@@ -41,6 +41,8 @@
  *       - 282733: Add plural converter annotations
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     09/16/2010-2.2 Guy Pelletier 
+ *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -170,24 +172,6 @@ public abstract class MetadataAccessor extends ORMetadata {
         }
         
         return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Process and add the globally defined converters to the project.
-     */
-    public void addConverters() {
-        // Process the custom converters if defined.
-        processCustomConverters();
-        
-        // Process the object type converters if defined.
-        processObjectTypeConverters();
-        
-        // Process the type converters if defined.
-        processTypeConverters();
-        
-        // Process the struct converters if defined
-        processStructConverters();
     }
     
     /**
@@ -577,6 +561,24 @@ public abstract class MetadataAccessor extends ORMetadata {
      * information they need.
      */
     public abstract void process();
+    
+    /**
+     * INTERNAL:
+     * Process and add the globally defined converters to the project.
+     */
+    public void processConverters() {
+        // Process the custom converters if defined.
+        processCustomConverters();
+        
+        // Process the object type converters if defined.
+        processObjectTypeConverters();
+        
+        // Process the type converters if defined.
+        processTypeConverters();
+        
+        // Process the struct converters if defined
+        processStructConverters();
+    }
     
     /**
      * INTERNAL:

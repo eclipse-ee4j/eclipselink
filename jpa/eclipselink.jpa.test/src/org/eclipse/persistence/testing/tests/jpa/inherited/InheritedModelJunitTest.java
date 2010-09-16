@@ -61,6 +61,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
 import org.eclipse.persistence.testing.models.jpa.inherited.BuildingBylaw;
 import org.eclipse.persistence.testing.models.jpa.inherited.Committee;
+import org.eclipse.persistence.testing.models.jpa.inherited.CommitteeDates;
 import org.eclipse.persistence.testing.models.jpa.inherited.Corona;
 import org.eclipse.persistence.testing.models.jpa.inherited.CoronaTag;
 import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
@@ -551,10 +552,17 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             
             Committee committee1 = new Committee();
             committee1.setDescription("New beer committee");
+            CommitteeDates committee1Dates = new CommitteeDates();
+            committee1Dates.setStartDate("Jan 1, 2010");   
+            committee1.setCommitteeDates(committee1Dates);
             beerConsumer.addCommittee(committee1);
             
             Committee committee2 = new Committee();
             committee2.setDescription("Alcohol content regulation");
+            CommitteeDates committee2Dates = new CommitteeDates();
+            committee2Dates.setStartDate("Jan 1, 1970");
+            committee2Dates.setEndDate("Jan 1, 2001");
+            committee2.setCommitteeDates(committee2Dates);
             beerConsumer.addCommittee(committee2);
                         
             em.persist(beerConsumer);

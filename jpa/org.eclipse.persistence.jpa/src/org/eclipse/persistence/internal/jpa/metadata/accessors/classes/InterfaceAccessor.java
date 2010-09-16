@@ -84,28 +84,6 @@ public class InterfaceAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
-     * The pre-process method is called during regular deployment and metadata
-     * processing. 
-     */
-    @Override
-    public void preProcess() {
-        // Does nothing at this point ... perhaps it will in the future ...
-    }  
-    
-    /**
-     * INTERNAL:
-     * The pre-process for canonical model method is called (and only called) 
-     * during the canonical model generation. The use of this pre-process allows
-     * us to remove some items from the regular pre-process that do not apply
-     * to the canonical model generation.
-     */
-    @Override
-    public void preProcessForCanonicalModel() {
-        // Does nothing at this point ... perhaps it will in the future ...
-    }
-    
-    /**
-     * INTERNAL:
      */
     @Override
     public void process() {

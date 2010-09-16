@@ -46,6 +46,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     07/05/2010-2.1.1 Guy Pelletier 
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+ *     09/16/2010-2.2 Guy Pelletier 
+ *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -145,6 +147,45 @@ public class EmbeddableAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Build a list of classes that are decorated with a MappedSuperclass
+     * annotation or that are tagged as a mapped-superclass in an XML document.
+     * 
+     * This method will also do a couple other things as well since we are
+     * traversing the parent classes:
+     *  - Build a map of generic types specified and will be used to resolve 
+     *    actual class types for mappings.
+     *  - save mapped-superclass descriptors on the project for later use
+     *    by the Metamodel API
+     * 
+     * We don't support embeddable inheritance yet. When that is added, this
+     * method will need to change and in fact we may be able to re-use the
+     * existing discover method from EntityAccessor (with minor tweaks).
+     */
+    protected void discoverMappedSuperclassesAndInheritanceParents(boolean addMappedSuperclassAccessors) {
+        // Clear any previous discovery.
+        clearMappedSuperclassesAndInheritanceParents();
+        
+        MetadataClass parentClass = getJavaClass().getSuperclass();
+        List<String> genericTypes = getJavaClass().getGenericType();
+        
+        while (! parentClass.isObject()) {
+            // Our parent might be a mapped superclass, check and add as needed.
+            addPotentialMappedSuperclass(parentClass, addMappedSuperclassAccessors);
+                
+            // Resolve any generic types from the generic parent onto the 
+            // current entity accessor.
+            resolveGenericTypes(genericTypes, parentClass);
+                
+            // Grab the generic types from the parent class.
+            genericTypes = parentClass.getGenericType();
+                
+            // Finally, get the next parent and keep processing ...
+            parentClass = parentClass.getSuperclass();  
+        }
+    }
+    
+    /**
+     * INTERNAL:
      */
     public Map<String, ClassAccessor> getEmbeddingAccessors() {
         return m_embeddingAccessors;
@@ -210,12 +251,15 @@ public class EmbeddableAccessor extends ClassAccessor {
      * This method is called after each entity of the persistence unit has had 
      * an opportunity to pre-process itself first since we'll rely on owning 
      * entities for things like access type etc. The pre-process will run some 
-     * validation. The order of processing is important, care must be taken if 
-     * changes must be made. 
+     * validation. 
+     * 
+     * The order of processing is important, care must be taken if changes must 
+     * be made. 
      */
     @Override
     public void preProcess() {
-        setIsPreProcessed();
+        // Perform the parent discovery process before processing any further.  
+        discoverMappedSuperclassesAndInheritanceParents(true);
         
         // Process the correct access type before any other processing.
         processAccessType();
@@ -226,19 +270,8 @@ public class EmbeddableAccessor extends ClassAccessor {
         // Process the default access methods after determining access type.
         processAccessMethods();
         
-        // Set a metadata complete flag if specified.
-        if (getMetadataComplete() != null) {
-            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
-        } 
-        
-        // Set an exclude default mappings flag if specified.
-        if (getExcludeDefaultMappings() != null) {
-            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
-        } 
-
-        // Add the accessors and converters on this embeddable.
-        addAccessors();
-        addConverters();
+        // Process our parents metadata after processing our own.
+        super.preProcess();
     }
     
     /**
@@ -247,31 +280,39 @@ public class EmbeddableAccessor extends ClassAccessor {
      * during the canonical model generation. The use of this pre-process allows
      * us to remove some items from the regular pre-process that do not apply
      * to the canonical model generation.
+     * 
+     * The order of processing is important, care must be taken if changes must 
+     * be made.
      */
     @Override
-    public void preProcessForCanonicalModel() {        
-        setIsPreProcessed();
+    public void preProcessForCanonicalModel() {
+        // Perform the parent discovery process before processing any further.  
+        discoverMappedSuperclassesAndInheritanceParents(true);
         
-        // Process the correct access type before any other processing.
-        processAccessType();
+        // Process our parents metadata after processing our own.
+        super.preProcessForCanonicalModel();
+    }
+    
+    /**
+     * INTERNAL
+     * Sub classes (Entity and Embeddable) must override this method to control 
+     * the metadata that is processed for their context. 
+     */
+    @Override
+    protected void preProcessMappedSuperclassMetadata(MappedSuperclassAccessor mappedSuperclass) {
+        // Process the metadata complete flag now before we start looking
+        // for annotations.
+        mappedSuperclass.processMetadataComplete();
         
-        // Set a metadata complete flag if specified.
-        if (getMetadataComplete() != null) {
-            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
-        } 
+        // Process the exclude default mappings flag now before we start
+        // looking for annotations.
+        mappedSuperclass.processExcludeDefaultMappings();
         
-        // Set an exclude default mappings flag if specified.
-        if (getExcludeDefaultMappings() != null) {
-            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
-        } 
-
-        // Before gathering our accessors, clear any accessors previously 
-        // gathered. When generating the canonical model the accessors need 
-        // to be re-gathered in each compile round.
-        getDescriptor().clearMappingAccessors();
+        // Process the global converters.
+        mappedSuperclass.processConverters();
         
-        // Add the accessors and converters on this embeddable.
-        addAccessors();
+        // Add the accessors and converters from this mapped superclass.
+        mappedSuperclass.addAccessors();
     }
     
     /**
@@ -285,23 +326,11 @@ public class EmbeddableAccessor extends ClassAccessor {
             throw ValidationException.cacheNotSupportedWithEmbeddable(getJavaClass());
         } 
         
-        // Process the customizer metadata.
-        processCustomizer();
-        
-        // Process the copy policy metadata.
-        processCopyPolicy();
-        
-        // Process the change tracking metadata.
-        processChangeTracking();
-        
-        // Process the properties metadata.
-        processProperties();
+        // Process our parents metadata after processing our own.
+        super.process();
 
-        // Process the mapping accessors on this embeddable.
+        // Process the mapping accessors on this embeddable now.
         processMappingAccessors();
-        
-        // Set the processed flag.
-        setIsProcessed();
     }
     
     /**
@@ -375,9 +404,23 @@ public class EmbeddableAccessor extends ClassAccessor {
             // Set the default access type on the descriptor and log a message
             // that we are defaulting the access type for this embeddable.
             if (embeddingAccessor == null) {
-                // No class embedded this embeddable and we have no explicit 
-                // access type set, just default it to FIELD.
-                getDescriptor().setDefaultAccess(MetadataConstants.FIELD);
+                // We don't have an owning entity (only possible during
+                // canonical model generation) so look at the mapped 
+                // superclasses. Ultimate default will be FIELD.
+                String defaultAccessType = MetadataConstants.FIELD;
+                for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
+                    if (! mappedSuperclass.hasAccess()) {
+                        if (mappedSuperclass.hasObjectRelationalFieldMappingAnnotationsDefined()) {
+                            defaultAccessType = MetadataConstants.FIELD;
+                        } else if (mappedSuperclass.hasObjectRelationalMethodMappingAnnotationsDefined()) {
+                            defaultAccessType = MetadataConstants.PROPERTY;
+                        }
+                            
+                        break;
+                    }
+                }
+
+                getDescriptor().setDefaultAccess(defaultAccessType);
             } else {
                 // Use the access type from the embedding accessor.
                 getDescriptor().setDefaultAccess(embeddingAccessor.getAccessType());
@@ -385,7 +428,33 @@ public class EmbeddableAccessor extends ClassAccessor {
             
             getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, getDescriptor().getDefaultAccess(), getJavaClass());
             
-            getDescriptor().setAccessTypeOnClassDescriptor(this.getAccessType());
+            getDescriptor().setAccessTypeOnClassDescriptor(getAccessType());
         } 
+    }
+    
+    /**
+     * INTERNAL
+     * From an embeddable we need pair down what we process as things like
+     * ID metadata does not apply. 
+     */
+    @Override
+    protected void processMappedSuperclassMetadata(MappedSuperclassAccessor mappedSuperclass) {
+        // Process the attribute override metadata.
+        mappedSuperclass.processAttributeOverrides();
+                    
+        // Process the association override metadata.
+        mappedSuperclass.processAssociationOverrides();
+        
+        // Process the change tracking metadata.
+        mappedSuperclass.processChangeTracking();
+        
+        // Process the customizer metadata.
+        mappedSuperclass.processCustomizer();
+        
+        // Process the copy policy metadata.
+        mappedSuperclass.processCopyPolicy();
+        
+        // Process the property metadata.
+        mappedSuperclass.processProperties();
     }
 }

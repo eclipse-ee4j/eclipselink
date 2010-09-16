@@ -10,6 +10,8 @@
  * Contributors:
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     09/16/2010-2.2 Guy Pelletier 
+ *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -31,6 +34,8 @@ import javax.persistence.TableGenerator;
 public class Committee {
     private Integer id;
     private String description;
+    private CommitteeDates committeeDates;
+
     private List<ExpertBeerConsumer> expertBeerConsumers;
     private List<NoviceBeerConsumer> noviceBeerConsumers;
     
@@ -45,6 +50,11 @@ public class Committee {
     
     protected void addNoviceBeerConsumer(NoviceBeerConsumer noviceBeerConsumer) {
         noviceBeerConsumers.add(noviceBeerConsumer);
+    }
+    
+    @Embedded
+    public CommitteeDates getCommitteeDates() {
+        return committeeDates;
     }
     
     @ManyToMany(mappedBy="committees")
@@ -72,6 +82,10 @@ public class Committee {
         pkColumnValue="COMMITTEE_SEQ")
     public Integer getId() {
         return id;
+    }
+    
+    public void setCommitteeDates(CommitteeDates committeeDates) {
+        this.committeeDates = committeeDates;
     }
     
     public void setExpertBeerConsumers(List<ExpertBeerConsumer> expertBeerConsumers) {

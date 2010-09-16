@@ -15,6 +15,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     09/16/2010-2.2 Guy Pelletier 
+ *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -62,7 +64,6 @@ public class XMLAttributes extends ORMetadata {
     private List<IdAccessor> m_ids;
     private List<ManyToManyAccessor> m_manyToManys;
     private List<ManyToOneAccessor> m_manyToOnes;
-    private List<MappingAccessor> m_allAccessors;
     private List<OneToManyAccessor> m_oneToManys;
     private List<OneToOneAccessor> m_oneToOnes;
     private List<VariableOneToOneAccessor> m_variableOneToOnes;
@@ -84,7 +85,64 @@ public class XMLAttributes extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof XMLAttributes) {
             XMLAttributes attributes = (XMLAttributes) objectToCompare;
-            return valuesMatch(getAccessors(), attributes.getAccessors());
+            
+            if (! valuesMatch(m_embeddedId, attributes.getEmbeddedId())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_basics, attributes.getBasics())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_basicCollections, attributes.getBasicCollections())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_basicMaps, attributes.getBasicMaps())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_elementCollections, attributes.getElementCollections())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_embeddeds, attributes.getEmbeddeds())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_ids, attributes.getIds())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_manyToManys, attributes.getManyToManys())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_manyToOnes, attributes.getManyToOnes())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_oneToManys, attributes.getOneToManys())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_oneToOnes, attributes.getOneToOnes())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_variableOneToOnes, attributes.getVariableOneToOnes())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_transformations, attributes.getTransformations())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_transients, attributes.getTransients())) {
+                return false;
+            }
+            
+            return valuesMatch(m_versions, attributes.getVersions());
         }
         
         return false;
@@ -92,32 +150,33 @@ public class XMLAttributes extends ORMetadata {
     
     /**
      * INTERNAL:
+     * This list is not cached and should not be cached since our accessors
+     * may change in a merge. The accessors list gets rebuilt every time
+     * this method is called (which should only ever be once!)
      */
     public List<MappingAccessor> getAccessors() {
-        if (m_allAccessors == null) {
-            m_allAccessors = new ArrayList<MappingAccessor>();
+        List<MappingAccessor> accessors = new ArrayList<MappingAccessor>();
         
-            if (m_embeddedId != null) {
-                m_allAccessors.add(m_embeddedId);
-            }
-            
-            m_allAccessors.addAll(m_ids); 
-            m_allAccessors.addAll(m_basics);
-            m_allAccessors.addAll(m_basicCollections);
-            m_allAccessors.addAll(m_basicMaps);
-            m_allAccessors.addAll(m_versions);
-            m_allAccessors.addAll(m_embeddeds);
-            m_allAccessors.addAll(m_elementCollections);
-            m_allAccessors.addAll(m_transformations);
-            m_allAccessors.addAll(m_transients);
-            m_allAccessors.addAll(m_manyToManys);
-            m_allAccessors.addAll(m_manyToOnes);
-            m_allAccessors.addAll(m_oneToManys);
-            m_allAccessors.addAll(m_oneToOnes);
-            m_allAccessors.addAll(m_variableOneToOnes);
+        if (m_embeddedId != null) {
+            accessors.add(m_embeddedId);
         }
+            
+        accessors.addAll(m_ids); 
+        accessors.addAll(m_basics);
+        accessors.addAll(m_basicCollections);
+        accessors.addAll(m_basicMaps);
+        accessors.addAll(m_versions);
+        accessors.addAll(m_embeddeds);
+        accessors.addAll(m_elementCollections);
+        accessors.addAll(m_transformations);
+        accessors.addAll(m_transients);
+        accessors.addAll(m_manyToManys);
+        accessors.addAll(m_manyToOnes);
+        accessors.addAll(m_oneToManys);
+        accessors.addAll(m_oneToOnes);
+        accessors.addAll(m_variableOneToOnes);
         
-        return m_allAccessors;
+        return accessors;
     }
     
     /**
@@ -252,9 +311,25 @@ public class XMLAttributes extends ORMetadata {
         // classes accessible object. The actual accessible object (field or
         // method) for each accessor will be set during the actual metadata
         // processing stage.
-        for (MappingAccessor accessor : getAccessors()) {
-            accessor.initXMLObject(accessibleObject, entityMappings);
-        }
+        
+        // Initialize single objects.
+        initXMLObject(m_embeddedId, accessibleObject);
+        
+        // Initialize lists of objects.
+        initXMLObjects(m_basics, accessibleObject);
+        initXMLObjects(m_basicCollections, accessibleObject);
+        initXMLObjects(m_basicMaps, accessibleObject);
+        initXMLObjects(m_elementCollections, accessibleObject);
+        initXMLObjects(m_embeddeds, accessibleObject);
+        initXMLObjects(m_ids, accessibleObject);
+        initXMLObjects(m_manyToManys, accessibleObject);
+        initXMLObjects(m_manyToOnes, accessibleObject);
+        initXMLObjects(m_oneToManys, accessibleObject);
+        initXMLObjects(m_oneToOnes, accessibleObject);
+        initXMLObjects(m_variableOneToOnes, accessibleObject);
+        initXMLObjects(m_transformations, accessibleObject);
+        initXMLObjects(m_transients, accessibleObject);
+        initXMLObjects(m_versions, accessibleObject);
     }
     
     /**
@@ -265,8 +340,26 @@ public class XMLAttributes extends ORMetadata {
     @Override
     public void merge(ORMetadata metadata) {
         if (metadata != null) {
+            XMLAttributes attributes = (XMLAttributes) metadata;
+            
+            // ORMetadata object merging
+            m_embeddedId = (EmbeddedIdAccessor) mergeORObjects(getEmbeddedId(), attributes.getEmbeddedId());
+            
             // ORMetadata list merging.
-            m_allAccessors = mergeORObjectLists(getAccessors(), ((XMLAttributes) metadata).getAccessors());
+            m_basics = mergeORObjectLists(m_basics, attributes.getBasics());
+            m_basicCollections = mergeORObjectLists(m_basicCollections, attributes.getBasicCollections());
+            m_basicMaps = mergeORObjectLists(m_basicMaps, attributes.getBasicMaps());
+            m_elementCollections = mergeORObjectLists(m_elementCollections, attributes.getElementCollections());
+            m_embeddeds = mergeORObjectLists(m_embeddeds, attributes.getEmbeddeds());
+            m_ids = mergeORObjectLists(m_ids, attributes.getIds());
+            m_manyToManys = mergeORObjectLists(m_manyToManys, attributes.getManyToManys());
+            m_manyToOnes = mergeORObjectLists(m_manyToOnes, attributes.getManyToOnes());
+            m_oneToManys = mergeORObjectLists(m_oneToManys, attributes.getOneToManys());
+            m_oneToOnes = mergeORObjectLists(m_oneToOnes, attributes.getOneToOnes());
+            m_variableOneToOnes = mergeORObjectLists(m_variableOneToOnes, attributes.getVariableOneToOnes());
+            m_transformations = mergeORObjectLists(m_transformations, attributes.getTransformations());
+            m_transients = mergeORObjectLists(m_transients, attributes.getTransients());
+            m_versions = mergeORObjectLists(m_versions, attributes.getVersions());
         }
     }
     

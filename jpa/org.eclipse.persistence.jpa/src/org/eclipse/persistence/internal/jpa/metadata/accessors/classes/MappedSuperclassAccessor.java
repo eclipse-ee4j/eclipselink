@@ -61,10 +61,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Cacheable;
 import javax.persistence.EntityListeners;
 import javax.persistence.ExcludeDefaultListeners;
@@ -98,9 +94,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataF
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
-
-import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 
@@ -146,8 +139,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private CacheMetadata m_cache;
     private CacheInterceptorMetadata m_cacheInterceptor;
     
-    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
-    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
     private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
     private List<FetchGroupMetadata> m_fetchGroups = new ArrayList<FetchGroupMetadata>();
     private List<NamedQueryMetadata> m_namedQueries = new ArrayList<NamedQueryMetadata>();
@@ -218,22 +209,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public boolean excludeSuperclassListeners() {
         return m_excludeSuperclassListeners;
     }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<AssociationOverrideMetadata> getAssociationOverrides() {
-        return m_associationOverrides;
-    } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<AttributeOverrideMetadata> getAttributeOverrides() {
-        return m_attributeOverrides;
-    } 
     
     /**
      * INTERNAL:
@@ -538,8 +513,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         initXMLObject(m_tableGenerator, accessibleObject);
         
         // Initialize lists of objects.
-        initXMLObjects(m_associationOverrides, accessibleObject);
-        initXMLObjects(m_attributeOverrides, accessibleObject);
         initXMLObjects(m_entityListeners, accessibleObject);
         initXMLObjects(m_fetchGroups, accessibleObject);
         initXMLObjects(m_namedQueries, accessibleObject);
@@ -605,8 +578,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_tableGenerator = (TableGeneratorMetadata) mergeORObjects(m_tableGenerator, accessor.getTableGenerator());
         
         // ORMetadata list merging. 
-        m_associationOverrides = mergeORObjectLists(m_associationOverrides, accessor.getAssociationOverrides());
-        m_attributeOverrides = mergeORObjectLists(m_attributeOverrides, accessor.getAttributeOverrides());
         m_entityListeners = mergeORObjectLists(m_entityListeners, accessor.getEntityListeners());
         m_fetchGroups = mergeORObjectLists(m_fetchGroups, accessor.getFetchGroups());
         m_namedQueries = mergeORObjectLists(m_namedQueries, accessor.getNamedQueries());
@@ -626,40 +597,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     @Override
     public void preProcess() {
-        setIsPreProcessed();
-        
         // Add any id class definition to the project.
         initIdClass();
         
         // Set a cacheable flag if specified on the entity's descriptor.
         processCacheable();
         
-        // Add the accessors and converters from this mapped superclass.
-        addAccessors();
-        addConverters();
-    }
-    
-    /**
-     * INTERNAL:
-     * The pre-process for canonical model method is called (and only called) 
-     * during the canonical model generation. The use of this pre-process allows
-     * us to remove some items from the regular pre-process that do not apply
-     * to the canonical model generation.
-     */
-    @Override
-    public void preProcessForCanonicalModel() {
-        setIsPreProcessed();
-        
-        // Process the correct access type before any other processing.
-        processAccessType();
-        
-        // Before gathering our accessors, clear any accessors previously 
-        // gathered. When generating the canonical model the accessors need 
-        // to be re-gathered in each compile round.
-        getDescriptor().clearMappingAccessors();
-        
-        // Add the accessors from this mapped superclass.
-        addAccessors();
+        // Process our parents metadata after processing our own.
+        super.preProcess();
     }
     
     /**
@@ -668,11 +613,57 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     @Override
     public void process() {
-        setIsProcessed();
+        // Process the fetch group metadata.
+        processFetchGroups();
         
-        // Process the common class level attributes that an entity or
-        // mapped superclass may define.
-        processClassMetadata();
+        // Process the named query metadata.
+        processNamedQueries();
+                    
+        // Process the named native query metadata.
+        processNamedNativeQueries();
+        
+        // Process the named stored procedure query metadata
+        processNamedStoredProcedureQueries();
+                    
+        // Process the sql result set mapping metadata
+        processSqlResultSetMappings();
+                    
+        // Process the table generator metadata.
+        processTableGenerator();
+            
+        // Process the sequence generator metadata.
+        processSequenceGenerator();
+                    
+        // Process the id class metadata.
+        processIdClass();
+        
+        // Process the primary key metadata.
+        processPrimaryKey();
+        
+        // Process the exclude default listeners metadata.
+        processExcludeDefaultListeners();
+        
+        // Process the exclude superclass listeners metadata.
+        processExcludeSuperclassListeners();
+        
+        // Process the optimistic locking policy metadata.
+        processOptimisticLocking();
+        
+        // Process any cache metadata (Cache and CacheInterceptor) taking the 
+        // cacheable and persistence unit global setting into consideration.
+        processCaching();
+        
+        // Process the Default Redirectors
+        processDefaultRedirectors();
+        
+        // Process the read only metadata.
+        processReadOnly();
+        
+        // Process the existence checking metadata.
+        processExistenceChecking();
+        
+        // Process our parents metadata after processing our own.
+        super.process();
     }
     
     /**
@@ -687,7 +678,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // 266912: Note: this function is a port of the subclass protected EntityAccessor.processAccessType() minus step 1 and 2
         String explicitAccessType = getAccess(); 
         String defaultAccessType = null;
-        // 3 - If there are no mapped superclasses or no mapped superclasses
+        // 1 - If there are no mapped superclasses or no mapped superclasses
         // without an explicit access type. Check where the annotations are
         // defined on this entity class.
         if (hasObjectRelationalFieldMappingAnnotationsDefined()) {
@@ -695,13 +686,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         } else if (hasObjectRelationalMethodMappingAnnotationsDefined()) {
             defaultAccessType = MetadataConstants.PROPERTY;
         } else {
-            // 4 - If there are no annotations defined on either the
+            // 2 - If there are no annotations defined on either the
             // fields or properties, check for an xml default from
             // persistence-unit-metadata-defaults or entity-mappings.
             if (getDescriptor().getDefaultAccess() != null) {
                 defaultAccessType = getDescriptor().getDefaultAccess();
             } else {
-                // 5 - We've exhausted our search, set the access type to FIELD.
+                // 3 - We've exhausted our search, set the access type to FIELD.
                 defaultAccessType = MetadataConstants.FIELD;
             }
         }
@@ -713,96 +704,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         if (explicitAccessType == null) {
             getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType, getJavaClass());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the association override metadata specified on an entity or 
-     * mapped superclass. For any given class, XML association overrides are
-     * always added first (see processAssociationOverrides()).
-     */
-    protected void processAssociationOverride(AssociationOverrideMetadata associationOverride) {
-        // If an association override already exists, need to make some checks
-        // to determine if we should throw an exception or log an ignore
-        // message.
-        if (associationOverride.shouldOverride(getDescriptor().getAssociationOverrideFor(associationOverride.getName()), getLogger(), getDescriptor().getJavaClassName())) {
-            getDescriptor().addAssociationOverride(associationOverride);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the association override metadata specified on an entity or 
-     * mapped superclass. Once the association overrides are processed from
-     * XML process the association overrides from annotations. This order of
-     * processing must be maintained.
-     */
-    protected void processAssociationOverrides() {
-        // Process the XML association override elements first.
-        for (AssociationOverrideMetadata associationOverride : m_associationOverrides) {
-            // Process the association override.
-            processAssociationOverride(associationOverride);
-        }
-        
-        // Process the association override annotations.
-        // Look for an @AssociationOverrides.
-        MetadataAnnotation associationOverrides = getAnnotation(AssociationOverrides.class);
-        if (associationOverrides != null) {
-            for (Object associationOverride : (Object[]) associationOverrides.getAttributeArray("value")) {
-                processAssociationOverride(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, getAccessibleObject()));
-            }
-        }
-        
-        // Look for an @AssociationOverride.
-        MetadataAnnotation associationOverride = getAnnotation(AssociationOverride.class);
-        if (associationOverride != null) {
-            processAssociationOverride(new AssociationOverrideMetadata(associationOverride, getAccessibleObject()));
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the attribute override metadata specified on an entity or 
-     * mapped superclass. For any given class, XML attribute overrides are
-     * always added first (see processAttributeOverrides()).
-     */
-    protected void processAttributeOverride(AttributeOverrideMetadata attributeOverride) {
-        // If an attribute override already exists, need to make some checks
-        // to determine if we should throw an exception or log an ignore
-        // message.
-        if (attributeOverride.shouldOverride(getDescriptor().getAttributeOverrideFor(attributeOverride.getName()), getLogger(), getDescriptor().getJavaClassName())) {
-            getDescriptor().addAttributeOverride(attributeOverride);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the attribute override metadata specified on an entity or 
-     * mapped superclass. Once the attribute overrides are processed from
-     * XML process the attribute overrides from annotations. This order of 
-     * processing must be maintained.
-     */
-    protected void processAttributeOverrides() {
-        // Process the XML attribute overrides first.
-        for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
-            // Process the attribute override.
-            processAttributeOverride(attributeOverride);
-        }
-        
-        // Process the attribute override annotations.
-        // Look for an @AttributeOverrides.
-        MetadataAnnotation attributeOverrides = getAnnotation(AttributeOverrides.class);    
-        if (attributeOverrides != null) {
-            for (Object attributeOverride : (Object[]) attributeOverrides.getAttribute("value")){ 
-                processAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, getAccessibleObject()));
-            }
-        }
-        
-        // Look for an @AttributeOverride.
-        MetadataAnnotation attributeOverride = getAnnotation(AttributeOverride.class);
-        if (attributeOverride != null) {
-            processAttributeOverride(new AttributeOverrideMetadata(attributeOverride, getAccessibleObject()));
         }
     }
     
@@ -901,79 +802,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processCachingMetadata() {    
         processCache();
         processCacheInterceptor(); 
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the items of interest on an entity or mapped superclass class. 
-     */
-    protected void processClassMetadata() {
-        // Process the attribute override metadata.
-        processAttributeOverrides();
-                    
-        // Process the association override metadata.
-        processAssociationOverrides();
-        
-        // Process the fetch group metadata.
-        processFetchGroups();
-        
-        // Process the named query metadata.
-        processNamedQueries();
-                    
-        // Process the named native query metadata.
-        processNamedNativeQueries();
-        
-        // Process the named stored procedure query metadata
-        processNamedStoredProcedureQueries();
-                    
-        // Process the sql result set mapping metadata
-        processSqlResultSetMappings();
-                    
-        // Process the table generator metadata.
-        processTableGenerator();
-            
-        // Process the sequence generator metadata.
-        processSequenceGenerator();
-                    
-        // Process the id class metadata.
-        processIdClass();
-        
-        // Process the primary key metadata.
-        processPrimaryKey();
-        
-        // Process the exclude default listeners metadata.
-        processExcludeDefaultListeners();
-        
-        // Process the exclude superclass listeners metadata.
-        processExcludeSuperclassListeners();
-        
-        // Process the optimistic locking policy metadata.
-        processOptimisticLocking();
-        
-        // Process any cache metadata (Cache and CacheInterceptor) taking the 
-        // cacheable and persistence unit global setting into consideration.
-        processCaching();
-        
-        // Process the Default Redirectors
-        processDefaultRedirectors();
-            
-        // Process the change tracking metadata.
-        processChangeTracking();
-        
-        // Process the read only metadata.
-        processReadOnly();
-        
-        // Process the customizer metadata.
-        processCustomizer();
-        
-        // Process the copy policy metadata.
-        processCopyPolicy();
-        
-        // Process the existence checking metadata.
-        processExistenceChecking();
-        
-        // Process the property metadata.
-        processProperties();
     }
     
     /**
@@ -1407,22 +1235,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         if (isAnnotationPresent(TableGenerator.class)) {
             getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(TableGenerator.class), getAccessibleObject()), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
-    } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides) {
-        m_associationOverrides = associationOverrides;
-    } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
-        m_attributeOverrides = attributeOverrides;
     } 
     
     /**

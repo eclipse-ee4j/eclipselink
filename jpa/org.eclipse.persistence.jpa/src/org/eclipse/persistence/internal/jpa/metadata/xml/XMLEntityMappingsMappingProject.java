@@ -47,6 +47,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     05/04/2010-2.1 Guy Pelletier 
  *       - 309373: Add parent class attribute to EclipseLink-ORM
+ *     09/16/2010-2.2 Guy Pelletier 
+ *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -1004,10 +1006,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getInstantiationCopyPolicyMapping());
         descriptor.addMapping(getCloneCopyPolicyMapping());
         descriptor.addMapping(getPropertyMapping());
+        descriptor.addMapping(getAttributeOverrideMapping());
+        descriptor.addMapping(getAssociationOverrideMapping());
         descriptor.addMapping(getAttributesMapping());
         
         // Attribute mappings.
         descriptor.addMapping(getClassAttributeMapping());
+        descriptor.addMapping(getParentClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
         descriptor.addMapping(getExcludeDefaultMappingsAttributeMapping());

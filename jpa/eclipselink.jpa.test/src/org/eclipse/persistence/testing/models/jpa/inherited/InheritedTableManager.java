@@ -37,6 +37,8 @@
  *       - 260296: mixed access with no Transient annotation does not result in error
  *     08/11/2010-2.2 Guy Pelletier 
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
+ *     09/16/2010-2.2 Guy Pelletier 
+ *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -762,6 +764,26 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DESCRIPTION_field.setUnique(false);
         DESCRIPTION_field.setIsIdentity(false);
         table.addField(DESCRIPTION_field);
+        
+        FieldDefinition fieldSTARTDATE = new FieldDefinition();
+        fieldSTARTDATE.setName("STARTDATE");
+        fieldSTARTDATE.setTypeName("VARCHAR");
+        fieldSTARTDATE.setSize(40);
+        fieldSTARTDATE.setShouldAllowNull(true);
+        fieldSTARTDATE.setIsPrimaryKey(false);
+        fieldSTARTDATE.setUnique(false);
+        fieldSTARTDATE.setIsIdentity(false);
+        table.addField(fieldSTARTDATE);
+    
+        FieldDefinition fieldENDDATE = new FieldDefinition();
+        fieldENDDATE.setName("ENDDATE");
+        fieldENDDATE.setTypeName("VARCHAR");
+        fieldENDDATE.setSize(40);
+        fieldENDDATE.setShouldAllowNull(true);
+        fieldENDDATE.setIsPrimaryKey(false);
+        fieldENDDATE.setUnique(false);
+        fieldENDDATE.setIsIdentity(false);
+        table.addField(fieldENDDATE);
 
         return table;
     }

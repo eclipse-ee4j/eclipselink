@@ -73,6 +73,8 @@
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     09/16/2010-2.2 Guy Pelletier 
+ *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -86,7 +88,6 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 import javax.persistence.SecondaryTable;
@@ -134,10 +135,11 @@ import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
  * @since EclipseLink 1.0
  */
 public class EntityAccessor extends MappedSuperclassAccessor {
+    private boolean m_cascadeOnDelete;
+    
     private InheritanceMetadata m_inheritance;
     private DiscriminatorColumnMetadata m_discriminatorColumn;
     
-    private List<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
     private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
@@ -149,8 +151,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private String m_entityName;
     
     private TableMetadata m_table;
-    
-    private boolean m_cascadeOnDelete;
 
     /**
      * INTERNAL:
@@ -189,69 +189,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Add mapped superclass accessors to inheriting entities.
-     * Add new descriptors for these mapped superclasses to the core project.
-     */
-    protected void addPotentialMappedSuperclass(MetadataClass metadataClass, boolean addMappedSuperclassAccessors) {
-        // Get the mappedSuperclass that was stored previously on the project
-        MappedSuperclassAccessor accessor = getProject().getMappedSuperclassAccessor(metadataClass);
-
-        if (accessor == null) {
-            // If the mapped superclass was not defined in XML then check for a 
-            // MappedSuperclass annotation unless the addMappedSuperclassAccessors 
-            // flag is false, meaning we are pre-processing for the canonical 
-            // model and any and all mapped superclasses should have been 
-            // discovered and we need not investigate this class further.
-            if (addMappedSuperclassAccessors) {
-                if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
-                    m_mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getDescriptor()));
-                    
-                    // 266912: process and store mappedSuperclass descriptors on 
-                    // the project for later use by the Metamodel API.
-                    getProject().addMetamodelMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getProject()), getDescriptor());
-                }
-            }
-        } else {
-            // For the canonical model pre-processing we do not need to do any
-            // of the reloading (cloning) that we require for the regular
-            // metadata processing. Therefore, just add the mapped superclass
-            // directly leaving its current descriptor as is. When a mapped
-            // superclass accessor is reloaded for a sub entity, its descriptor 
-            // is set to that entity's descriptor.
-            if (addMappedSuperclassAccessors) {
-                // Reload the accessor from XML to get our own instance not 
-                // already on the project
-                m_mappedSuperclasses.add(reloadMappedSuperclass(accessor, getDescriptor()));
-                
-                // 266912: process and store mappedSuperclass descriptors on the 
-                // project for later use by the Metamodel API Note: we must 
-                // again reload our accessor from XML or we will be sharing 
-                // instances of the descriptor
-                getProject().addMetamodelMappedSuperclass(reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass)), getDescriptor());
-            } else {
-                m_mappedSuperclasses.add(accessor);
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected void clearMappedSuperclassesAndInheritanceParents() {
-        // Re-initialize the mapped superclass list if it's not empty.
-        if (! m_mappedSuperclasses.isEmpty()) {
-            m_mappedSuperclasses.clear();
-        }
-        
-        // Null out the inheritance parent and root descriptor before we start
-        // since they will be recalculated and used to determine when to stop
-        // looking for mapped superclasses.
-        getDescriptor().setInheritanceParentDescriptor(null);
-        getDescriptor().setInheritanceRootDescriptor(null);
-    }
-    
-    /**
-     * INTERNAL:
      * Build a list of classes that are decorated with a MappedSuperclass
      * annotation or that are tagged as a mapped-superclass in an XML document.
      * 
@@ -269,8 +206,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * dependencies change.
      */
     protected void discoverMappedSuperclassesAndInheritanceParents(boolean addMappedSuperclassAccessors) {
-        // Clear out any previous mapped superclasses and inheritance parents
-        // that were discovered.
+        // Clear any previous discovery.
         clearMappedSuperclassesAndInheritanceParents();
         
         EntityAccessor currentEntityAccessor = this;
@@ -390,17 +326,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Return the mapped superclasses associated with this entity accessor.
-     * A call to discoverMappedSuperclassesAndInheritanceParents() should be
-     * made before calling this method. 
-     * @see process()
-     */
-    public List<MappedSuperclassAccessor> getMappedSuperclasses() {
-        return m_mappedSuperclasses;
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */    
     public List<PrimaryKeyJoinColumnMetadata> getPrimaryKeyJoinColumns() {
@@ -500,6 +425,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
     }
     
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isCascadeOnDelete() {
+        return m_cascadeOnDelete;
+    }
+    
     /** 
      * INTERNAL:
      * Return true if this accessor represents an entity class.
@@ -546,21 +479,18 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     /**
      * INTERNAL:
      * The pre-process method is called during regular deployment and metadata
-     * processing. 
-     * 
-     * This method will pre-process the items of interest on an entity class. 
+     * processing and will pre-process the items of interest on an entity class.
+     *  
      * The order of processing is important, care must be taken if changes must 
      * be made. 
      */
     @Override
     public void preProcess() {
-        setIsPreProcessed();
-        
         // If we are not already an inheritance subclass (meaning we were not
-        // discovered through a subclass entity discovery) then perform
-        // the discovery process before processing any further. We traverse
-        // the chain upwards and we can not guarantee which entity will be
-        // processed first in an inheritance hierarchy.
+        // discovered through a subclass entity discovery) then perform the 
+        // discovery process before processing any further. We traverse the 
+        // chain upwards and we can not guarantee which entity will be processed 
+        // first in an inheritance hierarchy.
         if (! getDescriptor().isInheritanceSubclass()) {
             discoverMappedSuperclassesAndInheritanceParents(true);
         }
@@ -589,29 +519,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the default access methods after determining access type.
         processAccessMethods();
         
-        // Process the metadata complete flag now before we start looking
-        // for annotations.
-        processMetadataComplete();
-        
-        // Process the exclude default mappings flag now before we start
-        // looking for annotations.
-        processExcludeDefaultMappings();
-        
-        // Add any id class definition to the project.
-        initIdClass();
-        
-        // Process a cacheable setting.
-        processCacheable();
-        
-        // Pre-process our mapped superclass accessors, this will add their
-        // accessors and converters and further look for a cacheable setting.
-        for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
-            mappedSuperclass.preProcess();
-        }
-        
-        // Add the accessors and converters on this entity.
-        addAccessors();
-        addConverters();
+        // Process our parents metadata after processing our own.
+        super.preProcess();
     }
     
     /**
@@ -620,6 +529,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * during the canonical model generation. The use of this pre-process allows
      * us to remove some items from the regular pre-process that do not apply
      * to the canonical model generation.
+     *  
+     * The order of processing is important, care must be taken if changes must 
+     * be made. 
      */
     @Override
     public void preProcessForCanonicalModel() {
@@ -649,24 +561,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             }
         }
         
-        // Process the correct access type before any other processing.
-        processAccessType();
-        
-        // Process the metadata complete flag now before we start looking
-        // for annotations.
-        processMetadataComplete();
-        
-        // Process the exclude default mappings flag now before we start
-        // looking for annotations.
-        processExcludeDefaultMappings();
-        
-        // Before gathering our accessors, clear any accessors previously 
-        // gathered. When generating the canonical model the accessors need 
-        // to be re-gathered in each compile round.
-        getDescriptor().clearMappingAccessors();
-        
-        // Finally, add our immediate accessors and converters.
-        addAccessors();
+        // Process our parents metadata after processing our own.
+        super.preProcessForCanonicalModel();
     }
     
     /**
@@ -676,12 +572,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     @Override
     public void process() {
-        setIsProcessed();
-        
         // Process the entity annotation.
         processEntity();
         
-        // If we are an inheritance subclass process out root first.
+        // If we are an inheritance subclass process our root first.
         if (getDescriptor().isInheritanceSubclass()) {
             ClassAccessor parentAccessor = getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
             if (! parentAccessor.isProcessed()) {
@@ -691,26 +585,150 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             
         // Process the Table and Inheritance metadata.
         processTableAndInheritance();
-        processIndexes();        
+        
+        
+        // Process the indices metadata.
+        processIndexes();
+        
+        // Process the cascade on delete metadata.
         processCascadeOnDelete();
         
-        // Process the common class level attributes that an entity or mapped 
-        // superclass may define. This needs to be done before processing
-        // the mapped superclasses. We want to be able to grab the metadata off 
-        // the actual entity class first because it needs to override any 
-        // settings from the mapped superclass and may need to log a warning.
-        processClassMetadata();
-        
-        // Process the MappedSuperclass(es) metadata now. There may be
-        // several MappedSuperclasses for any given Entity.
-        for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
-            // All this is going to do is call processClassMetadata.
-            mappedSuperclass.process();
-        }
+        // Process our parents metadata after processing our own.
+        super.process();
         
         // Finally, process the mapping accessors on this entity (and all those 
         // from super classes that apply to us).
         processMappingAccessors();
+    }
+    
+    /**
+     * INTERNAL:
+     * For VIRTUAL access we need to look for default access methods that we 
+     * need to use with our mapping attributes.
+     */
+    public void processAccessMethods() {
+        if (usesVirtualAccess()) {
+            // If we use virtual access and do not have any access methods
+            // specified then go look for access methods on a mapped superclass
+            // or inheritance parent.
+            if (hasAccessMethods()) {
+                getDescriptor().setDefaultAccessMethods(getAccessMethods());
+            } else {
+                // Go through the mapped superclasses.
+                for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
+                    if (mappedSuperclass.hasAccessMethods()) {
+                        getDescriptor().setDefaultAccessMethods(mappedSuperclass.getAccessMethods());
+                        return;
+                    }
+                }
+                
+                // Go through the inheritance parents.
+                if (getDescriptor().isInheritanceSubclass()) {
+                    MetadataDescriptor parentDescriptor = getDescriptor().getInheritanceParentDescriptor();
+                    while (parentDescriptor.isInheritanceSubclass()) {
+                        if (parentDescriptor.getClassAccessor().hasAccessMethods()) {
+                            getDescriptor().setDefaultAccessMethods(parentDescriptor.getClassAccessor().getAccessMethods());
+                            return;
+                        }
+                        
+                        parentDescriptor = parentDescriptor.getInheritanceParentDescriptor();
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Figure out the access type for this entity. It works as follows:
+     * 1 - check for an explicit access type specification
+     * 2 - check our inheritance parents (ignoring explicit specifications)
+     * 3 - check our mapped superclasses (ignoring explicit specifications) for 
+     *     the location of annotations
+     * 4 - check the entity itself for the location of annotations
+     * 5 - check for an xml default from a persistence-unit-metadata-defaults or 
+     *     entity-mappings setting.    
+     * 6 - we have exhausted our search, default to FIELD.
+     */
+    @Override
+    public void processAccessType() {
+        // This function has been overridden in the MappedSuperclassAccessor 
+        // parent. Do not call this superclass method.
+        
+        // Step 1 - Check for an explicit setting.
+        String explicitAccessType = getAccess(); 
+        
+        // Step 2, regardless if there is an explicit access type we still
+        // want to determine the default access type for this entity since
+        // any embeddable, mapped superclass or id class that depends on it
+        // will have it available. 
+        String defaultAccessType = null;
+        
+        // 1 - Check the access types from our parents if we are an inheritance 
+        // sub-class. Inheritance hierarchies are processed top->down so our 
+        // first parent that does not define an explicit access type will have 
+        // the type we would want to default to.
+        if (getDescriptor().isInheritanceSubclass()) {
+            MetadataDescriptor parent = getDescriptor().getInheritanceParentDescriptor();
+            while (parent != null) {
+                if (! parent.getClassAccessor().hasAccess()) {
+                    defaultAccessType = parent.getDefaultAccess();
+                    break;
+                }
+                    
+                parent = parent.getInheritanceParentDescriptor();
+            }
+        }
+        
+        // 2 - If there is no inheritance or no inheritance parent that does not 
+        // explicitly define an access type. Let's check this entities mapped 
+        // superclasses now.
+        if (defaultAccessType == null) {
+            for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
+                if (! mappedSuperclass.hasAccess()) {
+                    if (mappedSuperclass.hasObjectRelationalFieldMappingAnnotationsDefined()) {
+                        defaultAccessType = MetadataConstants.FIELD;
+                    } else if (mappedSuperclass.hasObjectRelationalMethodMappingAnnotationsDefined()) {
+                        defaultAccessType = MetadataConstants.PROPERTY;
+                    }
+                        
+                    break;
+                }
+            }
+            
+            // 3 - If there are no mapped superclasses or no mapped superclasses 
+            // without an explicit access type. Check where the annotations are 
+            // defined on this entity class. 
+            if (defaultAccessType == null) {    
+                if (hasObjectRelationalFieldMappingAnnotationsDefined()) {
+                    defaultAccessType = MetadataConstants.FIELD;
+                } else if (hasObjectRelationalMethodMappingAnnotationsDefined()) {
+                    defaultAccessType = MetadataConstants.PROPERTY;
+                } else {
+                    // 4 - If there are no annotations defined on either the
+                    // fields or properties, check for an xml default from
+                    // persistence-unit-metadata-defaults or entity-mappings.
+                    if (getDescriptor().getDefaultAccess() != null) {
+                        defaultAccessType = getDescriptor().getDefaultAccess();
+                    } else {
+                        // 5 - We've exhausted our search, set the access type
+                        // to FIELD.
+                        defaultAccessType = MetadataConstants.FIELD;
+                    }
+                }
+            }
+        } 
+        
+        // Finally set the default access type on the descriptor and log a 
+        // message to the user if we are defaulting the access type for this
+        // entity to use that default.
+        getDescriptor().setDefaultAccess(defaultAccessType);
+        
+        if (explicitAccessType == null) {
+            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType, getJavaClass());
+        }
+        
+        getDescriptor().setAccessTypeOnClassDescriptor(this.getAccessType());
     }
     
     /**
@@ -758,6 +776,21 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 // DISABLE_SELECTIVE and Cacheable(true) or no setting, process the cache metadata.
                 processCachingMetadata();
             }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Check if CascadeOnDelete was set on the Entity.
+     */
+    protected void processCascadeOnDelete() {
+        MetadataAnnotation annotation = getAnnotation(CascadeOnDelete.class);
+        
+        if (annotation != null) {
+            m_cascadeOnDelete = true;
+        }
+        if (m_cascadeOnDelete) {
+            getDescriptor().getClassDescriptor().setIsCascadeOnDeleteSetOnDatabaseOnSecondaryTables(true);
         }
     }
     
@@ -848,166 +881,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         return null;
     }
-    
-    /**
-     * INTERNAL:
-     * For VIRTUAL access we need to look for default access methods that we 
-     * need to use with our mapping attributes.
-     */
-    public void processAccessMethods() {
-        if (usesVirtualAccess()) {
-            // If we use virtual access and do not have any access methods
-            // specified then go look for access methods on a mapped superclass
-            // or inheritance parent.
-            if (hasAccessMethods()) {
-                getDescriptor().setDefaultAccessMethods(getAccessMethods());
-            } else {
-                // Go through the mapped superclasses.
-                for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
-                    if (mappedSuperclass.hasAccessMethods()) {
-                        getDescriptor().setDefaultAccessMethods(mappedSuperclass.getAccessMethods());
-                        return;
-                    }
-                }
-                
-                // Go through the inheritance parents.
-                if (getDescriptor().isInheritanceSubclass()) {
-                    MetadataDescriptor parentDescriptor = getDescriptor().getInheritanceParentDescriptor();
-                    while (parentDescriptor.isInheritanceSubclass()) {
-                        if (parentDescriptor.getClassAccessor().hasAccessMethods()) {
-                            getDescriptor().setDefaultAccessMethods(parentDescriptor.getClassAccessor().getAccessMethods());
-                            return;
-                        }
-                        
-                        parentDescriptor = parentDescriptor.getInheritanceParentDescriptor();
-                    }
-                }
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the accessors for the given class.
-     * If we are within a TABLE_PER_CLASS inheritance hierarchy, our parent
-     * accessors will already have been added at this point. 
-     * @see InheritanceMetadata process()
-     */
-    @Override
-    public void processMappingAccessors() {
-        // Process our mapping accessors, and then perform the necessary 
-        // validation checks for this entity.
-        super.processMappingAccessors();
-
-        // Validate the optimistic locking setting.
-        validateOptimisticLocking();
-            
-        // Check that we have a simple pk. If it is a derived id, this will be 
-        // run in a second pass
-        if (! hasDerivedId()){
-            // Validate we found a primary key.
-            validatePrimaryKey();
-                
-            // Primary key has been validated, let's process those items that
-            // depend on it now.
-                
-            // Process the SecondaryTable(s) metadata.
-            processSecondaryTables();
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Figure out the access type for this entity. It works as follows:
-     * 1 - check for an explicit access type specification
-     * 2 - check our inheritance parents (ignoring explicit specifications)
-     * 3 - check our mapped superclasses (ignoring explicit specifications) for 
-     *     the location of annotations
-     * 4 - check the entity itself for the location of annotations
-     * 5 - check for an xml default from a persistence-unit-metadata-defaults or 
-     *     entity-mappings setting.    
-     * 6 - we have exhausted our search, default to FIELD.
-     */
-    @Override
-    public void processAccessType() {
-        // This function has been overridden in the MappedSuperclassAccessor 
-        // parent. Do not call this superclass method.
-        
-        // Step 1 - Check for an explicit setting.
-        String explicitAccessType = getAccess(); 
-        
-        // Step 2, regardless if there is an explicit access type we still
-        // want to determine the default access type for this entity since
-        // any embeddable, mapped superclass or id class that depends on it
-        // will have it available. 
-        String defaultAccessType = null;
-        
-        // 1 - Check the access types from our parents if we are an inheritance 
-        // sub-class. Inheritance hierarchies are processed top->down so our 
-        // first parent that does not define an explicit access type will have 
-        // the type we would want to default to.
-        if (getDescriptor().isInheritanceSubclass()) {
-            MetadataDescriptor parent = getDescriptor().getInheritanceParentDescriptor();
-            while (parent != null) {
-                if (! parent.getClassAccessor().hasAccess()) {
-                    defaultAccessType = parent.getDefaultAccess();
-                    break;
-                }
-                    
-                parent = parent.getInheritanceParentDescriptor();
-            }
-        }
-        
-        // 2 - If there is no inheritance or no inheritance parent that does not 
-        // explicitly define an access type. Let's check this entities mapped 
-        // superclasses now.
-        if (defaultAccessType == null) {
-            for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
-                if (! mappedSuperclass.hasAccess()) {
-                    if (mappedSuperclass.hasObjectRelationalFieldMappingAnnotationsDefined()) {
-                        defaultAccessType = MetadataConstants.FIELD;
-                    } else if (mappedSuperclass.hasObjectRelationalMethodMappingAnnotationsDefined()) {
-                        defaultAccessType = MetadataConstants.PROPERTY;
-                    }
-                        
-                    break;
-                }
-            }
-            
-            // 3 - If there are no mapped superclasses or no mapped superclasses 
-            // without an explicit access type. Check where the annotations are 
-            // defined on this entity class. 
-            if (defaultAccessType == null) {    
-                if (hasObjectRelationalFieldMappingAnnotationsDefined()) {
-                    defaultAccessType = MetadataConstants.FIELD;
-                } else if (hasObjectRelationalMethodMappingAnnotationsDefined()) {
-                    defaultAccessType = MetadataConstants.PROPERTY;
-                } else {
-                    // 4 - If there are no annotations defined on either the
-                    // fields or properties, check for an xml default from
-                    // persistence-unit-metadata-defaults or entity-mappings.
-                    if (getDescriptor().getDefaultAccess() != null) {
-                        defaultAccessType = getDescriptor().getDefaultAccess();
-                    } else {
-                        // 5 - We've exhausted our search, set the access type
-                        // to FIELD.
-                        defaultAccessType = MetadataConstants.FIELD;
-                    }
-                }
-            }
-        } 
-        
-        // Finally set the default access type on the descriptor and log a 
-        // message to the user if we are defaulting the access type for this
-        // entity to use that default.
-        getDescriptor().setDefaultAccess(defaultAccessType);
-        
-        if (explicitAccessType == null) {
-            getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType, getJavaClass());
-        }
-        
-        getDescriptor().setAccessTypeOnClassDescriptor(this.getAccessType());
-    }
         
     /**
      * INTERNAL:
@@ -1029,18 +902,67 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process the entity metadata.
+     * Process index information for the given metadata descriptor.
      */
-    protected void processExcludeDefaultMappings() {
-        // Set an exclude default mappings flag if specified on the entity class
-        // or a mapped superclass.
-        if (getExcludeDefaultMappings() != null) {
-            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
-        } else {
-            for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
-                if (mappedSuperclass.getExcludeDefaultMappings() != null) {
-                    getDescriptor().setIgnoreDefaultMappings(mappedSuperclass.excludeDefaultMappings());
-                    break; // stop searching.
+    protected void processIndexes() {
+        MetadataAnnotation index = getAnnotation(Index.class);
+        
+        if (index != null) {
+            m_indexes.add(new IndexMetadata(index, getAccessibleObject()));
+        }
+        
+        MetadataAnnotation indexes = getAnnotation(Indexes.class);
+        if (indexes != null) {
+            Object[] indexArray = (Object[])indexes.getAttributeArray("value");
+            for (Object eachIndex : indexArray) {
+                m_indexes.add(new IndexMetadata((MetadataAnnotation)eachIndex, getAccessibleObject()));            
+            }
+        }
+        
+        for (IndexMetadata indexMetadata : m_indexes) {
+            IndexDefinition indexDefinition = new IndexDefinition();
+            if ((indexMetadata.getName() != null) && (indexMetadata.getName().length() != 0)) {
+                indexDefinition.setName(indexMetadata.getName());            
+            } else {
+                String name = "INDEX_" + getDescriptor().getPrimaryTable().getName();
+                for (String column : indexMetadata.getColumnNames()) {
+                    name = name + "_" + column;
+                }
+                indexDefinition.setName(name);
+            }
+            if ((indexMetadata.getSchema() != null) && (indexMetadata.getSchema().length() != 0)) {
+                indexDefinition.setQualifier(indexMetadata.getSchema());
+            } else if ((getDescriptor().getDefaultSchema() != null) && (getDescriptor().getDefaultSchema().length() != 0)) {
+                indexDefinition.setQualifier(indexMetadata.getSchema());                
+            }
+            if ((indexMetadata.getCatalog() != null) && (indexMetadata.getCatalog().length() != 0)) {
+                indexDefinition.setQualifier(indexMetadata.getCatalog());
+            } else if ((getDescriptor().getDefaultCatalog() != null) && (getDescriptor().getDefaultCatalog().length() != 0)) {
+                indexDefinition.setQualifier(getDescriptor().getDefaultCatalog());                
+            }
+            if (indexMetadata.getUnique() != null) {
+                indexDefinition.setIsUnique(indexMetadata.getUnique());
+            }
+            indexDefinition.getFields().addAll(indexMetadata.getColumnNames());
+            String table = indexMetadata.getTable();
+            if ((table == null) || (table.length() == 0)) {
+                indexDefinition.setTargetTable(getDescriptor().getPrimaryTable().getQualifiedName());
+                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
+            } else if (table.equals(getDescriptor().getPrimaryTable().getQualifiedName())
+                        || table.equals(getDescriptor().getPrimaryTable().getName())) {
+                indexDefinition.setTargetTable(table);
+                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
+            } else {
+                indexDefinition.setTargetTable(table);
+                boolean found = false;
+                for (DatabaseTable databaseTable : getDescriptor().getClassDescriptor().getTables()) {
+                    if (table.equals(databaseTable.getQualifiedName()) || table.equals(databaseTable.getName())) {
+                        databaseTable.getIndexes().add(indexDefinition);
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
                 }
             }
         }
@@ -1111,10 +1033,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         discoverMappedSuperclassesAndInheritanceParents(true);
         
         if (! getDescriptor().excludeSuperclassListeners()) {
-            int mappedSuperclassesSize = m_mappedSuperclasses.size();
+            int mappedSuperclassesSize = getMappedSuperclasses().size();
             
             for (int i = mappedSuperclassesSize - 1; i >= 0; i--) {
-                m_mappedSuperclasses.get(i).processEntityListeners(loader);
+                getMappedSuperclasses().get(i).processEntityListeners(loader);
             }
         }
         
@@ -1122,25 +1044,36 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Step 3 - process the entity class for lifecycle callback methods. Go
         // through the mapped superclasses as well.
-        new EntityClassListenerMetadata(this).process(m_mappedSuperclasses, loader);
+        new EntityClassListenerMetadata(this).process(getMappedSuperclasses(), loader);
     }
     
     /**
      * INTERNAL:
-     * Process the entity metadata.
+     * Process the accessors for the given class.
+     * If we are within a TABLE_PER_CLASS inheritance hierarchy, our parent
+     * accessors will already have been added at this point. 
+     * @see InheritanceMetadata process()
      */
-    protected void processMetadataComplete() {
-        // Set a metadata complete flag if specified on the entity class or a 
-        // mapped superclass.
-        if (getMetadataComplete() != null) {
-            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
-        } else {
-            for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
-                if (mappedSuperclass.getMetadataComplete() != null) {
-                    getDescriptor().setIgnoreAnnotations(mappedSuperclass.isMetadataComplete());
-                    break; // stop searching.
-                }
-            }
+    @Override
+    public void processMappingAccessors() {
+        // Process our mapping accessors, and then perform the necessary 
+        // validation checks for this entity.
+        super.processMappingAccessors();
+
+        // Validate the optimistic locking setting.
+        validateOptimisticLocking();
+            
+        // Check that we have a simple pk. If it is a derived id, this will be 
+        // run in a second pass
+        if (! hasDerivedId()){
+            // Validate we found a primary key.
+            validatePrimaryKey();
+                
+            // Primary key has been validated, let's process those items that
+            // depend on it now.
+                
+            // Process the SecondaryTable(s) metadata.
+            processSecondaryTables();
         }
     }
     
@@ -1217,89 +1150,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Check if CascadeOnDelete was set on the Entity.
-     */
-    protected void processCascadeOnDelete() {
-        MetadataAnnotation annotation = getAnnotation(CascadeOnDelete.class);
-        
-        if (annotation != null) {
-            m_cascadeOnDelete = true;
-        }
-        if (m_cascadeOnDelete) {
-            getDescriptor().getClassDescriptor().setIsCascadeOnDeleteSetOnDatabaseOnSecondaryTables(true);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process index information for the given metadata descriptor.
-     */
-    protected void processIndexes() {
-        MetadataAnnotation index = getAnnotation(Index.class);
-        
-        if (index != null) {
-            m_indexes.add(new IndexMetadata(index, getAccessibleObject()));
-        }
-        
-        MetadataAnnotation indexes = getAnnotation(Indexes.class);
-        if (indexes != null) {
-            Object[] indexArray = (Object[])indexes.getAttributeArray("value");
-            for (Object eachIndex : indexArray) {
-                m_indexes.add(new IndexMetadata((MetadataAnnotation)eachIndex, getAccessibleObject()));            
-            }
-        }
-        
-        for (IndexMetadata indexMetadata : m_indexes) {
-            IndexDefinition indexDefinition = new IndexDefinition();
-            if ((indexMetadata.getName() != null) && (indexMetadata.getName().length() != 0)) {
-                indexDefinition.setName(indexMetadata.getName());            
-            } else {
-                String name = "INDEX_" + getDescriptor().getPrimaryTable().getName();
-                for (String column : indexMetadata.getColumnNames()) {
-                    name = name + "_" + column;
-                }
-                indexDefinition.setName(name);
-            }
-            if ((indexMetadata.getSchema() != null) && (indexMetadata.getSchema().length() != 0)) {
-                indexDefinition.setQualifier(indexMetadata.getSchema());
-            } else if ((getDescriptor().getDefaultSchema() != null) && (getDescriptor().getDefaultSchema().length() != 0)) {
-                indexDefinition.setQualifier(indexMetadata.getSchema());                
-            }
-            if ((indexMetadata.getCatalog() != null) && (indexMetadata.getCatalog().length() != 0)) {
-                indexDefinition.setQualifier(indexMetadata.getCatalog());
-            } else if ((getDescriptor().getDefaultCatalog() != null) && (getDescriptor().getDefaultCatalog().length() != 0)) {
-                indexDefinition.setQualifier(getDescriptor().getDefaultCatalog());                
-            }
-            if (indexMetadata.getUnique() != null) {
-                indexDefinition.setIsUnique(indexMetadata.getUnique());
-            }
-            indexDefinition.getFields().addAll(indexMetadata.getColumnNames());
-            String table = indexMetadata.getTable();
-            if ((table == null) || (table.length() == 0)) {
-                indexDefinition.setTargetTable(getDescriptor().getPrimaryTable().getQualifiedName());
-                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-            } else if (table.equals(getDescriptor().getPrimaryTable().getQualifiedName())
-                        || table.equals(getDescriptor().getPrimaryTable().getName())) {
-                indexDefinition.setTargetTable(table);
-                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-            } else {
-                indexDefinition.setTargetTable(table);
-                boolean found = false;
-                for (DatabaseTable databaseTable : getDescriptor().getClassDescriptor().getTables()) {
-                    if (table.equals(databaseTable.getQualifiedName()) || table.equals(databaseTable.getName())) {
-                        databaseTable.getIndexes().add(indexDefinition);
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-                }
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Process a MetadataTable. Do all the table name defaulting and set the
      * correct, fully qualified name on the TopLink DatabaseTable.
      */
@@ -1369,13 +1219,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * This method resolves generic types. Resolving generic types will be
-     * the responsibility of the metadata factory since each factory could have 
-     * its own means to do so and not respect a generic format on the metadata
-     * objects.
      */
-    protected void resolveGenericTypes(List<String> genericTypes, MetadataClass parent) {
-        getMetadataFactory().resolveGenericTypes(getJavaClass(), genericTypes, parent, getDescriptor());
+    public void setCascadeOnDelete(boolean cascadeOnDelete) {
+        m_cascadeOnDelete = cascadeOnDelete;
     }
     
     /**
@@ -1440,14 +1286,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public void setTable(TableMetadata table) {
         m_table = table;
-    }
-    
-    public boolean isCascadeOnDelete() {
-        return m_cascadeOnDelete;
-    }
-
-    public void setCascadeOnDelete(boolean cascadeOnDelete) {
-        m_cascadeOnDelete = cascadeOnDelete;
     }
     
     /**
