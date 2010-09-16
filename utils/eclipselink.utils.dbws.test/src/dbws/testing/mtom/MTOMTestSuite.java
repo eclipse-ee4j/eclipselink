@@ -290,7 +290,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
     }
 
     @Override
-    protected InputStream initXRServicestream(ClassLoader parentClassLoader, ServletContext sc) {
+    protected InputStream initXRServiceStream(ClassLoader parentClassLoader, ServletContext sc) {
         return new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
     }
 
