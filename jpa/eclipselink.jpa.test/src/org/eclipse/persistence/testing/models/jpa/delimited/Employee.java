@@ -225,7 +225,7 @@ public class Employee implements Serializable, Cloneable {
     
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name="startDate", column=@Column(name="START_DATE", nullable=false)),
+        @AttributeOverride(name="startDate", column=@Column(name="START_DATE")),
         @AttributeOverride(name="endDate", column=@Column(name="END_DATE", nullable=true))
     })
     @Property(name="attributeName", value="period")
