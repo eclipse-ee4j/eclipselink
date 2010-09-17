@@ -93,6 +93,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
 
     private Boolean m_orphanRemoval;
     private boolean m_privateOwned;
+    private boolean m_cascadeOnDelete;
     private CascadeMetadata m_cascade;
     protected MetadataClass m_referenceClass;
     private MetadataClass m_targetEntity;
@@ -107,8 +108,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
   
     private String m_targetEntityName;
-    
-    private boolean m_cascadeOnDelete;
     
     /**
      * INTERNAL:
@@ -517,6 +516,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public boolean isCascadeOnDelete() {
+        return m_cascadeOnDelete;
+    }
+    
+    /**
+     * INTERNAL:
      * Return if the accessor should be lazy fetched.
      */
     public boolean isLazy() {        
@@ -552,6 +559,26 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public boolean isValueHolderInterface() {
         return getTargetEntity().getName().equals(ValueHolderInterface.class.getName()) || (getTargetEntity().getName().equals(void.class.getName()) && getReferenceClass().getName().equals(ValueHolderInterface.class.getName()));
+    }
+    
+    /**
+     * INTERNAL:
+     * Common validation done by all relationship accessors.
+     */
+    public void process() {
+        // The processing of this accessor may have been fast tracked through a 
+        // non-owning relationship. If so, no processing is required.
+        if (! isProcessed()) {
+            // If a Column annotation is specified then throw an exception.
+            if (hasColumn()) {
+                throw ValidationException.invalidColumnAnnotationOnRelationship(getJavaClass(), getAttributeName());
+            }
+                
+            // If a Convert annotation is specified then throw an exception.
+            if (hasConvert(false)) {
+                throw ValidationException.invalidMappingForConverter(getJavaClass(), getAttributeName());
+            }
+        }
     }
     
     /**
@@ -658,26 +685,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     }
     
     /**
-     * INTERNAL:
-     * Common validation done by all relationship accessors.
-     */
-    public void process() {
-        // The processing of this accessor may have been fast tracked through a 
-        // non-owning relationship. If so, no processing is required.
-        if (! isProcessed()) {
-            // If a Column annotation is specified then throw an exception.
-            if (hasColumn()) {
-                throw ValidationException.invalidColumnAnnotationOnRelationship(getJavaClass(), getAttributeName());
-            }
-                
-            // If a Convert annotation is specified then throw an exception.
-            if (hasConvert(false)) {
-                throw ValidationException.invalidMappingForConverter(getJavaClass(), getAttributeName());
-            }
-        }
-    }
-    
-    /**
      * Process settings common to ForeignReferenceMapping.
      */
     protected void processRelationshipMapping(ForeignReferenceMapping mapping) {
@@ -767,6 +774,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     }
     
     /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCascadeOnDelete(boolean cascadeOnDelete) {
+        m_cascadeOnDelete = cascadeOnDelete;
+    }
+    
+    /**
      * INTERNAL: 
      * Used for OX mapping.
      */
@@ -835,14 +850,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public void setTargetEntityName(String targetEntityName) {
         m_targetEntityName = targetEntityName;
-    }
-    
-    public boolean isCascadeOnDelete() {
-        return m_cascadeOnDelete;
-    }
-
-    public void setCascadeOnDelete(boolean cascadeOnDelete) {
-        m_cascadeOnDelete = cascadeOnDelete;
     }
     
     /**
