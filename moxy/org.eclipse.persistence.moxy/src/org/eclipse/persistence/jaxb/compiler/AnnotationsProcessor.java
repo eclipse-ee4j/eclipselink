@@ -2774,7 +2774,7 @@ public class AnnotationsProcessor {
                     } 
                     elements.put(qname, declaration);
                 }
-                if (!helper.isBuiltInJavaType(type) && !classes.contains(type)) {
+                if (!helper.isBuiltInJavaType(type) && !helper.classExistsInArray(type, classes)) {
                     classes.add(type);
                 }
             }

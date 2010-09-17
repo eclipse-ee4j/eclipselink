@@ -1179,43 +1179,7 @@ public class XMLProcessor {
      * The classes are compared via equals() method.
      */
     public boolean classExistsInArray(JavaClass theClass, ArrayList<JavaClass> existingClasses) {
-        for (JavaClass jClass : existingClasses) {
-            if (areClassesEqual(jClass, theClass)) {
-                return true;
-            }
-
-        }
-        return false;
-    }
-
-    private boolean areClassesEqual(JavaClass classA, JavaClass classB) {
-        if (classA == classB) {
-            return true;
-        }
-
-        if (!(classA.getQualifiedName().equals(classB.getQualifiedName()))) {
-            return false;
-        }
-        if (classA.getActualTypeArguments() != null) {
-            if (classB.getActualTypeArguments() == null) {
-                return false;
-            }
-            if (classA.getActualTypeArguments().size() != classB.getActualTypeArguments().size()) {
-                return false;
-            }
-
-            for (int i = 0; i < classA.getActualTypeArguments().size(); i++) {
-                JavaClass nestedClassA = (JavaClass) classA.getActualTypeArguments().toArray()[i];
-                JavaClass nestedClassB = (JavaClass) classB.getActualTypeArguments().toArray()[i];
-                if (!areClassesEqual(nestedClassA, nestedClassB)) {
-                    return false;
-                }
-            }
-            return true;
-        } else if (classB.getActualTypeArguments() == null) {
-            return true;
-        }
-        return false;
+        return aProcessor.getHelper().classExistsInArray(theClass, existingClasses);
     }
 
     /**

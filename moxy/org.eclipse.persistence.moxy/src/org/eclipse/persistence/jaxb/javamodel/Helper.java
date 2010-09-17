@@ -293,4 +293,53 @@ public class Helper {
     		return org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(javaClass.getQualifiedName(), loader);                          		
     	}
     }
+    
+    /**
+     * Convenience method to determine if a class exists in a given ArrayList.
+     */
+    public boolean classExistsInArray(JavaClass theClass, ArrayList<JavaClass> existingClasses) {
+        for (JavaClass jClass : existingClasses) {
+            if (areClassesEqual(jClass, theClass)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Convenience method to determine if two JavaClass instances are equal.
+     * 
+     * @param classA
+     * @param classB
+     * @return
+     */
+    private boolean areClassesEqual(JavaClass classA, JavaClass classB) {
+        if (classA == classB) {
+            return true;
+        }
+
+        if (!(classA.getQualifiedName().equals(classB.getQualifiedName()))) {
+            return false;
+        }
+        if (classA.getActualTypeArguments() != null) {
+            if (classB.getActualTypeArguments() == null) {
+                return false;
+            }
+            if (classA.getActualTypeArguments().size() != classB.getActualTypeArguments().size()) {
+                return false;
+            }
+
+            for (int i = 0; i < classA.getActualTypeArguments().size(); i++) {
+                JavaClass nestedClassA = (JavaClass) classA.getActualTypeArguments().toArray()[i];
+                JavaClass nestedClassB = (JavaClass) classB.getActualTypeArguments().toArray()[i];
+                if (!areClassesEqual(nestedClassA, nestedClassB)) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (classB.getActualTypeArguments() == null) {
+            return true;
+        }
+        return false;
+    }
 }
