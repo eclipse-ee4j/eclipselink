@@ -194,23 +194,29 @@ public class MySQLPlatform extends DatabasePlatform {
      * @param isStatementPrepared - flag is set to true if this statement is prepared 
      * @return - number of rows modified/deleted by this statement
      */
-    public int executeBatch(Statement statement, boolean isStatementPrepared) throws java.sql.SQLException {
-       int[] updateResult = statement.executeBatch();
-       int updateCount = 0;
-       for (int count : updateResult){
-           if (count == Statement.SUCCESS_NO_INFO){
-               count = 1;
-           }
-           updateCount+=count;
-       }
-       return updateCount;
-    }
+	public int executeBatch(Statement statement, boolean isStatementPrepared)
+			throws java.sql.SQLException {
+		int[] updateResult = statement.executeBatch();
+		if (isStatementPrepared) {
+			int updateCount = 0;
+			for (int count : updateResult) {
+				if (count == Statement.SUCCESS_NO_INFO) {
+					count = 1;
+				}
+				updateCount += count;
+			}
+			return updateCount;
+		} else {
+			return updateResult.length;
+		}
+	}
 
     /**
      * INTERNAL:
      * Supports Batch Writing with Optimistic Locking.
      */
-    public boolean canBatchWriteWithOptimisticLocking(){
+    @Override
+    public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call){
         return true;
     }
 
