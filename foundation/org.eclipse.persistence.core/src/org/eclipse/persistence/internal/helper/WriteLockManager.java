@@ -262,91 +262,84 @@ public class WriteLockManager {
                 //lets assume all locks will be acquired
                 locksToAcquire = false;
                 //first access the changeSet and begin to acquire locks
-                for (Map<ObjectChangeSet, ObjectChangeSet> changeSets : changeSet.getObjectChanges().values()) {
-                    ClassDescriptor descriptor = null;
-                    for (ObjectChangeSet objectChangeSet : changeSets.values()) {
-                        if (objectChangeSet.getId() == null) {
-                            //skip this process as we will be unable to acquire the correct cachekey anyway
-                            //this is a new object with identity after write sequencing
-                            continue;
+                ClassDescriptor descriptor = null;
+                for (ObjectChangeSet objectChangeSet : changeSet.getAllChangeSets().values()) {
+                    // No Need to acquire locks for invalidated objects.
+                    if (objectChangeSet.getSynchronizationType() == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS || objectChangeSet.getId() == null) {
+                        //skip this process as we will be unable to acquire the correct cachekey anyway
+                        //this is a new object with identity after write sequencing
+                        continue;
+                    }
+                    descriptor = objectChangeSet.getDescriptor();
+                    // Maybe null for distributed merge, initialize it.
+                    if (descriptor == null) {
+                        descriptor = session.getDescriptor(objectChangeSet.getClassType(session));
+                        objectChangeSet.setDescriptor(descriptor);
+                    }
+                    // PERF: Do not merge nor lock into the session cache if descriptor set to unit of work isolated.
+                    if (descriptor.shouldIsolateObjectsInUnitOfWork()) {
+                        continue;
+                    }
+                    CacheKey activeCacheKey = attemptToAcquireLock(descriptor, objectChangeSet.getId(), session);
+                    if (activeCacheKey == null) {
+                        // if cacheKey is null then the lock was not available no need to synchronize this block,because if the
+                        // check fails then this thread will just return to the queue until it gets woken up.
+                        if (this.prevailingQueue.getFirst() == mergeManager) {
+                            // wait on this object until it is free,  or until wait time expires because
+                            // this thread is the prevailing thread
+                            activeCacheKey = waitOnObjectLock(descriptor, objectChangeSet.getId(), session, (int)Math.round((Math.random()*500)));
                         }
-                        if (descriptor == null) {
-                            descriptor = objectChangeSet.getDescriptor();
-                            // Maybe null for distributed merge.
-                            if (descriptor == null) {
-                                descriptor = session.getDescriptor(objectChangeSet.getClassType(session));
-                            }
-                        }
-                        // PERF: Do not merge nor lock into the session cache if descriptor set to unit of work isolated.
-                        if (descriptor.shouldIsolateObjectsInUnitOfWork()) {
-                            break;
-                        }
-                        CacheKey activeCacheKey = attemptToAcquireLock(descriptor, objectChangeSet.getId(), session);
                         if (activeCacheKey == null) {
-                            // if cacheKey is null then the lock was not available no need to synchronize this block,because if the
-                            // check fails then this thread will just return to the queue until it gets woken up.
-                            if (this.prevailingQueue.getFirst() == mergeManager) {
-                                // wait on this object until it is free,  or until wait time expires because
-                                // this thread is the prevailing thread
-                                activeCacheKey = waitOnObjectLock(descriptor, objectChangeSet.getId(), session, (int)Math.round((Math.random()*500)));
+                            // failed to acquire lock, release all acquired
+                            // locks and place thread on waiting list
+                            releaseAllAcquiredLocks(mergeManager);
+                            // get cacheKey
+                            activeCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(objectChangeSet.getId(), descriptor.getJavaClass(), descriptor);
+                            if (session.shouldLog(SessionLog.FINER, SessionLog.CACHE)) {
+                                Object[] params = new Object[3];
+                                params[0] = descriptor.getJavaClass();
+                                params[1] = objectChangeSet.getId();
+                                params[2] = Thread.currentThread().getName();
+                                session.log(SessionLog.FINER, SessionLog.CACHE, "dead_lock_encountered_on_write_no_cachekey", params, null);
                             }
-                            if (activeCacheKey == null) {
-                                // failed to acquire lock, release all acquired
-                                // locks and place thread on waiting list
-                                releaseAllAcquiredLocks(mergeManager);
-                                // get cacheKey
-                                activeCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(objectChangeSet.getId(), descriptor.getJavaClass(), descriptor);
-                                if (session.shouldLog(SessionLog.FINER, SessionLog.CACHE)) {
-                                    Object[] params = new Object[3];
-                                    params[0] = descriptor.getJavaClass();
-                                    params[1] = objectChangeSet.getId();
-                                    params[2] = Thread.currentThread().getName();
-                                    session.log(SessionLog.FINER, SessionLog.CACHE, "dead_lock_encountered_on_write_no_cachekey", params, null);
+                            if (mergeManager.getWriteLockQueued() == null) {
+                                // thread is entering the wait queue for the
+                                // first time
+                                // set the QueueNode to be the node from the
+                                // linked list for quick removal upon
+                                // acquiring all locks
+                                synchronized (this.prevailingQueue) {
+                                    mergeManager.setQueueNode(this.prevailingQueue.addLast(mergeManager));
                                 }
-                                if (mergeManager.getWriteLockQueued() == null) {
-                                    // thread is entering the wait queue for the
-                                    // first time
-                                    // set the QueueNode to be the node from the
-                                    // linked list for quick removal upon
-                                    // acquiring all locks
-                                    synchronized (this.prevailingQueue) {
-                                        mergeManager.setQueueNode(this.prevailingQueue.addLast(mergeManager));
-                                    }
-                                }
+                            }
 
-                                // set the cache key on the merge manager for
-                                // the object that could not be acquired
-                                mergeManager.setWriteLockQueued(objectChangeSet.getId());
-                                try {
-                                    if (activeCacheKey != null){
-                                        //wait on the lock of the object that we couldn't get.
-                                        synchronized (activeCacheKey.getMutex()) {
-                                            // verify that the cache key is still locked before we wait on it, as
-                                            //it may have been released since we tried to acquire it.
-                                            if (activeCacheKey.getMutex().isAcquired() && (activeCacheKey.getMutex().getActiveThread() != Thread.currentThread())) {
-                                                activeCacheKey.getMutex().wait();
-                                            }
+                            // set the cache key on the merge manager for
+                            // the object that could not be acquired
+                            mergeManager.setWriteLockQueued(objectChangeSet.getId());
+                            try {
+                                if (activeCacheKey != null){
+                                    //wait on the lock of the object that we couldn't get.
+                                    synchronized (activeCacheKey.getMutex()) {
+                                        // verify that the cache key is still locked before we wait on it, as
+                                        //it may have been released since we tried to acquire it.
+                                        if (activeCacheKey.getMutex().isAcquired() && (activeCacheKey.getMutex().getActiveThread() != Thread.currentThread())) {
+                                            activeCacheKey.getMutex().wait();
                                         }
                                     }
-                                } catch (InterruptedException exception) {
-                                    throw org.eclipse.persistence.exceptions.ConcurrencyException.waitWasInterrupted(exception.getMessage());
                                 }
-                                locksToAcquire = true;
-                                //failed to acquire, exit this loop and ensure that the original loop will continue
-                                break;
-                            }else{
-                                objectChangeSet.setActiveCacheKey(activeCacheKey);
-                                mergeManager.getAcquiredLocks().add(activeCacheKey);
+                            } catch (InterruptedException exception) {
+                                throw org.eclipse.persistence.exceptions.ConcurrencyException.waitWasInterrupted(exception.getMessage());
                             }
-                        } else {
+                            // failed to acquire, exit this loop to restart all over again. 
+                            locksToAcquire = true;
+                            break;
+                        }else{
                             objectChangeSet.setActiveCacheKey(activeCacheKey);
                             mergeManager.getAcquiredLocks().add(activeCacheKey);
                         }
-                    }
-
-                    //if a lock failed reset to the beginning
-                    if (locksToAcquire) {
-                        break;
+                    } else {
+                        objectChangeSet.setActiveCacheKey(activeCacheKey);
+                        mergeManager.getAcquiredLocks().add(activeCacheKey);
                     }
                 }
             }

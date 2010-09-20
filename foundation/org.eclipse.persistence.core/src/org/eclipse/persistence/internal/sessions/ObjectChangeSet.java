@@ -356,8 +356,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * The object is collected from the session which, in this case, is the unit of work.
      * The object's changed attributes will be merged and added to the identity map.
      */
-    public Object getTargetVersionOfSourceObject(AbstractSession session) {
-        return getTargetVersionOfSourceObject(session, false);
+    public Object getTargetVersionOfSourceObject(MergeManager mergeManager, AbstractSession session) {
+        return getTargetVersionOfSourceObject(mergeManager, session, false);
     }
 
     /**
@@ -367,7 +367,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * The object's changed attributes will be merged and added to the identity map
      * @param shouldRead boolean if the object can not be found should it be read in from the database.
      */
-    public Object getTargetVersionOfSourceObject(AbstractSession session, boolean shouldRead) {
+    public Object getTargetVersionOfSourceObject(MergeManager mergeManager, AbstractSession session, boolean shouldRead) {
         Object attributeValue = null;
         ClassDescriptor descriptor = getDescriptor();
         if (descriptor == null) {
@@ -388,7 +388,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 }
             } else {
                 // It is not a unitOfWork so we must be merging into a distributed cache.
-                attributeValue = session.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(getId(), getClassType(session), descriptor);
+                attributeValue = getObjectFromSharedCacheForMerge(mergeManager, session, getId(), descriptor);
             }
         
             if ((attributeValue == null) && (shouldRead)) {
@@ -404,6 +404,47 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         
         return attributeValue;
     }
+    
+    /**
+     * INTERNAL:
+     * For use within the distributed merge process, this method will get an object from the shared 
+     * cache using a readlock.  If a readlock is unavailable then the merge manager will be 
+     * transitioned to deferred locks and a deferred lock will be used.
+     */
+    protected Object getObjectFromSharedCacheForMerge(MergeManager mergeManager, AbstractSession session, Object primaryKey, ClassDescriptor descriptor){
+        Object domainObject = null;
+        if (primaryKey == null) {
+            return null;
+        }
+        CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor);
+        if (cacheKey != null) {
+            if (cacheKey.acquireReadLockNoWait()) {
+                domainObject = cacheKey.getObject();
+                cacheKey.releaseReadLock();
+            } else {
+                if (!mergeManager.isTransitionedToDeferredLocks()) {
+                    session.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
+                }
+                cacheKey.acquireDeferredLock();
+                domainObject = cacheKey.getObject();
+                if (domainObject == null) {
+                    synchronized (cacheKey.getMutex()) {
+                        if (cacheKey.isAcquired()) {
+                            try {
+                                cacheKey.getMutex().wait();
+                            } catch (InterruptedException e) {
+                                //ignore and return
+                            }
+                        }
+                        domainObject = cacheKey.getObject();
+                    }
+                }
+                cacheKey.releaseDeferredLock();
+            }
+        }
+        return domainObject;
+    }
+
 
     /**
      * INTERNAL:

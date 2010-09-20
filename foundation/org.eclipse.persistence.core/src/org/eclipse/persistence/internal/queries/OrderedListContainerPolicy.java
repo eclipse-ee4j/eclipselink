@@ -463,7 +463,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                     objectChanges = changeObject.getChangeSet();
                     if (changeObject.getChangeType() == CollectionChangeEvent.REMOVE){
                         boolean objectRemoved = changeRecord.getRemoveObjectList().containsKey(objectChanges);
-                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession());
+                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
                         
                         //if objectToRemove is null, we can't look it up in the collection. 
                         // This should not happen unless identity is lost.
@@ -502,7 +502,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                         
                         if (object == null) {
                             // Retrieve the object to be added to the collection.
-                            object = objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession());
+                            object = objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
                         }
                         
                         // Assume at this point the above merge will have created a new 
@@ -531,14 +531,14 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                 
                     while (removedObjects.hasNext()) {
                         objectChanges = (ObjectChangeSet) removedObjects.next();
-                        removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession()), valueOfTarget, parentSession);
+                        removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession()), valueOfTarget, parentSession);
                         registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
                     }
                 } else {
                     for (int i = removedIndices.size() - 1; i >= 0; i--) {
                         Integer index = ((Integer) removedIndices.elementAt(i)).intValue();
                         objectChanges = (ObjectChangeSet) changeRecord.getOrderedRemoveObject(index);
-                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession());
+                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
                         if ( (objectToRemove!=null) && 
                                     (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()) )) ) {
                             removeFromAtIndex(index, valueOfTarget);
@@ -571,7 +571,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                     
                     if (object == null) {
                         // Retrieve the object to be added to the collection.
-                        object = objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession());
+                        object = objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
                     }
     
                     // Assume at this point the above merge will have created a new 

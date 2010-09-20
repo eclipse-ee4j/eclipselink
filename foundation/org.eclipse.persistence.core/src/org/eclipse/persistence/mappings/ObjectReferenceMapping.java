@@ -327,7 +327,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                 if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
                     //Let's try and find it first.  We may have merged it already. In which case merge
                     //changes will  stop the recursion
-                    targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager.getSession(), false);
+                    targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession(), false);
                     if ((targetValueOfSource == null) && (set.isNew() || set.isAggregate()) && set.containsChangesFromSynchronization()) {
                         if (!mergeManager.getObjectsAlreadyMerged().containsKey(set)) {
                             // if we haven't merged this object already then build a new object
@@ -346,7 +346,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                         }
                     } else {
                         // If We have not found it anywhere else load it from the database
-                        targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager.getSession(), true);
+                        targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession(), true);
                     }
                     if (set.containsChangesFromSynchronization()) {
                         mergeManager.mergeChanges(targetValueOfSource, set);
@@ -362,7 +362,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }
         if ((targetValueOfSource == null) && (((ObjectReferenceChangeRecord)changeRecord).getNewValue() != null)) {
-            targetValueOfSource = ((ObjectChangeSet)((ObjectReferenceChangeRecord)changeRecord).getNewValue()).getTargetVersionOfSourceObject(mergeManager.getSession());
+            targetValueOfSource = ((ObjectChangeSet)((ObjectReferenceChangeRecord)changeRecord).getNewValue()).getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
         }
 
         // Register new object in nested units of work must not be registered into the parent,

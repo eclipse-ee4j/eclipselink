@@ -341,7 +341,7 @@ public class MergeManager {
                 ObjectChangeSet objectChangeSet = (ObjectChangeSet)objectChangeEnum.next();
                 // Don't read the object here.  If it is null then we won't merge it at this stage, unless it
                 // is being referenced which will force the load later.
-                Object object = objectChangeSet.getTargetVersionOfSourceObject(this.session, false);
+                Object object = objectChangeSet.getTargetVersionOfSourceObject(this, this.session, false);
                 if (object != null) {
                     mergeChanges(object, objectChangeSet);
                     this.session.incrementProfile(SessionProfiler.ChangeSetsProcessed);

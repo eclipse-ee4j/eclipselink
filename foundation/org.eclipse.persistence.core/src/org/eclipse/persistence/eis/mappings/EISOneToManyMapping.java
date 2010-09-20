@@ -608,7 +608,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         if (this.shouldMergeCascadeParts(mergeManager)) {
             Object targetElement = null;
             if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
-                targetElement = objectChangeSet.getTargetVersionOfSourceObject(mergeManager.getSession(), true);
+                targetElement = objectChangeSet.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession(), true);
             } else {
                 targetElement = objectChangeSet.getUnitOfWorkClone();
             }
@@ -631,7 +631,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Build and return a new element based on the change set.
      */
     protected Object buildElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
-        return ((ObjectChangeSet)changeSet).getTargetVersionOfSourceObject(mergeManager.getSession());
+        return ((ObjectChangeSet)changeSet).getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
     }
 
     /**
