@@ -109,10 +109,8 @@ if [ ! "${BRANCH}" = "" ]
 then
     BRANCH_NM=${BRANCH}
     BRANCH=branches/${BRANCH}/
-    JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
 else
     BRANCH_NM="trunk"
-    JAVA_HOME=/shared/rt/eclipselink/sapjvm_6
 fi
 
 echo "Target     ='${TARGET}'"
@@ -120,14 +118,14 @@ echo "Target name='${TARG_NM}'"
 echo "Branch     ='${BRANCH}'"
 echo "Branch name='${BRANCH_NM}'"
 
-SVN_EXEC=`which svn`
-if [ $? -ne 0 ]
+SVN_EXEC=/usr/local/bin/svn
+if [ ! -x ${SVN_EXEC} ]
 then
-    echo "Cannot autofind svn executable. Using default value."
-    SVN_EXEC=/usr/local/bin/svn
-    if [ ! -f ${SVN_EXEC} ]
+    echo "Cannot find svn executable using default value. Attempting Autofind..."
+    SVN_EXEC=`which svn`
+    if [ $? -ne 0 ]
     then
-        echo "Error finding svn install!"
+        echo "Error: Unable to find SVN client install!"
         exit 1
     fi
 fi
@@ -152,7 +150,13 @@ then
     JAVA_HOME=/shared/common/jdk6_glassfish3/jdk
     ANT_HOME=/usr/share/ant
 else
-    JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
+    # Conditional to allow single branch testing of jdk and ant env
+    if [ ! "${BRANCH}" = "" ]
+    then
+        JAVA_HOME=/shared/common/jdk-1.6.x86_64
+    else
+        JAVA_HOME=/shared/common/jdk-1.6.x86_64
+    fi
     ANT_HOME=/shared/common/apache-ant-1.7.0
 fi
 LOG_DIR=${HOME_DIR}/logs
@@ -392,9 +396,6 @@ fi
 #Depends upon a valid putty install and config for "eclipse-dev"
 if [ "${ORACLEBLD}" = "true" ]
 then
-    JAVA_HOME=/shared/common/jdk6_glassfish3/jdk
-    ANT_HOME=/usr/share/ant
-
     #Only needed for dev behind firewall
     ANT_OPTS="${ANT_OPTS}"
     ANT_BASEARG="${ANT_BASEARG} -Dsvn.server.name=eclipse-dev"
@@ -457,18 +458,27 @@ fi
 echo "Post-build Processing Starting..."
 ## Post-build Processing
 ##
-MAIL_EXEC=/bin/mail
 MAILFROM=eric.gwin@oracle.com
-MAILLIST="ejgwin@gmail.com"
-SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
-FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
+if [ "${ORACLEBLD}" = "true" ]
+then
+    MAIL_EXEC=/usr/bin/mail
+    MAILLIST="ejgwin@gmail.com"
+    SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
+    FAIL_MAILLIST="peter.krogh@oracle.com david.twelves@oracle.com blaise.doughan@oracle.com tom.ware@oracle.com ejgwin@gmail.com"
+    FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
+else
+    MAIL_EXEC=/bin/mail
+    MAILLIST="ejgwin@gmail.com"
+    SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
+    FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
+    FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
+fi
 PARSE_RESULT_FILE=${tmp}/raw-summary.txt
 COMPILE_RESULT_FILE=${tmp}/compile-error-summary.txt
 SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
 TESTDATA_FILE=${tmp}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
 SVN_LOG_FILE=${tmp}/svnlog-${BRANCH_NM}_${TARG_NM}.txt
 MAILBODY=${tmp}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
-FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
 BUILD_FAILED="false"
 TESTS_FAILED="false"
 
