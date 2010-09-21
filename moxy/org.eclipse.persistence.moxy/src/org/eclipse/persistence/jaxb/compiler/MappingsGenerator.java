@@ -1023,7 +1023,7 @@ public class MappingsGenerator {
         String qualifiedInternalKeyClassName = keyType.replace('.', '/');
         String qualifiedInternalValueClassName = valueType.replace('.', '/');	
   		
-        cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" }, className.substring(className.lastIndexOf(".")));
+        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" }, className.substring(className.lastIndexOf(".")));
 
         cw.visitField(Constants.ACC_PRIVATE, "key", "L"+qualifiedInternalKeyClassName+";", null, null);
 

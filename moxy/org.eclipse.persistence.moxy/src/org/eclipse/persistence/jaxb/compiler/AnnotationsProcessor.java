@@ -2154,7 +2154,7 @@ public class AnnotationsProcessor {
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;
 
-        cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/MapValue", null, "StringEmployeeMap.java");
+        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/MapValue", null, "StringEmployeeMap.java");
 
         // FIELD ATTRIBUTES
         SignatureAttribute fieldAttrs1 = new SignatureAttribute("Ljava/util/Map<L" + internalKeyName + ";L" + internalValueName + ";>;");
@@ -2268,7 +2268,7 @@ public class AnnotationsProcessor {
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;
 
-        cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/PrimitiveArrayValue", null, className.replace(".", "/") + ".java");
+        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/PrimitiveArrayValue", null, className.replace(".", "/") + ".java");
 
         // FIELD ATTRIBUTES
         SignatureAttribute fieldAttrs1 = new SignatureAttribute("Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");
@@ -2426,7 +2426,7 @@ public class AnnotationsProcessor {
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;
 
-        cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/ObjectArrayValue", null, className.replace('.', '/') + ".java");
+        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/ObjectArrayValue", null, className.replace('.', '/') + ".java");
 
         // FIELD ATTRIBUTES
         SignatureAttribute fieldAttrs1 = new SignatureAttribute("Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");
@@ -2531,7 +2531,7 @@ public class AnnotationsProcessor {
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;
 
-        cw.visit(50, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", null, className.replace('.', '/') + ".java");
+        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", null, className.replace('.', '/') + ".java");
 
         // FIELD ATTRIBUTES
         SignatureAttribute fieldAttrs1 = new SignatureAttribute("Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");

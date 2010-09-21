@@ -54,7 +54,7 @@
         <pathelement path="${eclipselink.plugins}/${jaxb-api.lib}"/>
         <fileset
             dir="${eclipselink.plugins}"
-            includes="${activation.jar}, ${mail.jar}"/>
+            includes="${activation.jar}, ${mail.jar}, ${jsr173_1.0_api.jar}"/>
         <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
@@ -96,7 +96,7 @@
         <pathelement path="${eclipselink.plugins}/${jaxb-api.lib}"/>
         <fileset
             dir="${eclipselink.plugins}"
-            includes="${activation.jar}, ${mail.jar}"/>
+            includes="${activation.jar}, ${mail.jar}, ${jsr173_1.0_api.jar}"/>
         <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
         <pathelement path="${eclipselink.jar.name}"/>

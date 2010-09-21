@@ -76,26 +76,29 @@ public class Property {
     public void setHelper(Helper helper) {
         this.helper = helper;
     }
-    
+
     public void setAdapterClass(JavaClass adapterCls) {
         adapterClass = adapterCls;
         JavaClass newType  = helper.getJavaClass(Object.class);
-                
+
         // look for marshal method
         for (Iterator<JavaMethod> methodIt = adapterClass.getDeclaredMethods().iterator(); methodIt.hasNext(); ) {
             JavaMethod method = methodIt.next();
             if (method.getName().equals("marshal")) {
-            	newType = (JavaClass) method.getReturnType();
-                break;
+                JavaClass returnType = method.getReturnType();
+                if (!returnType.getQualifiedName().equals(newType.getQualifiedName())) {
+                    newType = (JavaClass) method.getReturnType();
+                    break;
+                }
             }
         }
         setType(newType);
     }
-    
+
     public JavaHasAnnotations getElement() {
         return element;
     }
-    
+
     public void setElement(JavaHasAnnotations element) {
         this.element = element;
     }
