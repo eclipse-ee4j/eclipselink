@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
+ *     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE 
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
@@ -74,6 +75,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new NestedFetchGroupTests("joinFetchOutsideOfFetchGroup"));
         suite.addTest(new NestedFetchGroupTests("simpleNestedFetchGroupWithBatch"));
         suite.addTest(new NestedFetchGroupTests("simpleLoadGroup"));
+        suite.addTest(new NestedFetchGroupTests("simpleFetchGroupLoadWithBatch"));
         
         return suite;
     }
@@ -957,6 +959,45 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                  if(emp.getManager() != null) {
                      emp.getManager().getProjects().size();
                  }
+             }
+             
+             int numSelectAfter = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
+             assertEquals(numSelectBefore, numSelectAfter);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+   
+   @Test
+   // Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE 
+    public void simpleFetchGroupLoadWithBatch() {
+        EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
+
+             FetchGroup projectGroup = new FetchGroup();
+             projectGroup.addAttribute("name");
+
+             FetchGroup employeeGroup = new FetchGroup();
+             employeeGroup.addAttribute("firstName");
+             employeeGroup.addAttribute("lastName");
+             employeeGroup.addAttribute("projects", projectGroup);
+                          
+             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
+             query.setParameter("GENDER", Gender.Female);
+             query.setHint(QueryHints.FETCH_GROUP, employeeGroup);
+             query.setHint(QueryHints.FETCH_GROUP_LOAD, "true");
+             query.setHint(QueryHints.BATCH, "e.projects");
+             List<Employee> employees = query.getResultList();
+
+             int numSelectBefore = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
+             
+             // All indirections specified in the plan should have been already triggered.
+             for (Employee e : employees) {
+                 e.getProjects().size();
              }
              
              int numSelectAfter = getQuerySQLTracker(em).getTotalSQLSELECTCalls();

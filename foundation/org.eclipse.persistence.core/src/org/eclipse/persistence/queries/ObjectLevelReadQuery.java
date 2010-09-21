@@ -19,6 +19,7 @@
  *         a timeout trying to acquire the lock. A PessimisticLockException is
  *         thrown otherwise.
  *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
+ *     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE 
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -1078,13 +1079,21 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         Object result = executeObjectLevelReadQuery();
         if(result != null) {
             if(this.loadGroup != null) {
-                getSession().load(result, this.loadGroup);
+                Object resultToLoad  = result;
+                if(this.shouldIncludeData) {
+                    resultToLoad = ((ComplexQueryResult)result).getResult();
+                }
+                getSession().load(resultToLoad, this.loadGroup);
             } else {
                 FetchGroup executionFetchGroup = this.getExecutionFetchGroup(); 
                 if(executionFetchGroup != null) {
                     LoadGroup lg = executionFetchGroup.toLoadGroupLoadOnly();
                     if(lg != null) {
-                        getSession().load(result, lg);
+                        Object resultToLoad  = result;
+                        if(this.shouldIncludeData) {
+                            resultToLoad = ((ComplexQueryResult)result).getResult();
+                        }
+                        getSession().load(resultToLoad, lg);
                     }
                 }
             }
