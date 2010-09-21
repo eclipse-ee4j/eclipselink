@@ -817,7 +817,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             
             // salary is not in the original fetchGroup
             empSerialized.setSalary(newSalary);
-            FetchGroup extendedFetchGroup = (FetchGroup)fetchGroup.clone();
+            FetchGroup extendedFetchGroup = fetchGroup.clone();
             extendedFetchGroup.addAttribute("salary");
             assertFetched(empSerialized, extendedFetchGroup);
             
