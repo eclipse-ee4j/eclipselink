@@ -18,6 +18,7 @@ import org.eclipse.persistence.testing.jaxb.schemagen.employee.SchemaGenEmployee
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.SchemaGenImportTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.scope.SchemaGenScopeTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.typearray.TypeArraySchemaGenTestCases;
+import org.eclipse.persistence.testing.jaxb.schemagen.anonymoustype.AnonymousTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.classarray.ClassArraySchemaGenTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmltype.SchemaGenXMLTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementref.SchemaGenXmlElementRefByteArrayTestCases;
@@ -46,6 +47,7 @@ public class SchemaGenTestSuite extends TestSuite {
         suite.addTestSuite(SchemaGenScopeTestCases.class);
         //suite.addTestSuite(SchemaGenImportTestCases.class);
         suite.addTestSuite(DateTestCases.class);
+        suite.addTestSuite(AnonymousTypeTestCases.class);
         return suite;
     }
 

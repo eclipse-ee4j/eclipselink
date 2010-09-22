@@ -61,7 +61,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
     protected static String EMPTY_NAMESPACE = "";
     protected JAXBContext jaxbContext;
     protected DocumentBuilder parser;
-    protected XMLComparer xmlComparer;
 
     /**
      * This is the preferred (and only) constructor.
@@ -77,7 +76,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
         builderFactory.setNamespaceAware(true);
         builderFactory.setIgnoringElementContentWhitespace(true);
         parser = builderFactory.newDocumentBuilder();
-        xmlComparer = new XMLComparer();
     }
     
     /**
@@ -464,7 +462,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param testSchema
      * @param controlSchema
      */
-    public void compareSchemas(File testSchema, File controlSchema) {
+    public static void compareSchemas(File testSchema, File controlSchema) {
         if (testSchema == null || controlSchema == null) {
             fail("Can't compare null schema file.");
         }
@@ -486,11 +484,15 @@ public class ExternalizedMetadataTestCases extends TestCase {
         }
     }
     
+    public static boolean compareDocuments(Document ctrlDoc, Document testDoc) {
+        return new XMLComparer().isNodeEqual(ctrlDoc, testDoc);
+    }
+    
     /**
      * SchemaOutputResolver for writing out the generated schema.
      *
      */
-    protected class MySchemaOutputResolver extends SchemaOutputResolver {
+    public static class MySchemaOutputResolver extends SchemaOutputResolver {
         // keep a list of processed schemas for the validation phase of the test(s)
         public Map<String, File> schemaFiles;
         
@@ -542,10 +544,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
         Document document = parser.parse(inputStream);
         OXTestCase.removeEmptyTextNodes(document);
         return document;
-    }
-    
-    protected boolean compareDocuments(Document ctrlDoc, Document testDoc) {
-        return xmlComparer.isNodeEqual(ctrlDoc, testDoc);
     }
     
     /**

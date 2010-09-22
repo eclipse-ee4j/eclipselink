@@ -715,33 +715,42 @@ public class SchemaGenerator {
                                 } else {
                                     typeName = type.getSimpleType().getName();
                                 }
-                                //  check namespace of schemaType
-                                if (type.getClassNamespace().equals(namespaceURI)) {
-                                    //no need to prefix here
-                                    String prefix = targetSchema.getNamespaceResolver().resolveNamespaceURI(namespaceURI);
-                                    if(prefix != null && !(prefix.equals(EMPTY_STRING))) {
-                                        element.setType(prefix + COLON + typeName);
-                                    } else {
-                                        element.setType(typeName);
-                                    }
+                                // may need an anonymous complex type
+                                if (typeName == null) {
+                                    Schema schema = getSchemaForNamespace(next.getNamespaceURI());
+                                    ComplexType cType = new ComplexType();
+                                    TypeDefParticle particle = new Sequence();
+                                    cType.setTypeDefParticle(particle);
+                                    element.setComplexType(cType);
+                                    addToSchemaType(type, type.getPropertyList(), particle, cType, schema);
+                                    targetSchema = schema;
                                 } else {
-                                    Schema complexTypeSchema = getSchemaForNamespace(type.getClassNamespace());
-
-                                    String complexTypeSchemaNS = type.getClassNamespace();
-                                    if (complexTypeSchemaNS == null) {
-                                        complexTypeSchemaNS = EMPTY_STRING;
-                                    }
-                                    addImportIfRequired(targetSchema, complexTypeSchema, type.getClassNamespace());
-
-                                    String prefix = targetSchema.getNamespaceResolver().resolveNamespaceURI(complexTypeSchemaNS);
-                                    if (prefix != null) {
-                                        element.setType(prefix + COLON + typeName);
+                                    //  check namespace of schemaType
+                                    if (type.getClassNamespace().equals(namespaceURI)) {
+                                        //no need to prefix here
+                                        String prefix = targetSchema.getNamespaceResolver().resolveNamespaceURI(namespaceURI);
+                                        if(prefix != null && !(prefix.equals(EMPTY_STRING))) {
+                                            element.setType(prefix + COLON + typeName);
+                                        } else {
+                                            element.setType(typeName);
+                                        }
                                     } else {
-                                        element.setType(typeName);
+                                        Schema complexTypeSchema = getSchemaForNamespace(type.getClassNamespace());
+                                        String complexTypeSchemaNS = type.getClassNamespace();
+                                        if (complexTypeSchemaNS == null) {
+                                            complexTypeSchemaNS = EMPTY_STRING;
+                                        }
+                                        addImportIfRequired(targetSchema, complexTypeSchema, type.getClassNamespace());
+    
+                                        String prefix = targetSchema.getNamespaceResolver().resolveNamespaceURI(complexTypeSchemaNS);
+                                        if (prefix != null) {
+                                            element.setType(prefix + COLON + typeName);
+                                        } else {
+                                            element.setType(typeName);
+                                        }
                                     }
                                 }
                             }
-
                         }
                         if (nextElement.getSubstitutionHead() != null) {
                             String subLocal = nextElement.getSubstitutionHead().getLocalPart();
