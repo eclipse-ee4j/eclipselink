@@ -694,7 +694,12 @@ public class XMLProcessor {
             getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_ON_MAP, new Object[] { xmlElement.getName() });
         } else {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlElement.getType());
-            oldProperty.setType(pType);
+            if(aProcessor.isCollectionType(oldProperty.getType())) {
+                oldProperty.setGenericType(pType);
+            } else {
+                oldProperty.setType(pType);
+            }
+            oldProperty.setHasXmlElementType(true);
             // may need to generate a type info for the type
             if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });

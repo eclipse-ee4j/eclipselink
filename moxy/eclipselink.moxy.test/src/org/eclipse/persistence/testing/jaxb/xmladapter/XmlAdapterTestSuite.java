@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.jaxb.xmladapter.classlevel.ClassLevelAdap
 import org.eclipse.persistence.testing.jaxb.xmladapter.composite.XmlAdapterCompositeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.compositecollection.XmlAdapterCompositeCollectionTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection.XmlAdapterCompositeDirectCollectionTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.direct.ListToStringAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.map.JAXBMapWithAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel.PackageLevelAdapterTestCases;
@@ -40,6 +41,7 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(XmlAdapterCompositeCollectionTestCases.class);
         suite.addTestSuite(XmlAdapterCompositeDirectCollectionTestCases.class);
         suite.addTestSuite(XmlAdapterDirectTestCases.class);
+        suite.addTestSuite(ListToStringAdapterTestCases.class);
         suite.addTestSuite(PackageLevelAdapterTestCases.class);
         suite.addTestSuite(PackageLevelAdaptersTestCases.class);
         suite.addTestSuite(ClassLevelAdapterTestCases.class);

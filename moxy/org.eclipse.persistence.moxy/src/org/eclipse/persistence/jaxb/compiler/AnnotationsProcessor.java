@@ -1141,7 +1141,11 @@ public class AnnotationsProcessor {
             property.setNillable(element.nillable());
             if (element.type() != XmlElement.DEFAULT.class) {
                 property.setOriginalType(property.getType());
-                property.setType(helper.getJavaClass(element.type()));
+                if(isCollectionType(property.getType())) {
+                    property.setGenericType(helper.getJavaClass(element.type()));
+                } else {
+                    property.setType(helper.getJavaClass(element.type()));
+                }
                 property.setHasXmlElementType(true);
             }
             // handle default value

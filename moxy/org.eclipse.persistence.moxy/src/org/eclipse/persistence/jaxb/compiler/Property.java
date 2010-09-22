@@ -129,17 +129,24 @@ public class Property {
         JavaClass newType  = helper.getJavaClass(Object.class);
                 
         // look for marshal method
+        boolean setGeneric = false;
         for (Iterator<JavaMethod> methodIt = adapterClass.getDeclaredMethods().iterator(); methodIt.hasNext(); ) {
             JavaMethod method = methodIt.next();
             if (method.getName().equals("marshal")) {
             	JavaClass returnType = method.getReturnType();            	
             	if(!returnType.getQualifiedName().equals(newType.getQualifiedName())){
             		newType = (JavaClass) method.getReturnType();
+            		JavaClass paramType = method.getParameterTypes()[0];
+            		setGeneric = isCollectionType(this.getType()) && !(isCollectionType(paramType));
             		break;
             	}
             }
         }
-        setType(newType);
+        if(setGeneric) {
+            this.setGenericType(newType);
+        } else {
+           this.setType(newType);
+        }
     }
     
     public JavaHasAnnotations getElement() {
@@ -182,9 +189,7 @@ public class Property {
         	return;
         }
     	String clsName= cls.getRawName();
-        if(type != null && isCollectionType(type)){  
-            genericType = cls;
-        }else if(isCollectionType(cls)){
+        if(isCollectionType(cls)){
         	if(cls.hasActualTypeArguments()){
         		ArrayList typeArgs =  (ArrayList) cls.getActualTypeArguments();
         		genericType = (JavaClass) typeArgs.get(0);
