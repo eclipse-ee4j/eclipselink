@@ -195,7 +195,7 @@ public class AnnotationsProcessor {
         init(classes, typeMappingInfos);
         preBuildTypeInfo(classes);
         classes = postBuildTypeInfo(classes);
-        processJavaClasses(classes);
+        processJavaClasses(null);
         finalizeProperties();
         createElementsForTypeMappingInfo();        
     }
@@ -707,20 +707,15 @@ public class AnnotationsProcessor {
     }
 
     /**
-     * Process a given set of JavaClass instances. @XmlIDREFs will be validated, and call back methods 
-     * will be handled as required. This method is typically called after init, preBuildTypeInfo, and 
-     * postBuildTypeInfo have been called.
+     * This method was initially designed to handle processing one or more
+     * JavaClass instances.  Over time its functionality has been broken
+     * apart and handled in different methods. Its sole purpose now is to
+     * check for callback methods. 
      * 
-     * @param classes
+     * @param classes this paramater can and should be null as it is not 
+     * used
      */
     public void processJavaClasses(JavaClass[] classes) {
-        ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
-        for (JavaClass javaClass : classes) {
-            classesToProcess.add(javaClass);
-        }
-
-        // TODO: at this point we can remove this method and call checkForCallbackMethods() instead
-        
         checkForCallbackMethods();
     }
 

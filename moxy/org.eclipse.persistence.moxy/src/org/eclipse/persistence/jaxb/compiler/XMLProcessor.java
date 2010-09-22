@@ -276,7 +276,7 @@ public class XMLProcessor {
             javaClasses = annotationsProcessor.postBuildTypeInfo(javaClasses);
 
             // now trigger the annotations processor to process the classes
-            annotationsProcessor.processJavaClasses(javaClasses);
+            annotationsProcessor.processJavaClasses(null);
 
             // get the generated TypeInfo
             Map<String, TypeInfo> typeInfosForPackage = annotationsProcessor.getTypeInfosForPackage(packageName);
