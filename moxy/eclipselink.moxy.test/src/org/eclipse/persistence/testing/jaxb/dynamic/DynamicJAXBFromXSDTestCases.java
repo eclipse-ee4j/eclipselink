@@ -805,8 +805,8 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         DynamicEntity readPerson = (DynamicEntity) jaxbContext.createUnmarshaller().unmarshal(marshalDoc);
 
-        assertEquals("Property type was not preserved during unmarshal.", Double.class, readPerson.get("salary").getClass());
-        assertEquals("Property type was not preserved during unmarshal.", Integer.class, readPerson.get("id").getClass());
+        assertEquals("Property type was not preserved during unmarshal.", Double.class, readPerson.<Object>get("salary").getClass());
+        assertEquals("Property type was not preserved during unmarshal.", Integer.class, readPerson.<Object>get("id").getClass());
     }
 
     // ====================================================================
