@@ -241,6 +241,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** stores fields that are written by Map key mappings so they can be checked for multiple writable mappings */
     protected transient List<DatabaseField> additionalWritableMapKeyFields;
     
+    /** whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates */
+    protected boolean hasRelationships = false;
+
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -2575,6 +2578,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     *  return whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates 
+     * @return
+     */
+    public boolean hasRelationships() {
+        return hasRelationships;
+    }
+    
+    /**
+     * INTERNAL:
      * Return if this descriptor has Returning policy.
      */
     public boolean hasReturningPolicy() {
@@ -3138,7 +3150,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public boolean isPrimaryKeySetAfterInsert(AbstractSession session) {
         return (usesSequenceNumbers() && getSequence().shouldAcquireValueAfterInsert()) || (hasReturningPolicy() && getReturningPolicy().isUsedToSetPrimaryKey());
     }
-
+    
     /**
      * INTERNAL:
      * Return if change sets are required for new objects.
@@ -3199,11 +3211,20 @@ public class ClassDescriptor implements Cloneable, Serializable {
             mapping.postInitialize(session);
             // PERF: computed if deferred locking is required.
             if (!shouldAcquireCascadedLocks()) {
-                if ((mapping instanceof ForeignReferenceMapping) && (!((ForeignReferenceMapping)mapping).usesIndirection())) {
-                    setShouldAcquireCascadedLocks(true);
+                if (mapping.isForeignReferenceMapping()){
+                    if (!((ForeignReferenceMapping)mapping).usesIndirection()){
+                        setShouldAcquireCascadedLocks(true);
+                    }
+                    hasRelationships = true;
                 }
-                if ((mapping instanceof AggregateObjectMapping) && mapping.getReferenceDescriptor().shouldAcquireCascadedLocks()) {
-                    setShouldAcquireCascadedLocks(true);
+                if ((mapping instanceof AggregateObjectMapping)){
+                    if (mapping.getReferenceDescriptor().shouldAcquireCascadedLocks()) {
+                        setShouldAcquireCascadedLocks(true);
+                    }
+                    if (mapping.getReferenceDescriptor().hasRelationships()){
+                        hasRelationships = true;
+                    }
+                    
                 }
             }
         }
@@ -4015,7 +4036,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             cacheSynchronizationType = DO_NOT_SEND_CHANGES;
         }
     }
-      
+
     /**
      * INTERNAL:
      * Return if the unit of work should by-pass the session cache.
@@ -4076,6 +4097,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.unitOfWorkCacheIsolationLevel = unitOfWorkCacheIsolationLevel;
     }
 
+    /**
+     * INTERNAL:
+     * set whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates 
+     * @param isSimpleDescriptor
+     */
+    public void setHasRelationshipds(boolean hasRelationships) {
+        this.hasRelationships = hasRelationships;
+    }
+    
     /**
     * PUBLIC:
     * Set the Java class that this descriptor maps.
@@ -4410,7 +4440,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public void setShouldBeReadOnly(boolean shouldBeReadOnly) {
         this.shouldBeReadOnly = shouldBeReadOnly;
     }
-
+    
     /**
      * PUBLIC:
      * Set the descriptor to be read-only.

@@ -131,7 +131,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             return null;
         }
         
-        if (descriptor.shouldAcquireCascadedLocks()) {
+        if (query.isObjectBuildingQuery() && ((ObjectBuildingQuery)query).requiresDeferredLocks() || descriptor.shouldAcquireCascadedLocks()) {
             return session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(primaryKey, getReadObjectQuery().getReferenceClass(), false, descriptor);
         } else {
             return session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(primaryKey, getReadObjectQuery().getReferenceClass(), false, descriptor);
@@ -262,7 +262,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     }
     
     /**
-     * Check whether the object already exists on the database; then
+     * Check whether the object already exists on the cadatabase; then
      * perform an insert or update, as appropriate.
      * This method was moved here, from WriteObjectQuery.execute(),
      * so we can hide the source.

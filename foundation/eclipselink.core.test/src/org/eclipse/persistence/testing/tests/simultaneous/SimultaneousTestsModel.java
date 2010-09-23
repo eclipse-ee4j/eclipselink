@@ -56,6 +56,7 @@ public class SimultaneousTestsModel extends TestModel {
         addTest(getQueryCacheMultithreadedTest());
         addTest(new ConcurrentDecryptionTest());
         addTest(new ConcurrentReadOneToOneInheritanceTest());
+        addTest(new ConcurrentReadFetchJoinTest());
     }
 
     public static TestSuite getReadEmployeeTestSuite() {

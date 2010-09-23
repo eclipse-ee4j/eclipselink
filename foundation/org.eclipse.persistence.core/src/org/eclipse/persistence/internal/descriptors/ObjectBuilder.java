@@ -651,7 +651,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         Object domainObject = null;
-        
         // Cache key is used for object locking.
         CacheKey cacheKey = null;
         // Keep track if we actually built/refresh the object.
@@ -662,7 +661,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 //lock the object in the IM		
                 // PERF: Only use deferred locking if required.
                 // CR#3876308 If joining is used, deferred locks are still required.
-                if (DeferredLockManager.SHOULD_USE_DEFERRED_LOCKS && (concreteDescriptor.shouldAcquireCascadedLocks() || (joinManager != null))) {
+                if (query.requiresDeferredLocks()) {
                     cacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
                     domainObject = cacheKey.getObject();
 
@@ -828,7 +827,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
 
                 // PERF: Only use deferred locking if required.
-                if (DeferredLockManager.SHOULD_USE_DEFERRED_LOCKS && (concreteDescriptor.shouldAcquireCascadedLocks() || (joinManager != null))) {
+                if (query.requiresDeferredLocks()){
                     cacheKey.releaseDeferredLock();
                 } else {
                     cacheKey.release();

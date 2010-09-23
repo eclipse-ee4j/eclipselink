@@ -87,6 +87,13 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     protected boolean shouldBuildNullForNullPk;
     
     /**
+     * When reading across relationships, queries may be set to acquire deferred locks
+     * This is used to ensure any Eagerly fetched object that is the target of a relationship
+     * with an object the acquires deferred locks behaves the same as its owner
+     */
+    protected Boolean requiresDeferredLocks = null;
+    
+    /**
      * INTERNAL:
      * Initialize the state of the query
      */
@@ -471,7 +478,18 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             }
         }
     }
+    
+    /**
+     * INTERNAL:
+     * When reading across relationships, queries may be set to acquire deferred locks
+     * This is used to ensure any Eagerly fetched object that is the target of a relationship
+     * with an object the acquires deferred locks behaves the same as its owner
+     */
+    public boolean requiresDeferredLocks() {
+        return requiresDeferredLocks != null && requiresDeferredLocks.booleanValue();
+    }
 
+    
     /**
      * INTERNAL:
      * Set the the time this query went to the database.
@@ -523,7 +541,17 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         referenceClassName = aClass;
         setIsPrepared(false);
     }
-
+    
+    /**
+     * INTERNAL:
+     * When reading across relationships, queries may be set to acquire deferred locks
+     * This is used to ensure any Eagerly fetched object that is the target of a relationship
+     * with an object the acquires deferred locks behaves the same as its owner
+     */
+    public void setRequiresDeferredLocks(boolean cascadeDeferredLocks) {
+        this.requiresDeferredLocks = Boolean.valueOf(cascadeDeferredLocks);
+    }
+    
     /**
      * PUBLIC:
      * Set if the attributes of the object(s) resulting from the query should be refreshed.
@@ -569,7 +597,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     public void setShouldUseExclusiveConnection(boolean shouldUseExclusiveConnection) {
         this.shouldUseExclusiveConnection = shouldUseExclusiveConnection;
     }
-
+    
     /**
      * INTERNAL:
      * Allows one to do conforming in a UnitOfWork without registering.

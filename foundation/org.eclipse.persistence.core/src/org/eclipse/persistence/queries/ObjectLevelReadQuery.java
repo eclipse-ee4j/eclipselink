@@ -53,6 +53,7 @@ import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DeferredLockManager;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.UniversalAsOfClause;
@@ -2131,6 +2132,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         } else if ((getLockMode() == NO_LOCK) && (!descriptor.hasPessimisticLockingPolicy())) {
             setWasDefaultLockMode(true);            
         }
+        setRequiresDeferredLocks(DeferredLockManager.SHOULD_USE_DEFERRED_LOCKS && (hasJoining() || (descriptor.shouldAcquireCascadedLocks())));
+           
         if(hasJoining() && hasPartialAttributeExpressions()) {
             session.log(SessionLog.WARNING, SessionLog.QUERY, "query_has_both_join_attributes_and_partial_attributes", new Object[]{this, this.getName()});
         }
