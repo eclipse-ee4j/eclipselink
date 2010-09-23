@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient;
 
 import java.io.File;
 
+import javax.xml.bind.JAXBException;
+
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance.Person;
 
@@ -121,5 +123,20 @@ public class XmlTransientTestCases extends ExternalizedMetadataTestCases {
 
         // validate schema against control schema
         compareSchemas(new File(path + "schema.xsd"), outputResolver.schemaFiles.get(EMPTY_NAMESPACE));
+    }
+    
+    /**
+     * Test a reference to a transient class.  Here, ContactInfo has a List<Address> where
+     * Address is marked transient via XML metadata.  A JAXBException should be thrown.
+     * 
+     * Negative test.
+     */
+    public void testReferenceToTransientClassException() {
+        try {
+            createContext(new Class[] { ContactInfo.class }, CONTEXT_PATH, PATH + "contactinfo-oxm.xml");
+        } catch (JAXBException jaxbex) {
+            return;
+        }
+        fail("The expected exception was not thrown.");
     }
 }

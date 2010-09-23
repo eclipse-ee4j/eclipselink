@@ -86,6 +86,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int TRANSFORMER_CLASS_NOT_FOUND = 50054;
     public static final int OXM_KEY_NOT_FOUND = 50055;
     public static final int INVALID_REF_CLASS = 50056;
+    public static final int TRANSIENT_REF_CLASS = 50057;
 
     protected JAXBException(String message) {
         super(message);
@@ -710,6 +711,19 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { propertyName, referencedClassName };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_REF_CLASS, args));
         validationException.setErrorCode(INVALID_REF_CLASS);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause:  The reference class (i.e. actualType) of a given Property is marked
+     * transient.  I.e. List<Address> addresses;  where Address is marked 
+     * transient.  
+     */
+    public static JAXBException invalidReferenceToTransientClass(String className, String propertyName, String referencedClassName) {
+        Object[] args = { className, propertyName, referencedClassName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, TRANSIENT_REF_CLASS, args));
+        validationException.setErrorCode(TRANSIENT_REF_CLASS);
         return validationException;
     }
 }

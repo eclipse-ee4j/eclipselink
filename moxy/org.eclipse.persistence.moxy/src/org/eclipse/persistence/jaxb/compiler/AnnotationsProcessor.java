@@ -603,11 +603,21 @@ public class AnnotationsProcessor {
         ArrayList<JavaClass> jClasses = getTypeInfoClasses();
         for (JavaClass jClass : jClasses) {
             TypeInfo tInfo = getTypeInfo().get(jClass.getQualifiedName());
+            // don't need to validate props on a transient class at this point
+            if (tInfo.isTransient()) { 
+                continue;
+            }
             // validate XmlValue
             if (tInfo.getXmlValueProperty() != null) {
                 validateXmlValueFieldOrProperty(jClass, tInfo.getXmlValueProperty());
             }
             for (Property property : tInfo.getPropertyList()) {
+                // need to check for transient reference class
+                JavaClass typeClass = property.getActualType();
+                TypeInfo targetInfo = typeInfo.get(typeClass.getQualifiedName());
+                if (targetInfo != null && targetInfo.isTransient()) {
+                    throw JAXBException.invalidReferenceToTransientClass(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
+                }
                 // only one XmlValue is allowed per class, and if there is one only XmlAttributes are allowed
                 if (tInfo.isSetXmlValueProperty()) {
                     if (property.isXmlValue() && !(tInfo.getXmlValueProperty().getPropertyName().equals(property.getPropertyName()))) {
@@ -619,8 +629,6 @@ public class AnnotationsProcessor {
                 }
                 // if the property is an XmlIDREF, the target must have an XmlID set
                 if (property.isXmlIdRef()) {
-                    JavaClass typeClass = property.getActualType();
-                    TypeInfo targetInfo = typeInfo.get(typeClass.getQualifiedName());
                     if (targetInfo != null && targetInfo.getIDProperty() == null) {
                         throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
                     }
