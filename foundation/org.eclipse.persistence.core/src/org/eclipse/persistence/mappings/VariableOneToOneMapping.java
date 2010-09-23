@@ -704,7 +704,12 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         DatabaseField targetField = objectDescriptor.getObjectBuilder().getTargetFieldForQueryKeyName(queryKeyName);
 
         if (targetField == null) {
-            return null;
+            // Bug 326091 - return the type value if the field passed is the type indicator field
+            if (referenceObject != null && this.typeField != null && field.equals(this.typeField)) {
+                return getTypeForImplementor(referenceObject.getClass());
+            } else {
+                return null;
+            }
         }
 
         return objectDescriptor.getObjectBuilder().extractValueFromObjectForField(referenceObject, targetField, session);

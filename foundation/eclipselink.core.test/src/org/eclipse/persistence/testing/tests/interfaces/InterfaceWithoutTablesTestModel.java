@@ -235,7 +235,7 @@ public class InterfaceWithoutTablesTestModel extends TestModel {
         suite.addTest(new VariableOneToOneDeleteTest());
         suite.addTest(new VariableOneToOneCodeCoverageTest());
         suite.addTest(new VariableOneToOneInsertTest());
-
+        suite.addTest(new VariableOneToOneGetTypeFieldTest());
         return suite;
     }
 }
