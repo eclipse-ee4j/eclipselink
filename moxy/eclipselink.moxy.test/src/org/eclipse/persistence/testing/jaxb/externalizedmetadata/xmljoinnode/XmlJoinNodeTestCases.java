@@ -39,6 +39,8 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmljoinnode/";
     private static final String OXM_DOC = PATH + "company-oxm.xml";
     private static final String INVALID_OXM_DOC = PATH + "invalid-xml-join-node-oxm.xml";
+    private static final String INVALID_XPATH_OXM_DOC = PATH + "invalid-target-xpath-oxm.xml";
+    private static final String INVALID_TARGET_OXM_DOC = PATH + "invalid-target-oxm.xml";
     private static final String XSD_DOC = PATH + "company.xsd";
     private static final String WORK_ADD_XSD_DOC = PATH + "work-address.xsd";
     private static final String INSTANCE_DOC = PATH + "company.xml";
@@ -199,6 +201,39 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
         assertTrue("The excepted exception was not thrown.", exception);
     }
     
+    /**
+     * Tests that an exception is thrown if a target XmlPath is invalid.
+     * 
+     * Negative test.
+     */
+    public void testInvalidTargetXPath() {
+        try {
+            createContext(classes, CONTEXT_PATH, INVALID_XPATH_OXM_DOC);
+        } catch (JAXBException e) {
+            return;
+        } catch (Exception ex) {
+            fail("An unexpected exception was thrown.");
+        }
+        fail("The expected JAXBException was not thrown.");
+    }
+    
+    /**
+     * Tests that an exception is thrown if the target class has no XmlID or
+     * XmlKey properties.
+     * 
+     * Negative test.
+     */
+    public void testTargetWithNoKey() {
+        try {
+            createContext(classes, CONTEXT_PATH, INVALID_TARGET_OXM_DOC);
+        } catch (JAXBException e) {
+            return;
+        } catch (Exception ex) {
+            fail("An unexpected exception was thrown.");
+        }
+        fail("The expected JAXBException was not thrown.");
+    }
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.XmlJoinNodeTestCases" };
         TestRunner.main(arguments);

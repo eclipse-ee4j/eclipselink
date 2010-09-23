@@ -87,6 +87,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int OXM_KEY_NOT_FOUND = 50055;
     public static final int INVALID_REF_CLASS = 50056;
     public static final int TRANSIENT_REF_CLASS = 50057;
+    public static final int NO_ID_OR_KEY_ON_JOIN_TARGET = 50058;
+    public static final int INVALID_REF_XML_PATH = 50059;
 
     protected JAXBException(String message) {
         super(message);
@@ -724,6 +726,28 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { className, propertyName, referencedClassName };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, TRANSIENT_REF_CLASS, args));
         validationException.setErrorCode(TRANSIENT_REF_CLASS);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause:    
+     */
+    public static JAXBException noKeyOrIDPropertyOnJoinTarget(String className, String propertyName, String referencedClassName) {
+        Object[] args = { className, propertyName, referencedClassName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NO_ID_OR_KEY_ON_JOIN_TARGET, args));
+        validationException.setErrorCode(NO_ID_OR_KEY_ON_JOIN_TARGET);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause:    
+     */
+    public static JAXBException invalidReferencedXmlPathOnJoin(String className, String propertyName, String referencedClassName, String referencedXmlPath) {
+        Object[] args = { className, propertyName, referencedClassName, referencedXmlPath };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_REF_XML_PATH, args));
+        validationException.setErrorCode(INVALID_REF_XML_PATH);
         return validationException;
     }
 }

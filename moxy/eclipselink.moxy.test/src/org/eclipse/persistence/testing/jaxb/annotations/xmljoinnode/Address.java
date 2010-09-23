@@ -14,20 +14,22 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmljoinnode;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlKey;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 public class Address {
-    @XmlKey
-    @XmlAttribute
+    @XmlID
+    @XmlPath("@id")
     public int id;
     
     public String street;
     public String suite;
     
     @XmlKey
-    @XmlElement(name="city")
+    @XmlPath("city/text()")
     public String cityName;
     
     public String postal;

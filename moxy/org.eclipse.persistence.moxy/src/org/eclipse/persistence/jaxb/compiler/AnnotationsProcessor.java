@@ -667,10 +667,31 @@ public class AnnotationsProcessor {
                 if (property.isXmlTransformation()) {
                     processXmlTransformationProperty(property);
                 }
-                // for XmlJoinNodes, the target class must have an associated TypeInfo  
+                // validate XmlJoinNodes
                 if (property.isSetXmlJoinNodes()) {
-                    if (typeInfo.get(property.getActualType().getQualifiedName()) == null) {
+                    // the target class must have an associated TypeInfo
+                    if (targetInfo == null) {
                         throw JAXBException.invalidXmlJoinNodeReferencedClass(property.getPropertyName(), property.getActualType().getQualifiedName());
+                    }
+                    // validate each referencedXmlPath - target TypeInfo should have XmlID/XmlKey property with matching XmlPath
+                    if (targetInfo.getIDProperty() == null && targetInfo.getXmlKeyProperties() == null) {
+                        throw JAXBException.noKeyOrIDPropertyOnJoinTarget(jClass.getQualifiedName(), property.getPropertyName(), property.getActualType().getQualifiedName());
+                    }
+                    for (org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode xmlJoinNode: property.getXmlJoinNodes().getXmlJoinNode()) {
+                        String refXPath = xmlJoinNode.getReferencedXmlPath();
+                        if (targetInfo.getIDProperty() != null && refXPath.equals(targetInfo.getIDProperty().getXmlPath())) {
+                            continue;
+                        }
+                        boolean matched = false; 
+                        for (Property xmlkeyProperty : targetInfo.getXmlKeyProperties()) {
+                            if (refXPath.equals(xmlkeyProperty.getXmlPath())) {
+                                matched = true;
+                                break;
+                            }
+                        }
+                        if (!matched) {
+                            throw JAXBException.invalidReferencedXmlPathOnJoin(jClass.getQualifiedName(), property.getPropertyName(), property.getActualType().getQualifiedName(), refXPath);
+                        }
                     }
                 }
             }
