@@ -16,6 +16,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
 /**
  * INTERNAL
@@ -39,6 +40,8 @@ public class AttributeNode extends Node {
     private DatabaseMapping mapping;
     
     private String castClassName = null;
+    
+    private QueryKey attributeQueryKey = null;
 
     /**
      * Create a new AttributeNode
@@ -91,6 +94,10 @@ public class AttributeNode extends Node {
         return initialType;
     }
 
+    public void checkForQueryKey(Object ownerType, TypeHelper typeHelper){
+        attributeQueryKey = typeHelper.resolveQueryKey(ownerType, name);
+    }
+    
     /** */
     public Expression addToExpression(Expression parentExpression, GenerationContext context) {
         if (isCollectionAttribute()) {
@@ -175,7 +182,7 @@ public class AttributeNode extends Node {
     /** */
     public boolean isCollectionAttribute() {
         DatabaseMapping mapping = getMapping();
-        return (mapping != null) && mapping.isCollectionMapping();
+        return ((mapping != null) && mapping.isCollectionMapping()) || (attributeQueryKey != null && attributeQueryKey.isCollectionQueryKey());
     }
 
     /**

@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.querykeys.OneToManyQueryKey;
 import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
 
 public class EmployeeCustomizer implements DescriptorCustomizer {
@@ -31,5 +32,12 @@ public class EmployeeCustomizer implements DescriptorCustomizer {
         ExpressionBuilder builder = new ExpressionBuilder();
         queryKey.setJoinCriteria(builder.getField("MANAGER_EMP_ID").equal(builder.getParameter("EMP_ID")));
         descriptor.addQueryKey(queryKey);
+        
+        OneToManyQueryKey otmQueryKey = new OneToManyQueryKey();
+        otmQueryKey.setName("phoneQK");
+        otmQueryKey.setReferenceClass(PhoneNumber.class);
+        builder = new ExpressionBuilder();
+        otmQueryKey.setJoinCriteria(builder.getField("OWNER_ID").equal(builder.getParameter("EMP_ID")));
+        descriptor.addQueryKey(otmQueryKey);
     }
 }

@@ -91,6 +91,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
             }
             if (right.isAttributeNode()){
                 type = ((AttributeNode)right).computeActualType(type, typeHelper);
+                ((AttributeNode)right).checkForQueryKey(left.getType(), typeHelper);
             }
             setType(type);
             right.setType(type);

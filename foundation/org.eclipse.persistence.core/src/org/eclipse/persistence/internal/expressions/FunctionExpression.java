@@ -648,6 +648,12 @@ public class FunctionExpression extends BaseExpression {
                 } else {
                     newDescriptor = mapping.getReferenceDescriptor();
                 }
+            } else {
+                QueryKey queryKey = getLeafQueryKeyFor(baseExp, ((QueryKeyExpression) baseExp).descriptor);
+                if ((queryKey != null) && !queryKey.isDirectQueryKey()){
+                    outerJoin = ((QueryKeyExpression) baseExp).shouldUseOuterJoin();
+                    newDescriptor = queryKey.getDescriptor();
+                }
             }
         } else if (baseExp.isExpressionBuilder()) {
             newDescriptor = normalizer.getSession().getDescriptor(((ExpressionBuilder) baseExp).getQueryClass());
@@ -754,6 +760,28 @@ public class FunctionExpression extends BaseExpression {
         return descriptor.getObjectBuilder().getMappingForAttributeName(qkExpression.getName());
     }
 
+    /**
+     * INTERNAL:
+     * Lookup the query key for this item.
+     * If an aggregate of foreign mapping is found it is traversed.
+     */
+    protected QueryKey getLeafQueryKeyFor(Expression expression, ClassDescriptor rootDescriptor) throws QueryException {
+        // Check for database field expressions or place holder
+        if ((expression == null) || (expression.isFieldExpression())) {
+            return null;
+        }
+
+        if (!(expression.isQueryKeyExpression())) {
+            return null;
+        }
+        
+        QueryKeyExpression qkExpression = (QueryKeyExpression)expression;
+        Expression baseExpression = qkExpression.getBaseExpression();
+
+        ClassDescriptor descriptor = getLeafDescriptorFor(baseExpression, rootDescriptor);
+        return descriptor.getQueryKeyNamed(qkExpression.getName());
+    }
+    
     /**
      * INTERNAL:
      * Lookup the descriptor for this item by traversing its expression recursively.

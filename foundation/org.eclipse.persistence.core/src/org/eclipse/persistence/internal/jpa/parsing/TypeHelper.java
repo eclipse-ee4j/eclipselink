@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
+
 /**
  * INTERNAL
  * <p><b>Purpose</b>: Specify type helper methods.
@@ -31,6 +33,11 @@ public interface TypeHelper {
     /** Returns the type of the attribute with the specified name in the
      * specified owner class. */ 
     public Object resolveAttribute(Object ownerClass, String attribute);
+    
+    /**
+     * Returns a query key associated with the name of the attribute
+     */
+    public QueryKey resolveQueryKey(Object ownerClass, String attribute);
 
     /** Returns the type of the map key for the mapping on ownerClass named attribute
      * Returns null if that mapping does not exist or does not contain a map key

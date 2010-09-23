@@ -76,7 +76,7 @@ public class TypeHelperImpl
         if (mapping != null) {
             return getType(mapping);
         }
-        QueryKey queryKey = resolveAttributeQueryKey(ownerClass, attribute);
+        QueryKey queryKey = resolveQueryKey(ownerClass, attribute);
         if (queryKey == null) {
             return null;
         } else if (queryKey.isForeignReferenceQueryKey()) {
@@ -208,7 +208,7 @@ public class TypeHelperImpl
         return (descriptor == null) ? null : descriptor.getObjectBuilder().getMappingForAttributeName(attribute);
     }
 
-    private QueryKey resolveAttributeQueryKey(Object ownerClass, String attribute) {
+    public QueryKey resolveQueryKey(Object ownerClass, String attribute) {
         ClassDescriptor descriptor = getDescriptor(ownerClass);
         if (descriptor == null) {
             return null;

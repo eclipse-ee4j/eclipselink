@@ -229,7 +229,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("testComplexIn"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testQueryKeys"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexOneToOneJoinOptimization"));
-        
+        suite.addTest(new JUnitJPQLComplexTestSuite("testCountOneToManyQueryKey"));
         return suite;
     }
     
@@ -3256,5 +3256,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 counter.remove();
             }
         }
+    }
+    
+    
+    // bug 325400
+    public void testCountOneToManyQueryKey(){
+        EntityManager em = createEntityManager();
+        Employee emp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'John' and e.lastName = 'Way'").getSingleResult();
+        Long result = (Long)em.createQuery("select count(pn) from Employee e join e.phoneQK pn where e.id = :id").setParameter("id", emp.getId()).getSingleResult();
+        assertTrue("Incorrect number of results returned", result.equals(Long.valueOf(2)));
     }
 }
