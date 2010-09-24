@@ -1432,6 +1432,16 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         YEAR_BUILT_field.setShouldAllowNull(true);
         table.addField(YEAR_BUILT_field);
         
+        FieldDefinition fieldORDER_COLUMN = new FieldDefinition();
+        fieldORDER_COLUMN.setName("ORDER_COLUMN");
+        fieldORDER_COLUMN.setTypeName("NUMERIC");
+        fieldORDER_COLUMN.setSize(15);
+        fieldORDER_COLUMN.setShouldAllowNull(true);
+        fieldORDER_COLUMN.setIsPrimaryKey(false);
+        fieldORDER_COLUMN.setUnique(false);
+        fieldORDER_COLUMN.setIsIdentity(false);
+        table.addField(fieldORDER_COLUMN);
+        
         table.addForeignKeyConstraint("FK_EC_REC", "EXPERT_CONSUMER_ID", "ID", "EXPERT_CONSUMER");
         
         return table;
@@ -1732,6 +1742,16 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         VENUE_YEAR_BUILT_field.setIsIdentity(false);
         VENUE_YEAR_BUILT_field.setShouldAllowNull(true);
         table.addField(VENUE_YEAR_BUILT_field);
+        
+        FieldDefinition fieldORDER_COLUMN = new FieldDefinition();
+        fieldORDER_COLUMN.setName("ORDER_COLUMN");
+        fieldORDER_COLUMN.setTypeName("NUMERIC");
+        fieldORDER_COLUMN.setSize(15);
+        fieldORDER_COLUMN.setShouldAllowNull(true);
+        fieldORDER_COLUMN.setIsPrimaryKey(false);
+        fieldORDER_COLUMN.setUnique(false);
+        fieldORDER_COLUMN.setIsIdentity(false);
+        table.addField(fieldORDER_COLUMN);
         
         return table;
     }
