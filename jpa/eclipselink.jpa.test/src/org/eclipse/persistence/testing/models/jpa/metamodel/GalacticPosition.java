@@ -39,7 +39,7 @@ import javax.persistence.Version;
  * Note that this Entity inherits from a Transient superclass (a non-entity, non-mappedSuperclass)
  * The Position class will be a BasicType (with no attributes outside of its Java class).
  * The Metamodel API will therefore not allow inheritance of any attributes into subclasses.
- * Any attempt to access attributes of Postion via GalacticPosition will get an expected IAE.
+ * Any attempt to access attributes of Position via GalacticPosition will get an expected IAE.
  */
 public class GalacticPosition extends Position implements java.io.Serializable {
     private static final long serialVersionUID = 1395818966377137158L;
