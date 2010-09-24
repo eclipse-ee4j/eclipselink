@@ -769,7 +769,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 // Order is important - shouldn't override indexes in one bunch while shifting another one.
                 // Look for the left-most and right-most bunches and update them first.
                 while(!iMinList.isEmpty()) {
-                    int iMinLeft = iMinList.size() + 1;
+                    int iMinLeft = previousList.size() + 1;
                     int iMinRight = -1;
                     int indexShiftLeft = -1;
                     int indexShiftRight = -1;

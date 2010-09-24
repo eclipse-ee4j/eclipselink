@@ -84,7 +84,8 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     // Both expert and novice consumers will define attribute overrides and
     // association overrides to apply to their respective tables.
     @AttributeOverride(name="description", column=@Column(name="DESCRIP"))
-    private Collection<Record> records;
+    @OrderColumn(name="ORDER_COLUMN")
+    private List<Record> records;
     
     @Embedded
     // Expert beer consumer will use these overrides, whereas, novice beer 
@@ -148,7 +149,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
         return iq;
     }
     
-    public Collection<Record> getRecords() {
+    public List<Record> getRecords() {
         return records;
     }
     
@@ -176,7 +177,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
         this.iq = iq;
     }
 
-    public void setRecords(Collection<Record> records) {
+    public void setRecords(List<Record> records) {
         this.records = records;
     }
 }

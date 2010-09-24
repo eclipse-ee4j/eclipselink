@@ -108,6 +108,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testReadNoviceBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testOrderColumnNoviceBeerConsumerDesignations"));
         suite.addTest(new InheritedModelJunitTest("testCreateExpertBeerConsumer"));
+        suite.addTest(new InheritedModelJunitTest("testDeleteMiddleRecordOfExpertBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testReadExpertBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testExpertBeerConsumerRecordsCRUD"));
         suite.addTest(new InheritedModelJunitTest("testUpdateBeerConsumer"));
@@ -459,14 +460,24 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             beerConsumer.getRecords().add(record1);
             
             Record record2 = new Record();
-            record2.setDescription("Most beers consumed in a second - 5");
-            record2.setDate(Helper.dateFromYearMonthDate(2005, 12, 12));
-            record2.setLocation(new Location("Miami", "USA"));
+            record2.setDescription("Most beers consumed upside down - 12");
+            record2.setDate(Helper.dateFromYearMonthDate(2007, 11, 11));
+            record2.setLocation(new Location("Sydney", "Australia"));
             Venue venue2 = new Venue();
-            venue2.setAttendance(63000);
-            venue2.setName("Dolphin Stadium");
+            venue2.setAttendance(2678);
+            venue2.setName("Opera House");
             record2.setVenue(venue2);
             beerConsumer.getRecords().add(record2);
+            
+            Record record3 = new Record();
+            record3.setDescription("Most beers consumed in a second - 5");
+            record3.setDate(Helper.dateFromYearMonthDate(2005, 12, 12));
+            record3.setLocation(new Location("Miami", "USA"));
+            Venue venue3 = new Venue();
+            venue3.setAttendance(63000);
+            venue3.setName("Dolphin Stadium");
+            record3.setVenue(venue3);
+            beerConsumer.getRecords().add(record3);
             
             Accredidation accredidation = new Accredidation();
             accredidation.setDetails("Elite, absolutely elite!");
@@ -519,6 +530,23 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         em = createEntityManager();
         BeerConsumer refreshedBC = em.find(BeerConsumer.class, m_expertBeerConsumerId);
         assertTrue("The expert beer consumer read back did not match the original", getServerSession().compareObjects(beerConsumer, refreshedBC));
+    }
+    
+    public void testDeleteMiddleRecordOfExpertBeerConsumer() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {        
+            ExpertBeerConsumer beerConsumer = em.find(ExpertBeerConsumer.class, m_expertBeerConsumerId);
+            beerConsumer.getRecords().remove(1);
+            commitTransaction(em);    
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            clearCache();
+        }        
     }
     
     public void testHeinekenBeerConsumer() {
@@ -645,7 +673,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         assertTrue("Quote from Jul 9, 2005 was incorrect", quote.equals(QUOTE_TWO));
         
         assertTrue("Incorrect number of records returned.", consumer.getRecords().size() == 2);
-        // don't individually check them ... assume they are correct.
+        assertTrue("Incorrect first record", consumer.getRecords().get(0).getDescription().equals("Fastest beer ever consumed - 10 ms"));
+        assertTrue("Incorrect last record", consumer.getRecords().get(1).getDescription().equals("Most beers consumed in a second - 5"));
     }
     
     // Bug 296606 - issues with ElementCollections 
