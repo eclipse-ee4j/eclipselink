@@ -124,8 +124,7 @@ public class TestCascadeFlush extends JPA1Base {
                 exceptionThrown = true;
             }
             verify(exceptionThrown, "commit did not fail as expected");
-            verifyAbsenceFromDatabase(parent.getId());
-            verifyExistenceOnDatabase(child.getId());
+            // can't verify anything on the database as state is undefined after rollback
         } finally {
             closeEntityManager(em);
         }
