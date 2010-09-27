@@ -31,8 +31,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 /**
- * Object to hold onto cache metadata. This class should eventually be 
- * extended by an XMLCache.
+ * Object to hold onto cache metadata.
  * 
  * @author Guy Pelletier
  * @since TopLink 11g

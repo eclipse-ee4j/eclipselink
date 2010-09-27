@@ -199,10 +199,10 @@ public abstract class ORMetadata {
     
     /**
      * INTERNAL:
-     * Sub classed must that can uniquely be identified must override this
-     * message to allow the overriding and merging to uniquely identify objects.
-     * It will also be used when logging messages (that is provide a more
-     * detailed message).
+     * Sub classes that can uniquely be identified must override this method to 
+     * allow the overriding and merging to uniquely identify objects. It will 
+     * also be used when logging messages, that is, to provide a more detailed 
+     * message.
      * 
      * @see shouldOverride
      * @see mergeListsAndOverride
