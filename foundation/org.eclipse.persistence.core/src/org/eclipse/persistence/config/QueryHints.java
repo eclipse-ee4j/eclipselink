@@ -228,6 +228,12 @@ public class QueryHints {
      * Batch reading is normally more efficient than join fetch, especially for collection relationships.
      * Valid values are strings that represent JPQL style navigations to a relationship.
      * <p>e.g. "e.manager.phoneNumbers"
+     * <p>Note:  Batch reading produces two lines of SQL to read the requested object graph and uses the
+     *  'where clause' of the first SQL as part of the 'where clause' of the second.  When indirect attributes
+     *  of the objects returned from the first query are referenced the second query is executed to return those attributes.
+     *  If changes are made to data referenced in the 'where clause' after the first SQL results are returned but before the
+     *  second query executes then these attributes may not be returned by the second query. To prevent this reference these 
+     *  attributes before changing data associated with the query."
      * @see BatchFetch
      * @see #BATCH_TYPE
      * @see BatchFetchType
