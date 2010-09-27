@@ -78,7 +78,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50056", "Property [{0}] contains an XmlJoinNode declaration, but the referenced class [{1}] is not applicable for this type of relationship."},
         {"50057", "Property [{1}] in class [{0}] references a class [{2}] that is marked transient, which is not allowed."},
         {"50058", "Property [{1}] in class [{0}] has an XmlJoinNode declaration, but the target class [{2}] has no XmlID property or XmlKey properties.  It is required that there is an XmlID/XmlKey property with a matching XmlPath on the target class for each referencedXmlPath."},
-        {"50059", "Property [{1}] in class [{0}] has an XmlJoinNode declaration with referencedXmlPath [{3}], but there is no XmlID or XmlKey property on the target class [{2}] with the XmlPath [{3}].  It is required that there is an XmlID/XmlKey property with a matching XmlPath on the target class for each referencedXmlPath."}
+        {"50059", "Property [{1}] in class [{0}] has an XmlJoinNode declaration with referencedXmlPath [{3}], but there is no XmlID or XmlKey property on the target class [{2}] with the XmlPath [{3}].  It is required that there is an XmlID/XmlKey property with a matching XmlPath on the target class for each referencedXmlPath."},
+        {"50060", "Property [{1}] in class [{0}] has an XmlIDREF declaration, but the target class [{2}] is not applicable for this type of relationship."}
     };
 
     /**

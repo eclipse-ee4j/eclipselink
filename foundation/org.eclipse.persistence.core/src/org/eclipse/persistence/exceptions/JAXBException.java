@@ -89,6 +89,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int TRANSIENT_REF_CLASS = 50057;
     public static final int NO_ID_OR_KEY_ON_JOIN_TARGET = 50058;
     public static final int INVALID_REF_XML_PATH = 50059;
+    public static final int INVALID_IDREF_CLASS = 50060;
 
     protected JAXBException(String message) {
         super(message);
@@ -731,7 +732,7 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * PUBLIC:
-     * Cause:    
+     * Cause:  The target class has no ID or Key properties set.
      */
     public static JAXBException noKeyOrIDPropertyOnJoinTarget(String className, String propertyName, String referencedClassName) {
         Object[] args = { className, propertyName, referencedClassName };
@@ -742,12 +743,24 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * PUBLIC:
-     * Cause:    
+     * Cause: No ID or Key property exists on the target class with an XPath == referencedXmlPath. 
      */
     public static JAXBException invalidReferencedXmlPathOnJoin(String className, String propertyName, String referencedClassName, String referencedXmlPath) {
         Object[] args = { className, propertyName, referencedClassName, referencedXmlPath };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_REF_XML_PATH, args));
         validationException.setErrorCode(INVALID_REF_XML_PATH);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: The referenced class (i.e. actualType) of the Property containing the 
+     * XmlIDREF declaration does not have an associated TypeInfo.
+     */
+    public static JAXBException invalidIDREFClass(String className, String propertyName, String referencedClassName) {
+        Object[] args = { className, propertyName, referencedClassName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_IDREF_CLASS, args));
+        validationException.setErrorCode(INVALID_IDREF_CLASS);
         return validationException;
     }
 }

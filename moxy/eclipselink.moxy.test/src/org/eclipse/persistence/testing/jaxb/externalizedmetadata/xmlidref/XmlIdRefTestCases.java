@@ -235,4 +235,19 @@ public class XmlIdRefTestCases extends ExternalizedMetadataTestCases {
         }
         assertTrue("The expected exception was not thrown.", ex);
     }
+    
+    /**
+     * Tests that an exception is thrown if XmlJoinNode is set on an invalid Property,
+     * as in the case where the Property type is String.
+     * 
+     * Negative test.
+     */
+    public void testInvalidRefClass() {
+        try {
+            createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "invalid-ref-class-oxm.xml");
+        } catch (JAXBException e) {
+            return;
+        }
+        fail("The excepted exception was not thrown.");
+    }
 }

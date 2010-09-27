@@ -627,8 +627,13 @@ public class AnnotationsProcessor {
                         throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
                     }
                 }
-                // if the property is an XmlIDREF, the target must have an XmlID set
+                // validate XmlIDREF
                 if (property.isXmlIdRef()) {
+                    // the target class must have an associated TypeInfo unless it is Object
+                    if (targetInfo == null && !typeClass.getQualifiedName().equals("java.lang.Object")) {
+                        throw JAXBException.invalidIDREFClass(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
+                    }
+                    // if the property is an XmlIDREF, the target must have an XmlID set
                     if (targetInfo != null && targetInfo.getIDProperty() == null) {
                         throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
                     }
@@ -671,11 +676,11 @@ public class AnnotationsProcessor {
                 if (property.isSetXmlJoinNodes()) {
                     // the target class must have an associated TypeInfo
                     if (targetInfo == null) {
-                        throw JAXBException.invalidXmlJoinNodeReferencedClass(property.getPropertyName(), property.getActualType().getQualifiedName());
+                        throw JAXBException.invalidXmlJoinNodeReferencedClass(property.getPropertyName(), typeClass.getQualifiedName());
                     }
                     // validate each referencedXmlPath - target TypeInfo should have XmlID/XmlKey property with matching XmlPath
                     if (targetInfo.getIDProperty() == null && targetInfo.getXmlKeyProperties() == null) {
-                        throw JAXBException.noKeyOrIDPropertyOnJoinTarget(jClass.getQualifiedName(), property.getPropertyName(), property.getActualType().getQualifiedName());
+                        throw JAXBException.noKeyOrIDPropertyOnJoinTarget(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
                     }
                     for (org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode xmlJoinNode: property.getXmlJoinNodes().getXmlJoinNode()) {
                         String refXPath = xmlJoinNode.getReferencedXmlPath();
@@ -690,7 +695,7 @@ public class AnnotationsProcessor {
                             }
                         }
                         if (!matched) {
-                            throw JAXBException.invalidReferencedXmlPathOnJoin(jClass.getQualifiedName(), property.getPropertyName(), property.getActualType().getQualifiedName(), refXPath);
+                            throw JAXBException.invalidReferencedXmlPathOnJoin(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName(), refXPath);
                         }
                     }
                 }
