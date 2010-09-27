@@ -584,7 +584,7 @@ public abstract class ORMetadata {
             // There is no existing, no override occurs, just use it!
             return true;
         } else if (existing.equals(this)) {
-            // The objects are the same. Could be that they user accidently
+            // The objects are the same. Could be that the user accidently
             // cut and paste from one file to another or that we are processing
             // an object from a mapped superclass which we have already
             // processed. Therefore, log no messages, ignore it and fall 
