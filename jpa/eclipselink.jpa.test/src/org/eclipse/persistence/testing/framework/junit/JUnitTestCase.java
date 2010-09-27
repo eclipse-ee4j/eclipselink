@@ -675,11 +675,11 @@ public abstract class JUnitTestCase extends TestCase {
 
     public boolean isSelectForUpateNoWaitSupported(String puName) {
         DatabasePlatform platform = getServerSession(puName).getPlatform();
-        if (!(platform.isOracle() || platform.isSQLServer())) {
-            warning("This database does not support NOWAIT.");
-            return false;
+        if (platform.isOracle() || platform.isSQLServer()) {
+            return true;
         }
-        return true;
+        warning("This database does not support NOWAIT.");
+        return false;
     }
     
     /**

@@ -1931,7 +1931,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
-    public void testLockWithJoinedInheritanceStrategy () {
+    public void testLockWithJoinedInheritanceStrategy () throws InterruptedException {
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             Employee emp = null;
@@ -1959,29 +1959,51 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             try {
                 beginTransaction(em);
                 emp = em.find(Employee.class, emp.getId());
-                Project lp1 = emp.getProjects().iterator().next();
+                final Project lp1 = emp.getProjects().iterator().next();
                 em.lock(lp1, LockModeType.PESSIMISTIC_WRITE);
                 lp1.setName("Lock In Additional Table ");
                 
-                EntityManager em2 = createEntityManager();
+                Runnable runnable = new Runnable() {
+
+                    @Override
+                    public void run() {
+                        EntityManager em2 = createEntityManager();
+                        
+                        try {
+                            beginTransaction(em2);
+                            LargeProject lp2 = em2.find(LargeProject.class, lp1.getId());
+                            HashMap properties = new HashMap();
+                            // According to the spec a 0 indicates a NOWAIT clause.
+                            properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                            em2.lock(lp2, LockModeType.PESSIMISTIC_WRITE, properties);
+                        } catch (PersistenceException ex) {
+                            if (!(ex instanceof javax.persistence.PessimisticLockException)) {
+                                throw ex;
+                            } 
+                        } finally {
+                            rollbackTransaction(em2);
+                            closeEntityManager(em2);
+                        }
+
+                    }
+                    
+                };
                 
-                try {
-                    beginTransaction(em2);
-                    LargeProject lp2 = em2.find(LargeProject.class, lp1.getId());
-                    HashMap properties = new HashMap();
-                    // According to the spec a 0 indicates a NOWAIT clause.
-                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
-                    em2.lock(lp2, LockModeType.PESSIMISTIC_WRITE, properties);
-                } catch (PersistenceException ex) {
-                    if (!(ex instanceof javax.persistence.PessimisticLockException)) {
-                        throw ex;
-                    } 
-                } finally {
-                    rollbackTransaction(em2);
-                    closeEntityManager(em2);
+                Thread t2 = new Thread(runnable);
+                t2.start();
+                
+                Thread.sleep(2000);
+                
+                // t2 should have failed to get a lock with NOWAIT and hence should have finished by now
+                boolean hanging = t2.isAlive();
+                
+                if (hanging) {
+                    t2.interrupt();
                 }
-            
+                
                 commitTransaction(em);
+                
+                assertFalse("pessimistic lock with nowait on entity with joined inheritance causes concurrent thread to wait", hanging);
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
@@ -8579,7 +8601,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             + "Symfoware platform doesn't support failover.");
             return;
         }
-
+        
         if (isOnServer()) {
             // Uses DefaultConnector.
             return;
