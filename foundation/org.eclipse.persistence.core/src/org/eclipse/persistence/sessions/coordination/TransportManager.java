@@ -68,8 +68,8 @@ public abstract class TransportManager {
     public static final int JNDI_NAMING_SERVICE = 0;
     public static final int REGISTRY_NAMING_SERVICE = 1;
 
-    /** Defaults for RMI applications assume that we are running in OC4J */
-    public static final String DEFAULT_URL_PROTOCOL = "ormi";
+    /** Defaults for RMI applications */
+    public static final String DEFAULT_URL_PROTOCOL = "rmi";
     public static final String DEFAULT_IIOP_URL_PROTOCOL = "corbaname";
     public static final String DEFAULT_URL_PORT = "23791";
     public static final String DEFAULT_IIOP_URL_PORT = "5555#";
@@ -381,9 +381,11 @@ public abstract class TransportManager {
         this.connectionsToExternalServices = new Hashtable(2);
 
         remoteContextProperties = new Hashtable();
-        remoteContextProperties.put(Context.INITIAL_CONTEXT_FACTORY, DEFAULT_CONTEXT_FACTORY);
+        // Factory is not require inside the server, do not default.
+        //remoteContextProperties.put(Context.INITIAL_CONTEXT_FACTORY, DEFAULT_CONTEXT_FACTORY);
         remoteContextProperties.put(DEFAULT_DEDICATED_CONNECTION_KEY, DEFAULT_DEDICATED_CONNECTION_VALUE);
-        remoteContextProperties.put(Context.SECURITY_PRINCIPAL, DEFAULT_USER_NAME);
+        // User/password are not required inside the server, do not default.
+        //remoteContextProperties.put(Context.SECURITY_PRINCIPAL, DEFAULT_USER_NAME);
 
         this.securableObjectHolder = new SecurableObjectHolder();
     }
@@ -410,12 +412,17 @@ public abstract class TransportManager {
      */
     public Context getRemoteHostContext(String remoteHostURL) {
         Hashtable remoteProperties = (Hashtable)getRemoteContextProperties().clone();
-        remoteProperties.put(Context.PROVIDER_URL, remoteHostURL);
+        // Host is only required if JMS connection factory is not accessible from local JNDI.
+        if (remoteHostURL != null) {
+            remoteProperties.put(Context.PROVIDER_URL, remoteHostURL);
+        }
         Object[] args = { remoteProperties };
         rcm.logDebug("context_props_for_remote_lookup", args);
 
-        // decrypt password just before looking up context
-        remoteProperties.put(Context.SECURITY_CREDENTIALS, decrypt(getPassword()));
+        if (getPassword() != null) {
+            // decrypt password just before looking up context
+            remoteProperties.put(Context.SECURITY_CREDENTIALS, decrypt(getPassword()));
+        }
 
         return getContext(remoteProperties);
     }

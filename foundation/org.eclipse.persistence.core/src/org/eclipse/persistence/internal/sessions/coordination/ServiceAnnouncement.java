@@ -78,7 +78,9 @@ public class ServiceAnnouncement {
         // Read the URL	
         int urlLength = bytes[curPos];
         curPos++;
-        serviceId.setURL(new String(bytes, curPos, urlLength));
+        if (urlLength > 0) {
+            serviceId.setURL(new String(bytes, curPos, urlLength));
+        }
     }
 
     /**
@@ -103,9 +105,15 @@ public class ServiceAnnouncement {
 
         byte[] idBytes = serviceId.getId().getBytes();
         int idLength = idBytes.length;
-
-        byte[] urlBytes = serviceId.getURL().getBytes();
-        int urlLength = urlBytes.length;
+        
+        byte[] urlBytes = null;
+        int urlLength = 0;
+        if (serviceId.getURL() == null) {
+            urlBytes = new byte[]{};
+        } else {
+            urlBytes = serviceId.getURL().getBytes();
+            urlLength = urlBytes.length;
+        }
 
         // Create the byte array to hold the data
         bytes = new byte[channelLength + idLength + urlLength + 3];

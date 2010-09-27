@@ -130,7 +130,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         logDebug("starting_rcm", args);
 
         // replace the $HOST substring of the URL with the discovered ipAddress
-        if (getUrl().indexOf(ServiceId.HOST_TOKEN) >= 0) {
+        if ((getUrl() != null) && (getUrl().indexOf(ServiceId.HOST_TOKEN) >= 0)) {
             try {
                 // discover local IP address
                 String ipAddress = InetAddress.getLocalHost().getHostAddress();
@@ -141,11 +141,11 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
                 throw RemoteCommandManagerException.errorDiscoveringLocalHostIPAddress(ex);
             }
         }
-        isStopped = false;
-        if(discoveryManager != null) {
-            discoveryManager.startDiscovery();
+        this.isStopped = false;
+        if (this.discoveryManager != null) {
+            this.discoveryManager.startDiscovery();
         } else {
-            transportManager.createConnections();
+            this.transportManager.createConnections();
         }
     }
 

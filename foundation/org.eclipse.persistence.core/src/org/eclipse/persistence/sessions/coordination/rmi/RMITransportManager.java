@@ -222,9 +222,10 @@ public class RMITransportManager extends TransportManager {
      */
     public void initialize() {
         super.initialize();
-        if (rcm.getServiceId().getURL() == null) {
-            rcm.getServiceId().setURL(getDefaultLocalUrl());
-        }
+        // URL is not required when in a cluster, do not default.
+        //if (rcm.getServiceId().getURL() == null) {
+        //    rcm.getServiceId().setURL(getDefaultLocalUrl());
+        //}
         namingServiceType = DEFAULT_NAMING_SERVICE;
     }
 

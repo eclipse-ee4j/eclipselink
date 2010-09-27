@@ -162,7 +162,7 @@
     <!-- *** Convienience and Compatability targets *** -->
 
     <!-- Short alias for building the jar. -->
-    <target name="jar" depends="package-eclipselink-jar"/>
+    <target name="jar" depends="build-eclipselink-jar"/>
 
     <!-- Short alias for building the jar. -->
     <target name="package-core" depends="dev-package-bundles, package-eclipselink-jar" description="package eclipselink without recompiling (*** dev use only ***)"/>

@@ -27,7 +27,6 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
 import org.eclipse.persistence.annotations.Cache;
-import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -1436,12 +1435,15 @@ public class PersistenceUnitProperties {
      * Values:
      * <ul>
      * <li>"jms"
+     * <li>"jms-publishing"
      * <li>"rmi"
+     * <li>"rmi-iiop"
+     * <li>a <package.class> name of a subclass implementation of the TransportManager abstract class.
      * </ul>
      * by default the cache is not coordinated.
      * 
+     * @see CacheCoordinationProtocol
      * @see Cache#coordinationType()
-     * @see CacheCoordinationType
      * @see RemoteCommandManager#setTransportManager(TransportManager)
      */
     public static final String COORDINATION_PROTOCOL = "eclipselink.cache.coordination.protocol";
@@ -1450,6 +1452,7 @@ public class PersistenceUnitProperties {
      * The <code>"eclipselink.cache.coordination.jms.host"</code> property
      * configures cache coordination for a clustered environment. Only used for
      * JMS coordination. Sets the URL for the JMS server hosting the topic.
+     * This is not required in the topic is distributed across the cluster (can be looked up in local JNDI).
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager#setTopicHostUrl(String)
@@ -1460,6 +1463,7 @@ public class PersistenceUnitProperties {
      * The <code>"eclipselink.cache.coordination.jms.topic"</code> property
      * configures cache coordination for a clustered environment. Only used for
      * JMS coordination. Sets the JMS topic name.
+     * The default topic JNDI name is "jms/EclipseLinkTopic".
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager#setTopicName(String)
@@ -1470,6 +1474,7 @@ public class PersistenceUnitProperties {
      * The <code>"eclipselink.cache.coordination.jms.factory"</code> property
      * configures cache coordination for a clustered environment. Only used for
      * JMS coordination. Sets the JMS topic connection factory name.
+     * The default topic connection factory JNDI name is "jms/EclipseLinkTopicConnectionFactory".
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager#setTopicConnectionFactoryName(String)
@@ -1492,6 +1497,7 @@ public class PersistenceUnitProperties {
      * property configures cache coordination for a clustered environment. Only
      * used for RMI coordination. Sets the number of milliseconds to wait for
      * announcements from other cluster members on startup.
+     * Default is 1000 milliseconds.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setAnnouncementDelay(int)
@@ -1503,6 +1509,7 @@ public class PersistenceUnitProperties {
      * property configures cache coordination for a clustered environment. Only
      * used for RMI coordination. Sets the multicast socket group address. The
      * multicast group is used to find other members of the cluster.
+     * The default address is 239.192.0.0.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setMulticastGroupAddress(String)
@@ -1515,6 +1522,7 @@ public class PersistenceUnitProperties {
      * property configures cache coordination for a clustered environment. Only
      * used for RMI coordination. Sets the multicast socket group port. The
      * multicast group port is used to find other members of the cluster.
+     * The default port is 3121.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.DiscoveryManager#setMulticastPort(int)
@@ -1546,6 +1554,9 @@ public class PersistenceUnitProperties {
      * configures cache coordination for a clustered environment. Only used for
      * RMI coordination. Sets the URL of the host server. This is the URL that
      * other cluster member should use to connect to this host.
+     * This may not be required in a clustered enviroment where JNDI is replicated.
+     * This can also be set as a System property or using a SessionCustomizer to avoid
+     * a seperate persistence.xml per server.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setUrl(String)
@@ -1566,6 +1577,7 @@ public class PersistenceUnitProperties {
      * the <code>"eclipselink.cache.coordination.jndi.user"</code> property
      * configures cache coordination for a clustered environment. Set the JNDI
      * naming service user name.
+     * This is not normally require if connecting to the local server.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.TransportManager#setUserName(String)
@@ -1576,6 +1588,7 @@ public class PersistenceUnitProperties {
      * The <code>"eclipselink.cache.coordination.jndi.password"</code> property
      * configures cache coordination for a clustered environment. Set the JNDI
      * naming service user name.
+     * This is not normally require if connecting to the local server.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.TransportManager#setPassword(String)
@@ -1587,6 +1600,7 @@ public class PersistenceUnitProperties {
      * <code>"eclipselink.cache.coordination.jndi.initial-context-factory"</code>
      * property configures cache coordination for a clustered environment. Set
      * the JNDI InitialContext factory.
+     * This is not normally require if connecting to the local server.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.TransportManager#setInitialContextFactoryName(String)
@@ -1624,7 +1638,7 @@ public class PersistenceUnitProperties {
      * the <code>"eclipselink.cache.coordination.channel"</code> property
      * configures cache coordination for a clustered environment. Set if the
      * channel for this cluster. All server's in the same channel will be
-     * coordinated.
+     * coordinated.  The default channel name is "EclipseLinkCommandChannel".
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setChannel(String)

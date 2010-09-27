@@ -78,10 +78,12 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
+import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
+import org.eclipse.persistence.config.CacheCoordinationProtocol;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
@@ -1073,9 +1075,9 @@ public class EntityManagerSetupImpl {
         
         if (protocol != null) {
             RemoteCommandManager rcm = new RemoteCommandManager(this.session);        
-            if (protocol.equalsIgnoreCase("jms") || protocol.equalsIgnoreCase("jms-publishing")) {
+            if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMSPublishing)) {
                 JMSPublishingTransportManager transport = null;
-                if (protocol.equalsIgnoreCase("jms")){
+                if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS)){
                      transport = new JMSTopicTransportManager(rcm);
                 } else {
                     transport = new JMSPublishingTransportManager(rcm);
@@ -1096,11 +1098,14 @@ public class EntityManagerSetupImpl {
                 }
                 
                 String reuse_publisher = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_REUSE_PUBLISHER, m, this.session);
-                if (host != null) {
+                if (reuse_publisher != null) {
                     transport.setShouldReuseJMSTopicPublisher(reuse_publisher.equalsIgnoreCase("true"));
                 }
                 
-            } else if (protocol.equalsIgnoreCase("rmi")) {
+            } else if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMI) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
+                if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS)){
+                    ((RMITransportManager)rcm.getTransportManager()).setIsRMIOverIIOP(true);
+               }
                 // Default protocol.
                 String delay = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_ANNOUNCEMENT_DELAY, m, this.session);
                 if (delay != null) {

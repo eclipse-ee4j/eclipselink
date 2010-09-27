@@ -8,21 +8,13 @@
         <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee</class>
         <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address</class>
         <properties>
-            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.sessionbean.CacheCoordinationSessionCustomizer"/>
             <property name="eclipselink.target-server" value="WebLogic"/>
-            <property name="eclipselink.validate-existence" value="true"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
-            <property name="cachecoordination.protocol" value="%%cachecoordination-protocol%%"/>
-            <property name="rcm.wls.jms.topichost.url" value="%%topic-host-url%%"/>
-            <property name="rcm.wls.jms.topicname" value="%%topic-name%%"/>
-            <property name="rcm.wls.jms.topic.connectionfactory.name" value="%%topic-connection-factory%%"/>
-            <property name="server.user" value="%%server-user%%"/>
-            <property name="server.pwd" value="%%server-pwd%%"/>
-            <property name="current.server.url" value="%%current-server-url%%"/>
-            <property name="announcement.delay" value="%%announcement-delay%%"/>
-            <property name="rcm.multicastgroup" value="%%rcm-multicastgroup%%"/>
-            <property name="rcm.multicastport" value="%%rcm-multicastport%%"/>
-            <property name="rcm.packet.timetolive" value="%%rcm-packet-timetolive%%"/>
+
+            <property name="eclipselink.cache.coordination.protocol" value="%%cachecoordination-protocol%%" />
+            <property name="eclipselink.cache.coordination.jms.host" value="%%topic-host-url%%" />
+            <property name="eclipselink.cache.coordination.jms.topic" value="%%topic-name%%" />
+            <property name="eclipselink.cache.coordination.jms.factory" value="%%topic-connection-factory%%" />
         </properties>
     </persistence-unit>
 </persistence>

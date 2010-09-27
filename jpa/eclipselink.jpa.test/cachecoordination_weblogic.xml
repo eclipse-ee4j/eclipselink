@@ -154,15 +154,16 @@
                 <sysproperty key="tangosol.coherence.clusterport" value="37373"/>
                 <sysproperty key="tangosol.coherence.cacheconfig" value="tang-perf-grid.xml"/>
                 <!--sysproperty key="tangosol.coherence.log.level" value="9"/-->
+                <sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server1.httphost}:${rcm.wls.server1.port}/"/>
                 <classpath refid="build.wls.path"/>
             </java>
             <sequential>
                 <waitfor>
                     <socket server="${rcm.wls.server1.httphost}" port="${rcm.wls.server1.port}"/>
-                </waitfor>              
+                </waitfor>
                 <parallel>
                         <echo message="*** starting managed server: Server2 "/>
-                    <java classname="weblogic.Server" 
+                    <java classname="weblogic.Server"
                         fork="true"
                         failonerror="true">
                         <jvmarg value="-server"/>
@@ -183,6 +184,7 @@
                         <sysproperty key="tangosol.coherence.clusterport" value="37373"/>
                         <sysproperty key="tangosol.coherence.cacheconfig" value="/tang-perf-grid.xml"/>
                         <!--sysproperty key="tangosol.coherence.log.level" value="1"/-->
+                        <sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server2.httphost}:${rcm.wls.server2.port}/"/>
                         <classpath refid="build.wls.path"/>
                     </java>
                     <echo message="*** starting managed server: Server3 "/>
@@ -206,6 +208,7 @@
                         <sysproperty key="weblogic.Stderr" value="${rcm.wls.server3.name}.err"/>
                         <sysproperty key="tangosol.coherence.clusterport" value="37373"/>
                         <sysproperty key="tangosol.coherence.cacheconfig" value="tang-perf-grid.xml"/>
+                        <sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server3.httphost}:${rcm.wls.server3.port}/"/>
                         <classpath refid="build.wls.path"/>
                     </java>
                     <sequential>
@@ -222,6 +225,98 @@
         </parallel>  
     </target>
 
+    <!-- This creates the server domain. -->
+    <target name="weblogic-create-cluster">
+        <delete dir="${weblogic.domain}"/>
+        <mkdir dir="${weblogic.domain}"/>
+        <wlserver fork="true" spawn="true" weblogichome="${weblogic.home}"
+                dir="${weblogic.domain}" host="${rcm.wls.admin.httphost}" servername="admin" generateConfig="true" verbose="true"
+                username="${server.user}" password="${server.pwd}" action="start">
+            <classpath>
+                <fileset dir="${weblogic.home}/lib" includes="weblogic.jar,weblogic_sp.jar"/>
+                <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+            </classpath>
+            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-Xmx960m"/>
+        </wlserver>
+        <wlconfig url="t3://${rcm.wls.admin.httphost}:${rcm.wls.admin.port}/" username="${server.user}" password="${server.pwd}">
+            <create type="Cluster" name="${rcm.wls.cluster.name}"/>
+            <query domain="mydomain" type="Cluster" name="${rcm.wls.cluster.name}" property="cluster"/>
+            <create type="Server" name="${rcm.wls.server1.name}">
+                <set attribute="ListenPort" value="${rcm.wls.server1.port}"/>
+                <set attribute="Cluster" value="${cluster}"/>
+            </create>
+            <create type="Server" name="${rcm.wls.server2.name}">
+                <set attribute="ListenPort" value="${rcm.wls.server2.port}"/>
+                <set attribute="Cluster" value="${cluster}"/>
+            </create>
+            <create type="Server" name="${rcm.wls.server3.name}">
+                <set attribute="ListenPort" value="${rcm.wls.server3.port}"/>
+                <set attribute="Cluster" value="${cluster}"/>
+            </create>
+        </wlconfig>
+        <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
+            dir="${weblogic.domain}" host="${rcm.wls.admin.httphost}" port="${rcm.wls.admin.port}" servername="admin"
+            username="${server.user}" password="${server.pwd}" action="shutdown">
+        </wlserver>
+    </target>
 
+    <target name="setup-cluster">
+        <wlconfig url="t3://${rcm.wls.admin.httphost}${rcm.wls.admin.port}/" username="${server.user}" password="${server.pwd}">
+            <query domain="mydomain" type="JDBCConnectionPool" name="EclipseLinkPool">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="JDBCTxDataSource" name="EclipseLinkDS">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="JDBCDataSource" name="EclipseLinkLocalDS">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="JMSTopic" name="EclipseLinkTopic">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="JMSConnectionFactory" name="EclipseLinkTopicConnectionFactory">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="JMSServer" name="EclipseLinkJMSServer">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="Cluster" name="${rcm.wls.cluster.name}" property="cluster"/>
+            <query domain="mydomain" type="Server" name="${rcm.wls.server1.name}" property="server1"/>
+            <create type="JDBCConnectionPool" name="EclipseLinkPool">
+                <set attribute="CapacityIncrement" value="2"/>
+                <set attribute="DriverName" value="${DB_DRIVER}"/>
+                <set attribute="InitialCapacity" value="1"/>
+                <set attribute="MaxCapacity" value="50"/>
+                <set attribute="Password" value="${DB_PASSWORD}"/>
+                <set attribute="Properties" value="user=${DB_USER}"/>
+                <set attribute="URL" value="${DB_URL}"/>
+                <set attribute="Targets" value="${cluster}"/>
+            </create>
+            <create type="JDBCTxDataSource" name="EclipseLinkDS">
+                <set attribute="JNDIName" value="jdbc/EclipseLinkDS"/>
+                <set attribute="PoolName" value="EclipseLinkPool"/>
+                <set attribute="Targets" value="${cluster}"/>
+            </create>
+            <create type="JDBCDataSource" name="EclipseLinkLocalDS">
+                <set attribute="JNDIName" value="jdbc/EclipseLinkLocalDS"/>
+                <set attribute="PoolName" value="EclipseLinkPool"/>
+                <set attribute="Targets" value="${cluster}"/>
+            </create>
+
+            <create type="JMSConnectionFactory" name="EclipseLinkTopicConnectionFactory">
+              <set attribute="JNDIName" value="jms/EclipseLinkTopicConnectionFactory"/>
+              <set attribute="XAServerEnabled" value="false"/>
+              <set attribute="Targets" value="${cluster}"/>
+           </create>
+           <create type="JMSServer" name="EclipseLinkJMSServer">
+              <set attribute="Targets" value="${server1}"/>
+               <create type="JMSTopic" name="EclipseLinkTopic">
+                  <set attribute="JNDIName" value="jms/EclipseLinkTopic"/>
+               </create>
+           </create>
+
+        </wlconfig>
+    </target>
 
 </project>
