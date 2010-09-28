@@ -64,15 +64,19 @@
     </propertyset>
 
     <property name="eclipselink.lib" value="${moxytest.2.trunk.dir}/${eclipselink.jar}"/>
-    <property name="persistence.lib" value="${moxytest.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
     <property name="jaxb-xjc.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
     <property name="jaxb-api.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
     <property name="jaxb-impl.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
-    
+
+    <path id="xml.parser.path">
+        <fileset 
+            dir="${xml.parser.jar.dir}"
+            includes="${xml.parser.jar}"/>
+    </path>
     <!-- Compile/run paths -->
     <path id="jaxb.compile.path">
+        <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <pathelement path="${persistence.lib}"/>
         <fileset
             dir="${moxytest.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>
@@ -83,6 +87,7 @@
         <pathelement path="${jaxb-impl.lib}"/>
     </path>
     <path id="jaxb.run.path">
+        <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
         <fileset
             dir="${moxytest.2.common.plugins.dir}"
@@ -97,7 +102,7 @@
         <pathelement path="${jaxb-impl.lib}"/>
     </path>
     <path id="oxm.compile.path">
-        <pathelement path="${persistence.lib}"/>
+        <path refid="xml.parser.path"/>
         <fileset
             dir="${moxytest.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>
@@ -106,7 +111,7 @@
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
     </path>
     <path id="oxm.run.path">
-        <pathelement path="${persistence.lib}"/>
+        <path refid="xml.parser.path"/>
         <fileset
             dir="${moxytest.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>
@@ -119,8 +124,8 @@
 
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
     <path id="jaxb.compile.against.jar.path">
+        <path refid="xml.parser.path"/>
         <pathelement path="${junit.lib}"/>
-        <pathelement path="${persistence.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <fileset
             dir="${moxytest.2.common.plugins.dir}"
@@ -130,6 +135,7 @@
         <pathelement path="${jaxb-impl.lib}"/>
     </path>
     <path id="jaxb.run.against.jar.path">
+        <path refid="xml.parser.path"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <fileset
@@ -142,7 +148,7 @@
         <pathelement path="${jaxb-impl.lib}"/>
     </path>
     <path id="oxm.compile.against.jar.path">
-        <pathelement path="${persistence.lib}"/>
+        <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${junit.lib}"/>
         <fileset
@@ -151,6 +157,7 @@
         <pathelement path="${eclipselink.lib}"/>
     </path>
     <path id="oxm.run.against.jar.path">
+        <path refid="xml.parser.path"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <fileset
