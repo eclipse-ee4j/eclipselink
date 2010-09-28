@@ -14,20 +14,25 @@
 package org.eclipse.persistence.testing.tests.jpa.proxyauthentication;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import junit.framework.*;
 
 import oracle.jdbc.OracleConnection;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
+import org.eclipse.persistence.platform.server.wls.WebLogicPlatform;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.proxyauthentication.*;
+import org.eclipse.persistence.transaction.JTATransactionController;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
@@ -93,6 +98,8 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     private PhoneNumber proxyPhone = null;
     private static final String PROXY_PU = "proxyauthentication";
     private static boolean shouldOverrideGetEntityManager = false;
+    private static boolean shouldRunPureJdbcTests = false;
+    private static ServerSession serverSession;
 
     public ProxyAuthenticationServerTestSuite(){
     }
@@ -111,17 +118,19 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         suite.addTest(new ProxyAuthenticationServerTestSuite("testReadDeleteWithProxy"));
         suite.addTest(new ProxyAuthenticationServerTestSuite("testCreateWithOutProxy"));
         suite.addTest(new ProxyAuthenticationServerTestSuite("testFlushRollback"));
-        // The following two tests commented out waiting on WLS 10.3.4. to fix the problem described in
         // Bug 323880 - "This is already a proxy session" exception on WLS 10.3.3 after explicitly rolling back the user transaction
-        // When it fixed please uncomment the two tests and close the bug.
-//        suite.addTest(new ProxyAuthenticationServerTestSuite("testJtaDataSource"));
-//        suite.addTest(new ProxyAuthenticationServerTestSuite("testNonJtaDataSource"));
+        suite.addTest(new ProxyAuthenticationServerTestSuite("testJtaDataSource"));
+        suite.addTest(new ProxyAuthenticationServerTestSuite("testNonJtaDataSource"));
         return suite;
     }
 
     public void testSetup() {
+        serverSession = getServerSession(PROXY_PU);
         shouldOverrideGetEntityManager = shouldOverrideGetEntityManager();
         System.out.println("====the shouldOverrideGetEntityManager====" + shouldOverrideGetEntityManager);
+        // currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.
+        shouldRunPureJdbcTests = shouldRunPureJdbcTests();
+        System.out.println("====the shouldRunPureJdbcTests====" + shouldRunPureJdbcTests);
         //new PhoneNumberTableCreator().replaceTables(JUnitTestCase.getServerSession(PROXY_PU));
         //new EmployeeTableCreator().replaceTables(JUnitTestCase.getServerSession(PROXY_PU));
         //getServerSession(PROXY_PU).executeNonSelectingSQL("update PROXY_EMPLOYEE_SEQ set SEQ_COUNT = 1 where SEQ_NAME='PROXY_EMPLOYEE_SEQ'");
@@ -332,10 +341,21 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     }
 
     public void testJtaDataSource() throws Exception {
+        if(!shouldRunPureJdbcTests) {
+            System.out.println("Currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.");
+            return;
+        }
+        if(!serverSession.getLogin().shouldUseExternalTransactionController()) {
+            throw new RuntimeException("Test problem: jta data source is required");
+        }
         System.out.println("====testJtaDataSource begin");
-        Context context = new InitialContext();
-        TransactionManager mngr = (TransactionManager)context.lookup("weblogic.transaction.TransactionManager");
-        DataSource jtaDs = (DataSource)context.lookup("jdbc/EclipseLinkDS");
+//        Context context = new InitialContext();
+//        TransactionManager mngr = (TransactionManager)context.lookup("weblogic.transaction.TransactionManager");
+        // Eclipselink session is used only to obtain TransactionManager from the application server.
+        TransactionManager mngr = ((JTATransactionController)serverSession.getExternalTransactionController()).getTransactionManager();
+//        DataSource jtaDs = (DataSource)context.lookup("jdbc/EclipseLinkDS");
+        // Eclipselink session is used only to obtain jta data source from the application server.
+        DataSource jtaDs = ((JNDIConnector)serverSession.getLogin().getConnector()).getDataSource();
         Properties props = new Properties();
         props.setProperty(OracleConnection.PROXY_USER_NAME, System.getProperty("proxy.user.name"));
 
@@ -349,19 +369,35 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         conn = jtaDs.getConnection();
         try {
             if(((OracleConnection)conn).isProxySession()) {
+                // close proxy session
+                ((OracleConnection)conn).close(OracleConnection.PROXY_SESSION);
                 fail("Connection has been released into connection pool with the proxy session still open");
             }
             System.out.println("====testJtaDataSource not a proxy session");
         } finally {
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+                // Ignore
+            }
             mngr.rollback();
             System.out.println("====testJtaDataSource end");
         }
     }
     
     public void testNonJtaDataSource() throws Exception {
+        if(!shouldRunPureJdbcTests) {
+            System.out.println("Currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.");
+            return;
+        }
+        if(((DatabaseLogin)serverSession.getReadConnectionPool().getLogin()).shouldUseExternalTransactionController()) {
+            throw new RuntimeException("Test problem: non jta data source is required");
+        }
         System.out.println("====testNonJtaDataSource begin");
-        Context context = new InitialContext();
-        DataSource nonJtaDs = (DataSource)context.lookup("jdbc/ELNonJTADS");
+//        Context context = new InitialContext();
+//        DataSource nonJtaDs = (DataSource)context.lookup("jdbc/ELNonJTADS");
+        // Eclipselink session is used only to obtain non jta data source from the application server.
+        DataSource nonJtaDs = ((JNDIConnector)((DatabaseLogin)serverSession.getReadConnectionPool().getLogin()).getConnector()).getDataSource();
         Properties props = new Properties();
         props.setProperty(OracleConnection.PROXY_USER_NAME, System.getProperty("proxy.user.name"));
 
@@ -417,10 +453,10 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     }
 
     private void compareObjects(Employee readEmp, Employee writtenEmp, PhoneNumber readPhone, PhoneNumber writtenPhone){
-        if (!getServerSession(PROXY_PU).compareObjects(readEmp, proxyEmp)) {
+        if (!serverSession.compareObjects(readEmp, proxyEmp)) {
             fail("Object: " + readEmp + " does not match object that was written: " + proxyEmp + ". See log (on finest) for what did not match.");
         }
-        if (!getServerSession(PROXY_PU).compareObjects(readPhone, writtenPhone)) {
+        if (!serverSession.compareObjects(readPhone, writtenPhone)) {
             fail("Object: " + readPhone + " does not match object that was written: " + writtenPhone + ". See log (on finest) for what did not match.");
         }
     }
@@ -438,12 +474,17 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     }
 
     private boolean shouldOverrideGetEntityManager(){
-        if(getServerSession(PROXY_PU).getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform") ||
-           getServerSession(PROXY_PU).getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.jboss.JBossPlatform") ){
+        if(serverSession.getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform") ||
+           serverSession.getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.jboss.JBossPlatform") ){
             return true;
         } else {
             return false;
         }
+    }
+
+    private boolean shouldRunPureJdbcTests(){
+        // currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.
+        return WebLogicPlatform.class.isAssignableFrom(serverSession.getServerPlatform().getClass()) && Helper.compareVersions(getServerSession(PROXY_PU).getServerPlatform().getServerNameAndVersion(), "10.3.4") >= 0;
     }
 
     protected java.util.Properties getServerProperties(){
