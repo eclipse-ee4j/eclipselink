@@ -528,6 +528,9 @@ public class SDOProperty implements Property, Serializable {
                             (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME))))) {
                         xmlMapping = buildXMLBinaryDataCollectionMapping(mappingUri, mimeTypePolicy);
                     } else {
+                        if(!isActivationAvailable && ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler"))) {
+                            throw SDOException.unableToMapDataHandlerDueToMissingDependency(this.propertyName, this.getContainingType().getQName().toString());
+                        }
                         if(isSubstitutable()) {
                             xmlMapping = buildXMLChoiceCollectionMapping(mappingUri);
                         } else {
@@ -536,13 +539,16 @@ public class SDOProperty implements Property, Serializable {
                     }
                 } else {
                     MimeTypePolicy mimeTypePolicy = getMimeTypePolicy();
-
                     //Removed check for XSD type since XSD type can't be set via typeHelper.define
                     if (isActivationAvailable && (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || 
                             ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")) ||
                             (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME))))) {
                          xmlMapping = buildXMLBinaryDataMapping(mappingUri, mimeTypePolicy);
                     } else {
+                        if(!isActivationAvailable && ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler"))) {
+                            //throw exception
+                            throw SDOException.unableToMapDataHandlerDueToMissingDependency(this.propertyName, this.getContainingType().getQName().toString());
+                        }
                         if(isSubstitutable()) {
                             xmlMapping = buildXMLChoiceObjectMapping(mappingUri);
                         } else {

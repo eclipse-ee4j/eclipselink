@@ -88,6 +88,7 @@ public class SDOException extends EclipseLinkException {
     public static final int SDO_JAXB_NO_TYPE_FOR_CLASS_BY_SCHEMA_CONTEXT = 45205;
     public static final int SDO_JAXB_ERROR_CREATING_JAXB_UNMARSHALLER = 45206;
     public static final int ERROR_RESOLVING_ENTITY = 45207;
+    public static final int MISSING_DEPENDENCY_FOR_BINARY_MAPPING = 45208;
 
     protected SDOException(String message) {
         super(message);
@@ -671,5 +672,12 @@ public class SDOException extends EclipseLinkException {
          exception.setInternalException(nestedException);
          return exception;
      }
+     
+     public static SDOException unableToMapDataHandlerDueToMissingDependency(String propertyName, String typeName) {
+         Object[] args = {propertyName, typeName};
+         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, MISSING_DEPENDENCY_FOR_BINARY_MAPPING, args));
+         exception.setErrorCode(MISSING_DEPENDENCY_FOR_BINARY_MAPPING);
+         return exception;
+     }     
 
 }
