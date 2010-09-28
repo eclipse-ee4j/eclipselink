@@ -1091,7 +1091,7 @@ public class EntityManagerSetupImpl {
                 }
                 
                 String reuse_publisher = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_REUSE_PUBLISHER, m, this.session);
-                if (host != null) {
+                if (reuse_publisher != null) {
                     transport.setShouldReuseJMSTopicPublisher(reuse_publisher.equalsIgnoreCase("true"));
                 }
                 
