@@ -133,6 +133,13 @@ public class SpringPlatform implements ServerPlatform {
     }
 
     /**
+     * Is the platform Spring?
+     */
+    public boolean isSpring() {
+        return true;
+    }
+
+    /**
      * Managed entity managers do not need to be closed.
      */
     public void closeEntityManager(EntityManager entityManager) {

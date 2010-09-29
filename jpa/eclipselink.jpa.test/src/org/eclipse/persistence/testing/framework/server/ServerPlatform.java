@@ -73,6 +73,11 @@ public interface ServerPlatform {
     boolean isJBoss();
 
     /**
+     * Is the platform Spring?
+     */
+    boolean isSpring();
+    
+    /**
      * Is the platform clustered?
      */
     boolean isClustered();

@@ -145,6 +145,13 @@ public class JEEPlatform implements ServerPlatform {
     }
 
     /**
+     * Is the platform Spring?
+     */
+    public boolean isSpring() {
+        return false;
+    }
+
+    /**
      * Is the platform clustered?
      */
     public boolean isClustered() {
