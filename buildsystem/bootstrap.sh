@@ -147,7 +147,7 @@ BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
 if [ "${ORACLEBLD}" = "true" ]
 then
-    JAVA_HOME=/shared/common/jdk6_glassfish3/jdk
+    JAVA_HOME=/shared/common/jdk1.6.0_21
     ANT_HOME=/usr/share/ant
 else
     # Conditional to allow single branch testing of jdk and ant env

@@ -156,7 +156,6 @@
         <property name="xml.stream.prefix" value="javax.xml.stream"/>
         <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
 
-
         <echo message="ant.project.name            ='${ant.project.name}'"/>
         <echo message="feature.build.location      ='${feature.build.location}'"/>
         <echo message="feature.2.base.dir          ='${feature.2.base.dir}'"/>
