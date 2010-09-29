@@ -9,7 +9,7 @@
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
             <property name="eclipselink.validate-existence" value="true"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.logging.logger" value="DefaultLogger"/>
         </properties>
     </persistence-unit>
