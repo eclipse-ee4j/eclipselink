@@ -2,7 +2,7 @@
     <persistence-unit name="%%default%%" transaction-type="%%transaction-type%%">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
-		<non-jta-data-source>jdbc/ELNonJTADS</non-jta-data-source>
+		<non-jta-data-source>%%NONJTA_DS_NAME%%</non-jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.target-server" value="%%server-platform%%"/>
