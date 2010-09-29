@@ -1784,6 +1784,9 @@
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%datasource-type%%' value="jta-data-source">
             <include name="*.xml"/>
         </replace>
+		<replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%NONJTA_DS_NAME%%' value="${NONJTA_DS_NAME}">
+            <include name="*.xml"/>
+        </replace>
     </target>
     
     <target name="replace-nonjta-datasource" if="is.nonjta.datasource">
