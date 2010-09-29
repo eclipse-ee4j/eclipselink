@@ -27,7 +27,6 @@ import org.eclipse.persistence.oxm.annotations.XmlWriteTransformers;
 public class Employee {
     public String name;
     
-    @XmlTransformation
     @XmlReadTransformer(transformerClass = NormalHoursTransformer.class)
     @XmlWriteTransformers({
         @XmlWriteTransformer(transformerClass = StartTimeTransformer.class, xpath= "normal-hours/start-time/text()"),

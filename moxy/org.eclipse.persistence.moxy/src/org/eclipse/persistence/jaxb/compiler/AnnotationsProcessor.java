@@ -1447,7 +1447,10 @@ public class AnnotationsProcessor {
             info.setAnyElementPropertyName(propertyName);
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlElementRef.class) || helper.isAnnotationPresent(javaHasAnnotations, XmlElementRefs.class)) {
             property = buildReferenceProperty(info, javaHasAnnotations, propertyName, ptype);
-        } else if (helper.isAnnotationPresent(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlTransformation.class)) {
+        } else if (helper.isAnnotationPresent(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlTransformation.class) ||
+                helper.isAnnotationPresent(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlReadTransformer.class) ||
+                helper.isAnnotationPresent(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlWriteTransformer.class) || 
+                helper.isAnnotationPresent(javaHasAnnotations, XmlWriteTransformers.class)) {
             property = buildTransformationProperty(javaHasAnnotations, cls);
         } else {
             property = new Property(helper);
@@ -1559,7 +1562,9 @@ public class AnnotationsProcessor {
         Property property = new Property(helper);
         org.eclipse.persistence.oxm.annotations.XmlTransformation transformationAnnotation = (org.eclipse.persistence.oxm.annotations.XmlTransformation)helper.getAnnotation(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlTransformation.class);
         XmlTransformation transformation = new XmlTransformation();
-        transformation.setOptional(transformationAnnotation.optional());
+        if(transformationAnnotation != null) {
+            transformation.setOptional(transformationAnnotation.optional());
+        }
         
         //Read Transformer
         org.eclipse.persistence.oxm.annotations.XmlReadTransformer readTransformer = (org.eclipse.persistence.oxm.annotations.XmlReadTransformer)helper.getAnnotation(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlReadTransformer.class);
