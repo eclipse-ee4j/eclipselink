@@ -52,14 +52,14 @@ START_DATE=`date '+%y%m%d-%H%M'`
 DEFAULT_PREVREV=5400
 DEFAULT_PREVCOMMIT=5401
 #Directories
-HOME_DIR=/shared/rt/eclipselink
-JAVA_HOME=/usr/lib/jvm/java-6-sun
+HOME_DIR=/shared/rt/eclipselink/oracle
+JAVA_HOME=/shared/common/jdk1.6.0_21
 ANT_HOME=/usr/share/ant
 LOG_DIR=${HOME_DIR}/logs
 ORACLE_ROOT=foundation/org.eclipse.persistence.oracle
 ORACLE_CI_DIR=foundation/plugins
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
-BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
+BLD_DEPS_DIR=./bld_deps/${BRANCH_NM}
 #URLs
 HOME_URL=svnroot/rt/org.eclipse.persistence
 BRANCH_URL=${HOME_URL}/${BRANCH}trunk
@@ -162,16 +162,16 @@ then
     echo "Need to create BLD_DEPS_DIR (${BLD_DEPS_DIR})"
     CreatePath ${BLD_DEPS_DIR}
 fi
-if [ ! -f $JDBC_LOGIN_INFO_FILE ]
-then
-    echo "No db Login info available!"
-    exit
-else
-    DB_USER=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f1`
-    DB_PWD=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f2`
-    DB_URL=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f3`
-    DB_NAME=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f4`
-fi
+#if [ ! -f $JDBC_LOGIN_INFO_FILE ]
+#then
+#    echo "No db Login info available!"
+#    exit
+#else
+#    DB_USER=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f1`
+#    DB_PWD=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f2`
+#    DB_URL=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f3`
+#    DB_NAME=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f4`
+#fi
 
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
 ANT_ARGS=" "
@@ -194,11 +194,11 @@ fi
 if [ "${PREV_REV}" = "" ]; then PREV_REV=${DEFAULT_PREVREV}; fi
 if [ "${PREV_COMMIT}" = "" ]; then PREV_COMMIT=${DEFAULT_PREVCOMMIT}; fi
 # Test to make sure noone else checked in a new version of the oracle jars independant of this process
-svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
+svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE}
 PREV_COMMIT=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
 echo "    previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
 echo "    previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'"
-svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} > ${TEMP_FILE} 
+svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} > ${TEMP_FILE}
 CURRENT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
 echo "    curProjRev: '${CURRENT_REV}'" >> ${DATED_LOG}
 echo "    curProjRev: '${CURRENT_REV}'"
@@ -231,7 +231,7 @@ then
     echo "Build completed."
     echo "Updating Revision info..." >> ${DATED_LOG}
     echo "Updating Revision info..."
-    svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
+    svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE}
     COMMIT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
     echo "    Commit revisions (New:Prev): '${COMMIT_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
     echo "    Commit revisions (New:Prev): '${COMMIT_REV}:${PREV_COMMIT}'"
@@ -307,7 +307,7 @@ then
         MAIL_SUBJECT="${BRANCH_NM} Oracle Extension Nightly build failed!"
         MAILLIST=${FAIL_MAILLIST}
     fi
-    
+
     ## Build Body text of email
     ##
     if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
@@ -318,6 +318,10 @@ then
     echo "-----------------------------------" >> ${MAILBODY}
     if [ "${COMMIT}" = "true" ]; then
         echo "This build of Oracle Extension committed as Revision ${COMMIT_REV}" >> ${MAILBODY}
+        echo "-----------------------------------" >> ${MAILBODY}
+    else
+        MAIL_SUBJECT="${MAIL_SUBJECT} Commit Failed!"
+        echo "Commit FAILED for this build of Oracle Extension" >> ${MAILBODY}
         echo "-----------------------------------" >> ${MAILBODY}
     fi
     echo "" >> ${MAILBODY}

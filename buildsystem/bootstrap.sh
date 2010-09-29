@@ -8,7 +8,7 @@ LOCAL_REPOS=false
 MILESTONE=false
 RELEASE=false
 TEST=false
-RHB=false
+ORACLEBLD=false
 UD2M=false
 TARGET=$1
 BRANCH=$2
@@ -23,13 +23,13 @@ then
 else
     TARG_NM="default"
 fi
-if [ "${TARGET}" = "redhat" ]
+if [ "${TARGET}" = "oraclebld" ]
 then
-    RHB=true
+    ORACLEBLD=true
     if [ ! "${BRANCH}" = "" ]
     then
         TARGET=${BRANCH}
-        BRANCH=
+        BRANCH=$3
         TARG_NM=${TARGET}
     else
         TARG_NM="default"
@@ -109,10 +109,8 @@ if [ ! "${BRANCH}" = "" ]
 then
     BRANCH_NM=${BRANCH}
     BRANCH=branches/${BRANCH}/
-    JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
 else
     BRANCH_NM="trunk"
-    JAVA_HOME=/shared/rt/eclipselink/sapjvm_6
 fi
 
 echo "Target     ='${TARGET}'"
@@ -120,14 +118,14 @@ echo "Target name='${TARG_NM}'"
 echo "Branch     ='${BRANCH}'"
 echo "Branch name='${BRANCH_NM}'"
 
-SVN_EXEC=`which svn`
-if [ $? -ne 0 ]
+SVN_EXEC=/usr/local/bin/svn
+if [ ! -x ${SVN_EXEC} ]
 then
-    echo "Cannot autofind svn executable. Using default value."
-    SVN_EXEC=/usr/local/bin/svn
-    if [ ! -f ${SVN_EXEC} ]
+    echo "Cannot find svn executable using default value. Attempting Autofind..."
+    SVN_EXEC=`which svn`
+    if [ $? -ne 0 ]
     then
-        echo "Error finding svn install!"
+        echo "Error: Unable to find SVN client install!"
         exit 1
     fi
 fi
@@ -142,15 +140,29 @@ tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 echo "results stored in: '${tmp}'"
 
 #Define common variables
+START_DATE=`date '+%y%m%d-%H%M'`
+#Directories
 HOME_DIR=/shared/rt/eclipselink
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
-JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
-ANT_HOME=/shared/common/apache-ant-1.7.0
+if [ "${ORACLEBLD}" = "true" ]
+then
+    JAVA_HOME=/shared/common/jdk1.6.0_21
+    ANT_HOME=/usr/share/ant
+else
+    # Conditional to allow single branch testing of jdk and ant env
+    if [ ! "${BRANCH}" = "" ]
+    then
+        JAVA_HOME=/shared/common/jdk-1.6.x86_64
+    else
+        JAVA_HOME=/shared/common/jdk-1.6.x86_64
+    fi
+    ANT_HOME=/shared/common/apache-ant-1.7.0
+fi
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
 BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
-START_DATE=`date '+%y%m%d-%H%M'`
+#Files
 LOGFILE_NAME=bsb-${BRANCH_NM}_${TARG_NM}_${START_DATE}.log
 DATED_LOG=${LOG_DIR}/${LOGFILE_NAME}
 JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db-${BRANCH_NM}.dat
@@ -165,6 +177,12 @@ OLD_CLASSPATH=${CLASSPATH}
 CLASSPATH=${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar:${MAILLIB_DIR}/mail.jar:${MAILLIB_DIR}/activation.jar:${MAVENANT_DIR}/maven-ant-tasks-2.0.8.jar
 
 #------- Subroutines -------#
+unset Usage
+Usage() {
+    echo "ERROR: Invalid usage detected!"
+    echo "USAGE: ./${PROGNAME} [target [target params] ..] [branch]"
+}
+
 unset CreatePath
 CreatePath() {
     #echo "Running CreateHome!"
@@ -375,13 +393,22 @@ then
     ANT_BASEARG="${ANT_BASEARG} -D_LocalRepos=1"
 fi
 
-if [ "${RHB}" = "true" ]
+#Depends upon a valid putty install and config for "eclipse-dev"
+if [ "${ORACLEBLD}" = "true" ]
 then
     #Only needed for dev behind firewall
-    ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com ${ANT_OPTS}"
-    ANT_ARGS="-autoproxy"
-    ANT_BASEARG="${ANT_BASEARG} -D_RHB=1"
+    ANT_OPTS="${ANT_OPTS}"
+    ANT_BASEARG="${ANT_BASEARG} -Dsvn.server.name=eclipse-dev"
 fi
+
+## Save for future reference
+#if [ "${RHB}" = "true" ]
+#then
+#    #Only needed for dev behind firewall
+#    ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com ${ANT_OPTS}"
+#    ANT_ARGS="-autoproxy"
+#    ANT_BASEARG="${ANT_BASEARG} -D_RHB=1"
+#fi
 
 if [ "${TEST}" = "true" ]
 then
@@ -433,16 +460,26 @@ echo "Post-build Processing Starting..."
 ##
 MAIL_EXEC=/bin/mail
 MAILFROM=eric.gwin@oracle.com
-MAILLIST="ejgwin@gmail.com"
-SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
-FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
+if [ "${ORACLEBLD}" = "true" ]
+then
+    MAIL_EXEC=/usr/bin/mail
+    MAILLIST="ejgwin@gmail.com"
+    SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
+    FAIL_MAILLIST="peter.krogh@oracle.com david.twelves@oracle.com blaise.doughan@oracle.com tom.ware@oracle.com ejgwin@gmail.com"
+    FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
+else
+    MAIL_EXEC=/bin/mail
+    MAILLIST="ejgwin@gmail.com"
+    SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
+    FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
+    FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
+fi
 PARSE_RESULT_FILE=${tmp}/raw-summary.txt
 COMPILE_RESULT_FILE=${tmp}/compile-error-summary.txt
 SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
 TESTDATA_FILE=${tmp}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
 SVN_LOG_FILE=${tmp}/svnlog-${BRANCH_NM}_${TARG_NM}.txt
 MAILBODY=${tmp}/mailbody-${BRANCH_NM}_${TARG_NM}.txt
-FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
 BUILD_FAILED="false"
 TESTS_FAILED="false"
 
@@ -557,7 +594,7 @@ then
     if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
     echo "Build summary for ${BUILD_STR}" > ${MAILBODY}
     echo "-----------------------------------" >> ${MAILBODY}
-    echo "Non-critical compilation issues (if any) repoted in" >> ${MAILBODY}
+    echo "Non-critical compilation issues (if any) reported in" >> ${MAILBODY}
     echo "the format [BUILDLOG_LINE#: NUMBER_OF_ERRORS]:" >> ${MAILBODY}
     cat ${COMPILE_RESULT_FILE} >> ${MAILBODY}
     echo "-----------------------------------" >> ${MAILBODY}
