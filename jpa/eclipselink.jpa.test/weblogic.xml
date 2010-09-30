@@ -106,6 +106,7 @@
             dir="${weblogic.domain}" host="${weblogic.host}" generateConfig="true" verbose="true"
             username="${server.user}" password="${server.pwd}" action="start">
             <classpath>
+                <pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/>
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
                 <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
             </classpath>
