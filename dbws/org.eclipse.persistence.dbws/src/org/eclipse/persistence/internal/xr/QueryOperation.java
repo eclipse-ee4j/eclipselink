@@ -33,6 +33,7 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
 
 // EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
@@ -41,10 +42,13 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatModel;
 import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -343,15 +347,49 @@ public class QueryOperation extends Operation {
                     }
                     return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
                 }
-                // handle primitive types
-                if (resultType != null && resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
-                    ValueObject vo = new ValueObject();
-                    vo.value = value;
-                    value = vo;
+                if (resultType != null) {
+                	if (resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
+                        // handle primitive types
+                        ValueObject vo = new ValueObject();
+                        vo.value = value;
+                        value = vo;
+                	}
+                	else if (xrService.descriptorsByQName.containsKey(resultType)) {
+                		XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
+                		ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(
+                			xdesc.getAlias());
+                		Object targetObject = null;
+                		if (isCollection()) {
+                			XRDynamicEntity_CollectionWrapper xrCollWrapper = 
+                				new XRDynamicEntity_CollectionWrapper();
+                			Vector<AbstractRecord> results = (Vector<AbstractRecord>)value;
+                			for (int i = 0, len = results.size(); i < len; i++) {
+                				Object o = desc.getObjectBuilder().buildNewInstance();
+                    			populateTargetObjectFromRecord(desc.getMappings(),
+                    				results.get(i), o, (AbstractSession)xrService.getORSession());
+                    			xrCollWrapper.add(o);
+                			}
+                			targetObject = xrCollWrapper;
+                		}
+                		else {
+                			targetObject = desc.getObjectBuilder().buildNewInstance();
+                			populateTargetObjectFromRecord(desc.getMappings(),
+                				(AbstractRecord)((Vector)value).get(0), targetObject,
+                					(AbstractSession)xrService.getORSession());
+                		}
+            			return targetObject;
+                	}
                 }
             }
         }
         return value;
+    }
+    
+    protected void populateTargetObjectFromRecord(Vector<DatabaseMapping> mappings,
+    	AbstractRecord record, Object targetObject, AbstractSession session) {
+		for (DatabaseMapping dm : mappings) {
+			dm.readFromRowIntoObject(record, null, targetObject, null, session);
+		}
     }
 
     public Object createSimpleXMLFormat(XRServiceAdapter xrService, Object value) {

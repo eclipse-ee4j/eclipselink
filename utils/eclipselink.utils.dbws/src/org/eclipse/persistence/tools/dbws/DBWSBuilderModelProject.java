@@ -360,6 +360,12 @@ public class DBWSBuilderModelProject extends Project {
         textMapping.setIsCDATA(true);
         descriptor.addMapping(textMapping);
 
+        XMLDirectMapping secondaryTextMapping = new XMLDirectMapping();
+        secondaryTextMapping.setAttributeName("secondarySqlText");
+        secondaryTextMapping.setXPath("secondary-text/text()");
+        secondaryTextMapping.setIsCDATA(true);
+        descriptor.addMapping(secondaryTextMapping);
+
         XMLCompositeCollectionMapping bindingsMapping = new XMLCompositeCollectionMapping();
         bindingsMapping.setAttributeName("bindings");
         bindingsMapping.setReferenceClass(BindingModel.class);

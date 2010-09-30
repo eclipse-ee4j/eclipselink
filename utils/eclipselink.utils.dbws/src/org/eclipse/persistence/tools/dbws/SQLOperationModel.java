@@ -35,6 +35,7 @@ import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 public class SQLOperationModel extends OperationModel {
 
     protected String sqlText;
+    protected String secondarySqlText;
     protected ArrayList<BindingModel> bindings = new ArrayList<BindingModel>();
 
     public SQLOperationModel() {
@@ -48,7 +49,22 @@ public class SQLOperationModel extends OperationModel {
         this.sqlText = sqlText;
     }
 
-    public void addBinding(BindingModel binding) {
+    public String getSecondarySqlText() {
+		return secondarySqlText;
+	}
+	public void setSecondarySqlText(String secondarySqlText) {
+		if (secondarySqlText != null && secondarySqlText.length() > 0) {
+			this.secondarySqlText = secondarySqlText;
+			setIsSimpleXMLFormat(false);
+		}
+		else {
+			// clears secondary SQL string; back to simple XML
+			this.secondarySqlText = null;
+			setIsSimpleXMLFormat(true);
+		}
+	}
+	
+	public void addBinding(BindingModel binding) {
         bindings.add(binding);
     }
 
@@ -63,6 +79,14 @@ public class SQLOperationModel extends OperationModel {
     public boolean isSQLOperation() {
         return true;
     }
+
+    public boolean hasSecondarySql() {
+    	if (secondarySqlText != null && secondarySqlText.length() > 0) {
+    		return true;
+    	}
+    	return false;
+	}
+    
     @Override
     public void buildOperation(DBWSBuilder builder) {
 

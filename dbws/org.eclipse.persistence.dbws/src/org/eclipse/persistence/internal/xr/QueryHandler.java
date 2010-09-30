@@ -68,7 +68,9 @@ public abstract class QueryHandler {
         if (queryOperation.hasResponse()) {
             QName type = queryOperation.getResult().getType();
             if (queryOperation.isCollection()) {
-                if (queryOperation.isSimpleXMLFormat()) {
+                if (queryOperation.isSimpleXMLFormat() ||
+                    (xrService.descriptorsByQName.containsKey(type) && 
+                    xrService.descriptorsByQName.get(type).isAggregateDescriptor())){
                     // data-read query
                     databaseQueryToInitialize = new DataReadQuery();
                 }
@@ -85,7 +87,9 @@ public abstract class QueryHandler {
                 }
             }
             else {
-                if (queryOperation.isSimpleXMLFormat()) {
+                if (queryOperation.isSimpleXMLFormat() ||
+                	(xrService.descriptorsByQName.containsKey(type) && 
+                	 xrService.descriptorsByQName.get(type).isAggregateDescriptor())){
                     // data-read query
                     databaseQueryToInitialize = new DataReadQuery();
                 }
