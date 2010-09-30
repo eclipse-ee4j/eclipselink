@@ -1202,6 +1202,9 @@ public class QueryHintsHandler {
                     }
                     expression = expression.get(token);
                     previousToken = token;
+                    if (mapping != null){
+                        descriptor = mapping.getReferenceDescriptor();
+                    }
                 }
                 objectQuery.addBatchReadAttribute(expression);
             } else {

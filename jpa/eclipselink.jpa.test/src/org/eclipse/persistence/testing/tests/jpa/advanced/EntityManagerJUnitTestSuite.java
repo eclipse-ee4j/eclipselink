@@ -314,8 +314,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testCollectionAddNewObjectUpdate"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMCloseAndOpen"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMFactoryCloseAndOpen"));
-
-        suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommit"));
+         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommit"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommitProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testForUOWInSharedCacheWithBatchQueryHint"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnFlushProperties"));
@@ -335,7 +334,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushClearQueryPk"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushClearQueryNonPK"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEmployee"));
+
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteMan"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNestedBatchQueryHint"));
         if (!isJPA10()) {
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachNull"));
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachRemovedObject"));
@@ -347,7 +348,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachManagedObject"));
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachNonManagedObject"));
             suite.addTest(new EntityManagerJUnitTestSuite("testCascadeDetach"));
-
             suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLock"));
             suite.addTest(new EntityManagerJUnitTestSuite("testGetLockModeType"));
             suite.addTest(new EntityManagerJUnitTestSuite("testGetEntityManagerFactory"));
@@ -9678,7 +9678,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         rollbackTransaction(em);
     }
     
-
-
+    // Bug 320254 - Ensure we do not get an exception when using a batch hint that navigates through more than one descriptor
+    public void testNestedBatchQueryHint(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Department dept = new Department();
+        dept.setName("Parents");
+        Employee emp = new Employee();
+        emp.setFirstName("Dave");
+        emp.setLastName("Daddy");
+        dept.setDepartmentHead(emp);
+        emp.setDepartment(dept);
+        PhoneNumber pn = new PhoneNumber();
+        pn.setNumber("1234567");
+        pn.setAreaCode("613");
+        pn.setType("Home");
+        emp.addPhoneNumber(pn);
+        em.persist(emp);
+        em.persist(dept);
+        em.persist(pn);
+        em.flush();
+        em.clear();
+        clearCache();
+        
+        List results = em.createQuery("select d from ADV_DEPT d").setHint(QueryHints.FETCH, "d.departmentHead").setHint(QueryHints.BATCH, "d.departmentHead.phoneNumbers").getResultList();
+        assertTrue("Wrong results returned.", results.size() == 1);
+        
+        dept = (Department)results.get(0);
+        dept.getDepartmentHead().getPhoneNumbers().hashCode();
+        rollbackTransaction(em);
+    }
 }
 
