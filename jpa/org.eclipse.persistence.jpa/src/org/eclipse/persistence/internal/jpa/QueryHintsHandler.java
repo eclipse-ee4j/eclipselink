@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     07/13/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     corteggiano, Frank Schwarz, Tom Ware - Fix for bug Bug 320254 - EL 2.1.0 JPA: Query with hint eclipselink.batch 
+ *              and org.eclipse.persistence.exceptions.QueryException.queryHintNavigatedNonExistantRelationship 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
