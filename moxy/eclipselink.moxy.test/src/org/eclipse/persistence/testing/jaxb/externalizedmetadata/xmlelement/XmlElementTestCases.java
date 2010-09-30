@@ -18,11 +18,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 
 /**
@@ -45,12 +49,7 @@ public class XmlElementTestCases extends ExternalizedMetadataTestCases {
         outputResolver = new MySchemaOutputResolver();
     }
     
-    /**
-     * Tests @XmlElement override via eclipselink-oxm.xml.  
-     * 
-     * Positive test.
-     */
-    public void testXmlElementOverride() {
+    private void doGenerateSchema() {
         if (shouldGenerateSchema) {
             outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
             // validate schema
@@ -58,6 +57,15 @@ public class XmlElementTestCases extends ExternalizedMetadataTestCases {
             compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
             shouldGenerateSchema = false;
         }
+    }
+    
+    /**
+     * Tests @XmlElement override via eclipselink-oxm.xml.  
+     * 
+     * Positive test.
+     */
+    public void testXmlElementOverride() {
+        doGenerateSchema();
         String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
@@ -71,13 +79,7 @@ public class XmlElementTestCases extends ExternalizedMetadataTestCases {
      * Negative test.
      */
     public void testXmlElementOverrideInvalid() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
-            // validate schema
-            String controlSchema = PATH + "schema.xsd";
-            compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-            shouldGenerateSchema = false;
-        }
+        doGenerateSchema();
         String src = PATH + "employee-invalid.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation passed unxepectedly", result != null);
@@ -105,5 +107,20 @@ public class XmlElementTestCases extends ExternalizedMetadataTestCases {
         } catch (JAXBException e) {
             fail("An exception occurred creating the JAXBContext: " + e.getMessage());
         }
+    }
+    
+    /**
+     * Test setting the container class via container-type attribute.
+     * 
+     * Positive test.
+     */
+    public void testContainerType() {
+        doGenerateSchema();
+        XMLDescriptor xDesc = getJAXBContext().getXMLContext().getDescriptor(new QName("employee"));
+        assertNotNull("No descriptor was generated for Employee.", xDesc);
+        DatabaseMapping mapping = xDesc.getMappingForAttributeName("myEmployees");
+        assertNotNull("No mapping exists on Employee for attribute [myEmployees].", mapping);
+        assertTrue("Expected an XMLCompositeCollectionMapping for attribute [myEmployees], but was [" + mapping.toString() +"].", mapping instanceof XMLCompositeCollectionMapping);
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCompositeCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCompositeCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 }

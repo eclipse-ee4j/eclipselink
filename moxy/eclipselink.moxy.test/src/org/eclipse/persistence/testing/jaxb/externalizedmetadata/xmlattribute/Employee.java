@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -25,4 +27,6 @@ public class Employee {
 
     @XmlAttribute(required=false)
     public int id;
+    
+    public Object things;
 }

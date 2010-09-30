@@ -138,6 +138,7 @@ public class MappingsGenerator {
     private Helper helper;
     private JavaClass jotArrayList;
     private JavaClass jotHashSet;
+    private JavaClass jotHashMap;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
     private HashMap<String, TypeInfo> typeInfo;
     private HashMap<QName, Class> qNamesToGeneratedClasses;
@@ -156,6 +157,7 @@ public class MappingsGenerator {
         this.helper = helper;
         jotArrayList = helper.getJavaClass(ArrayList.class);
         jotHashSet = helper.getJavaClass(HashSet.class);
+        jotHashMap = helper.getJavaClass(HashMap.class);
         qNamesToGeneratedClasses = new HashMap<QName, Class>();
         qNamesToDeclaredClasses = new HashMap<QName, Class>();
         classToGeneratedClasses = new HashMap<String, Class>();
@@ -822,6 +824,15 @@ public class MappingsGenerator {
             mapping.setPreserveWhitespaceForMixedContent(true);
         }
         mapping.setUseXMLRoot(true);
+
+        JavaClass collectionType = property.getType();
+        if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+            collectionType = jotArrayList;
+        } else if (areEquals(collectionType, Set.class)) {
+            collectionType = jotHashSet;
+        }
+        mapping.useCollectionClass(helper.getClassForJavaClass(collectionType));
+        
         return mapping;
     }
 
@@ -1240,6 +1251,13 @@ public class MappingsGenerator {
         }
         mapping.setSchemaInstanceIncluded(false);
         mapping.setNamespaceDeclarationIncluded(false);
+
+        JavaClass mapType = property.getType();
+        if (areEquals(mapType, Map.class)) {
+            mapType = jotHashMap;
+        }
+        mapping.useMapClassName(mapType.getRawName());
+        
         return mapping;
     }
 
@@ -1669,7 +1687,6 @@ public class MappingsGenerator {
         } else if (areEquals(collectionType, Set.class)) {
             collectionType = jotHashSet;
         }
-
         mapping.useCollectionClassName(collectionType.getRawName());
 
         // if the XPath is set (via xml-path) use it; otherwise figure it out

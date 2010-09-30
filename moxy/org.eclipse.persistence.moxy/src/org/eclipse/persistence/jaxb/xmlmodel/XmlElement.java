@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="default-value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="nillable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="container-type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElement.DEFAULT" />
  *       &lt;attribute name="xml-id" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-idref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -100,6 +101,8 @@ public class XmlElement
     protected Boolean nillable;
     @XmlAttribute(name = "required")
     protected Boolean required;
+    @XmlAttribute(name = "container-type")
+    protected String containerType;
     @XmlAttribute(name = "type")
     protected String type;
     @XmlAttribute(name = "xml-id")
@@ -434,6 +437,34 @@ public class XmlElement
      */
     public void setRequired(Boolean value) {
         this.required = value;
+    }
+
+    /**
+     * Gets the value of the containerType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getContainerType() {
+        if (containerType == null) {
+            return "##default";
+        } else {
+            return containerType;
+        }
+    }
+
+    /**
+     * Sets the value of the containerType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setContainerType(String value) {
+        this.containerType = value;
     }
 
     /**

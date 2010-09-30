@@ -273,6 +273,7 @@
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-path" type="xs:string" />
+                    <xs:attribute name="container-type" type="xs:string" default="##default" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
@@ -300,6 +301,7 @@
                     <xs:attribute name="xml-mime-type" type="xs:string" />
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="container-type" type="xs:string" default="##default" />
                     <xs:attribute name="type" type="xs:string" default="##default" />
                     <xs:attribute name="xml-path" type="xs:string" />
                 </xs:extension>
@@ -321,6 +323,7 @@
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-path" type="xs:string" />
+                    <xs:attribute name="container-type" type="xs:string" default="##default" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
@@ -343,6 +346,7 @@
                     <xs:attribute name="default-value" type="xs:string" />
                     <xs:attribute name="nillable" type="xs:boolean" default="false" />
                     <xs:attribute name="required" type="xs:boolean" default="false" />
+                    <xs:attribute name="container-type" type="xs:string" default="##default" />
                     <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.XmlElement.DEFAULT" />
                     <xs:attribute name="xml-id" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-idref" type="xs:boolean" default="false" />
@@ -373,6 +377,7 @@
                     <xs:attribute name="xml-list" type="xs:boolean" default="false" />
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="container-type" type="xs:string" default="##default" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
@@ -439,6 +444,7 @@
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="type" type="xs:string" default="##default" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="container-type" type="xs:string" default="##default" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

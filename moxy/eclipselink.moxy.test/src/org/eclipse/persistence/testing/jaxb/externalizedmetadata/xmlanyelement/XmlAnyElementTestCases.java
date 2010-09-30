@@ -14,15 +14,18 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -41,6 +44,10 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
     private Class[] employeeWithListClassArray;
     private Employee ctrlEmp;
     private EmployeeWithList ctrlEmpWithList;
+    private JAXBContext empContext;
+    private JAXBContext empListContext;
+    private JAXBContext empAdapterContext;
+    private JAXBContext empAdapterListContext;
     
     /**
      * This is the preferred (and only) constructor.
@@ -49,6 +56,74 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      */
     public XmlAnyElementTestCases(String name) {
         super(name);
+    }
+    
+    /**
+     * Laxy load a context based on eclipselink-oxm.xml and
+     * the Employee class array
+     * 
+     * @return
+     */
+    private JAXBContext getEmpContext() {
+        if (empContext == null) {
+            try {
+                empContext = createContext(getEmployeeClassArray(), CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
+            } catch (JAXBException e) {
+                fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+            }
+        }
+        return empContext;
+    }
+    
+    /**
+     * Laxy load a context based on eclipselink-oxm-xml-list.xml 
+     * and the EmployeeWithList class array
+     * 
+     * @return
+     */
+    private JAXBContext getEmpListContext() {
+        if (empListContext == null) {
+            try {
+                empListContext = createContext(getEmployeeWithListClassArray(), CONTEXT_PATH, PATH + "eclipselink-oxm-xml-list.xml");
+            } catch (JAXBException e) {
+                fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+            }
+        }
+        return empListContext;
+    }
+
+    /**
+     * Laxy load a context based on eclipselink-oxm-xml-adapter.xml
+     * and the Employee class array
+     * 
+     * @return
+     */
+    private JAXBContext getEmpAdapterContext() {
+        if (empAdapterContext == null) {
+            try {
+                empAdapterContext = createContext(getEmployeeClassArray(), CONTEXT_PATH, PATH + "eclipselink-oxm-xml-adapter.xml");
+            } catch (JAXBException e) {
+                fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+            }
+        }
+        return empAdapterContext;
+    }
+
+    /**
+     * Laxy load a context based on eclipselink-oxm-xml-adapter-list.xml 
+     * and the EmployeeWithList class array
+     * 
+     * @return
+     */
+    private JAXBContext getEmpAdapterListContext() {
+        if (empAdapterListContext == null) {
+            try {
+                empAdapterListContext = createContext(getEmployeeWithListClassArray(), CONTEXT_PATH, PATH + "eclipselink-oxm-xml-adapter-list.xml");
+            } catch (JAXBException e) {
+                fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+            }
+        }
+        return empAdapterListContext;
     }
 
     /**
@@ -165,17 +240,8 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testSchemaGeneration() {
-        String metadataFile = PATH + "eclipselink-oxm-xml-list.xml";
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(getEmployeeWithListClassArray(), CONTEXT_PATH, metadataFile);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
-        }
-
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-        jCtx.generateSchema(outputResolver);
+        getEmpListContext().generateSchema(outputResolver);
         
         // validate schema
         String controlSchema = PATH + "schema.xsd";
@@ -227,17 +293,8 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlAnyElementUnmarshal() {
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
-        }
-
         // test unmarshal
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Unmarshaller unmarshaller = getEmpContext().createUnmarshaller();
         try {
             String src = PATH + "employee-default-ns.xml";
             Employee emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
@@ -257,19 +314,10 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlAnyElementMarshal() {
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
-        }
-
         Document testDoc = parser.newDocument();
         
         // test marshal
-        Marshaller marshaller = jCtx.createMarshaller();
+        Marshaller marshaller = getEmpContext().createMarshaller();
         try {
             marshaller.marshal(getControlEmployee(), testDoc);
             String src = PATH + "employee-default-ns.xml";
@@ -333,15 +381,6 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testLaxFalse() {
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
-        }
-    	
         // setup the control Employee
         Element empElt = null;
         try {
@@ -362,7 +401,7 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
         ctrlEmp.stuff = empElt;
 
         // test unmarshal
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Unmarshaller unmarshaller = getEmpContext().createUnmarshaller();
         try {
             String src = PATH + "employee-with-employee.xml";
             Employee emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
@@ -380,16 +419,7 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlAdapterMarshalSingle() {
-        String metadataFile = PATH + "eclipselink-oxm-xml-adapter.xml";
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
-        }
-
-        Marshaller marshaller = jCtx.createMarshaller();
+        Marshaller marshaller = getEmpAdapterContext().createMarshaller();
         try {
             Document testDoc = parser.newDocument();
             marshaller.marshal(getControlEmployeeForAdapterTests(), testDoc);
@@ -414,16 +444,7 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlAdapterUnmarshalSingle() {
-        String metadataFile = PATH + "eclipselink-oxm-xml-adapter.xml";
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
-        }
-
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Unmarshaller unmarshaller = getEmpAdapterContext().createUnmarshaller();
         try {
             String src = PATH + "employee-default-ns.xml";
             Employee testEmp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
@@ -441,16 +462,7 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlAdapterMarshalCollection() {
-        String metadataFile = PATH + "eclipselink-oxm-xml-adapter-list.xml";
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(getEmployeeWithListClassArray(), CONTEXT_PATH, metadataFile);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
-        }
-
-        Marshaller marshaller = jCtx.createMarshaller();
+        Marshaller marshaller = getEmpAdapterListContext().createMarshaller();
         try {
             Document testDoc = parser.newDocument();
             marshaller.marshal(getControlEmployeeWithListForAdapterTests(), testDoc);
@@ -476,16 +488,7 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlAdapterUnmarshalCollection() {
-        String metadataFile = PATH + "eclipselink-oxm-xml-adapter-list.xml";
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(getEmployeeWithListClassArray(), CONTEXT_PATH, metadataFile);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
-        }
-        
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Unmarshaller unmarshaller = getEmpAdapterListContext().createUnmarshaller();
         try {
             String src = PATH + "employee-with-list.xml";
             EmployeeWithList testEmp = (EmployeeWithList) unmarshaller.unmarshal(getControlDocument(src));
@@ -495,5 +498,19 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
             e.printStackTrace();
             fail("An unexpected exception occurred unmarshalling the document: " + e.getMessage());
         }
+    }
+    
+    /**
+     * Test setting the container class via container-type attribute.
+     * 
+     * Positive test.
+     */
+    public void testContainerType() {
+        XMLDescriptor xDesc = getEmpListContext().getXMLContext().getDescriptor(new QName("employee"));
+        assertNotNull("No descriptor was generated for EmployeeWithList.", xDesc);
+        DatabaseMapping mapping = xDesc.getMappingForAttributeName("stuff");
+        assertNotNull("No mapping exists on EmployeeWithList for attribute [stuff].", mapping);
+        assertTrue("Expected an XMLAnyCollectionMapping for attribute [stuff], but was [" + mapping.toString() +"].", mapping instanceof XMLAnyCollectionMapping);
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLAnyCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLAnyCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 }

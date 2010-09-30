@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="read-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="write-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="container-type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -70,6 +71,8 @@ public class XmlValue
     protected String type;
     @XmlAttribute(name = "write-only")
     protected Boolean writeOnly;
+    @XmlAttribute(name = "container-type")
+    protected String containerType;
 
     /**
      * Gets the value of the xmlAbstractNullPolicy property.
@@ -282,5 +285,33 @@ public class XmlValue
      */
     public void setType(String value) {
         this.type = value;
+    }
+
+    /**
+     * Gets the value of the containerType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getContainerType() {
+        if (containerType == null) {
+            return "##default";
+        } else {
+            return containerType;
+        }
+    }
+
+    /**
+     * Sets the value of the containerType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setContainerType(String value) {
+        this.containerType = value;
     }
 }

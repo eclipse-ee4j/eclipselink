@@ -19,6 +19,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -30,6 +35,7 @@ public class XmlAnyAttributeTestCases extends ExternalizedMetadataTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribute";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyattribute/";
     public static final String RETURN_STRING = "Giggity";
+    JAXBContext jCtx;
     
     /**
      * This is the preferred (and only) constructor.
@@ -38,6 +44,20 @@ public class XmlAnyAttributeTestCases extends ExternalizedMetadataTestCases {
      */
     public XmlAnyAttributeTestCases(String name) {
         super(name);
+    }
+    
+    /**
+     * The JAXBContext to be used for these tests is created here.
+     * 
+     */
+    public void setUp() throws Exception {
+        super.setUp();
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
+        } catch (JAXBException e) {
+            //e.printStackTrace();
+            fail("JAXBContext creation failed unexpectedly.");
+        }
     }
 
     /**
@@ -51,7 +71,9 @@ public class XmlAnyAttributeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlAnyAttributeSchemaGen() {
         // generate schema
-        MySchemaOutputResolver outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver(); 
+        jCtx.generateSchema(outputResolver);
+        
         // validate schema
         String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -69,10 +91,6 @@ public class XmlAnyAttributeTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlAnyAttributeUnmarshalThenMarshal() {
-    	
-    	Class[] classesToProcess = new Class[] { Employee.class };
-        MySchemaOutputResolver outputResolver = generateSchema(classesToProcess, CONTEXT_PATH , PATH, 1);
-  
         // setup control Employee
         Employee ctrlEmp = new Employee();
         ctrlEmp.a = 1;
@@ -83,7 +101,7 @@ public class XmlAnyAttributeTestCases extends ExternalizedMetadataTestCases {
 
         // test unmarshal
         Employee emp = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
         try {
             String src = PATH + "employee.xml";
             emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
@@ -106,7 +124,7 @@ public class XmlAnyAttributeTestCases extends ExternalizedMetadataTestCases {
         Document testDoc = parser.newDocument();
         
         // test marshal
-        Marshaller marshaller = jaxbContext.createMarshaller();
+        Marshaller marshaller = jCtx.createMarshaller();
         try {
             marshaller.marshal(ctrlEmp, testDoc);
             assertTrue("The Employee did not marshal correctly - document comparison failed: ", compareDocuments(ctrlDoc, testDoc));
@@ -114,5 +132,19 @@ public class XmlAnyAttributeTestCases extends ExternalizedMetadataTestCases {
             e.printStackTrace();
             fail("An unexpected exception occurred marshalling the Employee.");
         }
+    }
+
+    /**
+     * Test setting the map class via container-type attribute.
+     * 
+     * Positive test.
+     */
+    public void testContainerType() {
+        XMLDescriptor xDesc = jCtx.getXMLContext().getDescriptor(new QName("employee"));
+        assertNotNull("No descriptor was generated for Employee.", xDesc);
+        DatabaseMapping mapping = xDesc.getMappingForAttributeName("stuff");
+        assertNotNull("No mapping exists on Employee for attribute [stuff].", mapping);
+        assertTrue("Expected an XMLAnyAttributeMapping for attribute [stuff], but was [" + mapping.toString() +"].", mapping instanceof XMLAnyAttributeMapping);
+        assertTrue("Expected map class [java.util.LinkedHashMap] but was ["+((XMLAnyAttributeMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLAnyAttributeMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedHashMap"));
     }
 }

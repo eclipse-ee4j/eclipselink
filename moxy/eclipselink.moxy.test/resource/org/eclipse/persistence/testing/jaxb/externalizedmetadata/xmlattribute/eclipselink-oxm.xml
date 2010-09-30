@@ -6,6 +6,7 @@
                 <xml-attribute java-attribute="firstName" name="fname" type="java.lang.String" />
                 <xml-attribute java-attribute="lastName" name="lname" />
                 <xml-attribute java-attribute="id" required="true" />
+                <xml-attribute java-attribute="things" type="java.lang.String" container-type="java.util.LinkedList" />
             </java-attributes>
 		</java-type>
 	</java-types>

@@ -4,7 +4,7 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.Foo">
             <xml-root-element name="foo"/>
             <java-attributes>
-                <xml-elements java-attribute="items">
+                <xml-elements java-attribute="items" container-type="java.util.LinkedList">
                     <xml-element java-attribute="A" type="java.lang.Integer" />
                     <xml-element java-attribute="B" type="java.lang.Float" />
                 </xml-elements>

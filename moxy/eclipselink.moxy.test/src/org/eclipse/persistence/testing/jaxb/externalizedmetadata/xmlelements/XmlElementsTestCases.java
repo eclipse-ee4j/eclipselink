@@ -20,12 +20,17 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.CDNPricesNoAnnotation;
 import org.w3c.dom.Document;
 
 /**
@@ -212,5 +217,25 @@ public class XmlElementsTestCases extends ExternalizedMetadataTestCases {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
+    }
+    
+    /**
+     * Test setting the container class via container-type attribute.
+     * 
+     * Positive test.
+     */
+    public void testContainerType() {
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Foo.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
+        } catch (JAXBException e) {
+            fail("JAXBContext creation failed.");
+        }
+        XMLDescriptor xDesc = jCtx.getXMLContext().getDescriptor(new QName("foo"));
+        assertNotNull("No descriptor was generated for Foo.", xDesc);
+        DatabaseMapping mapping = xDesc.getMappingForAttributeName("items");
+        assertNotNull("No mapping exists on Foo for attribute [items].", mapping);
+        assertTrue("Expected an XMLChoiceCollectionMapping for attribute [items], but was [" + mapping.toString() +"].", mapping instanceof XMLChoiceCollectionMapping);
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLChoiceCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLChoiceCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 }

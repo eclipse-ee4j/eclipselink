@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="read-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="write-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-path" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="container-type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -61,6 +62,8 @@ public class XmlAnyAttribute
     protected Boolean writeOnly;
     @XmlAttribute(name = "xml-path")
     protected String xmlPath;
+    @XmlAttribute(name = "container-type")
+    protected String containerType;
 
     /**
      * Gets the value of the xmlAccessMethods property.
@@ -206,6 +209,34 @@ public class XmlAnyAttribute
      */
     public void setXmlPath(String value) {
         this.xmlPath = value;
+    }
+
+    /**
+     * Gets the value of the containerType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getContainerType() {
+        if (containerType == null) {
+            return "##default";
+        } else {
+            return containerType;
+        }
+    }
+
+    /**
+     * Sets the value of the containerType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setContainerType(String value) {
+        this.containerType = value;
     }
 
 }

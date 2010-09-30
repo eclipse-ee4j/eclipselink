@@ -17,10 +17,16 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 
 /**
@@ -173,5 +179,25 @@ public class XmlValueTestCases extends ExternalizedMetadataTestCases {
         }
         
         assertTrue("The expected exception was not thrown", exceptionOccurred);
+    }
+    
+    /**
+     * Test setting the container class via container-type attribute.
+     * 
+     * Positive test.
+     */
+    public void testContainerType() {
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { CDNPricesNoAnnotation.class }, CONTEXT_PATH, PATH + "eclipselink-oxm-cdnprices.xml");
+        } catch (JAXBException e) {
+            fail("JAXBContext creation failed.");
+        }
+        XMLDescriptor xDesc = jCtx.getXMLContext().getDescriptor(new QName("canadian-price"));
+        assertNotNull("No descriptor was generated for CDNPricesNoAnnotation.", xDesc);
+        DatabaseMapping mapping = xDesc.getMappingForAttributeName("prices");
+        assertNotNull("No mapping exists on CDNPricesNoAnnotation for attribute [prices].", mapping);
+        assertTrue("Expected an XMLCompositeDirectCollectionMapping for attribute [prices], but was [" + mapping.toString() +"].", mapping instanceof XMLCompositeDirectCollectionMapping);
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 }

@@ -13,5 +13,5 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue;
 
 public class CDNPricesNoAnnotation {
-    public java.math.BigDecimal[] prices;
+    public java.util.List prices;
 }

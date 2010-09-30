@@ -4,7 +4,7 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.EmployeeWithList">
             <xml-root-element name="employee" />
             <java-attributes>
-                <xml-any-element java-attribute="stuff" />
+                <xml-any-element java-attribute="stuff" container-type="java.util.LinkedList" />
             </java-attributes>
 		</java-type>
 	</java-types>

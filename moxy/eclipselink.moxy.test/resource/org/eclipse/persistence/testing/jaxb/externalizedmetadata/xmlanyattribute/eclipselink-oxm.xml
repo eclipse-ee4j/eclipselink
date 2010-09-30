@@ -3,8 +3,8 @@
     <java-types>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribute.Employee">
             <java-attributes>
-                <xml-any-attribute java-attribute="stuff"/>
-                <xml-element java-attribute="stuffs" required="0"/>
+                <xml-any-attribute java-attribute="stuff" container-type="java.util.LinkedHashMap" />
+                <xml-element java-attribute="stuffs" required="false"/>
             </java-attributes>
         </java-type>
     </java-types>

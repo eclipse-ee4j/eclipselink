@@ -8,7 +8,7 @@
                 <xml-element java-attribute="id" required="false"/>
                 <xml-element java-attribute="myInt" default-value="99"/>
                 <xml-element java-attribute="myUtilDate" name="aUtilDate" namespace="http://www.example.com/utils" type="java.util.Date" required="true"/>
-                <xml-element java-attribute="myEmployees" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement.Employee"/>
+                <xml-element java-attribute="myEmployees" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement.Employee" container-type="java.util.LinkedList" />
             </java-attributes>
 		</java-type>
 	</java-types>

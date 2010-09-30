@@ -71,6 +71,7 @@ public class XMLProcessor {
     private static final String SELF = ".";
     private static final String OPEN_BRACKET =  "[";
     private static final String DEFAULT = "##default";
+    private static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
     /**
      * This is the preferred constructor.
@@ -481,6 +482,10 @@ public class XMLProcessor {
         if (xmlAnyAttribute.getXmlProperties() != null  && xmlAnyAttribute.getXmlProperties().getXmlProperty().size() > 0) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlAnyAttribute.getXmlProperties().getXmlProperty()));
         }
+        // check for container type
+        if (!xmlAnyAttribute.getContainerType().equals(DEFAULT)) {
+            setContainerType(oldProperty, xmlAnyAttribute.getContainerType());
+        }
         return oldProperty;
     }
 
@@ -530,6 +535,10 @@ public class XMLProcessor {
         // set user-defined properties
         if (xmlAnyElement.getXmlProperties() != null  && xmlAnyElement.getXmlProperties().getXmlProperty().size() > 0) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlAnyElement.getXmlProperties().getXmlProperty()));
+        }
+        // check for container type
+        if (!xmlAnyElement.getContainerType().equals(DEFAULT)) {
+            setContainerType(oldProperty, xmlAnyElement.getContainerType());
         }
         return oldProperty;
     }
@@ -615,10 +624,18 @@ public class XMLProcessor {
         }
         oldProperty.setSchemaName(qName);
 
+        // check for container type
+        if (!xmlAttribute.getContainerType().equals(DEFAULT)) {
+            setContainerType(oldProperty, xmlAttribute.getContainerType());
+        }
         // set type
         if (!xmlAttribute.getType().equals(DEFAULT)) {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlAttribute.getType());
-            oldProperty.setType(pType);
+            if (aProcessor.isCollectionType(oldProperty.getType())) {
+                oldProperty.setGenericType(pType);
+            } else {
+                oldProperty.setType(pType);
+            }
             oldProperty.setHasXmlElementType(true);
             // may need to generate a type info for the type
             if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
@@ -753,6 +770,10 @@ public class XMLProcessor {
         }
         oldProperty.setSchemaName(qName);
 
+        // check for container type
+        if (!xmlElement.getContainerType().equals(DEFAULT)) {
+            setContainerType(oldProperty, xmlElement.getContainerType());
+        }
         // set type
         if (xmlElement.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT")) {
             // if xmlElement has no type, and the property type was set via
@@ -857,13 +878,13 @@ public class XMLProcessor {
         if (mapKey != null && mapKey.getType() != null) {
             oldProperty.setKeyType(jModelInput.getJavaModel().getClass(mapKey.getType()));
         } else {
-            oldProperty.setKeyType(jModelInput.getJavaModel().getClass("java.lang.Object"));
+            oldProperty.setKeyType(jModelInput.getJavaModel().getClass(JAVA_LANG_OBJECT));
         }
 
         if (mapValue != null && mapValue.getType() != null) {
             oldProperty.setValueType(jModelInput.getJavaModel().getClass(mapValue.getType()));
         } else {
-            oldProperty.setValueType(jModelInput.getJavaModel().getClass("java.lang.Object"));
+            oldProperty.setValueType(jModelInput.getJavaModel().getClass(JAVA_LANG_OBJECT));
         }
 
         return oldProperty;
@@ -907,6 +928,10 @@ public class XMLProcessor {
         // set user-defined properties
         if (xmlElements.getXmlProperties() != null  && xmlElements.getXmlProperties().getXmlProperty().size() > 0) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlElements.getXmlProperties().getXmlProperty()));
+        }
+        // check for container type
+        if (!xmlElements.getContainerType().equals(DEFAULT)) {
+            setContainerType(oldProperty, xmlElements.getContainerType());
         }
         return oldProperty;
     }
@@ -984,10 +1009,18 @@ public class XMLProcessor {
             oldProperty.setGetMethodName(xmlValue.getXmlAccessMethods().getGetMethod());
             oldProperty.setSetMethodName(xmlValue.getXmlAccessMethods().getSetMethod());
         }
+        // check for container type
+        if (!xmlValue.getContainerType().equals(DEFAULT)) {
+            setContainerType(oldProperty, xmlValue.getContainerType());
+        }
         // set type
         if (!xmlValue.getType().equals(DEFAULT)) {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlValue.getType());
-            oldProperty.setType(pType);
+            if (aProcessor.isCollectionType(oldProperty.getType())) {
+                oldProperty.setGenericType(pType);
+            } else {
+                oldProperty.setType(pType);
+            }
             // may need to generate a type info for the type
             if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
@@ -1426,5 +1459,23 @@ public class XMLProcessor {
             propMap.put(prop.getName(), pvalue);
         }
         return propMap;
+    }
+
+    /**
+     * Convenience method for setting the container class on a given property.
+     * The generic type will be overwritten, and could be incorrect after
+     * doing so, so the original generic type will be retrieved and set after
+     * the call to set the container type.
+     * 
+     * @param property
+     * @param containerClassName
+     */
+    private void setContainerType(Property property, String containerClassName) {
+        // store the original generic type as the call to setType will overwrite it
+        JavaClass genericType = property.getGenericType();
+        // set the type to the container-type value
+        property.setType(jModelInput.getJavaModel().getClass(containerClassName));
+        // set the original generic type
+        property.setGenericType(genericType);
     }
 }
