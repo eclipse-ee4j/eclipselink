@@ -708,7 +708,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         String projectName = getProjectName();
         orProject = new Project();
         orProject.setName(projectName + "-" + DBWS_OR_LABEL);
-        if (dbTables.isEmpty()) {
+        if (dbTables.isEmpty() && !hasSecondarySqlOperations()) {
             logMessage(FINEST, "No tables specified");
             oxProject = new SimpleXMLFormatProject();
         }
@@ -717,141 +717,27 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         oxProject.setName(projectName + "-" + DBWS_OX_LABEL);
         for (DbTable dbTable : dbTables) {
-            RelationalDescriptor desc = new RelationalDescriptor();
-            orProject.addDescriptor(desc);
-            String tableName = dbTable.getName();
-            String tablenameAlias = nct.generateSchemaAlias(tableName);
-            desc.addTableName(tableName);
-            desc.setAlias(tablenameAlias);
-            String generatedJavaClassName = getGeneratedJavaClassName(tableName);
-            desc.setJavaClassName(generatedJavaClassName);
-            desc.useWeakIdentityMap();
-            XMLDescriptor xdesc = new XMLDescriptor();
-            oxProject.addDescriptor(xdesc);
-            xdesc.setJavaClassName(generatedJavaClassName);
-            xdesc.setAlias(tablenameAlias);
-            NamespaceResolver nr = new NamespaceResolver();
-            nr.setDefaultNamespaceURI(getTargetNamespace());
-            nr.put(SCHEMA_INSTANCE_PREFIX,
-                W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
-            xdesc.setNamespaceResolver(nr);
-            xdesc.setDefaultRootElement(tablenameAlias);
-            XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
-            schemaReference.setSchemaContext("/" + tablenameAlias);
-            schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
-            xdesc.setSchemaReference(schemaReference);
+        	String tableName = dbTable.getName();
+        	RelationalDescriptor desc = buildORDescriptor(tableName, nct);
+        	XMLDescriptor xdesc = buildOXDescriptor(tableName, nct);
             for (DbColumn dbColumn : dbTable.getColumns()) {
                 String columnName = dbColumn.getName();
-                int jdbcType = dbColumn.getJDBCType();
-                String dmdTypeName = dbColumn.getJDBCTypeName();
-                logMessage(FINE, "Building mappings for " + tableName + "." + columnName);
-                XMLDirectMapping xdm = null;
-                QName qName = getXMLTypeFromJDBCType(jdbcType);
-                Class<?> attributeClass = getClassFromJDBCType(dmdTypeName.toUpperCase(),
-                    databasePlatform);
-                // figure out if binary attachments are required
-                boolean binaryAttach = false;
-                String attachmentType = null;
-                if (BASE_64_BINARY_QNAME.equals(qName)) {
-                    // use primitive byte[] array, not object Byte[] array
-                    attributeClass = APBYTE;
-                    for (OperationModel om : operations) {
-                        if (om.isTableOperation()) {
-                            TableOperationModel tom = (TableOperationModel)om;
-                            if (tom.getBinaryAttachment()) {
-                                binaryAttach = true;
-                                if ("MTOM".equalsIgnoreCase(tom.getAttachmentType())) {
-                                    attachmentType = "MTOM";
-                                }
-                                else { 
-                                    attachmentType = "SWAREF";
-                                }
-                                // only need one operation to require attachments
-                                break;
-                            }
-                            if (tom.additionalOperations.size() > 0) {
-                                for (OperationModel om2 : tom.additionalOperations) {
-                                    if (om2.isProcedureOperation()) {
-                                        ProcedureOperationModel pom = (ProcedureOperationModel)om2;
-                                        if (pom.getBinaryAttachment()) {
-                                            binaryAttach = true;
-                                            if ("MTOM".equalsIgnoreCase(tom.getAttachmentType())) {
-                                                attachmentType = "MTOM";
-                                            }
-                                            else { 
-                                                attachmentType = "SWAREF";
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (binaryAttach) {
-                        xdm = new XMLBinaryDataMapping();
-                        XMLBinaryDataMapping xbdm = (XMLBinaryDataMapping)xdm;
-                        if (attachmentType.equals("SWAREF")) {
-                            xbdm.setSwaRef(true);
-                        }
-                        xbdm.setMimeType(DEFAULT_ATTACHMENT_MIMETYPE);
-                    }
-                    else {
-                        xdm = new XMLDirectMapping();
-                        SerializedObjectConverter converter = new SerializedObjectConverter(xdm);
-                        xdm.setConverter(converter);
-                    }
-                }
-                else {
-                    xdm = new XMLDirectMapping();
-                }
-                DirectToFieldMapping dtfm = new DirectToFieldMapping();
-                dtfm.setAttributeClassificationName(attributeClass.getName());
-                String fieldName = nct.generateElementAlias(columnName);
-                dtfm.setAttributeName(fieldName);
-                DatabaseField databaseField = new DatabaseField(columnName, tableName);
-                databaseField.setSqlType(jdbcType);
-                dtfm.setField(databaseField);
-                xdm.setAttributeName(fieldName);
-                xdm.setAttributeClassificationName(attributeClass.getName());
-                String xPath = "";
                 ElementStyle style = nct.styleForElement(columnName);
                 if (style == NONE) {
-                    continue;
+                	continue;
                 }
-                else if (style == ATTRIBUTE) {
-                    xPath += "@" + fieldName;
-                }
-                else if (style == ELEMENT){
-                    xPath += fieldName;
-                    AbstractNullPolicy nullPolicy = xdm.getNullPolicy();
-                    nullPolicy.setNullRepresentedByEmptyNode(false);
-                    nullPolicy.setMarshalNullRepresentation(XSI_NIL);
-                    nullPolicy.setNullRepresentedByXsiNil(true);
-                    xdm.setNullPolicy(nullPolicy);
-                }
-                if (nct.getOptimisticLockingField() != null && 
-                    nct.getOptimisticLockingField().equalsIgnoreCase(columnName)) {
-                    desc.useVersionLocking(columnName, false);
-                }
-                desc.addMapping(dtfm);
-                xdesc.addMapping(xdm);
-                if (attributeClass != APBYTE) {
-                    xPath += "/text()";
-                }
-                xdm.setXPath(xPath);
-                XMLField xmlField = (XMLField)xdm.getField();
-                xmlField.setRequired(true);
-                xmlField.setSchemaType(qName);
-                if (binaryAttach && qName == BASE_64_BINARY_QNAME) {
-                    // need xsd namespaces 
-                    nr.put("xsd", W3C_XML_SCHEMA_NS_URI);
-                }
-                if (dbColumn.isPK()) {
-                    desc.addPrimaryKeyField(databaseField);
-                }
+                logMessage(FINE, "Building mappings for " + tableName + "." + columnName);
+            	DirectToFieldMapping orFieldMapping = buildORFieldMappingFromColumn(dbColumn, desc, nct);
+            	desc.addMapping(orFieldMapping);
+            	XMLDirectMapping oxFieldMapping = buildOXFieldMappingFromColumn(dbColumn, xdesc, nct);
+            	xdesc.addMapping(oxFieldMapping);
+            	// check for switch from Byte[] to byte[]
+            	if (oxFieldMapping.getAttributeClassificationName() == APBYTE.getName()) {
+            		orFieldMapping.setAttributeClassificationName(APBYTE.getName());
+            	}
           }
           ReadObjectQuery roq = new ReadObjectQuery();
+          String generatedJavaClassName = getGeneratedJavaClassName(tableName);
           roq.setReferenceClassName(generatedJavaClassName);
           Expression expression = null;
           Expression builder = new ExpressionBuilder();
@@ -890,6 +776,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     }
                 }
             }
+            if (opModel.isSQLOperation() && ((SQLOperationModel)opModel).hasSecondarySql()) {
+                buildOROXProjectsForSecondarySql((SQLOperationModel)opModel, nct);
+            }
         }
         DatabaseLogin databaseLogin = new DatabaseLogin();
         databaseLogin.removeProperty("user");
@@ -903,6 +792,51 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         xmlLogin.getProperties().remove("password");
         oxProject.setLogin(xmlLogin);
     }
+
+	protected void buildOROXProjectsForSecondarySql(SQLOperationModel sqlOm,
+		NamingConventionTransformer nct) {
+		List<DbColumn> columns = JDBCHelper.buildDbColumns(getConnection(),
+			sqlOm.getSecondarySqlText());
+        String tableName = sqlOm.getReturnType();
+        // need custom NamingConventionTransformer so that returnType/tableName is
+        // used verbatim
+        NamingConventionTransformer extraNct = new DefaultNamingConventionTransformer() {
+			@Override
+			protected boolean isDefaultTransformer() {
+				return false;
+			}
+			@Override
+			public String generateSchemaAlias(String tableName) {
+				return tableName;
+			}
+        };
+        ((DefaultNamingConventionTransformer)extraNct).setNextTransformer(nct);
+        RelationalDescriptor desc = buildORDescriptor(tableName, extraNct);
+        desc.descriptorIsAggregate();
+        orProject.addDescriptor(desc);
+        XMLDescriptor xdesc = buildOXDescriptor(tableName, extraNct);
+        oxProject.addDescriptor(xdesc);
+        List<String> columnsAlreadyProcessed = new ArrayList<String>();
+        for (DbColumn dbColumn : columns) {
+            String columnName = dbColumn.getName();
+            if (!columnsAlreadyProcessed.contains(columnName)) {
+            	columnsAlreadyProcessed.add(columnName);
+	            ElementStyle style = nct.styleForElement(columnName);
+	            if (style == NONE) {
+	            	continue;
+	            }
+	            logMessage(FINE, "Building mappings for " + columnName);
+	        	DirectToFieldMapping orFieldMapping = buildORFieldMappingFromColumn(dbColumn, desc, nct);
+	        	desc.addMapping(orFieldMapping);
+	        	XMLDirectMapping oxFieldMapping = buildOXFieldMappingFromColumn(dbColumn, xdesc, nct);
+	        	xdesc.addMapping(oxFieldMapping);
+            }
+            else {
+            	logMessage(SEVERE, "Duplicate ResultSet columns not supported '" + columnName + "'");
+            	throw new RuntimeException("Duplicate ResultSet columns not supported");
+            }
+        }
+	}
 
     @SuppressWarnings("unchecked")
     protected void buildOROXProjectsForAdvancedPLSQLProcedure(ProcedureOperationModel procOpModel) {
@@ -1066,7 +1000,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     protected void writeOROXProjects(OutputStream dbwsOrStream, OutputStream dbwsOxStream) {
         boolean writeORProject = false;
-        if (dbTables.size() > 0) {
+        if (dbTables.size() > 0 ||hasSecondarySqlOperations()) {
             writeORProject = true;
         }
         else if (dbStoredProcedures.size() > 0) {
@@ -1106,7 +1040,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         if (!isNullStream(dbwsOxStream)) {
             boolean writeOXProject = false;
-            if (dbTables.size() > 0) {
+            if (dbTables.size() > 0 || hasSecondarySqlOperations()) {
                 writeOXProject = true;
             }
             else if (dbStoredProcedures.size() > 0) {
@@ -1827,5 +1761,173 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     }
     public void setTopNamingConventionTransformer(NamingConventionTransformer topTransformer) {
         this.topTransformer = topTransformer;
+    }
+    
+    public boolean hasSecondarySqlOperations() {
+    	boolean flag = false;
+    	for (OperationModel om : operations) {
+    		if (om.isSQLOperation()) {
+    			SQLOperationModel sqlOm = (SQLOperationModel)om;
+    			String secondarySql = sqlOm.getSecondarySqlText();
+    			if (secondarySql != null && secondarySql.length() > 0) {
+    				flag = true;
+    				break;
+    			}
+    		}
+    	}
+    	return flag;
+    }
+    
+    public RelationalDescriptor buildORDescriptor(String tableName, NamingConventionTransformer nct) {
+        RelationalDescriptor desc = new RelationalDescriptor();
+        String tablenameAlias = nct.generateSchemaAlias(tableName);
+        desc.addTableName(tableName);
+        desc.setAlias(tablenameAlias);
+        String generatedJavaClassName = getGeneratedJavaClassName(tableName);
+        desc.setJavaClassName(generatedJavaClassName);
+        desc.useWeakIdentityMap();
+        return desc;
+    }
+    
+    public XMLDescriptor buildOXDescriptor(String tableName, NamingConventionTransformer nct) {
+        XMLDescriptor xdesc = new XMLDescriptor();
+        String generatedJavaClassName = getGeneratedJavaClassName(tableName);
+        xdesc.setJavaClassName(generatedJavaClassName);
+        String tablenameAlias = nct.generateSchemaAlias(tableName);
+        xdesc.setAlias(tablenameAlias);
+        NamespaceResolver nr = new NamespaceResolver();
+        nr.setDefaultNamespaceURI(getTargetNamespace());
+        nr.put(SCHEMA_INSTANCE_PREFIX,
+            W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
+        xdesc.setNamespaceResolver(nr);
+        xdesc.setDefaultRootElement(tablenameAlias);
+        XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
+        schemaReference.setSchemaContext("/" + tablenameAlias);
+        schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+        xdesc.setSchemaReference(schemaReference);
+        return xdesc;
+    }
+    
+    public DirectToFieldMapping buildORFieldMappingFromColumn(DbColumn dbColumn,
+    	RelationalDescriptor desc, NamingConventionTransformer nct) {
+        DirectToFieldMapping dtfm = new DirectToFieldMapping();
+        String columnName = dbColumn.getName();
+        int jdbcType = dbColumn.getJDBCType();
+        String dmdTypeName = dbColumn.getJDBCTypeName();
+        Class<?> attributeClass = getClassFromJDBCType(dmdTypeName.toUpperCase(),
+            databasePlatform);
+        dtfm.setAttributeClassificationName(attributeClass.getName());
+        String fieldName = nct.generateElementAlias(columnName);
+        dtfm.setAttributeName(fieldName);
+        DatabaseField databaseField = new DatabaseField(columnName, desc.getTableName());
+        databaseField.setSqlType(jdbcType);
+        dtfm.setField(databaseField);
+        if (nct.getOptimisticLockingField() != null && 
+            nct.getOptimisticLockingField().equalsIgnoreCase(columnName)) {
+            desc.useVersionLocking(columnName, false);
+        }
+        if (dbColumn.isPK()) {
+            desc.addPrimaryKeyField(databaseField);
+        }
+        return dtfm;
+    }
+    
+    public XMLDirectMapping buildOXFieldMappingFromColumn(DbColumn dbColumn, XMLDescriptor xdesc,
+    	NamingConventionTransformer nct) {
+        XMLDirectMapping xdm = null;
+        String columnName = dbColumn.getName();
+        int jdbcType = dbColumn.getJDBCType();
+        String dmdTypeName = dbColumn.getJDBCTypeName();
+        QName qName = getXMLTypeFromJDBCType(jdbcType);
+        Class<?> attributeClass = getClassFromJDBCType(dmdTypeName.toUpperCase(),
+            databasePlatform);
+        // figure out if binary attachments are required
+        boolean binaryAttach = false;
+        String attachmentType = null;
+        if (BASE_64_BINARY_QNAME.equals(qName)) {
+            // use primitive byte[] array, not object Byte[] array
+            attributeClass = APBYTE;
+            for (OperationModel om : operations) {
+                if (om.isTableOperation()) {
+                    TableOperationModel tom = (TableOperationModel)om;
+                    if (tom.getBinaryAttachment()) {
+                        binaryAttach = true;
+                        if ("MTOM".equalsIgnoreCase(tom.getAttachmentType())) {
+                            attachmentType = "MTOM";
+                        }
+                        else { 
+                            attachmentType = "SWAREF";
+                        }
+                        // only need one operation to require attachments
+                        break;
+                    }
+                    if (tom.additionalOperations.size() > 0) {
+                        for (OperationModel om2 : tom.additionalOperations) {
+                            if (om2.isProcedureOperation()) {
+                                ProcedureOperationModel pom = (ProcedureOperationModel)om2;
+                                if (pom.getBinaryAttachment()) {
+                                    binaryAttach = true;
+                                    if ("MTOM".equalsIgnoreCase(tom.getAttachmentType())) {
+                                        attachmentType = "MTOM";
+                                    }
+                                    else { 
+                                        attachmentType = "SWAREF";
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (binaryAttach) {
+                xdm = new XMLBinaryDataMapping();
+                XMLBinaryDataMapping xbdm = (XMLBinaryDataMapping)xdm;
+                if (attachmentType.equals("SWAREF")) {
+                    xbdm.setSwaRef(true);
+                }
+                xbdm.setMimeType(DEFAULT_ATTACHMENT_MIMETYPE);
+            }
+            else {
+                xdm = new XMLDirectMapping();
+                SerializedObjectConverter converter = new SerializedObjectConverter(xdm);
+                xdm.setConverter(converter);
+            }
+        }
+        else {
+            xdm = new XMLDirectMapping();
+        }
+        String fieldName = nct.generateElementAlias(columnName);
+        xdm.setAttributeName(fieldName);
+        xdm.setAttributeClassificationName(attributeClass.getName());
+        String xPath = "";
+        ElementStyle style = nct.styleForElement(columnName);
+        if (style == ATTRIBUTE) {
+            xPath += "@" + fieldName;
+        }
+        else if (style == ELEMENT){
+            xPath += fieldName;
+            if (!dbColumn.isPK()) {
+                AbstractNullPolicy nullPolicy = xdm.getNullPolicy();
+                nullPolicy.setNullRepresentedByEmptyNode(false);
+                nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                nullPolicy.setNullRepresentedByXsiNil(true);
+                xdm.setNullPolicy(nullPolicy);
+            }
+        }
+        if (attributeClass != APBYTE) {
+            xPath += "/text()";
+        }
+        xdm.setXPath(xPath);
+        XMLField xmlField = (XMLField)xdm.getField();
+        xmlField.setSchemaType(qName);
+        if (binaryAttach && qName == BASE_64_BINARY_QNAME) {
+            // need xsd namespaces 
+            xdesc.getNamespaceResolver().put("xsd", W3C_XML_SCHEMA_NS_URI);
+        }
+        if (dbColumn.isPK()) {
+            xmlField.setRequired(true);
+        }
+        return xdm;
     }
 }

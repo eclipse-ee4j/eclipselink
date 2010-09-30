@@ -102,6 +102,20 @@ public class DBWSTestSuite {
     public static final String MTOM_SERVICE_NAMESPACE = "urn:" + MTOM_SERVICE;
     public static final String MTOM_PORT = MTOM_SERVICE + "Port";
 
+    public static final String NONSENCE_WHERE_SQL = " WHERE 0=1";
+    public static final String SECONDARY = "secondarySQL";
+    public static final String SECONDARY_TEST = SECONDARY + "Test";
+    public static final String SECONDARY_SERVICE = SECONDARY + "Service";
+    public static final String SECONDARY_NAMESPACE = "urn:" + SECONDARY;
+    public static final String SECONDARY_SERVICE_NAMESPACE = "urn:" + SECONDARY_SERVICE;
+    public static final String SECONDARY_PORT = SECONDARY_SERVICE + "Port";
+    public static final String SECONDARY_COUNT_SQL =
+		"select count(*) as \"COUNT\", max(SAL) as \"MAX-Salary\" from secondary";
+    public static final String SECONDARY_COUNT_SCHEMA_TYPE = "secondaryAggregate";
+    public static final String SECONDARY_ALL_SQL =
+		"select * from secondary";
+    public static final String SECONDARY_ALL_SCHEMA_TYPE = "secondaryType";
+    
     // JUnit test fixtures
 
     public static String DBWS_BUILDER_XML_USERNAME;

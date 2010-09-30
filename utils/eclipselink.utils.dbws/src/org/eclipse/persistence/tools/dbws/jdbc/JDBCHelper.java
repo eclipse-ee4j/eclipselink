@@ -17,7 +17,9 @@ package org.eclipse.persistence.tools.dbws.jdbc;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -614,4 +616,57 @@ public class JDBCHelper {
             return sb.toString();
         }
      }
+    
+    public static List<DbColumn> buildDbColumns(Connection connection, String secondarySql) {
+        List<DbColumn> columns = null;
+        ResultSet resultSet = null;
+        try {
+        	Statement statement = connection.createStatement();
+        	resultSet = statement.executeQuery(secondarySql);
+        }
+        catch (SQLException sqlException) {
+        	throw new IllegalStateException("failure executing secondary SQL: " +
+        		secondarySql, sqlException);
+        }
+        if (resultSet != null) {
+			ResultSetMetaData rsMetaData = null;
+        	try {
+        		rsMetaData = resultSet.getMetaData();
+			}
+        	catch (SQLException sqlException) {
+            	throw new IllegalStateException("failure retrieving resultSet metadata", sqlException);
+			}
+        	if (rsMetaData != null) {
+        		int columnCount = 0;
+        		try {
+        			columnCount = rsMetaData.getColumnCount();
+				}
+        		catch (SQLException sqlException) {
+                	throw new IllegalStateException("failure retrieving columnCount", sqlException);
+				}
+        		if (columnCount > 0) {
+        			columns = new ArrayList<DbColumn>(columnCount);
+        			try {
+						for (int i = 1; i <= columnCount; i++) {
+							DbColumn dbColumn = new DbColumn();
+							dbColumn.setOrdinalPosition(i);
+							dbColumn.setName(rsMetaData.getColumnLabel(i));
+							dbColumn.setJDBCType(rsMetaData.getColumnType(i));
+							dbColumn.setJDBCTypeName(rsMetaData.getColumnTypeName(i));
+							dbColumn.setPrecision(rsMetaData.getPrecision(i));
+							dbColumn.setScale(rsMetaData.getScale(i));
+							dbColumn.setNullable(
+								rsMetaData.isNullable(i)==ResultSetMetaData.columnNullable);
+							columns.add(dbColumn);
+						}
+					}
+        			catch (SQLException sqlException) {
+                    	throw new IllegalStateException("failure retrieving column information",
+                    		sqlException);
+    				}
+        		}
+        	}
+        }
+        return columns;
+    }
 }
