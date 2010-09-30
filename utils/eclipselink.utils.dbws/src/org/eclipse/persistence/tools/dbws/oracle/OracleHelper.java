@@ -88,7 +88,7 @@ public class OracleHelper {
                 procedureModel.setJPubType(typ);
             }
             catch (Exception e) {
-                // TODO 
+                // TODO
             }
         }
         else {
@@ -99,7 +99,7 @@ public class OracleHelper {
             methods = typ.getDeclaredMethods();
         }
         catch (Exception e) {
-            // TODO 
+            // TODO
         }
         if (methods.size() > 0) {
             dbStoredProcedures = new ArrayList<DbStoredProcedure>();
@@ -191,7 +191,7 @@ public class OracleHelper {
                 }
                 else {
                     typ = BinaryInteger.getConversionCode();
-                    
+
                 }
             }
             if ("LONG".equals(arg.getJdbcTypeName())) {

@@ -112,60 +112,60 @@ public class DBWSTestHelper {
     public static final String BRECORD_DESCRIPTOR_ALIAS = BRECORD_COMPATIBLETYPE.toLowerCase();
     public static final String BRECORD_DESCRIPTOR_JAVACLASSNAME = BRECORD_DATABASETYPE.toLowerCase();
 
-    public static final String ADVJDBC_PACKAGE_NAME = 
+    public static final String ADVJDBC_PACKAGE_NAME =
         "ADVANCED_OBJECT_DEMO";
-    public static final String ADVJDBC_ECHO_EMPOBJECT = 
+    public static final String ADVJDBC_ECHO_EMPOBJECT =
         "echoEmpObject";
-    public static final String ADVJDBC_ECHO_EMPOBJECT_TEST = 
+    public static final String ADVJDBC_ECHO_EMPOBJECT_TEST =
         "echoEmpObjectTest";
-    public static final String ADVJDBC_ECHO_EMPOBJECT_SERVICE = 
+    public static final String ADVJDBC_ECHO_EMPOBJECT_SERVICE =
         ADVJDBC_ECHO_EMPOBJECT + "Service";
-    public static final String ADVJDBC_ECHO_EMPOBJECT_NAMESPACE = 
+    public static final String ADVJDBC_ECHO_EMPOBJECT_NAMESPACE =
         "urn:echoEmp";
-    public static final String ADVJDBC_ECHO_EMPOBJECT_SERVICE_NAMESPACE = 
+    public static final String ADVJDBC_ECHO_EMPOBJECT_SERVICE_NAMESPACE =
         "urn:echoEmpService";
     public static final String ADVJDBC_ECHO_EMPOBJECT_PORT = "echoEmpServicePort";
 
-    public static final String ADVJDBC_ANOTHER_PACKAGE_NAME = 
+    public static final String ADVJDBC_ANOTHER_PACKAGE_NAME =
         "ANOTHER_ADVANCED_DEMO";
     public static final String ADVJDBC_BUILD_EMPARRAY =
         "buildEmpArray";
-    public static final String ADVJDBC_BUILD_EMPARRAY_TEST = 
+    public static final String ADVJDBC_BUILD_EMPARRAY_TEST =
         ADVJDBC_BUILD_EMPARRAY + "Test";
-    public static final String ADVJDBC_BUILD_EMPARRAY_SERVICE = 
+    public static final String ADVJDBC_BUILD_EMPARRAY_SERVICE =
         ADVJDBC_BUILD_EMPARRAY + "Service";
-    public static final String ADVJDBC_BUILD_EMPARRAY_NAMESPACE = 
+    public static final String ADVJDBC_BUILD_EMPARRAY_NAMESPACE =
         "urn:empArray";
-    public static final String ADVJDBC_BUILD_EMPARRAY_SERVICE_NAMESPACE = 
+    public static final String ADVJDBC_BUILD_EMPARRAY_SERVICE_NAMESPACE =
         ADVJDBC_BUILD_EMPARRAY_NAMESPACE + "Service";
     public static final String ADVJDBC_BUILD_EMPARRAY_PORT = ADVJDBC_BUILD_EMPARRAY_SERVICE +
-    		"Port";
+            "Port";
 
-    public static final String ADVJDBC_TOPLEVEL_PACKAGE_NAME = 
+    public static final String ADVJDBC_TOPLEVEL_PACKAGE_NAME =
         "toplevel";
     public static final String ADVJDBC_BUILD_TBL1 =
         "SF_TBL1";
     public static final String ADVJDBC_BUILDTBL1 =
         "buildTbl1";
-    public static final String ADVJDBC_BUILD_TBL1_TEST = 
+    public static final String ADVJDBC_BUILD_TBL1_TEST =
         ADVJDBC_BUILDTBL1 + "Test";
-    public static final String ADVJDBC_BUILD_TBL1_SERVICE = 
+    public static final String ADVJDBC_BUILD_TBL1_SERVICE =
         ADVJDBC_BUILDTBL1 + "Service";
-    public static final String ADVJDBC_BUILD_TBL1_NAMESPACE = 
+    public static final String ADVJDBC_BUILD_TBL1_NAMESPACE =
         "urn:tbl1";
-    public static final String ADVJDBC_BUILD_TBL1_SERVICE_NAMESPACE = 
+    public static final String ADVJDBC_BUILD_TBL1_SERVICE_NAMESPACE =
         ADVJDBC_BUILD_TBL1_NAMESPACE + "Service";
     public static final String ADVJDBC_BUILD_TBL1_PORT = ADVJDBC_BUILD_TBL1_SERVICE +
             "Port";
     public static final String ADVJDBC_BUILD_TBL2 =
         "buildTbl2";
-    public static final String ADVJDBC_BUILD_TBL2_TEST = 
+    public static final String ADVJDBC_BUILD_TBL2_TEST =
         ADVJDBC_BUILD_TBL2 + "Test";
-    public static final String ADVJDBC_BUILD_TBL2_SERVICE = 
+    public static final String ADVJDBC_BUILD_TBL2_SERVICE =
         ADVJDBC_BUILD_TBL2 + "Service";
-    public static final String ADVJDBC_BUILD_TBL2_NAMESPACE = 
+    public static final String ADVJDBC_BUILD_TBL2_NAMESPACE =
         "urn:tbl2";
-    public static final String ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE = 
+    public static final String ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE =
         ADVJDBC_BUILD_TBL2_NAMESPACE + "Service";
     public static final String ADVJDBC_BUILD_TBL2_PORT = ADVJDBC_BUILD_TBL2_SERVICE +
             "Port";
@@ -174,11 +174,11 @@ public class DBWSTestHelper {
         "buildARecord";
     public static final String ADVJDBC_BUILD_ARECORD_TEST =
         ADVJDBC_BUILD_ARECORD + "Test";
-    public static final String ADVJDBC_BUILD_ARECORD_SERVICE = 
+    public static final String ADVJDBC_BUILD_ARECORD_SERVICE =
         ADVJDBC_BUILD_ARECORD + "Service";
-    public static final String ADVJDBC_BUILD_ARECORD_NAMESPACE = 
+    public static final String ADVJDBC_BUILD_ARECORD_NAMESPACE =
         "urn:aRecord";
-    public static final String ADVJDBC_BUILD_ARECORD_SERVICE_NAMESPACE = 
+    public static final String ADVJDBC_BUILD_ARECORD_SERVICE_NAMESPACE =
         ADVJDBC_BUILD_ARECORD_NAMESPACE + "Service";
     public static final String ADVJDBC_BUILD_ARECORD_PORT = ADVJDBC_BUILD_ARECORD_SERVICE + "Port";
 
@@ -186,14 +186,14 @@ public class DBWSTestHelper {
         "buildCRecord";
     public static final String ADVJDBC_BUILD_CRECORD_TEST =
         ADVJDBC_BUILD_CRECORD + "Test";
-    public static final String ADVJDBC_BUILD_CRECORD_SERVICE = 
+    public static final String ADVJDBC_BUILD_CRECORD_SERVICE =
         ADVJDBC_BUILD_CRECORD + "Service";
-    public static final String ADVJDBC_BUILD_CRECORD_NAMESPACE = 
+    public static final String ADVJDBC_BUILD_CRECORD_NAMESPACE =
         "urn:cRecord";
-    public static final String ADVJDBC_BUILD_CRECORD_SERVICE_NAMESPACE = 
+    public static final String ADVJDBC_BUILD_CRECORD_SERVICE_NAMESPACE =
         ADVJDBC_BUILD_CRECORD_NAMESPACE + "Service";
     public static final String ADVJDBC_BUILD_CRECORD_PORT = ADVJDBC_BUILD_CRECORD_SERVICE + "Port";
-    
+
     public static final String LTBL_PACKAGE_NAME = "LTBL_PKG";
     public static final String LTBL_PROCEDURE_NAME = "LTBL_QUERY";
     public static final String LTBL_PROJECT = "localTable";
@@ -202,7 +202,7 @@ public class DBWSTestHelper {
     public static final String LTBL_PROJECT_NAMESPACE = "urn:" + LTBL_PROJECT;
     public static final String LTBL_PROJECT_SERVICE_NAMESPACE = "urn:" + LTBL_PROJECT_SERVICE;
     public static final String LTBL_PROJECT_PORT = LTBL_PROJECT_SERVICE + "Port";
-    
+
     public static String documentToString(Document doc) {
         DOMSource domSource = new DOMSource(doc);
         StringWriter stringWriter = new StringWriter();

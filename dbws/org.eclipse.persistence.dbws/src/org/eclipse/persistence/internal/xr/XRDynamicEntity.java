@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -49,7 +49,7 @@ public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntit
 
     static final Object UNKNOWN_VALUE = new Object();
     public static final String XR_FIELD_INFO_STATIC = "XRFI";
-    
+
     protected XRField[] _fields;
 
     public XRDynamicEntity() {
@@ -60,13 +60,13 @@ public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntit
             _fields[i] = new XRField();
         }
     }
-    
+
     public abstract XRFieldInfo getFieldInfo();
 
     protected int getFieldIdx(String fieldName) {
         return getFieldInfo().getFieldIdx(fieldName);
     }
-    
+
     public <T> T get(String fieldName) throws DynamicException {
         return (T) get(getFieldIdx(fieldName));
     }
@@ -129,7 +129,7 @@ public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntit
     public void _persistence_setId(Object pk) {
         this.__pk = pk;
     }
-    
+
     //ChangeTracker API
     /**
      * ChangeListener used for attribute change tracking processed in the
@@ -191,7 +191,7 @@ public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntit
     public boolean _persistence_shouldRefreshFetchGroup() {
         return this.__refreshFetchGroup;
     }
-    
+
     @Override
     public String toString() {
         // this will print something like {Emp 10} or {Phone 234-5678 10}

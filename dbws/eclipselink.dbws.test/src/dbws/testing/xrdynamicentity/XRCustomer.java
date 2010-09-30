@@ -18,7 +18,7 @@ import org.eclipse.persistence.internal.xr.XRDynamicEntity;
 public class XRCustomer extends XRDynamicEntity {
 
     public static XRFieldInfo XRFI = new XRFieldInfo();
-    
+
     public XRCustomer() {
         super();
     }

@@ -85,12 +85,12 @@ public class P3testWebServiceSuite extends WebServiceTestSuite implements Provid
         super.init();
     }
 
-    static final String REQUEST_MSG = 
+    static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Header/>" +
           "<env:Body>" +
             "<srvc:" + PROC3_TEST + " xmlns:srvc=\"" + PROC3_SERVICE_NAMESPACE + "\" xmlns:ns1=\"" + PROC3_NAMESPACE + "\">" +
-              "<srvc:RECARRAY>" + 
+              "<srvc:RECARRAY>" +
                 "<ns1:item>" +
                   "<ns1:t1>" +
                     "<ns1:item>this</ns1:item>" +
@@ -124,7 +124,7 @@ public class P3testWebServiceSuite extends WebServiceTestSuite implements Provid
                   "</ns1:t2>" +
                   "<ns1:t3>false</ns1:t3>" +
                 "</ns1:item>" +
-              "</srvc:RECARRAY>" + 
+              "</srvc:RECARRAY>" +
             "</srvc:" + PROC3_TEST + ">" +
           "</env:Body>" +
         "</env:Envelope>";
@@ -134,7 +134,7 @@ public class P3testWebServiceSuite extends WebServiceTestSuite implements Provid
         ParserConfigurationException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage request = factory.createMessage();
-        SOAPPart part = request.getSOAPPart(); 
+        SOAPPart part = request.getSOAPPart();
         DOMSource domSource = new DOMSource(
             getDocumentBuilder().parse(new InputSource(new StringReader(REQUEST_MSG))));
         part.setContent(domSource);
@@ -160,7 +160,7 @@ public class P3testWebServiceSuite extends WebServiceTestSuite implements Provid
         }
     }
 
-    static final String TEST_RESPONSE = 
+    static final String TEST_RESPONSE =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +

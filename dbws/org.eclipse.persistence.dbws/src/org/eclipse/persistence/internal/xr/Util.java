@@ -394,7 +394,7 @@ public class Util {
         return clz;
     }
 
-	public static final QName SXF_QNAME = new QName("", DEFAULT_SIMPLE_XML_FORMAT_TAG);
+    public static final QName SXF_QNAME = new QName("", DEFAULT_SIMPLE_XML_FORMAT_TAG);
     /*
      *
                             if (xmlField.getSchemaType().equals(DATE_QNAME)) {

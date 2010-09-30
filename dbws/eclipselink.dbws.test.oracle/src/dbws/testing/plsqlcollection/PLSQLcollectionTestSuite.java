@@ -47,7 +47,7 @@ import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
 public class PLSQLcollectionTestSuite {
 
-    static final String CONSTANT_PROJECT_BUILD_VERSION = 
+    static final String CONSTANT_PROJECT_BUILD_VERSION =
         "Eclipse Persistence Services - some version (some build date)";
     static final String QUERY_NAME = "PLSQLcollectionQuery";
 
@@ -57,14 +57,14 @@ public class PLSQLcollectionTestSuite {
 
     static XMLComparer comparer = new XMLComparer();
     static XMLParser xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
-    
+
     // testsuite fixture(s)
     static Project project = null;
     static Session session = null;
     static String username = null;
     static String password = null;
     static String url = null;
-    
+
     @BeforeClass
     public static void setUpProject() {
         username = System.getProperty(DATABASE_USERNAME_KEY);
@@ -101,7 +101,7 @@ public class PLSQLcollectionTestSuite {
         query.setCall(call);
         t1Descriptor.getQueryManager().addQuery(QUERY_NAME, query);
     }
-    
+
     @AfterClass
     public static void tearDown() {
         if (session != null) {
@@ -109,9 +109,9 @@ public class PLSQLcollectionTestSuite {
         }
     }
 
-    static final String TEST_PROJECT_CONTROL_DOC = 
+    static final String TEST_PROJECT_CONTROL_DOC =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-        "<object-persistence version=\"" + CONSTANT_PROJECT_BUILD_VERSION + "\" " + 
+        "<object-persistence version=\"" + CONSTANT_PROJECT_BUILD_VERSION + "\" " +
            "xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" " +
            "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
            "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
@@ -168,18 +168,18 @@ public class PLSQLcollectionTestSuite {
     @Test
     public void toProjectXML() throws IllegalArgumentException, IllegalAccessException,
         SecurityException, NoSuchFieldException {
-        ObjectPersistenceWorkbenchXMLProject runtimeProject = 
+        ObjectPersistenceWorkbenchXMLProject runtimeProject =
             new ObjectPersistenceWorkbenchXMLProject();
-        XMLTransformationMapping versionMapping = 
+        XMLTransformationMapping versionMapping =
             (XMLTransformationMapping)runtimeProject.getDescriptor(Project.class).
                 getMappings().firstElement();
-        TransformerBasedFieldTransformation  versionTransformer = 
+        TransformerBasedFieldTransformation  versionTransformer =
             (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().
                 firstElement();
         Field transformerField =
             TransformerBasedFieldTransformation.class.getDeclaredField("transformer");
         transformerField.setAccessible(true);
-        ConstantTransformer constantTransformer = 
+        ConstantTransformer constantTransformer =
             (ConstantTransformer)transformerField.get(versionTransformer);
         constantTransformer.setValue(CONSTANT_PROJECT_BUILD_VERSION);
         XMLContext context = new XMLContext(runtimeProject);
@@ -192,7 +192,7 @@ public class PLSQLcollectionTestSuite {
 
     @Test
     public void fromProjectXML() {
-        XRDynamicClassLoader xrdecl = 
+        XRDynamicClassLoader xrdecl =
             new XRDynamicClassLoader(PLSQLcollectionTestSuite.class.getClassLoader());
         Project projectFromXML = XMLProjectReader.read(new StringReader(TEST_PROJECT_CONTROL_DOC),
             xrdecl);
@@ -215,7 +215,7 @@ public class PLSQLcollectionTestSuite {
             query.isDataModifyQuery());
         project = projectFromXML;
     }
-    
+
     @Test
     public void testTbl1() {
         session = project.createDatabaseSession();

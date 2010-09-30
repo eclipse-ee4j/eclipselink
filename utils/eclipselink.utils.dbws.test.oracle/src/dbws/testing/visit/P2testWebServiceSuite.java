@@ -85,23 +85,23 @@ public class P2testWebServiceSuite extends WebServiceTestSuite implements Provid
         super.init();
     }
 
-    static final String REQUEST_MSG = 
+    static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Header/>" +
           "<env:Body>" +
             "<srvc:" + PROC2_TEST + " xmlns:srvc=\"" + PROC2_SERVICE_NAMESPACE + "\" xmlns:ns1=\"" + PROC2_NAMESPACE + "\">" +
-              "<srvc:OLD>" + 
+              "<srvc:OLD>" +
                 "<ns1:item>" + "1" + "</ns1:item>" +
                 "<ns1:item>" + "2" + "</ns1:item>" +
                 "<ns1:item>" + "3" + "</ns1:item>" +
                 "<ns1:item>" + "4" + "</ns1:item>" +
-              "</srvc:OLD>" + 
-              "<srvc:NEW>" + 
+              "</srvc:OLD>" +
+              "<srvc:NEW>" +
                 "<ns1:item>" + "5" + "</ns1:item>" +
                 "<ns1:item>" + "6" + "</ns1:item>" +
                 "<ns1:item>" + "7" + "</ns1:item>" +
                 "<ns1:item>" + "8" + "</ns1:item>" +
-              "</srvc:NEW>" + 
+              "</srvc:NEW>" +
             "</srvc:" + PROC2_TEST + ">" +
           "</env:Body>" +
         "</env:Envelope>";
@@ -111,7 +111,7 @@ public class P2testWebServiceSuite extends WebServiceTestSuite implements Provid
         ParserConfigurationException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage request = factory.createMessage();
-        SOAPPart part = request.getSOAPPart(); 
+        SOAPPart part = request.getSOAPPart();
         DOMSource domSource = new DOMSource(
             getDocumentBuilder().parse(new InputSource(new StringReader(REQUEST_MSG))));
         part.setContent(domSource);
@@ -137,7 +137,7 @@ public class P2testWebServiceSuite extends WebServiceTestSuite implements Provid
         }
     }
 
-    static final String TEST_RESPONSE = 
+    static final String TEST_RESPONSE =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +

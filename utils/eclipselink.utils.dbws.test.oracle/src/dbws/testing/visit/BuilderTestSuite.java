@@ -46,8 +46,8 @@ import static dbws.testing.visit.WebServiceTestSuite.DATABASE_USERNAME_KEY;
 import static dbws.testing.visit.WebServiceTestSuite.DEFAULT_DATABASE_DRIVER;
 
 public class BuilderTestSuite {
-    
-    public static final String CONSTANT_PROJECT_BUILD_VERSION = 
+
+    public static final String CONSTANT_PROJECT_BUILD_VERSION =
         "Eclipse Persistence Services - some version (some build date)";
 
     // JUnit test fixtures
@@ -84,18 +84,18 @@ public class BuilderTestSuite {
         props.put("user", username);
         props.put("password", password);
         conn = DriverManager.getConnection(url, props);
-        
+
         writeObjectPersistenceProject = new ObjectPersistenceWorkbenchXMLProject();
-        XMLTransformationMapping versionMapping = 
+        XMLTransformationMapping versionMapping =
             (XMLTransformationMapping)writeObjectPersistenceProject.getDescriptor(Project.class).
                 getMappings().firstElement();
-        TransformerBasedFieldTransformation  versionTransformer = 
+        TransformerBasedFieldTransformation  versionTransformer =
             (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().
                 firstElement();
         Field transformerField =
             TransformerBasedFieldTransformation.class.getDeclaredField("transformer");
         transformerField.setAccessible(true);
-        ConstantTransformer constantTransformer = 
+        ConstantTransformer constantTransformer =
             (ConstantTransformer)transformerField.get(versionTransformer);
         constantTransformer.setValue(CONSTANT_PROJECT_BUILD_VERSION);
 

@@ -103,9 +103,9 @@ import static dbws.testing.DBWSTestSuite.ROOTCAUSE_TEST;
 public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
 
     public static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + ROOTCAUSE;
-    static final String SOAP_UPDATE_REQUEST = 
+    static final String SOAP_UPDATE_REQUEST =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-           "<SOAP-ENV:Body>" + 
+           "<SOAP-ENV:Body>" +
               "<srvc:update_rootcause_tableType xmlns:srvc=\"" + ROOTCAUSE_SERVICE_NAMESPACE + "\" xmlns=\"" + ROOTCAUSE_NAMESPACE + "\">" +
                  "<srvc:theInstance>" +
                     // rootcause_tableType built wrong
@@ -114,7 +114,7 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
                        "<name />" +
                     "</barf>" +
                  "</srvc:theInstance>" +
-              "</srvc:update_rootcause_tableType>" + 
+              "</srvc:update_rootcause_tableType>" +
            "</SOAP-ENV:Body>" +
         "</SOAP-ENV:Envelope>";
 
@@ -200,7 +200,7 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
         super.init(new XRDynamicClassLoader(Thread.currentThread().getContextClassLoader()),
             null, false);
     }
-    
+
     @Override
     public void logoutSessions() {
         if (xrService.getORSession() != null) {
@@ -258,7 +258,7 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
         }
         // just for debugging, keep 'response' variable alive after try-catch
         if (response != null) {
-            response.hashCode(); 
+            response.hashCode();
         }
     }
 }

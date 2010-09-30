@@ -37,7 +37,7 @@ import static org.eclipse.persistence.internal.xr.XRDynamicEntity.XR_FIELD_INFO_
 
 public class XRDynamicEntityTestSuite {
 
-    static final String PACKAGE_PREFIX = 
+    static final String PACKAGE_PREFIX =
         XRDynamicEntityTestSuite.class.getPackage().getName();
     static final String TEST_CLASSNAME = PACKAGE_PREFIX + ".TestClass";
     static final String INCOMPATIBLE_CLASSNAME = Incompatible.class.getSimpleName();
@@ -45,11 +45,11 @@ public class XRDynamicEntityTestSuite {
     static final String FIELD_1 = "field1";
     static final String FIELD_2 = "field2";
     static final String TEST_STRING = "this is a test";
-    
+
     //test fixtures
     static XRDynamicEntity entity1 = null;
     @BeforeClass
-    public static void setUp() throws NoSuchFieldException, IllegalArgumentException, 
+    public static void setUp() throws NoSuchFieldException, IllegalArgumentException,
         IllegalAccessException {
         Field xrfiField = Helper.getField(XRCustomer.class, XR_FIELD_INFO_STATIC);
         XRFieldInfo xrfi = (XRFieldInfo)xrfiField.get(null);
@@ -57,7 +57,7 @@ public class XRDynamicEntityTestSuite {
         xrfi.addFieldInfo(FIELD_2, 1);
         entity1 = new XRCustomer();
     }
-    
+
     @Test
     public void noParentLoader() throws Exception {
         XRDynamicClassLoader xrdcl = new XRDynamicClassLoader(null);
@@ -69,7 +69,7 @@ public class XRDynamicEntityTestSuite {
         XRDynamicClassLoader xrdcl = new XRDynamicClassLoader(null);
         assertEquals(XRClassWriter.class, xrdcl.getDefaultWriter().getClass());
     }
-    
+
     @Test(expected=NoClassDefFoundError.class)
     public void createDynamicClassWithNoParentLoader() {
         XRDynamicClassLoader dcl = new XRDynamicClassLoader(null);
@@ -82,7 +82,7 @@ public class XRDynamicEntityTestSuite {
         Class<?> stringClass = xrdcl.loadClass("java.lang.String");
         assertTrue("core class java.lang.String not found", String.class == stringClass);
     }
-    
+
     @Test(expected=IllegalArgumentException.class)
     public void createIncompatibleClass() {
         XRDynamicClassLoader dcl = new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
@@ -100,7 +100,7 @@ public class XRDynamicEntityTestSuite {
     @Test
     public void buildTestClass() throws ClassNotFoundException {
         //Needs non-null parent for createDynamicClass to work
-        XRDynamicClassLoader xrdcl = 
+        XRDynamicClassLoader xrdcl =
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
         Class<?> testClass = xrdcl.createDynamicClass(TEST_CLASSNAME);
         assertEquals("test class wrong name", testClass.getName(), TEST_CLASSNAME);
@@ -111,9 +111,9 @@ public class XRDynamicEntityTestSuite {
     @SuppressWarnings("unchecked")
     @Test
     public void buildTestEntity() throws InstantiationException, IllegalAccessException {
-        XRDynamicClassLoader xrdcl = 
+        XRDynamicClassLoader xrdcl =
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
-        Class<DynamicEntity> testClass = 
+        Class<DynamicEntity> testClass =
             (Class<DynamicEntity>)xrdcl.createDynamicClass(TEST_CLASSNAME);
         //build instance
         @SuppressWarnings("unused")
@@ -122,7 +122,7 @@ public class XRDynamicEntityTestSuite {
 
     @Test
     public void createTestClassTwice() throws Exception {
-        XRDynamicClassLoader xrdcl = 
+        XRDynamicClassLoader xrdcl =
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
         Class<?> dynamicClass = xrdcl.createDynamicClass(TEST_CLASSNAME);
         assertNotNull(dynamicClass);
@@ -132,7 +132,7 @@ public class XRDynamicEntityTestSuite {
     }
 
     //stupid naming convention to get tests run in order
-    
+
     @Test
     public void test1() {
         Object field = entity1.get(FIELD_1);

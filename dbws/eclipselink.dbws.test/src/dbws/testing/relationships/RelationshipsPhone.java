@@ -14,13 +14,13 @@ package dbws.testing.relationships;
 
 public class RelationshipsPhone {
 
-	public String areaCode;
-	public String phonenumber;
-	public String type;
-	public int empId;
+    public String areaCode;
+    public String phonenumber;
+    public String type;
+    public int empId;
 
     public RelationshipsPhone() {
-    	super();
+        super();
     }
 
     @Override

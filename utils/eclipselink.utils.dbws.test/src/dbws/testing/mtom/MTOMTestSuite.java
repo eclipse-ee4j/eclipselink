@@ -110,7 +110,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
 
     //lorem ipsum is the name given to commonly used placeholder filler text
     //this copy is exactly 5000 bytes long
-    static final String LOREM_IPSUM = 
+    static final String LOREM_IPSUM =
         "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque " +
         "laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi " +
         "architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas " +
@@ -171,17 +171,17 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         "assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis " +
         "debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et " +
         "molestiae non recusandae. Itaque earum rerum hic.";
-    
+
     public static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + MTOM;
     static final int NUM_CREATE = 3;
-    static final String SOAP_CREATE_REQUEST_ID = 
+    static final String SOAP_CREATE_REQUEST_ID =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-           "<SOAP-ENV:Body>" + 
+           "<SOAP-ENV:Body>" +
               "<srvc:create_mtomType xmlns:srvc=\"" + MTOM_SERVICE_NAMESPACE + "\" xmlns=\"" + MTOM_NAMESPACE + "\">" +
                  "<srvc:theInstance>" +
                     "<mtomType>" +
                        "<id>";
-    static final String SOAP_CREATE_REQUEST_END = 
+    static final String SOAP_CREATE_REQUEST_END =
                        "</id>" +
                        "<descript>this is a test</descript>" +
                        "<stuff>" +
@@ -189,33 +189,33 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
                        "</stuff>" +
                     "</mtomType>" +
                  "</srvc:theInstance>" +
-              "</srvc:create_mtomType>" + 
+              "</srvc:create_mtomType>" +
            "</SOAP-ENV:Body>" +
         "</SOAP-ENV:Envelope>";
-    static final String SOAP_FIND_BY_PK_REQUEST = 
+    static final String SOAP_FIND_BY_PK_REQUEST =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-           "<SOAP-ENV:Body>" + 
+           "<SOAP-ENV:Body>" +
               "<srvc:findByPrimaryKey_mtomType xmlns:srvc=\"" + MTOM_SERVICE_NAMESPACE + "\" xmlns=\"" + MTOM_NAMESPACE + "\">" +
                    "<id>1</id>" +
-              "</srvc:findByPrimaryKey_mtomType>" + 
+              "</srvc:findByPrimaryKey_mtomType>" +
            "</SOAP-ENV:Body>" +
-        "</SOAP-ENV:Envelope>"; 
-    static final String SOAP_FIND_ALL_REQUEST = 
+        "</SOAP-ENV:Envelope>";
+    static final String SOAP_FIND_ALL_REQUEST =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-           "<SOAP-ENV:Body>" + 
+           "<SOAP-ENV:Body>" +
               "<srvc:findAll_mtomType xmlns:srvc=\"" + MTOM_SERVICE_NAMESPACE + "\" xmlns=\"" + MTOM_NAMESPACE + "\"/>" +
            "</SOAP-ENV:Body>" +
-        "</SOAP-ENV:Envelope>"; 
-    static final String SOAP_REMOVE_ID = 
+        "</SOAP-ENV:Envelope>";
+    static final String SOAP_REMOVE_ID =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-           "<SOAP-ENV:Body>" + 
+           "<SOAP-ENV:Body>" +
               "<srvc:delete_mtomType xmlns:srvc=\"" + MTOM_SERVICE_NAMESPACE + "\" xmlns=\"" + MTOM_NAMESPACE + "\">" +
                    "<id>";
-    static final String SOAP_REMOVE_END =     
+    static final String SOAP_REMOVE_END =
                    "</id>" +
-              "</srvc:delete_mtomType>" + 
+              "</srvc:delete_mtomType>" +
            "</SOAP-ENV:Body>" +
-        "</SOAP-ENV:Envelope>";     
+        "</SOAP-ENV:Envelope>";
 
     // JUnit test fixtures
     public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
@@ -231,7 +231,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
     public static Service testService = null;
     public static Dispatch<SOAPMessage> dispatch = null;
     public static DBWSBuilder builder = new DBWSBuilder();
-    
+
     @Resource
     protected WebServiceContext wsContext;
 
@@ -317,7 +317,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         }
         return super.invoke(request);
     }
-    
+
     @Override
     public void logoutSessions() {
         if (xrService.getORSession() != null) {
@@ -427,7 +427,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
             response = dispatch.invoke(request);
             assertTrue("incorrect number of attachments",
                 response.countAttachments() == 3);
-            for (Iterator<AttachmentPart> attachmentsIterator = 
+            for (Iterator<AttachmentPart> attachmentsIterator =
                 (Iterator<AttachmentPart>)response.getAttachments(); attachmentsIterator.hasNext();) {
                 AttachmentPart aPart = attachmentsIterator.next();
                 DataHandler dh = aPart.getDataHandler();
@@ -459,7 +459,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
                 SOAPMessage request = factory.createMessage();
                 SOAPPart part = request.getSOAPPart();
                 DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
-                    new InputSource(new StringReader(SOAP_REMOVE_ID + i + 
+                    new InputSource(new StringReader(SOAP_REMOVE_ID + i +
                         SOAP_REMOVE_END))));
                 part.setContent(domSource);
                 dispatch.invoke(request);

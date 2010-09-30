@@ -86,12 +86,12 @@ public class BuildTbl2TestWebServiceSuite extends WebServiceSOAP12TestSuite impl
         super.init();
     }
 
-    static final String REQUEST_MSG = 
+    static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"" + URI_NS_SOAP_1_2_ENVELOPE + "\">" +
           "<env:Header/>" +
           "<env:Body>" +
-            "<srvc:" + ADVJDBC_BUILD_TBL2_TEST + " xmlns:srvc=\"" + 
-                ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE + 
+            "<srvc:" + ADVJDBC_BUILD_TBL2_TEST + " xmlns:srvc=\"" +
+                ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE +
                 "\" xmlns=\"" + ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE + "\">" +
               "<srvc:NUM>3</srvc:NUM>" +
             "</srvc:" + ADVJDBC_BUILD_TBL2_TEST + ">" +
@@ -102,7 +102,7 @@ public class BuildTbl2TestWebServiceSuite extends WebServiceSOAP12TestSuite impl
         ParserConfigurationException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance(SOAP_1_2_PROTOCOL);
         SOAPMessage request = factory.createMessage();
-        SOAPPart part = request.getSOAPPart(); 
+        SOAPPart part = request.getSOAPPart();
         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
             new InputSource(new StringReader(REQUEST_MSG))));
         part.setContent(domSource);
@@ -126,10 +126,10 @@ public class BuildTbl2TestWebServiceSuite extends WebServiceSOAP12TestSuite impl
         }
     }
 
-    static final String TEST_RESPONSE = 
+    static final String TEST_RESPONSE =
         "<env:Envelope xmlns:env=\"" + URI_NS_SOAP_1_2_ENVELOPE + "\">" +
           "<env:Header/>" +
-          "<env:Body>" +          
+          "<env:Body>" +
              "<srvc:" + ADVJDBC_BUILD_TBL2_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_TBL2_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_TBL2_SERVICE_NAMESPACE + "\">" +
                  "<srvc:result>" +
                      "<somepackage_tbl2Type xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +

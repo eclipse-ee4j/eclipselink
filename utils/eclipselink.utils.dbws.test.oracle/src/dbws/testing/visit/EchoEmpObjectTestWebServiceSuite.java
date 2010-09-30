@@ -84,14 +84,14 @@ public class EchoEmpObjectTestWebServiceSuite extends WebServiceTestSuite implem
         super.init();
     }
 
-    static final String REQUEST_MSG = 
+    static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Header/>" +
           "<env:Body>" +
-            "<srvc:" + ADVJDBC_ECHO_EMPOBJECT_TEST + " xmlns:srvc=\"" + 
-                ADVJDBC_ECHO_EMPOBJECT_SERVICE_NAMESPACE + 
+            "<srvc:" + ADVJDBC_ECHO_EMPOBJECT_TEST + " xmlns:srvc=\"" +
+                ADVJDBC_ECHO_EMPOBJECT_SERVICE_NAMESPACE +
                 "\" xmlns=\"" + ADVJDBC_ECHO_EMPOBJECT_NAMESPACE + "\">" +
-              "<srvc:ANEMPOBJECT>" + 
+              "<srvc:ANEMPOBJECT>" +
                   "<employee_id>55</employee_id>" +
                   "<address>" +
                      "<street>20 Pinetrail Cres.</street>" +
@@ -113,7 +113,7 @@ public class EchoEmpObjectTestWebServiceSuite extends WebServiceTestSuite implem
         ParserConfigurationException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage request = factory.createMessage();
-        SOAPPart part = request.getSOAPPart(); 
+        SOAPPart part = request.getSOAPPart();
         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
             new InputSource(new StringReader(REQUEST_MSG))));
         part.setContent(domSource);
@@ -137,10 +137,10 @@ public class EchoEmpObjectTestWebServiceSuite extends WebServiceTestSuite implem
         }
     }
 
-    static final String TEST_RESPONSE = 
+    static final String TEST_RESPONSE =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<SOAP-ENV:Header/>" +
-          "<SOAP-ENV:Body>" +          
+          "<SOAP-ENV:Body>" +
              "<srvc:" + ADVJDBC_ECHO_EMPOBJECT_TEST + "Response xmlns=\"" + ADVJDBC_ECHO_EMPOBJECT_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_ECHO_EMPOBJECT_SERVICE_NAMESPACE + "\">" +
                  "<srvc:result>" +
                      "<emp_objectType xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +

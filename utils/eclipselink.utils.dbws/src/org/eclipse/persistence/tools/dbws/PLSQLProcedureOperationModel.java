@@ -42,7 +42,7 @@ public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
     public boolean isPLSQLProcedureOperation() {
         return true;
     }
-    
+
     @Override
     public void buildOperation(DBWSBuilder builder) {
         List<DbStoredProcedure> procs = builder.loadProcedures(this, true);
@@ -203,7 +203,7 @@ public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
                             if (direction == INOUT) {
                                 parm = new Parameter();
                                 parm.setName(argName);
-                                // bug 303331 - set type in 'shadow' and 'regular' parameter 
+                                // bug 303331 - set type in 'shadow' and 'regular' parameter
                                 parm.setType(OracleHelper.getXMLTypeFromJDBCType(arg,
                                     builder.getTargetNamespace()));
                                 result.setType(parm.getType());
@@ -238,6 +238,6 @@ public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
             builder.xrServiceModel.getOperations().put(qo.getName(), qo);
         }
         addSimpleXMLFormat(builder.schema);
-       
+
     }
 }

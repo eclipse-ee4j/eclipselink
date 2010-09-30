@@ -85,12 +85,12 @@ public class P6testWebServiceSuite extends WebServiceTestSuite implements Provid
         super.init();
     }
 
-    static final String REQUEST_MSG = 
+    static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Header/>" +
           "<env:Body>" +
             "<srvc:" + PROC6_TEST + " xmlns:srvc=\"" + PROC6_SERVICE_NAMESPACE + "\" xmlns:ns1=\"" + PROC6_NAMESPACE + "\">" +
-              "<srvc:BAR>" + 
+              "<srvc:BAR>" +
                 "<ns1:item>" +
                   "<ns1:item>1</ns1:item>" +
                   "<ns1:item>2</ns1:item>" +
@@ -106,7 +106,7 @@ public class P6testWebServiceSuite extends WebServiceTestSuite implements Provid
                   "<ns1:item>8</ns1:item>" +
                   "<ns1:item>27</ns1:item>" +
                 "</ns1:item>" +
-              "</srvc:BAR>" + 
+              "</srvc:BAR>" +
             "</srvc:" + PROC6_TEST + ">" +
           "</env:Body>" +
         "</env:Envelope>";
@@ -116,7 +116,7 @@ public class P6testWebServiceSuite extends WebServiceTestSuite implements Provid
         ParserConfigurationException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage request = factory.createMessage();
-        SOAPPart part = request.getSOAPPart(); 
+        SOAPPart part = request.getSOAPPart();
         DOMSource domSource = new DOMSource(
             getDocumentBuilder().parse(new InputSource(new StringReader(REQUEST_MSG))));
         part.setContent(domSource);
@@ -142,11 +142,11 @@ public class P6testWebServiceSuite extends WebServiceTestSuite implements Provid
         }
     }
 
-    static final String TEST_RESPONSE = 
+    static final String TEST_RESPONSE =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
-            "<srvc:" + PROC6_TEST + "Response xmlns:srvc=\"" + PROC6_SERVICE_NAMESPACE + "\">" +          
+            "<srvc:" + PROC6_TEST + "Response xmlns:srvc=\"" + PROC6_SERVICE_NAMESPACE + "\">" +
               "<srvc:result>1</srvc:result>" +
             "</srvc:" + PROC6_TEST + "Response>" +
           "</SOAP-ENV:Body>" +

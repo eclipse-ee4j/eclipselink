@@ -141,15 +141,15 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
               "isCollection=\"true\" " +
               "returnType=\"" + SECONDARY_ALL_SCHEMA_TYPE + "\"> " +
               "<text><![CDATA[" + SECONDARY_ALL_SQL + "]]></text>" +
-              "<secondary-text><![CDATA[" + SECONDARY_ALL_SQL + 
-              	NONSENCE_WHERE_SQL + "]]></secondary-text>" +
+              "<secondary-text><![CDATA[" + SECONDARY_ALL_SQL +
+                  NONSENCE_WHERE_SQL + "]]></secondary-text>" +
           "</sql>" +
           "<sql " +
               "name=\"countSecondary\" " +
               "isCollection=\"false\" " +
               "returnType=\"" + SECONDARY_COUNT_SCHEMA_TYPE +"\"> " +
               "<text><![CDATA[" + SECONDARY_COUNT_SQL + "]]></text>" +
-              "<secondary-text><![CDATA[" + SECONDARY_COUNT_SQL + 
+              "<secondary-text><![CDATA[" + SECONDARY_COUNT_SQL +
                 NONSENCE_WHERE_SQL + "]]></secondary-text>" +
           "</sql>" +
         "</dbws-builder>";
@@ -167,7 +167,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
     public static QName portQName = null;
     public static Service testService = null;
     public static DBWSBuilder builder = new DBWSBuilder();
-   
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
@@ -175,7 +175,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
         String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
         String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
-       
+
         String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
         password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
         DBWS_BUILDER_XML_PLATFORM + platform + DBWS_BUILDER_XML_MAIN;
@@ -205,19 +205,19 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         testService = Service.create(serviceQName);
         testService.addPort(portQName, SOAP11HTTP_BINDING, ENDPOINT_ADDRESS);
     }
-   
+
     @AfterClass
     public static void teardown() {
         if (endpoint != null) {
             endpoint.stop();
         }
     }
-   
+
     @PreDestroy
     public void destroy() {
         super.destroy();
     }
-   
+
     @Override
     protected InputStream initXRServiceStream(ClassLoader parentClassLoader, ServletContext sc) {
         return new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
@@ -238,7 +238,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         super.init(new XRDynamicClassLoader(Thread.currentThread().getContextClassLoader()),
             null, false);
     }
-     
+
      @Override
      public void logoutSessions() {
          if (xrService.getORSession() != null) {
@@ -248,7 +248,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
              ((DatabaseSession)xrService.getOXSession()).logout();
          }
      }
-   
+
      @Override
      public void buildSessions() {
          Project oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
@@ -276,13 +276,13 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      }
 
      //hokey test naming convention to hack order-of-tests
-     
+
      @Test
      public void checkSQLOperationModel() {
-     	SQLOperationModel sqlModel = (SQLOperationModel)builder.operations.get(0);
-     	assertEquals(SECONDARY_ALL_SQL + NONSENCE_WHERE_SQL , sqlModel.getSecondarySqlText());
-     	assertFalse(sqlModel.isSimpleXMLFormat());
-     	assertEquals(SECONDARY_ALL_SCHEMA_TYPE, sqlModel.getReturnType());
+         SQLOperationModel sqlModel = (SQLOperationModel)builder.operations.get(0);
+         assertEquals(SECONDARY_ALL_SQL + NONSENCE_WHERE_SQL , sqlModel.getSecondarySqlText());
+         assertFalse(sqlModel.isSimpleXMLFormat());
+         assertEquals(SECONDARY_ALL_SCHEMA_TYPE, sqlModel.getReturnType());
      }
 
      @Test
@@ -296,34 +296,34 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      public static final String SCHEMA_CONTROL_DOC =
          "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
          "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:secondarySQL\" xmlns=\"urn:secondarySQL\" elementFormDefault=\"qualified\">\n" +
-  	    "   <xsd:complexType name=\"secondaryType\">\n" +
- 	    "      <xsd:sequence>\n" +
- 	    "         <xsd:element name=\"empno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
- 	    "         <xsd:element name=\"ename\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
- 	    "         <xsd:element name=\"job\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
- 	    "         <xsd:element name=\"mgr\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
- 	    "         <xsd:element name=\"hiredate\" type=\"xsd:date\" minOccurs=\"0\" nillable=\"true\"/>\n" +
- 	    "         <xsd:element name=\"sal\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
- 	    "         <xsd:element name=\"comm\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
- 	    "         <xsd:element name=\"deptno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
- 	    "      </xsd:sequence>\n" +
- 	    "   </xsd:complexType>\n" +
- 	    "   <xsd:complexType name=\"secondaryAggregate\">\n" +
- 	    "      <xsd:sequence>\n" +
- 	    "         <xsd:element name=\"count\" type=\"xsd:integer\" minOccurs=\"0\" nillable=\"true\"/>\n" +
- 	    "         <xsd:element name=\"max-salary\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
- 	    "      </xsd:sequence>\n" +
- 	    "   </xsd:complexType>\n" +
- 	    "   <xsd:element name=\"secondaryType\" type=\"secondaryType\"/>\n" +
- 	    "   <xsd:element name=\"secondaryAggregate\" type=\"secondaryAggregate\"/>\n" +
- 	    "</xsd:schema>";
+          "   <xsd:complexType name=\"secondaryType\">\n" +
+         "      <xsd:sequence>\n" +
+         "         <xsd:element name=\"empno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"ename\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"job\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"mgr\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"hiredate\" type=\"xsd:date\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"sal\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"comm\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"deptno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "      </xsd:sequence>\n" +
+         "   </xsd:complexType>\n" +
+         "   <xsd:complexType name=\"secondaryAggregate\">\n" +
+         "      <xsd:sequence>\n" +
+         "         <xsd:element name=\"count\" type=\"xsd:integer\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"max-salary\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "      </xsd:sequence>\n" +
+         "   </xsd:complexType>\n" +
+         "   <xsd:element name=\"secondaryType\" type=\"secondaryType\"/>\n" +
+         "   <xsd:element name=\"secondaryAggregate\" type=\"secondaryAggregate\"/>\n" +
+         "</xsd:schema>";
 
      static final String ALL_CUSTOM_CONTROL_DOC =
          "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
-         "<all-custom>" +    
+         "<all-custom>" +
          "</all-custom>";
 
-     static final String COUNT_REQUEST_MSG = 
+     static final String COUNT_REQUEST_MSG =
          "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
              "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<env:Header/>" +
@@ -331,7 +331,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
              "<countSecondary xmlns=\"" + SECONDARY_SERVICE_NAMESPACE + "\"/>" +
            "</env:Body>" +
          "</env:Envelope>";
-     
+
      @Test
      public void countSecondary() throws SOAPException, SAXException, IOException, TransformerException {
          MessageFactory factory = MessageFactory.newInstance();
@@ -362,22 +362,22 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          }
      }
      static final String COUNT_RESPONSE_MSG =
-	     "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-	     "<SOAP-ENV:Header/>" +
-	     "<SOAP-ENV:Body>" +
-	       "<srvc:countSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
-	       		"\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +          
-	         "<srvc:result>" +
-	           "<secondaryAggregate xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	             "<count>14</count>" +
-	             "<max-salary>5000.00</max-salary>" +
-	           "</secondaryAggregate>" +
-	         "</srvc:result>" +
-	       "</srvc:countSecondaryResponse>" +
-	     "</SOAP-ENV:Body>" +
-	     "</SOAP-ENV:Envelope>";
+         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+         "<SOAP-ENV:Header/>" +
+         "<SOAP-ENV:Body>" +
+           "<srvc:countSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
+                   "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
+             "<srvc:result>" +
+               "<secondaryAggregate xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                 "<count>14</count>" +
+                 "<max-salary>5000.00</max-salary>" +
+               "</secondaryAggregate>" +
+             "</srvc:result>" +
+           "</srvc:countSecondaryResponse>" +
+         "</SOAP-ENV:Body>" +
+         "</SOAP-ENV:Envelope>";
 
-     static final String ALL_REQUEST_MSG = 
+     static final String ALL_REQUEST_MSG =
          "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
              "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<env:Header/>" +
@@ -415,154 +415,154 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          }
      }
      static final String ALL_RESPONSE_MSG =
-	   "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-	     "<SOAP-ENV:Header/>" +
-	     "<SOAP-ENV:Body>" +
-	       "<srvc:allSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
-	           "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +            
-		     "<srvc:result>" +
-	 	       "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7369</empno>" +
-	 		     "<ename>SMITH</ename>" +
-	 		     "<job>CLERK</job>" +
-	 		     "<mgr>7902</mgr>" +
-	 		     "<hiredate>1980-12-17</hiredate>" +
-	 		     "<sal>800.00</sal>" +
-	 		     "<comm xsi:nil=\"true\"/>" +
-	 		     "<deptno>20</deptno>" +
-	 	       "</secondaryType>" +
-	 	       "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7499</empno>" +
-	 		     "<ename>ALLEN</ename>" +
-	 		     "<job>SALESMAN</job>" +
-	 		     "<mgr>7698</mgr>" +
-	 		     "<hiredate>1981-02-20</hiredate>" +
-	 		     "<sal>1600.00</sal>" +
-	 		     "<comm>300.00</comm>" +
-	 		     "<deptno>30</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7521</empno>" +
-	 		     "<ename>WARD</ename>" +
-	 		     "<job>SALESMAN</job>" +
-	 		     "<mgr>7698</mgr>" +
-	 		     "<hiredate>1981-02-22</hiredate>" +
-	 		     "<sal>1250.00</sal>" +
-	 		     "<comm>500.00</comm>" +
-	 		     "<deptno>30</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7566</empno>" +
-	 		     "<ename>JONES</ename>" +
-	 		     "<job>MANAGER</job>" +
-	 		     "<mgr>7839</mgr>" +
-	 		     "<hiredate>1981-04-02</hiredate>" +
-	 		     "<sal>2975.00</sal>" +
-	 		     "<comm xsi:nil=\"true\"/>" +
-	 		     "<deptno>20</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7654</empno>" +
-	 		     "<ename>MARTIN</ename>" +
-	 		     "<job>SALESMAN</job>" +
-	 		     "<mgr>7698</mgr>" +
-	 		     "<hiredate>1981-09-28</hiredate>" +
-	 		     "<sal>1250.00</sal>" +
-	 		     "<comm>1400.00</comm>" +
-	 		     "<deptno>30</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7698</empno>" +
-	 		     "<ename>BLAKE</ename>" +
-	 		     "<job>MANAGER</job>" +
-	 		     "<mgr>7839</mgr>" +
-	 		     "<hiredate>1981-05-01</hiredate>" +
-	 		     "<sal>2850.00</sal>" +
-	 		     "<comm xsi:nil=\"true\"/>" +
-	 		     "<deptno>30</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7782</empno>" +
-	 		     "<ename>CLARK</ename>" +
-	 		     "<job>MANAGER</job>" +
-	 		     "<mgr>7839</mgr>" +
-	 		     "<hiredate>1981-06-09</hiredate>" +
-	 		     "<sal>2450.00</sal>" +
-	 		     "<comm xsi:nil=\"true\"/>" +
-	 		     "<deptno>10</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7788</empno>" +
-	 		     "<ename>SCOTT</ename>" +
-	 		     "<job>ANALYST</job>" +
-	 		     "<mgr>7566</mgr>" +
-	 		     "<hiredate>1981-06-09</hiredate>" +
-	 		     "<sal>3000.00</sal>" +
-	 		     "<comm xsi:nil=\"true\"/>" +
-	 		     "<deptno>20</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7839</empno>" +
-	 		     "<ename>KING</ename>" +
-	 		     "<job>PRESIDENT</job>" +
-	 		     "<mgr xsi:nil=\"true\"/>" +
-	 		     "<hiredate>1981-11-17</hiredate>" +
-	 		     "<sal>5000.00</sal>" +
-	 		     "<comm xsi:nil=\"true\"/>" +
-	 		     "<deptno>10</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7844</empno>" +
-	 		     "<ename>TURNER</ename>" +
-	 		     "<job>SALESMAN</job>" +
-	 		     "<mgr>7698</mgr>" +
-	 		     "<hiredate>1981-09-08</hiredate>" +
-	 		     "<sal>1500.00</sal>" +
-	 		     "<comm>0.00</comm>" +
-	 		     "<deptno>30</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7876</empno>" +
-	 		     "<ename>ADAMS</ename>" +
-	 		     "<job>CLERK</job>" +
-	 		     "<mgr>7788</mgr>" +
-	 		     "<hiredate>1987-05-23</hiredate>" +
-	 		     "<sal>1100.00</sal>" +
-	 		     "<comm xsi:nil=\"true\"/>" +
-	 		     "<deptno>20</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7900</empno>" +
-	 		     "<ename>JAMES</ename>" +
-	 		     "<job>CLERK</job>" +
-	 		     "<mgr>7698</mgr>" +
-	 		     "<hiredate>1981-12-03</hiredate>" +
-	 		     "<sal>950.00</sal>" +
-	 		     "<comm xsi:nil=\"true\"/>" +
-	 		     "<deptno>30</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7902</empno>" +
-	 		     "<ename>FORD</ename>" +
-	 		     "<job>ANALYST</job>" +
-	 		     "<mgr>7566</mgr>" +
-	 		     "<hiredate>1981-12-03</hiredate>" +
-	 		     "<sal>3000.00</sal>" +
-	 		     "<comm xsi:nil=\"true\"/>" +
-	 		     "<deptno>20</deptno>" +
-	 	      "</secondaryType>" +
-	 	      "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	 		     "<empno>7934</empno>" +
-	 		     "<ename>MILLER</ename>" +
-	 		     "<job>CLERK</job>" +
-	 		     "<mgr>7782</mgr>" +
-	 		     "<hiredate>1982-01-23</hiredate>" +
-	 		     "<sal>1300.00</sal>" +
-	 		     "<comm xsi:nil=\"true\"/>" +
-	 		     "<deptno>10</deptno>" +
-	 	      "</secondaryType>" + 
-		     "</srvc:result>" +
-		   "</srvc:allSecondaryResponse>" +
+       "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+         "<SOAP-ENV:Header/>" +
+         "<SOAP-ENV:Body>" +
+           "<srvc:allSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
+               "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
+             "<srvc:result>" +
+                "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7369</empno>" +
+                  "<ename>SMITH</ename>" +
+                  "<job>CLERK</job>" +
+                  "<mgr>7902</mgr>" +
+                  "<hiredate>1980-12-17</hiredate>" +
+                  "<sal>800.00</sal>" +
+                  "<comm xsi:nil=\"true\"/>" +
+                  "<deptno>20</deptno>" +
+                "</secondaryType>" +
+                "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7499</empno>" +
+                  "<ename>ALLEN</ename>" +
+                  "<job>SALESMAN</job>" +
+                  "<mgr>7698</mgr>" +
+                  "<hiredate>1981-02-20</hiredate>" +
+                  "<sal>1600.00</sal>" +
+                  "<comm>300.00</comm>" +
+                  "<deptno>30</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7521</empno>" +
+                  "<ename>WARD</ename>" +
+                  "<job>SALESMAN</job>" +
+                  "<mgr>7698</mgr>" +
+                  "<hiredate>1981-02-22</hiredate>" +
+                  "<sal>1250.00</sal>" +
+                  "<comm>500.00</comm>" +
+                  "<deptno>30</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7566</empno>" +
+                  "<ename>JONES</ename>" +
+                  "<job>MANAGER</job>" +
+                  "<mgr>7839</mgr>" +
+                  "<hiredate>1981-04-02</hiredate>" +
+                  "<sal>2975.00</sal>" +
+                  "<comm xsi:nil=\"true\"/>" +
+                  "<deptno>20</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7654</empno>" +
+                  "<ename>MARTIN</ename>" +
+                  "<job>SALESMAN</job>" +
+                  "<mgr>7698</mgr>" +
+                  "<hiredate>1981-09-28</hiredate>" +
+                  "<sal>1250.00</sal>" +
+                  "<comm>1400.00</comm>" +
+                  "<deptno>30</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7698</empno>" +
+                  "<ename>BLAKE</ename>" +
+                  "<job>MANAGER</job>" +
+                  "<mgr>7839</mgr>" +
+                  "<hiredate>1981-05-01</hiredate>" +
+                  "<sal>2850.00</sal>" +
+                  "<comm xsi:nil=\"true\"/>" +
+                  "<deptno>30</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7782</empno>" +
+                  "<ename>CLARK</ename>" +
+                  "<job>MANAGER</job>" +
+                  "<mgr>7839</mgr>" +
+                  "<hiredate>1981-06-09</hiredate>" +
+                  "<sal>2450.00</sal>" +
+                  "<comm xsi:nil=\"true\"/>" +
+                  "<deptno>10</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7788</empno>" +
+                  "<ename>SCOTT</ename>" +
+                  "<job>ANALYST</job>" +
+                  "<mgr>7566</mgr>" +
+                  "<hiredate>1981-06-09</hiredate>" +
+                  "<sal>3000.00</sal>" +
+                  "<comm xsi:nil=\"true\"/>" +
+                  "<deptno>20</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7839</empno>" +
+                  "<ename>KING</ename>" +
+                  "<job>PRESIDENT</job>" +
+                  "<mgr xsi:nil=\"true\"/>" +
+                  "<hiredate>1981-11-17</hiredate>" +
+                  "<sal>5000.00</sal>" +
+                  "<comm xsi:nil=\"true\"/>" +
+                  "<deptno>10</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7844</empno>" +
+                  "<ename>TURNER</ename>" +
+                  "<job>SALESMAN</job>" +
+                  "<mgr>7698</mgr>" +
+                  "<hiredate>1981-09-08</hiredate>" +
+                  "<sal>1500.00</sal>" +
+                  "<comm>0.00</comm>" +
+                  "<deptno>30</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7876</empno>" +
+                  "<ename>ADAMS</ename>" +
+                  "<job>CLERK</job>" +
+                  "<mgr>7788</mgr>" +
+                  "<hiredate>1987-05-23</hiredate>" +
+                  "<sal>1100.00</sal>" +
+                  "<comm xsi:nil=\"true\"/>" +
+                  "<deptno>20</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7900</empno>" +
+                  "<ename>JAMES</ename>" +
+                  "<job>CLERK</job>" +
+                  "<mgr>7698</mgr>" +
+                  "<hiredate>1981-12-03</hiredate>" +
+                  "<sal>950.00</sal>" +
+                  "<comm xsi:nil=\"true\"/>" +
+                  "<deptno>30</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7902</empno>" +
+                  "<ename>FORD</ename>" +
+                  "<job>ANALYST</job>" +
+                  "<mgr>7566</mgr>" +
+                  "<hiredate>1981-12-03</hiredate>" +
+                  "<sal>3000.00</sal>" +
+                  "<comm xsi:nil=\"true\"/>" +
+                  "<deptno>20</deptno>" +
+               "</secondaryType>" +
+               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<empno>7934</empno>" +
+                  "<ename>MILLER</ename>" +
+                  "<job>CLERK</job>" +
+                  "<mgr>7782</mgr>" +
+                  "<hiredate>1982-01-23</hiredate>" +
+                  "<sal>1300.00</sal>" +
+                  "<comm xsi:nil=\"true\"/>" +
+                  "<deptno>10</deptno>" +
+               "</secondaryType>" +
+             "</srvc:result>" +
+           "</srvc:allSecondaryResponse>" +
          "</SOAP-ENV:Body>" +
        "</SOAP-ENV:Envelope>";
 
@@ -574,9 +574,9 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
          String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
          String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-         	password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
-         	  DBWS_BUILDER_XML_PLATFORM + platform + 
-         	    "</property>" +
+             password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
+               DBWS_BUILDER_XML_PLATFORM + platform +
+                 "</property>" +
               "</properties>" +
             "<sql " +
               "name=\"badColumns\" " +
@@ -602,12 +602,12 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
              }
          });
          try {
-			builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
-			     DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream,
-			     __nullStream, __nullStream, __nullStream, null);
-		}
+            builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+                 DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream,
+                 __nullStream, __nullStream, __nullStream, null);
+        }
         catch (Exception e) {
-        	assertEquals("Duplicate ResultSet columns not supported", e.getMessage());
-		}
+            assertEquals("Duplicate ResultSet columns not supported", e.getMessage());
+        }
      }
 }

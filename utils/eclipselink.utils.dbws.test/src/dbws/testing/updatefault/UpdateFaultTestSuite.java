@@ -103,9 +103,9 @@ import static dbws.testing.DBWSTestSuite.SFAULT_TEST;
 public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
 
     public static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SFAULT;
-    static final String SOAP_UPDATE_REQUEST = 
+    static final String SOAP_UPDATE_REQUEST =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-           "<SOAP-ENV:Body>" + 
+           "<SOAP-ENV:Body>" +
               "<srvc:update_sfault_tableType xmlns:srvc=\"" + SFAULT_SERVICE_NAMESPACE + "\" xmlns=\"" + SFAULT_NAMESPACE + "\">" +
                  "<srvc:theInstance>" +
                     "<sfault_tableType>" +
@@ -114,7 +114,7 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
                        "<name>abcdefghij</name>" +
                     "</sfault_tableType>" +
                  "</srvc:theInstance>" +
-              "</srvc:update_sfault_tableType>" + 
+              "</srvc:update_sfault_tableType>" +
            "</SOAP-ENV:Body>" +
         "</SOAP-ENV:Envelope>";
 
@@ -200,7 +200,7 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         super.init(new XRDynamicClassLoader(Thread.currentThread().getContextClassLoader()),
             null, false);
     }
-    
+
     @Override
     public void logoutSessions() {
         if (xrService.getORSession() != null) {
@@ -258,7 +258,7 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         }
         // just for debugging, keep 'response' variable alive after try-catch
         if (response != null) {
-            response.hashCode(); 
+            response.hashCode();
         }
     }
 }

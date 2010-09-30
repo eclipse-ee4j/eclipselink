@@ -67,12 +67,12 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
         pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+        List<ObjectRelationalDataTypeDescriptor> descriptors =
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC1, descriptors.size() == 1);
         tbl1Asserts(descriptors.get(0));
     }
-    
+
     protected void tbl1Asserts(ObjectRelationalDataTypeDescriptor tbl1Descriptor) {
         assertTrue("wrong tbl1Descriptor alias",
             tbl1Descriptor.getAlias().equals(TBL1_DESCRIPTOR_ALIAS));
@@ -102,12 +102,12 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
         pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+        List<ObjectRelationalDataTypeDescriptor> descriptors =
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC2, descriptors.size() == 1);
         tbl2Asserts(descriptors.get(0));
     }
-    
+
     protected void tbl2Asserts(ObjectRelationalDataTypeDescriptor tbl2Descriptor) {
         assertTrue("wrong tbl2Descriptor alias",
             tbl2Descriptor.getAlias().equals(TBL2_DESCRIPTOR_ALIAS));
@@ -137,7 +137,7 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
         pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+        List<ObjectRelationalDataTypeDescriptor> descriptors =
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC3, descriptors.size() == 4);
         tbl3Asserts(descriptors.get(3));
@@ -145,7 +145,7 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
         tbl1Asserts(descriptors.get(1));
         tbl2Asserts(descriptors.get(2));
     }
-    
+
     protected void tbl3Asserts(ObjectRelationalDataTypeDescriptor tbl3Descriptor) {
         assertTrue("wrong tbl3Descriptor Java className",
             tbl3Descriptor.getAlias().equals(TBL3_DESCRIPTOR_ALIAS));
@@ -207,7 +207,7 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
         pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+        List<ObjectRelationalDataTypeDescriptor> descriptors =
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC4, descriptors.size() == 3);
         aRecordAsserts(descriptors.get(0));
@@ -225,7 +225,7 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
         pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+        List<ObjectRelationalDataTypeDescriptor> descriptors =
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC5, descriptors.size() == 3);
         aRecordAsserts(descriptors.get(0));
@@ -243,7 +243,7 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
         pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+        List<ObjectRelationalDataTypeDescriptor> descriptors =
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC6, descriptors.size() == 2);
         tbl2Asserts(descriptors.get(0));
@@ -276,14 +276,14 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PublisherWalker walker = new PublisherWalker(orDescriptorBuilder);
         builder.getSqlType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+        List<ObjectRelationalDataTypeDescriptor> descriptors =
             orDescriptorBuilder.getDescriptors();
         assertTrue("wrong number of descriptors for " + PROC7, descriptors.size() == 5);
         aRecordAsserts(descriptors.get(0));
         tbl1Asserts(descriptors.get(1));
         tbl2Asserts(descriptors.get(2));
         tbl4Asserts(descriptors.get(3));
-        bRecordAsserts(descriptors.get(4));      
+        bRecordAsserts(descriptors.get(4));
     }
 
     protected void bRecordAsserts(ObjectRelationalDataTypeDescriptor bRecordDescriptor) {

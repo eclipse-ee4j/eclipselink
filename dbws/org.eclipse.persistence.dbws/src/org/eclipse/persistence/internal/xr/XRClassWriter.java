@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -51,52 +51,52 @@ public class XRClassWriter extends DynamicClassWriter {
         XRDynamicEntity.class.getName().replace('.', '/');
     private static final String XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES =
         XRDynamicEntity_CollectionWrapper.class.getName().replace('.', '/');
-    
-	public XRClassWriter() {
-		super(XRDynamicEntity.class);
-	}
-    
+
+    public XRClassWriter() {
+        super(XRDynamicEntity.class);
+    }
+
     public XRClassWriter(Class<?> parentClass) {
         super(parentClass);
     }
 
     @Override
     public byte[] writeClass(DynamicClassLoader loader, String className) throws ClassNotFoundException {
-		/*
-		 * Pattern is as follows:
-		 * 
-		 * public class Foo extends XRDynamicEntity {
-		 *
-		 *   public static XRFieldInfo XRFI = new XRFieldInfo();
-		 *   
-		 *   public Foo() {
-		 *     super();
-		 *   }
-		 *   
-		 *   @Override
-		 *   public XRFieldInfo getFieldInfo() {
-		 *     return XRFI;
-		 *   }
-		 * }
-         * 
+        /*
+         * Pattern is as follows:
+         *
+         * public class Foo extends XRDynamicEntity {
+         *
+         *   public static XRFieldInfo XRFI = new XRFieldInfo();
+         *
+         *   public Foo() {
+         *     super();
+         *   }
+         *
+         *   @Override
+         *   public XRFieldInfo getFieldInfo() {
+         *     return XRFI;
+         *   }
+         * }
+         *
          * At some time later in the class' lifecycle, the XRFI
          * static is populated with the required info w.r.t the index for a field
          */
-		String classNameAsSlashes = className.replace('.', '/');
-		ClassWriter cw = new ClassWriter(true);
-		CodeVisitor cv;
-		// special-case: build sub-class of XRDynamicEntityCollection
-		if (className.endsWith(COLLECTION_WRAPPER_SUFFIX)) {
-			cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes,
-				XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null, null);
-			cv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
-			cv.visitVarInsn(ALOAD, 0);
-			cv.visitMethodInsn(INVOKESPECIAL, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES,
-			    INIT, "()V");
-			cv.visitInsn(RETURN);
-			cv.visitMaxs(0, 0);
-		}
-		else {
+        String classNameAsSlashes = className.replace('.', '/');
+        ClassWriter cw = new ClassWriter(true);
+        CodeVisitor cv;
+        // special-case: build sub-class of XRDynamicEntityCollection
+        if (className.endsWith(COLLECTION_WRAPPER_SUFFIX)) {
+            cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes,
+                XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null, null);
+            cv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitMethodInsn(INVOKESPECIAL, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES,
+                INIT, "()V");
+            cv.visitInsn(RETURN);
+            cv.visitMaxs(0, 0);
+        }
+        else {
             cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes,
                 XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null, null);
             cw.visitField(ACC_PUBLIC + ACC_STATIC, XR_FIELD_INFO_STATIC,
@@ -114,14 +114,14 @@ public class XRClassWriter extends DynamicClassWriter {
             cv.visitMethodInsn(INVOKESPECIAL, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, INIT, "()V");
             cv.visitInsn(RETURN);
             cv.visitMaxs(0, 0);
-            cv = cw.visitMethod(ACC_PUBLIC, "getFieldInfo", 
+            cv = cw.visitMethod(ACC_PUBLIC, "getFieldInfo",
                 "()L" + XRFIELDINFO_CLASSNAME_SLASHES + ";", null, null);
             cv.visitFieldInsn(GETSTATIC, classNameAsSlashes, XR_FIELD_INFO_STATIC,
                 "L" + XRFIELDINFO_CLASSNAME_SLASHES + ";");
             cv.visitInsn(ARETURN);
             cv.visitMaxs(0, 0);
-		}
-		cw.visitEnd();
-		return cw.toByteArray();
+        }
+        cw.visitEnd();
+        return cw.toByteArray();
     }
 }

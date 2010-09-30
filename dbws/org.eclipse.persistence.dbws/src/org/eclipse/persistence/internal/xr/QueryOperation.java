@@ -88,7 +88,7 @@ public class QueryOperation extends Operation {
     public QueryOperation() {
         super();
     }
-    
+
     public Result getResult() {
         return result;
     }
@@ -348,48 +348,52 @@ public class QueryOperation extends Operation {
                     return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
                 }
                 if (resultType != null) {
-                	if (resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
+                    if (resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
                         // handle primitive types
                         ValueObject vo = new ValueObject();
                         vo.value = value;
                         value = vo;
-                	}
-                	else if (xrService.descriptorsByQName.containsKey(resultType)) {
-                		XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
-                		ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(
-                			xdesc.getAlias());
-                		Object targetObject = null;
-                		if (isCollection()) {
-                			XRDynamicEntity_CollectionWrapper xrCollWrapper = 
-                				new XRDynamicEntity_CollectionWrapper();
-                			Vector<AbstractRecord> results = (Vector<AbstractRecord>)value;
-                			for (int i = 0, len = results.size(); i < len; i++) {
-                				Object o = desc.getObjectBuilder().buildNewInstance();
-                    			populateTargetObjectFromRecord(desc.getMappings(),
-                    				results.get(i), o, (AbstractSession)xrService.getORSession());
-                    			xrCollWrapper.add(o);
-                			}
-                			targetObject = xrCollWrapper;
-                		}
-                		else {
-                			targetObject = desc.getObjectBuilder().buildNewInstance();
-                			populateTargetObjectFromRecord(desc.getMappings(),
-                				(AbstractRecord)((Vector)value).get(0), targetObject,
-                					(AbstractSession)xrService.getORSession());
-                		}
-            			return targetObject;
-                	}
+                    }
+                    else {
+                        Object targetObject = value;
+                        if (xrService.descriptorsByQName.containsKey(resultType)) {
+                            XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
+                            ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(
+                                xdesc.getAlias());
+                            if (desc.isAggregateDescriptor()) {
+                                if (isCollection()) {
+                                    XRDynamicEntity_CollectionWrapper xrCollWrapper =
+                                        new XRDynamicEntity_CollectionWrapper();
+                                    Vector<AbstractRecord> results = (Vector<AbstractRecord>)value;
+                                    for (int i = 0, len = results.size(); i < len; i++) {
+                                        Object o = desc.getObjectBuilder().buildNewInstance();
+                                        populateTargetObjectFromRecord(desc.getMappings(),
+                                            results.get(i), o, (AbstractSession)xrService.getORSession());
+                                        xrCollWrapper.add(o);
+                                    }
+                                    targetObject = xrCollWrapper;
+                                }
+                                else {
+                                    targetObject = desc.getObjectBuilder().buildNewInstance();
+                                    populateTargetObjectFromRecord(desc.getMappings(),
+                                        (AbstractRecord)((Vector)value).get(0), targetObject,
+                                            (AbstractSession)xrService.getORSession());
+                                }
+                            }
+                        }
+                        value = targetObject;
+                    }
                 }
             }
         }
         return value;
     }
-    
+
     protected void populateTargetObjectFromRecord(Vector<DatabaseMapping> mappings,
-    	AbstractRecord record, Object targetObject, AbstractSession session) {
-		for (DatabaseMapping dm : mappings) {
-			dm.readFromRowIntoObject(record, null, targetObject, null, session);
-		}
+        AbstractRecord record, Object targetObject, AbstractSession session) {
+        for (DatabaseMapping dm : mappings) {
+            dm.readFromRowIntoObject(record, null, targetObject, null, session);
+        }
     }
 
     public Object createSimpleXMLFormat(XRServiceAdapter xrService, Object value) {

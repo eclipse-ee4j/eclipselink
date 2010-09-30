@@ -386,7 +386,7 @@ public class RelationshipsTestSuite {
                  "</remote-caching>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
-              "</class-mapping-descriptor>" +              
+              "</class-mapping-descriptor>" +
            "</class-mapping-descriptors>" +
            "<login xsi:type=\"database-login\">\n" +
               "<bind-all-parameters>true</bind-all-parameters>\n" +

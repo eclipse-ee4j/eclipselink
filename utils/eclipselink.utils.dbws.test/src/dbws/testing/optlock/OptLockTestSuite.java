@@ -115,7 +115,7 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
     public static QName portQName = null;
     public static Service testService = null;
     public static DBWSBuilder builder = new DBWSBuilder();
-   
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
@@ -150,19 +150,19 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
         testService = Service.create(serviceQName);
         testService.addPort(portQName, SOAP11HTTP_BINDING, ENDPOINT_ADDRESS);
     }
-   
+
     @AfterClass
     public static void teardown() {
         if (endpoint != null) {
             endpoint.stop();
         }
     }
-   
+
     @PreDestroy
     public void destroy() {
         super.destroy();
     }
-   
+
     @Override
     protected InputStream initXRServiceStream(ClassLoader parentClassLoader, ServletContext sc) {
         return new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
@@ -183,7 +183,7 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
         super.init(new XRDynamicClassLoader(Thread.currentThread().getContextClassLoader()),
             null, false);
     }
-     
+
      @Override
      public void logoutSessions() {
          if (xrService.getORSession() != null) {
@@ -193,7 +193,7 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
              ((DatabaseSession)xrService.getOXSession()).logout();
          }
      }
-   
+
      @Override
      public void buildSessions() {
          Project oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
@@ -220,15 +220,15 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
          xrService.setOXSession(xrService.getXMLContext().getSession(0));
      }
 
-  static final String THE_INSTANCE = 
+  static final String THE_INSTANCE =
       "<optlockType>" +
           "<id>1</id>" +
           "<name>name</name>" +
           "<descript>this is ver 2</descript>" +
           "<version>1</version>" +
       "</optlockType>";
-        
-    static final String REQUEST_MSG = 
+
+    static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<env:Header/>" +
@@ -238,16 +238,16 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
               "<srvc:theInstance>" +
                 THE_INSTANCE +
               "</srvc:theInstance>" +
-            "</srvc:update_optlockType>" + 
+            "</srvc:update_optlockType>" +
           "</env:Body>" +
         "</env:Envelope>";
-    
+
     @Test
     public void updateinstanceTest() throws SOAPException, IOException, SAXException,
         ParserConfigurationException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage request = factory.createMessage();
-        SOAPPart part = request.getSOAPPart(); 
+        SOAPPart part = request.getSOAPPart();
         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
             new InputSource(new StringReader(REQUEST_MSG))));
         part.setContent(domSource);

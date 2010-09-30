@@ -31,7 +31,7 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive
  * <b>PUBLIC:</b> WeblogicPackager extends {@link JSR109WebServicePackager}. It is responsible for generating <br>
  * the WebLogic-specific deployment information - specifically, the settings in the sessions.xml file <br>
  * that require WebLogic-specific platform information
- * 
+ *
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */

@@ -54,14 +54,14 @@ import static org.eclipse.persistence.tools.dbws.Util.UNDER_DBWS;
  *    |       eclipselink-dbws.xml
  *    |
  *    +---_dbws
- *    |       DBWSProvider.class 
+ *    |       DBWSProvider.class
  *    |
  *    \---wsdl
  *            <i>swaref.xsd</i>                 -- optional if using attachments
  *            eclipselink-dbws-schema.xsd
  *            eclipselink-dbws.wsdl
  * </pre>
- * 
+ *
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
@@ -78,7 +78,7 @@ public class JavasePackager extends ProviderPackager {
     public Archiver buildDefaultArchiver() {
         return new JavaseArchiver(this);
     }
-    
+
     /**
      * by returning null, the generated _dbws.DDBWProvider class will have a slightly-different
      * class annotation:
@@ -96,7 +96,7 @@ public class JavasePackager extends ProviderPackager {
     public String getWSDLPathPrefix() {
         return null;
     }
-    
+
     static class JavaseArchiver extends JarArchiver {
         JavaseArchiver() {
             super();
@@ -120,7 +120,7 @@ public class JavasePackager extends ProviderPackager {
                 }
                 fis.close();
                 f.deleteOnExit();
-                
+
                 jarOutputStream.putNextEntry(getWSDLJarEntry());
                 f = new File(packager.getStageDir(), DBWS_WSDL);
                 fis = new FileInputStream(f);

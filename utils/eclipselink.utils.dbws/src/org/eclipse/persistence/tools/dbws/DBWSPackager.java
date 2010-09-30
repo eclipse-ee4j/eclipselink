@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,8 +26,8 @@ public interface DBWSPackager {
     public enum ArchiveUse {
         archive, noArchive, ignore;
     }
-    
-	// attribute methods
+
+    // attribute methods
     public void setDBWSBuilder(DBWSBuilder builder);
     public void setAdditionalArgs(String[] additionalArgs);
     public File getStageDir();
@@ -39,7 +39,7 @@ public interface DBWSPackager {
     public String getPackagerLabel();
     public void setArchiveFilename(String archiveFilename);
     public String getArchiveFilename();
-    
+
     public void start(); // lifecycle methods
     public void end();
 
@@ -48,7 +48,7 @@ public interface DBWSPackager {
     public void closeSchemaStream(OutputStream schemaStream);
 
     public OutputStream getSessionsStream(String sessionsFileName) throws FileNotFoundException;
-	public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder);
+    public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder);
     public void closeSessionsStream(OutputStream sessionsStream);
 
     public OutputStream getServiceStream() throws FileNotFoundException;
@@ -81,13 +81,13 @@ public interface DBWSPackager {
     public void closeProviderListenerClassStream(OutputStream classProviderListenerStream);
     public OutputStream getProviderListenerSourceStream() throws FileNotFoundException;
     public void closeProviderListenerSourceStream(OutputStream sourceProviderListenerStream);
-	public void writeProvider(OutputStream sourceProviderStream, OutputStream codeGenProviderStream,
+    public void writeProvider(OutputStream sourceProviderStream, OutputStream codeGenProviderStream,
         OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream,
-	    DBWSBuilder builder);
+        DBWSBuilder builder);
 
     public void setArchiveUse(ArchiveUse archiveUse);
     public String getUsage();
-    
+
     public static interface Archiver {
         public void setPackager(DBWSPackager packager);
         public DBWSPackager getPackager();

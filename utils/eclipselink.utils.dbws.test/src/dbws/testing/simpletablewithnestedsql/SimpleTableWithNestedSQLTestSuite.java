@@ -51,9 +51,9 @@ import dbws.testing.DBWSTestSuite;
 
 public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
 
-	public final static String FINDBYNAME_RESPONSETYPE = "findByNameResponseType";
-	public final static String TABLE_ALIAS ="ns1:simpletable2Type";
-	
+    public final static String FINDBYNAME_RESPONSETYPE = "findByNameResponseType";
+    public final static String TABLE_ALIAS ="ns1:simpletable2Type";
+
     @Test
     public void checkWSDL() throws WSDLException {
         DBWS_BUILDER_XML_USERNAME =
@@ -88,7 +88,7 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
             "</sql>" +
           "</table>" +
         "</dbws-builder>";
-    	String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+        String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
         String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
@@ -100,7 +100,7 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSBuilderModel builderModel =
             (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
-        DBWSBuilder builder = new DBWSBuilder(); 
+        DBWSBuilder builder = new DBWSBuilder();
         builder.quiet = true;
         builder.setPlatformClassname(platform);
         builder.properties = builderModel.properties;
@@ -109,38 +109,38 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
         builder.setPackager(new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
             @Override
             public void start() {
-            	// do nothing - don't have to verify existence of 'stageDir' when
-            	// all the streams are in-memory
+                // do nothing - don't have to verify existence of 'stageDir' when
+                // all the streams are in-memory
             }
         });
         ByteArrayOutputStream dbwsServiceStream = new ByteArrayOutputStream();
         ByteArrayOutputStream wsdlStream = new ByteArrayOutputStream();
         builder.build(__nullStream, __nullStream, dbwsServiceStream, __nullStream, __nullStream,
-        	__nullStream, __nullStream, wsdlStream, __nullStream, __nullStream, __nullStream,
-        	__nullStream, null);
+            __nullStream, __nullStream, wsdlStream, __nullStream, __nullStream, __nullStream,
+            __nullStream, null);
         // verify that the generated WSDL has the correct response type
         // for the nested sql operation 'findByName'
         try {
             StringWriter sw = new StringWriter();
             StreamSource wsdlStreamSource = new StreamSource(new StringReader(wsdlStream.toString()));
-        	Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(
-        	    new StringReader(MATCH_SCHEMA)));
-        	StreamResult streamResult = new StreamResult(sw);
-        	t.transform(wsdlStreamSource, streamResult);
-        	sw.toString();
+            Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(
+                new StringReader(MATCH_SCHEMA)));
+            StreamResult streamResult = new StreamResult(sw);
+            t.transform(wsdlStreamSource, streamResult);
+            sw.toString();
             SchemaModelProject schemaProject = new SchemaModelProject();
             XMLContext xmlContext2 = new XMLContext(schemaProject);
             unmarshaller = xmlContext2.createUnmarshaller();
             Schema schema = (Schema)unmarshaller.unmarshal(new StringReader(sw.toString()));
-            ComplexType findByNameResponseType = 
-            	(ComplexType) schema.getTopLevelComplexTypes().get(FINDBYNAME_RESPONSETYPE);
+            ComplexType findByNameResponseType =
+                (ComplexType) schema.getTopLevelComplexTypes().get(FINDBYNAME_RESPONSETYPE);
             Element result = (Element)findByNameResponseType.getSequence().getElements().get(0);
             Element unnamed = (Element)result.getComplexType().getSequence().getElements().get(0);
             assertTrue("wrong refType for " + FINDBYNAME_RESPONSETYPE,
-            	TABLE_ALIAS.equals(unnamed.getRef()));
+                TABLE_ALIAS.equals(unnamed.getRef()));
         }
         catch (Exception e) {
-        	fail(e.getMessage());
+            fail(e.getMessage());
         }
     }
 }

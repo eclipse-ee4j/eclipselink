@@ -171,24 +171,24 @@ public class ProviderHelper extends XRServiceFactory {
         }
         return xrServiceStream;
     }
-    
+
     protected InputStream initXRSchemaStream(ClassLoader parentClassLoader, ServletContext sc) {
         InputStream xrSchemaStream = null;
         String path = WSDL_DIR + DBWS_SCHEMA_XML;
         if (sc != null) {
-            path = "/" + WEB_INF_DIR + path; 
+            path = "/" + WEB_INF_DIR + path;
             xrSchemaStream = sc.getResourceAsStream(path);
         }
         else {
             // if ServletContext is null, then we are running in JavaSE6 'container-less' mode
-            xrSchemaStream = parentClassLoader.getResourceAsStream(path); 
+            xrSchemaStream = parentClassLoader.getResourceAsStream(path);
         }
         if (xrSchemaStream == null) {
             throw new WebServiceException(DBWSException.couldNotLocateFile(DBWS_SCHEMA_XML));
         }
         return xrSchemaStream;
     }
-    
+
     protected InputStream initWSDLInputStream(ClassLoader parentClassLoader, ServletContext sc) {
         InputStream wsdlInputStream = null;
         String path = WSDL_DIR + DBWS_WSDL;
@@ -199,13 +199,13 @@ public class ProviderHelper extends XRServiceFactory {
         else {
             // if ServletContext is null, then we are running in JavaSE6 'container-less' mode
             wsdlInputStream = parentClassLoader.getResourceAsStream(path);
-        } 
+        }
         if (wsdlInputStream == null) {
             throw new WebServiceException(DBWSException.couldNotLocateFile(DBWS_WSDL));
         }
         return wsdlInputStream;
     }
-    
+
     @SuppressWarnings("unchecked")
     public void init(ClassLoader parentClassLoader, ServletContext sc, boolean mtomEnabled) {
         this.parentClassLoader = parentClassLoader;
@@ -250,12 +250,12 @@ public class ProviderHelper extends XRServiceFactory {
         try {
             StringWriter sw = new StringWriter();
             StreamSource wsdlStreamSource = new StreamSource(wsdlInputStream);
-        	Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(
-        	    new StringReader(MATCH_SCHEMA)));
-        	StreamResult streamResult = new StreamResult(sw);
-        	t.transform(wsdlStreamSource, streamResult);
-        	sw.toString();
-        	wsdlInputStream.close();
+            Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(
+                new StringReader(MATCH_SCHEMA)));
+            StreamResult streamResult = new StreamResult(sw);
+            t.transform(wsdlStreamSource, streamResult);
+            sw.toString();
+            wsdlInputStream.close();
             SchemaModelProject schemaProject = new SchemaModelProject();
             XMLContext xmlContext2 = new XMLContext(schemaProject);
             unmarshaller = xmlContext2.createUnmarshaller();
@@ -263,7 +263,7 @@ public class ProviderHelper extends XRServiceFactory {
             dbwsAdapter.setExtendedSchema(extendedSchema);
         }
         catch (Exception e) {
-        	// that's Ok, WSDL may not contain inline schema
+            // that's Ok, WSDL may not contain inline schema
         }
         finally {
             try {
@@ -273,10 +273,10 @@ public class ProviderHelper extends XRServiceFactory {
                 // ignore
             }
         }
-        
+
         // an Invocation needs a mapping for its parameters - use XMLAnyCollectionMapping +
         // custom AttributeAccessor
-        // NB - this code is NOt in it own initNNN method, cannot be overridden 
+        // NB - this code is NOt in it own initNNN method, cannot be overridden
         String tns = dbwsAdapter.getExtendedSchema().getTargetNamespace();
         Project oxProject = dbwsAdapter.getOXSession().getProject();
         XMLDescriptor invocationDescriptor = new XMLDescriptor();
@@ -315,7 +315,7 @@ public class ProviderHelper extends XRServiceFactory {
                             Node n = nl.item(j);
                             if (n.getNodeType() == Node.ELEMENT_NODE) {
                                 try {
-                                    Object theInstance = 
+                                    Object theInstance =
                                         dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(n);
                                     if (theInstance instanceof XMLRoot) {
                                         theInstance = ((XMLRoot)theInstance).getObject();
@@ -333,7 +333,7 @@ public class ProviderHelper extends XRServiceFactory {
                         ClassDescriptor desc = null;
                         for (XMLDescriptor xdesc : (Vector<XMLDescriptor>)oxProject.getOrderedDescriptors()) {
                             XMLSchemaReference schemaReference = xdesc.getSchemaReference();
-                            if (schemaReference != null && 
+                            if (schemaReference != null &&
                                 schemaReference.getSchemaContext().equalsIgnoreCase(key)) {
                                 desc = xdesc;
                                 break;
@@ -341,7 +341,7 @@ public class ProviderHelper extends XRServiceFactory {
                         }
                         if (desc != null) {
                             try {
-                                Object theObject = 
+                                Object theObject =
                                     dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(e,
                                         desc.getJavaClass());
                                 if (theObject instanceof XMLRoot) {
@@ -373,7 +373,7 @@ public class ProviderHelper extends XRServiceFactory {
                                 }
                             }
                             if (found) {
-                                Object theObject = 
+                                Object theObject =
                                     dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(e,
                                         desc.getJavaClass());
                                 if (theObject instanceof XMLRoot) {
@@ -643,7 +643,7 @@ public class ProviderHelper extends XRServiceFactory {
                     else {
                         serverQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
                     }
-                    soapFault = soapFactory.createFault("SOAPMessage response error - " + 
+                    soapFault = soapFactory.createFault("SOAPMessage response error - " +
                         e.getMessage(), serverQName);
                 }
                 catch (SOAPException soape2) {

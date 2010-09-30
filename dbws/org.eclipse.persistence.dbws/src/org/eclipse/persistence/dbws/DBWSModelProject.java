@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -265,7 +265,7 @@ public class DBWSModelProject extends Project {
         });
         isCollection.setXPath("@isCollection");
         descriptor.addMapping(isCollection);
-        
+
         XMLField isColl = new XMLField("@isCollection");
         isColl.setSchemaType(BOOLEAN_QNAME);
         descriptor.getInheritancePolicy().setClassIndicatorField(isColl);
@@ -482,7 +482,7 @@ public class DBWSModelProject extends Project {
         resultType.addFieldTransformer("type/text()", qNameTransformer);
         resultType.setAttributeTransformer(qNameTransformer);
         descriptor.addMapping(resultType);
-        
+
         return descriptor;
     }
 
@@ -522,12 +522,12 @@ public class DBWSModelProject extends Project {
         name.setAttributeName("name");
         name.setXPath("name/text()");
         descriptor.addMapping(name);
-        
+
         XMLDirectMapping descriptorName = new XMLDirectMapping();
         descriptorName.setAttributeName("descriptorName");
         descriptorName.setXPath("descriptor-name/text()");
         descriptor.addMapping(descriptorName);
-        
+
         XMLCompositeCollectionMapping parameters = new XMLCompositeCollectionMapping();
         parameters.setAttributeName("parameters");
         parameters.setReferenceClass(Parameter.class);
