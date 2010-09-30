@@ -49,7 +49,7 @@ import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLWriter;
 import javax.xml.namespace.QName;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-//import static 
+//import static
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
@@ -128,7 +128,7 @@ public class WSDLGenerator {
     public Definition generateWSDL() throws WSDLException {
         return generateWSDL(false);
     }
-    
+
     public Definition generateWSDL(boolean useSOAP12) throws WSDLException {
         WSDLFactory factory = WSDLFactory.newInstance();
         ExtensionRegistry registry = factory.newPopulatedExtensionRegistry();
@@ -227,7 +227,7 @@ public class WSDLGenerator {
              *   <wsdl:part name="fault" element="tns:FaultType"></wsdl:part>
              * </wsdl:message>
              */
-            Message faultMessage = def.createMessage(); 
+            Message faultMessage = def.createMessage();
             faultMessage.setUndefined(false);
             faultMessage.setQName(new QName(serviceNameSpace, FAULT_SUFFIX + TYPE_SUFFIX));
             Part faultPart = def.createPart();
@@ -257,7 +257,7 @@ public class WSDLGenerator {
         requestPart.setElementName(new QName(serviceNameSpace, operation.getName()));
         requestMessage.addPart(requestPart);
         def.addMessage(requestMessage);
-        
+
         Message responseMessage = null;
         if (operation.hasResponse()) {
             responseMessage = def.createMessage();
@@ -375,7 +375,7 @@ public class WSDLGenerator {
             output.setName(operation.getName() + EMPTY_RESPONSE);
             output.setMessage(emptyResponseMessage);
             op.setOutput(output);
-            Message faultMessage = def.getMessage(new QName(serviceNameSpace, 
+            Message faultMessage = def.getMessage(new QName(serviceNameSpace,
                 FAULT_SUFFIX + TYPE_SUFFIX));
             Fault fault = def.createFault();
             fault.setMessage(faultMessage);
@@ -524,8 +524,8 @@ public class WSDLGenerator {
             // <xsd:element name="FaultType">
             //   <xsd:complexType>
             //     <xsd:sequence>
-            //       <xsd:element name="faultCode" type="xsd:string"/> 
-            //       <xsd:element name="faultString" type="xsd:string"/> 
+            //       <xsd:element name="faultCode" type="xsd:string"/>
+            //       <xsd:element name="faultString" type="xsd:string"/>
             //     </xsd:sequence>
             //   </xsd:complexType>
             // </element>
@@ -550,11 +550,11 @@ public class WSDLGenerator {
         return marshaller.objectToXML(schema).getDocumentElement();
     }
 
-	public String getServiceName() {
-		return serviceName;
-	}
+    public String getServiceName() {
+        return serviceName;
+    }
 
-	public String getServiceNameSpace() {
-		return serviceNameSpace;
-	}
+    public String getServiceNameSpace() {
+        return serviceNameSpace;
+    }
 }

@@ -53,7 +53,7 @@ import static dbws.testing.visit.DBWSTestHelper.TBL3_DATABASETYPE;
 import static dbws.testing.visit.DBWSTestHelper.TBL4_DATABASETYPE;
 
 public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
-    
+
     @Test
     public void p1Test() {
         PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
@@ -111,7 +111,7 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
         ComplexDatabaseType cdt = (ComplexDatabaseType)tbl2DatabaseType;
         assertTrue("tbl2DatabaseType is not a collection", cdt.isCollection());
         PLSQLCollection coll = (PLSQLCollection)cdt;
-        assertTrue("wrong compatibleType for tbl2DatabaseType", 
+        assertTrue("wrong compatibleType for tbl2DatabaseType",
             coll.getCompatibleType().equals(TBL2_COMPATIBLETYPE));
         assertEquals("wrong nestedType for databaseType", NUMERIC_TYPE, coll.getNestedType());
     }
@@ -138,12 +138,12 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
         ComplexDatabaseType cdt = (ComplexDatabaseType)tbl3DatabaseType;
         assertTrue("tbl3DatabaseType is not a collection", cdt.isCollection());
         PLSQLCollection coll = (PLSQLCollection)cdt;
-        assertTrue("wrong compatibleType for tbl3DatabaseType", 
+        assertTrue("wrong compatibleType for tbl3DatabaseType",
             coll.getCompatibleType().equals(TBL3_COMPATIBLETYPE));
         DatabaseType nestedType = coll.getNestedType();
         aRecordAsserts(nestedType);
     }
-    
+
     protected void aRecordAsserts(DatabaseType aRecordDatabaseType) {
         assertEquals("aRecordDatabaseType incorrect databaseType",
             ARECORD_DATABASETYPE, aRecordDatabaseType.getTypeName());
@@ -212,7 +212,7 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
             typesForMethod.length == 1);
         tbl4Asserts(typesForMethod[0]);
     }
-    
+
     protected void tbl4Asserts(DatabaseType tbl4DatabaseType) {
         assertEquals("tbl4DatabaseType incorrect databaseType", TBL4_DATABASETYPE, tbl4DatabaseType.getTypeName());
         assertTrue("tbl4DatabaseType is not Complex", tbl4DatabaseType.isComplexDatabaseType());
@@ -246,5 +246,5 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
         aRecordAsserts(fields.get(0).databaseType);
         tbl4Asserts(fields.get(1).databaseType);
     }
-*/    
+*/
 }

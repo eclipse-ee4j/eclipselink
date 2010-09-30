@@ -104,7 +104,7 @@ public class OperationModel {
     public void setReturnType(String returnType) {
         this.returnType = returnType;
     }
-    
+
     public boolean isTableOperation() {
         return false;
     }

@@ -116,7 +116,7 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
             nr.setDefaultNamespaceURI(targetNamespace);
             xdesc.setNamespaceResolver(nr);
         }
-        boolean itemsMappingFound = 
+        boolean itemsMappingFound =
             xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (next.isRecord()) {
             if (!itemsMappingFound) {
@@ -214,12 +214,12 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                         xdesc.addMapping(fieldMapping);
                     }
                     else {
-                        XMLCompositeDirectCollectionMapping fieldMapping = 
+                        XMLCompositeDirectCollectionMapping fieldMapping =
                             new XMLCompositeDirectCollectionMapping();
                         String foo = tblHelper.targetTypeName().toLowerCase();
                         XMLDescriptor xdesc2 = descriptorMap.get(foo);
                         if (xdesc2 != null) {
-                            XMLCompositeDirectCollectionMapping itemsMapping = 
+                            XMLCompositeDirectCollectionMapping itemsMapping =
                                 (XMLCompositeDirectCollectionMapping)xdesc2.getMappingForAttributeName(
                                 ITEMS_MAPPING_ATTRIBUTE_NAME);
                             Class<?> attributeElementClass = itemsMapping.getAttributeElementClass();
@@ -302,7 +302,7 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
     public void handleObjectType(String objectTypename, String targetTypeName, int numAttributes) {
         stac.push(new ObjectTypeHelper(objectTypename, targetTypeName, numAttributes));
     }
-    
+
     public static Class<?> attributeClassFromDatabaseType(DefaultListenerHelper helper) {
         if (!helper.isComplex()) {
             String typeName = helper.targetTypeName();

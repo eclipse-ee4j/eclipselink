@@ -356,7 +356,7 @@ public class SqlType extends TypeClass {
     public String getSqlTypeDrop() throws SQLException, PublisherException {
         //return getSqlName().isReused() ? "" : "DROP TYPE " + getTargetTypeName() + " FORCE; \n"
         //    + "show errors\n";
-		return "DROP TYPE " + getTargetTypeName() + " FORCE;";
+        return "DROP TYPE " + getTargetTypeName() + " FORCE;";
     }
 
     // PL/SQL package declaration for conversion functions

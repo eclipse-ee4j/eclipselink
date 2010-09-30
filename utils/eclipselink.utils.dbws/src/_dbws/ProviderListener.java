@@ -5,9 +5,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 public class ProviderListener implements ServletContextListener {
-    
+
     public static ServletContext SC = null;
-    
+
     public  ProviderListener() {
         super();
     }

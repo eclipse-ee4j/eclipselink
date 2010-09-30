@@ -356,9 +356,9 @@ public class JDBCHelper {
         List<DbStoredProcedure> dbStoredProcedures = null;
         boolean catalogMatchDontCare = false;
         if (platform instanceof MySQLPlatform || platform instanceof DerbyPlatform ||
-        	platform instanceof PostgreSQLPlatform ) {
-        	// TODO - get info on other platforms that also require catalogMatchDontCare = true
-        	catalogMatchDontCare = true;
+            platform instanceof PostgreSQLPlatform ) {
+            // TODO - get info on other platforms that also require catalogMatchDontCare = true
+            catalogMatchDontCare = true;
         }
         // Oracle is 'special' - the catalogMatchDontCare logic only applies if the catalogPattern
         // is NULL vs. the empty "" string
@@ -414,6 +414,10 @@ public class JDBCHelper {
                         String actualSchemaName = procedureColumnsInfo.getString(PROC_COLS_INFO_SCHEMA);
                         String actualProcedureName = procedureColumnsInfo.getString(PROC_COLS_INFO_NAME);
                         String argName = procedureColumnsInfo.getString(PROC_COLS_INFO_COLNAME);
+                        // some MySql drivers return empty string, some return null: set to emptyString regardless
+                        if (argName == null) {
+                            argName = "";
+                        }
                         DbStoredArgument dbStoredArgument = new DbStoredArgument(argName);
                         short inOut = procedureColumnsInfo.getShort(PROC_COLS_INFO_TYPE);
                         if (inOut == procedureColumnInOut) {
@@ -449,10 +453,10 @@ public class JDBCHelper {
                             // this dbStoredArgument belongs to a 'regular' procedure
                             DbStoredProcedure matchingProc = null;
                             for (int i = 0; i < tmpProcs.size();) {
-                            	DbStoredProcedure tmpProc = tmpProcs.get(i);
+                                DbStoredProcedure tmpProc = tmpProcs.get(i);
                                 if (tmpProc.matches(actualCatalogName, actualSchemaName,
                                     actualProcedureName, isOracle, catalogMatchDontCare)) {
-                                	matchingProc = tmpProc;
+                                    matchingProc = tmpProc;
                                     dbStoredProcedures.add(matchingProc);
                                     break;
                                 }
@@ -616,56 +620,56 @@ public class JDBCHelper {
             return sb.toString();
         }
      }
-    
+
     public static List<DbColumn> buildDbColumns(Connection connection, String secondarySql) {
         List<DbColumn> columns = null;
         ResultSet resultSet = null;
         try {
-        	Statement statement = connection.createStatement();
-        	resultSet = statement.executeQuery(secondarySql);
+            Statement statement = connection.createStatement();
+            resultSet = statement.executeQuery(secondarySql);
         }
         catch (SQLException sqlException) {
-        	throw new IllegalStateException("failure executing secondary SQL: " +
-        		secondarySql, sqlException);
+            throw new IllegalStateException("failure executing secondary SQL: " +
+                secondarySql, sqlException);
         }
         if (resultSet != null) {
-			ResultSetMetaData rsMetaData = null;
-        	try {
-        		rsMetaData = resultSet.getMetaData();
-			}
-        	catch (SQLException sqlException) {
-            	throw new IllegalStateException("failure retrieving resultSet metadata", sqlException);
-			}
-        	if (rsMetaData != null) {
-        		int columnCount = 0;
-        		try {
-        			columnCount = rsMetaData.getColumnCount();
-				}
-        		catch (SQLException sqlException) {
-                	throw new IllegalStateException("failure retrieving columnCount", sqlException);
-				}
-        		if (columnCount > 0) {
-        			columns = new ArrayList<DbColumn>(columnCount);
-        			try {
-						for (int i = 1; i <= columnCount; i++) {
-							DbColumn dbColumn = new DbColumn();
-							dbColumn.setOrdinalPosition(i);
-							dbColumn.setName(rsMetaData.getColumnLabel(i));
-							dbColumn.setJDBCType(rsMetaData.getColumnType(i));
-							dbColumn.setJDBCTypeName(rsMetaData.getColumnTypeName(i));
-							dbColumn.setPrecision(rsMetaData.getPrecision(i));
-							dbColumn.setScale(rsMetaData.getScale(i));
-							dbColumn.setNullable(
-								rsMetaData.isNullable(i)==ResultSetMetaData.columnNullable);
-							columns.add(dbColumn);
-						}
-					}
-        			catch (SQLException sqlException) {
-                    	throw new IllegalStateException("failure retrieving column information",
-                    		sqlException);
-    				}
-        		}
-        	}
+            ResultSetMetaData rsMetaData = null;
+            try {
+                rsMetaData = resultSet.getMetaData();
+            }
+            catch (SQLException sqlException) {
+                throw new IllegalStateException("failure retrieving resultSet metadata", sqlException);
+            }
+            if (rsMetaData != null) {
+                int columnCount = 0;
+                try {
+                    columnCount = rsMetaData.getColumnCount();
+                }
+                catch (SQLException sqlException) {
+                    throw new IllegalStateException("failure retrieving columnCount", sqlException);
+                }
+                if (columnCount > 0) {
+                    columns = new ArrayList<DbColumn>(columnCount);
+                    try {
+                        for (int i = 1; i <= columnCount; i++) {
+                            DbColumn dbColumn = new DbColumn();
+                            dbColumn.setOrdinalPosition(i);
+                            dbColumn.setName(rsMetaData.getColumnLabel(i));
+                            dbColumn.setJDBCType(rsMetaData.getColumnType(i));
+                            dbColumn.setJDBCTypeName(rsMetaData.getColumnTypeName(i));
+                            dbColumn.setPrecision(rsMetaData.getPrecision(i));
+                            dbColumn.setScale(rsMetaData.getScale(i));
+                            dbColumn.setNullable(
+                                rsMetaData.isNullable(i)==ResultSetMetaData.columnNullable);
+                            columns.add(dbColumn);
+                        }
+                    }
+                    catch (SQLException sqlException) {
+                        throw new IllegalStateException("failure retrieving column information",
+                            sqlException);
+                    }
+                }
+            }
         }
         return columns;
     }

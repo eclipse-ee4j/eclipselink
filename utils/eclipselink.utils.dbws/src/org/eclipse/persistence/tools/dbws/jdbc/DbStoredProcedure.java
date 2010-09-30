@@ -69,31 +69,31 @@ public class DbStoredProcedure {
     }
 
     public boolean matches(String catalog, String schema, String name, boolean isOracle,
-    	boolean catalogMatchDontCare) {
+        boolean catalogMatchDontCare) {
 
-	    // return true if all 3 match, sorta
+        // return true if all 3 match, sorta
 
-	    boolean catalogMatch =
-	        this.catalog == null ?
-	            // for Oracle, catalog matching is 'dont-care' only if null
-	            (isOracle ? true :
-	            // other platforms: null has to match null
-	           (catalog == null))
-	            : this.catalog.equals(catalog);
-	    // but catalogDontCare trumps!
-	    if (catalogMatchDontCare) {
-	    	catalogMatch = true;
-	    }
-	    boolean schemaMatch =
-	        // either they are both null or they match
-	        this.schema == null ? (schema == null)
-	            : this.schema.equals(schema);
-	    boolean nameMatch =
-	        // either they are both null or they match
-	        this.name == null ? (name == null)
-	            : this.name.equals(name);
-	    return catalogMatch && schemaMatch && nameMatch;
-	}
+        boolean catalogMatch =
+            this.catalog == null ?
+                // for Oracle, catalog matching is 'dont-care' only if null
+                (isOracle ? true :
+                // other platforms: null has to match null
+               (catalog == null))
+                : this.catalog.equals(catalog);
+        // but catalogDontCare trumps!
+        if (catalogMatchDontCare) {
+            catalogMatch = true;
+        }
+        boolean schemaMatch =
+            // either they are both null or they match
+            this.schema == null ? (schema == null)
+                : this.schema.equals(schema);
+        boolean nameMatch =
+            // either they are both null or they match
+            this.name == null ? (name == null)
+                : this.name.equals(name);
+        return catalogMatch && schemaMatch && nameMatch;
+    }
 
     @Override
     public String toString() {

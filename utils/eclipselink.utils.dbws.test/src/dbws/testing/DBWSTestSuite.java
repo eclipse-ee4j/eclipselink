@@ -87,7 +87,7 @@ public class DBWSTestSuite {
     public static final String ROOTCAUSE_NAMESPACE = "urn:" + ROOTCAUSE;
     public static final String ROOTCAUSE_SERVICE_NAMESPACE = "urn:" + ROOTCAUSE_SERVICE;
     public static final String ROOTCAUSE_PORT = ROOTCAUSE_SERVICE + "Port";
-    
+
     public static final String OPTLOCK = "optlock";
     public static final String OPTLOCK_TEST = OPTLOCK + "Test";
     public static final String OPTLOCK_SERVICE = OPTLOCK + "Service";
@@ -110,12 +110,12 @@ public class DBWSTestSuite {
     public static final String SECONDARY_SERVICE_NAMESPACE = "urn:" + SECONDARY_SERVICE;
     public static final String SECONDARY_PORT = SECONDARY_SERVICE + "Port";
     public static final String SECONDARY_COUNT_SQL =
-		"select count(*) as \"COUNT\", max(SAL) as \"MAX-Salary\" from secondary";
+        "select count(*) as \"COUNT\", max(SAL) as \"MAX-Salary\" from secondary";
     public static final String SECONDARY_COUNT_SCHEMA_TYPE = "secondaryAggregate";
     public static final String SECONDARY_ALL_SQL =
-		"select * from secondary";
+        "select * from secondary";
     public static final String SECONDARY_ALL_SCHEMA_TYPE = "secondaryType";
-    
+
 
     // JUnit test fixtures
 
@@ -181,7 +181,7 @@ public class DBWSTestSuite {
                 }
                 else {
                     orProject = new Project();
-                    orProject.setName(builder.getProjectName() + "-dbws-or"); 
+                    orProject.setName(builder.getProjectName() + "-dbws-or");
                 }
                 Project oxProject = null;
                 if (DBWS_OX_STREAM.size() != 0) {

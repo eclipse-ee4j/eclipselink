@@ -285,7 +285,7 @@ public class VeearrayTestSuite {
         schemaReference.setSchemaContext("/employeeType");
         schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
         employeeOXDescriptor.setSchemaReference(schemaReference);
-        
+
         XMLDirectMapping xmlIdMapping = new XMLDirectMapping();
         xmlIdMapping.setAttributeName("id");
         XMLField idField = new XMLField();

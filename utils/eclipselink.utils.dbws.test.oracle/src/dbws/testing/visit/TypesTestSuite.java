@@ -84,31 +84,31 @@ public class TypesTestSuite extends BuilderTestSuite {
          "catalogPattern=\"TEST_TYPES\" " +
          "procedurePattern=\"ECHO_INTEGER\" " +
          "isSimpleXMLFormat=\"true\" " +
-      "/>" + 
+      "/>" +
       "<procedure " +
          "name=\"echoSmallint\" " +
          "catalogPattern=\"TEST_TYPES\" " +
          "procedurePattern=\"ECHO_SMALLINT\" " +
          "isSimpleXMLFormat=\"true\" " +
-      "/>" +           
+      "/>" +
       "<procedure " +
          "name=\"echoNumeric\" " +
          "catalogPattern=\"TEST_TYPES\" " +
          "procedurePattern=\"ECHO_NUMERIC\" " +
          "isSimpleXMLFormat=\"true\" " +
-      "/>" +      
+      "/>" +
       "<procedure " +
          "name=\"echoDec\" " +
          "catalogPattern=\"TEST_TYPES\" " +
          "procedurePattern=\"ECHO_DEC\" " +
          "isSimpleXMLFormat=\"true\" " +
-      "/>" +      
+      "/>" +
       "<procedure " +
          "name=\"echoDecimal\" " +
          "catalogPattern=\"TEST_TYPES\" " +
          "procedurePattern=\"ECHO_DECIMAL\" " +
          "isSimpleXMLFormat=\"true\" " +
-      "/>" +      
+      "/>" +
       "<procedure " +
          "name=\"echoNumber\" " +
          "catalogPattern=\"TEST_TYPES\" " +
@@ -194,7 +194,7 @@ public class TypesTestSuite extends BuilderTestSuite {
          "isSimpleXMLFormat=\"true\" " +
       "/>" +
     "</dbws-builder>";
-  
+
   // JUnit test fixtures
   public static DBWSBuilder builder = new DBWSBuilder();
   public static XRServiceAdapter xrService = null;
@@ -204,7 +204,7 @@ public class TypesTestSuite extends BuilderTestSuite {
   public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
 
   @BeforeClass
-  public static void setup() throws SecurityException, IllegalArgumentException, 
+  public static void setup() throws SecurityException, IllegalArgumentException,
       ClassNotFoundException, SQLException, NoSuchFieldException, IllegalAccessException,
       WSDLException {
       BuilderTestSuite.setUp();
@@ -247,7 +247,7 @@ public class TypesTestSuite extends BuilderTestSuite {
               }
               else {
                   orProject = new Project();
-                  orProject.setName(builder.getProjectName() + "-dbws-or"); 
+                  orProject.setName(builder.getProjectName() + "-dbws-or");
               }
               Project oxProject = null;
               if (DBWS_OX_STREAM.size() != 0) {
@@ -470,8 +470,8 @@ public class TypesTestSuite extends BuilderTestSuite {
          "<simple-xml>" +
             "<result>this is a varchar2 test</result>" +
          "</simple-xml>" +
-      "</simple-xml-format>";         
-  
+      "</simple-xml-format>";
+
   @Test
   public void echoChar() {
       Invocation invocation = new Invocation("echoChar");
@@ -516,7 +516,7 @@ public class TypesTestSuite extends BuilderTestSuite {
             "<result>3.14159</result>" +
          "</simple-xml>" +
       "</simple-xml-format>";
-  
+
   @Test
   public void echoFloat() {
       Invocation invocation = new Invocation("echoFloat");
@@ -538,7 +538,7 @@ public class TypesTestSuite extends BuilderTestSuite {
             "<result>31415.926</result>" +
          "</simple-xml>" +
       "</simple-xml-format>";
-  
+
   @Test
   public void echoDouble() {
       Invocation invocation = new Invocation("echoDouble");
@@ -560,7 +560,7 @@ public class TypesTestSuite extends BuilderTestSuite {
             "<result>314.15926</result>" +
          "</simple-xml>" +
       "</simple-xml-format>";
-  
+
   @Test
   public void echoDate() throws ParseException {
       Invocation invocation = new Invocation("echoDate");
@@ -582,8 +582,8 @@ public class TypesTestSuite extends BuilderTestSuite {
          "<simple-xml>" +
             "<result>2009-12-03T00:00:00.0</result>" +
          "</simple-xml>" +
-      "</simple-xml-format>"; 
-  
+      "</simple-xml-format>";
+
   @Test
   public void echoTimestamp() throws ParseException {
       Invocation invocation = new Invocation("echoTimestamp");
@@ -605,7 +605,7 @@ public class TypesTestSuite extends BuilderTestSuite {
          "<simple-xml>" +
             "<result>2009-12-04T09:19:23.123</result>" +
          "</simple-xml>" +
-      "</simple-xml-format>";  
+      "</simple-xml-format>";
 
   @Test
   public void echoClob() throws ParseException, SQLException {
@@ -655,7 +655,7 @@ public class TypesTestSuite extends BuilderTestSuite {
             "</result>" +
          "</simple-xml>" +
       "</simple-xml-format>";
-  
+
   @Test
   public void echoLong() throws ParseException {
       Invocation invocation = new Invocation("echoLong");
@@ -681,13 +681,13 @@ public class TypesTestSuite extends BuilderTestSuite {
                "564768706379427063794268626D3930614756794948526C6333513D" +
             "</result>" +
          "</simple-xml>" +
-      "</simple-xml-format>"; 
-  
+      "</simple-xml-format>";
+
   @Test
   public void echoLongRaw() throws ParseException {
       Invocation invocation = new Invocation("echoLongRaw");
       byte[] testBytes = ("This is yet another test (long stringggggggggggggggggggggggggggggggggggggg" +
-      		"ggggggggggggggggggggggggggggggggggggggg").getBytes();
+              "ggggggggggggggggggggggggggggggggggggggg").getBytes();
       invocation.setParameter("PLONGRAW", testBytes);
       Operation op = xrService.getOperation(invocation.getName());
       Object result = op.invoke(xrService, invocation);
@@ -710,7 +710,7 @@ public class TypesTestSuite extends BuilderTestSuite {
             "</result>" +
          "</simple-xml>" +
       "</simple-xml-format>";
-  
+
   @Test
   public void echoRaw() throws ParseException {
       Invocation invocation = new Invocation("echoRaw");
@@ -736,5 +736,5 @@ public class TypesTestSuite extends BuilderTestSuite {
                "5647687063794270637942355A585167595735766447686C636942305A584E3049513D3D" +
             "</result>" +
          "</simple-xml>" +
-      "</simple-xml-format>";  
+      "</simple-xml-format>";
 }

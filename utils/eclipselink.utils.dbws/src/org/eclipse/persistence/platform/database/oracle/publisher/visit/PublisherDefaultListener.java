@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -47,21 +47,21 @@ public class PublisherDefaultListener implements PublisherListener {
     public void endMethod(String methodName) {
     }
 
-    public void handleObjectType(String objectTypeName, String targetTypeName, int numAttributes) { 
+    public void handleObjectType(String objectTypeName, String targetTypeName, int numAttributes) {
     }
-    
+
     public void handleSqlType(String sqlTypeName, int typecode, String targetTypeName) {
     }
 
     public void handleSqlArrayType(String name, String targetTypeName) {
     }
 
-    public void handleSqlTableType(String tableTypeName, String targetTypeName) {        
+    public void handleSqlTableType(String tableTypeName, String targetTypeName) {
     }
 
     public void handleAttributeField(String attributeFieldName) {
     }
-    
+
     public String trimDotPrefix(String prefix) {
         String trimmedPrefix = prefix;
         int dotIdx = trimmedPrefix.indexOf('.');
@@ -120,7 +120,7 @@ public class PublisherDefaultListener implements PublisherListener {
             return false;
         }
     }
-    
+
     public static class SqltypeHelper extends DefaultListenerHelper {
         protected String sqlTypeName;
         public SqltypeHelper(String sqlTypeName) {
@@ -159,7 +159,7 @@ public class PublisherDefaultListener implements PublisherListener {
             return "{" + arrayTypename + "}";
         }
     }
-    
+
     public static class ObjectTypeHelper extends DefaultListenerHelper {
         protected String objectTypename;
         protected int numAttributes;
@@ -192,7 +192,7 @@ public class PublisherDefaultListener implements PublisherListener {
             return --numAttributes;
         }
     }
-    
+
     public static class TableHelper extends DefaultListenerHelper {
         protected String tableName;
         protected String tableAlias;
@@ -234,7 +234,7 @@ public class PublisherDefaultListener implements PublisherListener {
             return sb.toString();
         }
     }
-    
+
     public static class RecordHelper extends DefaultListenerHelper {
         protected String recordName;
         protected int numFields;

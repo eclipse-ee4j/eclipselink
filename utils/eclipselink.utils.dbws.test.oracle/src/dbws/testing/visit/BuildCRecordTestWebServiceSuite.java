@@ -85,12 +85,12 @@ public class BuildCRecordTestWebServiceSuite extends WebServiceTestSuite impleme
         super.init();
     }
 
-    static final String REQUEST_MSG = 
+    static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"" + URI_NS_SOAP_1_1_ENVELOPE + "\">" +
           "<env:Header/>" +
           "<env:Body>" +
-            "<srvc:" + ADVJDBC_BUILD_CRECORD_TEST + " xmlns:srvc=\"" + 
-                ADVJDBC_BUILD_CRECORD_SERVICE_NAMESPACE + 
+            "<srvc:" + ADVJDBC_BUILD_CRECORD_TEST + " xmlns:srvc=\"" +
+                ADVJDBC_BUILD_CRECORD_SERVICE_NAMESPACE +
                 "\" xmlns=\"" + ADVJDBC_BUILD_CRECORD_NAMESPACE + "\">" +
               "<srvc:NUM>3</srvc:NUM>" +
             "</srvc:" + ADVJDBC_BUILD_CRECORD_TEST + ">" +
@@ -101,7 +101,7 @@ public class BuildCRecordTestWebServiceSuite extends WebServiceTestSuite impleme
         ParserConfigurationException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage request = factory.createMessage();
-        SOAPPart part = request.getSOAPPart(); 
+        SOAPPart part = request.getSOAPPart();
         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
             new InputSource(new StringReader(REQUEST_MSG))));
         part.setContent(domSource);
@@ -125,10 +125,10 @@ public class BuildCRecordTestWebServiceSuite extends WebServiceTestSuite impleme
         }
     }
 
-    static final String TEST_RESPONSE = 
+    static final String TEST_RESPONSE =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"" + URI_NS_SOAP_1_1_ENVELOPE + "\">" +
           "<SOAP-ENV:Header/>" +
-          "<SOAP-ENV:Body>" +          
+          "<SOAP-ENV:Body>" +
              "<srvc:" + ADVJDBC_BUILD_CRECORD_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_CRECORD_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_CRECORD_SERVICE_NAMESPACE + "\">" +
                 "<srvc:result>" +
                    "<somepackage_crecordType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +

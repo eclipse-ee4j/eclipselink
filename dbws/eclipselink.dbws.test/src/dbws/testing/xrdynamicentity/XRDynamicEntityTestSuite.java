@@ -36,13 +36,13 @@ import org.eclipse.persistence.internal.xr.XRDynamicEntity;
 
 public class XRDynamicEntityTestSuite {
 
-    static final String PACKAGE_PREFIX = 
+    static final String PACKAGE_PREFIX =
         XRDynamicEntityTestSuite.class.getPackage().getName();
     static final String TEST_CLASSNAME = PACKAGE_PREFIX + ".TestClass";
     static final String FIELD_1 = "field1";
     static final String FIELD_2 = "field2";
     static final String TEST_STRING = "this is a test";
-    
+
     //test fixtures
     static XRDynamicEntity entity1 = null;
     @BeforeClass
@@ -54,7 +54,7 @@ public class XRDynamicEntityTestSuite {
         XRCustomer.DPM.setPropertyNames(propertyNames);
         entity1 = new XRCustomer();
     }
-    
+
     @Test
     public void nullParent() throws Exception {
         XRDynamicClassLoader xrdcl = new XRDynamicClassLoader(null);
@@ -76,7 +76,7 @@ public class XRDynamicEntityTestSuite {
     @Test
     public void buildTestClass() throws ClassNotFoundException {
         //Needs non-null parent ClassLoader for createDynamicClass to work
-        XRDynamicClassLoader xrdcl = 
+        XRDynamicClassLoader xrdcl =
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
         Class<?> testClass = xrdcl.createDynamicClass(TEST_CLASSNAME);
         assertEquals("test class wrong name", testClass.getName(), TEST_CLASSNAME);
@@ -88,9 +88,9 @@ public class XRDynamicEntityTestSuite {
     @Test
     public void buildTestEntity() throws InstantiationException, IllegalAccessException,
         NoSuchFieldException {
-        XRDynamicClassLoader xrdcl = 
+        XRDynamicClassLoader xrdcl =
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
-        Class<XRDynamicEntity> testClass = 
+        Class<XRDynamicEntity> testClass =
             (Class<XRDynamicEntity>)xrdcl.createDynamicClass(TEST_CLASSNAME);
         XRDynamicEntity newInstance = testClass.newInstance();
         XRDynamicPropertiesManager xrDPM = newInstance.fetchPropertiesManager();
@@ -105,7 +105,7 @@ public class XRDynamicEntityTestSuite {
 
     @Test
     public void createTestClassTwice() throws Exception {
-        XRDynamicClassLoader xrdcl = 
+        XRDynamicClassLoader xrdcl =
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
         Class<?> dynamicClass = xrdcl.createDynamicClass(TEST_CLASSNAME);
         assertNotNull(dynamicClass);
@@ -115,7 +115,7 @@ public class XRDynamicEntityTestSuite {
     }
 
     //stupid naming convention to get tests run in order
-    
+
     @Test
     public void test1() {
         Object field = entity1.get(FIELD_1);

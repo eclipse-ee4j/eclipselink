@@ -84,12 +84,12 @@ public class BuildEmpArrayTestWebServiceSuite extends WebServiceTestSuite implem
         super.init();
     }
 
-    static final String REQUEST_MSG = 
+    static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Header/>" +
           "<env:Body>" +
-            "<srvc:" + ADVJDBC_BUILD_EMPARRAY_TEST + " xmlns:srvc=\"" + 
-                ADVJDBC_BUILD_EMPARRAY_SERVICE_NAMESPACE + 
+            "<srvc:" + ADVJDBC_BUILD_EMPARRAY_TEST + " xmlns:srvc=\"" +
+                ADVJDBC_BUILD_EMPARRAY_SERVICE_NAMESPACE +
                 "\" xmlns=\"" + ADVJDBC_BUILD_EMPARRAY_NAMESPACE + "\">" +
               "<srvc:NUM>3</srvc:NUM>" +
             "</srvc:" + ADVJDBC_BUILD_EMPARRAY_TEST + ">" +
@@ -100,7 +100,7 @@ public class BuildEmpArrayTestWebServiceSuite extends WebServiceTestSuite implem
         ParserConfigurationException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage request = factory.createMessage();
-        SOAPPart part = request.getSOAPPart(); 
+        SOAPPart part = request.getSOAPPart();
         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
             new InputSource(new StringReader(REQUEST_MSG))));
         part.setContent(domSource);
@@ -124,10 +124,10 @@ public class BuildEmpArrayTestWebServiceSuite extends WebServiceTestSuite implem
         }
     }
 
-    static final String TEST_RESPONSE = 
+    static final String TEST_RESPONSE =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<SOAP-ENV:Header/>" +
-          "<SOAP-ENV:Body>" +          
+          "<SOAP-ENV:Body>" +
              "<srvc:" + ADVJDBC_BUILD_EMPARRAY_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_EMPARRAY_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_EMPARRAY_SERVICE_NAMESPACE + "\">" +
                  "<srvc:result>" +
                      "<emp_info_arrayType>" +

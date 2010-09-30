@@ -350,7 +350,7 @@ public class XRServiceFactory  {
         }
         return db;
     }
-    
+
     public static Transformer getTransformer() {
         Transformer transformer = null;
         try {

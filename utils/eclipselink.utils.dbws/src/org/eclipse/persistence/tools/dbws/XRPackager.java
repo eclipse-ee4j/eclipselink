@@ -46,14 +46,14 @@ import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
  * By default, this packager does not use an archiver and writes out its files 'flat' to the stageDir:
  * <pre>
  * ${PACKAGER_ROOT}
- *    |   eclipselink-dbws.xml             -- fixed naming convention 
+ *    |   eclipselink-dbws.xml             -- fixed naming convention
  *    |   eclipselink-dbws-or.xml
  *    |   eclipselink-dbws-ox.xml
  *    |   eclipselink-dbws-schema.xsd
- *    |   eclipselink-dbws-sessions.xml    -- name can be overriden by <sessions-file> entry in eclipselink-dbws.xml 
+ *    |   eclipselink-dbws-sessions.xml    -- name can be overriden by <sessions-file> entry in eclipselink-dbws.xml
  *    |   <i>swaref.xsd</i>                       -- optional if attachements are enabled
  * </pre>
- * 
+ *
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
@@ -83,7 +83,7 @@ public class XRPackager implements DBWSPackager {
     protected Archiver archiver;
     protected String packagerLabel;
     protected ArchiveUse archiveUse;
-    
+
     public XRPackager() {
         this(null,"xr",noArchive);
     }
@@ -99,7 +99,7 @@ public class XRPackager implements DBWSPackager {
     public void setDBWSBuilder(DBWSBuilder builder) {
         this.builder = builder;
     }
-    
+
     public void setAdditionalArgs(String[] additionalArgs) {
         this.additionalArgs = additionalArgs;
         if (additionalArgs != null) {
@@ -121,21 +121,21 @@ public class XRPackager implements DBWSPackager {
     public void setStageDir(File stageDir) {
         this.stageDir = stageDir;
     }
-    
+
     public String getSessionsFileName() {
         return sessionsFileName;
     }
     public void setSessionsFileName(String sessionsFileName) {
         this.sessionsFileName = sessionsFileName;
     }
-    
+
     public boolean hasAttachments() {
         return hasAttachments;
     }
     public void setHasAttachments(boolean hasAttachments) {
         this.hasAttachments = hasAttachments;
     }
-    
+
     public Archiver getArchiver() {
         return archiver;
     }
@@ -193,7 +193,7 @@ public class XRPackager implements DBWSPackager {
     public String getAdditionalUsage() {
         return " [jarFilename]";
     }
-    
+
     public void start() {
         if (stageDir == null) {
             throw new DBWSException(this.getClass().getSimpleName() + " stageDir cannot be null");
@@ -212,7 +212,7 @@ public class XRPackager implements DBWSPackager {
     }
     public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder) {
         // build basic sessions.xml - no server platform settings, no Datasource settings
-        SessionConfigs ts =	new SessionConfigs();
+        SessionConfigs ts =    new SessionConfigs();
         ts.setVersion(Version.getVersion());
         DatabaseSessionConfig orSessionConfig = new DatabaseSessionConfig();
         String projectName = builder.getProjectName();
@@ -251,19 +251,19 @@ public class XRPackager implements DBWSPackager {
         }
         ts.addSessionConfig(oxSessionConfig);
         return ts;
-	}
+    }
 
     public void closeSessionsStream(OutputStream sessionsStream) {
-    	closeStream(sessionsStream);
+        closeStream(sessionsStream);
     }
-    
+
     public OutputStream getServiceStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_SERVICE_XML));
     }
     public void closeServiceStream(OutputStream serviceStream) {
-    	closeStream(serviceStream);
+        closeStream(serviceStream);
     }
-    
+
     public OutputStream getOrStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_OR_XML));
     }
@@ -276,9 +276,9 @@ public class XRPackager implements DBWSPackager {
         }
     }
     public void closeOrStream(OutputStream orStream) {
-    	closeStream(orStream);
+        closeStream(orStream);
     }
-    
+
     public OutputStream getOxStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_OX_XML));
     }
@@ -291,9 +291,9 @@ public class XRPackager implements DBWSPackager {
         }
     }
     public void closeOxStream(OutputStream oxStream) {
-    	closeStream(oxStream);
+        closeStream(oxStream);
     }
-    
+
     public OutputStream getWSDLStream() throws FileNotFoundException {
         return __nullStream;
     }
@@ -306,16 +306,16 @@ public class XRPackager implements DBWSPackager {
         }
     }
     public void closeWSDLStream(OutputStream wsdlStream) {
-    	closeStream(wsdlStream);
+        closeStream(wsdlStream);
     }
-    
+
     public OutputStream getSWARefStream() throws FileNotFoundException {
-    	if (!hasAttachments) {
-    		return __nullStream;
-    	}
-    	else {
+        if (!hasAttachments) {
+            return __nullStream;
+        }
+        else {
             return new FileOutputStream(new File(stageDir, SWAREF_FILENAME));
-    	}
+        }
     }
     public void closeSWARefStream(OutputStream swarefStream) {
         closeStream(swarefStream);
@@ -327,7 +327,7 @@ public class XRPackager implements DBWSPackager {
     public void writeWebXml(OutputStream webXmlStream, DBWSBuilder dbwsBuilder) {
     }
     public void closeWebXmlStream(OutputStream webXmlStream) {
-    	closeStream(webXmlStream);
+        closeStream(webXmlStream);
     }
 
     public OutputStream getProviderSourceStream() throws FileNotFoundException {
@@ -336,45 +336,45 @@ public class XRPackager implements DBWSPackager {
     public void closeProviderSourceStream(OutputStream sourceProviderStream) {
         closeStream(sourceProviderStream);
     }
-    
+
     public OutputStream getProviderClassStream() throws FileNotFoundException {
         return __nullStream;
     }
     public void closeProviderClassStream(OutputStream classProviderStream) {
         closeStream(classProviderStream);
     }
-    
+
     public OutputStream getProviderListenerSourceStream() throws FileNotFoundException {
         return __nullStream;
     }
     public void closeProviderListenerSourceStream(OutputStream sourceProviderListenerStream) {
         closeStream(sourceProviderListenerStream);
     }
-    
+
     public OutputStream getProviderListenerClassStream() throws FileNotFoundException {
         return __nullStream;
     }
     public void closeProviderListenerClassStream(OutputStream classProviderListenerStream) {
         closeStream(classProviderListenerStream);
     }
-    
+
     @Override
     public void writeProvider(OutputStream sourceProviderStream, OutputStream classProviderStream,
         OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream,
         DBWSBuilder builder) {
         // no-op
     }
-    
+
     protected void closeStream(OutputStream outputStream) {
         if (outputStream != null && outputStream != __nullStream) {
             try {
-            	outputStream.flush();
-            	outputStream.close();
+                outputStream.flush();
+                outputStream.close();
             }
             catch (IOException e) {/* ignore */}
         }
     }
-    
+
     public void end() {
         if (archiver != null) {
             archiver.archive();

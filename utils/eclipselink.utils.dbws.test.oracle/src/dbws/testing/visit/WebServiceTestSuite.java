@@ -69,7 +69,7 @@ public class WebServiceTestSuite extends ProviderHelper {
     public static final String DEFAULT_DATABASE_PASSWORD = "tiger";
     public static final String DEFAULT_DATABASE_PLATFORM =
         "org.eclipse.persistence.platform.database.oracle.Oracle11Platform";
-    
+
     // JUnit test fixtures
     public static XMLComparer comparer = new XMLComparer();
     public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
@@ -83,7 +83,7 @@ public class WebServiceTestSuite extends ProviderHelper {
     public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
-    
+
     public static void serviceSetup(String endPointAddress, WebServiceTestSuite endPoint)
         throws WSDLException {
         builder.quiet = true;
@@ -125,7 +125,7 @@ public class WebServiceTestSuite extends ProviderHelper {
         testService = Service.create(serviceQName);
         testService.addPort(portQName, SOAP11HTTP_BINDING, endPointAddress);
     }
-    
+
     @AfterClass
     public static void teardown() {
         if (endpoint != null) {
@@ -152,12 +152,12 @@ public class WebServiceTestSuite extends ProviderHelper {
     protected InputStream initWSDLInputStream(ClassLoader parentClassLoader, ServletContext sc) {
         return new ByteArrayInputStream(DBWS_WSDL_STREAM.toByteArray());
     }
-    
+
     protected void init() {
         super.init(new XRDynamicClassLoader(
             Thread.currentThread().getContextClassLoader()), null, false);
     }
-    
+
     @Override
     public void logoutSessions() {
         if (xrService.getORSession() != null) {

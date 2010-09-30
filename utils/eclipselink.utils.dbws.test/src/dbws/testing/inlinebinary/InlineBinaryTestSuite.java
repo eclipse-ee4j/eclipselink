@@ -64,7 +64,7 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
            "</dbws-builder>";
         DBWSTestSuite.setUp();
     }
-    
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void findAll() {

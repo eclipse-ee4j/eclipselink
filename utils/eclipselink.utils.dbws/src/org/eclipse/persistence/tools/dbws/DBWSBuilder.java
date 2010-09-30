@@ -245,7 +245,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     protected XRServiceModel xrServiceModel = new DBWSModel();
     protected List<DbTable> dbTables = new ArrayList<DbTable>();
     protected List<DbStoredProcedure> dbStoredProcedures = new ArrayList<DbStoredProcedure>();
-    protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+    protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName =
         new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
     protected NamingConventionTransformer topTransformer;
     protected Set<String> typeDDL = new HashSet<String>();
@@ -313,18 +313,18 @@ public class DBWSBuilder extends DBWSBuilderModel {
                 }
                 else {
                     logMessage(SEVERE, "DBWSBuilder unable to locate stage directory " +
-                    	stageDirname);
+                        stageDirname);
                     return;
                 }
             }
             else {
                 logMessage(SEVERE, "DBWSBuilder unable to locate dbws-builder.xml file " +
-                	builderFilename);
+                    builderFilename);
                 return;
             }
         }
 /*
-prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_driver.jar org.eclipse.persistence.tools.dbws.DBWSBuilder -builderFile {path_to_dbws_builder.xml_file} -stageDir {path_to_staging_directory} -packageAs {how_to_package_output} [additionalArgs]        
+prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_driver.jar org.eclipse.persistence.tools.dbws.DBWSBuilder -builderFile {path_to_dbws_builder.xml_file} -stageDir {path_to_staging_directory} -packageAs {how_to_package_output} [additionalArgs]
  */
         StringBuilder sb = new StringBuilder(30);
         sb.append("DBWSBuilder usage ([] indicates optional argument):\nprompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_driver.jar \\\n\t");
@@ -460,8 +460,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     public void build(OutputStream dbwsSchemaStream, OutputStream dbwsSessionsStream,
         OutputStream dbwsServiceStream, OutputStream dbwsOrStream, OutputStream dbwsOxStream,
         OutputStream swarefStream, OutputStream webXmlStream, OutputStream wsdlStream,
-        OutputStream classProviderStream, OutputStream sourceProviderStream, 
-        OutputStream classProviderListenerStream, OutputStream sourceProviderListenerStream, 
+        OutputStream classProviderStream, OutputStream sourceProviderStream,
+        OutputStream classProviderListenerStream, OutputStream sourceProviderListenerStream,
         Logger logger)
         throws WSDLException {
 
@@ -528,10 +528,10 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     public OutputStream getShadowDDLStream() {
         return __nullStream;
     }
-    
+
     public void buildDbArtifacts() {
         // do Table operations first
-        boolean isOracle = 
+        boolean isOracle =
             getDatabasePlatform().getClass().getName().contains("Oracle") ? true : false;
         for (OperationModel operation : operations) {
             if (operation.isTableOperation()) {
@@ -604,7 +604,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             boolean unSupportedColumnType = false;
             for (DbColumn dbColumn : dbTable.getColumns()) {
                 switch (dbColumn.getJDBCType()) {
-                    case Types.ARRAY : 
+                    case Types.ARRAY :
                     case Types.STRUCT :
                     case Types.OTHER :
                     case Types.DATALINK :
@@ -629,7 +629,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         //bug 296114 - Problem using JDBC metadata for Oracle Stored Function in package with overloading
         //             use OracleHelper for all StoredProcedure operations, not just PL/SQL or
         //             advancedJDBC
-        if (isOracle) {    
+        if (isOracle) {
             return OracleHelper.buildStoredProcedure(getConnection(), getUsername(), databasePlatform,
                 procedureModel);
         }
@@ -680,7 +680,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                         break;
                     }
                 }
-                else if (jdbcType == ARRAY ||     
+                else if (jdbcType == ARRAY ||
                          jdbcType == STRUCT ||
                          jdbcType == DATALINK ||
                          jdbcType == JAVA_OBJECT) {
@@ -716,24 +716,26 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         oxProject.setName(projectName + "-" + DBWS_OX_LABEL);
         for (DbTable dbTable : dbTables) {
-        	String tableName = dbTable.getName();
-        	RelationalDescriptor desc = buildORDescriptor(tableName, nct);
-        	XMLDescriptor xdesc = buildOXDescriptor(tableName, nct);
+            String tableName = dbTable.getName();
+            RelationalDescriptor desc = buildORDescriptor(tableName, nct);
+            orProject.addDescriptor(desc);
+            XMLDescriptor xdesc = buildOXDescriptor(tableName, nct);
+            oxProject.addDescriptor(xdesc);
             for (DbColumn dbColumn : dbTable.getColumns()) {
                 String columnName = dbColumn.getName();
                 ElementStyle style = nct.styleForElement(columnName);
                 if (style == NONE) {
-                	continue;
+                    continue;
                 }
                 logMessage(FINE, "Building mappings for " + tableName + "." + columnName);
-            	DirectToFieldMapping orFieldMapping = buildORFieldMappingFromColumn(dbColumn, desc, nct);
-            	desc.addMapping(orFieldMapping);
-            	XMLDirectMapping oxFieldMapping = buildOXFieldMappingFromColumn(dbColumn, xdesc, nct);
-            	xdesc.addMapping(oxFieldMapping);
-            	// check for switch from Byte[] to byte[]
-            	if (oxFieldMapping.getAttributeClassificationName() == APBYTE.getName()) {
-            		orFieldMapping.setAttributeClassificationName(APBYTE.getName());
-            	}
+                DirectToFieldMapping orFieldMapping = buildORFieldMappingFromColumn(dbColumn, desc, nct);
+                desc.addMapping(orFieldMapping);
+                XMLDirectMapping oxFieldMapping = buildOXFieldMappingFromColumn(dbColumn, xdesc, nct);
+                xdesc.addMapping(oxFieldMapping);
+                // check for switch from Byte[] to byte[]
+                if (oxFieldMapping.getAttributeClassificationName() == APBYTE.getName()) {
+                    orFieldMapping.setAttributeClassificationName(APBYTE.getName());
+                }
           }
           ReadObjectQuery roq = new ReadObjectQuery();
           String generatedJavaClassName = getGeneratedJavaClassName(tableName);
@@ -792,22 +794,22 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         oxProject.setLogin(xmlLogin);
     }
 
-	protected void buildOROXProjectsForSecondarySql(SQLOperationModel sqlOm,
-		NamingConventionTransformer nct) {
-		List<DbColumn> columns = JDBCHelper.buildDbColumns(getConnection(),
-			sqlOm.getSecondarySqlText());
+    protected void buildOROXProjectsForSecondarySql(SQLOperationModel sqlOm,
+        NamingConventionTransformer nct) {
+        List<DbColumn> columns = JDBCHelper.buildDbColumns(getConnection(),
+            sqlOm.getSecondarySqlText());
         String tableName = sqlOm.getReturnType();
         // need custom NamingConventionTransformer so that returnType/tableName is
         // used verbatim
         NamingConventionTransformer extraNct = new DefaultNamingConventionTransformer() {
-			@Override
-			protected boolean isDefaultTransformer() {
-				return false;
-			}
-			@Override
-			public String generateSchemaAlias(String tableName) {
-				return tableName;
-			}
+            @Override
+            protected boolean isDefaultTransformer() {
+                return false;
+            }
+            @Override
+            public String generateSchemaAlias(String tableName) {
+                return tableName;
+            }
         };
         ((DefaultNamingConventionTransformer)extraNct).setNextTransformer(nct);
         RelationalDescriptor desc = buildORDescriptor(tableName, extraNct);
@@ -819,25 +821,25 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         for (DbColumn dbColumn : columns) {
             String columnName = dbColumn.getName();
             if (!columnsAlreadyProcessed.contains(columnName)) {
-            	columnsAlreadyProcessed.add(columnName);
-	            ElementStyle style = nct.styleForElement(columnName);
-	            if (style == NONE) {
-	            	continue;
-	            }
-	            logMessage(FINE, "Building mappings for " + columnName);
-	        	DirectToFieldMapping orFieldMapping = buildORFieldMappingFromColumn(dbColumn, desc, nct);
-	        	desc.addMapping(orFieldMapping);
-	        	XMLDirectMapping oxFieldMapping = buildOXFieldMappingFromColumn(dbColumn, xdesc, nct);
-	        	xdesc.addMapping(oxFieldMapping);
+                columnsAlreadyProcessed.add(columnName);
+                ElementStyle style = nct.styleForElement(columnName);
+                if (style == NONE) {
+                    continue;
+                }
+                logMessage(FINE, "Building mappings for " + columnName);
+                DirectToFieldMapping orFieldMapping = buildORFieldMappingFromColumn(dbColumn, desc, nct);
+                desc.addMapping(orFieldMapping);
+                XMLDirectMapping oxFieldMapping = buildOXFieldMappingFromColumn(dbColumn, xdesc, nct);
+                xdesc.addMapping(oxFieldMapping);
             }
             else {
-            	logMessage(SEVERE, "Duplicate ResultSet columns not supported '" + columnName + "'");
-            	throw new RuntimeException("Duplicate ResultSet columns not supported");
+                logMessage(SEVERE, "Duplicate ResultSet columns not supported '" + columnName + "'");
+                throw new RuntimeException("Duplicate ResultSet columns not supported");
             }
         }
-	}
+    }
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     protected void buildOROXProjectsForAdvancedPLSQLProcedure(ProcedureOperationModel procOpModel) {
         /*
          * Walk-thru sqlType, building PLSQLCollection/PLSQLrecord helper objects,
@@ -863,7 +865,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             }
         }
         for (DbStoredProcedure storedProcedure : dbStoredProcedures) {
-            boolean isPLSQLStoredProc = false; 
+            boolean isPLSQLStoredProc = false;
             for (DbStoredArgument arg : storedProcedure.getArguments()) {
                 if (arg.isPLSQLArgument()) {
                     isPLSQLStoredProc = true;
@@ -882,7 +884,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 call.setProcedureName(catalogPrefix + storedProcedure.getName());
                 DatabaseQuery dq = null;
-                DbStoredProcedureNameAndModel nameAndModel = 
+                DbStoredProcedureNameAndModel nameAndModel =
                     dbStoredProcedure2QueryName.get(storedProcedure);
                 String returnType = nameAndModel.procOpModel.getReturnType();
                 boolean hasResponse = returnType != null;
@@ -924,7 +926,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 dq.bindAllParameters();
                 dq.setName(nameAndModel.name);
                 dq.setCall(call);
-                DatabaseType[] typesForMethod = 
+                DatabaseType[] typesForMethod =
                     helperObjectsBuilder.getTypesForMethod(storedProcedure.getName());
                 for (int i = 0, len = typesForMethod.length; i < len; i++) {
                     DbStoredArgument arg = storedProcedure.getArguments().get(i);
@@ -959,18 +961,18 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 orProject.getQueries().add(dq);
             }
-        }    
+        }
     }
-    
+
     protected void buildOROXProjectsForAdvancedProcedure(ProcedureOperationModel procOpModel,
         NamingConventionTransformer nct) {
         // bug 271679 Advanced JDBC types (table, object, array)
-        
+
         /*
          * Walk-thru sqlType, building ObjectRelationalDataTypeDescriptors (and mappings),
-         * XMLDescriptors (and mappings) and DatabaseQuery's 
+         * XMLDescriptors (and mappings) and DatabaseQuery's
          */
-        AdvancedJDBCQueryBuilder queryBuilder = 
+        AdvancedJDBCQueryBuilder queryBuilder =
             new AdvancedJDBCQueryBuilder(dbStoredProcedures, dbStoredProcedure2QueryName);
         AdvancedJDBCORDescriptorBuilder orDescriptorBuilder = new AdvancedJDBCORDescriptorBuilder();
         AdvancedJDBCOXDescriptorBuilder oxDescriptorBuilder =
@@ -1099,7 +1101,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     @SuppressWarnings("unchecked")
     protected void buildSchema(NamingConventionTransformer nct) {
-        
+
         List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
         for (XMLDescriptor desc : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
             String alias = desc.getAlias();
@@ -1111,7 +1113,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             // need a deep-copy clone of oxProject; simplest way is to marshall/unmarshall to a stream
             StringWriter sw = new StringWriter();
             XMLProjectWriter.write(oxProject, sw);
-            XRDynamicClassLoader specialLoader = 
+            XRDynamicClassLoader specialLoader =
                 new XRDynamicClassLoader(this.getClass().getClassLoader());
             Project oxProjectClone = XMLProjectReader.read(new StringReader(sw.toString()), specialLoader);
             ProjectHelper.fixOROXAccessors(oxProjectClone, null);
@@ -1242,7 +1244,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             for (OperationModel operation : operations) {
                 if (operation.isTableOperation()) {
                     TableOperationModel tableModel = (TableOperationModel)operation;
-                    if (tableModel.additionalOperations != null && 
+                    if (tableModel.additionalOperations != null &&
                         tableModel.additionalOperations.size() > 0) {
                         for (OperationModel additionalOperation : tableModel.additionalOperations) {
                             additionalOperation.buildOperation(this);
@@ -1474,7 +1476,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     public void setConnection(Connection conn) {
         this.conn = conn;
     }
-    
+
     public String getProjectName() {
         return properties.get(PROJNAME_KEY);
     }
@@ -1586,7 +1588,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     }
 
     public WSDLGenerator getWSDLGenerator() {
-    	return wsdlGenerator;
+        return wsdlGenerator;
     }
 
     public String getWsdlLocationURI() {
@@ -1628,7 +1630,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     public void useSOAP12() {
         properties.put(USE_SOAP12_KEY, "true");
-       
+
     }
     public boolean usesSOAP12() {
         boolean useSOAP12 = false;
@@ -1638,7 +1640,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         return useSOAP12;
     }
-    
+
     public boolean mtomEnabled() {
         boolean mtomEnabled = false;
         for (OperationModel opModel : getOperations()) {
@@ -1650,7 +1652,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         return mtomEnabled;
     }
-    
+
     public void setTargetNamespace(String targetNamespace) {
         properties.put(TARGET_NAMESPACE_KEY, targetNamespace);
     }
@@ -1691,17 +1693,17 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 ProcedureOperationModel procOpModel = (ProcedureOperationModel)opModel;
                 // scan all the dbStoredProcedures for matches
                 List<DbStoredProcedure> matches = new ArrayList<DbStoredProcedure>();
-                String modelCatalogPattern = 
+                String modelCatalogPattern =
                     escapePunctuation(procOpModel.getCatalogPattern(), isOracle);
                 if (TOPLEVEL.equalsIgnoreCase(modelCatalogPattern)) {
                     modelCatalogPattern = null;
                 }
-                String modelSchemaPattern = 
+                String modelSchemaPattern =
                     escapePunctuation(procOpModel.getSchemaPattern(), isOracle);
-                String modelProcedureNamePattern = 
+                String modelProcedureNamePattern =
                     escapePunctuation(procOpModel.getProcedurePattern(), isOracle);
                 for (DbStoredProcedure storedProc : dbStoredProcedures) {
-                    boolean procedureNameMatch = 
+                    boolean procedureNameMatch =
                         sqlMatch(modelProcedureNamePattern, storedProc.getName());
                     if (storedProc.getCatalog() == null || modelCatalogPattern == null) {
                         if (storedProc.getSchema() == null) {
@@ -1716,7 +1718,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                         }
                     }
                     else {
-                        boolean catalogMatch = 
+                        boolean catalogMatch =
                             sqlMatch(modelCatalogPattern, storedProc.getCatalog());
                         if (storedProc.getSchema() == null) {
                             // determined by catalog * procedureName
@@ -1731,13 +1733,13 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     }
                 }
                 if (matches.size() == 1) {
-                    DbStoredProcedureNameAndModel nameAndModel = 
+                    DbStoredProcedureNameAndModel nameAndModel =
                         new DbStoredProcedureNameAndModel(procOpModel.getName(), procOpModel);
                     dbStoredProcedure2QueryName.put(matches.get(0), nameAndModel);
                 }
                 else {
                     for (int i = 0, len = matches.size(); i < len;) {
-                        DbStoredProcedureNameAndModel nameAndModel = 
+                        DbStoredProcedureNameAndModel nameAndModel =
                             new DbStoredProcedureNameAndModel(procOpModel.getName()+(i+1), procOpModel);
                         dbStoredProcedure2QueryName.put(matches.get(i), nameAndModel);
                         i++;
@@ -1754,29 +1756,29 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             this.procOpModel = procOpModel;
         }
     }
-    
+
     public NamingConventionTransformer getTopNamingConventionTransformer() {
         return topTransformer;
     }
     public void setTopNamingConventionTransformer(NamingConventionTransformer topTransformer) {
         this.topTransformer = topTransformer;
     }
-    
+
     public boolean hasSecondarySqlOperations() {
-    	boolean flag = false;
-    	for (OperationModel om : operations) {
-    		if (om.isSQLOperation()) {
-    			SQLOperationModel sqlOm = (SQLOperationModel)om;
-    			String secondarySql = sqlOm.getSecondarySqlText();
-    			if (secondarySql != null && secondarySql.length() > 0) {
-    				flag = true;
-    				break;
-    			}
-    		}
-    	}
-    	return flag;
+        boolean flag = false;
+        for (OperationModel om : operations) {
+            if (om.isSQLOperation()) {
+                SQLOperationModel sqlOm = (SQLOperationModel)om;
+                String secondarySql = sqlOm.getSecondarySqlText();
+                if (secondarySql != null && secondarySql.length() > 0) {
+                    flag = true;
+                    break;
+                }
+            }
+        }
+        return flag;
     }
-    
+
     public RelationalDescriptor buildORDescriptor(String tableName, NamingConventionTransformer nct) {
         RelationalDescriptor desc = new RelationalDescriptor();
         String tablenameAlias = nct.generateSchemaAlias(tableName);
@@ -1787,7 +1789,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         desc.useWeakIdentityMap();
         return desc;
     }
-    
+
     public XMLDescriptor buildOXDescriptor(String tableName, NamingConventionTransformer nct) {
         XMLDescriptor xdesc = new XMLDescriptor();
         String generatedJavaClassName = getGeneratedJavaClassName(tableName);
@@ -1806,9 +1808,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         xdesc.setSchemaReference(schemaReference);
         return xdesc;
     }
-    
+
     public DirectToFieldMapping buildORFieldMappingFromColumn(DbColumn dbColumn,
-    	RelationalDescriptor desc, NamingConventionTransformer nct) {
+        RelationalDescriptor desc, NamingConventionTransformer nct) {
         DirectToFieldMapping dtfm = new DirectToFieldMapping();
         String columnName = dbColumn.getName();
         int jdbcType = dbColumn.getJDBCType();
@@ -1821,7 +1823,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         DatabaseField databaseField = new DatabaseField(columnName, desc.getTableName());
         databaseField.setSqlType(jdbcType);
         dtfm.setField(databaseField);
-        if (nct.getOptimisticLockingField() != null && 
+        if (nct.getOptimisticLockingField() != null &&
             nct.getOptimisticLockingField().equalsIgnoreCase(columnName)) {
             desc.useVersionLocking(columnName, false);
         }
@@ -1830,9 +1832,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         return dtfm;
     }
-    
+
     public XMLDirectMapping buildOXFieldMappingFromColumn(DbColumn dbColumn, XMLDescriptor xdesc,
-    	NamingConventionTransformer nct) {
+        NamingConventionTransformer nct) {
         XMLDirectMapping xdm = null;
         String columnName = dbColumn.getName();
         int jdbcType = dbColumn.getJDBCType();
@@ -1854,7 +1856,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                         if ("MTOM".equalsIgnoreCase(tom.getAttachmentType())) {
                             attachmentType = "MTOM";
                         }
-                        else { 
+                        else {
                             attachmentType = "SWAREF";
                         }
                         // only need one operation to require attachments
@@ -1869,7 +1871,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                                     if ("MTOM".equalsIgnoreCase(tom.getAttachmentType())) {
                                         attachmentType = "MTOM";
                                     }
-                                    else { 
+                                    else {
                                         attachmentType = "SWAREF";
                                     }
                                     break;
@@ -1921,7 +1923,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         XMLField xmlField = (XMLField)xdm.getField();
         xmlField.setSchemaType(qName);
         if (binaryAttach && qName == BASE_64_BINARY_QNAME) {
-            // need xsd namespaces 
+            // need xsd namespaces
             xdesc.getNamespaceResolver().put("xsd", W3C_XML_SCHEMA_NS_URI);
         }
         if (dbColumn.isPK()) {

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -50,21 +50,21 @@ public class SQLOperationModel extends OperationModel {
     }
 
     public String getSecondarySqlText() {
-		return secondarySqlText;
-	}
-	public void setSecondarySqlText(String secondarySqlText) {
-		if (secondarySqlText != null && secondarySqlText.length() > 0) {
-			this.secondarySqlText = secondarySqlText;
-			setIsSimpleXMLFormat(false);
-		}
-		else {
-			// clears secondary SQL string; back to simple XML
-			this.secondarySqlText = null;
-			setIsSimpleXMLFormat(true);
-		}
-	}
-	
-	public void addBinding(BindingModel binding) {
+        return secondarySqlText;
+    }
+    public void setSecondarySqlText(String secondarySqlText) {
+        if (secondarySqlText != null && secondarySqlText.length() > 0) {
+            this.secondarySqlText = secondarySqlText;
+            setIsSimpleXMLFormat(false);
+        }
+        else {
+            // clears secondary SQL string; back to simple XML
+            this.secondarySqlText = null;
+            setIsSimpleXMLFormat(true);
+        }
+    }
+
+    public void addBinding(BindingModel binding) {
         bindings.add(binding);
     }
 
@@ -81,12 +81,12 @@ public class SQLOperationModel extends OperationModel {
     }
 
     public boolean hasSecondarySql() {
-    	if (secondarySqlText != null && secondarySqlText.length() > 0) {
-    		return true;
-    	}
-    	return false;
-	}
-    
+        if (secondarySqlText != null && secondarySqlText.length() > 0) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void buildOperation(DBWSBuilder builder) {
 

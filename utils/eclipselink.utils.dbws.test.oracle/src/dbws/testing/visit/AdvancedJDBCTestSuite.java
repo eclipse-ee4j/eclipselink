@@ -66,7 +66,7 @@ import static org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorPr
 import static dbws.testing.visit.WebServiceTestSuite.DEFAULT_DATABASE_DRIVER;
 
 public class AdvancedJDBCTestSuite extends BuilderTestSuite {
-    
+
     static final String REGION_OR_PROJECT =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
     "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
@@ -135,7 +135,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
     "</object-persistence>";
     @SuppressWarnings("unchecked")
     @Test
-    public void struct1LevelDeep_OrPart() 
+    public void struct1LevelDeep_OrPart()
         throws SQLException, PublisherException, InstantiationException, IllegalAccessException {
         ProcedureOperationModel pModel = new ProcedureOperationModel();
         pModel.setName("echoRegion");
@@ -358,9 +358,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         testOrProject(pModel, "empAddress", EMPADDRESS_OR_PROJECT);
         // test query
         DatabaseSession ds = fixUp(EMPADDRESS_OR_PROJECT);
-        ObjectRelationalDataTypeDescriptor regionDesc = 
+        ObjectRelationalDataTypeDescriptor regionDesc =
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("region");
-        ObjectRelationalDataTypeDescriptor empAddressDesc = 
+        ObjectRelationalDataTypeDescriptor empAddressDesc =
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("emp_address");
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoEmpAddress");
         XRDynamicEntity regionEntity = (XRDynamicEntity)regionDesc.getObjectBuilder().buildNewInstance();
@@ -461,9 +461,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                   "</field>" +
                   "<attribute-classification>java.lang.String</attribute-classification>" +
                   "<null-policy xsi:type=\"null-policy\">" +
-	                 "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                 "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	              "</null-policy>" +
+                     "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                     "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                  "</null-policy>" +
                "</attribute-mapping>" +
                "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                   "<attribute-name>suburb</attribute-name>" +
@@ -472,9 +472,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                   "</field>" +
                   "<attribute-classification>java.lang.String</attribute-classification>" +
                   "<null-policy xsi:type=\"null-policy\">" +
-	                 "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                 "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	              "</null-policy>" +
+                     "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                     "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                  "</null-policy>" +
                "</attribute-mapping>" +
                "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                   "<attribute-name>addr_region</attribute-name>" +
@@ -488,9 +488,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                   "</field>" +
                   "<attribute-classification>java.math.BigInteger</attribute-classification>" +
                   "<null-policy xsi:type=\"null-policy\">" +
-	                 "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                 "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	              "</null-policy>" +
+                     "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                     "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                  "</null-policy>" +
                "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -694,11 +694,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         testOrProject(pModel, "empObject", EMPOBJECT_OR_PROJECT);
         // test query
         DatabaseSession ds = fixUp(EMPOBJECT_OR_PROJECT);
-        ObjectRelationalDataTypeDescriptor regionDesc = 
+        ObjectRelationalDataTypeDescriptor regionDesc =
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("region");
-        ObjectRelationalDataTypeDescriptor empAddressDesc = 
+        ObjectRelationalDataTypeDescriptor empAddressDesc =
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("emp_address");
-        ObjectRelationalDataTypeDescriptor empObjectDesc = 
+        ObjectRelationalDataTypeDescriptor empObjectDesc =
             (ObjectRelationalDataTypeDescriptor)ds.getProject().getDescriptorForAlias("emp_object");
         ValueReadQuery vrq = (ValueReadQuery)ds.getQuery("echoEmpObject");
         XRDynamicEntity regionEntity = (XRDynamicEntity)regionDesc.getObjectBuilder().buildNewInstance();
@@ -772,7 +772,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         XMLContext xmlContext2 = new XMLContext(p2, xrdecl);
         Document empObjectEntityDoc = xmlPlatform.createDocument();
         xmlContext2.createMarshaller().marshal(empObjectEntity, empObjectEntityDoc);
-        String empObjectEntityString = 
+        String empObjectEntityString =
             DBWSTestHelper.documentToString(empObjectEntityDoc).replaceAll("[\r\n]", "");
         String anEmpObject = ANEMPOBJECT + today.toString() + ANEMPOBJECT_SUFFIX;
         assertTrue("instance empObject not same as control empObject",
@@ -818,9 +818,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-  	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-  	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-  	                   "</null-policy>" +
+                            "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                            "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                         "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>reg_name</attribute-name>" +
@@ -829,9 +829,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -864,9 +864,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                        "<attribute-name>address</attribute-name>" +
@@ -880,9 +880,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>date_of_hire</attribute-name>" +
@@ -899,9 +899,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.sql.Date</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -940,9 +940,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>suburb</attribute-name>" +
@@ -951,9 +951,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                        "<attribute-name>addr_region</attribute-name>" +
@@ -967,9 +967,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.math.BigInteger</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -1200,9 +1200,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.math.BigDecimal</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>name</attribute-name>" +
@@ -1211,9 +1211,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.lang.String</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -1263,7 +1263,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "</class-mapping-descriptor>" +
            "</class-mapping-descriptors>" +
         "</object-persistence>";
-    static final String EMPARRAY_SCHEMA = 
+    static final String EMPARRAY_SCHEMA =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<xsd:schema targetNamespace=\"urn:empArray\" xmlns=\"urn:empArray\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
            "<xsd:complexType name=\"emp_infoType\">" +
@@ -1280,7 +1280,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "<xsd:element name=\"emp_info_arrayType\" type=\"emp_info_arrayType\"/>" +
        "</xsd:schema>";
 
-    public static final String SF_TBL1_OR_PROJECT = 
+    public static final String SF_TBL1_OR_PROJECT =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
     "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
        "<name>sfTbl1</name>" +
@@ -1295,7 +1295,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                    "<attribute-name>items</attribute-name>" +
                    "<field name=\"items\" xsi:type=\"object-relational-field\">" +
                       "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\"/>" +
-                   "</field>" +                       
+                   "</field>" +
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
                    "</container>" +
@@ -1376,7 +1376,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         testOxProject(pModel, "sfTbl1", "urn:tbl1", SF_TBL1_OX_PROJECT, SF_TBL1_SCHEMA);
     }
 
-    public static final String SF_TBL1_OX_PROJECT = 
+    public static final String SF_TBL1_OX_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
            "<name>sfTbl1</name>" +
@@ -1425,7 +1425,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "</class-mapping-descriptor>" +
            "</class-mapping-descriptors>" +
         "</object-persistence>";
-    public static final String SF_TBL1_SCHEMA = 
+    public static final String SF_TBL1_SCHEMA =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"urn:tbl1\" elementFormDefault=\"qualified\" targetNamespace=\"urn:tbl1\">" +
             "<xsd:complexType name=\"somepackage_tbl1Type\">" +
@@ -1436,7 +1436,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             "<xsd:element name=\"somepackage_tbl1Type\" type=\"somepackage_tbl1Type\"/>" +
         "</xsd:schema>";
 
-    public static final String TBL5_OR_PROJECT = 
+    public static final String TBL5_OR_PROJECT =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
     "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
        "<name>tbl5</name>" +
@@ -1528,7 +1528,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setReturnType("somepackage_tbl5Type");
         testOxProject(pModel, "BuildTbl5", "urn:tbl5", TBL5_OX_PROJECT, TBL5_SCHEMA);
     }
-    public static final String TBL5_OX_PROJECT = 
+    public static final String TBL5_OX_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
            "<name>BuildTbl5</name>" +
@@ -1587,8 +1587,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "</xsd:complexType>" +
            "<xsd:element name=\"somepackage_tbl5Type\" type=\"somepackage_tbl5Type\"/>" +
         "</xsd:schema>";
-    
-    public static final String ARECORD_OR_PROJECT = 
+
+    public static final String ARECORD_OR_PROJECT =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
     "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
        "<name>aRecord</name>" +
@@ -1765,7 +1765,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         pModel.setReturnType("somepackage_arecordType");
         testOxProject(pModel, "buildARecord", "urn:aRecord", ARECORD_OX_PROJECT, ARECORD_SCHEMA);
     }
-    public static final String ARECORD_OX_PROJECT = 
+    public static final String ARECORD_OX_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
            "<name>buildARecord</name>" +
@@ -1815,9 +1815,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.math.BigInteger</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -1954,7 +1954,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "</xsd:sequence>" +
            "</xsd:complexType>" +
            "<xsd:element name=\"somepackage_arecordType\" type=\"somepackage_arecordType\"/>" +
-        "</xsd:schema>";        
+        "</xsd:schema>";
 
     public static final String CRECORD_OR_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -2146,7 +2146,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Object o = ds.executeQuery(vrq, args);
         assertTrue("return value not correct type", o instanceof XRDynamicEntity);
     }
-    
+
     @Test
     public void BuildCRecord_OxPart() {
         ProcedureOperationModel pModel = new ProcedureOperationModel();
@@ -2254,9 +2254,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "</field>" +
                        "<attribute-classification>java.math.BigInteger</attribute-classification>" +
                        "<null-policy xsi:type=\"null-policy\">" +
-	                      "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
-	                      "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
-	                   "</null-policy>" +
+                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>" +
+                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>" +
+                       "</null-policy>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -2404,30 +2404,30 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "</xsd:complexType>" +
            "<xsd:element name=\"somepackage_crecordType\" type=\"somepackage_crecordType\"/>" +
         "</xsd:schema>";
-    
+
     protected void testOrProject(ProcedureOperationModel pModel, String projectName, String orProject) {
-        List<DbStoredProcedure> storedProcedures = 
-            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel); 
-        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+        List<DbStoredProcedure> storedProcedures =
+            OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
+        Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName =
             new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
         ArrayList<OperationModel> operations = new ArrayList<OperationModel>();
         operations.add(pModel);
         DBWSBuilder.buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            storedProcedures, operations, true);     
-        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder = 
+            storedProcedures, operations, true);
+        AdvancedJDBCORDescriptorBuilder advJOrDescriptorBuilder =
             new AdvancedJDBCORDescriptorBuilder();
-        AdvancedJDBCQueryBuilder queryBuilder = 
+        AdvancedJDBCQueryBuilder queryBuilder =
             new AdvancedJDBCQueryBuilder(storedProcedures, dbStoredProcedure2QueryName);
         PublisherListenerChainAdapter listenerChainAdapter = new PublisherListenerChainAdapter();
         listenerChainAdapter.addListener(advJOrDescriptorBuilder);
         listenerChainAdapter.addListener(queryBuilder);
         PublisherWalker walker = new PublisherWalker(listenerChainAdapter);
         pModel.getJPubType().accept(walker);
-        List<ObjectRelationalDataTypeDescriptor> descriptors = 
+        List<ObjectRelationalDataTypeDescriptor> descriptors =
             advJOrDescriptorBuilder.getDescriptors();
         Project p = new Project();
         p.setName(projectName);
-        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) { 
+        for (ObjectRelationalDataTypeDescriptor ordt : descriptors) {
             p.addDescriptor(ordt);
         }
         List<DatabaseQuery> queries = queryBuilder.getQueries();
@@ -2445,7 +2445,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
     protected void testOxProject(ProcedureOperationModel pModel, String projectName,
         String nameSpace, String oxProject, String oxSchema) {
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
-        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder = 
+        AdvancedJDBCOXDescriptorBuilder advJOxDescriptorBuilder =
             new AdvancedJDBCOXDescriptorBuilder(nameSpace, new TypeSuffixTransformer());
         PublisherWalker walker = new PublisherWalker(advJOxDescriptorBuilder);
         pModel.getJPubType().accept(walker);
@@ -2453,7 +2453,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             ((AdvancedJDBCOXDescriptorBuilder)walker.getListener()).getDescriptors();
         Project p = new Project();
         p.setName(projectName);
-        for (XMLDescriptor xDesc : descriptors) { 
+        for (XMLDescriptor xDesc : descriptors) {
             p.addDescriptor(xDesc);
         }
         Document resultDoc = xmlPlatform.createDocument();
@@ -2462,7 +2462,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(oxProject));
         assertTrue("control document not same as instance document",
                 comparer.isNodeEqual(controlDoc, resultDoc));
-        
+
         SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
         SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
         // set element form default to qualified for target namespace

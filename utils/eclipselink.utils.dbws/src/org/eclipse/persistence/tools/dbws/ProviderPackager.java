@@ -48,14 +48,14 @@ import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_F
  *   | DBWSProvider.class     -- code-generated javax.xml.ws.Provider
  *   | ProviderListener.class -- code-generated javax.servlet.ServletContextListener
  * </pre>
- * 
+ *
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
 public class ProviderPackager extends XRPackager {
 
     public static final String PROVIDER_NAME = "_dbws.DBWSProvider";
-    
+
     public static final String PROVIDER_LISTENER_SOURCE =
         "package _dbws;\n\n" +
         "import javax.servlet.ServletContext;\n" +
@@ -104,7 +104,7 @@ public class ProviderPackager extends XRPackager {
         "\",\n    targetNamespace = \"";
     public static final String DBWS_PROVIDER_SOURCE_SUFFIX =
         "\"\n)\n@ServiceMode(MESSAGE)\n";
-    
+
     public static final String DBWS_PROVIDER_SOAP12_BINDING =
         "@BindingType(value=SOAP12HTTP_BINDING)\n";
     public static final String DBWS_PROVIDER_SOAP11_MTOM_BINDING =
@@ -145,7 +145,7 @@ public class ProviderPackager extends XRPackager {
         "    public void destroy() {\n" +
         "        super.destroy();\n" +
         "    }\n" +
-        "};\n"; 
+        "};\n";
 
     public ProviderPackager() {
         this(new WarArchiver(),"provider", noArchive);
@@ -158,7 +158,7 @@ public class ProviderPackager extends XRPackager {
     public Archiver buildDefaultArchiver() {
         return new WarArchiver(this);
     }
-    
+
     @Override
     public OutputStream getWSDLStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_WSDL));
@@ -168,29 +168,29 @@ public class ProviderPackager extends XRPackager {
     public OutputStream getProviderClassStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_PROVIDER_CLASS_FILE));
     }
-    
+
     @Override
     public OutputStream getProviderSourceStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_PROVIDER_SOURCE_FILE));
     }
-    
+
     @Override
     public OutputStream getProviderListenerSourceStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, PROVIDER_LISTENER_SOURCE_FILE));
     }
-    
+
     @Override
     public OutputStream getProviderListenerClassStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, PROVIDER_LISTENER_CLASS_FILE));
-        
+
     }
-    
+
     static final int DEFAULT_BUFFER_SIZE = 4096;
     @Override
     public void writeProvider(OutputStream sourceProviderStream, OutputStream classProviderStream,
         OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream,
         DBWSBuilder builder) {
-        
+
         StringBuilder source = new StringBuilder(DBWS_PROVIDER_SOURCE_PREAMBLE);
         String wsdlPathPrevix = getWSDLPathPrefix();
         if (wsdlPathPrevix != null) {
@@ -203,7 +203,7 @@ public class ProviderPackager extends XRPackager {
         source.append(serviceName + "Port");
         source.append(DBWS_PROVIDER_SOURCE_TARGET_NAMESPACE);
         source.append(builder.getWSDLGenerator().getServiceNameSpace());
-        source.append(DBWS_PROVIDER_SOURCE_SUFFIX);        
+        source.append(DBWS_PROVIDER_SOURCE_SUFFIX);
         if (builder.usesSOAP12()) {
             if (builder.mtomEnabled()) {
                 source.append(DBWS_PROVIDER_SOAP12_MTOM_BINDING);
@@ -228,7 +228,7 @@ public class ProviderPackager extends XRPackager {
             }
             catch (IOException e) {}
         }
-        
+
         if (classProviderStream != __nullStream) {
             InMemoryCompiler providerCompiler = new InMemoryCompiler(PROVIDER_NAME);
             if (providerCompiler.getCompiler() == null) {
@@ -238,7 +238,7 @@ public class ProviderPackager extends XRPackager {
             byte[] bytes = providerCompiler.compile(source);
             if (bytes.length == 0) {
                 DiagnosticCollector<JavaFileObject> collector = providerCompiler.getDiagnosticsCollector();
-                StringBuilder diagBuf = 
+                StringBuilder diagBuf =
                     new StringBuilder("DBWSBuilder cannot generate ProviderListener code " +
                         "(likely servlet jar missing from classpath)\n");
                 for (Diagnostic<? extends JavaFileObject> d : collector.getDiagnostics()) {

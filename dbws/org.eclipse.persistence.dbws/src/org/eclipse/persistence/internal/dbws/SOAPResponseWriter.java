@@ -97,7 +97,7 @@ public class SOAPResponseWriter {
                     QName type = queryOperation.getResult().getType();
                     String localElement = type.getLocalPart();
                     // look for top-level complex types
-                    Set<Map.Entry<String, ComplexType>> entrySet = 
+                    Set<Map.Entry<String, ComplexType>> entrySet =
                         dbwsAdapter.getSchema().getTopLevelComplexTypes().entrySet();
                     for (Map.Entry<String, ComplexType> me : entrySet) {
                         if (me.getValue().getName().equals(type.getLocalPart())) {

@@ -18,7 +18,7 @@ import org.eclipse.persistence.internal.xr.XRDynamicPropertiesManager;
 public class XRCustomer extends XRDynamicEntity {
 
     public static XRDynamicPropertiesManager DPM = new XRDynamicPropertiesManager();
-    
+
     public XRCustomer() {
         super();
     }
@@ -26,5 +26,5 @@ public class XRCustomer extends XRDynamicEntity {
     public XRDynamicPropertiesManager fetchPropertiesManager() {
         return DPM;
     }
-    
+
 }

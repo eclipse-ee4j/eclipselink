@@ -129,7 +129,7 @@ public class OracleObjecttypeTestSuite {
         "    </named-query>\n" +
         "  </query>\n" +
         "</dbws>";
-    static final String OBJECTTYPE_OR_PROJECT = 
+    static final String OBJECTTYPE_OR_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<object-persistence version=\"" + CONSTANT_PROJECT_BUILD_VERSION + "\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
            "<name>or-oracleobjecttype</name>" +
@@ -241,7 +241,7 @@ public class OracleObjecttypeTestSuite {
               "</class-mapping-descriptor>" +
            "</class-mapping-descriptors>" +
         "</object-persistence>";
-    static final String OBJECTTYPE_OX_PROJECT = 
+    static final String OBJECTTYPE_OX_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<object-persistence version=\"" + CONSTANT_PROJECT_BUILD_VERSION + "\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
            "<name>ox-oracleobjecttype</name>" +
@@ -440,17 +440,17 @@ public class OracleObjecttypeTestSuite {
         readQuery.setCall(spCall);
         employeeORDescriptor.getQueryManager().addQuery("getEmployeesByProv", readQuery);
 
-        ObjectPersistenceWorkbenchXMLProject runtimeProject = 
+        ObjectPersistenceWorkbenchXMLProject runtimeProject =
             new ObjectPersistenceWorkbenchXMLProject();
-        XMLTransformationMapping versionMapping = 
+        XMLTransformationMapping versionMapping =
             (XMLTransformationMapping)runtimeProject.getDescriptor(Project.class).
                 getMappings().firstElement();
-        TransformerBasedFieldTransformation  versionTransformer = 
+        TransformerBasedFieldTransformation  versionTransformer =
             (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().get(0);
         Field transformerField =
             TransformerBasedFieldTransformation.class.getDeclaredField("transformer");
         transformerField.setAccessible(true);
-        ConstantTransformer constantTransformer = 
+        ConstantTransformer constantTransformer =
             (ConstantTransformer)transformerField.get(versionTransformer);
         constantTransformer.setValue(CONSTANT_PROJECT_BUILD_VERSION);
         XMLContext context = new XMLContext(runtimeProject);
@@ -480,7 +480,7 @@ public class OracleObjecttypeTestSuite {
         schemaReference.setSchemaContext("/addressType");
         schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
         addressOXDescriptor.setSchemaReference(schemaReference);
-        
+
         XMLDirectMapping streetMapping = new XMLDirectMapping();
         streetMapping.setAttributeName("street");
         XMLField streetField = new XMLField();

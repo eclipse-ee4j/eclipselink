@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -50,11 +50,11 @@ public class XRClassWriter extends DynamicClassWriter {
         XRDynamicEntity_CollectionWrapper.class.getName().replace('.', '/');
     static final String XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES =
         XRDynamicPropertiesManager.class.getName().replace('.', '/');
-    
+
     public XRClassWriter() {
         super();
     }
-    
+
     /*
      * Pattern is as follows:
      * <pre>
@@ -67,7 +67,7 @@ public class XRClassWriter extends DynamicClassWriter {
      *         return DPM;
      *     }
      * }
-     * 
+     *
      * later on, the DPM field is populated:
      *     XRDynamicEntity newInstance = fooClz.newInstance();
      *     XRDynamicPropertiesManager dpm = newInstance.getPropertiesManager();
@@ -77,10 +77,10 @@ public class XRClassWriter extends DynamicClassWriter {
      *     dpm.setPropertiesNameSet(propertyNames);
      * </pre>
      */
-	
+
     @Override
     public byte[] writeClass(DynamicClassLoader loader, String className) throws ClassNotFoundException {
-                
+
         String classNameAsSlashes = className.replace('.', '/');
         ClassWriter cw = new ClassWriter(true);
         CodeVisitor cv;
@@ -99,7 +99,7 @@ public class XRClassWriter extends DynamicClassWriter {
         // public class Foo extends XRDynamicEntity {
         cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes,
             XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null, null);
-        
+
         // public static XRDynamicPropertiesManager DPM = new XRDynamicPropertiesManager();
         cw.visitField(ACC_PUBLIC + ACC_STATIC, PROPERTIES_MANAGER_FIELD,
             "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
@@ -111,7 +111,7 @@ public class XRClassWriter extends DynamicClassWriter {
             "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
         cv.visitInsn(RETURN);
         cv.visitMaxs(0, 0);
-        
+
         // public Foo() {
         //     super();
         // }
@@ -120,9 +120,9 @@ public class XRClassWriter extends DynamicClassWriter {
         cv.visitMethodInsn(INVOKESPECIAL, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, INIT, "()V");
         cv.visitInsn(RETURN);
         cv.visitMaxs(0, 0);
-        
+
         // public XRDynamicPropertiesManager fetchPropertiesManager() {
-        cv = cw.visitMethod(ACC_PUBLIC, "fetchPropertiesManager", 
+        cv = cw.visitMethod(ACC_PUBLIC, "fetchPropertiesManager",
             "()L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
         cv.visitFieldInsn(GETSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD,
             "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");

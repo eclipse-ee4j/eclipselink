@@ -35,7 +35,7 @@ import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTIO
 public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
 
     public static final String ITEMS_ATTRIBUTE_NAME = "items";
-    
+
     protected Stack<ListenerHelper> stac = new Stack<ListenerHelper>();
     protected Map<String, ObjectRelationalDataTypeDescriptor> descriptorMap =
         new HashMap<String, ObjectRelationalDataTypeDescriptor>();
@@ -53,7 +53,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
         if (descriptorMap.isEmpty()) {
             return null;
         }
-        ArrayList<ObjectRelationalDataTypeDescriptor> al = 
+        ArrayList<ObjectRelationalDataTypeDescriptor> al =
             new ArrayList<ObjectRelationalDataTypeDescriptor>();
         al.addAll(descriptorMap.values());
         return al;
@@ -85,7 +85,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                 ListenerHelper listenerHelper2 = stac.peek();
                 if (listenerHelper2.isObject()) {
                     ObjectTypeHelper objectTypeHelper = (ObjectTypeHelper)listenerHelper2;
-                    ObjectRelationalDataTypeDescriptor ordt = 
+                    ObjectRelationalDataTypeDescriptor ordt =
                         descriptorMap.get(objectTypeHelper.objectTypename());
                     DatabaseMapping dm = ordt.getMappingForAttributeName(attributeName);
                     if (dm == null) {
@@ -103,7 +103,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                 }
                 else if (listenerHelper2.isArray()) {
                     SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)listenerHelper2;
-                    ObjectRelationalDataTypeDescriptor ordt = 
+                    ObjectRelationalDataTypeDescriptor ordt =
                         descriptorMap.get(sqlArrayTypeHelper.arrayTypename());
                     DatabaseMapping dm = ordt.getMappingForAttributeName(attributeName);
                     if (dm == null) {
@@ -116,7 +116,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                         DatabaseField nestedField = new DatabaseField("");
                         nestedField.setSqlType(typecode);
                         nestedField.setColumnDefinition(sqlTypeName);
-                        ObjectRelationalDatabaseField field = 
+                        ObjectRelationalDatabaseField field =
                             (ObjectRelationalDatabaseField)arrayMapping.getField();
                         field.setNestedTypeField(nestedField);
                         ordt.addMapping(arrayMapping);
@@ -125,7 +125,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
             }
             else if (listenerHelper.isArray()) {
                 SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)listenerHelper;
-                ObjectRelationalDataTypeDescriptor ordt = 
+                ObjectRelationalDataTypeDescriptor ordt =
                     descriptorMap.get(sqlArrayTypeHelper.arrayTypename());
                 DatabaseMapping dm = ordt.getMappingForAttributeName(ITEMS_ATTRIBUTE_NAME);
                 if (dm == null) {
@@ -137,7 +137,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                     DatabaseField nestedField = new DatabaseField("");
                     nestedField.setSqlType(typecode);
                     nestedField.setColumnDefinition(sqlTypeName);
-                    ObjectRelationalDatabaseField field = 
+                    ObjectRelationalDatabaseField field =
                         (ObjectRelationalDatabaseField)arrayMapping.getField();
                     field.setNestedTypeField(nestedField);
                     ordt.addMapping(arrayMapping);
@@ -152,7 +152,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                      */
                     SqlArrayTypeHelper sqlArrayTypeHelper2 = (SqlArrayTypeHelper)listenerHelper3;
                     stac.pop();
-                    ObjectRelationalDataTypeDescriptor ordt3 = 
+                    ObjectRelationalDataTypeDescriptor ordt3 =
                         descriptorMap.get(sqlArrayTypeHelper2.arrayTypename());
                     DatabaseMapping dm3 = ordt3.getMappingForAttributeName(ITEMS_ATTRIBUTE_NAME);
                     if (dm3 == null) {
@@ -179,10 +179,10 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                     ListenerHelper listenerHelper5 = stac.peek();
                     if (listenerHelper5.isObject()) {
                         ObjectTypeHelper objectTypeHelper = (ObjectTypeHelper)listenerHelper5;
-                        ObjectRelationalDataTypeDescriptor ordt2 = 
+                        ObjectRelationalDataTypeDescriptor ordt2 =
                             descriptorMap.get(objectTypeHelper.objectTypename());
                         String fieldName = fieldHelper.attributeFieldName();
-                        DatabaseMapping dm2 = 
+                        DatabaseMapping dm2 =
                             ordt2.getMappingForAttributeName(fieldName.toLowerCase());
                         if (dm2 == null) {
                             ordt2.addFieldOrdering(fieldName);
@@ -196,7 +196,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                                 DatabaseField nestedField = new DatabaseField("");
                                 nestedField.setSqlType(typecode);
                                 nestedField.setColumnDefinition(sqlTypeName);
-                                ObjectRelationalDatabaseField field = 
+                                ObjectRelationalDatabaseField field =
                                     (ObjectRelationalDatabaseField)arrayMapping2.getField();
                                 field.setNestedTypeField(nestedField);
                                 ordt2.addMapping(arrayMapping2);
@@ -208,20 +208,20 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                                 String structureName = "";
                                 String referenceClassName = "";
                                 if (listenerHelper3.isObject()) {
-                                    ObjectTypeHelper objectTypeHelper2 = 
+                                    ObjectTypeHelper objectTypeHelper2 =
                                         (ObjectTypeHelper)listenerHelper3;
-                                    structureName = 
+                                    structureName =
                                         objectTypeHelper2.objectTypename().toUpperCase();
-                                    ObjectRelationalDataTypeDescriptor ordt3 = 
+                                    ObjectRelationalDataTypeDescriptor ordt3 =
                                         descriptorMap.get(objectTypeHelper2.objectTypename());
                                     referenceClassName = ordt3.getJavaClassName();
                                 }
                                 else if (listenerHelper3.isArray()) {
-                                    SqlArrayTypeHelper sqlArrayTypeHelper3 = 
+                                    SqlArrayTypeHelper sqlArrayTypeHelper3 =
                                         (SqlArrayTypeHelper)listenerHelper3;
-                                    structureName = 
+                                    structureName =
                                         sqlArrayTypeHelper3.arrayTypename().toUpperCase();
-                                    ObjectRelationalDataTypeDescriptor ordt3 = 
+                                    ObjectRelationalDataTypeDescriptor ordt3 =
                                         descriptorMap.get(sqlArrayTypeHelper3.arrayTypename());
                                     referenceClassName = ordt3.getJavaClassName();
                                 }
@@ -273,7 +273,7 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                     if (listenerHelper2.isObject()) {
                         ObjectTypeHelper objectTypeHelper2 = (ObjectTypeHelper)listenerHelper2;
                         String objectTypeNameAlias2 = objectTypeHelper2.objectTypename();
-                        ObjectRelationalDataTypeDescriptor ordt2 = 
+                        ObjectRelationalDataTypeDescriptor ordt2 =
                             descriptorMap.get(objectTypeNameAlias2);
                         if (ordt2 != null) {
                             DatabaseMapping dm = ordt2.getMappingForAttributeName(attributeName);
@@ -296,10 +296,10 @@ public class AdvancedJDBCORDescriptorBuilder extends PublisherDefaultListener {
                 else if (listenerHelper.isArray()) {
                     SqlArrayTypeHelper sqlArrayTypeHelper = (SqlArrayTypeHelper)stac.pop();
                     String sqlArrayTypeNameAlias = sqlArrayTypeHelper.arrayTypename();
-                    ObjectRelationalDataTypeDescriptor ordt2 = 
+                    ObjectRelationalDataTypeDescriptor ordt2 =
                         descriptorMap.get(sqlArrayTypeNameAlias);
                     if (ordt2 != null) {
-                        DatabaseMapping dm = 
+                        DatabaseMapping dm =
                             ordt2.getMappingForAttributeName(ITEMS_ATTRIBUTE_NAME);
                         if (dm == null) {
                             ObjectArrayMapping arrayMapping = new ObjectArrayMapping();

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,14 +33,14 @@ import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
  * @since EclipseLink 1.x
  */
 public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
-    
+
     private int count = 0;
-    private HashMap<String, DataHandler> attachments = new HashMap<String,DataHandler>(); 
-    
+    private HashMap<String, DataHandler> attachments = new HashMap<String,DataHandler>();
+
     public boolean hasAttachments() {
         return attachments.size() > 0;
     }
-    
+
     public Map<String, DataHandler> getAttachments() {
         return attachments;
     }
@@ -60,14 +60,14 @@ public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
         attachments.put(name, dataHandler);
         return name;
     }
-    
+
     public String addMtomAttachment(DataHandler data, String elementName, String namespace) {
         String name = "cid:" + randomUUID().toString();
         attachments.put(name, data);
         return name;
     }
-    
-    public String addMtomAttachment(byte[] data, int start, int len, String mimeType, 
+
+    public String addMtomAttachment(byte[] data, int start, int len, String mimeType,
         String elementName, String namespace) {
         String name = "cid:" + randomUUID().toString();
         DataHandler dataHandler = new DataHandler(new ByteArrayDataSource(data,

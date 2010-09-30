@@ -88,7 +88,7 @@ public class QueryOperation extends Operation {
     public QueryOperation() {
         super();
     }
-    
+
     public Result getResult() {
         return result;
     }
@@ -354,37 +354,41 @@ public class QueryOperation extends Operation {
                         vo.value = value;
                         value = vo;
                 	}
-                	else if (xrService.descriptorsByQName.containsKey(resultType)) {
-                		XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
-                		ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(
-                			xdesc.getAlias());
-                		Object targetObject = null;
-                		if (isCollection()) {
-                			XRDynamicEntity_CollectionWrapper xrCollWrapper = 
-                				new XRDynamicEntity_CollectionWrapper();
-                			Vector<AbstractRecord> results = (Vector<AbstractRecord>)value;
-                			for (int i = 0, len = results.size(); i < len; i++) {
-                				Object o = desc.getObjectBuilder().buildNewInstance();
-                    			populateTargetObjectFromRecord(desc.getMappings(),
-                    				results.get(i), o, (AbstractSession)xrService.getORSession());
-                    			xrCollWrapper.add(o);
-                			}
-                			targetObject = xrCollWrapper;
+                	else {
+                		Object targetObject = value;
+                		if (xrService.descriptorsByQName.containsKey(resultType)) {
+                			XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
+                    		ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(
+                    			xdesc.getAlias());
+                    		if (desc.isAggregateDescriptor()) {
+                    			if (isCollection()) {
+                        			XRDynamicEntity_CollectionWrapper xrCollWrapper =
+                        				new XRDynamicEntity_CollectionWrapper();
+                        			Vector<AbstractRecord> results = (Vector<AbstractRecord>)value;
+                        			for (int i = 0, len = results.size(); i < len; i++) {
+                        				Object o = desc.getObjectBuilder().buildNewInstance();
+                            			populateTargetObjectFromRecord(desc.getMappings(),
+                            				results.get(i), o, (AbstractSession)xrService.getORSession());
+                            			xrCollWrapper.add(o);
+                        			}
+                        			targetObject = xrCollWrapper;
+                        		}
+                        		else {
+                        			targetObject = desc.getObjectBuilder().buildNewInstance();
+                        			populateTargetObjectFromRecord(desc.getMappings(),
+                        				(AbstractRecord)((Vector)value).get(0), targetObject,
+                        					(AbstractSession)xrService.getORSession());
+                        		}
+                    		}
                 		}
-                		else {
-                			targetObject = desc.getObjectBuilder().buildNewInstance();
-                			populateTargetObjectFromRecord(desc.getMappings(),
-                				(AbstractRecord)((Vector)value).get(0), targetObject,
-                					(AbstractSession)xrService.getORSession());
-                		}
-            			return targetObject;
+            			value = targetObject;
                 	}
                 }
             }
         }
         return value;
     }
-    
+
     protected void populateTargetObjectFromRecord(Vector<DatabaseMapping> mappings,
     	AbstractRecord record, Object targetObject, AbstractSession session) {
 		for (DatabaseMapping dm : mappings) {

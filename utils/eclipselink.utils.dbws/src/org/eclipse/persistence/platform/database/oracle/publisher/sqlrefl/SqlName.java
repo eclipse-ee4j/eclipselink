@@ -263,7 +263,7 @@ public class SqlName extends Name {
         if (m_name.equals("TIMESTAMP WITH TZ")) {
             return "TIMESTAMP WITH TIME ZONE";
         }
-		// "BOOLEAN" is really "PL/SQL BOOLEAN" which doesn't have a JDBC equivalent
+        // "BOOLEAN" is really "PL/SQL BOOLEAN" which doesn't have a JDBC equivalent
         // use INTEGER and SYS.SQLJUTL.INT2BOOL/SYS.SQLJUTL.BOOL2INT conversion
         if (m_name.equals("BOOLEAN")) {
             return "INTEGER";

@@ -24,9 +24,9 @@ import javax.xml.transform.stream.StreamResult;
 
 public class DBWSTestHelper {
 
-    public static final String CONSTANT_PROJECT_BUILD_VERSION = 
+    public static final String CONSTANT_PROJECT_BUILD_VERSION =
         "Eclipse Persistence Services - some version (some build date)";
-    
+
     public final static String DATABASE_USERNAME_KEY = "db.user";
     public final static String DATABASE_PASSWORD_KEY = "db.pwd";
     public final static String DATABASE_URL_KEY = "db.url";

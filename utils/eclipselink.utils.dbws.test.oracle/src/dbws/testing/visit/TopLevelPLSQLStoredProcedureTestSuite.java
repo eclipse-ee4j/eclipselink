@@ -80,7 +80,7 @@ public class TopLevelPLSQLStoredProcedureTestSuite extends BuilderTestSuite {
            "procedurePattern=\"BOOL_IN_TEST\" " +
         "/>" +
       "</dbws-builder>";
-    
+
     // JUnit test fixtures
     public static DBWSBuilder builder = new DBWSBuilder();
     public static XRServiceAdapter xrService = null;
@@ -91,7 +91,7 @@ public class TopLevelPLSQLStoredProcedureTestSuite extends BuilderTestSuite {
     public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
 
     @BeforeClass
-    public static void setup() throws SecurityException, IllegalArgumentException, 
+    public static void setup() throws SecurityException, IllegalArgumentException,
         ClassNotFoundException, SQLException, NoSuchFieldException, IllegalAccessException,
         WSDLException {
         BuilderTestSuite.setUp();
@@ -134,7 +134,7 @@ public class TopLevelPLSQLStoredProcedureTestSuite extends BuilderTestSuite {
                 }
                 else {
                     orProject = new Project();
-                    orProject.setName(builder.getProjectName() + "-dbws-or"); 
+                    orProject.setName(builder.getProjectName() + "-dbws-or");
                 }
                 Project oxProject = null;
                 if (DBWS_OX_STREAM.size() != 0) {

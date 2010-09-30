@@ -201,7 +201,7 @@ public class KeyMappingsTestSuite {
                     "</foreign-key-fields>\n" +
                     "<selection-query xsi:type=\"read-object-query\"/>\n" +
                     "<join-fetch>inner-join</join-fetch>\n" +
-                 "</attribute-mapping>\n" +                    
+                 "</attribute-mapping>\n" +
                     "<attribute-mapping xsi:type=\"one-to-many-mapping\">\n" +
                        "<attribute-name>phones</attribute-name>\n" +
                        "<reference-class>dbws.testing.keymappings.Phone</reference-class>\n" +

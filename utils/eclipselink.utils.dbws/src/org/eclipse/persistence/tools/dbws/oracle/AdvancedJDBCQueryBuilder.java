@@ -40,7 +40,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
     protected Map<String, DatabaseQuery> queryMap = new HashMap<String, DatabaseQuery>();
     protected List<DbStoredProcedure> storedProcedures;
     protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName;
-    
+
     protected String packageName = null;
 
     public AdvancedJDBCQueryBuilder(List<DbStoredProcedure> storedProcedures,
@@ -74,7 +74,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
                 this.packageName = packageName.substring(dotIdx+1);
             }
             else {
-                // toplevel 
+                // toplevel
                 this.packageName = packageName;
             }
         }
@@ -98,7 +98,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
         }
         stac.push(new ReturnArgHelper("", returnType));
     }
-    
+
     @Override
     public void beginMethodArg(String argName, String direction, int idx) {
         if (!stac.isEmpty()) {
@@ -111,7 +111,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
             }
         }
     }
-    
+
     @Override
     public void endMethod(String methodName) {
         if (!stac.isEmpty()) {
@@ -140,7 +140,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
                         if (returnArg.isComplex()) {
                             String javaClassName = returnArg.typeName();
                             if (returnArg.nestedType() != null) {
-                                ObjectRelationalDatabaseField nestedField = 
+                                ObjectRelationalDatabaseField nestedField =
                                     new ObjectRelationalDatabaseField("");
                                 nestedField.setSqlTypeName(returnArg.nestedType());
                                 nestedField.setSqlType(returnArg.nestedTypecode());
@@ -287,7 +287,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
                 methodHelper.setFunc(true);
                 MethodArgHelper methodArgHelper = new MethodArgHelper("", arrayType);
                 methodArgHelper.setTypecode(Types.ARRAY);
-                methodArgHelper.setTypeName((packageName + "." + arrayType).toLowerCase() + 
+                methodArgHelper.setTypeName((packageName + "." + arrayType).toLowerCase() +
                     COLLECTION_WRAPPER_SUFFIX);
                 methodArgHelper.setIsComplex(true);
                 methodHelper.args().add(0, methodArgHelper);
@@ -318,7 +318,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
                 methodHelper.setFunc(true);
                 MethodArgHelper methodArgHelper = new MethodArgHelper("", tableType);
                 methodArgHelper.setTypecode(Types.ARRAY);
-                methodArgHelper.setTypeName((packageName + "." + tableType).toLowerCase() + 
+                methodArgHelper.setTypeName((packageName + "." + tableType).toLowerCase() +
                     COLLECTION_WRAPPER_SUFFIX);
                 methodArgHelper.setIsComplex(true);
                 methodHelper.args().add(0, methodArgHelper);

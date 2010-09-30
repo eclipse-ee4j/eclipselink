@@ -32,10 +32,10 @@ import dbws.testing.DBWSTestSuite;
 
 public class BindingModelTestSuite extends DBWSTestSuite {
 
-    static final String OPERATION = "numLogXml"; 
-    static final String GROUP_BY_CLAUSE = 
+    static final String OPERATION = "numLogXml";
+    static final String GROUP_BY_CLAUSE =
         "group by to_char(data, 'HH24') order by to_char(data, 'HH24') asc";
-    
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         DBWS_BUILDER_XML_USERNAME =
@@ -73,7 +73,7 @@ public class BindingModelTestSuite extends DBWSTestSuite {
 
     @Test
     public void checkParsedSqlText() {
-        QueryOperation queryOperation = 
+        QueryOperation queryOperation =
             (QueryOperation)builder.getXrServiceModel().getOperation(OPERATION);
         SQLQueryHandler sqlQueryHandler = (SQLQueryHandler)queryOperation.getQueryHandler();
         String sqlString =  sqlQueryHandler.getSqlString();

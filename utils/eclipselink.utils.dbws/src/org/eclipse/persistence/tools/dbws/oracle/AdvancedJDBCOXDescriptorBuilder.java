@@ -65,7 +65,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
         this.targetNamespace = targetNamespace;
         this.nct = nct;
     }
-    
+
     public AdvancedJDBCOXDescriptorBuilder(String targetNamespace, NamingConventionTransformer nct,
         String packageName) {
         this(targetNamespace, nct);
@@ -152,7 +152,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                     XMLDescriptor xdesc = descriptorMap.get(sqlArrayTypeHelper.arrayTypename());
                     DatabaseMapping dm = xdesc.getMappingForAttributeName(attributeName);
                     if (dm == null) {
-                        XMLCompositeDirectCollectionMapping dirCollectMapping = 
+                        XMLCompositeDirectCollectionMapping dirCollectMapping =
                             new XMLCompositeDirectCollectionMapping();
                         SqltypeHelper componentType = new SqltypeHelper(sqlTypeName);
                         dirCollectMapping.setAttributeElementClass(
@@ -217,7 +217,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                             fieldMapping.setAttributeElementClass(
                                 attributeClassFromDatabaseType((DefaultListenerHelper)componentType));
                             fieldMapping.setAttributeName(fieldName.toLowerCase());
-                            XMLField field = new XMLField(fieldName.toLowerCase() + "/" + 
+                            XMLField field = new XMLField(fieldName.toLowerCase() + "/" +
                                 ITEM_MAPPING_NAME + "/text()");
                             field.setRequired(true);
                             fieldMapping.setField(field);
@@ -278,7 +278,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                     if (listenerHelper2.isObject()) {
                         ObjectTypeHelper objectTypeHelper2 = (ObjectTypeHelper)listenerHelper2;
                         String objectTypeNameAlias2 = objectTypeHelper2.objectTypename();
-                        XMLDescriptor xdesc2 = 
+                        XMLDescriptor xdesc2 =
                             descriptorMap.get(objectTypeNameAlias2);
                         if (xdesc2 != null) {
                             DatabaseMapping dm = xdesc2.getMappingForAttributeName(attributeName);
@@ -305,7 +305,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                     String sqlArrayTypeAlias = sqlArrayTypeHelper.arrayTypename();
                     XMLDescriptor xdesc2 = descriptorMap.get(sqlArrayTypeAlias);
                     if (xdesc2 != null) {
-                        boolean itemsMappingFound = 
+                        boolean itemsMappingFound =
                             xdesc2.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
                         if (!itemsMappingFound) {
                             XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
@@ -336,7 +336,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
         if (xdesc == null) {
             xdesc = new XMLDescriptor();
             xdesc.setAlias(arrayTypenameAlias);
-            xdesc.setJavaClassName(packageName.toLowerCase() + "." + 
+            xdesc.setJavaClassName(packageName.toLowerCase() + "." +
                 arrayTypenameAlias + COLLECTION_WRAPPER_SUFFIX);
             xdesc.getQueryManager();
             XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
@@ -368,7 +368,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
         if (xdesc == null) {
             xdesc = new XMLDescriptor();
             xdesc.setAlias(tableTypeNameAlias);
-            xdesc.setJavaClassName(packageName.toLowerCase() + "." + 
+            xdesc.setJavaClassName(packageName.toLowerCase() + "." +
                 tableTypeNameAlias + COLLECTION_WRAPPER_SUFFIX);
             xdesc.getQueryManager();
             XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();

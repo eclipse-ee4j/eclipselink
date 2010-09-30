@@ -161,11 +161,11 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
         }
         xrSchemaStream = new ByteArrayInputStream(DBWS_SCHEMA_STREAM.toByteArray());
         buildService(dbwsModel);
-    
+
         // the xrService built by 'buildService' above is overridden to produce an
         // instance of DBWSAdapter (a sub-class of XRService)
         DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
-    
+
         // get inline schema from WSDL - has additional types for the operations
         StringWriter sw = new StringWriter();
         InputStream wsdlInputStream = new ByteArrayInputStream(DBWS_WSDL_STREAM.toByteArray());
@@ -225,7 +225,7 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
                             Node n = nl.item(j);
                             if (n.getNodeType() == Node.ELEMENT_NODE) {
                                 try {
-                                    Object theInstance = 
+                                    Object theInstance =
                                         dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(n);
                                     if (theInstance instanceof XMLRoot) {
                                         theInstance = ((XMLRoot)theInstance).getObject();
@@ -243,7 +243,7 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
                         ClassDescriptor desc = null;
                         for (XMLDescriptor xdesc : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
                             XMLSchemaReference schemaReference = xdesc.getSchemaReference();
-                            if (schemaReference != null && 
+                            if (schemaReference != null &&
                                 schemaReference.getSchemaContext().equalsIgnoreCase(key)) {
                                 desc = xdesc;
                                 break;
@@ -251,7 +251,7 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
                         }
                         if (desc != null) {
                             try {
-                                Object theObject = 
+                                Object theObject =
                                     dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(e,
                                         desc.getJavaClass());
                                 if (theObject instanceof XMLRoot) {
@@ -283,7 +283,7 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
                                 }
                             }
                             if (found) {
-                                Object theObject = 
+                                Object theObject =
                                     dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(e,
                                         desc.getJavaClass());
                                 if (theObject instanceof XMLRoot) {
@@ -320,12 +320,12 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
         oxProject.addDescriptor(invocationDescriptor);
         ((DatabaseSessionImpl)dbwsAdapter.getOXSession()).initializeDescriptorIfSessionAlive(invocationDescriptor);
         dbwsAdapter.getXMLContext().storeXMLDescriptorByQName(invocationDescriptor);
-    
+
         // create SOAP message response handler
         responseWriter = new SOAPResponseWriter(dbwsAdapter);
         responseWriter.initialize();
     }
-    
+
     @Override
     public void logoutSessions() {
         if (xrService.getORSession() != null) {
@@ -362,7 +362,7 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
         xrService.setOXSession(xrService.getXMLContext().getSession(0));
     }
 
-    static final String REQUEST_MSG = 
+    static final String REQUEST_MSG =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
@@ -372,41 +372,41 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
                     ">" +
               "<BLOCK_DATA>" +
                   "<item>" +
-                    "<empno>123</empno>" + 
-                    "<fname>Mike</fname>" + 
-                    "<lname>Norman</lname>" + 
+                    "<empno>123</empno>" +
+                    "<fname>Mike</fname>" +
+                    "<lname>Norman</lname>" +
                   "</item>" +
                   "<item>" +
-                    "<empno>456</empno>" + 
-                    "<fname>Blaise</fname>" + 
-                    "<lname>Doughan</lname>" + 
-                  "</item>" + 
-              "</BLOCK_DATA>" + 
+                    "<empno>456</empno>" +
+                    "<fname>Blaise</fname>" +
+                    "<lname>Doughan</lname>" +
+                  "</item>" +
+              "</BLOCK_DATA>" +
               "<P_EMPNO>10</P_EMPNO>" +
             "</srvc:" + LTBL_PROJECT_TEST + ">" +
           "</SOAP-ENV:Body>" +
         "</SOAP-ENV:Envelope>";
-    static final String RESPONSE_MSG = 
+    static final String RESPONSE_MSG =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
-            "<srvc:localTableTestResponse " + 
+            "<srvc:localTableTestResponse " +
                     "xmlns=\"" + LTBL_PROJECT_NAMESPACE + "\" " +
                     "xmlns:srvc=\"" + LTBL_PROJECT_SERVICE_NAMESPACE + "\" " +
-            		">" +
+                    ">" +
               "<srvc:result>" +
                 "<LTBL_PKG_LTBL_TAB>" +
                   "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-                    "<empno>123</empno>" +  
-                    "<fname>Mike</fname>" +  
-                    "<lname>Norman</lname>" + 
+                    "<empno>123</empno>" +
+                    "<fname>Mike</fname>" +
+                    "<lname>Norman</lname>" +
                   "</item>" +
                   "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-                    "<empno>789</empno>" +  
-                    "<fname>John</fname>" +  
-                    "<lname>Blair</lname>" + 
-                  "</item>" + 
-                "</LTBL_PKG_LTBL_TAB>" + 
+                    "<empno>789</empno>" +
+                    "<fname>John</fname>" +
+                    "<lname>Blair</lname>" +
+                  "</item>" +
+                "</LTBL_PKG_LTBL_TAB>" +
               "</srvc:result>" +
             "</srvc:localTableTestResponse>" +
           "</SOAP-ENV:Body>" +
@@ -415,7 +415,7 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
     public void localTableQuery() throws SOAPException, SAXException, IOException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage request = factory.createMessage();
-        SOAPPart part = request.getSOAPPart(); 
+        SOAPPart part = request.getSOAPPart();
         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
             new InputSource(new StringReader(REQUEST_MSG))));
         part.setContent(domSource);

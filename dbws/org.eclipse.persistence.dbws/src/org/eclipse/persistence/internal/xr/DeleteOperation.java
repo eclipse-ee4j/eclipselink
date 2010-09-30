@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -38,7 +38,7 @@ import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
 public class DeleteOperation extends Operation {
 
     protected String descriptorName;
-    protected ClassDescriptor classDescriptor; 
+    protected ClassDescriptor classDescriptor;
 
     public String getDescriptorName() {
         return descriptorName;
@@ -46,11 +46,11 @@ public class DeleteOperation extends Operation {
     public void setDescriptorName(String descriptorName) {
         this.descriptorName = descriptorName;
     }
-    
+
     public ClassDescriptor getClassDescriptor() {
         return classDescriptor;
     }
-    
+
     @Override
     public void validate(XRServiceAdapter xrService) {
         super.validate(xrService);
@@ -62,7 +62,7 @@ public class DeleteOperation extends Operation {
         }
         classDescriptor = xrService.getORSession().getProject().getDescriptorForAlias(descriptorName);
     }
-    
+
     /**
      * Execute <tt>DELETE</tt> operation on the database
      * @param   xrService parent <code>XRService</code> that owns this <code>Operation</code>
@@ -75,7 +75,7 @@ public class DeleteOperation extends Operation {
      */
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
-        ReadObjectQuery roq = 
+        ReadObjectQuery roq =
             (ReadObjectQuery)classDescriptor.getQueryManager().getQuery(PK_QUERYNAME);
         List queryArguments = roq.getArguments();
         int queryArgumentsSize = queryArguments.size();

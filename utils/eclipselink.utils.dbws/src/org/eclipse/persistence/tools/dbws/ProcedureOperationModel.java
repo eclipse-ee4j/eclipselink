@@ -258,22 +258,22 @@ public class ProcedureOperationModel extends OperationModel {
                 }
                 else if (!isOracle) {
                     // if user overrides returnType, assume they're right
-                	if (returnType != null) {
+                    if (returnType != null) {
                         result = new Result();
                         result.setType(buildCustomQName(returnType, builder));
-                	}
-                	else {
-	                    if (isCollection) {
-	                        result = new CollectionResult();
-	                        if (isSimpleXMLFormat()) {
-	                            result.setType(SXF_QNAME_CURSOR);
-	                        }
-	                    }
-	                    else {
-	                        result = new Result();
-	                        result.setType(SXF_QNAME);
-	                    }
-                	}
+                    }
+                    else {
+                        if (isCollection) {
+                            result = new CollectionResult();
+                            if (isSimpleXMLFormat()) {
+                                result.setType(SXF_QNAME_CURSOR);
+                            }
+                        }
+                        else {
+                            result = new Result();
+                            result.setType(SXF_QNAME);
+                        }
+                    }
                 }
                 // if it is Oracle, then return types are determined by first OUT parameter (below)
             }
@@ -293,7 +293,7 @@ public class ProcedureOperationModel extends OperationModel {
                         case STRUCT:
                         case ARRAY:
                         case OTHER:
-                            String typeString = 
+                            String typeString =
                                 builder.topTransformer.generateSchemaAlias(arg.getJdbcTypeName());
                             xmlType = buildCustomQName(typeString, builder);
                             break;

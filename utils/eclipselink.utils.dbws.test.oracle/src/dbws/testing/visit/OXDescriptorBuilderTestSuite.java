@@ -69,7 +69,7 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
         assertTrue("wrong number of descriptors for " + PROC1, descriptors.size() == 1);
         tbl1Asserts(descriptors.get(0));
     }
-    
+
     protected void tbl1Asserts(XMLDescriptor tbl1Descriptor) {
         assertTrue("wrong descriptor alias",
             tbl1Descriptor.getAlias().equals(TBL1_DESCRIPTOR_ALIAS));
@@ -102,7 +102,7 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
         assertTrue("wrong number of descriptors for " + PROC2, descriptors.size() == 1);
         tbl2Asserts(descriptors.get(0));
     }
-    
+
     protected void tbl2Asserts(XMLDescriptor tbl2Descriptor) {
         assertTrue("wrong descriptor alias",
             tbl2Descriptor.getAlias().equals(TBL2_DESCRIPTOR_ALIAS));
@@ -138,7 +138,7 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
         tbl1Asserts(descriptors.get(1));
         tbl2Asserts(descriptors.get(2));
     }
-    
+
     protected void tbl3Asserts(XMLDescriptor tbl3Descriptor) {
         assertTrue("wrong tbl3Descriptor Java className",
             tbl3Descriptor.getAlias().equals(TBL3_DESCRIPTOR_ALIAS));
@@ -182,7 +182,7 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
             xcom2.getAttributeElementClass().equals(BigDecimal.class));
         DatabaseMapping dm3 = mappings.get(2);
         assertTrue("incorrect mapping attribute name", dm3.getAttributeName().equals("t3"));
-        assertTrue("mapping is not (XML) DirectToField mapping", 
+        assertTrue("mapping is not (XML) DirectToField mapping",
             dm3.isXMLMapping() && dm3.isDirectToFieldMapping());
         assertTrue("mapping incorrect XPath",
             ((XMLDirectMapping)dm3).getXPath().equals("t3/text()"));
@@ -265,7 +265,7 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
         tbl1Asserts(descriptors.get(1));
         tbl2Asserts(descriptors.get(2));
         tbl4Asserts(descriptors.get(3));
-        bRecordAsserts(descriptors.get(4));      
+        bRecordAsserts(descriptors.get(4));
     }
 
     protected void bRecordAsserts(XMLDescriptor bRecordDescriptor) {
@@ -281,12 +281,12 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
         assertTrue("mapping is not isAbstractCompositeObject mapping",
             b1Mapping.isAbstractCompositeObjectMapping());
         XMLCompositeObjectMapping xcom1 = (XMLCompositeObjectMapping)b1Mapping;
-        assertTrue("mapping incorrect XPath", xcom1.getXPath().equals("b1"));      
+        assertTrue("mapping incorrect XPath", xcom1.getXPath().equals("b1"));
         DatabaseMapping b2Mapping = mappings.get(1);
         assertTrue("incorrect mapping attribute name",
             b2Mapping.getAttributeName().equals("b2"));
         assertTrue("mapping is not isAbstractCompositeObject mapping",
             b2Mapping.isAbstractCompositeObjectMapping());
     }
-*/    
+*/
 }

@@ -1238,7 +1238,7 @@ public class SqlReflector {
     public void addAllPackages(String schema) throws SQLException, PublisherException {
         if (m_conn != null) {
             PreparedStatement stmt = m_conn.prepareStatement("SELECT OBJECT_NAME AS TYPE_NAME FROM " +
-            		"ALL_OBJECTS WHERE OWNER = :1 AND OBJECT_TYPE = 'PACKAGE' AND STATUS='VALID'");
+                    "ALL_OBJECTS WHERE OWNER = :1 AND OBJECT_TYPE = 'PACKAGE' AND STATUS='VALID'");
             stmt.setString(1, schema);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {

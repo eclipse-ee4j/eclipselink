@@ -52,7 +52,7 @@ public class WarArchiver extends JarArchiver {
         }
         this.jarFilename = jarFilename;
     }
-    
+
     @Override
     protected JarEntry getOrJarEntry() {
         return new JarEntry(WEB_INF_DIR + CLASSES + META_INF_PATHS[1] + DBWS_OR_XML);
@@ -93,7 +93,7 @@ public class WarArchiver extends JarArchiver {
     public String getOxProjectPathPrefix() {
         return META_INF_PATHS[1];
     }
-    
+
     protected ZipEntry getWebXmlJarEntry() {
         return new JarEntry(WEB_INF_DIR + WEB_XML_FILENAME);
     }
@@ -132,7 +132,7 @@ public class WarArchiver extends JarArchiver {
         }
         return jarOutputStream;
     }
-    
+
     @Override
     protected void addFilesToJarOutputStream(JarOutputStream jarOutputStream) {
         super.addFilesToJarOutputStream(jarOutputStream);
@@ -173,7 +173,7 @@ public class WarArchiver extends JarArchiver {
                 fis.close();
             }
             f.deleteOnExit();
-            
+
             // ProviderListener source is optional
             f = new File(packager.getStageDir(), PROVIDER_LISTENER_SOURCE_FILE);
             if (f.length() > 0) {
@@ -194,7 +194,7 @@ public class WarArchiver extends JarArchiver {
             }
             fis.close();
             f.deleteOnExit();
-            
+
             jarOutputStream.putNextEntry(getWSDLJarEntry());
             f = new File(packager.getStageDir(), DBWS_WSDL);
             fis = new FileInputStream(f);

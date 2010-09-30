@@ -35,7 +35,7 @@ public class PLSQLORDescriptorBuilder extends PublisherDefaultListener {
 
     public static final String ITEMS_MAPPING_ATTRIBUTE_NAME = "items";
     public static final String ITEMS_MAPPING_FIELD_NAME = "ITEMS";
-    
+
     protected Stack<ListenerHelper> stac = new Stack<ListenerHelper>();
     protected Map<String, ObjectRelationalDataTypeDescriptor> descriptorMap =
         new HashMap<String, ObjectRelationalDataTypeDescriptor>();
@@ -49,7 +49,7 @@ public class PLSQLORDescriptorBuilder extends PublisherDefaultListener {
         if (descriptorMap.isEmpty()) {
             return null;
         }
-        ArrayList<ObjectRelationalDataTypeDescriptor> al = 
+        ArrayList<ObjectRelationalDataTypeDescriptor> al =
             new ArrayList<ObjectRelationalDataTypeDescriptor>();
         al.addAll(descriptorMap.values());
         return al;
@@ -81,7 +81,7 @@ public class PLSQLORDescriptorBuilder extends PublisherDefaultListener {
             ordt.setJavaClassName(tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
             ordt.getQueryManager();
         }
-        boolean itemsMappingFound = 
+        boolean itemsMappingFound =
             ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (top.isRecord()) {
             if (!itemsMappingFound) {
