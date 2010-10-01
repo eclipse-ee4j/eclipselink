@@ -99,7 +99,7 @@ public class MultipleUnitOfWorkTest extends org.eclipse.persistence.testing.fram
 
     protected void setup() {
         if(getSession().isClientSession()) {
-            checkTransactionIsolation();
+            listener = checkTransactionIsolation();
         }
 
         super.setup();

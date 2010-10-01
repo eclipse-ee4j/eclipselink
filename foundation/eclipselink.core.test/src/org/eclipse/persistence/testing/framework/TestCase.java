@@ -663,14 +663,14 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Throws a warning if the test database is using serializable transaction isolation.
      */
-    public void checkTransactionIsolation() {
+    public SessionEventAdapter checkTransactionIsolation() {
+        final SessionEventAdapter listener;
         DatabasePlatform platform = getSession().getPlatform();
         if (platform.isSybase()) {
-            if (SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession)getAbstractSession().getParent())) {
-                SybaseTransactionIsolationListener listener = new SybaseTransactionIsolationListener();
-                getAbstractSession().getParent().getEventManager().addListener(listener);
+            if (SybaseTransactionIsolationListener.isDatabaseVersionSupported((ServerSession) getAbstractSession().getParent())) {
+                listener = new SybaseTransactionIsolationListener();
             } else {
-                throw new TestWarningException("The test requires Sybase version "+SybaseTransactionIsolationListener.requiredVersion+" or higher");
+                throw new TestWarningException("The test requires Sybase version " + SybaseTransactionIsolationListener.requiredVersion + " or higher");
             }
         } else if (platform.isSQLServer()) {
             throw new TestWarningException("This test requires transaction isolation setup on SQLServer database which is currently not set in tlsvrdb6");
@@ -679,9 +679,14 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         } else if (platform.isDB2()) {
             throw new TestWarningException("This test requires transaction isolation setup on DB2 database which is currently not set");
         } else if (platform.isSymfoware()) {
-            TransactionIsolationLevelSwitchListener listener = new TransactionIsolationLevelSwitchListener();
-            getAbstractSession().getParent().getEventManager().addListener(listener);
+            listener = new TransactionIsolationLevelSwitchListener();
+        } else if (platform.isMaxDB()) {
+            listener = new JDBCIsoLevelSwitchListener();
+        } else {
+            return null;
         }
+        getAbstractSession().getParent().getEventManager().addListener(listener);
+        return listener;
     }
     
     /**

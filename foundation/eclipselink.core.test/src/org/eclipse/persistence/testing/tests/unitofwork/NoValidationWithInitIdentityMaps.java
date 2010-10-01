@@ -36,7 +36,7 @@ public class NoValidationWithInitIdentityMaps extends TransactionalTestCase {
 
     public void setup() {
         if(getSession().isClientSession()) {
-            checkTransactionIsolation();
+            listener = checkTransactionIsolation();
         }
 
         super.setup();

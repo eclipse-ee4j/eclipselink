@@ -283,7 +283,7 @@ public class ComplexMultipleUnitOfWorkTest extends AutoVerifyTestCase {
 
     public void setup() {
         if (getSession().isClientSession()) {
-            checkTransactionIsolation();
+            listener = checkTransactionIsolation();
         }
         getAbstractSession().beginTransaction();
     }

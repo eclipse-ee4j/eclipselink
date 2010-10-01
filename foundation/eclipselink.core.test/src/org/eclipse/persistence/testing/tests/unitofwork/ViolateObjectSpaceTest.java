@@ -44,7 +44,7 @@ public class ViolateObjectSpaceTest extends TransactionalTestCase {
     
     protected void setup() {
         if (getSession().isClientSession()) {
-            checkTransactionIsolation();
+            listener = checkTransactionIsolation();
         }
         super.setup();
     }

@@ -83,7 +83,7 @@ public class UnitOfWorkResumeOnFailureTest extends WriteObjectTest {
 
     protected void setup() {
         if (getSession().isClientSession()) {
-            checkTransactionIsolation();
+            listener = checkTransactionIsolation();
         }
 
         super.setup();
