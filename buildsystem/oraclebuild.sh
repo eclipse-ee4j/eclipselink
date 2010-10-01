@@ -48,7 +48,6 @@ echo "results stored in: '${tmp}'"
 
 #Define common variables
 SVN_SERVER=dev.eclipse.org
-#SVN_SERVER=eclipse-dev
 START_DATE=`date '+%y%m%d-%H%M'`
 DEFAULT_PREVREV=5400
 DEFAULT_PREVCOMMIT=5401
