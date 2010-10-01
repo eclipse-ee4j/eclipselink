@@ -51,6 +51,7 @@ import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
 //JUnit4 imports
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -566,7 +567,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          "</SOAP-ENV:Body>" +
        "</SOAP-ENV:Envelope>";
 
-     @Test
+     @Ignore
      public void testForDuplicateColumns() {
          String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
          String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
