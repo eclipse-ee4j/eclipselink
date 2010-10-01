@@ -276,8 +276,6 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          xrService.setOXSession(xrService.getXMLContext().getSession(0));
      }
 
-     //hokey test naming convention to hack order-of-tests
-
      @Test
      public void checkSQLOperationModel() {
          SQLOperationModel sqlModel = (SQLOperationModel)builder.operations.get(0);
