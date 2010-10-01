@@ -253,6 +253,11 @@ public class MySQLPlatform extends DatabasePlatform {
         return " FOR UPDATE";
     }
     
+    @Override
+    public boolean isForUpdateCompatibleWithDistinct() {
+        return false;
+    }
+
     /**
      * INTERNAL:
      * This method returns the query to select the timestamp

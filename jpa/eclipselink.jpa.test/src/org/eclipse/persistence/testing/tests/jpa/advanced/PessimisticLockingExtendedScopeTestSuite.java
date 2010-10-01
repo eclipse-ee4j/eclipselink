@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 Oracle. All rights reserved.
+ * Copyright (c) 2010 Oracle, SAP. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     SAP    - tests rewritten
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -73,377 +74,327 @@ import org.eclipse.persistence.sessions.server.ServerSession;
         clearCache();
     }
     
-    //Entity relationships for which the locked entity contains the foreign key will be locked with bidirectional one-to-one mapping without mappedBy (Scenario 1.1)
-    public void testPESSMISTIC_ES1() throws Exception{
-        // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
-            EntityManager em = createEntityManager();
-            EntyA a = null;
-            EntyC c = null;
-            try{
-                beginTransaction(em);
-                a = new EntyA();
-                c = new EntyC();
+    interface Actor<X> {
+        void setup(EntityManager em);
+        
+        X getEntityToLock(EntityManager em);
+        
+        void modify(EntityManager em);
+        
+        void check(EntityManager em, X lockedEntity);
+    }
+    
+    // Entity relationships for which the locked entity contains the foreign key
+    // will be locked with bidirectional one-to-one mapping without mappedBy
+    // (Scenario 1.1)
+    public void testPESSMISTIC_ES1() throws Exception {
+        final EntyA a = new EntyA();
+        
+        final Actor actor = new Actor<EntyA>() {
+
+            @Override
+            public void setup(EntityManager em) {
+                EntyC c = new EntyC();
                 em.persist(c);
                 a.setName("test");
                 a.setEntyC(c);
                 em.persist(a);
-                commitTransaction(em);
-            }catch (RuntimeException ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
             }
 
-            Exception lockTimeOutException = null;
-            LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
-            Map<String, Object> properties = new HashMap();
-            properties.put(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-            EntityManager em1= createEntityManager();
-
-            try{
-                beginTransaction(em1);
-                a = em1.find(EntyA.class, a.getId());
-                em1.lock(a, lockMode, properties);
-                EntityManager em2 = createEntityManager();
-                try{
-                    beginTransaction(em2);
-                    a = em2.find(EntyA.class, a.getId());
-                    a.setEntyC(null);
-                    commitTransaction(em2);
-                }catch(javax.persistence.RollbackException ex){
-                    if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1){
-                        ex.printStackTrace();
-                        fail("it's not the right exception");
-                    }
-                }finally{
-                    if (isTransactionActive(em2)){
-                        rollbackTransaction(em2);
-                    }
-                    closeEntityManager(em2);
-                }
-            }catch (Exception ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em1)){
-                    rollbackTransaction(em1);
-                }
-                closeEntityManager(em1);
+            @Override
+            public EntyA getEntityToLock(EntityManager em) {
+                return em.find(EntyA.class, a.getId());
             }
-        }
+
+            @Override
+            public void modify(EntityManager em) {
+                EntyA a2 = em.find(EntyA.class, a.getId());
+                a2.setEntyC(null);
+            }
+
+            @Override
+            public void check(EntityManager em, EntyA lockedEntity) {
+                em.refresh(lockedEntity);
+                assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyC());
+            }
+            
+        };
+        
+        testNonrepeatableRead(actor);
     }
-    
-    //Entity relationships for which the locked entity contains the foreign key will be locked with unidirectional one-to-one mapping(Scenario 1.2)
-    public void testPESSMISTIC_ES2() throws Exception{
-        // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
-            EntityManager em = createEntityManager();
-            EntyA a = null;
-            EntyB b = null;
-            try{
-                beginTransaction(em);
-                a = new EntyA();
-                b = new EntyB();
+
+    // Entity relationships for which the locked entity contains the foreign key
+    // will be locked with unidirectional one-to-one mapping(Scenario 1.2)
+    public void testPESSMISTIC_ES2() throws Exception {
+        final EntyA a = new EntyA();
+        
+        final Actor actor = new Actor<EntyA>() {
+
+            @Override
+            public void setup(EntityManager em) {
+                EntyB b = new EntyB();
                 a.setEntyB(b);
                 em.persist(a);
-                commitTransaction(em);
-            }catch (RuntimeException ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
             }
 
-            Exception lockTimeOutException = null;
-            LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
-            Map<String, Object> properties = new HashMap();
-            properties.put(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-            EntityManager em1= createEntityManager();
-
-            try{
-                beginTransaction(em1);
-                a = em1.find(EntyA.class, a.getId());
-                em1.lock(a, lockMode, properties);
-                EntityManager em2 = createEntityManager();
-                try{
-                    beginTransaction(em2);
-                    a = em2.find(EntyA.class, a.getId());
-                    a.setEntyB(null);
-                    commitTransaction(em2);
-                }catch(javax.persistence.RollbackException ex){
-                    if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1){
-                        ex.printStackTrace();
-                        fail("it's not the right exception");
-                    }
-                }finally{
-                    if (isTransactionActive(em2)){
-                        rollbackTransaction(em2);
-                    }
-                    closeEntityManager(em2);
-                }
-            }catch (Exception ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em1)){
-                    rollbackTransaction(em1);
-                }
-                closeEntityManager(em1);
+            @Override
+            public EntyA getEntityToLock(EntityManager em1) {
+                return em1.find(EntyA.class, a.getId());
             }
-        }
+
+            @Override
+            public void modify(EntityManager em2) {
+                EntyA a2 = em2.find(EntyA.class, a.getId());
+                a2.setEntyB(null);
+            }
+
+            @Override
+            public void check(EntityManager em1, EntyA lockedEntity) {
+                em1.refresh(lockedEntity);
+                assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyB());
+            }
+            
+        };
+        
+        testNonrepeatableRead(actor);
     }
 
-    //Entity relationships for which the locked entity contains the foreign key will be locked with unidirectional many-to-one mapping(Scenario 1.3)
-    public void testPESSMISTIC_ES3() throws Exception{
-        // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
-            EntityManager em = createEntityManager();
-            Equipment eq = null;
-            EquipmentCode eqCode = null;
-            try{
-                beginTransaction(em);
-                eq = new Equipment();
-                eqCode = new EquipmentCode();
+
+    // Entity relationships for which the locked entity contains the foreign key
+    // will be locked with unidirectional many-to-one mapping(Scenario 1.3)
+    public void testPESSMISTIC_ES3() throws Exception {
+        final Equipment eq = new Equipment();
+        
+        final Actor actor = new Actor<Equipment>() {
+
+            @Override
+            public void setup(EntityManager em) {
+                EquipmentCode eqCode = new EquipmentCode();
                 eqCode.setCode("A");
                 em.persist(eqCode);
                 eq.setEquipmentCode(eqCode);
                 em.persist(eq);
-                commitTransaction(em);
-            }catch (RuntimeException ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
             }
 
-            Exception lockTimeOutException = null;
-            LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
-            Map<String, Object> properties = new HashMap();
-            properties.put(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-            EntityManager em1= createEntityManager();
-
-            try{
-                beginTransaction(em1);
-                eq = em1.find(Equipment.class, eq.getId());
-                em1.lock(eq, lockMode, properties);
-                EntityManager em2 = createEntityManager();
-                try{
-                    beginTransaction(em2);
-                    eq = em2.find(Equipment.class, eq.getId());
-                    eq.setEquipmentCode(null);
-                    commitTransaction(em2);
-                }catch(javax.persistence.RollbackException ex){
-                    if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1){
-                        ex.printStackTrace();
-                        fail("it's not the right exception");
-                    }
-                }finally{
-                    if (isTransactionActive(em2)){
-                        rollbackTransaction(em2);
-                    }
-                    closeEntityManager(em2);
-                }
-            }catch (Exception ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em1)){
-                    rollbackTransaction(em1);
-                }
-                closeEntityManager(em1);
+            @Override
+            public Equipment getEntityToLock(EntityManager em1) {
+                return em1.find(Equipment.class, eq.getId());
             }
-        }
+
+            @Override
+            public void modify(EntityManager em2) {
+                Equipment eq2 = em2.find(Equipment.class, eq.getId());
+                eq2.setEquipmentCode(null);
+            }
+
+            @Override
+            public void check(EntityManager em1, Equipment lockedEntity) {
+                em1.refresh(lockedEntity);
+                assertNotNull("other transaction modified row concurrently", lockedEntity.getEquipmentCode());
+            }
+            
+        };
+        
+        testNonrepeatableRead(actor);
     }
+    
 
-    //Entity relationships for which the locked entity contains the foreign key will be locked with bidirectional many-to-one mapping(Scenario 1.4)
-    public void testPESSMISTIC_ES4() throws Exception{
-        // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
-            EntityManager em = createEntityManager();
-            Employee emp = null;
-            Address ads = null;
-            try{
-                beginTransaction(em);
-                emp = new Employee();
-                ads = new Address("SomeStreet", "somecity", "province", "country", "postalcode");
+    // Entity relationships for which the locked entity contains the foreign key
+    // will be locked with bidirectional many-to-one mapping(Scenario 1.4)
+    public void testPESSMISTIC_ES4() throws Exception {
+        final Employee emp = new Employee();
+        
+        final Actor actor = new Actor<Employee>() {
+
+            @Override
+            public void setup(EntityManager em) {
+                Address ads = new Address("SomeStreet", "somecity", "province", "country", "postalcode");
                 emp.setAddress(ads);
                 em.persist(emp);
-                commitTransaction(em);
-            }catch (RuntimeException ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
             }
 
-            Exception lockTimeOutException = null;
-            LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
-            Map<String, Object> properties = new HashMap();
-            properties.put(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-            EntityManager em1= createEntityManager();
-
-            try{
-                beginTransaction(em1);
-                emp = em1.find(Employee.class, emp.getId());
-                em1.lock(emp, lockMode, properties);
-                EntityManager em2 = createEntityManager();
-                try{
-                    beginTransaction(em2);
-                    emp = em2.find(Employee.class, emp.getId());
-                    Address address = null;
-                    emp.setAddress(address);
-                    commitTransaction(em2);
-                }catch(javax.persistence.RollbackException ex){
-                    if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1){
-                        ex.printStackTrace();
-                        fail("it's not the right exception");
-                    }
-                }finally{
-                    if (isTransactionActive(em2)){
-                        rollbackTransaction(em2);
-                    }
-                    closeEntityManager(em2);
-                }
-            }catch (Exception ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em1)){
-                    rollbackTransaction(em1);
-                }
-                closeEntityManager(em1);
+            @Override
+            public Employee getEntityToLock(EntityManager em1) {
+                return em1.find(Employee.class, emp.getId());
             }
-        }
+
+            @Override
+            public void modify(EntityManager em2) {
+                Employee emp2 = em2.find(Employee.class, emp.getId());
+                emp2.setAddress((Address)null);
+            }
+
+            @Override
+            public void check(EntityManager em1, Employee lockedEntity) {
+                em1.refresh(lockedEntity);
+                assertNotNull("other transaction modified row concurrently", lockedEntity.getAddress());
+            }
+            
+        };
+        
+        testNonrepeatableRead(actor);
     }
 
-    //Relationships owned by the entity that are contained in join tables will be locked with Unidirectional OneToMany mapping (Scenario 2.2)
-    public void testPESSMISTIC_ES5() throws Exception{
-        // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
-            EntityManager em = createEntityManager();
-            EntyA entyA = null;
-            EntyD entyD = null;
-            try{
-                beginTransaction(em);
-                entyA = new EntyA();
+    
+    // Relationships owned by the entity that are contained in join tables will
+    // be locked with Unidirectional OneToMany mapping (Scenario 2.2)
+    public void testPESSMISTIC_ES5() throws Exception {
+        final EntyA entyA = new EntyA();
+        
+        final Actor actor = new Actor<EntyA>() {
+
+            @Override
+            public void setup(EntityManager em) {
                 em.persist(entyA);
                 entyA.getEntyDs().add(new EntyD());
-                commitTransaction(em);
-            }catch (RuntimeException ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
             }
 
-            Exception lockTimeOutException = null;
-            LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
-            Map<String, Object> properties = new HashMap();
-            properties.put(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-            EntityManager em1= createEntityManager();
-            try{
-                beginTransaction(em1);
-                entyA = em1.find(EntyA.class, entyA.getId());
-                em1.lock(entyA, lockMode, properties);
-                EntityManager em2 = createEntityManager();
-                try{
-                    beginTransaction(em2);
-                    entyA = em2.find(EntyA.class, entyA.getId());
-                    entyA.setEntyDs(null);
-                    commitTransaction(em2);
-                }catch(javax.persistence.RollbackException ex){
-                    if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1){
-                        ex.printStackTrace();
-                        fail("it's not the right exception");
-                    }
-                }finally{
-                    if (isTransactionActive(em2)){
-                        rollbackTransaction(em2);
-                    }
-                    closeEntityManager(em2);
-                }
-            }catch (Exception ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em1)){
-                    rollbackTransaction(em1);
-                }
-                closeEntityManager(em1);
+            @Override
+            public EntyA getEntityToLock(EntityManager em1) {
+                return em1.find(EntyA.class, entyA.getId());
             }
-        }
+
+            @Override
+            public void modify(EntityManager em2) {
+                EntyA entyA2 = em2.find(EntyA.class, entyA.getId());
+                entyA2.setEntyDs(null);
+            }
+
+            @Override
+            public void check(EntityManager em1, EntyA lockedEntity) {
+                em1.refresh(lockedEntity);
+                assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyDs());
+                assertFalse("other transaction modified row concurrently", lockedEntity.getEntyDs().isEmpty());
+            }
+            
+        };
+        
+        testNonrepeatableRead(actor);
     }
-
+    
+    
     //Relationships owned by the entity that are contained in join tables will be locked with Unidirectional ManyToMany mapping (Scenario 2.3)
-    public void testPESSMISTIC_ES6() throws Exception{
-        // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
-            EntityManager em = createEntityManager();
-            EntyA entyA = null;
-            EntyE entyE1, entyE2 = null;
-            try{
-                beginTransaction(em);
+    public void testPESSMISTIC_ES6() throws Exception {
+        final EntyA entyA = new EntyA();
+        
+        final Actor actor = new Actor<EntyA>() {
+
+            @Override
+            public void setup(EntityManager em) {
                 Collection entyEs = new ArrayList();
-                entyA = new EntyA();
-                entyE1 = new EntyE();
-                entyE2 = new EntyE();
+                EntyE entyE1 = new EntyE();
+                EntyE entyE2 = new EntyE();
                 entyEs.add(entyE1);
                 entyEs.add(entyE2);
                 entyA.setEntyEs(entyEs);
                 em.persist(entyA);
-                commitTransaction(em);
-            }catch (RuntimeException ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
             }
 
-            Exception lockTimeOutException = null;
-            LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
-            Map<String, Object> properties = new HashMap();
-            properties.put(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-            EntityManager em1= createEntityManager();
-            try{
-                beginTransaction(em1);
-                entyA = em1.find(EntyA.class, entyA.getId());
-                em1.lock(entyA, lockMode, properties);
-                EntityManager em2 = createEntityManager();
-                try{
-                    beginTransaction(em2);
-                    entyA = em2.find(EntyA.class, entyA.getId());
-                    entyA.setEntyEs(null);
-                    commitTransaction(em2);
-                }catch(javax.persistence.RollbackException ex){
-                    if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1){
-                        ex.printStackTrace();
-                        fail("it's not the right exception");
-                    }
-                }finally{
-                    if (isTransactionActive(em2)){
-                        rollbackTransaction(em2);
-                    }
-                    closeEntityManager(em2);
-                }
-            }catch (Exception ex){
-                throw ex;
-            }finally{
-                if (isTransactionActive(em1)){
-                    rollbackTransaction(em1);
-                }
-                closeEntityManager(em1);
+            @Override
+            public EntyA getEntityToLock(EntityManager em1) {
+                return em1.find(EntyA.class, entyA.getId());
             }
+
+            @Override
+            public void modify(EntityManager em2) {
+                EntyA entyA2 = em2.find(EntyA.class, entyA.getId());
+                entyA2.setEntyEs(null);
+            }
+
+            @Override
+            public void check(EntityManager em1, EntyA lockedEntity) {
+                em1.refresh(lockedEntity);
+                assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyEs());
+                assertFalse("other transaction modified row concurrently", lockedEntity.getEntyEs().isEmpty());
+            }
+            
+        };
+        
+        testNonrepeatableRead(actor);
+    }
+
+
+    
+        /*
+     * The test should assert that the following phenomenon does not occur
+     * after a row has been locked by T1:
+     * 
+     * - P2 (Non-repeatable read): Transaction T1 reads a row. Another
+     * transaction T2 then modifies or deletes that row, before T1 has
+     * committed or rolled back.
+     */
+    private <X> void testNonrepeatableRead(final Actor<X> actor) throws InterruptedException {
+        // Cannot create parallel entity managers in the server.
+        if (isOnServer() || !isSelectForUpateSupported()) {
+            return;
+        }
+        
+        EntityManager em = createEntityManager();
+        EntyC c = null;
+        try {
+            beginTransaction(em);
+            actor.setup(em);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            throw ex;
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+
+        Exception lockTimeOutException = null;
+        LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
+        Map<String, Object> properties = new HashMap();
+        properties.put(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
+        properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 10);
+
+        EntityManager em1 = createEntityManager();
+        try {
+            beginTransaction(em1);
+            X locked = actor.getEntityToLock(em1); 
+            em1.lock(locked, lockMode, properties);
+
+            final EntityManager em2 = createEntityManager();
+            try {
+                // P2 (Non-repeatable read)
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        try {
+                            beginTransaction(em2);
+                            actor.modify(em2);
+                            commitTransaction(em2); // might wait for lock to be released
+                        } catch (javax.persistence.RollbackException ex) {
+                            if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1) {
+                                ex.printStackTrace();
+                                fail("it's not the right exception");
+                            }
+                        }
+                    }
+                };
+
+                Thread t2 = new Thread(runnable);
+                t2.start();
+                Thread.sleep(1000);       // allow t2 to atempt update
+                actor.check(em1, locked); // assert repeatable read
+                rollbackTransaction(em1); // release lock
+                t2.join();                // wait until t2 finished
+            } finally {
+                if (isTransactionActive(em2)) {
+                    rollbackTransaction(em2);
+                }
+                closeEntityManager(em2);
+            }
+        } finally {
+            if (isTransactionActive(em1)) {
+                rollbackTransaction(em1);
+            }
+            closeEntityManager(em1);
         }
     }
+    
+
 
     //Bidirectional OneToOne Relationship with target entity has foreign key, entity does not contain the foreign key will not be locked (Scenario 3.1)
     public void testPESSMISTIC_ES7() throws Exception{
@@ -485,7 +436,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
                     c = em2.find(EntyC.class, c.getId());
                     c.setEntyA(null);
                     commitTransaction(em2);
-                }catch(javax.persistence.RollbackException ex){
+                } catch(javax.persistence.RollbackException ex){
                     fail("it should not throw the exception!!!");
                 }finally{
                     if (isTransactionActive(em2)){

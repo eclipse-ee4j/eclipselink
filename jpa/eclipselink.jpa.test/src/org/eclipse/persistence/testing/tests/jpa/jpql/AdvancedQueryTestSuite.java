@@ -24,6 +24,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
+import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
@@ -1098,34 +1099,32 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
-            Exception pessimisticLockException = null;
+            PessimisticLockException pessimisticLockException = null;
         
             try {
                 beginTransaction(em);
             
-                // Find all the departments and lock them.
-                List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
-                Employee employee = (Employee) employees.get(0);
-                employee.setFirstName("New Pessimistic Employee");
-            
                 EntityManager em2 = createEntityManager();
-            
                 try {
                     beginTransaction(em2);
+
+                    List employees2 = em2.createQuery("Select employee from Employee employee").getResultList(); // 
+                    Employee employee2 = (Employee) employees2.get(0);
+
+                    // Find all the departments and lock them.
+                    List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
+                    Employee employee = (Employee) employees.get(0);
+                    employee.setFirstName("New Pessimistic Employee");
+
                 
-                    Employee employee2 = em2.find(Employee.class, employee.getId());
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                     em2.lock(employee2, LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     
                     commitTransaction(em2);
-                } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.PessimisticLockException) {
-                        pessimisticLockException = ex;
-                    } else {
-                        throw ex;
-                    } 
+                } catch (javax.persistence.PessimisticLockException ex) {
+                    pessimisticLockException = ex;
                 } finally {
                     closeEntityManager(em2);
                 }
@@ -1153,30 +1152,28 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         
             try {
                 beginTransaction(em);
-            
-                // Find all the departments and lock them.
-                List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
-                Employee employee = (Employee) employees.get(0);
-                employee.setFirstName("New Pessimistic Employee");
-            
+                
                 EntityManager em2 = createEntityManager();
-            
                 try {
                     beginTransaction(em2);
+
+                    List employees2 = em2.createQuery("Select employee from Employee employee").getResultList(); // 
+                    Employee employee2 = (Employee) employees2.get(0);
+
+                    // Find all the departments and lock them.
+                    List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
+                    Employee employee = (Employee) employees.get(0);
+                    employee.setFirstName("New Pessimistic Employee");
+
                 
-                    Employee employee2 = em2.find(Employee.class, employee.getId());
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE, properties);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     
                     commitTransaction(em2);
-                } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.PessimisticLockException) {
-                        pessimisticLockException = ex;
-                    } else {
-                        throw ex;
-                    } 
+                } catch (javax.persistence.PessimisticLockException ex) {
+                    pessimisticLockException = ex;
                 } finally {
                     closeEntityManager(em2);
                 }
@@ -1397,27 +1394,26 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             try {
                 beginTransaction(em);
             
-                // Find all the employees and lock them.
-                List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
-                Employee employee = (Employee) employees.get(0);
-                employee.setSalary(90000);
-            
                 EntityManager em2 = createEntityManager();
-            
+                
                 try {
                     beginTransaction(em2);
-                    Employee employee2 = em2.find(Employee.class, employee.getId());
+                    
+                    List employees2 = em2.createQuery("Select employee from Employee employee").getResultList();
+                    Employee employee2 = (Employee) employees2.get(0);
+
+                    // Find all the employees and lock them.
+                    List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
+                    Employee employee = (Employee) employees.get(0);
+                    employee.setSalary(90000);
+            
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                     em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setSalary(100000);
                     commitTransaction(em2);
-                } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                } catch (PessimisticLockException ex) {
                         pessimisticLockException = ex;
-                    } else {
-                        throw ex;
-                    } 
                 } finally {
                     closeEntityManager(em2);
                 }
