@@ -360,7 +360,7 @@ public class QueryOperation extends Operation {
                 			XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
                     		ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(
                     			xdesc.getAlias());
-                    		if (desc.isAggregateDescriptor()) {
+                    		if (desc.isAggregateDescriptor() && !desc.isObjectRelationalDataTypeDescriptor()) {
                     			if (isCollection()) {
                         			XRDynamicEntity_CollectionWrapper xrCollWrapper =
                         				new XRDynamicEntity_CollectionWrapper();
