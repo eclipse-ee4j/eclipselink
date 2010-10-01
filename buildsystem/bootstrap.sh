@@ -142,13 +142,13 @@ echo "results stored in: '${tmp}'"
 #Define common variables
 START_DATE=`date '+%y%m%d-%H%M'`
 #Directories
-HOME_DIR=/shared/rt/eclipselink
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
 if [ "${ORACLEBLD}" = "true" ]
 then
     JAVA_HOME=/shared/common/jdk1.6.0_21
     ANT_HOME=/usr/share/ant
+    HOME_DIR=/shared/el_continuous
 else
     # Conditional to allow single branch testing of jdk and ant env
     if [ ! "${BRANCH}" = "" ]
@@ -158,6 +158,7 @@ else
         JAVA_HOME=/shared/common/jdk-1.6.x86_64
     fi
     ANT_HOME=/shared/common/apache-ant-1.7.0
+    HOME_DIR=/shared/rt/eclipselink
 fi
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
@@ -394,12 +395,12 @@ then
 fi
 
 #Depends upon a valid putty install and config for "eclipse-dev"
-if [ "${ORACLEBLD}" = "true" ]
-then
-    #Only needed for dev behind firewall
-    ANT_OPTS="${ANT_OPTS}"
-    ANT_BASEARG="${ANT_BASEARG} -Dsvn.server.name=eclipse-dev"
-fi
+#if [ "${ORACLEBLD}" = "true" ]
+#then
+#    #Only needed for dev behind firewall
+#    ANT_OPTS="${ANT_OPTS}"
+#    ANT_BASEARG="${ANT_BASEARG} -Dsvn.server.name=eclipse-dev"
+#fi
 
 ## Save for future reference
 #if [ "${RHB}" = "true" ]
@@ -463,8 +464,10 @@ if [ "${ORACLEBLD}" = "true" ]
 then
     MAIL_EXEC=/usr/bin/mail
     MAILLIST="ejgwin@gmail.com"
-    SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
-    FAIL_MAILLIST="peter.krogh@oracle.com david.twelves@oracle.com blaise.doughan@oracle.com tom.ware@oracle.com ejgwin@gmail.com"
+    SUCC_MAILLIST="eric.gwin@oracle.com"
+    FAIL_MAILLIST="eric.gwin@oracle.com"
+#    SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
+#    FAIL_MAILLIST="peter.krogh@oracle.com david.twelves@oracle.com blaise.doughan@oracle.com tom.ware@oracle.com ejgwin@gmail.com"
     FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
 else
     MAIL_EXEC=/bin/mail
