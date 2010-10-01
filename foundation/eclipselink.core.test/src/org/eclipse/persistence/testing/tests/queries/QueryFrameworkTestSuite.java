@@ -36,6 +36,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
 
     public void addTests() {
         addSRGTests();
+        addTest(new QueryTimeoutTest());
         //Add new tests here, if any.
         addTest(new ServerSessionTestAdapter(new PessimisticLockNoLockJoinedTest()));
         addTest(new ReadAllNoDistinctTest());
@@ -229,7 +230,6 @@ public class QueryFrameworkTestSuite extends TestSuite {
 
         addTest(new OneToManyMaxRowsSettingTest());
 
-        addTest(new QueryTimeoutTest());
         // Created for BUG# 2745106
         addTest(new QueryExceptionStringTest());
         addTest(new NamedQueriesClientSessionTest());

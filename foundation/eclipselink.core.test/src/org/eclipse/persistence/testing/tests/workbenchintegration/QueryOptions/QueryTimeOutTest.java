@@ -29,6 +29,10 @@ public class QueryTimeOutTest extends AutoVerifyTestCase {
             throwWarning("workbenchintegration.QueryOptions' QueryTimeoutTest skipped for this platform, "
                     + "the driver does not support query time-out.");
         }
+        if (getSession().getPlatform().isMaxDB()) {
+            throwWarning("workbenchintegration.QueryOptions' QueryTimeoutTest skipped for this platform, "
+                    + "the driver does not support query timeout. (bug 326503)");
+        }
         try {
             getSession().executeQuery("queryTimeOutQuery", 
                                       org.eclipse.persistence.testing.models.employee.domain.Employee.class);

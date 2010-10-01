@@ -50,6 +50,10 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
             throwWarning("Test QueryTimeoutConnectionReleasedTest skipped for this platform, "
                     + "the driver does not support query timeout. (bug 304905)");
         }
+        if (getSession().getPlatform().isMaxDB()) {
+            throwWarning("Test QueryTimeoutConnectionReleasedTest skipped for this platform, "
+                    + "the driver does not support query timeout. (bug 326503)");
+        }
         preConnectionsAvailable = serverSession.getReadConnectionPool().getConnectionsAvailable().size();
         try {
             DataReadQuery query = new DataReadQuery();

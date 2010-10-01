@@ -33,6 +33,10 @@ public class QueryTimeoutTest extends TestCase {
             throwWarning("Test QueryTimeoutTest skipped for this platform, "
                     + "the driver does not support query timeout. (bug 304905)");
         }
+        if (getSession().getPlatform().isMaxDB()) {
+            throwWarning("Test QueryTimeoutTest skipped for this platform, "
+                    + "the driver does not support query timeout. (bug 326503)");
+        }
         try {
             DataReadQuery query = new DataReadQuery();
             query.setSQLString("SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE f, EMPLOYEE g, EMPLOYEE h");
