@@ -163,7 +163,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         FieldDefinition fieldINSPECTIONDATES = new FieldDefinition();
         fieldINSPECTIONDATES.setName("I_DATES");
         fieldINSPECTIONDATES.setTypeName("LONG RAW");
-        fieldINSPECTIONDATES.setSize(100);
+        fieldINSPECTIONDATES.setSize(500);
         fieldINSPECTIONDATES.setSubSize(0);
         fieldINSPECTIONDATES.setIsPrimaryKey(false);
         fieldINSPECTIONDATES.setIsIdentity(false);
@@ -550,7 +550,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         FieldDefinition fieldPROPERTIES = new FieldDefinition();
         fieldPROPERTIES.setName("PROPERTIES");
         fieldPROPERTIES.setTypeName("LONG RAW");
-        fieldPROPERTIES.setSize(200);
+        fieldPROPERTIES.setSize(500);
         fieldPROPERTIES.setSubSize(0);
         fieldPROPERTIES.setIsPrimaryKey(false);
         fieldPROPERTIES.setIsIdentity(false);
