@@ -1024,13 +1024,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try{
             em.flush();
         }catch (Exception ex){
-
-            em.clear(); //prevent the flush again
-            // Query may fail in server as connection marked for rollback.
-            try {
-                String eName = (String)em.createQuery("SELECT e.firstName FROM Employee e where e.id = " + emp2.getId()).getSingleResult();
-                assertTrue("Failed to keep txn open for set RollbackOnly", eName.equals(newName));
-            } catch (Exception ignore) {}
+			/*
+			If JTA case after exception has occured the connection is immediately closed. Attempt to perform read causes a new connection to be acquired. Because the unitOfWork is no longer in transaction the connection is acquired by ServerSession. In case the ServerSession's read connection pool is JTA-managed the acquired connection that attempt fails on some app. servers (WLS) while others (GlassFish) return connection that correspond to no transaction at all (that would cause the old data to be read and the test to fail). Alternatively, if  a non-JTA-managed connection pool used for reading then the newly acquired connection is always retuns the old object (and the test would fail, again).  Note that in case of internal connection pool the connection is still kept after the exception is thrown and therefore the read returns the new data (the test passes).
+			*/
+			if (!isOnServer()){
+				em.clear(); //prevent the flush again
+				try {
+					String eName = (String)em.createQuery("SELECT e.firstName FROM Employee e where e.id = " + emp2.getId()).getSingleResult();
+					assertTrue("Failed to keep txn open for set RollbackOnly", eName.equals(newName));
+				} catch (Exception ignore) {}
+			}
         }
         try {
             if (isOnServer()) {
