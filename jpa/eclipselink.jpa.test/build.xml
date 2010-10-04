@@ -1636,29 +1636,7 @@
             target="${javac.version}"
             deprecation="${javac.deprecation}"
             failonerror="false"
-            includes="org/eclipse/persistence/testing/framework/junit/**,
-                org/eclipse/persistence/testing/framework/AutoVerifyTestCase.java,
-                org/eclipse/persistence/testing/framework/TestCase.java,
-                org/eclipse/persistence/testing/framework/TestEntity.java,
-                org/eclipse/persistence/testing/framework/TestModel.java,
-                org/eclipse/persistence/testing/framework/*TestHelper.java,
-                org/eclipse/persistence/testing/framework/QuerySQLTracker.java,
-                org/eclipse/persistence/testing/framework/TestWarningException.java,
-                org/eclipse/persistence/testing/framework/TestException.java,
-                org/eclipse/persistence/testing/framework/TestErrorException.java,
-                org/eclipse/persistence/testing/framework/TestProblemException.java,
-                org/eclipse/persistence/testing/framework/ResultInterface.java,
-                org/eclipse/persistence/testing/framework/TestCollection.java,
-                org/eclipse/persistence/testing/framework/PerformanceComparisonTest.java,
-                org/eclipse/persistence/testing/framework/PerformanceComparisonTestCase.java,
-                org/eclipse/persistence/testing/framework/TestResult.java,
-                org/eclipse/persistence/testing/framework/PerformanceComparisonTestResult.java,
-                org/eclipse/persistence/testing/framework/PerformanceRegressionTest.java,
-                org/eclipse/persistence/testing/framework/PerformanceRegressionTestCase.java,
-                org/eclipse/persistence/testing/framework/ConcurrencyTestAdapter.java,
-                org/eclipse/persistence/testing/framework/ConcurrentPerformanceComparisonTest.java,
-                org/eclipse/persistence/testing/framework/ConcurrentPerformanceRegressionTest.java,
-                org/eclipse/persistence/testing/framework/TogglingFastTableCreator.java">
+            includes="org/eclipse/persistence/testing/framework/**/*.java">
             <classpath refid="compile.server.path"/>
         </javac>
         <javac
