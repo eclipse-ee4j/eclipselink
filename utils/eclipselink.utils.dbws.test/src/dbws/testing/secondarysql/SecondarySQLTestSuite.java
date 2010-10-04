@@ -606,7 +606,6 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                  __nullStream, __nullStream, __nullStream, null);
         }
         catch (Exception e) {
-            e.printStackTrace();
             assertEquals("Duplicate ResultSet columns not supported", e.getMessage());
         }
      }
