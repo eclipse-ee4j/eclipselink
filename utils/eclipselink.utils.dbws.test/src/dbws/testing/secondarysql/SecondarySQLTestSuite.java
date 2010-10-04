@@ -581,7 +581,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
               "name=\"badColumns\" " +
               "returnType=\"dontCare\"> " +
               "<text><![CDATA[dontCare]]></text>" +
-              "<secondary-text><![CDATA[SELECT ENAME, ENAME FROM SECONDARY]]></secondary-text>" +
+              "<secondary-text><![CDATA[select ename, ename from secondary]]></secondary-text>" +
             "</sql>" +
          "</dbws-builder>";
          XMLContext context = new XMLContext(new DBWSBuilderModelProject());
