@@ -16,7 +16,9 @@ package org.eclipse.persistence.sdo.helper;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -75,10 +77,13 @@ public class SDOHelperContext implements HelperContext {
     protected TypeHelper typeHelper;
     protected XSDHelper xsdHelper;
     private String identifier;
+    private Map<String, Object> properties;
 
     // Each application will have its own helper context - it is assumed that application 
     // names/loaders are unique within each active server instance
     private static ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>> helperContexts = new ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>>();
+    // Each application will have a Map of alias' to identifiers
+    private static ConcurrentHashMap<Object, ConcurrentHashMap<String, String>> aliasMap = new ConcurrentHashMap<Object, ConcurrentHashMap<String, String>>();
     // allow users to set their own classloader to context map pairs
     private static WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>> userSetHelperContexts = new WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>>();
     // keep a map of application names to application class loaders to handle redeploy
@@ -378,21 +383,33 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Return the local helper context with the given identifier, or create
-     * one if it does not already exist.
+     * Return the local helper context associated with the given identifier, or
+     * create one if it does not already exist.  If identifier is an alias, the 
+     * value associated with it in the alias Map will be used as the identifier 
+     * value.
+     * 
+     * @param identifier the identifier or alias to use for lookup/creation 
+     * @return HelperContext associated with identifier, or a new HelperContext 
+     * keyed on identifier if none eixsts
      */
     public static HelperContext getHelperContext(String identifier) {
+        String id = identifier;
+        // if identifier is an alias, we need the actual id value
+        ConcurrentMap<String, String> aliasEntries = getAliasMap();
+        if (aliasEntries.containsKey(identifier)) {
+            id = aliasEntries.get(identifier);
+        }
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         // check the map for contextClassLoader and return it if it exists
-        HelperContext hCtx = getUserSetHelperContext(identifier, contextClassLoader);
-        if(hCtx != null) {
+        HelperContext hCtx = getUserSetHelperContext(id, contextClassLoader);
+        if (hCtx != null) {
             return hCtx;
         }
         ConcurrentMap<String, HelperContext> contextMap = getContextMap();
-        HelperContext helperContext = contextMap.get(identifier);
+        HelperContext helperContext = contextMap.get(id);
         if (null == helperContext) {
-            helperContext = new SDOHelperContext(identifier);
-            HelperContext existingContext = contextMap.putIfAbsent(identifier, helperContext);
+            helperContext = new SDOHelperContext(id);
+            HelperContext existingContext = contextMap.putIfAbsent(id, helperContext);
             if (existingContext != null) {
                 helperContext = existingContext;
             }
@@ -476,8 +493,14 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Replaces the provided helper context in the map of identifiers to helper contexts for
-     * this application. ctx.getIdentifier() will be used to obtain identifier 
+     * Replaces the provided  helper context in the map of identifiers to 
+     * helper contexts for this application. ctx.getIdentifier()  will be 
+     * used to obtain the identifier value. If identifier is a key in the 
+     * the alias Map, i.e. was previously set as alias, the corresponding 
+     * entry will be removed from the alias Map.
+     * 
+     * @param ctx the HelperContext to be added to the context Map for
+     * the current application
      */
     public static void putHelperContext(HelperContext ctx) {
         String identifier = ((SDOHelperContext) ctx).getIdentifier();
@@ -486,6 +509,8 @@ public class SDOHelperContext implements HelperContext {
             return;
         }
         getContextMap().put(identifier, ctx);
+        // identifier may have been an alias at one point
+        getAliasMap().remove(identifier);
     }
 
     /**
@@ -503,8 +528,29 @@ public class SDOHelperContext implements HelperContext {
         }
         // remove the appName entry in the appNameToClassLoader map
         appNameToClassLoaderMap.remove(key);
+        // remove the alias map for this app
+        aliasMap.remove(key);
     }
 
+    /**
+     * INTERNAL:
+     * Return the key to be used for Map lookups based in the current thread's
+     * context loader.  The returned value will be the application name (if
+     * available) or the context loader.
+     * 
+     */
+    private static Object getMapKey() {
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        String classLoaderName = contextClassLoader.getClass().getName();
+        // get a MapKeyLookupResult instance based on the context loader
+        MapKeyLookupResult hCtxMapKey = getContextMapKey(contextClassLoader, classLoaderName);
+        // at this point we will have a loader and possibly an application name
+        String appName = hCtxMapKey.getApplicationName();
+        ClassLoader appLoader = hCtxMapKey.getLoader();
+        // we will use the application name as the map key if set; otherwise we use the loader
+        return appName != null ? appName : appLoader;
+    }
+    
     /**
      * INTERNAL:
      * This method will return the MapKeyLookupResult instance to be used to 
@@ -1021,5 +1067,120 @@ public class SDOHelperContext implements HelperContext {
      */
     public String getIdentifier() {
         return this.identifier;
+    }
+    
+    /**
+     * Return true if a HelperContext corresponding to this identifier or alias
+     * already exists, else false.  If identifer is an alias, the corresponding 
+     * value in the alias Map will be used as the identifier for the lookup.
+     * 
+     * @param identifier the alias or identifier used to lookup a helper context
+     * @return true if an entry exists in the helper context map for identifier (or 
+     * the associated identifier value if identifier is an alias), false otherwise. 
+     */
+    public static boolean hasHelperContext(String identifier) {
+        String id = identifier;
+        Object appKey = getMapKey();
+        // if identifier is an alias, we need the actual id value
+        ConcurrentMap<String, String> aliasEntries = getAliasMap();
+        if (aliasEntries.containsKey(identifier)) {
+            id = aliasEntries.get(identifier);
+        }
+        // now check the Map of user set identifiers to helperContexts
+        WeakHashMap<String, WeakReference<HelperContext>> userSetMap = userSetHelperContexts.get(appKey);
+        if (userSetMap != null && userSetMap.containsKey(id)) {
+            return true;
+        }
+
+        // lastly, check the Map of identifiers to helperContexts
+        ConcurrentHashMap<String, HelperContext> contextMap = helperContexts.get(appKey);
+        return (contextMap != null && contextMap.containsKey(id));
+    }
+    
+    /**
+     * Add an alias to identifier pair to the alias Map for the current 
+     * application.  
+     * 
+     * @param identifier assumed to be a key in the helper context Map 
+     * @param alias the alias to be associated with identifier 
+     */
+    public static void addAlias(String identifier, String alias) {
+        getAliasMap().put(alias, identifier);
+    }
+    
+    /**
+     * INTERNAL: 
+     * Returns the map of alias' to identifiers for the current application.
+     * 
+     * @return Map of alias' to identifiers for the current application
+     */
+    private static ConcurrentMap<String, String> getAliasMap() {
+        return getAliasMap(getMapKey());
+    }
+    
+    /**
+     * INTERNAL: 
+     * Returns the map of alias' to identifiers for the current application.
+     * 
+     * @param mapKey application name or classloader used to lookup the alias map
+     * @return Map of alias' to identifiers for the current application
+     */
+    private static ConcurrentMap<String, String> getAliasMap(Object mapKey) {
+        ConcurrentHashMap<String, String> alias = aliasMap.get(mapKey);       
+        
+        // may need to add a new entry
+        if (null == alias) {
+            alias = new ConcurrentHashMap<String, String>();
+            // use putIfAbsent to avoid concurrent entries in the map
+            ConcurrentHashMap existingMap = aliasMap.putIfAbsent(mapKey, alias);
+            if (existingMap != null) {
+                // if a new entry was just added, use it instead of the one we just created
+                alias = existingMap;
+            }
+        }
+        return alias;
+    }
+
+    /**
+     * Lazily initialize the Map of user properties.
+     */
+    private Map<String, Object> getProperties() {
+        if (properties == null) {
+            properties = new HashMap<String, Object>();
+        }
+        return properties;
+    }
+    
+    /**
+     * Add a name/value pair to the properties Map.  If name is
+     * null, nothing will be done. If value is null, the entry
+     * in the Map will be removed (if an entry exists for name).
+     * 
+     * @param name the name of the property
+     * @param value the value of the property
+     */
+    public void setProperty(String name, Object value) {
+        // if the key is null there is nothing to do
+        if (name == null) {
+            return;
+        }
+        // if value is null, remove the entry
+        if (value == null) {
+            getProperties().remove(name);
+        } else {
+            // put the name/value pair in the map
+            getProperties().put(name, value);
+        }
+    }
+    
+    /**
+     * Return the value stored in the properties Map for a given 
+     * name, or null if an entry for name does not exist.
+     *   
+     * @param name the name of the property to be returned
+     * @return the value associated with name, or null 
+     */
+    public Object getProperty(String name) {
+        return getProperties().get(name);
     }
 }
