@@ -132,7 +132,46 @@ public class SDOHelperContextTest extends SDOHelperContextTestCases {
     	assertFalse(property2.isMany());
     	assertFalse(property3.isMany());
     }
-    
+
+    /**
+     * Test API for helper context alias'
+     * 
+     * Positive test.
+     */
+    public void testAlias() {
+        SDOHelperContext defaultCtx = new SDOHelperContext("defaultContext");
+        defaultCtx.setProperty("isDefault", true);
+        SDOHelperContext.putHelperContext(defaultCtx);
+        assertTrue("No helper context with id [defaultContext] found", SDOHelperContext.hasHelperContext("defaultContext"));
+        assertFalse("SDOHelperContext.hasHelperContext('myEnterpriseId') returned true unexpectedly", SDOHelperContext.hasHelperContext("myEnterpriseId"));
+        // associate the alias 'myEnterpriseId' with the default context identifier
+        SDOHelperContext.addAlias("defaultContext", "myEnterpriseId");
+        assertTrue("No helper context found with alias [myEnterpriseId]", SDOHelperContext.hasHelperContext("myEnterpriseId"));
+        // at this point, if we look up alias 'myEnterpriseId' we should get the default context
+        SDOHelperContext hCtx = (SDOHelperContext) SDOHelperContext.getHelperContext("myEnterpriseId");
+        Boolean isDefault = false;
+        try {
+            isDefault = (Boolean) hCtx.getProperty("isDefault");
+        } catch (Exception ex) {
+            fail("Attempt to lookup property 'isDefault' failed: " + ex.getMessage());
+        }
+        assertTrue("Lookup of alias 'myEnterpriseId' did not return the default context as expected", isDefault);
+        // now create a new context using the alias as the id
+        SDOHelperContext newCtx = new SDOHelperContext("myEnterpriseId");
+        newCtx.setProperty("isDefault", false);
+        SDOHelperContext.putHelperContext(newCtx);
+        assertTrue("Helper context with id [defaultContext] was removed unexpectedly", SDOHelperContext.hasHelperContext("defaultContext"));
+        assertTrue("Helper context with id [myEnterpriseId] was not added correctly", SDOHelperContext.hasHelperContext("myEnterpriseId"));
+        // make sure the old alias value was removed during the previous put op
+        hCtx = (SDOHelperContext) SDOHelperContext.getHelperContext("myEnterpriseId");
+        try {
+            isDefault = (Boolean) hCtx.getProperty("isDefault");
+        } catch (Exception ex) {
+            fail("Attempt to lookup property 'isDefault' failed: " + ex.getMessage());
+        }
+        assertFalse("Lookup of alias 'myEnterpriseId' returned the default context unexpectedly", isDefault);
+    }
+
 /*
 this	SDOHelperContextTest  (id=17)	
 	aHelperContext	SDOHelperContext  (id=30)	
