@@ -47,10 +47,10 @@
         <exclude-superclass-listeners/>
         <attributes>
             <id name="type">
-                <column name="TYPE"/>
+                <column name="TYPE" length="32"/>
             </id>
             <id name="areaCode">
-                <column name="AREA_CODE"/>
+                <column name="AREA_CODE" length="32"/>
             </id>
             <many-to-one name="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.BeerConsumer">
                 <join-column name="CONSUMER_ID"/>
