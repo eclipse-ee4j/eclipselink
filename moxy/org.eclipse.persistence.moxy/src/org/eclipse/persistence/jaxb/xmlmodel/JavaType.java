@@ -48,6 +48,7 @@ import javax.xml.bind.annotation.XmlList;
  *         &lt;/element>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="super-type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="xml-accessor-order" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-order" default="UNDEFINED" />
  *       &lt;attribute name="xml-accessor-type" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-type" default="PUBLIC_MEMBER" />
  *       &lt;attribute name="xml-customizer" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -86,6 +87,8 @@ public class JavaType {
     protected JavaType.JavaAttributes javaAttributes;
     @javax.xml.bind.annotation.XmlAttribute(name = "name")
     protected String name;
+    @javax.xml.bind.annotation.XmlAttribute(name = "super-type")
+    protected String superType;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-accessor-order")
     protected XmlAccessOrder xmlAccessorOrder;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-accessor-type")
@@ -296,6 +299,34 @@ public class JavaType {
      */
     public void setName(String value) {
         this.name = value;
+    }
+
+    /**
+     * Gets the value of the superType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSuperType() {
+        if (superType == null) {
+            return "##default";
+        } else {
+            return superType;
+        }
+    }
+
+    /**
+     * Sets the value of the superType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSuperType(String value) {
+        this.superType = value;
     }
 
     /**
