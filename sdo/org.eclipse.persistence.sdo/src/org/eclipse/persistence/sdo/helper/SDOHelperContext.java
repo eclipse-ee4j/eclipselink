@@ -1082,7 +1082,7 @@ public class SDOHelperContext implements HelperContext {
         String id = identifier;
         Object appKey = getMapKey();
         // if identifier is an alias, we need the actual id value
-        ConcurrentMap<String, String> aliasEntries = getAliasMap();
+        ConcurrentMap<String, String> aliasEntries = getAliasMap(appKey);
         if (aliasEntries.containsKey(identifier)) {
             id = aliasEntries.get(identifier);
         }
