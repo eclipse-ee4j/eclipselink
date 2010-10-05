@@ -1469,7 +1469,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 conn = DriverManager.getConnection(getUrl(), props);
             }
             catch (Exception e) {
-                logMessage(SEVERE, "JDBC driver error" + driverClassName, e);
+                logMessage(SEVERE, "JDBC driver error: " + driverClassName, e);
             }
         }
         return conn;
@@ -1534,21 +1534,23 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     }
     @SuppressWarnings({"unchecked"/*, "rawtypes"*/})
     public DatabasePlatform getDatabasePlatform() {
-        String platformClassname = getPlatformClassname();
-        try {
-            Class platformClass = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                platformClass = (Class)AccessController.doPrivileged(
-                    new PrivilegedClassForName(platformClassname));
+        if (databasePlatform == null) {
+            String platformClassname = getPlatformClassname();
+            try {
+                Class platformClass = null;
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    platformClass = (Class)AccessController.doPrivileged(
+                        new PrivilegedClassForName(platformClassname));
+                }
+                else {
+                    platformClass =
+                        PrivilegedAccessHelper.getClassForName(platformClassname);
+                }
+                databasePlatform = (DatabasePlatform)Helper.getInstanceFromClass(platformClass);
             }
-            else {
-                platformClass =
-                    PrivilegedAccessHelper.getClassForName(platformClassname);
+            catch (Exception e) {
+                databasePlatform = new MySQLPlatform();
             }
-            databasePlatform = (DatabasePlatform)Helper.getInstanceFromClass(platformClass);
-        }
-        catch (Exception e) {
-            databasePlatform = new MySQLPlatform();
         }
         return databasePlatform;
     }

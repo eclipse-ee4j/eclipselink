@@ -116,6 +116,7 @@ public class DBWSTestSuite {
         "select * from secondary";
     public static final String SECONDARY_ALL_SCHEMA_TYPE = "secondaryType";
 
+
     // JUnit test fixtures
 
     public static String DBWS_BUILDER_XML_USERNAME;

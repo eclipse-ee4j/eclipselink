@@ -51,7 +51,7 @@ import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
 //JUnit4 imports
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
+//import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -275,8 +275,6 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          xrService.setXMLContext(new XMLContext(oxProject));
          xrService.setOXSession(xrService.getXMLContext().getSession(0));
      }
-
-     //hokey test naming convention to hack order-of-tests
 
      @Test
      public void checkSQLOperationModel() {
@@ -567,7 +565,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          "</SOAP-ENV:Body>" +
        "</SOAP-ENV:Envelope>";
 
-     @Ignore
+     @Test
      public void testForDuplicateColumns() {
          String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
          String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
@@ -583,7 +581,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
               "name=\"badColumns\" " +
               "returnType=\"dontCare\"> " +
               "<text><![CDATA[dontCare]]></text>" +
-              "<secondary-text><![CDATA[SELECT ENAME, ENAME FROM SECONDARY]]></secondary-text>" +
+              "<secondary-text><![CDATA[select ename, ename from secondary]]></secondary-text>" +
             "</sql>" +
          "</dbws-builder>";
          XMLContext context = new XMLContext(new DBWSBuilderModelProject());
