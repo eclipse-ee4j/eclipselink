@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.TransactionRequiredException;
@@ -241,8 +242,8 @@ public class TestPersist extends JPA1Base {
     @Test
     public void testPersistDetached() throws SQLException {
         /*
-         * If X is a detached object, an IllegalArgumentException will be thrown by the persist operation (or the transaction
-         * commit will fail).
+         * <li>If X is a detached object, the EntityExistsException may be thrown when the persist operation is invoked, 
+         * or the EntityExistsException or another PersistenceException may be thrown at flush or commit time.</li>
          */
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -261,7 +262,7 @@ public class TestPersist extends JPA1Base {
             boolean failed = false;
             try {
                 em.persist(dep);
-            } catch (IllegalArgumentException e) {
+            } catch (EntityExistsException e) {
                 failed = true;
                 env.rollbackTransactionAndClear(em);
             }
@@ -286,7 +287,7 @@ public class TestPersist extends JPA1Base {
             em.persist(dep); // this is now in state new
             try {
                 em.persist(detachedDep);
-            } catch (IllegalArgumentException e) {
+            } catch (EntityExistsException e) {
                 failed = true;
                 env.rollbackTransactionAndClear(em);
             }
@@ -314,7 +315,7 @@ public class TestPersist extends JPA1Base {
             dep = em.find(Department.class, new Integer(id)); // this is now in state managed
             try {
                 em.persist(detachedDep);
-            } catch (IllegalArgumentException e) {
+            } catch (EntityExistsException e) {
                 failed = true;
                 env.rollbackTransactionAndClear(em);
             }
@@ -343,7 +344,7 @@ public class TestPersist extends JPA1Base {
             em.remove(dep); // this is now in state deleted
             try {
                 em.persist(detachedDep);
-            } catch (IllegalArgumentException e) {
+            } catch (EntityExistsException e) {
                 failed = true;
                 env.rollbackTransactionAndClear(em);
             }

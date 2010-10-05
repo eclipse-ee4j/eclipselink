@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
@@ -35,8 +36,8 @@ import org.junit.Test;
  * to entities referenced by X, if the relationships from X to these other entities is annotated with the cascade=PERSIST or
  * cascade=ALL annotation element value or specified with the equivalent XML descriptor element.</li>
  * <li>If X is a removed entity, it becomes managed.</li>
- * <li>If X is a detached object, an IllegalArgumentException will be thrown by the persist operation (or the transaction commit
- * will fail).</li>
+ * <li>If X is a detached object, the EntityExistsException may be thrown when the persist operation is invoked, 
+ * or the EntityExistsException or another PersistenceException may be thrown at flush or commit time.</li>
  * <li>For all entities Y referenced by a relationship from X, if the relationship to Y has been annotated with the cascade
  * element value cascade=PERSIST or cascade=ALL, the persist operation is applied to Y.</li>
  * </ul>
@@ -113,7 +114,7 @@ public class TestCascadePersist extends JPA1Base {
                 em.persist(parent);
                 verify(em.contains(parent), "Parent not contained in persistence context after persist");
                 verify(em.contains(child), "Child not contained in persistence context after persist");
-            } catch (IllegalArgumentException e) {
+            } catch (EntityExistsException e) {
                 persistFailed = true;
                 immediateException = true;
             }
@@ -148,7 +149,7 @@ public class TestCascadePersist extends JPA1Base {
                 em.persist(parent);
                 verify(em.contains(parent), "Parent not contained in persistence context after persist");
                 verify(em.contains(child), "Child not contained in persistence context after persist");
-            } catch (IllegalArgumentException e) {
+            } catch (EntityExistsException e) {
                 persistFailed = true;
                 immediateException = true;
             }
@@ -187,7 +188,7 @@ public class TestCascadePersist extends JPA1Base {
                 em.persist(parent);
                 verify(em.contains(parent), "Parent not contained in persistence context after persist");
                 verify(em.contains(child), "Child not contained in persistence context after persist");
-            } catch (IllegalArgumentException e) {
+            } catch (EntityExistsException e) {
                 persistFailed = true;
                 immediateException = true;
             }
@@ -226,7 +227,7 @@ public class TestCascadePersist extends JPA1Base {
                 em.persist(parent);
                 verify(em.contains(parent), "Parent not contained in persistence context after persist");
                 verify(em.contains(child), "Child not contained in persistence context after persist");
-            } catch (IllegalArgumentException e) {
+            } catch (EntityExistsException e) {
                 persistFailed = true;
                 immediateException = true;
             }
@@ -278,10 +279,6 @@ public class TestCascadePersist extends JPA1Base {
 
     private void verifyExistenceOnDatabase(int nodeId) throws SQLException {
         verify(checkForExistenceOnDatabase(nodeId), "no node with id " + nodeId + " found using JDBC.");
-    }
-
-    private void verifyAbsenceFromDatabase(int nodeId) throws SQLException {
-        verify(!checkForExistenceOnDatabase(nodeId), "node with id " + nodeId + "still found using JDBC.");
     }
 
     private boolean checkForExistenceOnDatabase(int nodeId) throws SQLException {
