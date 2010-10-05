@@ -65,7 +65,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode;

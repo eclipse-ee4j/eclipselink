@@ -2097,7 +2097,7 @@ public class AnnotationsProcessor {
         // First collect all the getters and setters
         ArrayList<JavaMethod> propertyMethods = new ArrayList<JavaMethod>();
         for (JavaMethod next : new ArrayList<JavaMethod>(cls.getDeclaredMethods())) {
-            if ((next.getName().startsWith("get") && next.getName().length() > 3) || (next.getName().startsWith("is") && next.getName().length() > 2)) {
+            if (((next.getName().startsWith("get") && next.getName().length() > 3) || (next.getName().startsWith("is") && next.getName().length() > 2)) && next.getParameterTypes().length == 0 && next.getReturnType() != helper.getJavaClass(java.lang.Void.class)) {
                 int modifiers = next.getModifiers();
                 if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
                     propertyMethods.add(next);
