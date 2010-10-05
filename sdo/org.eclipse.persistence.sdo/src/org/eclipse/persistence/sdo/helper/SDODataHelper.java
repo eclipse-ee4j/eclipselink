@@ -722,23 +722,27 @@ public class SDODataHelper implements DataHelper {
         if (null == property) {
             throw new IllegalArgumentException(SDOException.conversionError(null));
         }
-        Type convertType = property.getType();
-        if (property.isMany()) {
-            if (value == null) {
-                return null;
-            } else if (!(value instanceof List)) {
-                throw new IllegalArgumentException(SDOException.conversionError(null));
-            } else {
-                List theList = (List) value;
-                Object nextItem = null;
-                for (int i = 0; i < theList.size(); i++) {
-                    nextItem = theList.get(i);
-                    theList.set(i, convert(convertType, nextItem));
+        try {
+            Type convertType = property.getType();
+            if (property.isMany()) {
+                if (value == null) {
+                    return null;
+                } else if (!(value instanceof List)) {
+                    throw new IllegalArgumentException(SDOException.conversionError(null));
+                } else {
+                    List theList = (List) value;
+                    Object nextItem = null;
+                    for (int i = 0; i < theList.size(); i++) {
+                        nextItem = theList.get(i);
+                        theList.set(i, convert(convertType, nextItem));
+                    }
+                    return theList;
                 }
-                return theList;
+            } else {
+                return convert(convertType, value);
             }
-        } else {
-            return convert(convertType, value);
+        } catch (ConversionException e) {
+            throw SDOException.invalidPropertyValue(property.getName(), property.getType().getURI() + '#' + property.getType().getName(), value.getClass().getName(), value.toString(), e);
         }
     }
 

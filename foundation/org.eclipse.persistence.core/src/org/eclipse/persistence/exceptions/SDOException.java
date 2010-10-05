@@ -76,6 +76,7 @@ public class SDOException extends EclipseLinkException {
     public static final int CANNOT_PERFORM_OPERATION_ON_PROPERTY = 45038;
     public static final int ERROR_ACCESSING_EXTERNALIZABLEDELEGATOR = 45039;
     public static final int CANNOT_PERFORM_OP_WITH_NULL_PARAM = 45040;
+    public static final int INVALID_PROPERTY_VALUE = 45041;
     public static final int ERROR_PERFORMING_WLS_LOOKUP = 45100;
     public static final int ERROR_MAKING_WLS_REFLECTIVE_CALL = 45101;
     public static final int ERROR_GETTING_OBJECTNAME = 45102;
@@ -321,6 +322,16 @@ public class SDOException extends EclipseLinkException {
         Object[] args = { operation, parameter };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, CANNOT_PERFORM_OP_WITH_NULL_PARAM, args));
         exception.setErrorCode(CANNOT_PERFORM_OP_WITH_NULL_PARAM);
+        return exception;
+    }
+    
+    /**
+     * INTERNAL: Exception trying to call a method with a null input parameter
+     */
+    public static SDOException invalidPropertyValue(String property, String type, String valueType, String value, ConversionException coe) {
+        Object[] args = { value, valueType, property, type };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, INVALID_PROPERTY_VALUE, args), coe);
+        exception.setErrorCode(INVALID_PROPERTY_VALUE);
         return exception;
     }
 

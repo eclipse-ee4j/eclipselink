@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import junit.textui.TestRunner;
+import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOConstants;
 
@@ -436,5 +437,19 @@ public class SDODataObjectGetIntConversionTest extends SDODataObjectConversionTe
         dataObject.setShort(property, shr);// add it to instance list
 
         this.assertEquals((int)shr, dataObject.getInt(property));
+    }
+
+    // purpose: setString with incorrect Integer as String Property
+    public void testInvalidIntFromDefinedStringProperty() {
+        // dataObject's type add int property
+        SDOProperty property = ((SDOProperty) type.getProperty(PROPERTY_NAME));
+        property.setType(SDOConstants.SDO_INT);
+
+        String str = "12&";
+        try {
+            dataObject.setString(property, str);
+        } catch (SDOException sdo) {
+            this.assertEquals(sdo.getErrorCode(), SDOException.INVALID_PROPERTY_VALUE);
+        }
     }
 }
