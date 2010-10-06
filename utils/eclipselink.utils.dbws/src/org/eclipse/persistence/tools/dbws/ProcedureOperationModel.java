@@ -139,23 +139,24 @@ public class ProcedureOperationModel extends OperationModel {
 
         super.buildOperation(builder);
         boolean isOracle = builder.databasePlatform.getClass().getName().contains("Oracle");
+        boolean isMySQL = builder.databasePlatform.getClass().getName().contains("MySQL");
         List<DbStoredProcedure> procs = builder.loadProcedures(this, isOracle);
         for (DbStoredProcedure storedProcedure : procs) {
             StringBuilder sb = new StringBuilder();
             if (name == null || name.length() == 0) {
-            if (storedProcedure.getOverload() > 0) {
-                sb.append(storedProcedure.getOverload());
-                sb.append('_');
-            }
-            if (storedProcedure.getCatalog() != null && storedProcedure.getCatalog().length() > 0) {
-                sb.append(storedProcedure.getCatalog());
-                sb.append('_');
-            }
-            if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
-                sb.append(storedProcedure.getSchema());
-                sb.append('_');
-            }
-            sb.append(storedProcedure.getName());
+                if (storedProcedure.getOverload() > 0) {
+                    sb.append(storedProcedure.getOverload());
+                    sb.append('_');
+                }
+                if (storedProcedure.getCatalog() != null && storedProcedure.getCatalog().length() > 0) {
+                    sb.append(storedProcedure.getCatalog());
+                    sb.append('_');
+                }
+                if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
+                    sb.append(storedProcedure.getSchema());
+                    sb.append('_');
+                }
+                sb.append(storedProcedure.getName());
             }
             else {
                 sb.append(name);
@@ -181,9 +182,11 @@ public class ProcedureOperationModel extends OperationModel {
                 }
             }
             else {
-                if (storedProcedure.getCatalog() != null && storedProcedure.getCatalog().length() > 0) {
-                    sb.append(storedProcedure.getCatalog());
-                    sb.append('.');
+                if (!isMySQL) {
+                    if (storedProcedure.getCatalog() != null && storedProcedure.getCatalog().length() > 0) {
+                        sb.append(storedProcedure.getCatalog());
+                        sb.append('.');
+                    }
                 }
                 if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
                     sb.append(storedProcedure.getSchema());

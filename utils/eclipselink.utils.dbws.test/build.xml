@@ -34,8 +34,8 @@
 #******************************************************************************/-->
 <project name="eclipselink.utils.dbws.test" default="build" basedir=".">
     <!-- Test to make certain that build is run from component dir -->
-    <available file="../${ant.project.name}" type="dir" property="dbwsutiltest.is.local"/>
-    <fail unless="dbwsutiltest.is.local" message="Not running from '${ant.project.name}' directory"/>
+    <available file="../${ant.project.name}" type="dir" property="dbwsutilstest.is.local"/>
+    <fail unless="dbwsutilstest.is.local" message="Not running from '${ant.project.name}' directory"/>
     <condition property="is.java.version.16">
         <equals arg1="${ant.java.version}" arg2="1.6"/>
     </condition>
@@ -43,21 +43,21 @@
         message="eclipselink.utils.dbws requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
     />
 
-    <dirname  property="dbwsutiltest.build.location_temp" file="${ant.file.eclipselink.utils.dbws.test}"/>
-    <pathconvert targetos="unix" property="dbwsutiltest.build.location">
+    <dirname  property="dbwsutilstest.build.location_temp" file="${ant.file.eclipselink.utils.dbws.test}"/>
+    <pathconvert targetos="unix" property="dbwsutilstest.build.location">
         <path>
-            <pathelement location="${dbwsutiltest.build.location_temp}"/>
+            <pathelement location="${dbwsutilstest.build.location_temp}"/>
         </path>
     </pathconvert>
-    <echo message="dbwsutiltest.build.location = '${dbwsutiltest.build.location}'"/>
-    <condition property="dbwsutiltest.2.base.dir" value="../.." else="..">
-        <contains string="${dbwsutiltest.build.location}" substring="utils/${ant.project.name}"/>
+    <echo message="dbwsutilstest.build.location = '${dbwsutilstest.build.location}'"/>
+    <condition property="dbwsutilstest.2.base.dir" value="../.." else="..">
+        <contains string="${dbwsutilstest.build.location}" substring="utils/${ant.project.name}"/>
     </condition>
-    <echo message="dbwsutiltest.2.base.dir = '${dbwsutiltest.2.base.dir}'"/>
-    <property name="dbwsutiltest.2.common.plugins.dir" value="${dbwsutiltest.2.base.dir}/plugins"/>
-    <property name="dbwsutiltest.2.dbwsutil.dir" value="../eclipselink.utils.dbws"/>
+    <echo message="dbwsutilstest.2.base.dir = '${dbwsutilstest.2.base.dir}'"/>
+    <property name="dbwsutilstest.2.common.plugins.dir" value="${dbwsutilstest.2.base.dir}/plugins"/>
+    <property name="dbwsutilstest.2.dbwsutils.dir" value="../eclipselink.utils.dbws"/>
 
-    <property name="custom.tasks.lib" value="${dbwsutiltest.build.location}/${dbwsutiltest.2.base.dir}/buildsystem/ant_customizations.jar"/>
+    <property name="custom.tasks.lib" value="${dbwsutilstest.build.location}/${dbwsutilstest.2.base.dir}/buildsystem/ant_customizations.jar"/>
     <property name="custom.tolower.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
     <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
     <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}'"/>
@@ -86,34 +86,34 @@
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
     <!-- Set Compile Path-->
-    <path id="dbwsutiltest.compile.path">
+    <path id="dbwsutilstest.compile.path">
         <pathelement path="${junit.lib}"/>
-        <pathelement path="${dbwsutiltest.2.base.dir}/${eclipselink.jar}"/>
-        <pathelement path="${dbwsutiltest.2.common.plugins.dir}/${asm}"/>
-        <pathelement path="${dbwsutiltest.2.dbwsutil.dir}/${dbwsutils.jar}"/>
+        <pathelement path="${dbwsutilstest.2.base.dir}/${eclipselink.jar}"/>
+        <pathelement path="${dbwsutilstest.2.common.plugins.dir}/${asm}"/>
+        <pathelement path="${dbwsutilstest.2.dbwsutils.dir}/${dbwsutils.jar}"/>
         <fileset
             dir="../plugins"
             includes="${eclipselink.utils.dbws.depend}"
         />
         <fileset
-            dir="${dbwsutiltest.2.common.plugins.dir}"
+            dir="${dbwsutilstest.2.common.plugins.dir}"
             includes="${eclipselink.dbws.core.depend}"
         />
     </path>
     <echo message="junit.lib='${junit.lib}'"/>
     <!-- Set Run Path-->
-    <path id="dbwsutiltest.run.path">
-        <path refid="dbwsutiltest.compile.path"/>
+    <path id="dbwsutilstest.run.path">
+        <path refid="dbwsutilstest.compile.path"/>
         <pathelement path="${jdbc.driver.jar}"/>
-        <pathelement path="./${dbwsutil.test.jar}"/>
+        <pathelement path="./${dbwsutils.test.jar}"/>
     </path>
     <!-- Test dependencies -->
-    <available file="${dbwsutiltest.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
-    <available file="${dbwsutiltest.2.dbwsutil.dir}/${dbwsutils.jar}" property="dbwsutil.jar.exist"/>
-    <available file="${dbwsutiltest.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
+    <available file="${dbwsutilstest.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
+    <available file="${dbwsutilstest.2.dbwsutils.dir}/${dbwsutils.jar}" property="dbwsutils.jar.exist"/>
+    <available file="${dbwsutilstest.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
     <available file="../plugins/${wsdl.jar}" property="wsdl.exist"/>
     <available file="${jdbc.driver.jar}"  property="jdbc.jar.exist"/>
-    <available file="./${dbwsutil.test.jar}" property="dbwsutiltest.common.jar.exist"/>
+    <available file="./${dbwsutils.test.jar}" property="dbwsutilstest.common.jar.exist"/>
     <condition property="support.test">
         <and>
             <isset property="is.java.version.16"/>
@@ -127,7 +127,7 @@
     </condition>
 
     <!-- all -->
-    <target name="build" depends="clean, compile, package" description="build dbwsutiltests jar"/>
+    <target name="build" depends="clean, compile, package" description="build dbwsutilstests jar"/>
 
     <!-- test -->
     <target name="test" depends="compile-common, run-tests" description="run tests after building"/>
@@ -176,7 +176,7 @@
         url="${db.url}"
         userid="${db.user}"
         password="${db.pwd}"
-        classpathref="dbwsutiltest.run.path"
+        classpathref="dbwsutilstest.run.path"
         delimiter="|"
         >
         <fileset
@@ -201,7 +201,7 @@
         srcdir="./${src.dir}"
         destdir="./${classes.dir}"
         includes="dbws/testing/@{package-name}/@{testsuite-name}TestSuite.java"
-        classpathref="dbwsutiltest.run.path"
+        classpathref="dbwsutilstest.run.path"
       />
     </sequential>
   </macrodef>
@@ -225,13 +225,13 @@
             path="./jaxb-ri_override.jar"
           />
           <path
-            refid="dbwsutiltest.run.path"
+            refid="dbwsutilstest.run.path"
           />
           <pathelement
             path="./${classes.dir}"
           />
           <pathelement
-            path="./${dbwsutil.test.jar}"
+            path="./${dbwsutils.test.jar}"
           />
           <pathelement
             path="dbws@{package-name}.jar"
@@ -294,7 +294,7 @@
         url="${db.url}"
         userid="${db.user}"
         password="${db.pwd}"
-        classpathref="dbwsutiltest.run.path"
+        classpathref="dbwsutilstest.run.path"
         delimiter="|"
         >
         <fileset
@@ -317,6 +317,7 @@
       <SetupDatabase
         testsuite-name="${package-name}"
       />
+	  <!--
       <CompileTestsuite
         testsuite-name="@{testsuite-name}"
         package-name="${package-name}"
@@ -328,6 +329,7 @@
       <TeardownDatabase
         testsuite-name="${package-name}"
       />
+      -->
     </sequential>
   </macrodef>
 
@@ -335,14 +337,14 @@
     <target name="clean" description="Clean generated files for common content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="." includes="${dbwsutil.test.jar}"/>
+            <fileset dir="." includes="${dbwsutils.test.jar}"/>
         </delete>
     </target>
 
     <!-- compile -->
     <target name="compile" description="Compile DBWS Util test Common classes">
         <fail unless="eclipselink.jar.exist" message="EclipseLink cannot be found. Exiting..."/>
-        <fail unless="dbwsutil.jar.exist"    message="DBWS Util cannot be found. Exiting..."/>
+        <fail unless="dbwsutils.jar.exist"    message="DBWS Util cannot be found. Exiting..."/>
         <fail unless="asm.exist"             message="ASM Bundle cannot be found. Exiting..."/>
         <fail unless="wsdl.exist"            message="WSDL Library cannot be found. Exiting..."/>
         <mkdir dir="${classes.dir}"/>
@@ -350,13 +352,13 @@
                destdir="${classes.dir}"
                includes="dbws/testing/*.java"
                fork="true"
-               classpathref="dbwsutiltest.compile.path"
+               classpathref="dbwsutilstest.compile.path"
         />
     </target>
 
     <!-- package -->
     <target name="package" description="package DBWS Util Test Common jar">
-        <jar jarfile="./${dbwsutil.test.jar}">
+        <jar jarfile="./${dbwsutils.test.jar}">
             <fileset dir="${classes.dir}">
                 <include name="dbws/testing/*.class"/>
             </fileset>
@@ -364,9 +366,9 @@
     </target>
 
     <!-- *** Test execution targets *** -->
-    <target name="compile-common" unless="dbwsutiltest.common.jar.exist">
+    <target name="compile-common" unless="dbwsutilstest.common.jar.exist">
         <antcall target="build" inheritAll="true" inheritRefs="true"/>
-        <available file="./${dbwsutil.test.jar}" property="dbwsutiltest.common.jar.exist"/>
+        <available file="./${dbwsutils.test.jar}" property="dbwsutilstest.common.jar.exist"/>
     </target>
 
     <target name="run-tests" if="support.test" description="setup, compile, and run dbws util testsuites">
