@@ -127,6 +127,8 @@ then
     then
         echo "Error: Unable to find SVN client install!"
         exit 1
+    else
+        echo "Found: ${SVN_EXEC}"
     fi
 fi
 
@@ -511,7 +513,7 @@ then
         ## Prepend the ":" for the "to" syntax of the "svn log" command
         PREV_REV=:${PREV_REV}
     fi
-    echo "  changes included are from current revision to earliest not previously built (${CUR_REV}:${PREV_REV}) inclusive."
+    echo "  changes included are from current revision to earliest not previously built (${CUR_REV}${PREV_REV}) inclusive."
 
     ## Generate transaction log for this revision
     ##
@@ -570,9 +572,9 @@ then
         if [ "${TARG_NM}" = "cb" ]
         then
             # Zip up test results and copy them to appropriate location
-            ant ${ANT_BASEARG} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results
+            ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results
             echo "Command to zip and copy test results"
-            echo "   ant ${ANT_BASEARG} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results"
+            echo "   ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results"
        fi
     fi
 
