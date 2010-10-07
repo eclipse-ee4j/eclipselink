@@ -466,18 +466,17 @@ if [ "${ORACLEBLD}" = "true" ]
 then
     MAIL_EXEC=/usr/bin/mail
     MAILLIST="ejgwin@gmail.com"
-    SUCC_MAILLIST="eric.gwin@oracle.com"
-    FAIL_MAILLIST="eric.gwin@oracle.com"
-#    SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
-#    FAIL_MAILLIST="peter.krogh@oracle.com david.twelves@oracle.com blaise.doughan@oracle.com tom.ware@oracle.com ejgwin@gmail.com"
-    FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
+#    SUCC_MAILLIST="eric.gwin@oracle.com"
+#    FAIL_MAILLIST="eric.gwin@oracle.com"
+    SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
+    FAIL_MAILLIST="pkrogh_directs_ww@oracle.com dtwelves_directs_ww@oracle.com toplinkqa_ca@oracle.com ejgwin@gmail.com"
 else
     MAIL_EXEC=/bin/mail
     MAILLIST="ejgwin@gmail.com"
     SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
     FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
-    FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
 fi
+FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
 PARSE_RESULT_FILE=${tmp}/raw-summary.txt
 COMPILE_RESULT_FILE=${tmp}/compile-error-summary.txt
 SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
@@ -571,10 +570,17 @@ then
         LOGPREFIX=TestFail
         if [ "${TARG_NM}" = "cb" ]
         then
+            TEST_RESULT_ARCHIVE=TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip
             # Zip up test results and copy them to appropriate location
-            ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results
-            echo "Command to zip and copy test results"
-            echo "   ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results"
+            ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="${TEST_RESULT_ARCHIVE}" save-tst-results
+            echo "Command to zip test results"
+            echo "   ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="${TEST_RESULT_ARCHIVE}" save-tst-results"
+            if [ "${ORACLEBLD}" = "true" ]
+            then
+                scp ${TEST_RESULT_ARCHIVE} build.eclipse.org:${FailedNFSDir}/.
+            else
+                cp ${TEST_RESULT_ARCHIVE} ${FailedNFSDir}/.
+        fi
        fi
     fi
 
@@ -586,7 +592,12 @@ then
 
     if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
-        cp ${DATED_LOG} ${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
+        if [ "${ORACLEBLD}" = "true" ]
+        then
+            scp ${DATED_LOG} build.eclipse.org:${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
+        else
+            cp ${DATED_LOG} ${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
+        fi
         MAILLIST=${FAIL_MAILLIST}
         echo "Updating 'failed build' site..."
         chmod 755 ${BRANCH_PATH}/buildsystem/buildFailureList.sh
