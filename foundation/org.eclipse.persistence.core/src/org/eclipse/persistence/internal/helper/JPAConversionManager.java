@@ -47,7 +47,23 @@ public class JPAConversionManager extends ConversionManager {
             defaultNullValue = getDefaultNullValues().get(theClass);
         }
         if (defaultNullValue == null && theClass.isPrimitive()) {
-            return 0;
+            if(Double.TYPE.equals(theClass)){
+                return Double.valueOf(0D);
+            }  else if(Long.TYPE.equals(theClass)) {
+                return Long.valueOf(0L);
+            } else if(Character.TYPE.equals(theClass)){
+                return Character.digit(0, 10);
+            } else if(Float.TYPE.equals(theClass)){
+                return Float.valueOf(0F); 
+            } else if(Short.TYPE.equals(theClass)){
+                return Short.valueOf((short)0);
+            } else if(Byte.TYPE.equals(theClass)){
+                return Byte.valueOf((byte)0);
+            } else if(Boolean.TYPE.equals(theClass)){
+                return Boolean.FALSE;
+            } else {
+                return 0;
+            }
         } else {
             return defaultNullValue;
         }

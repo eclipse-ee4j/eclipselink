@@ -81,6 +81,7 @@ import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
+import org.eclipse.persistence.testing.models.jpa.advanced.PlatinumBuyer;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
 
 /**
@@ -215,6 +216,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("updateAttributeWithObjectTest"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEmployee"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteMan"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNullDouble"));
 
         return suite;
     }
@@ -4821,6 +4823,25 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
+    }
+    
+    // Bug 325916
+    public void testNullDouble(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        PlatinumBuyer buyer = new PlatinumBuyer();
+        buyer.setName("Mike");
+        buyer.setDescription("a buyer with no purchases.");
+        em.persist(buyer);
+        em.flush();
+        em.clear();
+        clearCache();
+        em.createNativeQuery("update CMP3_PBUYER set PURCHASES = NULL where BUYER_ID = " + buyer.getId()).executeUpdate();
+        
+        buyer = em.find(PlatinumBuyer.class, buyer.getId());
+        
+        rollbackTransaction(em);
     }
 
 }
