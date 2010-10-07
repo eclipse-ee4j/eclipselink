@@ -12,11 +12,15 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.expressions;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.expressions.ListExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 
 /**
  * INTERNAL:
@@ -37,6 +41,7 @@ import org.eclipse.persistence.expressions.ListExpressionOperator;
 public class ArgumentListFunctionExpression extends FunctionExpression {
 
     protected Boolean hasLastChild = Boolean.valueOf(false);
+
     /**
      * INTERNAL:
      * Add a new Expression to the list of arguments.  
@@ -83,6 +88,7 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
     public void setOperator(ExpressionOperator theOperator) {
         assert(theOperator instanceof ListExpressionOperator);
         super.setOperator(theOperator);
+        ((ListExpressionOperator)theOperator).setNumberOfItems(0);
     }
     
     /**
@@ -92,8 +98,10 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
     public void printSQL(ExpressionSQLPrinter printer) {
         ListExpressionOperator platformOperator = (ListExpressionOperator)getPlatformOperator(printer.getPlatform());
         platformOperator.copyTo(operator);
+        ((ListExpressionOperator)operator).setIsComplete(true);
         operator.printCollection(getChildren(), printer);
     }
+    
     
     @Override
     protected void postCopyIn(Map alreadyDone) {
@@ -103,5 +111,15 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
         super.postCopyIn(alreadyDone);
         hasLastChild = hasLastChildCopy;
     }
+    
+    /**
+     * INTERNAL:
+     */
+    public void initializePlatformOperator(DatabasePlatform platform) {
+        super.initializePlatformOperator(platform);
+        ((ListExpressionOperator)platformOperator).setNumberOfItems(((ListExpressionOperator)operator).getNumberOfItems());
+    }
+    
+    
 }
 

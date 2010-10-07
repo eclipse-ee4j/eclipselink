@@ -58,6 +58,7 @@ public class ClassConstants {
     public static final Class DirectConnector_Class = org.eclipse.persistence.sessions.DirectConnector.class;
     public static final Class Expression_Class = org.eclipse.persistence.expressions.Expression.class;
     public static final Class FunctionExpression_Class = org.eclipse.persistence.internal.expressions.FunctionExpression.class;
+    public static final Class ArgumentListFunctionExpression_Class = org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression.class;
     public static final Class IndirectContainer_Class = org.eclipse.persistence.indirection.IndirectContainer.class;
     public static final Class IndirectList_Class = org.eclipse.persistence.indirection.IndirectList.class;
     public static final Class IndirectMap_Class = org.eclipse.persistence.indirection.IndirectMap.class;

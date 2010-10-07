@@ -86,6 +86,7 @@ public class ExpressionOperator implements Serializable {
     public static final int Case = 117;
     public static final int NullIf = 131;
     public static final int Coalesce = 132;
+    public static final int CaseCondition = 136;
 
     /** Aggregate operators */
     public static final int Count = 19;
@@ -505,8 +506,31 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(Case);
         exOperator.bePrefix();
-        exOperator.setNodeClass(FunctionExpression.class);
+        exOperator.setNodeClass(ClassConstants.ArgumentListFunctionExpression_Class);
         exOperator.setIsBindingSupported(false);
+        exOperator.setStartString("CASE ");
+        exOperator.setSeparators(new String[]{" WHEN ", " THEN "});
+        exOperator.setTerminationStrings(new String[]{" ELSE ", " END"});
+        return exOperator;
+    }
+    
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     * Note: This operator works differently from other operators.
+     * @see Expression#caseStatement(Map, String)
+     */
+    public static ExpressionOperator caseConditionStatement() {
+        ListExpressionOperator exOperator = new ListExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(CaseCondition);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.ArgumentListFunctionExpression_Class);
+        exOperator.setIsBindingSupported(false);
+        exOperator.setStartStrings(new String[]{"CASE WHEN ", " THEN "});
+        exOperator.setSeparators(new String[]{" WHEN ", " THEN "});
+        exOperator.setTerminationStrings(new String[]{" ELSE ", " END "});
         return exOperator;
     }
 
@@ -1225,6 +1249,7 @@ public class ExpressionOperator implements Serializable {
         addOperator(notInSubQuery());
         addOperator(coalesce());
         addOperator(caseStatement());
+        addOperator(caseConditionStatement());
     }
 
     /**
@@ -1280,6 +1305,9 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put(Integer.valueOf(ToLowerCase), "ToLowerCase");
         platformOperatorNames.put(Integer.valueOf(Chr), "Chr");
         platformOperatorNames.put(Integer.valueOf(Concat), "Concat");
+        platformOperatorNames.put(Integer.valueOf(Coalesce), "Coalesce");
+        platformOperatorNames.put(Integer.valueOf(Case), "Case");
+        platformOperatorNames.put(Integer.valueOf(CaseCondition), "Case(codition)");
         platformOperatorNames.put(Integer.valueOf(HexToRaw), "HexToRaw");
         platformOperatorNames.put(Integer.valueOf(Initcap), "Initcap");
         platformOperatorNames.put(Integer.valueOf(Instring), "Instring");
@@ -1676,8 +1704,11 @@ public class ExpressionOperator implements Serializable {
      */
     protected Expression createNode() {
         // PERF: Avoid reflection for common cases.
-        if (this.nodeClass == ClassConstants.FunctionExpression_Class) {
+        if (this.nodeClass == ClassConstants.ArgumentListFunctionExpression_Class){
+            return new ArgumentListFunctionExpression();
+        } else if (this.nodeClass == ClassConstants.FunctionExpression_Class) {
             return new FunctionExpression();
+
         } else if (this.nodeClass == ClassConstants.RelationExpression_Class) {
             return new RelationExpression();
         } else if (this.nodeClass == ClassConstants.LogicalExpression_Class) {

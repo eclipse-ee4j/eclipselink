@@ -409,6 +409,7 @@ public class DatasourcePlatform implements Platform {
         
         addOperator(ExpressionOperator.coalesce());
         addOperator(ExpressionOperator.caseStatement());
+        addOperator(ExpressionOperator.caseConditionStatement());
     }
 
     public boolean isAccess() {

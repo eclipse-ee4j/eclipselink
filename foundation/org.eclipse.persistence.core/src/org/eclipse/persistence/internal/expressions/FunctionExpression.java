@@ -169,6 +169,7 @@ public class FunctionExpression extends BaseExpression {
      */
     public Expression create(Expression base, Vector arguments, ExpressionOperator anOperator) {
         baseExpression = base;
+        setOperator(anOperator);
         addChild(base);
         Expression localBase = base;
         if(anOperator.isFunctionOperator()) {
@@ -181,7 +182,6 @@ public class FunctionExpression extends BaseExpression {
             Expression arg = Expression.from(e.nextElement(), localBase);
             addChild(arg);
         }
-        setOperator(anOperator);
         return this;
     }
 

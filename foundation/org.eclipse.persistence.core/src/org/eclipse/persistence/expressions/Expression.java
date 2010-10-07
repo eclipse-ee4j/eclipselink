@@ -596,16 +596,6 @@ public abstract class Expression implements Serializable, Cloneable {
      * hashtable match
      */
     public Expression caseStatement(Map caseItems, Object defaultItem) {
-
-        /**
-         * case (like decode) works differently than most of the functionality in the expression
-         * framework. It takes a variable number of arguments and as a result, the printed strings
-         * for a case call have to be built when the number of arguments are known.
-         * As a result, we do not look up case in the ExpressionOperator.  Instead we build
-         * the whole operator here.  The side effect of this is that case will not throw
-         * an invalid operator exception for any platform.  (Even the ones that do not support
-         * case)
-         */
         FunctionExpression expression = caseStatement();
         expression.addChild(this);
         Iterator iterator = caseItems.keySet().iterator();
@@ -636,21 +626,15 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see ArgumentListFunctionExpression
      */
     public ArgumentListFunctionExpression caseStatement() {
-        ListExpressionOperator operator = new ListExpressionOperator();
-        operator.setSelector(ExpressionOperator.Case);
-        operator.setNodeClass(FunctionExpression.class);
-        operator.setType(ExpressionOperator.FunctionOperator);
-        operator.bePrefix();
-        operator.setIsBindingSupported(false);
-
-        operator.setStartString("CASE ");
-        operator.setSeparators(new String[]{" WHEN ", " THEN "});
-        operator.setTerminationStrings(new String[]{" ELSE ", " END"});
+        
+        ListExpressionOperator caseOperator = (ListExpressionOperator)getOperator(ExpressionOperator.Case);
+        ListExpressionOperator clonedCaseOperator = new ListExpressionOperator();
+        caseOperator.copyTo(clonedCaseOperator);
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
 
-        expression.setOperator(operator);
+        expression.setOperator(clonedCaseOperator);
         return expression;
     }
     
@@ -679,15 +663,6 @@ public abstract class Expression implements Serializable, Cloneable {
      * Map match
      */
     public Expression caseConditionStatement(Map<Expression, Object> caseConditions, Object defaultItem) {
-        /**
-         * case (like decode) works differently than most of the functionality in the expression
-         * framework. It takes a variable number of arguments and as a result, the printed strings
-         * for a case call have to be built when the number of arguments are known.
-         * As a result, we do not look up case in the ExpressionOperator.  Instead we build
-         * the whole operator here.  The side effect of this is that case will not throw
-         * an invalid operator exception for any platform.  (Even the ones that do not support
-         * case)
-         */
         FunctionExpression expression = caseConditionStatement();
         Iterator<Expression> iterator = caseConditions.keySet().iterator();
         if (iterator.hasNext()){
@@ -723,21 +698,14 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see ArgumentListFunctionExpression
      */
     public ArgumentListFunctionExpression caseConditionStatement() {
-        ListExpressionOperator operator = new ListExpressionOperator();
-        operator.setSelector(ExpressionOperator.Case);
-        operator.setNodeClass(FunctionExpression.class);
-        operator.setType(ExpressionOperator.FunctionOperator);
-        operator.bePrefix();
-        operator.setIsBindingSupported(false);
-
-        operator.setStartStrings(new String[]{"CASE WHEN ", " THEN "});
-        operator.setSeparators(new String[]{" WHEN ", " THEN "});
-        operator.setTerminationStrings(new String[]{" ELSE ", " END "});
+        ListExpressionOperator caseOperator = (ListExpressionOperator)getOperator(ExpressionOperator.CaseCondition);
+        ListExpressionOperator clonedCaseOperator = new ListExpressionOperator();
+        caseOperator.copyTo(clonedCaseOperator);
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
 
-        expression.setOperator(operator);
+        expression.setOperator(clonedCaseOperator);
         return expression;
     }
     
@@ -779,15 +747,6 @@ public abstract class Expression implements Serializable, Cloneable {
      * A Collection containing the items to check if null
      */
     public ArgumentListFunctionExpression coalesce(Collection expressions) {
-        /**
-         * coalesce (like decode) works differently than most of the functionality in the expression
-         * framework. It takes a variable number of arguments and as a result, the printed strings
-         * for a case call have to be built when the number of arguments are known.
-         * As a result, we do not look up case in the ExpressionOperator.  Instead we build
-         * the whole operator here.  The side effect of this is that case will not throw
-         * an invalid operator exception for any platform.  (Even the ones that do not support
-         * case)
-         */
         ArgumentListFunctionExpression expression = coalesce();
         Iterator iterator = expressions.iterator();
         if (iterator.hasNext()){
@@ -802,20 +761,14 @@ public abstract class Expression implements Serializable, Cloneable {
     }
     
     public ArgumentListFunctionExpression coalesce() {
-        ListExpressionOperator anOperator = new ListExpressionOperator();
-        anOperator.setSelector(ExpressionOperator.Coalesce);
-        anOperator.setNodeClass(FunctionExpression.class);
-        anOperator.setType(ExpressionOperator.FunctionOperator);
-        anOperator.bePrefix();
-
-        anOperator.setStartString("COALESCE(");
-        anOperator.setSeparator(",");
-        anOperator.setTerminationString(" )");
+        ListExpressionOperator coalesceOperator = (ListExpressionOperator)getOperator(ExpressionOperator.Coalesce);
+        ListExpressionOperator clonedCoalesceOperator = new ListExpressionOperator();
+        coalesceOperator.copyTo(clonedCoalesceOperator);
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
 
-        expression.setOperator(anOperator);
+        expression.setOperator(clonedCoalesceOperator);
         return expression;
     }
 

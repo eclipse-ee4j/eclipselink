@@ -38,6 +38,7 @@ public class ListExpressionOperator extends ExpressionOperator {
     protected String[] separators = null;
     protected String[] terminationStrings = null;
     protected int numberOfItems = 0;
+    protected boolean isComplete = false;
     
     public void copyTo(ExpressionOperator operator){
         super.copyTo(operator);
@@ -126,7 +127,13 @@ public class ListExpressionOperator extends ExpressionOperator {
         numberOfItems++;
     }
     
-    public boolean isComplete() {
-        return numberOfItems > 0;
+    public void setIsComplete(boolean isComplete){
+        this.isComplete = isComplete;
     }
+    
+    public boolean isComplete() {
+        return isComplete;
+    }
+    
+    
 }
