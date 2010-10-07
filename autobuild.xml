@@ -685,8 +685,6 @@
                 <include name="${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html"/>
             </zipfileset>
         </zip>
-        <copy todir="${test.result.dest.dir}" file="${basedir}/${test.result.zip}"  failonerror="false"/>
-        <delete file="${basedir}/${test.result.zip}" failonerror="false"/>
     </target>
 
 </project>
