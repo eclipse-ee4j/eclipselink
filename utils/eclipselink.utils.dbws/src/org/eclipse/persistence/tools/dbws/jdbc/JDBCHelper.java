@@ -414,7 +414,7 @@ public class JDBCHelper {
                         String actualSchemaName = procedureColumnsInfo.getString(PROC_COLS_INFO_SCHEMA);
                         String actualProcedureName = procedureColumnsInfo.getString(PROC_COLS_INFO_NAME);
                         String argName = procedureColumnsInfo.getString(PROC_COLS_INFO_COLNAME);
-                        // some MySql driver return empty string, some return null: set to emptyString regardless
+                        // some MySql drivers return empty string, some return null: set to emptyString regardless
                         if (argName == null) {
                             argName = "";
                         }
