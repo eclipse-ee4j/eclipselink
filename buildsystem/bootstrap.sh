@@ -577,10 +577,11 @@ then
             echo "   ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="${TEST_RESULT_ARCHIVE}" save-tst-results"
             if [ "${ORACLEBLD}" = "true" ]
             then
-                scp ${TEST_RESULT_ARCHIVE} build.eclipse.org:${FailedNFSDir}/.
+                scp ${BRANCH_PATH}/${TEST_RESULT_ARCHIVE} build.eclipse.org:${FailedNFSDir}/Ott-${TEST_RESULT_ARCHIVE}
             else
-                cp ${TEST_RESULT_ARCHIVE} ${FailedNFSDir}/.
-        fi
+                cp ${BRANCH_PATH}/${TEST_RESULT_ARCHIVE} ${FailedNFSDir}/.
+            fi
+            rm ${BRANCH_PATH}/${TEST_RESULT_ARCHIVE}
        fi
     fi
 
@@ -594,7 +595,7 @@ then
     then
         if [ "${ORACLEBLD}" = "true" ]
         then
-            scp ${DATED_LOG} build.eclipse.org:${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
+            scp ${DATED_LOG} build.eclipse.org:${FailedNFSDir}/${LOGPREFIX}_ott_${LOGFILE_NAME}
         else
             cp ${DATED_LOG} ${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
         fi
