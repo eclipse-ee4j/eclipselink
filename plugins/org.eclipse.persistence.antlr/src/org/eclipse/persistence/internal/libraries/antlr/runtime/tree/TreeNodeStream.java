@@ -1,6 +1,6 @@
 /*
 [The "BSD licence"]
-Copyright (c) 2005-2006 Terence Parr
+Copyright (c) 2005-2008 Terence Parr
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -76,6 +76,11 @@ public interface TreeNodeStream extends IntStream {
 	 */
 	public void setUniqueNavigationNodes(boolean uniqueNavigationNodes);
 
+    /** Reset the tree node stream in such a way that it acts like
+     *  a freshly constructed stream.
+     */
+    public void reset();
+
 	/** Return the text of all nodes from start to stop, inclusive.
 	 *  If the stream does not buffer all the nodes then it can still
 	 *  walk recursively from start until stop.  You can always return
@@ -83,5 +88,19 @@ public interface TreeNodeStream extends IntStream {
 	 *  an action of course in that case.
 	 */
 	public String toString(Object start, Object stop);
-}
 
+
+	// REWRITING TREES (used by tree parser)
+
+	/** Replace from start to stop child index of parent with t, which might
+	 *  be a list.  Number of children may be different
+	 *  after this call.  The stream is notified because it is walking the
+	 *  tree and might need to know you are monkeying with the underlying
+	 *  tree.  Also, it might be able to modify the node stream to avoid
+	 *  restreaming for future phases.
+	 *
+	 *  If parent is null, don't do anything; must be at root of overall tree.
+	 *  Can't replace whatever points to the parent externally.  Do nothing.
+	 */
+	public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t);
+}

@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,8 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
 
+import java.util.List;
+
 /** A record of the rules used to match a token sequence.  The tokens
  *  end up as the leaves of this tree and rule nodes are the interior nodes.
  *  This really adds no functionality, it is just an alias for CommonTree
@@ -36,6 +38,8 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
  */
 public class ParseTree extends BaseTree {
 	public Object payload;
+	public List hiddenTokens;
+
 	public ParseTree(Object label) {
 		this.payload = label;
 	}
@@ -75,5 +79,41 @@ public class ParseTree extends BaseTree {
 			return t.getText();
 		}
 		return payload.toString();
+	}
+
+	/** Emit a token and all hidden nodes before.  EOF node holds all
+	 *  hidden tokens after last real token.
+	 */
+	public String toStringWithHiddenTokens() {
+		StringBuffer buf = new StringBuffer();
+		if ( hiddenTokens!=null ) {
+			for (int i = 0; i < hiddenTokens.size(); i++) {
+				Token hidden = (Token) hiddenTokens.get(i);
+				buf.append(hidden.getText());
+			}
+		}
+		String nodeText = this.toString();
+		if ( !nodeText.equals("<EOF>") ) buf.append(nodeText);
+		return buf.toString();
+	}
+
+	/** Print out the leaves of this tree, which means printing original
+	 *  input back out.
+	 */
+	public String toInputString() {
+		StringBuffer buf = new StringBuffer();
+		_toStringLeaves(buf);
+		return buf.toString();
+	}
+
+	public void _toStringLeaves(StringBuffer buf) {
+		if ( payload instanceof Token ) { // leaf node token?
+			buf.append(this.toStringWithHiddenTokens());
+			return;
+		}
+		for (int i = 0; children!=null && i < children.size(); i++) {
+			ParseTree t = (ParseTree)children.get(i);
+			t._toStringLeaves(buf);
+		}
 	}
 }

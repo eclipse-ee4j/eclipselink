@@ -1,10 +1,69 @@
+/*
+ [The "BSD licence"]
+ Copyright (c) 2005-2008 Terence Parr
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 3. The name of the author may not be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
 
+import java.util.HashMap;
+import java.util.Map;
+
+/** A TreeAdaptor that works with any Tree implementation. */
 public abstract class BaseTreeAdaptor implements TreeAdaptor {
+	/** System.identityHashCode() is not always unique; we have to
+	 *  track ourselves.  That's ok, it's only for debugging, though it's
+	 *  expensive: we have to create a hashtable with all tree nodes in it.
+	 */
+	protected Map treeToUniqueIDMap;
+	protected int uniqueNodeID = 1;
+
 	public Object nil() {
 		return create(null);
+	}
+
+	/** create tree node that holds the start and stop tokens associated
+	 *  with an error.
+	 *
+	 *  If you specify your own kind of tree nodes, you will likely have to
+	 *  override this method. CommonTree returns Token.INVALID_TOKEN_TYPE
+	 *  if no token payload but you might have to set token type for diff
+	 *  node type.
+     *
+     *  You don't have to subclass CommonErrorNode; you will likely need to
+     *  subclass your own tree node class to avoid class cast exception.
+	 */
+	public Object errorNode(TokenStream input, Token start, Token stop,
+							RecognitionException e)
+	{
+		CommonErrorNode t = new CommonErrorNode(input, start, stop, e);
+		//System.out.println("returning error node '"+t+"' @index="+input.index());
+		return t;
 	}
 
 	public boolean isNil(Object tree) {
@@ -12,7 +71,28 @@ public abstract class BaseTreeAdaptor implements TreeAdaptor {
 	}
 
 	public Object dupTree(Object tree) {
-		return ((Tree)tree).dupTree();
+		return dupTree(tree, null);
+	}
+
+	/** This is generic in the sense that it will work with any kind of
+	 *  tree (not just Tree interface).  It invokes the adaptor routines
+	 *  not the tree node routines to do the construction.  
+	 */
+	public Object dupTree(Object t, Object parent) {
+		if ( t==null ) {
+			return null;
+		}
+		Object newTree = dupNode(t);
+		// ensure new subtree root has parent/child index set
+		setChildIndex(newTree, getChildIndex(t)); // same index in new tree
+		setParent(newTree, parent);
+		int n = getChildCount(t);
+		for (int i = 0; i < n; i++) {
+			Object child = getChild(t, i);
+			Object newSubTree = dupTree(child, t);
+			addChild(newTree, newSubTree);
+		}
+		return newTree;
 	}
 
 	/** Add a child to the tree t.  If child is a flat tree (a list), make all
@@ -23,7 +103,7 @@ public abstract class BaseTreeAdaptor implements TreeAdaptor {
 	 *  ASTs.
 	 */
 	public void addChild(Object t, Object child) {
-		if ( t!=null ) {
+		if ( t!=null && child!=null ) {
 			((Tree)t).addChild((Tree)child);
 		}
 	}
@@ -55,19 +135,21 @@ public abstract class BaseTreeAdaptor implements TreeAdaptor {
 	 *  efficiency.
 	 */
 	public Object becomeRoot(Object newRoot, Object oldRoot) {
-		Tree newRootTree = (Tree)newRoot;
+        //System.out.println("becomeroot new "+newRoot.toString()+" old "+oldRoot);
+        Tree newRootTree = (Tree)newRoot;
 		Tree oldRootTree = (Tree)oldRoot;
 		if ( oldRoot==null ) {
 			return newRoot;
 		}
 		// handle ^(nil real-node)
 		if ( newRootTree.isNil() ) {
-			if ( newRootTree.getChildCount()>1 ) {
+            int nc = newRootTree.getChildCount();
+            if ( nc==1 ) newRootTree = (Tree)newRootTree.getChild(0);
+            else if ( nc >1 ) {
 				// TODO: make tree run time exceptions hierarchy
 				throw new RuntimeException("more than one node as root (TODO: make exception hierarchy)");
 			}
-			newRootTree = (Tree)newRootTree.getChild(0);
-		}
+        }
 		// add oldRoot to newRoot; addChild takes care of case where oldRoot
 		// is a flat list (i.e., nil-rooted tree).  All children of oldRoot
 		// are added to newRoot.
@@ -75,11 +157,20 @@ public abstract class BaseTreeAdaptor implements TreeAdaptor {
 		return newRootTree;
 	}
 
-	/** Transform ^(nil x) to x */
+	/** Transform ^(nil x) to x and nil to null */
 	public Object rulePostProcessing(Object root) {
+		//System.out.println("rulePostProcessing: "+((Tree)root).toStringTree());
 		Tree r = (Tree)root;
-		if ( r!=null && r.isNil() && r.getChildCount()==1 ) {
-			r = (Tree)r.getChild(0);
+		if ( r!=null && r.isNil() ) {
+			if ( r.getChildCount()==0 ) {
+				r = null;
+			}
+			else if ( r.getChildCount()==1 ) {
+				r = (Tree)r.getChild(0);
+				// whoever invokes rule will set parent and child index
+				r.setParent(null);
+				r.setChildIndex(-1);
+			}
 		}
 		return r;
 	}
@@ -111,8 +202,7 @@ public abstract class BaseTreeAdaptor implements TreeAdaptor {
 	}
 
 	public int getType(Object t) {
-		((Tree)t).getType();
-		return 0;
+		return ((Tree)t).getType();
 	}
 
 	public void setType(Object t, int type) {
@@ -131,12 +221,32 @@ public abstract class BaseTreeAdaptor implements TreeAdaptor {
 		return ((Tree)t).getChild(i);
 	}
 
+	public void setChild(Object t, int i, Object child) {
+		((Tree)t).setChild(i, (Tree)child);
+	}
+
+	public Object deleteChild(Object t, int i) {
+		return ((Tree)t).deleteChild(i);
+	}
+
 	public int getChildCount(Object t) {
 		return ((Tree)t).getChildCount();
 	}
 
 	public int getUniqueID(Object node) {
-		return System.identityHashCode(node);
+		if ( treeToUniqueIDMap==null ) {
+			 treeToUniqueIDMap = new HashMap();
+		}
+		Integer prevID = (Integer)treeToUniqueIDMap.get(node);
+		if ( prevID!=null ) {
+			return prevID.intValue();
+		}
+		int ID = uniqueNodeID;
+		treeToUniqueIDMap.put(node, new Integer(ID));
+		uniqueNodeID++;
+		return ID;
+		// GC makes these nonunique:
+		// return System.identityHashCode(node);
 	}
 
 	/** Tell me how to create a token for use with imaginary token nodes.

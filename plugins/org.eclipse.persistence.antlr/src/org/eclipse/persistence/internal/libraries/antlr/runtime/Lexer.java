@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -34,40 +34,7 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
  */
 public abstract class Lexer extends BaseRecognizer implements TokenSource {
 	/** Where is the lexer drawing characters from? */
-    protected CharStream input;
-
-	/** The goal of all lexer rules/methods is to create a token object.
-	 *  This is an instance variable as multiple rules may collaborate to
-	 *  create a single token.  nextToken will return this object after
-	 *  matching lexer rule(s).  If you subclass to allow multiple token
-	 *  emissions, then set this to the last token to be matched or
-	 *  something nonnull so that the auto token emit mechanism will not
-	 *  emit another token.
-	 */
-    protected Token token;
-
-	/** What character index in the stream did the current token start at?
-	 *  Needed, for example, to get the text for current token.  Set at
-	 *  the start of nextToken.
- 	 */
-	protected int tokenStartCharIndex = -1;
-
-	/** The line on which the first character of the token resides */
-	protected int tokenStartLine;
-
-	/** The character position of first character within the line */
-	protected int tokenStartCharPositionInLine;
-
-	/** The channel number for the current token */
-	protected int channel;
-
-	/** The token type for the current token */
-	protected int type;
-
-	/** You can set the text for the current token to override what is in
-	 *  the input char buffer.  Use setText() or can set this instance var.
- 	 */
-	protected String text;
+	protected CharStream input;
 
 	public Lexer() {
 	}
@@ -76,51 +43,63 @@ public abstract class Lexer extends BaseRecognizer implements TokenSource {
 		this.input = input;
 	}
 
+	public Lexer(CharStream input, RecognizerSharedState state) {
+		super(state);
+		this.input = input;
+	}
+
 	public void reset() {
 		super.reset(); // reset all recognizer state variables
 		// wack Lexer state variables
-		token = null;
-		type = Token.INVALID_TOKEN_TYPE;
-		channel = Token.DEFAULT_CHANNEL;
-		tokenStartCharIndex = -1;
-		tokenStartCharPositionInLine = -1;
-		tokenStartLine = -1;
-		text = null;
 		if ( input!=null ) {
 			input.seek(0); // rewind the input
 		}
+		if ( state==null ) {
+			return; // no shared state work to do
+		}
+		state.token = null;
+		state.type = Token.INVALID_TOKEN_TYPE;
+		state.channel = Token.DEFAULT_CHANNEL;
+		state.tokenStartCharIndex = -1;
+		state.tokenStartCharPositionInLine = -1;
+		state.tokenStartLine = -1;
+		state.text = null;
 	}
 
 	/** Return a token from this source; i.e., match a token on the char
 	 *  stream.
 	 */
-    public Token nextToken() {
+	public Token nextToken() {
 		while (true) {
-			token = null;
-			channel = Token.DEFAULT_CHANNEL;
-			tokenStartCharIndex = input.index();
-			tokenStartCharPositionInLine = input.getCharPositionInLine();
-			tokenStartLine = input.getLine();
-			text = null;
+			state.token = null;
+			state.channel = Token.DEFAULT_CHANNEL;
+			state.tokenStartCharIndex = input.index();
+			state.tokenStartCharPositionInLine = input.getCharPositionInLine();
+			state.tokenStartLine = input.getLine();
+			state.text = null;
 			if ( input.LA(1)==CharStream.EOF ) {
-                return Token.EOF_TOKEN;
-            }
-            try {
-                mTokens();
-				if ( token==null ) {
+				return Token.EOF_TOKEN;
+			}
+			try {
+				mTokens();
+				if ( state.token==null ) {
 					emit();
 				}
-				else if ( token==Token.SKIP_TOKEN ) {
+				else if ( state.token==Token.SKIP_TOKEN ) {
 					continue;
 				}
-				return token;
+				return state.token;
 			}
-            catch (RecognitionException re) {
-                reportError(re);
-                recover(re);
-            }
-        }
-    }
+			catch (NoViableAltException nva) {
+				reportError(nva);
+				recover(nva); // throw out current char and try again
+			}
+			catch (RecognitionException re) {
+				reportError(re);
+				// match() routine has already called recover()
+			}
+		}
+	}
 
 	/** Instruct the lexer to skip creating a token for current lexer rule
 	 *  and look for another token.  nextToken() knows to keep looking when
@@ -129,7 +108,7 @@ public abstract class Lexer extends BaseRecognizer implements TokenSource {
 	 *  and emits it.
 	 */
 	public void skip() {
-		token = Token.SKIP_TOKEN;
+		state.token = Token.SKIP_TOKEN;
 	}
 
 	/** This is the lexer entry point that sets instance var 'token' */
@@ -142,13 +121,21 @@ public abstract class Lexer extends BaseRecognizer implements TokenSource {
 		this.input = input;
 	}
 
+	public CharStream getCharStream() {
+		return this.input;
+	}
+
+	public String getSourceName() {
+		return input.getSourceName();
+	}
+
 	/** Currently does not support multiple emits per nextToken invocation
 	 *  for efficiency reasons.  Subclass and override this method and
 	 *  nextToken (to push tokens into a list and pull from that list rather
 	 *  than a single variable as this implementation does).
 	 */
 	public void emit(Token token) {
-		this.token = token;
+		state.token = token;
 	}
 
 	/** The standard method called to automatically emit a token at the
@@ -156,78 +143,81 @@ public abstract class Lexer extends BaseRecognizer implements TokenSource {
 	 *  char buffer start..stop.  If there is a text override in 'text',
 	 *  use that to set the token's text.  Override this method to emit
 	 *  custom Token objects.
+	 *
+	 *  If you are building trees, then you should also override
+	 *  Parser or TreeParser.getMissingSymbol().
 	 */
 	public Token emit() {
-		Token t = new CommonToken(input, type, channel, tokenStartCharIndex, getCharIndex()-1);
-		t.setLine(tokenStartLine);
-		t.setText(text);
-		t.setCharPositionInLine(tokenStartCharPositionInLine);
+		Token t = new CommonToken(input, state.type, state.channel, state.tokenStartCharIndex, getCharIndex()-1);
+		t.setLine(state.tokenStartLine);
+		t.setText(state.text);
+		t.setCharPositionInLine(state.tokenStartCharPositionInLine);
 		emit(t);
 		return t;
 	}
 
 	public void match(String s) throws MismatchedTokenException {
-        int i = 0;
-        while ( i<s.length() ) {
-            if ( input.LA(1)!=s.charAt(i) ) {
-				if ( backtracking>0 ) {
-					failed = true;
+		int i = 0;
+		while ( i<s.length() ) {
+			if ( input.LA(1)!=s.charAt(i) ) {
+				if ( state.backtracking>0 ) {
+					state.failed = true;
 					return;
 				}
 				MismatchedTokenException mte =
 					new MismatchedTokenException(s.charAt(i), input);
 				recover(mte);
 				throw mte;
-            }
-            i++;
-            input.consume();
-			failed = false;
-        }
-    }
+			}
+			i++;
+			input.consume();
+			state.failed = false;
+		}
+	}
 
-    public void matchAny() {
-        input.consume();
-    }
+	public void matchAny() {
+		input.consume();
+	}
 
-    public void match(int c) throws MismatchedTokenException {
-        if ( input.LA(1)!=c ) {
-			if ( backtracking>0 ) {
-				failed = true;
+	public void match(int c) throws MismatchedTokenException {
+		if ( input.LA(1)!=c ) {
+			if ( state.backtracking>0 ) {
+				state.failed = true;
 				return;
 			}
 			MismatchedTokenException mte =
 				new MismatchedTokenException(c, input);
-			recover(mte);
+			recover(mte);  // don't really recover; just consume in lexer
 			throw mte;
-        }
-        input.consume();
-		failed = false;
-    }
+		}
+		input.consume();
+		state.failed = false;
+	}
 
-    public void matchRange(int a, int b)
+	public void matchRange(int a, int b)
 		throws MismatchedRangeException
 	{
-        if ( input.LA(1)<a || input.LA(1)>b ) {
-			if ( backtracking>0 ) {
-				failed = true;
+		if ( input.LA(1)<a || input.LA(1)>b ) {
+			if ( state.backtracking>0 ) {
+				state.failed = true;
 				return;
 			}
-            MismatchedRangeException mre =
+			MismatchedRangeException mre =
 				new MismatchedRangeException(a,b,input);
 			recover(mre);
 			throw mre;
-        }
-        input.consume();
-		failed = false;
-    }
+		}
+		input.consume();
+		state.failed = false;
+	}
 
-    public int getLine() {
-        return input.getLine();
-    }
+	public int getLine() {
+		return input.getLine();
+	}
 
-    public int getCharPositionInLine() {
-        return input.getCharPositionInLine();
-    }
+	public int getCharPositionInLine() {
+		return input.getCharPositionInLine();
+	}
 
 	/** What is the index of the current character of lookahead? */
 	public int getCharIndex() {
@@ -238,17 +228,17 @@ public abstract class Lexer extends BaseRecognizer implements TokenSource {
 	 *  text override.
 	 */
 	public String getText() {
-		if ( text!=null ) {
-			return text;
+		if ( state.text!=null ) {
+			return state.text;
 		}
-		return input.substring(tokenStartCharIndex,getCharIndex()-1);
+		return input.substring(state.tokenStartCharIndex,getCharIndex()-1);
 	}
 
 	/** Set the complete text of this token; it wipes any previous
 	 *  changes to the text.
 	 */
 	public void setText(String text) {
-		this.text = text;
+		state.text = text;
 	}
 
 	public void reportError(RecognitionException e) {
@@ -284,18 +274,18 @@ public abstract class Lexer extends BaseRecognizer implements TokenSource {
 			// for development, can add "(decision="+eee.decisionNumber+")"
 			msg = "required (...)+ loop did not match anything at character "+getCharErrorDisplay(e.c);
 		}
-		else if ( e instanceof MismatchedSetException ) {
-			MismatchedSetException mse = (MismatchedSetException)e;
-			msg = "mismatched character "+getCharErrorDisplay(e.c)+" expecting set "+mse.expecting;
-		}
 		else if ( e instanceof MismatchedNotSetException ) {
 			MismatchedNotSetException mse = (MismatchedNotSetException)e;
+			msg = "mismatched character "+getCharErrorDisplay(e.c)+" expecting set "+mse.expecting;
+		}
+		else if ( e instanceof MismatchedSetException ) {
+			MismatchedSetException mse = (MismatchedSetException)e;
 			msg = "mismatched character "+getCharErrorDisplay(e.c)+" expecting set "+mse.expecting;
 		}
 		else if ( e instanceof MismatchedRangeException ) {
 			MismatchedRangeException mre = (MismatchedRangeException)e;
 			msg = "mismatched character "+getCharErrorDisplay(e.c)+" expecting set "+
-				getCharErrorDisplay(mre.a)+".."+getCharErrorDisplay(mre.b);
+				  getCharErrorDisplay(mre.a)+".."+getCharErrorDisplay(mre.b);
 		}
 		else {
 			msg = super.getErrorMessage(e, tokenNames);

@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -60,25 +60,32 @@ public interface Token {
 	public static final int HIDDEN_CHANNEL = 99;
 
 	/** Get the text of the token */
-	public abstract String getText();
-	public abstract void setText(String text);
+	public String getText();
+	public void setText(String text);
 
-	public abstract int getType();
-	public abstract void setType(int ttype);
+	public int getType();
+	public void setType(int ttype);
 	/**  The line number on which this token was matched; line=1..n */
-	public abstract int getLine();
-    public abstract void setLine(int line);
+	public int getLine();
+    public void setLine(int line);
 
 	/** The index of the first character relative to the beginning of the line 0..n-1 */
-	public abstract int getCharPositionInLine();
-	public abstract void setCharPositionInLine(int pos);
+	public int getCharPositionInLine();
+	public void setCharPositionInLine(int pos);
 
-	public abstract int getChannel();
-	public abstract void setChannel(int channel);
+	public int getChannel();
+	public void setChannel(int channel);
 
 	/** An index from 0..n-1 of the token object in the input stream.
 	 *  This must be valid in order to use the ANTLRWorks debugger.
 	 */
-	public abstract int getTokenIndex();
-	public abstract void setTokenIndex(int index);
+	public int getTokenIndex();
+	public void setTokenIndex(int index);
+
+	/** From what character stream was this token created?  You don't have to
+	 *  implement but it's nice to know where a Token comes from if you have
+	 *  include files etc... on the input.
+	 */
+	public CharStream getInputStream();
+	public void setInputStream(CharStream input);
 }

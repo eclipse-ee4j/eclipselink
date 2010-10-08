@@ -29,8 +29,8 @@ public class CaseInsensitiveJPQLLexer extends JPQLLexer {
         	int currentChar = Character.toLowerCase(input.LA(1));
         	int stringChar = Character.toLowerCase(s.charAt(i));
             if ( currentChar != stringChar ) {
-				if ( backtracking>0 ) {
-					failed = true;
+				if ( state.backtracking>0 ) {
+					state.failed = true;
 					return;
 				}
 				MismatchedTokenException mte =
@@ -40,7 +40,7 @@ public class CaseInsensitiveJPQLLexer extends JPQLLexer {
             }
             i++;
             input.consume();
-			failed = false;
+            state.failed = false;
         }
     }
 
@@ -48,8 +48,8 @@ public class CaseInsensitiveJPQLLexer extends JPQLLexer {
     	int currentChar = Character.toLowerCase(input.LA(1));
     	int stringChar = Character.toLowerCase(c);
         if ( currentChar != stringChar ) {
-			if ( backtracking>0 ) {
-				failed = true;
+			if ( state.backtracking>0 ) {
+			    state.failed = true;
 				return;
 			}
 			MismatchedTokenException mte =
@@ -58,7 +58,7 @@ public class CaseInsensitiveJPQLLexer extends JPQLLexer {
 			throw mte;
         }
         input.consume();
-		failed = false;
+        state.failed = false;
     }
 
     public void matchRange(int a, int b)
@@ -68,8 +68,8 @@ public class CaseInsensitiveJPQLLexer extends JPQLLexer {
     	int aChar = Character.toLowerCase(a);
     	int bChar = Character.toLowerCase(b);
         if ( currentChar<aChar || currentChar>bChar ) {
-			if ( backtracking>0 ) {
-				failed = true;
+			if ( state.backtracking>0 ) {
+				state.failed = true;
 				return;
 			}
             MismatchedRangeException mre =
@@ -78,6 +78,6 @@ public class CaseInsensitiveJPQLLexer extends JPQLLexer {
 			throw mre;
         }
         input.consume();
-		failed = false;
+		state.failed = false;
     }
 }

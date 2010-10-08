@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,16 @@ public abstract class RewriteRuleElementStream {
 	/** The list of tokens or subtrees we are tracking */
 	protected List elements;
 
+	/** Once a node / subtree has been used in a stream, it must be dup'd
+	 *  from then on.  Streams are reset after subrules so that the streams
+	 *  can be reused in future subrules.  So, reset must set a dirty bit.
+	 *  If dirty, then next() always returns a dup.
+	 *
+	 *  I wanted to use "naughty bit" here, but couldn't think of a way
+	 *  to use "naughty".
+	 */
+	protected boolean dirty = false;
+
 	/** The element or stream description; usually has name of the token or
 	 *  rule reference that this list tracks.  Can include rulename too, but
 	 *  the exception would track that info.
@@ -91,9 +101,12 @@ public abstract class RewriteRuleElementStream {
 
 	/** Reset the condition of this stream so that it appears we have
 	 *  not consumed any of its elements.  Elements themselves are untouched.
+	 *  Once we reset the stream, any future use will need duplicates.  Set
+	 *  the dirty bit.
 	 */
 	public void reset() {
 		cursor = 0;
+		dirty = true;
 	}
 
 	public void add(Object el) {
@@ -119,10 +132,11 @@ public abstract class RewriteRuleElementStream {
 	/** Return the next element in the stream.  If out of elements, throw
 	 *  an exception unless size()==1.  If size is 1, then return elements[0].
 	 *  Return a duplicate node/subtree if stream is out of elements and
-	 *  size==1.
+	 *  size==1.  If we've already used the element, dup (dirty bit set).
 	 */
-	public Object next() {
-		if ( cursor>=size() && size()==1 ) {
+	public Object nextTree() {
+		int n = size();
+		if ( dirty || (cursor>=n && n==1) ) {
 			// if out of elements and size is 1, dup
 			Object el = _next();
 			return dup(el);
@@ -139,12 +153,13 @@ public abstract class RewriteRuleElementStream {
 	 *  protected so you can override in a subclass if necessary.
 	 */
 	protected Object _next() {
-		if ( size()==0 ) {
+		int n = size();
+		if ( n ==0 ) {
 			throw new RewriteEmptyStreamException(elementDescription);
 		}
-		if ( cursor>=size() ) { // out of elements?
-			if ( size()==1 ) {  // if size is 1, it's ok; return and we'll dup 
-				return singleElement;
+		if ( cursor>= n) { // out of elements?
+			if ( n ==1 ) {  // if size is 1, it's ok; return and we'll dup
+				return toTree(singleElement);
 			}
 			// out of elements and size was not 1, so we can't dup
 			throw new RewriteCardinalityException(elementDescription);
@@ -162,7 +177,8 @@ public abstract class RewriteRuleElementStream {
 
 	/** When constructing trees, sometimes we need to dup a token or AST
 	 * 	subtree.  Dup'ing a token means just creating another AST node
-	 *  around it.  For trees, you must call the adaptor.dupTree().
+	 *  around it.  For trees, you must call the adaptor.dupTree() unless
+	 *  the element is for a tree root; then it must be a node dup.
 	 */
 	protected abstract Object dup(Object el);
 

@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@ public class CommonToken implements Token, Serializable {
 	protected int charPositionInLine = -1; // set to invalid position
 	protected int channel=DEFAULT_CHANNEL;
 	protected transient CharStream input;
+
 	/** We need to be able to change the text once in a while.  If
 	 *  this is non-null, then getText should return this.  Note that
 	 *  start/stop are not affected by changing this.
@@ -75,6 +76,10 @@ public class CommonToken implements Token, Serializable {
 		index = oldToken.getTokenIndex();
 		charPositionInLine = oldToken.getCharPositionInLine();
 		channel = oldToken.getChannel();
+		if ( oldToken instanceof CommonToken ) {
+			start = ((CommonToken)oldToken).start;
+			stop = ((CommonToken)oldToken).stop;
+		}
 	}
 
 	public int getType() {
@@ -151,6 +156,14 @@ public class CommonToken implements Token, Serializable {
 
 	public void setTokenIndex(int index) {
 		this.index = index;
+	}
+
+	public CharStream getInputStream() {
+		return input;
+	}
+
+	public void setInputStream(CharStream input) {
+		this.input = input;
 	}
 
 	public String toString() {

@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,8 @@
 package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
 
 /** How to create and navigate trees.  Rather than have a separate factory
  *  and adaptor, I've merged them.  Makes sense to encapsulate.
@@ -44,14 +46,18 @@ public interface TreeAdaptor {
 	/** Create a tree node from Token object; for CommonTree type trees,
 	 *  then the token just becomes the payload.  This is the most
 	 *  common create call.
-     */
+	 *
+	 *  Override if you want another kind of node to be built.
+	 */
 	public Object create(Token payload);
+
+	/** Duplicate a single tree node.
+	 *  Override if you want another kind of node to be built.
+	 */
+	public Object dupNode(Object treeNode);
 
 	/** Duplicate tree recursively, using dupNode() for each node */
 	public Object dupTree(Object tree);
-
-	/** Duplicate a single tree node */
-	public Object dupNode(Object treeNode);
 
 	/** Return a nil node (an empty but non-null node) that can hold
 	 *  a list of element as the children.  If you want a flat tree (a list)
@@ -59,7 +65,23 @@ public interface TreeAdaptor {
 	 */
 	public Object nil();
 
-	/** Is tree considered a nil node used to make lists of child nodes? */ 
+	/** Return a tree node representing an error.  This node records the
+	 *  tokens consumed during error recovery.  The start token indicates the
+	 *  input symbol at which the error was detected.  The stop token indicates
+	 *  the last symbol consumed during recovery.
+	 *
+	 *  You must specify the input stream so that the erroneous text can
+	 *  be packaged up in the error node.  The exception could be useful
+	 *  to some applications; default implementation stores ptr to it in
+	 *  the CommonErrorNode.
+	 *
+	 *  This only makes sense during token parsing, not tree parsing.
+	 *  Tree parsing should happen only when parsing and tree construction
+	 *  succeed.
+	 */
+	public Object errorNode(TokenStream input, Token start, Token stop, RecognitionException e);
+
+	/** Is tree considered a nil node used to make lists of child nodes? */
 	public boolean isNil(Object tree);
 
 	/** Add a child to the tree t.  If child is a flat tree (a list), make all
@@ -67,7 +89,7 @@ public interface TreeAdaptor {
 	 *  and child isNil then you can decide it is ok to move children to t via
 	 *  t.children = child.children; i.e., without copying the array.  Just
 	 *  make sure that this is consistent with have the user will build
-	 *  ASTs.
+	 *  ASTs.  Do nothing if t or child is null.
 	 */
 	public void addChild(Object t, Object child);
 
@@ -207,6 +229,35 @@ public interface TreeAdaptor {
 	/** Get a child 0..n-1 node */
 	public Object getChild(Object t, int i);
 
+	/** Set ith child (0..n-1) to t; t must be non-null and non-nil node */
+	public void setChild(Object t, int i, Object child);
+
+	/** Remove ith child and shift children down from right. */
+	public Object deleteChild(Object t, int i);
+
 	/** How many children?  If 0, then this is a leaf node */
 	public int getChildCount(Object t);
+
+	/** Who is the parent node of this node; if null, implies node is root.
+	 *  If your node type doesn't handle this, it's ok but the tree rewrites
+	 *  in tree parsers need this functionality.
+	 */
+	public Object getParent(Object t);
+	public void setParent(Object t, Object parent);
+
+	/** What index is this node in the child list? Range: 0..n-1
+	 *  If your node type doesn't handle this, it's ok but the tree rewrites
+	 *  in tree parsers need this functionality.
+	 */
+	public int getChildIndex(Object t);
+	public void setChildIndex(Object t, int index);
+
+	/** Replace from start to stop child index of parent with t, which might
+	 *  be a list.  Number of children may be different
+	 *  after this call.
+	 *
+	 *  If parent is null, don't do anything; must be at root of overall tree.
+	 *  Can't replace whatever points to the parent externally.  Do nothing.
+	 */
+	public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t);
 }

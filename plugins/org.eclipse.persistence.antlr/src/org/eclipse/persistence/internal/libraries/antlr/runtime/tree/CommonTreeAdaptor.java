@@ -1,3 +1,30 @@
+/*
+ [The "BSD licence"]
+ Copyright (c) 2005-2008 Terence Parr
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 3. The name of the author may not be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.CommonToken;
@@ -10,7 +37,8 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
  *  use your subclass.
  *
  *  To get your parser to build nodes of a different type, override
- *  create(Token).
+ *  create(Token), errorNode(), and to be safe, YourTreeClass.dupNode().
+ *  dupNode is called to duplicate nodes during rewrite operations.
  */
 public class CommonTreeAdaptor extends BaseTreeAdaptor {
 	/** Duplicate a node.  This is part of the factory;
@@ -19,8 +47,9 @@ public class CommonTreeAdaptor extends BaseTreeAdaptor {
 	 *  I could use reflection to prevent having to override this
 	 *  but reflection is slow.
 	 */
-	public Object dupNode(Object treeNode) {
-		return ((Tree)treeNode).dupNode();
+	public Object dupNode(Object t) {
+		if ( t==null ) return null;
+		return ((Tree)t).dupNode();
 	}
 
 	public Object create(Token payload) {
@@ -63,37 +92,32 @@ public class CommonTreeAdaptor extends BaseTreeAdaptor {
 	 *  Might be useful info so I'll not force to be i..i.
 	 */
 	public void setTokenBoundaries(Object t, Token startToken, Token stopToken) {
-		if ( t==null ) {
-			return;
-		}
+		if ( t==null ) return;
 		int start = 0;
 		int stop = 0;
-		if ( startToken!=null ) {
-			start = startToken.getTokenIndex();
-		}
-		if ( stopToken!=null ) {
-			stop = stopToken.getTokenIndex();
-		}
+		if ( startToken!=null ) start = startToken.getTokenIndex();
+		if ( stopToken!=null ) stop = stopToken.getTokenIndex();
 		((Tree)t).setTokenStartIndex(start);
 		((Tree)t).setTokenStopIndex(stop);
 	}
 
 	public int getTokenStartIndex(Object t) {
+		if ( t==null ) return -1;
 		return ((Tree)t).getTokenStartIndex();
 	}
 
 	public int getTokenStopIndex(Object t) {
+		if ( t==null ) return -1;
 		return ((Tree)t).getTokenStopIndex();
 	}
 
 	public String getText(Object t) {
+		if ( t==null ) return null;
 		return ((Tree)t).getText();
 	}
 
     public int getType(Object t) {
-		if ( t==null ) {
-			return Token.INVALID_TOKEN_TYPE;
-		}
+		if ( t==null ) return Token.INVALID_TOKEN_TYPE;
 		return ((Tree)t).getType();
 	}
 
@@ -109,11 +133,36 @@ public class CommonTreeAdaptor extends BaseTreeAdaptor {
 	}
 
 	public Object getChild(Object t, int i) {
+		if ( t==null ) return null;
         return ((Tree)t).getChild(i);
     }
 
     public int getChildCount(Object t) {
+		if ( t==null ) return 0;
         return ((Tree)t).getChildCount();
     }
 
+	public Object getParent(Object t) {
+		if ( t==null ) return null;
+        return ((Tree)t).getParent();
+	}
+
+	public void setParent(Object t, Object parent) {
+        if ( t!=null ) ((Tree)t).setParent((Tree)parent);
+	}
+
+	public int getChildIndex(Object t) {
+        if ( t==null ) return 0;
+		return ((Tree)t).getChildIndex();
+	}
+
+	public void setChildIndex(Object t, int index) {
+        if ( t!=null ) ((Tree)t).setChildIndex(index);
+	}
+
+	public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
+		if ( parent!=null ) {
+			((Tree)parent).replaceChildren(startChildIndex, stopChildIndex, t);
+		}
+	}
 }

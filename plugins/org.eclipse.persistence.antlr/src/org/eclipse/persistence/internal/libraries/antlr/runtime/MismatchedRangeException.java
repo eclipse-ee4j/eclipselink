@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,9 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 public class MismatchedRangeException extends RecognitionException {
 	public int a,b;
+
+	/** Used for remote debugger deserialization */
+	public MismatchedRangeException() {;}
 
 	public MismatchedRangeException(int a, int b, IntStream input) {
 		super(input);

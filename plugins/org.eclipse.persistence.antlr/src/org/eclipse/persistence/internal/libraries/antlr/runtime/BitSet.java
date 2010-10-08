@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,7 @@ public class BitSet implements Cloneable {
 
 	/** Construction from a list of integers */
 	public BitSet(List items) {
+		this();
 		for (int i = 0; i < items.size(); i++) {
 			Integer v = (Integer) items.get(i);
 			add(v.intValue());

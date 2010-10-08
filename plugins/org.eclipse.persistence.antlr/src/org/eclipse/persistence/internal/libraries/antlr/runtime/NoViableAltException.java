@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,11 @@ public class NoViableAltException extends RecognitionException {
 	}
 
 	public String toString() {
-		return "NoViableAltException("+getUnexpectedType()+"!=["+grammarDecisionDescription+"])";
+		if ( input instanceof CharStream ) {
+			return "NoViableAltException('"+(char)getUnexpectedType()+"'@["+grammarDecisionDescription+"])";
+		}
+		else {
+			return "NoViableAltException("+getUnexpectedType()+"@["+grammarDecisionDescription+"])";
+		}
 	}
 }

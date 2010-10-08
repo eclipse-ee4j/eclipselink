@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -29,21 +29,34 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
 
-/** A tree node that is wrapper for a Token object. */
+/** A tree node that is wrapper for a Token object.  After 3.0 release
+ *  while building tree rewrite stuff, it became clear that computing
+ *  parent and child index is very difficult and cumbersome.  Better to
+ *  spend the space in every tree node.  If you don't want these extra
+ *  fields, it's easy to cut them out in your own BaseTree subclass.
+ */
 public class CommonTree extends BaseTree {
+	/** A single token is the payload */
+	public Token token;
+
 	/** What token indexes bracket all tokens associated with this node
 	 *  and below?
 	 */
-	public int startIndex=-1, stopIndex=-1;
+	protected int startIndex=-1, stopIndex=-1;
 
-	/** A single token is the payload */
-	public Token token;
+	/** Who is the parent node of this node; if null, implies node is root */
+	public CommonTree parent;
+
+	/** What index is this node in the child list? Range: 0..n-1 */
+	public int childIndex = -1;
 
 	public CommonTree() { }
 	
 	public CommonTree(CommonTree node) {
 		super(node);
 		this.token = node.token;
+		this.startIndex = node.startIndex;
+		this.stopIndex = node.stopIndex;
 	}
 
 	public CommonTree(Token t) {
@@ -64,13 +77,16 @@ public class CommonTree extends BaseTree {
 
 	public int getType() {
 		if ( token==null ) {
-			return 0;
+			return Token.INVALID_TOKEN_TYPE;
 		}
 		return token.getType();
 	}
 
 	public String getText() {
-		return toString();
+		if ( token==null ) {
+			return null;
+		}
+		return token.getText();
 	}
 
 	public int getLine() {
@@ -115,9 +131,54 @@ public class CommonTree extends BaseTree {
 		stopIndex = index;
 	}
 
+    /** For every node in this subtree, make sure it's start/stop token's
+     *  are set.  Walk depth first, visit bottom up.  Only updates nodes
+     *  with at least one token index < 0.
+     */
+    public void setUnknownTokenBoundaries() {
+        if ( children==null ) {
+            if ( startIndex<0 || stopIndex<0 ) {
+                startIndex = stopIndex = token.getTokenIndex();
+            }
+            return;
+        }
+        for (int i=0; i<children.size(); i++) {
+            ((CommonTree)children.get(i)).setUnknownTokenBoundaries();
+        }
+        if ( startIndex>=0 && stopIndex>=0 ) return; // already set
+        if ( children.size() > 0 ) {
+            CommonTree firstChild = (CommonTree)children.get(0);
+            CommonTree lastChild = (CommonTree)children.get(children.size()-1);
+            startIndex = firstChild.getTokenStartIndex();
+            stopIndex = lastChild.getTokenStopIndex();
+        }
+    }
+
+	public int getChildIndex() {
+		return childIndex;
+	}
+
+	public Tree getParent() {
+		return parent;
+	}
+
+	public void setParent(Tree t) {
+		this.parent = (CommonTree)t;
+	}
+
+	public void setChildIndex(int index) {
+		this.childIndex = index;
+	}
+
 	public String toString() {
 		if ( isNil() ) {
 			return "nil";
+		}
+		if ( getType()==Token.INVALID_TOKEN_TYPE ) {
+			return "<errornode>";
+		}
+		if ( token==null ) {
+			return null;
 		}
 		return token.getText();
 	}

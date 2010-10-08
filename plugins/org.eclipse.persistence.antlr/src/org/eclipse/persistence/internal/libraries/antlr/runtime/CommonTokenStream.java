@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -328,12 +328,21 @@ public class CommonTokenStream implements TokenStream {
 		seek(lastMarker);
 	}
 
+	public void reset() {
+		p = 0;
+		lastMarker = 0;
+	}
+	
 	public void seek(int index) {
 		p = index;
 	}
 
 	public TokenSource getTokenSource() {
 		return tokenSource;
+	}
+
+	public String getSourceName() {
+		return getTokenSource().getSourceName();
 	}
 
 	public String toString() {

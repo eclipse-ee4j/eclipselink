@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -53,11 +53,24 @@ public class RewriteRuleTokenStream extends RewriteRuleElementStream {
 		super(adaptor, elementDescription, elements);
 	}
 
+	/** Get next token from stream and make a node for it */
+	public Object nextNode() {
+		Token t = (Token)_next();
+		return adaptor.create(t);
+	}
+
+	public Token nextToken() {
+		return (Token)_next();
+	}
+
+	/** Don't convert to a tree unless they explicitly call nextTree.
+	 *  This way we can do hetero tree nodes in rewrite.
+	 */
 	protected Object toTree(Object el) {
-		return adaptor.create((Token)el);
+		return el;
 	}
 
 	protected Object dup(Object el) {
-		return adaptor.create((Token)el);
+		throw new UnsupportedOperationException("dup can't be called for a token stream.");
 	}
 }

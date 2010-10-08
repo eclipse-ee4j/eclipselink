@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -58,19 +58,26 @@ public class RewriteRuleSubtreeStream extends RewriteRuleElementStream {
 	 *  must dup the type node, but ID has been added.
 	 *
 	 *  Referencing a rule result twice is ok; dup entire tree as
-	 *  we can't be adding trees; e.g., expr expr. 
+	 *  we can't be adding trees as root; e.g., expr expr.
+	 *
+	 *  Hideous code duplication here with super.next().  Can't think of
+	 *  a proper way to refactor.  This needs to always call dup node
+	 *  and super.next() doesn't know which to call: dup node or dup tree.
 	 */
 	public Object nextNode() {
-		Object el = _next();
-		if ( cursor>=size() && size()==1 ) {
-			// if out of elements and size is 1, dup just the node
+		int n = size();
+		if ( dirty || (cursor>=n && n==1) ) {
+			// if out of elements and size is 1, dup (at most a single node
+			// since this is for making root nodes).
+			Object el = _next();
 			return adaptor.dupNode(el);
 		}
+		// test size above then fetch
+		Object el = _next();
 		return el;
 	}
 
 	protected Object dup(Object el) {
-		//System.out.println("dup "+((Tree)el).toStringTree()+" = "+((Tree)adaptor.dupTree(el)).toStringTree());
 		return adaptor.dupTree(el);
 	}
 }

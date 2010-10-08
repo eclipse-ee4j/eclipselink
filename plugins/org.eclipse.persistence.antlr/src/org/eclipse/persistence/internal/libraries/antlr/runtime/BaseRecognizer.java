@@ -1,3 +1,30 @@
+/*
+ [The "BSD licence"]
+ Copyright (c) 2005-2008 Terence Parr
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 3. The name of the author may not be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 import java.util.ArrayList;
@@ -15,108 +42,120 @@ public abstract class BaseRecognizer {
 	public static final int MEMO_RULE_UNKNOWN = -1;
 	public static final int INITIAL_FOLLOW_STACK_SIZE = 100;
 
-	public static final Integer MEMO_RULE_FAILED_I = new Integer(MEMO_RULE_FAILED);
-
 	// copies from Token object for convenience in actions
 	public static final int DEFAULT_TOKEN_CHANNEL = Token.DEFAULT_CHANNEL;
 	public static final int HIDDEN = Token.HIDDEN_CHANNEL;
 
 	public static final String NEXT_TOKEN_RULE_NAME = "nextToken";
 
-	/** Track the set of token types that can follow any rule invocation.
-	 *  Stack grows upwards.  When it hits the max, it grows 2x in size
-	 *  and keeps going.
+	/** State of a lexer, parser, or tree parser are collected into a state
+	 *  object so the state can be shared.  This sharing is needed to
+	 *  have one grammar import others and share same error variables
+	 *  and other state variables.  It's a kind of explicit multiple
+	 *  inheritance via delegation of methods and shared state.
 	 */
-	protected BitSet[] following = new BitSet[INITIAL_FOLLOW_STACK_SIZE];
-	protected int _fsp = -1;
+	protected RecognizerSharedState state;
 
-	/** This is true when we see an error and before having successfully
-	 *  matched a token.  Prevents generation of more than one error message
-	 *  per error.
-	 */
-	protected boolean errorRecovery = false;
+	public BaseRecognizer() {
+		state = new RecognizerSharedState();
+	}
 
-	/** The index into the input stream where the last error occurred.
-	 * 	This is used to prevent infinite loops where an error is found
-	 *  but no token is consumed during recovery...another error is found,
-	 *  ad naseum.  This is a failsafe mechanism to guarantee that at least
-	 *  one token/tree node is consumed for two errors.
-	 */
-	protected int lastErrorIndex = -1;
-
-	/** In lieu of a return value, this indicates that a rule or token
-	 *  has failed to match.  Reset to false upon valid token match.
-	 */
-	protected boolean failed = false;
-
-	/** If 0, no backtracking is going on.  Safe to exec actions etc...
-	 *  If >0 then it's the level of backtracking.
-	 */
-	protected int backtracking = 0;
-
-	/** An array[size num rules] of Map<Integer,Integer> that tracks
-	 *  the stop token index for each rule.  ruleMemo[ruleIndex] is
-	 *  the memoization table for ruleIndex.  For key ruleStartIndex, you
-	 *  get back the stop token for associated rule or MEMO_RULE_FAILED.
-	 *
-	 *  This is only used if rule memoization is on (which it is by default).
-	 */
-	protected Map[] ruleMemo;
+	public BaseRecognizer(RecognizerSharedState state) {
+		if ( state==null ) {
+			state = new RecognizerSharedState();
+		}
+		this.state = state;
+	}
 
 	/** reset the parser's state; subclasses must rewinds the input stream */
 	public void reset() {
 		// wack everything related to error recovery
-		_fsp = -1;
-		errorRecovery = false;
-		lastErrorIndex = -1;
-		failed = false;
+		if ( state==null ) {
+			return; // no shared state work to do
+		}
+		state._fsp = -1;
+		state.errorRecovery = false;
+		state.lastErrorIndex = -1;
+		state.failed = false;
+		state.syntaxErrors = 0;
 		// wack everything related to backtracking and memoization
-		backtracking = 0;
-		for (int i = 0; ruleMemo!=null && i < ruleMemo.length; i++) { // wipe cache
-			ruleMemo[i] = null;
+		state.backtracking = 0;
+		for (int i = 0; state.ruleMemo!=null && i < state.ruleMemo.length; i++) { // wipe cache
+			state.ruleMemo[i] = null;
 		}
 	}
 
-	/** Match current input symbol against ttype.  Upon error, do one token
-	 *  insertion or deletion if possible.  You can override to not recover
-	 *  here and bail out of the current production to the normal error
-	 *  exception catch (at the end of the method) by just throwing
-	 *  MismatchedTokenException upon input.LA(1)!=ttype.
+
+	/** Match current input symbol against ttype.  Attempt
+	 *  single token insertion or deletion error recovery.  If
+	 *  that fails, throw MismatchedTokenException.
+	 *
+	 *  To turn off single token insertion or deletion error
+	 *  recovery, override recoverFromMismatchedToken() and have it
+     *  throw an exception. See TreeParser.recoverFromMismatchedToken().
+     *  This way any error in a rule will cause an exception and
+     *  immediate exit from rule.  Rule would recover by resynchronizing
+     *  to the set of symbols that can follow rule ref.
 	 */
-	public void match(IntStream input, int ttype, BitSet follow)
+	public Object match(IntStream input, int ttype, BitSet follow)
 		throws RecognitionException
 	{
+		//System.out.println("match "+((TokenStream)input).LT(1));
+		Object matchedSymbol = getCurrentInputSymbol(input);
 		if ( input.LA(1)==ttype ) {
 			input.consume();
-			errorRecovery = false;
-			failed = false;
-			return;
+			state.errorRecovery = false;
+			state.failed = false;
+			return matchedSymbol;
 		}
-		if ( backtracking>0 ) {
-			failed = true;
-			return;
+		if ( state.backtracking>0 ) {
+			state.failed = true;
+			return matchedSymbol;
 		}
-		mismatch(input, ttype, follow);
-		return;
+		matchedSymbol = recoverFromMismatchedToken(input, ttype, follow);
+		return matchedSymbol;
 	}
 
+	/** Match the wildcard: in a symbol */
 	public void matchAny(IntStream input) {
-		errorRecovery = false;
-		failed = false;
+		state.errorRecovery = false;
+		state.failed = false;
 		input.consume();
 	}
 
-	/** factor out what to do upon token mismatch so tree parsers can behave
-	 *  differently.  Override this method in your parser to do things
-	 *  like bailing out after the first error; just throw the mte object
-	 *  instead of calling the recovery method.
-	 */
-	protected void mismatch(IntStream input, int ttype, BitSet follow)
-		throws RecognitionException
-	{
-		MismatchedTokenException mte =
-			new MismatchedTokenException(ttype, input);
-		recoverFromMismatchedToken(input, mte, ttype, follow);
+	public boolean mismatchIsUnwantedToken(IntStream input, int ttype) {
+		return input.LA(2)==ttype;
+	}
+
+	public boolean mismatchIsMissingToken(IntStream input, BitSet follow) {
+		if ( follow==null ) {
+			// we have no information about the follow; we can only consume
+			// a single token and hope for the best
+			return false;
+		}
+		// compute what can follow this grammar element reference
+		if ( follow.member(Token.EOR_TOKEN_TYPE) ) {
+			BitSet viableTokensFollowingThisRule = computeContextSensitiveRuleFOLLOW();
+			follow = follow.or(viableTokensFollowingThisRule);
+            if ( state._fsp>=0 ) { // remove EOR if we're not the start symbol
+                follow.remove(Token.EOR_TOKEN_TYPE);
+            }
+		}
+		// if current token is consistent with what could come after set
+		// then we know we're missing a token; error recovery is free to
+		// "insert" the missing token
+
+		//System.out.println("viable tokens="+follow.toString(getTokenNames()));
+		//System.out.println("LT(1)="+((TokenStream)input).LT(1));
+
+		// BitSet cannot handle negative numbers like -1 (EOF) so I leave EOR
+		// in follow set to indicate that the fall of the start symbol is
+		// in the set (EOF can follow).
+		if ( follow.member(input.LA(1)) || follow.member(Token.EOR_TOKEN_TYPE) ) {
+			//System.out.println("LT(1)=="+((TokenStream)input).LT(1)+" is consistent with what follows; inserting...");
+			return true;
+		}
+		return false;
 	}
 
 	/** Report a recognition problem.
@@ -131,15 +170,18 @@ public abstract class BaseRecognizer {
 	 * 		3. consume until token found in resynch set
 	 * 		4. try to resume parsing
 	 * 		5. next match() will reset errorRecovery mode
+	 *
+	 *  If you override, make sure to update syntaxErrors if you care about that.
 	 */
 	public void reportError(RecognitionException e) {
 		// if we've already reported an error and have not matched a token
 		// yet successfully, don't report any errors.
-		if ( errorRecovery ) {
+		if ( state.errorRecovery ) {
 			//System.err.print("[SPURIOUS] ");
 			return;
 		}
-		errorRecovery = true;
+		state.syntaxErrors++; // don't count spurious
+		state.errorRecovery = true;
 
 		displayRecognitionError(this.getTokenNames(), e);
 	}
@@ -175,8 +217,31 @@ public abstract class BaseRecognizer {
 	 *  exception types.
 	 */
 	public String getErrorMessage(RecognitionException e, String[] tokenNames) {
-		String msg = null;
-		if ( e instanceof MismatchedTokenException ) {
+		String msg = e.getMessage();
+		if ( e instanceof UnwantedTokenException ) {
+			UnwantedTokenException ute = (UnwantedTokenException)e;
+			String tokenName="<unknown>";
+			if ( ute.expecting== Token.EOF ) {
+				tokenName = "EOF";
+			}
+			else {
+				tokenName = tokenNames[ute.expecting];
+			}
+			msg = "extraneous input "+getTokenErrorDisplay(ute.getUnexpectedToken())+
+				" expecting "+tokenName;
+		}
+		else if ( e instanceof MissingTokenException ) {
+			MissingTokenException mte = (MissingTokenException)e;
+			String tokenName="<unknown>";
+			if ( mte.expecting== Token.EOF ) {
+				tokenName = "EOF";
+			}
+			else {
+				tokenName = tokenNames[mte.expecting];
+			}
+			msg = "missing "+tokenName+" at "+getTokenErrorDisplay(e.token);
+		}
+		else if ( e instanceof MismatchedTokenException ) {
 			MismatchedTokenException mte = (MismatchedTokenException)e;
 			String tokenName="<unknown>";
 			if ( mte.expecting== Token.EOF ) {
@@ -201,14 +266,14 @@ public abstract class BaseRecognizer {
 				" expecting "+tokenName;
 		}
 		else if ( e instanceof NoViableAltException ) {
-			NoViableAltException nvae = (NoViableAltException)e;
+			//NoViableAltException nvae = (NoViableAltException)e;
 			// for development, can add "decision=<<"+nvae.grammarDecisionDescription+">>"
 			// and "(decision="+nvae.decisionNumber+") and
 			// "state "+nvae.stateNumber
 			msg = "no viable alternative at input "+getTokenErrorDisplay(e.token);
 		}
 		else if ( e instanceof EarlyExitException ) {
-			EarlyExitException eee = (EarlyExitException)e;
+			//EarlyExitException eee = (EarlyExitException)e;
 			// for development, can add "(decision="+eee.decisionNumber+")"
 			msg = "required (...)+ loop did not match anything at input "+
 				getTokenErrorDisplay(e.token);
@@ -229,6 +294,17 @@ public abstract class BaseRecognizer {
 				fpe.predicateText+"}?";
 		}
 		return msg;
+	}
+
+	/** Get number of recognition errors (lexer, parser, tree parser).  Each
+	 *  recognizer tracks its own number.  So parser and lexer each have
+	 *  separate count.  Does not count the spurious errors found between
+	 *  an error and next valid token match
+	 *
+	 *  See also reportError()
+	 */
+	public int getNumberOfSyntaxErrors() {
+		return state.syntaxErrors;
 	}
 
 	/** What is the error header, normally line/character position information? */
@@ -265,19 +341,21 @@ public abstract class BaseRecognizer {
 		System.err.println(msg);
 	}
 
-	/** Recover from an error found on the input stream.  Mostly this is
-	 *  NoViableAlt exceptions, but could be a mismatched token that
-	 *  the match() routine could not recover from.
+	/** Recover from an error found on the input stream.  This is
+	 *  for NoViableAlt and mismatched symbol exceptions.  If you enable
+	 *  single token insertion and deletion, this will usually not
+	 *  handle mismatched symbol exceptions but there could be a mismatched
+	 *  token that the match() routine could not recover from.
 	 */
 	public void recover(IntStream input, RecognitionException re) {
-		if ( lastErrorIndex==input.index() ) {
+		if ( state.lastErrorIndex==input.index() ) {
 			// uh oh, another error at same token index; must be a case
 			// where LT(1) is in the recovery token set so nothing is
 			// consumed; consume a single token so at least to prevent
 			// an infinite loop; this is a failsafe.
 			input.consume();
 		}
-		lastErrorIndex = input.index();
+		state.lastErrorIndex = input.index();
 		BitSet followSet = computeErrorRecoverySet();
 		beginResync();
 		consumeUntil(input, followSet);
@@ -445,20 +523,29 @@ public abstract class BaseRecognizer {
 	}
 
 	protected BitSet combineFollows(boolean exact) {
-		int top = _fsp;
+		int top = state._fsp;
 		BitSet followSet = new BitSet();
 		for (int i=top; i>=0; i--) {
-			BitSet localFollowSet = (BitSet) following[i];
+			BitSet localFollowSet = (BitSet)state.following[i];
 			/*
 			System.out.println("local follow depth "+i+"="+
 							   localFollowSet.toString(getTokenNames())+")");
-			*/
+			 */
 			followSet.orInPlace(localFollowSet);
-			if ( exact && !localFollowSet.member(Token.EOR_TOKEN_TYPE) ) {
-				break;
+			if ( exact ) {
+				// can we see end of rule?
+				if ( localFollowSet.member(Token.EOR_TOKEN_TYPE) ) {
+					// Only leave EOR in set if at top (start rule); this lets
+					// us know if have to include follow(start rule); i.e., EOF
+					if ( i>0 ) {
+						followSet.remove(Token.EOR_TOKEN_TYPE);
+					}
+				}
+				else { // can't see end of rule, quit
+					break;
+				}
 			}
 		}
-		followSet.remove(Token.EOR_TOKEN_TYPE);
 		return followSet;
 	}
 
@@ -491,73 +578,91 @@ public abstract class BaseRecognizer {
 	 *  is in the set of tokens that can follow the ')' token
 	 *  reference in rule atom.  It can assume that you forgot the ')'.
 	 */
-	public void recoverFromMismatchedToken(IntStream input,
-										   RecognitionException e,
-										   int ttype,
-										   BitSet follow)
+	protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
 		throws RecognitionException
 	{
+		RecognitionException e = null;
 		// if next token is what we are looking for then "delete" this token
-		if ( input.LA(2)==ttype ) {
-			reportError(e);
+		if ( mismatchIsUnwantedToken(input, ttype) ) {
+			e = new UnwantedTokenException(ttype, input);
 			/*
-			System.err.println("recoverFromMismatchedToken deleting "+input.LT(1)+
-							   " since "+input.LT(2)+" is what we want");
-			*/
+			System.err.println("recoverFromMismatchedToken deleting "+
+							   ((TokenStream)input).LT(1)+
+							   " since "+((TokenStream)input).LT(2)+" is what we want");
+			 */
 			beginResync();
 			input.consume(); // simply delete extra token
 			endResync();
+			reportError(e);  // report after consuming so AW sees the token in the exception
+			// we want to return the token we're actually matching
+			Object matchedSymbol = getCurrentInputSymbol(input);
 			input.consume(); // move past ttype token as if all were ok
-			return;
+			return matchedSymbol;
 		}
-		if ( !recoverFromMismatchedElement(input,e,follow) ) {
-			throw e;
+		// can't recover with single token deletion, try insertion
+		if ( mismatchIsMissingToken(input, follow) ) {
+			Object inserted = getMissingSymbol(input, e, ttype, follow);
+			e = new MissingTokenException(ttype, input, inserted);
+			reportError(e);  // report after inserting so AW sees the token in the exception
+			return inserted;
 		}
+		// even that didn't work; must throw the exception
+		e = new MismatchedTokenException(ttype, input);
+		throw e;
 	}
 
-	public void recoverFromMismatchedSet(IntStream input,
-										 RecognitionException e,
-										 BitSet follow)
+	/** Not currently used */
+	public Object recoverFromMismatchedSet(IntStream input,
+										   RecognitionException e,
+										   BitSet follow)
 		throws RecognitionException
 	{
-		// TODO do single token deletion like above for Token mismatch
-		if ( !recoverFromMismatchedElement(input,e,follow) ) {
-			throw e;
+		if ( mismatchIsMissingToken(input, follow) ) {
+			// System.out.println("missing token");
+			reportError(e);
+			// we don't know how to conjure up a token for sets yet
+			return getMissingSymbol(input, e, Token.INVALID_TOKEN_TYPE, follow);
 		}
+		// TODO do single token deletion like above for Token mismatch
+		throw e;
 	}
 
-	/** This code is factored out from mismatched token and mismatched set
-	 *  recovery.  It handles "single token insertion" error recovery for
-	 *  both.  No tokens are consumed to recover from insertions.  Return
-	 *  true if recovery was possible else return false.
+	/** Match needs to return the current input symbol, which gets put
+	 *  into the label for the associated token ref; e.g., x=ID.  Token
+	 *  and tree parsers need to return different objects. Rather than test
+	 *  for input stream type or change the IntStream interface, I use
+	 *  a simple method to ask the recognizer to tell me what the current
+	 *  input symbol is.
+	 * 
+	 *  This is ignored for lexers.
 	 */
-	protected boolean recoverFromMismatchedElement(IntStream input,
-												   RecognitionException e,
-												   BitSet follow)
+	protected Object getCurrentInputSymbol(IntStream input) { return null; }
+
+	/** Conjure up a missing token during error recovery.
+	 *
+	 *  The recognizer attempts to recover from single missing
+	 *  symbols. But, actions might refer to that missing symbol.
+	 *  For example, x=ID {f($x);}. The action clearly assumes
+	 *  that there has been an identifier matched previously and that
+	 *  $x points at that token. If that token is missing, but
+	 *  the next token in the stream is what we want we assume that
+	 *  this token is missing and we keep going. Because we
+	 *  have to return some token to replace the missing token,
+	 *  we have to conjure one up. This method gives the user control
+	 *  over the tokens returned for missing tokens. Mostly,
+	 *  you will want to create something special for identifier
+	 *  tokens. For literals such as '{' and ',', the default
+	 *  action in the parser or tree parser works. It simply creates
+	 *  a CommonToken of the appropriate type. The text will be the token.
+	 *  If you change what tokens must be created by the lexer,
+	 *  override this method to create the appropriate tokens.
+	 */
+	protected Object getMissingSymbol(IntStream input,
+									  RecognitionException e,
+									  int expectedTokenType,
+									  BitSet follow)
 	{
-		if ( follow==null ) {
-			// we have no information about the follow; we can only consume
-			// a single token and hope for the best
-			return false;
-		}
-		//System.out.println("recoverFromMismatchedElement");
-		// compute what can follow this grammar element reference
-		if ( follow.member(Token.EOR_TOKEN_TYPE) ) {
-			BitSet viableTokensFollowingThisRule =
-				computeContextSensitiveRuleFOLLOW();
-			follow = follow.or(viableTokensFollowingThisRule);
-			follow.remove(Token.EOR_TOKEN_TYPE);
-		}
-		// if current token is consistent with what could come after set
-		// then it is ok to "insert" the missing token, else throw exception
-		//System.out.println("viable tokens="+follow.toString(getTokenNames())+")");
-		if ( follow.member(input.LA(1)) ) {
-			//System.out.println("LT(1)=="+input.LT(1)+" is consistent with what follows; inserting...");
-			reportError(e);
-			return true;
-		}
-		//System.err.println("nothing to do; throw exception");
-		return false;
+		return null;
 	}
 
 	public void consumeUntil(IntStream input, int tokenType) {
@@ -582,12 +687,12 @@ public abstract class BaseRecognizer {
 
 	/** Push a rule's follow set using our own hardcoded stack */
 	protected void pushFollow(BitSet fset) {
-		if ( (_fsp +1)>=following.length ) {
-			BitSet[] f = new BitSet[following.length*2];
-			System.arraycopy(following, 0, f, 0, following.length-1);
-			following = f;
+		if ( (state._fsp +1)>=state.following.length ) {
+			BitSet[] f = new BitSet[state.following.length*2];
+			System.arraycopy(state.following, 0, f, 0, state.following.length);
+			state.following = f;
 		}
-		following[++_fsp] = fset;
+		state.following[++state._fsp] = fset;
 	}
 
 	/** Return List<String> of the rules in your parser instance
@@ -632,9 +737,12 @@ public abstract class BaseRecognizer {
 		return rules;
 	}
 
-	public int getBacktrackingLevel() {
-		return backtracking;
-	}
+    public int getBacktrackingLevel() { return state.backtracking; }
+
+    public void setBacktrackingLevel(int n) { state.backtracking = n; }
+
+    /** Return whether or not a backtracking attempt failed. */
+    public boolean failed() { return state.failed; }
 
 	/** Used to print out token names like ID during debugging and
 	 *  error reporting.  The generated parsers implement a method
@@ -651,6 +759,8 @@ public abstract class BaseRecognizer {
 		return null;
 	}
 
+	public abstract String getSourceName();
+
 	/** A convenience method for use most often with template rewrites.
 	 *  Convert a List<Token> to List<String>
 	 */
@@ -663,25 +773,6 @@ public abstract class BaseRecognizer {
 		return strings;
 	}
 
-	/** Convert a List<RuleReturnScope> to List<StringTemplate> by copying
-	 *  out the .st property.  Useful when converting from
-	 *  list labels to template attributes:
-	 *
-	 *    a : ids+=rule -> foo(ids={toTemplates($ids)})
-	 *      ;
-	 *  TJP: this is not needed anymore.  $ids is a List of templates
-	 *  when output=template
-	 * 
-	public List toTemplates(List retvals) {
-		if ( retvals==null ) return null;
-		List strings = new ArrayList(retvals.size());
-		for (int i=0; i<retvals.size(); i++) {
-			strings.add(((RuleReturnScope)retvals.get(i)).getTemplate());
-		}
-		return strings;
-	}
-	 */
-
 	/** Given a rule number and a start token index number, return
 	 *  MEMO_RULE_UNKNOWN if the rule has not parsed input starting from
 	 *  start index.  If this rule has parsed input starting from the
@@ -693,11 +784,11 @@ public abstract class BaseRecognizer {
 	 *  tosses out data after we commit past input position i.
 	 */
 	public int getRuleMemoization(int ruleIndex, int ruleStartIndex) {
-		if ( ruleMemo[ruleIndex]==null ) {
-			ruleMemo[ruleIndex] = new HashMap();
+		if ( state.ruleMemo[ruleIndex]==null ) {
+			state.ruleMemo[ruleIndex] = new HashMap();
 		}
 		Integer stopIndexI =
-			(Integer)ruleMemo[ruleIndex].get(new Integer(ruleStartIndex));
+			(Integer)state.ruleMemo[ruleIndex].get(new Integer(ruleStartIndex));
 		if ( stopIndexI==null ) {
 			return MEMO_RULE_UNKNOWN;
 		}
@@ -720,10 +811,10 @@ public abstract class BaseRecognizer {
 		}
 		if ( stopIndex==MEMO_RULE_FAILED ) {
 			//System.out.println("rule "+ruleIndex+" will never succeed");
-			failed=true;
+			state.failed=true;
 		}
 		else {
-			//System.out.println("seen rule "+ruleIndex+" before; skipping ahead to @"+(stopIndex+1)+" failed="+failed);
+			//System.out.println("seen rule "+ruleIndex+" before; skipping ahead to @"+(stopIndex+1)+" failed="+state.failed);
 			input.seek(stopIndex+1); // jump to one past stop token
 		}
 		return true;
@@ -736,43 +827,27 @@ public abstract class BaseRecognizer {
 						int ruleIndex,
 						int ruleStartIndex)
 	{
-		int stopTokenIndex = failed?MEMO_RULE_FAILED:input.index()-1;
-		if ( ruleMemo[ruleIndex]!=null ) {
-			ruleMemo[ruleIndex].put(
+		int stopTokenIndex = state.failed?MEMO_RULE_FAILED:input.index()-1;
+		if ( state.ruleMemo==null ) {
+			System.err.println("!!!!!!!!! memo array is null for "+ getGrammarFileName());
+		}
+		if ( ruleIndex >= state.ruleMemo.length ) {
+			System.err.println("!!!!!!!!! memo size is "+state.ruleMemo.length+", but rule index is "+ruleIndex);
+		}
+		if ( state.ruleMemo[ruleIndex]!=null ) {
+			state.ruleMemo[ruleIndex].put(
 				new Integer(ruleStartIndex), new Integer(stopTokenIndex)
 			);
 		}
 	}
-
-	/** Assume failure in case a rule bails out with an exception.
-	 *  Reset to rule stop index if successful.
-	public void memoizeFailure(int ruleIndex, int ruleStartIndex) {
-		ruleMemo[ruleIndex].put(
-			new Integer(ruleStartIndex), MEMO_RULE_FAILED_I
-		);
-	}
-	 */
-
-	/** After successful completion of a rule, record success for this
-	 *  rule and that it can skip ahead next time it attempts this
-	 *  rule for this input position.
-	public void memoizeSuccess(IntStream input,
-							   int ruleIndex,
-							   int ruleStartIndex)
-	{
-		ruleMemo[ruleIndex].put(
-			new Integer(ruleStartIndex), new Integer(input.index()-1)
-		);
-	}
-	 */
 
 	/** return how many rule/input-index pairs there are in total.
 	 *  TODO: this includes synpreds. :(
 	 */
 	public int getRuleMemoizationCacheSize() {
 		int n = 0;
-		for (int i = 0; ruleMemo!=null && i < ruleMemo.length; i++) {
-			Map ruleMap = ruleMemo[i];
+		for (int i = 0; state.ruleMemo!=null && i < state.ruleMemo.length; i++) {
+			Map ruleMap = state.ruleMemo[i];
 			if ( ruleMap!=null ) {
 				n += ruleMap.size(); // how many input indexes are recorded?
 			}
@@ -782,11 +857,8 @@ public abstract class BaseRecognizer {
 
 	public void traceIn(String ruleName, int ruleIndex, Object inputSymbol)  {
 		System.out.print("enter "+ruleName+" "+inputSymbol);
-		if ( failed ) {
-			System.out.println(" failed="+failed);
-		}
-		if ( backtracking>0 ) {
-			System.out.print(" backtracking="+backtracking);
+		if ( state.backtracking>0 ) {
+			System.out.print(" backtracking="+state.backtracking);
 		}
 		System.out.println();
 	}
@@ -796,35 +868,12 @@ public abstract class BaseRecognizer {
 						 Object inputSymbol)
 	{
 		System.out.print("exit "+ruleName+" "+inputSymbol);
-		if ( failed ) {
-			System.out.println(" failed="+failed);
-		}
-		if ( backtracking>0 ) {
-			System.out.print(" backtracking="+backtracking);
-		}
+		if ( state.backtracking>0 ) {
+            System.out.print(" backtracking="+state.backtracking);
+            if ( state.failed ) System.out.print(" failed");
+            else System.out.print(" succeeded");
+        }
 		System.out.println();
 	}
 
-	/** A syntactic predicate.  Returns true/false depending on whether
-	 *  the specified grammar fragment matches the current input stream.
-	 *  This resets the failed instance var afterwards.
-	public boolean synpred(IntStream input, GrammarFragmentPtr fragment) {
-		//int i = input.index();
-		//System.out.println("begin backtracking="+backtracking+" @"+i+"="+((CommonTokenStream)input).LT(1));
-		backtracking++;
-		beginBacktrack(backtracking);
-		int start = input.mark();
-		try {fragment.invoke();}
-		catch (RecognitionException re) {
-			System.err.println("impossible: "+re);
-		}
-		boolean success = !failed;
-		input.rewind(start);
-		endBacktrack(backtracking, success);
-		backtracking--;
-		//System.out.println("end backtracking="+backtracking+": "+(failed?"FAILED":"SUCCEEDED")+" @"+input.index()+" should be "+i);
-		failed=false;
-		return success;
-	}
-	 */
 }

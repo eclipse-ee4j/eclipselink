@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2006 Terence Parr
+ Copyright (c) 2005-2008 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -42,8 +42,11 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
  *  input streams.
  *
  *  I do not use getters for fields of objects that are used simply to
- *  group values such as this aggregate.
+ *  group values such as this aggregate.  The getters/setters are there to
+ *  satisfy the superclass interface.
  */
 public class ParserRuleReturnScope extends RuleReturnScope {
 	public Token start, stop;
+	public Object getStart() { return start; }
+	public Object getStop() { return stop; }
 }

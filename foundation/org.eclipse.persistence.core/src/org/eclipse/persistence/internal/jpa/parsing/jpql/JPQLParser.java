@@ -61,6 +61,10 @@ public abstract class JPQLParser extends org.eclipse.persistence.internal.librar
         super(stream);
     }
 
+    public JPQLParser(TokenStream input, RecognizerSharedState state) {
+        super(input, state);
+    }
+    
     /**
      * INTERNAL
      * Returns the ANTLR version currently used.
