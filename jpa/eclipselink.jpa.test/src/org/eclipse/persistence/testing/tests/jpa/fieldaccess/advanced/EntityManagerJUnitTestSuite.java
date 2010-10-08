@@ -81,7 +81,6 @@ import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
-import org.eclipse.persistence.testing.models.jpa.advanced.PlatinumBuyer;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
 
 /**
