@@ -577,7 +577,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(Coalesce);
         exOperator.bePrefix();
-        exOperator.setNodeClass(FunctionExpression.class);
+        exOperator.setNodeClass(ClassConstants.ArgumentListFunctionExpression_Class);
         exOperator.setStartString("COALESCE(");
         exOperator.setSeparator(",");
         exOperator.setTerminationString(" )");
