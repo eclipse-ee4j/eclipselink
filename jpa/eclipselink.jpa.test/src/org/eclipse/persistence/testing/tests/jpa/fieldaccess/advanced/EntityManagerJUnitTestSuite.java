@@ -4826,7 +4826,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     // Bug 325916
     public void testNullDouble(){
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         
         PlatinumBuyer buyer = new PlatinumBuyer();
