@@ -150,6 +150,11 @@ public class ExpressionOperator implements Serializable {
     public static final int NextDay = 51;
     public static final int RoundDate = 52;
     public static final int ToDate = 53;
+    /**
+     * Function to obtain the current timestamp on the database including date
+     * and time components. This corresponds to the JPQL function
+     * current_timestamp.
+     */
     public static final int Today = 54;
     public static final int AddDate = 90;
     public static final int DateName = 92;
@@ -158,7 +163,17 @@ public class ExpressionOperator implements Serializable {
     public static final int TruncateDate = 102;
     public static final int NewTime = 103;
     public static final int Nvl = 104;
+    /**
+     * Function to obtain the current date on the database with date components
+     * only but without time components. This corresponds to the JPQL function
+     * current_date.
+     */
     public static final int CurrentDate = 123;
+    /**
+     * Function to obtain the current time on the database with time components
+     * only but without date components. This corresponds to the JPQL function
+     * current_time.
+     */
     public static final int CurrentTime = 128;
 
     // Math

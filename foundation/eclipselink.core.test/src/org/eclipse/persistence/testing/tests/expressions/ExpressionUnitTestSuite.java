@@ -191,7 +191,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
 
     protected void _addCurrentDateTest() {
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression expression = builder.get("period").get("startDate").lessThan(builder.currentDate());
+        Expression expression = builder.get("period").get("startDate").lessThan(builder.currentDateDate());
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
         test.setExpression(expression);
