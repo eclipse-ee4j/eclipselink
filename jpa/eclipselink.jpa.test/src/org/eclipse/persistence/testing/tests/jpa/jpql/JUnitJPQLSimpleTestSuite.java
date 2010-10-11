@@ -37,6 +37,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -165,6 +166,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectUsingLockModeQueryHintTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("multipleExecutionOfNamedQueryTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("testOneEqualsOne"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testParameterEqualsParameter"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleTypeTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleAsOrderByTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralDateTest"));
@@ -202,38 +204,33 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     /**
      * Tests 1=1 returns correct result.
      */
-    public void testOneEqualsOne() throws Exception {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testOneEqualsOne skipped for this platform, "
+    public void testParameterEqualsParameter() throws Exception {
+        DatabasePlatform databasePlatform = JUnitTestCase.getServerSession().getPlatform(); 
+        
+        if (databasePlatform.isSymfoware()) {
+            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, " 
                     + "Symfoware doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 304897)");
             return;
         }
 
+        if (databasePlatform.isMaxDB()) {
+            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, " 
+                    + "MaxDB doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 326962)");
+            return;
+        }
+        
     	EntityManager em = createEntityManager();
     	beginTransaction(em);
     	try {
-	        Query query = em.createQuery("SELECT e FROM Employee e");
-	        List<Employee> emps = query.getResultList();
-	
-	        Assert.assertNotNull(emps);
-	        int numRead = emps.size();
-	
-	        query = em.createQuery("SELECT e FROM Employee e WHERE 1=1");
-	        emps = query.getResultList();
-	
-	        Assert.assertNotNull(emps);
-	        Assert.assertEquals(numRead, emps.size());
+            Query query = em.createQuery("SELECT e FROM Employee e");
+            List<Employee> emps = query.getResultList();
+    
+            Assert.assertNotNull(emps);
+            int numRead = emps.size();
 	        
 	        query = em.createQuery("SELECT e FROM Employee e WHERE :arg1=:arg2");
 	        query.setParameter("arg1", 1);
 	        query.setParameter("arg2", 1);
-	        emps = query.getResultList();
-	
-	        Assert.assertNotNull(emps);
-	        Assert.assertEquals(numRead, emps.size());
-	        
-	        ExpressionBuilder builder = new ExpressionBuilder();
-	        query = ((JpaEntityManager)em.getDelegate()).createQuery(builder.value(1).equal(builder.value(1)), Employee.class);
 	        emps = query.getResultList();
 	
 	        Assert.assertNotNull(emps);
@@ -244,6 +241,37 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     	}    
     }
     
+    /**
+     * Tests 1=1 returns correct result.
+     */
+    public void testOneEqualsOne() throws Exception {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e");
+            List<Employee> emps = query.getResultList();
+    
+            Assert.assertNotNull(emps);
+            int numRead = emps.size();
+    
+            query = em.createQuery("SELECT e FROM Employee e WHERE 1=1");
+            emps = query.getResultList();
+    
+            Assert.assertNotNull(emps);
+            Assert.assertEquals(numRead, emps.size());
+            
+            ExpressionBuilder builder = new ExpressionBuilder();
+            query = ((JpaEntityManager)em.getDelegate()).createQuery(builder.value(1).equal(builder.value(1)), Employee.class);
+            emps = query.getResultList();
+    
+            Assert.assertNotNull(emps);
+            Assert.assertEquals(numRead, emps.size());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }    
+    }
+
     //GF Bug#404
     //1.  Fetch join now works with LAZY.  The fix is to trigger the value holder during object registration.  The test is to serialize
     //the results and deserialize it, then call getPhoneNumbers().size().  It used to throw an exception because the value holder 

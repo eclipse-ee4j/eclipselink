@@ -1961,7 +1961,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             throw ex;
         }
         // we can no longer rely on the query above to clear the Employee from the persistence context.
-        // Clearling the context to allow us to proceed.
+        // Clearing the context to allow us to proceed.
         em.clear();
         // persist new empWithoutAddress - the one that has been deleted from the db.
         beginTransaction(em);

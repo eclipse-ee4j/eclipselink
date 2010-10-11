@@ -60,6 +60,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -178,6 +179,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("selectAverageQueryForByteColumnTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("multipleExecutionOfCriteriaQueryTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testOneEqualsOne"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testParameterEqualsParameter"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleTypeTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleAsOrderByTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCaseInWhereTest"));
@@ -223,6 +225,54 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         new InheritanceTableCreator().replaceTables(session);
     }
 
+    /**
+     * Tests 1=1 returns correct result.
+     */
+    public void testParameterEqualsParameter() throws Exception {
+        DatabasePlatform databasePlatform = JUnitTestCase.getServerSession().getPlatform(); 
+        
+        if (databasePlatform.isSymfoware()) {
+            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, " 
+                    + "Symfoware doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 304897)");
+            return;
+        }
+
+        if (databasePlatform.isMaxDB()) {
+            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, " 
+                    + "MaxDB doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 326962)");
+            return;
+        }
+        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            //"SELECT e FROM Employee e"
+            Query query = em.createQuery(qb.createQuery(Employee.class));            
+            List<Employee> emps = query.getResultList();
+    
+            Assert.assertNotNull(emps);
+            int numRead = emps.size();
+    
+            
+            //"SELECT e FROM Employee e WHERE :arg1=:arg2");
+            CriteriaQuery cq = qb.createQuery(Employee.class);
+            cq.where(qb.equal(qb.parameter(Integer.class, "arg1"), qb.parameter(Integer.class, "arg2")));
+            query = em.createQuery(cq);
+            
+            query.setParameter("arg1", 1);
+            query.setParameter("arg2", 1);
+            emps = query.getResultList();
+    
+            Assert.assertNotNull(emps);
+            Assert.assertEquals(numRead, emps.size());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }    
+    }
+    
+    
     
     /**
      * Tests 1=1 returns correct result.
@@ -243,18 +293,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             CriteriaQuery cq = qb.createQuery(Employee.class);
             cq.where(qb.equal(qb.literal(1), 1));
             emps = em.createQuery(cq).getResultList();
-    
-            Assert.assertNotNull(emps);
-            Assert.assertEquals(numRead, emps.size());
-            
-            //"SELECT e FROM Employee e WHERE :arg1=:arg2");
-            cq = qb.createQuery(Employee.class);
-            cq.where(qb.equal(qb.parameter(Integer.class, "arg1"), qb.parameter(Integer.class, "arg2")));
-            query = em.createQuery(cq);
-            
-            query.setParameter("arg1", 1);
-            query.setParameter("arg2", 1);
-            emps = query.getResultList();
     
             Assert.assertNotNull(emps);
             Assert.assertEquals(numRead, emps.size());
