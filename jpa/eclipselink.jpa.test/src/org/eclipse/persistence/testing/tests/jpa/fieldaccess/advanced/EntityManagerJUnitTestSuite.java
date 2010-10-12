@@ -4836,7 +4836,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.flush();
         em.clear();
         clearCache();
-        em.createNativeQuery("update CMP3_PBUYER set PURCHASES = NULL where BUYER_ID = " + buyer.getId()).executeUpdate();
+        em.createNativeQuery("update CMP3_FA_PBUYER set PURCHASES = NULL where BUYER_ID = " + buyer.getId()).executeUpdate();
         
         buyer = em.find(PlatinumBuyer.class, buyer.getId());
         
