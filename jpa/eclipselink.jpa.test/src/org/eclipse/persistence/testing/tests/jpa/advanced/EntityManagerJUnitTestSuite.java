@@ -1935,6 +1935,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testLockWithJoinedInheritanceStrategy () throws InterruptedException {
+        if(getServerSession().getPlatform().isMaxDB()) {
+            // skip this test (bug 326799)
+            return;
+        }
+        
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             Employee emp = null;
