@@ -272,7 +272,10 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
             assertTrue("Test error: No Items found", result.size()!=0 );
             Customer returned = (Customer)result.get(0);
-            assertTrue("Test error: No Customers found", "Manotic ".equals(returned.getCity()) );
+            if (!getServerSession().getPlatform().isMaxDB()) {
+                // bug 327435: MaxDB trims trailing spaces of [VAR]CHAR fields
+                assertTrue("Test error: No Customers found", "Manotic ".equals(returned.getCity()));
+            }
 
         } catch(Exception e) {
             try {
