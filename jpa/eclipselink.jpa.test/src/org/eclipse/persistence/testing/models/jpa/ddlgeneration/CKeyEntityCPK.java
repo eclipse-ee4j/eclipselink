@@ -26,7 +26,7 @@ public class CKeyEntityCPK {
     @Column(name = "SEQ")
     public int seq;
 
-    @Column(name = "ROLE_")
+    @Column(name = "ROLE_", length=64)
     public String role;
 
 

@@ -47,11 +47,11 @@ public class CKeyEntityA {
     private int seq;
 
     @Id
-    @Column(name = "F_NAME")
+    @Column(name = "F_NAME", length=64)
     private String firstName;
 
     @Id
-    @Column(name = "L_NAME")
+    @Column(name = "L_NAME", length=64)
     private String lastName;
 
     @ManyToOne

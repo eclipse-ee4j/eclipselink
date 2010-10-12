@@ -23,7 +23,7 @@ public class CKeyEntityBPK {
     @Column(name = "SEQ")
     public long seq;
 
-    @Column(name = "CODE")
+    @Column(name = "CODE", length=64)
     public String code;
 
     public CKeyEntityBPK() {
