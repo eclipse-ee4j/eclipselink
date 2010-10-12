@@ -11,6 +11,6 @@ Include-Resource:\
  ${antlr.2.base.dir}/about.html,\
  ${antlr.2.base.dir}/readme.html,\
  ${antlr.2.base.dir}/license.html
-Import-Package: *
+Import-Package: org.antlr.stringtemplate.*;resolution:=optional, *
 Specification-Version: 
 
