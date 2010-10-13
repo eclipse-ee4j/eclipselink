@@ -877,7 +877,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         
         // verify merged in the shared cache - clear em cache, query using cache only.
         em.clear();
-        HashMap hints = new HashMap(2);
+        Map<String, Object> hints = new HashMap<String, Object>(2);
         hints.put(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
         //hints.put(QueryHints.FETCH_GROUP, fetchGroup);
         Employee empShared = em.find(Employee.class, id, hints);

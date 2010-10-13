@@ -332,7 +332,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
 
     /**
      * INTERNAL:
-     * Configure the call to be a dynamic custom SQL call, so that it ignore the # token.
+     * Configure the call to be a dynamic custom SQL call, so that it ignores the # token.
      */
     public void setCallHasCustomSQLArguments() {
         if (hasMultipleCalls()) {
@@ -348,7 +348,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     }
 
     /**
-     * Update the foreign key fields when resolving a bi-directonal reference in a UOW.
+     * Update the foreign key fields when resolving a bi-directional reference in a UOW.
      * This must always be dynamic as it is called within an insert query and is really part of the insert
      * and does not fire update events or worry about locking.
      */

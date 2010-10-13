@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -100,7 +101,7 @@ public class FetchGroupMergeWithCacheTests extends BaseFetchGroupTests {
         FetchGroup fg = new FetchGroup();
         fg.addAttribute("firstName");
         fg.addAttribute("lastName");
-        HashMap properties = new HashMap(1);
+        Map<String, Object> properties = new HashMap<String, Object>(1);
         properties.put(QueryHints.FETCH_GROUP, fg);
         Employee resultEmployee = em2.find(Employee.class, id, properties);
         try {
