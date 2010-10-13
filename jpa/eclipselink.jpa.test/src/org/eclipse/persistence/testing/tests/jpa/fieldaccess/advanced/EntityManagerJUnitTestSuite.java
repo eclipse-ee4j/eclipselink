@@ -4834,11 +4834,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         buyer.setDescription("a buyer with no purchases.");
         em.persist(buyer);
         em.flush();
-        em.clear();
-        clearCache();
         em.createNativeQuery("update CMP3_FA_PBUYER set PURCHASES = NULL where BUYER_ID = " + buyer.getId()).executeUpdate();
         
-        buyer = em.find(PlatinumBuyer.class, buyer.getId());
+        em.refresh(buyer);
         
         rollbackTransaction(em);
     }
