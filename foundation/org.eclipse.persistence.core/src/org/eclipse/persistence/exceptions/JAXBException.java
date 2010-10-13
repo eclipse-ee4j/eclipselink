@@ -90,6 +90,13 @@ public class JAXBException extends EclipseLinkException {
     public static final int NO_ID_OR_KEY_ON_JOIN_TARGET = 50058;
     public static final int INVALID_REF_XML_PATH = 50059;
     public static final int INVALID_IDREF_CLASS = 50060;
+    public static final int ADAPTER_CLASS_NOT_LOADED = 50061;
+    public static final int ADAPTER_CLASS_METHOD_EXCEPTION = 50062;
+    public static final int ADAPTER_CLASS_COULD_NOT_BE_INSTANTIATED = 50063;
+    public static final int INVALID_ADAPTER_CLASS = 50064;
+    public static final int INVALID_PACKAGE_ADAPTER_CLASS = 50065;
+    public static final int INVALID_TYPE_ADAPTER_CLASS = 50066;
+    public static final int INVALID_PROPERTY_ADAPTER_CLASS = 50067;
 
     protected JAXBException(String message) {
         super(message);
@@ -761,6 +768,103 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { className, propertyName, referencedClassName };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_IDREF_CLASS, args));
         validationException.setErrorCode(INVALID_IDREF_CLASS);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: The adapter class set on XMLJavaTypeConverter could not be loaded. This is 
+     * most likely due to an incorrect class name or the wrong classloader being set on
+     * XMLConversionManager. 
+     */
+    public static JAXBException adapterClassNotLoaded(String adapterClassName, Exception ex) {
+        Object[] args = { adapterClassName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ADAPTER_CLASS_NOT_LOADED, args), ex);
+        validationException.setErrorCode(ADAPTER_CLASS_NOT_LOADED);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: An exception occurred while attampting to get the declared methods from 
+     * the adapter class.
+     */
+    public static JAXBException adapterClassMethodsCouldNotBeAccessed(String adapterClassName, Exception ex) {
+        Object[] args = { adapterClassName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ADAPTER_CLASS_METHOD_EXCEPTION, args), ex);
+        validationException.setErrorCode(ADAPTER_CLASS_METHOD_EXCEPTION);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: An exception occurred while attampting to get a new instance of 
+     * the adapter class.
+     */
+    public static JAXBException adapterClassCouldNotBeInstantiated(String adapterClassName, Exception ex) {
+        Object[] args = { adapterClassName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ADAPTER_CLASS_COULD_NOT_BE_INSTANTIATED, args), ex);
+        validationException.setErrorCode(ADAPTER_CLASS_COULD_NOT_BE_INSTANTIATED);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: The adapter class does not extend javax.xml.bind.annotation.adapters.XmlAdapter.
+     */
+    public static JAXBException invalidAdapterClass(String adapterClassName) {
+        Object[] args = { adapterClassName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_ADAPTER_CLASS, args));
+        validationException.setErrorCode(INVALID_ADAPTER_CLASS);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: The package level adapter class set on XMLJavaTypeConverter could not be 
+     * loaded. This is most likely due to an incorrect class name or the wrong 
+     * classloader being set on XMLConversionManager.
+     * 
+     * @param adapterClassName the name of the XmlAdapterClass
+     * @param packageName name of the target package
+     */
+    public static JAXBException invalidPackageAdapterClass(String adapterClassName, String packageName) {
+        Object[] args = { adapterClassName, packageName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_PACKAGE_ADAPTER_CLASS, args));
+        validationException.setErrorCode(INVALID_PACKAGE_ADAPTER_CLASS);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: The type level adapter class set on XMLJavaTypeConverter could not be 
+     * loaded. This is most likely due to an incorrect class name or the wrong 
+     * classloader being set on XMLConversionManager.
+     * 
+     * @param adapterClassName the name of the XmlAdapterClass
+     * @param typeName name of the target type
+     */
+    public static JAXBException invalidTypeAdapterClass(String adapterClassName, String typeName) {
+        Object[] args = { adapterClassName, typeName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_TYPE_ADAPTER_CLASS, args));
+        validationException.setErrorCode(INVALID_TYPE_ADAPTER_CLASS);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: The field/property level adapter class set on XMLJavaTypeConverter could
+     * not be loaded. This is most likely due to an incorrect class name or the wrong 
+     * classloader being set on XMLConversionManager.
+     * 
+     * @param adapterClassName the name of the XmlAdapterClass
+     * @param propName the name of the field/property
+     * @param typeName name of the owning type
+     */
+    public static JAXBException invalidPropertyAdapterClass(String adapterClassName, String propName, String typeName) {
+        Object[] args = { adapterClassName, propName, typeName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_PROPERTY_ADAPTER_CLASS, args));
+        validationException.setErrorCode(INVALID_PROPERTY_ADAPTER_CLASS);
         return validationException;
     }
 }

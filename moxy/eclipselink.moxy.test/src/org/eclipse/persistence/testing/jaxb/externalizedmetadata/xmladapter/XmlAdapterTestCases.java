@@ -32,11 +32,22 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.pack
 public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/";
+
+    private static final String PROP_CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.property";
+    private static final String PROP_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/property/";
+    
+    private static final String PKG_CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel";
+    private static final String PKG_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/packagelevel/";
+    
+    private static final String CLS_CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel";
+    private static final String CLS_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/classlevel/";
+
     private final static int DAY = 12;
     private final static int MONTH = 4;
     private final static int YEAR = 1997;
     private static Calendar CALENDAR = new GregorianCalendar(YEAR, MONTH, DAY);
     private final static int ID = 66;
+    Class[] propArray;
 
     /**
      * This is the preferred (and only) constructor.
@@ -46,6 +57,11 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
     public XmlAdapterTestCases(String name) {
         super(name);
     }
+    
+    public void setUp() throws Exception {
+        super.setUp();
+        propArray = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.property.MyClass.class };
+    }
 
     /**
      * Tests property level @XmlJavaTypeAdapter via eclipselink-oxm.xml.
@@ -53,9 +69,8 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlJavaTypeAdapterOnProperty() {
-        String metadataFile = PATH + "property/" + "eclipselink-oxm.xml";
-        Class[] classesToProcess = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.property.MyClass.class };
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH+ ".property", metadataFile, 1);      
+        String metadataFile = PROP_PATH + "eclipselink-oxm.xml";
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(propArray, PROP_CONTEXT_PATH, metadataFile, 1);      
         String controlSchema = PATH + "schema.xsd";
 
         // validate schema
@@ -93,18 +108,18 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlJavaTypeAdapterOnClass() {
-        String metadataFile = PATH + "/classlevel/" + "eclipselink-oxm.xml";
+        String metadataFile = CLS_PATH + "eclipselink-oxm.xml";
         
         Class[] classesToProcess = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyClass.class };
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH+ ".classlevel", metadataFile, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CLS_CONTEXT_PATH, metadataFile, 1);
          
-        String controlSchema = PATH + "classlevel/schema.xsd";
+        String controlSchema = CLS_PATH + "schema.xsd";
 
         // validate schema
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
 
         // validate instance doc against schema
-        String src = PATH + "classlevel/myclass.xml";
+        String src = CLS_PATH + "myclass.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
 
@@ -135,11 +150,11 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlJavaTypeAdapterOnPackage() {
-        String metadataFile = PATH + "/packagelevel/" + "eclipselink-oxm.xml";        
+        String metadataFile = PKG_PATH + "eclipselink-oxm.xml";        
         Class[] classesToProcess = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.MyClass.class, SomeLameClass.class };
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH+ ".packagelevel", metadataFile, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, PKG_CONTEXT_PATH, metadataFile, 1);
   
-        String controlSchema = PATH + "packagelevel/schema.xsd";
+        String controlSchema = PKG_PATH + "schema.xsd";
 
         // validate schema
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));

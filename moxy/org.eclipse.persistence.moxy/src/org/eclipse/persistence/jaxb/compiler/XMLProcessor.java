@@ -264,10 +264,7 @@ public class XMLProcessor {
                                 tInfo.addPackageLevelAdapterClass(adapterClass, boundType);
                             }
                         } catch(JAXBException e) {
-                            String[] messageParams = new String[2];
-                            messageParams[0] = xja.getValue();
-                            messageParams[1] = packageName;
-                            this.getLogger().logWarning(JAXBMetadataLogger.INVALID_PACKAGE_LEVEL_XML_JAVA_TYPE_ADAPTER, messageParams);
+                            throw JAXBException.invalidPackageAdapterClass(xja.getValue(), packageName);
                         }
                     }
                 }
@@ -336,6 +333,7 @@ public class XMLProcessor {
                 }
             }
         }
+        
         aProcessor.finalizeProperties();
         aProcessor.createElementsForTypeMappingInfo();
     }
@@ -802,12 +800,7 @@ public class XMLProcessor {
             try {
                 oldProperty.setXmlJavaTypeAdapter(xmlElement.getXmlJavaTypeAdapter());
             } catch(JAXBException e) {
-                String[] messageParams = new String[3];
-                messageParams[0] = xmlElement.getXmlJavaTypeAdapter().getValue();
-                messageParams[1] = xmlElement.getJavaAttribute();
-                messageParams[2] = javaType.getName();
-                getLogger().logWarning(JAXBMetadataLogger.INVALID_PROPERTY_LEVEL_XML_JAVA_TYPE_ADAPTER, messageParams);
-                oldProperty.setXmlJavaTypeAdapter(null);
+                throw JAXBException.invalidPropertyAdapterClass(xmlElement.getXmlJavaTypeAdapter().getValue(), xmlElement.getJavaAttribute(), javaType.getName());
             }
         }
 

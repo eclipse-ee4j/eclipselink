@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -30,7 +31,7 @@ public class XmlAdapterNegativeTestCases extends TestCase {
         super(name);
     }
 
-    public void testNegativeXmlJavaTypeAdapter() throws Exception {
+    public void testNegativePackageLevelXmlAdapter() throws Exception {
         Map<String, Source> metadata = new HashMap<String,Source>();
         InputStream stream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/negative/eclipselink-oxm.xml");
         metadata.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.negative", new StreamSource(stream));
@@ -40,22 +41,50 @@ public class XmlAdapterNegativeTestCases extends TestCase {
 
         Class<?>[] classes = new Class[1];
         classes[0] = Customer.class;
-        JAXBContext jaxbContext = JAXBContextFactory.createContext(classes, properties);
-
-        InputStream xml = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/negative/customer.xml");
-        Customer testCustomer = (Customer) jaxbContext.createUnmarshaller().unmarshal(xml);
-        assertEquals(getControlCustomer(), testCustomer);
+        try {
+            JAXBContextFactory.createContext(classes, properties);
+        } catch (JAXBException jaxbex) {
+            //jaxbex.printStackTrace();
+            return;
+        }
+        fail("Invalid package level xml-java-type-adapter value should have caused an exception, but no exception was thrown.");
     }
 
-    private Customer getControlCustomer() {
-        Customer leafCustomer = new Customer();
-        leafCustomer.setId(456);
+    public void testNegativeClassLevelXmlAdapter() throws Exception {
+        Map<String, Source> metadata = new HashMap<String,Source>();
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/negative/class-adapter-oxm.xml");
+        metadata.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.negative", new StreamSource(stream));
 
-        Customer rootCustomer = new Customer();
-        rootCustomer.setId(123);
-        rootCustomer.setCustomer(leafCustomer);
+        Map<String,Object> properties = new HashMap<String,Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadata);
 
-        return rootCustomer; 
+        Class<?>[] classes = new Class[1];
+        classes[0] = Customer.class;
+        try {
+            JAXBContextFactory.createContext(classes, properties);
+        } catch (JAXBException jaxbex) {
+            //jaxbex.printStackTrace();
+            return;
+        }
+        fail("Invalid class level xml-java-type-adapter value should have caused an exception, but no exception was thrown.");
     }
 
+    public void testNegativePropertyLevelXmlAdapter() throws Exception {
+        Map<String, Source> metadata = new HashMap<String,Source>();
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/negative/property-adapter-oxm.xml");
+        metadata.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.negative", new StreamSource(stream));
+
+        Map<String,Object> properties = new HashMap<String,Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadata);
+
+        Class<?>[] classes = new Class[1];
+        classes[0] = Customer.class;
+        try {
+            JAXBContextFactory.createContext(classes, properties);
+        } catch (JAXBException jaxbex) {
+            //jaxbex.printStackTrace();
+            return;
+        }
+        fail("Invalid property level xml-java-type-adapter value should have caused an exception, but no exception was thrown.");
+    }
 }

@@ -16,6 +16,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.HashMap;
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -206,36 +207,32 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             ClassLoader loader = session.getDatasourceLogin().getDatasourcePlatform().getConversionManager().getLoader();
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    try {
-                        xmlAdapterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(getXmlAdapterClassName(), true, loader));
-                    } catch (PrivilegedActionException ex) {
-                        if (ex.getCause() instanceof ClassNotFoundException) {
-                            throw (ClassNotFoundException) ex.getCause();
-                        }
-                        throw (RuntimeException) ex.getCause();
-                    }
+                    xmlAdapterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(getXmlAdapterClassName(), true, loader));
                 } else {
                     xmlAdapterClass = PrivilegedAccessHelper.getClassForName(getXmlAdapterClassName(), true, loader);
                 }
-            } catch (ClassNotFoundException cnfe) {
-                throw (RuntimeException) cnfe.getCause();
+            } catch (Exception e) {
+                throw JAXBException.adapterClassNotLoaded(getXmlAdapterClassName(), e);
             }
         }
 
+        // validate adapter class extends javax.xml.bind.annotation.adapters.XmlAdapter
+        if (!XmlAdapter.class.isAssignableFrom(xmlAdapterClass)) {
+            throw JAXBException.invalidAdapterClass(getXmlAdapterClassName());
+        }
+        
         this.mapping = mapping;
         Method[] methods = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
                 methods = (Method[]) AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(xmlAdapterClass));
-                ;
             } catch (PrivilegedActionException ex) {
-                throw (RuntimeException) ex.getCause();
+                throw JAXBException.adapterClassMethodsCouldNotBeAccessed(getXmlAdapterClassName(), ex);
             }
         } else {
             methods = PrivilegedAccessHelper.getDeclaredMethods(xmlAdapterClass);
         }
         Method method;
-
         // look for marshal method
         for (int i = 0; i < methods.length; i++) {
             method = methods[i];
@@ -251,22 +248,12 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
 
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                try {
-                    xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));
-                    ;
-                } catch (PrivilegedActionException ex) {
-                    if (ex.getCause() instanceof IllegalAccessException) {
-                        throw (IllegalAccessException) ex.getCause();
-                    }
-                    if (ex.getCause() instanceof InstantiationException) {
-                        throw (InstantiationException) ex.getCause();
-                    }
-                    throw (RuntimeException) ex.getCause();
-                }
+                xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));
             } else {
                 xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
             }
         } catch (Exception ex) {
+            throw JAXBException.adapterClassCouldNotBeInstantiated(getXmlAdapterClassName(), ex);
         }
     }
 
