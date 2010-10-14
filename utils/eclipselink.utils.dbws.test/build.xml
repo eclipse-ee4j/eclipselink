@@ -317,7 +317,6 @@
       <SetupDatabase
         testsuite-name="${package-name}"
       />
-	  <!--
       <CompileTestsuite
         testsuite-name="@{testsuite-name}"
         package-name="${package-name}"
@@ -329,7 +328,6 @@
       <TeardownDatabase
         testsuite-name="${package-name}"
       />
-      -->
     </sequential>
   </macrodef>
 
