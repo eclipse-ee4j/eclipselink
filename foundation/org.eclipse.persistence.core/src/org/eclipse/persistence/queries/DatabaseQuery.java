@@ -657,7 +657,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public Object execute(AbstractSession session, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
         DatabaseQuery queryToExecute = this;
-
+        if (! isJPQLCallQuery()){
+        	checkDescriptor(session);
+        }else{
+        	((ObjectLevelReadQuery)this).checkPrePrepare(session);
+        }
         QueryRedirector localRedirector = getRedirector();
         // refactored redirection for bug 3241138
         if (localRedirector != null) {
