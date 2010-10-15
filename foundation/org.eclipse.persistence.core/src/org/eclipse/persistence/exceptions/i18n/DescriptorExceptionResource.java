@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -227,7 +229,8 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "216", "CacheKeyType cannot be ID_VALUE for a composite primary key.."},
                                            { "217", "Invalid XPath for XMLDirectMapping/XMLCompositeDirectCollectionMapping. XPath must either contain an @ symbol for attributes or end in /text() for text nodes. For example: \"@name\" or \"name/text()\""}, 
                                            // 323148
-                                           { "218", "A NullPointerException would have occurred accessing a non-existent weaved _vh_ method [{0}].  The class was not weaved properly - for EE deployments, check the module order in the application.xml deployment descriptor and verify that the module containing the persistence unit is ahead of any other module that uses it."}                                           
+                                           { "218", "A NullPointerException would have occurred accessing a non-existent weaved _vh_ method [{0}].  The class was not weaved properly - for EE deployments, check the module order in the application.xml deployment descriptor and verify that the module containing the persistence unit is ahead of any other module that uses it."},
+                                           { "219", "The additional criteria from [{1}] is not allowed within an inheritance hierarchy using views."}
 
     };
 

@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -172,7 +174,8 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6166", "An attempt was made to cast outside of an inheritance hierarchy.  [{0}] does not appear in the class heirarchy for [{1}]. Note: This exception could also indicate you our casting on a Table-Per-Class inheritance relationship which is not supported for casting."},
        { "6167", "A cast has been invoked on an expression that does not use inheritance: [{0}]."},
        { "6168", "Query failed to prepare, unexpected error occurred: [{0}]."},
-       { "6169", "A mapping was configured to use IN batch fetching, but the original query was not configured to use IN batch fetching and must be: [{0}]."}
+       { "6169", "A mapping was configured to use IN batch fetching, but the original query was not configured to use IN batch fetching and must be: [{0}]."},
+       { "6170", "No value was provided for the additional criteria query parameter [{0}]. Additional criteria parameters must be set through Entity Manager, Entity Manager Factory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."}
     };
 
     /**

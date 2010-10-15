@@ -12,6 +12,8 @@
  *     stardif - updates for Cascaded locking and inheritance
  *     02/20/2009-1.1 Guy Pelletier 
  *       - 259829: TABLE_PER_CLASS with abstract classes does not work
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -3284,7 +3286,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
             getFetchGroupManager().postInitialize(session);
         }
         getObjectBuilder().postInitialize(session);
-
+        getQueryManager().postInitialize(session);
+        
         validateAfterInitialization(session);
 
         checkDatabase(session);
@@ -4725,6 +4728,17 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.shouldAcquireCascadedLocks = shouldAcquireCascadedLocks;
     }
 
+    /**
+     * PUBLIC:
+     * Return true if this descriptor should using an additional join expresison.
+     */
+    public boolean shouldUseAdditionalJoinExpression() {
+        // Return true, if the query manager has an additional join expression 
+        // and this descriptor is not part of an inheritance hierarchy using a 
+        // view (CR#3701077)
+        return ((getQueryManager().getAdditionalJoinExpression() != null) && ! (hasInheritance() && getInheritancePolicy().hasView()));
+    }
+    
     /**
      * PUBLIC:
      * Return true if this descriptor is using CacheIdentityMap

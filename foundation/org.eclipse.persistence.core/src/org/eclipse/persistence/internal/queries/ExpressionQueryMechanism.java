@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Thomas Spiegl - fix for bug 324406
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
@@ -131,34 +133,29 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             expression.resetPlaceHolderBuilder(builder);
         }
 
-        DescriptorQueryManager queryManager = getDescriptor().getQueryManager();
-
-        
         // Leaf inheritance and multiple table join.
-        if (queryManager.getAdditionalJoinExpression() != null) {
-            // CR#3701077, additional join not required for view, view does join.
-            if (! (getDescriptor().hasInheritance() && (getDescriptor().getInheritancePolicy().hasView()))) {
-                Expression additionalJoin = queryManager.getAdditionalJoinExpression();
+        if (getDescriptor().shouldUseAdditionalJoinExpression()) {
+            DescriptorQueryManager queryManager = getDescriptor().getQueryManager();
+            Expression additionalJoin = queryManager.getAdditionalJoinExpression();
     
-                // If there's an expression, then we know we'll have to rebuild anyway, so don't clone.
-                if (expression == null) {
-                    // Should never happen...
-                    expression = (Expression)additionalJoin.clone();
-                } else {
-                    if (query.isObjectLevelReadQuery()){
-                        ExpressionBuilder builder = ((ObjectLevelReadQuery)query).getExpressionBuilder();
-                        if ((additionalJoin.getBuilder() != builder) && (additionalJoin.getBuilder().getQueryClass() == null)) {
-                            if ((!isSubSelect) && (builder != null)) {
-                                builder = (ExpressionBuilder)builder.copiedVersionFrom(clonedExpressions);
-                            }
-                            additionalJoin = additionalJoin.rebuildOn(builder);
+            // If there's an expression, then we know we'll have to rebuild anyway, so don't clone.
+            if (expression == null) {
+                // Should never happen...
+                expression = (Expression)additionalJoin.clone();
+            } else {
+                if (query.isObjectLevelReadQuery()){
+                    ExpressionBuilder builder = ((ObjectLevelReadQuery)query).getExpressionBuilder();
+                    if ((additionalJoin.getBuilder() != builder) && (additionalJoin.getBuilder().getQueryClass() == null)) {
+                        if ((!isSubSelect) && (builder != null)) {
+                            builder = (ExpressionBuilder)builder.copiedVersionFrom(clonedExpressions);
                         }
+                        additionalJoin = additionalJoin.rebuildOn(builder);
                     }
-                    expression = expression.and(additionalJoin);
                 }
-                // set wasAdditionalJoinCriteriaUsed on the addionalJoin because the expression may not have the correct builder as its left most builder
-                additionalJoin.getBuilder().setWasAdditionJoinCriteriaUsed(true);
+                expression = expression.and(additionalJoin);
             }
+            // set wasAdditionalJoinCriteriaUsed on the addionalJoin because the expression may not have the correct builder as its left most builder
+            additionalJoin.getBuilder().setWasAdditionJoinCriteriaUsed(true);
         }
         return expression;
     }

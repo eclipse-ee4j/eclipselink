@@ -52,7 +52,9 @@
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  *     08/04/2010-2.1.1 Guy Pelletier
  *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
- ******************************************************************************/  
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.ArrayList;
@@ -75,6 +77,7 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
 import javax.persistence.TableGenerator;
 
+import org.eclipse.persistence.annotations.AdditionalCriteria;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheInterceptor;
 import org.eclipse.persistence.annotations.FetchGroup;
@@ -92,6 +95,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
+import org.eclipse.persistence.internal.jpa.metadata.additionalcriteria.AdditionalCriteriaMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
 
@@ -132,6 +136,8 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 public class MappedSuperclassAccessor extends ClassAccessor {
     private boolean m_excludeDefaultListeners;
     private boolean m_excludeSuperclassListeners;
+    
+    private AdditionalCriteriaMetadata m_additionalCriteria;
     
     private Boolean m_cacheable;
     private Boolean m_readOnly;
@@ -208,6 +214,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public boolean excludeSuperclassListeners() {
         return m_excludeSuperclassListeners;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public AdditionalCriteriaMetadata getAdditionalCriteria() {
+        return m_additionalCriteria;
     }
     
     /**
@@ -504,6 +518,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         super.initXMLObject(accessibleObject, entityMappings);
         
         // Initialize single objects.
+        initXMLObject(m_additionalCriteria, accessibleObject);
         initXMLObject(m_cache, accessibleObject);
         initXMLObject(m_cacheInterceptor, accessibleObject);
         initXMLObject(m_optimisticLocking, accessibleObject);
@@ -569,6 +584,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_existenceChecking = (String) mergeSimpleObjects(m_existenceChecking, accessor.getExistenceChecking(), accessor, "@existence-checking");
         
         // ORMetadata object merging.
+        m_additionalCriteria = (AdditionalCriteriaMetadata) mergeORObjects(m_additionalCriteria, accessor.getAdditionalCriteria());
         m_cache = (CacheMetadata) mergeORObjects(m_cache, accessor.getCache());
         m_cacheInterceptor = (CacheInterceptorMetadata) mergeORObjects(m_cacheInterceptor, accessor.getCacheInterceptor());
         m_optimisticLocking = (OptimisticLockingMetadata) mergeORObjects(m_optimisticLocking, accessor.getOptimisticLocking());
@@ -577,7 +593,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_sequenceGenerator = (SequenceGeneratorMetadata) mergeORObjects(m_sequenceGenerator, accessor.getSequenceGenerator());
         m_tableGenerator = (TableGeneratorMetadata) mergeORObjects(m_tableGenerator, accessor.getTableGenerator());
         
-        // ORMetadata list merging. 
+        // ORMetadata list merging.
         m_entityListeners = mergeORObjectLists(m_entityListeners, accessor.getEntityListeners());
         m_fetchGroups = mergeORObjectLists(m_fetchGroups, accessor.getFetchGroups());
         m_namedQueries = mergeORObjectLists(m_namedQueries, accessor.getNamedQueries());
@@ -662,10 +678,41 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Process the existence checking metadata.
         processExistenceChecking();
         
+        // Process the additional criteria metadata.
+        processAdditionalCriteria();
+        
         // Process our parents metadata after processing our own.
         super.process();
     }
-    
+        
+    /**
+     * INTERNAL:
+     * Process the additional criteria metadata specified on an entity or 
+     * mapped superclass. Once the additional criteria are processed from
+     * XML process the additional criteria from annotations. This order of 
+     * processing must be maintained.
+     */
+    protected void processAdditionalCriteria() {
+        if (m_additionalCriteria != null || isAnnotationPresent(AdditionalCriteria.class)) {
+            // We have additional criteria available. If the descriptor already
+            // has additional criteria, then we are processing a mapped 
+            // superclass and should ignore the additional criteria for this 
+            // descriptor.
+            if (getDescriptor().hasAdditionalCriteria()) {
+                // Ignore additional criteria on mapped superclass if additional
+                // criteria is already defined on the entity.
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_ADDITIONAL_CRITERIA, getDescriptor().getJavaClass(), getJavaClass());    
+            } else if (m_additionalCriteria != null) {
+                // Process the additional criteria that was specified in XML.
+                m_additionalCriteria.process(getDescriptor());
+
+            } else {
+                // Process the additional criteria from the annotation.
+                new AdditionalCriteriaMetadata(getAnnotation(AdditionalCriteria.class), getAccessibleObject()).process(getDescriptor());
+            }
+        }
+    }
+        
     /**
      * INTERNAL:
      * Process the accessType for a MappedSuperclass.
@@ -1236,6 +1283,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(TableGenerator.class), getAccessibleObject()), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
     } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAdditionalCriteria(AdditionalCriteriaMetadata additionalCriteria) {
+        m_additionalCriteria = additionalCriteria;
+    }
     
     /**
      * INTERNAL:

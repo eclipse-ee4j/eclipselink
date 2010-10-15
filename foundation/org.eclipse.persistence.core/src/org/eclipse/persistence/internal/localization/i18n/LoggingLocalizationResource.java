@@ -14,7 +14,9 @@
  *     06/30/2010-2.1.1 Michael O'Brien 
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -262,6 +264,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_cacheable_false", "Ignoring the explicit cacheable=false set for the entity class [{0}] since a caching type of ALL has been specified in the persistence.xml file." },
         { "metadata_warning_ignore_cacheable_true", "Ignoring the explicit cacheable=true set for the entity class [{0}] since a caching type of NONE has been specified in the persistence.xml file." },
         
+        { "metadata_warning_ignore_mapped_superclass_additional_criteria", "Ignoring the additional criteria metadata on the mapped superclass [{1}] for the entity class [{0}] since additional criteria metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." }, 
         { "metadata_warning_ignore_attribute_override", "Ignoring the attribute override named [{0}] on the element [{1}] of the mapped superclass [{2}] since an attribute override with the same name has been specified on the entity class [{3}]." },
         { "metadata_warning_ignore_association_override", "Ignoring the association override named [{0}] on the element [{1}] of the mapped superclass [{2}] since an association override with the same name has been specified on the entity class [{3}]." },
         

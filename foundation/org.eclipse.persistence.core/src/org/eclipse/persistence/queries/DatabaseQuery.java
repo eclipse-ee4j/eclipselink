@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     07/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
@@ -744,7 +746,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         }
         // Check for query argument values.
         if ((this.argumentValues != null) && (!this.argumentValues.isEmpty()) && translationRow.isEmpty()) {
-            translationRow = rowFromArguments(this.argumentValues);
+            translationRow = rowFromArguments(this.argumentValues, session);
         }
         queryToExecute.setTranslationRow(translationRow);
 
@@ -1304,7 +1306,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void ignoreCacheStatement() {
         this.shouldCacheStatement = null;
     }
-
+    
     /**
      * PUBLIC: Return true if this query uses an SQL or stored procedure, or SDK
      * call.
@@ -1712,29 +1714,51 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             argumentField.setType((Class) argumentTypes.get(index));
             argumentFields.add(argumentField);
         }
+
         return argumentFields;
     }
 
     /**
      * INTERNAL: Translate argumentValues into a database row.
      */
-    public AbstractRecord rowFromArguments(List argumentValues) throws QueryException {
+    public AbstractRecord rowFromArguments(List argumentValues, AbstractSession session) throws QueryException {
         List<DatabaseField> argumentFields = this.argumentFields;
+
         // PERF: argumentFields are set in prepare, but need to be built if
         // query is not prepared.
         if (!isPrepared() || (argumentFields == null)) {
             argumentFields = buildArgumentFields();
         }
-
+        
         if (argumentFields.size() != argumentValues.size()) {
             throw QueryException.argumentSizeMismatchInQueryAndQueryDefinition(this);
         }
+        
         int argumentsSize = argumentFields.size();
         AbstractRecord row = new DatabaseRecord(argumentsSize);
         for (int index = 0; index < argumentsSize; index++) {
             row.put(argumentFields.get(index), argumentValues.get(index));
         }
 
+        // If the descriptor uses additional criteria, add its argument fields now.
+        if (getDescriptor() != null && getDescriptor().shouldUseAdditionalJoinExpression() && getDescriptor().getQueryManager().hasAdditionalCriteriaArguments()) {
+            HashMap<String, Class> additionalCriteriaArguments = getDescriptor().getQueryManager().getAdditionalCriteriaArguments();
+                
+            for (String additionalCriteriaParameter : additionalCriteriaArguments.keySet()) {
+                Object propertyValue = session.getProperty(additionalCriteriaParameter);
+                
+                if (propertyValue == null) {
+                    // If we don't have a property value and the argument field 
+                    // is to an additional criteria parameter, throw an exception.
+                    throw QueryException.argumentFromAdditionalCriteriaMissing(this, additionalCriteriaParameter);
+                } else {
+                    DatabaseField argumentField = new DatabaseField(additionalCriteriaParameter);
+                    argumentField.setType(additionalCriteriaArguments.get(additionalCriteriaParameter));
+                    row.put(argumentField, propertyValue);
+                }
+            }
+        }
+        
         return row;
     }
 

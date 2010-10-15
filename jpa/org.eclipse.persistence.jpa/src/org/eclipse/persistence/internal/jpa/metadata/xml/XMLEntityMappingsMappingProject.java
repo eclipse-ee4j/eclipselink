@@ -49,6 +49,8 @@
  *       - 309373: Add parent class attribute to EclipseLink-ORM
  *     09/16/2010-2.2 Guy Pelletier 
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -76,6 +78,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Transfor
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.additionalcriteria.AdditionalCriteriaMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
@@ -189,6 +192,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildDiscriminatorColumnDescriptor());
         addDescriptor(buildDiscriminatorClassDescriptor());
         
+        addDescriptor(buildAdditionalCriteriaDescriptor());
         addDescriptor(buildNamedQueryDescriptor());
         addDescriptor(buildNamedNativeQueryDescriptor());
         addDescriptor(buildNamedStoredProcedureQueryDescriptor());
@@ -280,6 +284,25 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         setMethodMapping.setSetMethodName("setSetMethodName");
         setMethodMapping.setXPath("@set-method");
         descriptor.addMapping(setMethodMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: additional-criteria
+     */
+    protected ClassDescriptor buildAdditionalCriteriaDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(AdditionalCriteriaMetadata.class);
+    
+        // Element mappings - must remain in order of definition in XML.
+        XMLDirectMapping criteriaMapping = new XMLDirectMapping();
+        criteriaMapping.setAttributeName("m_criteria");
+        criteriaMapping.setGetMethodName("getCriteria");
+        criteriaMapping.setSetMethodName("setCriteria");
+        criteriaMapping.setXPath("orm:criteria");
+        descriptor.addMapping(criteriaMapping);
         
         return descriptor;
     }
@@ -1075,6 +1098,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
         descriptor.addMapping(getAccessMethodsMapping());
+        descriptor.addMapping(getAdditionalCriteriaMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
         
@@ -1577,6 +1601,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
         descriptor.addMapping(getAccessMethodsMapping());
+        descriptor.addMapping(getAdditionalCriteriaMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
         descriptor.addMapping(getIdClassMapping());
@@ -2683,6 +2708,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeObjectMapping getAdditionalCriteriaMapping() {
+        XMLCompositeObjectMapping additionalCriteriaMapping = new XMLCompositeObjectMapping();
+        additionalCriteriaMapping.setAttributeName("m_additionalCriteria");
+        additionalCriteriaMapping.setGetMethodName("getAdditionalCriteria");
+        additionalCriteriaMapping.setSetMethodName("setAdditionalCriteria");
+        additionalCriteriaMapping.setReferenceClass(AdditionalCriteriaMetadata.class);
+        additionalCriteriaMapping.setXPath("orm:additional-criteria");
+        return additionalCriteriaMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLDirectMapping getAllocationSizeAttributeMapping() {
         XMLDirectMapping allocationSizeMapping = new XMLDirectMapping();
         allocationSizeMapping.setAttributeName("m_allocationSize");
@@ -3226,6 +3264,32 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         idClassMapping.setSetMethodName("setIdClassName");
         idClassMapping.setXPath("orm:id-class/@class");
         return idClassMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getIndexesMapping() {
+        XMLCompositeCollectionMapping indexesMapping = new XMLCompositeCollectionMapping();
+        indexesMapping.setAttributeName("m_indexes");
+        indexesMapping.setGetMethodName("getIndexes");
+        indexesMapping.setSetMethodName("setIndexes");
+        indexesMapping.setReferenceClass(IndexMetadata.class);
+        indexesMapping.setXPath("orm:index");
+        return indexesMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getIndexMapping() {
+        XMLCompositeObjectMapping indexMapping = new XMLCompositeObjectMapping();
+        indexMapping.setAttributeName("m_index");
+        indexMapping.setGetMethodName("getIndex");
+        indexMapping.setSetMethodName("setIndex");
+        indexMapping.setReferenceClass(IndexMetadata.class);
+        indexMapping.setXPath("orm:index");
+        return indexMapping;
     }
     
     /**
@@ -3959,26 +4023,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         tableMapping.setSetMethodName("setTable");
         tableMapping.setXPath("@table");
         return tableMapping;
-    }
-    
-    protected XMLCompositeCollectionMapping getIndexesMapping() {
-        XMLCompositeCollectionMapping indexesMapping = new XMLCompositeCollectionMapping();
-        indexesMapping.setAttributeName("m_indexes");
-        indexesMapping.setGetMethodName("getIndexes");
-        indexesMapping.setSetMethodName("setIndexes");
-        indexesMapping.setReferenceClass(IndexMetadata.class);
-        indexesMapping.setXPath("orm:index");
-        return indexesMapping;
-    }
-    
-    protected XMLCompositeObjectMapping getIndexMapping() {
-        XMLCompositeObjectMapping indexMapping = new XMLCompositeObjectMapping();
-        indexMapping.setAttributeName("m_index");
-        indexMapping.setGetMethodName("getIndex");
-        indexMapping.setSetMethodName("setIndex");
-        indexMapping.setReferenceClass(IndexMetadata.class);
-        indexMapping.setXPath("orm:index");
-        return indexMapping;
     }
     
     /**

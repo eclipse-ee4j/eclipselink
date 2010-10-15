@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -183,6 +185,7 @@ public class QueryException extends ValidationException {
     public final static int CAST_MUST_USE_INHERITANCE = 6167;
     public final static int PREPARE_FAILED = 6168;
     public final static int ORIGINAL_QUERY_MUST_USE_IN = 6169;
+    public final static int ADDITIONAL_CRITERIA_VALUE_MISSING = 6170;
 
     /**
      * INTERNAL:
@@ -232,6 +235,14 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, ARGUMENT_SIZE_MISMATCH_IN_QUERY_AND_QUERY_DEFINITION, args), query);
         queryException.setErrorCode(ARGUMENT_SIZE_MISMATCH_IN_QUERY_AND_QUERY_DEFINITION);
+        return queryException;
+    }
+    
+    public static QueryException argumentFromAdditionalCriteriaMissing(DatabaseQuery query, String argumentName) {
+        Object[] args = { argumentName };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, ADDITIONAL_CRITERIA_VALUE_MISSING, args), query);
+        queryException.setErrorCode(ADDITIONAL_CRITERIA_VALUE_MISSING);
         return queryException;
     }
 

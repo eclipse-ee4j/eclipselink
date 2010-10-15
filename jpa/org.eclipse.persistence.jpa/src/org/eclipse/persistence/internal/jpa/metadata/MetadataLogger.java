@@ -33,6 +33,8 @@
  *       - 260296: mixed access with no Transient annotation does not result in error
  *     07/23/2010-2.2 Guy Pelletier 
  *       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -94,6 +96,7 @@ public class MetadataLogger {
     public static final String IGNORE_INHERITANCE_SUBCLASS_READ_ONLY = "metadata_warning_ignore_inheritance_subclass_read_only";
     
     public static final String IGNORE_MAPPED_SUPERCLASS_COPY_POLICY = "metadata_warning_ignore_mapped_superclass_copy_policy";
+    public static final String IGNORE_MAPPED_SUPERCLASS_ADDITIONAL_CRITERIA = "metadata_warning_ignore_mapped_superclass_additional_criteria";
     public static final String IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE = "metadata_warning_ignore_mapped_superclass_association_override";
     public static final String IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE = "metadata_warning_ignore_mapped_superclass_attribute_override";
     public static final String IGNORE_MAPPED_SUPERCLASS_CACHE = "metadata_warning_ignore_mapped_superclass_cache";
@@ -232,6 +235,7 @@ public class MetadataLogger {
         addContextString(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);
        
         addContextString(IGNORE_MAPPED_SUPERCLASS_COPY_POLICY);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_ADDITIONAL_CRITERIA);
         addContextString(IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE);
         addContextString(IGNORE_MAPPED_SUPERCLASS_ATTRIBUTE_OVERRIDE);
         addContextString(IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING);

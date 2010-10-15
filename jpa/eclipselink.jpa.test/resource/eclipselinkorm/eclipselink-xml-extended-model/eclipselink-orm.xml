@@ -476,6 +476,21 @@
             </basic>
         </attributes>
     </entity>
+    <entity name="XMLStudent" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Student">
+        <additional-criteria>
+            <criteria>this.name LIKE :NAME</criteria>
+        </additional-criteria>
+    </entity>
+    <entity name="XMLSchool" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.School">
+        <additional-criteria>
+            <criteria>this.name LIKE 'Ottawa%'</criteria>
+        </additional-criteria>
+    </entity>
+    <entity name="XMLBolt" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Bolt">
+        <additional-criteria>
+            <criteria>this.nut.size = :NUT_SIZE and this.nut.color = :NUT_COLOR order by this.id</criteria>
+        </additional-criteria>
+    </entity>
     <embeddable class="ShovelSections" access="VIRTUAL">
         <access-methods get-method="getMaterial" set-method="setMaterial"/>
         <attributes>

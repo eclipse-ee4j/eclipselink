@@ -67,6 +67,7 @@
             <property name="javax.persistence.lock.timeout" value="5"/>
             <property name="eclipselink.id-validation" value="NEGATIVE"/>
             <property name="javax.persistence.query.timeout" value="20"/>
+            <property name="NAME" value="Montreal%"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="default1">

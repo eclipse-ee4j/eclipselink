@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -1252,7 +1254,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (query == null) {
             throw QueryException.queryNotDefined();
         }
-        AbstractRecord row = query.rowFromArguments(argumentValues);
+        AbstractRecord row = query.rowFromArguments(argumentValues, this);
 
         return executeQuery(query, row);
     }

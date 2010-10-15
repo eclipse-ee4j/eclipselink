@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -19,7 +21,10 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.jpa.parsing.JPQLParseTree;
+import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
@@ -56,6 +61,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     protected DoesExistQuery doesExistQuery;
     protected ClassDescriptor descriptor;
     protected boolean hasCustomMultipleTableJoinExpression;
+    protected transient String additionalCriteria;
+    // Contains list of additional criteria and their types.
+    protected transient HashMap<String, Class> additionalCriteriaArguments;
     protected transient Expression additionalJoinExpression;
     protected transient Expression multipleTableJoinExpression;
     protected transient Map queries;
@@ -290,6 +298,14 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         }
     };
 
+    /**
+     * ADVANCED:
+     * Returns the additional criteria arguments.
+     */
+    public HashMap<String, Class> getAdditionalCriteriaArguments() {
+        return additionalCriteriaArguments;
+    }
+    
     /**
      * ADVANCED:
      * Returns the join expression that should be appended to all of the descriptors expressions
@@ -702,6 +718,22 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     }
 
     /**
+     * ADVANCED:
+     * Return true if an additional criteria has been set on this query manager.
+     */
+    public boolean hasAdditionalCriteria() {
+        return additionalCriteria != null;
+    }
+    
+    /**
+     * ADVANCED:
+     * Return true if there are arguments within the additional criteria.
+     */
+    public boolean hasAdditionalCriteriaArguments() {
+        return additionalCriteriaArguments != null && ! additionalCriteriaArguments.isEmpty();
+    }
+    
+    /**
      * INTERNAL:
      * Return if a custom join expression is used.
      */
@@ -892,6 +924,45 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Post initializations after mappings are initialized.
+     */
+    public void postInitialize(AbstractSession session) throws DescriptorException {
+        // If the additional criteria is specified, append it to the additional
+        // join expression. We do this in postInitialize after all the mappings
+        // have been fully initialized.
+        if (additionalCriteria != null) {
+            if (getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().hasView()) {
+                throw DescriptorException.additionalCriteriaNotSupportedWithInheritanceViews(getDescriptor());
+            }
+            
+            String jpql = "select this from " + descriptor.getAlias() + " this where " + additionalCriteria.trim();
+            
+            JPQLParseTree parseTree = JPQLParser.buildParseTree(jpql);
+            parseTree.setClassLoader(session.getLoader());
+            DatabaseQuery databaseQuery = parseTree.createDatabaseQuery();
+            databaseQuery.setJPQLString(jpql);
+            parseTree.populateQuery(databaseQuery, (AbstractSession) session);
+            parseTree.addParametersToQuery(databaseQuery);
+            
+            // Store the arguments and their types.
+            if (databaseQuery.hasArguments()) {
+                additionalCriteriaArguments = new HashMap<String, Class>();
+                
+                for (int i = 0; i < databaseQuery.getArguments().size(); i++) {
+                    additionalCriteriaArguments.put(databaseQuery.getArguments().get(i), databaseQuery.getArgumentTypes().get(i));
+                }
+            }
+            
+            additionalJoinExpression = databaseQuery.getSelectionCriteria().and(additionalJoinExpression);
+            // The make sure the additional join expression has the correct 
+            // context, rebuild the additional join expression on a new 
+            // expression builder.
+            additionalJoinExpression = additionalJoinExpression.rebuildOn(new ExpressionBuilder());
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Execute the post insert operation for the query
      */
     public void postInsert(WriteObjectQuery query) {
@@ -1061,6 +1132,16 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         }
     }
 
+    /**
+     * ADVANCED:
+     * Set the additional join criteria that will be used to form the additional
+     * join expression. The additionalCriteria is a jpql fragment at this point. 
+     * @see setAdditionalJoinExpression
+     */
+    public void setAdditionalCriteria(String additionalCriteria) {
+        this.additionalCriteria = additionalCriteria;
+    }
+    
     /**
      * ADVANCED:
      * Set the additional join expression. Used in conjunction with

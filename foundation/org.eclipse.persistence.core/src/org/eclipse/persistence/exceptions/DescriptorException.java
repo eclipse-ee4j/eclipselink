@@ -13,6 +13,8 @@
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -237,6 +239,7 @@ public class DescriptorException extends ValidationException {
     public final static int CANNOT_USE_ID_VALUE_FOR_COMPOSITE_ID = 216;
     public final static int INVALID_XPATH_FOR_DIRECT_MAPPING = 217;
     public final static int NULL_POINTER_WHILE_GETTING_VALUE_THRU_METHOD_ACCESSOR_IN_MODULE_ORDER_BREAKS_WEAVING = 218;
+    public final static int ADDITIONAL_CRITERIA_NOT_SUPPORTED_WITH_INHERITANCE_VIEWS = 219;
 
     /**
      * INTERNAL:
@@ -272,6 +275,14 @@ public class DescriptorException extends ValidationException {
         setInternalException(exception);
     }
 
+    public static DescriptorException additionalCriteriaNotSupportedWithInheritanceViews(ClassDescriptor descriptor) {
+        Object[] args = { };
+
+        DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, ADDITIONAL_CRITERIA_NOT_SUPPORTED_WITH_INHERITANCE_VIEWS, args), descriptor);
+        exception.setErrorCode(ADDITIONAL_CRITERIA_NOT_SUPPORTED_WITH_INHERITANCE_VIEWS);
+        return exception;
+    }
+    
     public static DescriptorException attemptToRegisterDeadIndirection(Object object, DatabaseMapping mapping) {
         Object[] args = { object };
 

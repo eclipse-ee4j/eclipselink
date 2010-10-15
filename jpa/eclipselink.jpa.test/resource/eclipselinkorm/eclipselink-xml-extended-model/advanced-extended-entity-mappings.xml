@@ -818,7 +818,7 @@
             <one-to-one name="admin" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.derivedid.Administrator" id="true"/>
         </attributes>
     </entity>
-        <entity name="XMLDepartmentAdminRole" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.derivedid.DepartmentAdminRole" access="PROPERTY">
+    <entity name="XMLDepartmentAdminRole" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.derivedid.DepartmentAdminRole" access="PROPERTY">
         <table name="CMP3_XML_DEPT_ADMIN"/>
         <id-class class="org.eclipse.persistence.testing.models.jpa.xml.advanced.derivedid.DepartmentAdminRolePK"/>
         <exclude-default-listeners/>
@@ -830,6 +830,63 @@
                 <join-column name="DEPT_LOCATION" referenced-column-name="LOCATION"/>
             </one-to-one>
             <one-to-one name="admin" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.derivedid.Administrator" id="true"/>
+        </attributes>
+    </entity>
+    <entity name="XMLStudent" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Student">
+        <table name="JPA_XML_AC_STUDENT"/>
+        <attributes>
+            <id name="id">
+                <generated-value generator="AC_XML_STUDENT_SEQ"/>
+                <sequence-generator name="AC_XML_STUDENT_SEQ" allocation-size="25"/>
+            </id>
+            <basic name="name"/>
+            <many-to-one name="school"/>
+        </attributes>
+    </entity>
+    <entity name="XMLSchool" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.School">
+        <table name="JPA_XML_AC_SCHOOL"/>
+        <named-query name="findJPQLXMLSchools">
+            <query>SELECT s from XMLSchool s</query>
+        </named-query>
+        <attributes>
+            <id name="id">
+                <generated-value generator="AC_XML_SCHOOL_SEQ"/>
+                <sequence-generator name="AC_XML_SCHOOL_SEQ" allocation-size="25"/>
+            </id>
+            <basic name="name"/>
+            <one-to-many name="students" mapped-by="school">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-many>
+        </attributes>
+    </entity>
+    <entity name="XMLBolt" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Bolt">
+        <table name="JPA_XML_AC_BOLT"/>
+        <attributes>
+            <id name="id">
+                <generated-value generator="AC_XML_BOLT_SEQ"/>
+                <sequence-generator name="AC_XML_BOLT_SEQ" allocation-size="25"/>
+            </id>
+            <one-to-one name="nut">
+                <join-column name="NUT_ID"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLNut" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Nut">
+        <table name="JPA_XML_AC_NUT"/>
+        <attributes>
+            <id name="id">
+                <generated-value generator="AC_XML_NUT_SEQ"/>
+                <sequence-generator name="AC_XML_NUT_SEQ" allocation-size="25"/>
+            </id>
+            <basic name="size">
+                <column name="B_SIZE"/>
+            </basic>
+            <basic name="color"/>
         </attributes>
     </entity>
     <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod" access="PROPERTY">
@@ -844,7 +901,7 @@
             </basic>
         </attributes>
     </embeddable>
-        <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod" access="PROPERTY">
+    <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod" access="PROPERTY">
         <attributes>
             <basic name="startDate">
                 <column name="S_DATE"/>

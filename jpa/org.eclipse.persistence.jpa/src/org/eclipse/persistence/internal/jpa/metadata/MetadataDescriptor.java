@@ -76,6 +76,8 @@
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     10/15/2010-2.2 Guy Pelletier 
+ *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1062,6 +1064,15 @@ public class MetadataDescriptor {
      */
     public DatabaseField getSequenceNumberField() {
         return m_descriptor.getSequenceNumberField();
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true is an additional criteria has been set on this descriptor's
+     * query manager.
+     */
+    public boolean hasAdditionalCriteria() {
+        return m_descriptor.getQueryManager().hasAdditionalCriteria();
     }
     
     /**

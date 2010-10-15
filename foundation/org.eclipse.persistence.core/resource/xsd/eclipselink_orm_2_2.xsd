@@ -20,6 +20,8 @@
 <!--        - 227219: Expand EclipseLink-ORM.XML schema functionality for 2.1 release  (update version to 2.1)                       -->
 <!--     6/14/2010-2.2 Guy Pelletier                                                                                                 -->
 <!--        - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings (update version to 2.2)  -->
+<!--     10/15/2010-2.2 Guy Pelletier                                                                                                -->
+<!--       - 322008: Improve usability of additional criteria applied to queries at the session/EM                                   -->
 <!-- ******************************************************************************************************************************* -->
 
 <!-- Java Persistence API object-relational mapping file schema -->
@@ -82,6 +84,55 @@
     <xsd:attribute name="set-method" type="xsd:string" use="required"/>
   </xsd:complexType>
   
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="additional-criteria">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /**
+         * An additional criteria can be specified at the Entity or MappedSuperclass 
+         * level. When specified at the mapped superclass level, it applies to all 
+         * inheriting entities unless those entities define their own additional 
+         * criteria, at which point the additional criteria from the mapped superclass 
+         * is ignored.  
+         *
+         * The additional criteria supports any valid JPQL string and must use 'this' 
+         * as an alias to form your additional criteria. E.G.,
+         * 
+         * @Entity
+         * @AdditionalCriteria("this.nut.size = :NUT_SIZE and this.nut.color = :NUT_COLOR")
+         * public class Bolt {...}
+         * 
+         * Additional criteria parameters are also accepted and are set through 
+         * properties on the entity manager factory, or on an entity manager. When set 
+         * on the entity manager, the properties must be set before any query execution
+         * and should not be changed for the life span of that entity manager.
+         * 
+         * Properties set on the entity manager will override those similarly named 
+         * properties set on the entity manager factory.
+         *
+         * Additional criteria is not supported with any native queries.
+         * 
+         * @author Guy Pelletier
+         * @since EclipseLink 2.2
+         */
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface AdditionalCriteria {
+            /**
+             * (Required) The JPQL fragment to use as the additional criteria.
+             */
+            String value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="criteria" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+      
   <!-- **************************************************** -->
   
   <xsd:complexType name="cache">
@@ -708,6 +759,7 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:element name="additional-criteria" type="orm:additional-criteria" minOccurs="0"/>
       <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
       <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
       <xsd:element name="table" type="orm:table" minOccurs="0"/>
@@ -2527,6 +2579,7 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:element name="additional-criteria" type="orm:additional-criteria" minOccurs="0"/>
       <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
       <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
