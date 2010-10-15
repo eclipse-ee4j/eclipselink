@@ -203,6 +203,7 @@ public class AnnotationsProcessor {
         preBuildTypeInfo(classes);
         classes = postBuildTypeInfo(classes);
         processJavaClasses(null);
+        processPropertyTypes(this.typeInfoClasses.toArray(new JavaClass[this.typeInfoClasses.size()]));
         finalizeProperties();
         createElementsForTypeMappingInfo();
     }
@@ -591,17 +592,6 @@ public class AnnotationsProcessor {
             // handle @XmlAccessorOrder
             postProcessXmlAccessorOrder(info, packageNamespace);
 
-            // Make sure this class has a factory method or a zero arg
-            // constructor
-            if (!javaClass.isInterface()) {
-                if (info.getFactoryMethodName() == null && info.getObjectFactoryClassName() == null) {
-                    JavaConstructor zeroArgConstructor = javaClass.getDeclaredConstructor(new JavaClass[] {});
-                    if (zeroArgConstructor == null) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(javaClass.getName());
-                    }
-                }
-            }
-
             validatePropOrderForInfo(info);
         }
         return typeInfo;
@@ -620,6 +610,19 @@ public class AnnotationsProcessor {
             if (tInfo.isTransient()) {
                 continue;
             }
+            
+            if(!jClass.isInterface() && !tInfo.isEnumerationType()) {
+                if (tInfo.getFactoryMethodName() == null && tInfo.getObjectFactoryClassName() == null) {
+                    JavaConstructor zeroArgConstructor = jClass.getDeclaredConstructor(new JavaClass[] {});
+                    if (zeroArgConstructor == null) {
+                        if(tInfo.isSetXmlJavaTypeAdapter()) {
+                            tInfo.setTransient(true);
+                        } else {
+                            throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(jClass.getName());
+                        }
+                    }
+                }
+            }            
             // validate XmlValue
             if (tInfo.getXmlValueProperty() != null) {
                 validateXmlValueFieldOrProperty(jClass, tInfo.getXmlValueProperty());
@@ -737,14 +740,7 @@ public class AnnotationsProcessor {
             // all types is completed
             processXmlIDREF(property);
 
-            JavaClass propertyType = property.getActualType();
-
-            if (shouldGenerateTypeInfo(propertyType)) {
-                JavaClass[] jClassArray = new JavaClass[] { propertyType };
-                buildNewTypeInfo(jClassArray);
-            }
-
-            if (property.isMap()) {
+            if(property.isMap()) {
                 JavaClass keyType = property.getKeyType();
                 if (shouldGenerateTypeInfo(keyType)) {
                     JavaClass[] jClassArray = new JavaClass[] { keyType };
@@ -760,6 +756,20 @@ public class AnnotationsProcessor {
         }
     }
 
+    void processPropertyTypes(JavaClass[] classes) {
+        for (JavaClass next:classes) {
+            TypeInfo info = getTypeInfo().get(next.getQualifiedName());
+            if(info != null) {
+                for (Property property : info.getPropertyList()) {
+                    JavaClass type = property.getActualType();
+                    if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
+                        JavaClass[] jClassArray = new JavaClass[] { type };
+                        buildNewTypeInfo(jClassArray);
+                    }
+                }
+            }
+        }
+    }
     /**
      * This method was initially designed to handle processing one or more
      * JavaClass instances. Over time its functionality has been broken apart
@@ -1319,18 +1329,27 @@ public class AnnotationsProcessor {
             property.setXmlJavaTypeAdapter(xja);
         } else {
             TypeInfo ptypeInfo = typeInfo.get(ptype.getQualifiedName());
+            boolean newTypeInfoForAdapter = false;
             if (ptypeInfo == null && shouldGenerateTypeInfo(ptype)) {
                 JavaClass[] jClassArray = new JavaClass[] { ptype };
                 buildNewTypeInfo(jClassArray);
+                ptypeInfo = typeInfo.get(ptype.getQualifiedName());
+                newTypeInfoForAdapter = true;
             }
             org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xmlJavaTypeAdapter;
-            if (ptypeInfo != null && null != (xmlJavaTypeAdapter = ptypeInfo.getXmlJavaTypeAdapter())) {
-                try {
-                    property.setXmlJavaTypeAdapter(xmlJavaTypeAdapter);
-                } catch (JAXBException e) {
-                    throw JAXBException.invalidTypeAdapterClass(xmlJavaTypeAdapter.getValue(), javaClass.getName());
+            if (ptypeInfo != null) {
+                if (null != (xmlJavaTypeAdapter = ptypeInfo.getXmlJavaTypeAdapter())) {
+                    try {
+                        property.setXmlJavaTypeAdapter(xmlJavaTypeAdapter);
+                    } catch (JAXBException e) {
+                        throw JAXBException.invalidTypeAdapterClass(xmlJavaTypeAdapter.getValue(), javaClass.getName());                    }
+                } else {
+                    if(newTypeInfoForAdapter) {
+                        removeTypeInfo(ptype.getQualifiedName(), ptypeInfo);
+                    }
                 }
-            } else if (info.getPackageLevelAdaptersByClass().get(ptype.getQualifiedName()) != null) {
+            } 
+            if (info.getPackageLevelAdaptersByClass().get(ptype.getQualifiedName()) != null && !property.isSetXmlJavaTypeAdapter()) {
                 adapterClass = info.getPackageLevelAdapterClass(ptype);
 
                 org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
@@ -1339,6 +1358,21 @@ public class AnnotationsProcessor {
                 property.setXmlJavaTypeAdapter(xja);
             }
 
+        }
+    }
+
+    private void removeTypeInfo(String qualifiedName, TypeInfo info) {
+        this.typeInfo.remove(qualifiedName);
+        String typeName = info.getSchemaTypeName();
+        if (typeName != null && !("".equals(typeName))) {
+            QName typeQName = new QName(info.getClassNamespace(), typeName);
+            this.typeQNames.remove(typeQName);
+        }        
+        for(JavaClass next:this.typeInfoClasses) {
+            if(next.getQualifiedName().equals(info.getJavaClassName())) {
+                this.typeInfoClasses.remove(next);
+                break;
+            }
         }
     }
 
@@ -3708,6 +3742,7 @@ public class AnnotationsProcessor {
     public void buildNewTypeInfo(JavaClass[] javaClasses) {
         preBuildTypeInfo(javaClasses);
         postBuildTypeInfo(javaClasses);
+        processPropertyTypes(javaClasses);
     }
 
     /**

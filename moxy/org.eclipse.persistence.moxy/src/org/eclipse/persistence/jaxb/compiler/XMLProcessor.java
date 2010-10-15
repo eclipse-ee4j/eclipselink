@@ -333,6 +333,8 @@ public class XMLProcessor {
                 }
             }
         }
+        ArrayList<JavaClass> jClasses = aProcessor.getTypeInfoClasses();
+        aProcessor.processPropertyTypes(jClasses.toArray(new JavaClass[jClasses.size()]));
         
         aProcessor.finalizeProperties();
         aProcessor.createElementsForTypeMappingInfo();
@@ -1259,6 +1261,7 @@ public class XMLProcessor {
         unsetXmlValue(oldProperty, tInfo);
         unsetXmlID(oldProperty, tInfo);
         unsetXmlKey(oldProperty, tInfo);
+        reapplyPackageAndClassAdapters(oldProperty, tInfo);
         return oldProperty;
     }
 
@@ -1470,5 +1473,26 @@ public class XMLProcessor {
         property.setType(jModelInput.getJavaModel().getClass(containerClassName));
         // set the original generic type
         property.setGenericType(genericType);
+    }
+    
+    public void reapplyPackageAndClassAdapters(Property prop, TypeInfo owningInfo) {
+        JavaClass type = prop.getActualType();
+        //if a class level adapter is present on the target class, set it
+        TypeInfo targetInfo = aProcessor.getTypeInfo().get(type.getQualifiedName());
+        if(targetInfo != null) {
+            if(targetInfo.getXmlJavaTypeAdapter() != null) {
+                prop.setXmlJavaTypeAdapter(targetInfo.getXmlJavaTypeAdapter());
+            }
+        }
+
+        //check for package level adapter. Don't overwrite class level
+        JavaClass packageLevelAdapter = owningInfo.getPackageLevelAdaptersByClass().get(type.getQualifiedName()); 
+        if(packageLevelAdapter != null && prop.getXmlJavaTypeAdapter() == null) {
+            org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
+            xja.setValue(packageLevelAdapter.getQualifiedName());
+            xja.setType(type.getQualifiedName());
+            prop.setXmlJavaTypeAdapter(xja);
+        }
+        
     }
 }

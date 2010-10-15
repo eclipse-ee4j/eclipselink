@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/oxm http://www.eclipse.org/eclipselink/xsds/eclipselink_oxm_2_1.xsd">
+
+	<xml-schema 
+		attribute-form-default="UNQUALIFIED" 
+		element-form-default="QUALIFIED" namespace="urn:myNS">
+	</xml-schema>
+	<java-types>
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package1.Container">
+			<xml-root-element name="CONTAINER"/>
+			<java-attributes>
+				<xml-element java-attribute="containerProperty" name="PROPERTY"/>
+			</java-attributes>
+		</java-type>
+	</java-types>
+	
+</xml-bindings>

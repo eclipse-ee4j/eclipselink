@@ -579,9 +579,17 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
         Schema theSchema;
         try {
+            InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_2.xsd");
+            if (bindingsFileXSDInputStream == null){
+                bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("xsd/eclipselink_oxm_2_2.xsd");
+            }
+            if (bindingsFileXSDInputStream == null){
+                fail("ERROR LOADING eclipselink_oxm_2_2.xsd");
+            }
+            Source bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
             theSchema = sFact.newSchema(bindingsFileXSDSource);
             Validator validator = theSchema.newValidator();
-
+                   
             validator.validate(src);
         } catch (Exception e) {
             e.printStackTrace();
@@ -592,5 +600,6 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
+
 
 }

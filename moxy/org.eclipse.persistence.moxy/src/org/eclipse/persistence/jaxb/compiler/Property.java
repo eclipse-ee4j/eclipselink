@@ -161,6 +161,7 @@ public class Property {
         if(setGeneric) {
             this.setGenericType(newType);
         } else {
+           this.setOriginalType(this.getType());
            this.setType(newType);
         }
     }
