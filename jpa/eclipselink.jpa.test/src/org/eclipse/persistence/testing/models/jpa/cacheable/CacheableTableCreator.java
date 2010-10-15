@@ -22,6 +22,8 @@ public class CacheableTableCreator extends TableCreator {
         setName("JPA Cacheable Project");
 
         addTableDefinition(buildCACHEABLE_FALSE_ENTITYTable());
+        addTableDefinition(buildCACHEABLE_FALSE_DETAILTable());
+        addTableDefinition(buildCACHEABLE_FALSE_TO_DETAILTable());
         addTableDefinition(buildCACHEABLE_TRUE_ENTITYTable());
         addTableDefinition(buildSUB_CACHEABLE_FALSE_ENTITYTable());
         addTableDefinition(buildSUB_CACHEABLE_NONE_ENTITYTable());
@@ -41,6 +43,70 @@ public class CacheableTableCreator extends TableCreator {
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
     
+        return table;
+    }
+    
+    public static TableDefinition buildCACHEABLE_FALSE_DETAILTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CACHEABLE_FALSE_DETAIL");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldDescription = new FieldDefinition();
+        fieldDescription.setName("DESCRIPTION");
+        fieldDescription.setTypeName("VARCHAR2");
+        fieldDescription.setSize(15);
+        fieldDescription.setShouldAllowNull(true);
+        fieldDescription.setIsPrimaryKey(false);
+        fieldDescription.setUnique(false);
+        fieldDescription.setIsIdentity(false);
+        table.addField(fieldDescription);
+
+        return table;
+    }
+    
+    public static TableDefinition buildCACHEABLE_FALSE_TO_DETAILTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CACHEABLE_FALSE_TO_DETAIL");
+    
+        FieldDefinition fieldEntityID = new FieldDefinition();
+        fieldEntityID.setName("ENTITY_ID");
+        fieldEntityID.setTypeName("NUMERIC");
+        fieldEntityID.setSize(15);
+        fieldEntityID.setShouldAllowNull(false);
+        fieldEntityID.setIsPrimaryKey(true);
+        fieldEntityID.setUnique(false);
+        fieldEntityID.setIsIdentity(false);
+        table.addField(fieldEntityID);    
+
+        FieldDefinition fieldDetailID = new FieldDefinition();
+        fieldDetailID.setName("DETAIL_ID");
+        fieldDetailID.setTypeName("NUMERIC");
+        fieldDetailID.setSize(15);
+        fieldDetailID.setShouldAllowNull(false);
+        fieldDetailID.setIsPrimaryKey(true);
+        fieldDetailID.setUnique(false);
+        fieldDetailID.setIsIdentity(false);
+        table.addField(fieldDetailID);    
+
+        FieldDefinition fieldIndex = new FieldDefinition();
+        fieldIndex.setName("IND");
+        fieldIndex.setTypeName("NUMERIC");
+        fieldIndex.setSize(15);
+        fieldIndex.setShouldAllowNull(false);
+        fieldIndex.setIsPrimaryKey(true);
+        fieldIndex.setUnique(false);
+        fieldIndex.setIsIdentity(false);
+        table.addField(fieldIndex);    
+
         return table;
     }
     

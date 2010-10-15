@@ -95,6 +95,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
@@ -107,6 +108,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
@@ -119,6 +121,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
@@ -131,6 +134,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
@@ -143,6 +147,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
