@@ -34,36 +34,43 @@ import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 
 public class SQLOperationModel extends OperationModel {
 
-    protected String sqlText;
-    protected String secondarySqlText;
+    protected String sql;
+    protected String buildSql;
     protected ArrayList<BindingModel> bindings = new ArrayList<BindingModel>();
 
     public SQLOperationModel() {
-
     }
+    
+    @Deprecated
     public String getSQLText() {
-        return sqlText;
+        return getSql();
+    }
+    public String getSql() {
+        return sql;
+    }
+    public void setSql(String sql) {
+        this.sql = sql;
+    }
+    @Deprecated
+    public void setSQLText(String sql) {
+        setSql(sql);
     }
 
-    public void setSQLText(String sqlText) {
-        this.sqlText = sqlText;
+    public String getBuildSql() {
+        return buildSql;
     }
-
-    public String getSecondarySqlText() {
-        return secondarySqlText;
-    }
-    public void setSecondarySqlText(String secondarySqlText) {
-        if (secondarySqlText != null && secondarySqlText.length() > 0) {
-            this.secondarySqlText = secondarySqlText;
+    public void setBuildSql(String buildSql) {
+        if (buildSql != null && buildSql.length() > 0) {
+            this.buildSql = buildSql;
             setIsSimpleXMLFormat(false);
         }
         else {
-            // clears secondary SQL string; back to simple XML
-            this.secondarySqlText = null;
+            // clears build SQL string; back to simple XML
+            this.buildSql = null;
             setIsSimpleXMLFormat(true);
         }
     }
-
+    
     public void addBinding(BindingModel binding) {
         bindings.add(binding);
     }
@@ -80,8 +87,8 @@ public class SQLOperationModel extends OperationModel {
         return true;
     }
 
-    public boolean hasSecondarySql() {
-        if (secondarySqlText != null && secondarySqlText.length() > 0) {
+    public boolean hasBuildSql() {
+        if (buildSql != null && buildSql.length() > 0) {
             return true;
         }
         return false;
@@ -139,7 +146,7 @@ public class SQLOperationModel extends OperationModel {
             result.setSimpleXMLFormat( sxf == null ? new SimpleXMLFormat() : sxf);
         }
         qo.setResult(result);
-        sqlqh.setSqlString(convertJDBCParameterBindingMarkers(sqlText, bindings));
+        sqlqh.setSqlString(convertJDBCParameterBindingMarkers(sql, bindings));
         if (!bindings.isEmpty()) {
             for (BindingModel param : bindings) {
                 Parameter p = new Parameter();

@@ -31,7 +31,9 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
@@ -354,17 +356,24 @@ public class DBWSBuilderModelProject extends Project {
         returnTypeMapping.setXPath("@returnType");
         descriptor.addMapping(returnTypeMapping);
 
-        XMLDirectMapping textMapping = new XMLDirectMapping();
-        textMapping.setAttributeName("sqlText");
-        textMapping.setXPath("text/text()");
-        textMapping.setIsCDATA(true);
-        descriptor.addMapping(textMapping);
-
-        XMLDirectMapping secondaryTextMapping = new XMLDirectMapping();
-        secondaryTextMapping.setAttributeName("secondarySqlText");
-        secondaryTextMapping.setXPath("secondary-text/text()");
-        secondaryTextMapping.setIsCDATA(true);
-        descriptor.addMapping(secondaryTextMapping);
+        // bug 322949
+        
+        XMLChoiceObjectMapping statementMapping = new XMLChoiceObjectMapping();
+        statementMapping.setAttributeName("sql");
+        // support old element name 'text' and new name 'statement'
+        XMLField f1 = new XMLField("statement/text()");
+        f1.setIsCDATA(true);
+        statementMapping.addChoiceElement(f1, String.class);
+        XMLField f2 = new XMLField("text/text()");
+        f2.setIsCDATA(true);
+        statementMapping.addChoiceElement(f2, String.class);
+        descriptor.addMapping(statementMapping);
+        
+        XMLDirectMapping buildStatementMapping = new XMLDirectMapping();
+        buildStatementMapping.setAttributeName("buildSql");
+        buildStatementMapping.setXPath("build-statement/text()");
+        buildStatementMapping.setIsCDATA(true);
+        descriptor.addMapping(buildStatementMapping);
 
         XMLCompositeCollectionMapping bindingsMapping = new XMLCompositeCollectionMapping();
         bindingsMapping.setAttributeName("bindings");

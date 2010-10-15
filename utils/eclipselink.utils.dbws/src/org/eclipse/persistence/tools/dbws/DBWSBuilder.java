@@ -707,7 +707,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         String projectName = getProjectName();
         orProject = new Project();
         orProject.setName(projectName + "-" + DBWS_OR_LABEL);
-        if (dbTables.isEmpty() && !hasSecondarySqlOperations()) {
+        if (dbTables.isEmpty() && !hasBuildSqlOperations()) {
             logMessage(FINEST, "No tables specified");
             oxProject = new SimpleXMLFormatProject();
         }
@@ -777,7 +777,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     }
                 }
             }
-            if (opModel.isSQLOperation() && ((SQLOperationModel)opModel).hasSecondarySql()) {
+            if (opModel.isSQLOperation() && ((SQLOperationModel)opModel).hasBuildSql()) {
                 buildOROXProjectsForSecondarySql((SQLOperationModel)opModel, nct);
             }
         }
@@ -797,7 +797,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     protected void buildOROXProjectsForSecondarySql(SQLOperationModel sqlOm,
         NamingConventionTransformer nct) {
         List<DbColumn> columns = JDBCHelper.buildDbColumns(getConnection(),
-            sqlOm.getSecondarySqlText());
+            sqlOm.getBuildSql());
         String tableName = sqlOm.getReturnType();
         // need custom NamingConventionTransformer so that returnType/tableName is
         // used verbatim
@@ -1001,7 +1001,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     protected void writeOROXProjects(OutputStream dbwsOrStream, OutputStream dbwsOxStream) {
         boolean writeORProject = false;
-        if (dbTables.size() > 0 ||hasSecondarySqlOperations()) {
+        if (dbTables.size() > 0 || hasBuildSqlOperations()) {
             writeORProject = true;
         }
         else if (dbStoredProcedures.size() > 0) {
@@ -1041,7 +1041,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         if (!isNullStream(dbwsOxStream)) {
             boolean writeOXProject = false;
-            if (dbTables.size() > 0 || hasSecondarySqlOperations()) {
+            if (dbTables.size() > 0 || hasBuildSqlOperations()) {
                 writeOXProject = true;
             }
             else if (dbStoredProcedures.size() > 0) {
@@ -1766,13 +1766,13 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         this.topTransformer = topTransformer;
     }
 
-    public boolean hasSecondarySqlOperations() {
+    public boolean hasBuildSqlOperations() {
         boolean flag = false;
         for (OperationModel om : operations) {
             if (om.isSQLOperation()) {
                 SQLOperationModel sqlOm = (SQLOperationModel)om;
-                String secondarySql = sqlOm.getSecondarySqlText();
-                if (secondarySql != null && secondarySql.length() > 0) {
+                String buildSql = sqlOm.getBuildSql();
+                if (buildSql != null && buildSql.length() > 0) {
                     flag = true;
                     break;
                 }
