@@ -141,17 +141,17 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
               "name=\"allSecondary\" " +
               "isCollection=\"true\" " +
               "returnType=\"" + SECONDARY_ALL_SCHEMA_TYPE + "\"> " +
-              "<text><![CDATA[" + SECONDARY_ALL_SQL + "]]></text>" +
-              "<secondary-text><![CDATA[" + SECONDARY_ALL_SQL +
-                  NONSENCE_WHERE_SQL + "]]></secondary-text>" +
+              "<statement><![CDATA[" + SECONDARY_ALL_SQL + "]]></statement>" +
+              "<build-statement><![CDATA[" + SECONDARY_ALL_SQL +
+                  NONSENCE_WHERE_SQL + "]]></build-statement>" +
           "</sql>" +
           "<sql " +
               "name=\"countSecondary\" " +
               "isCollection=\"false\" " +
               "returnType=\"" + SECONDARY_COUNT_SCHEMA_TYPE +"\"> " +
-              "<text><![CDATA[" + SECONDARY_COUNT_SQL + "]]></text>" +
-              "<secondary-text><![CDATA[" + SECONDARY_COUNT_SQL +
-                NONSENCE_WHERE_SQL + "]]></secondary-text>" +
+              "<statement><![CDATA[" + SECONDARY_COUNT_SQL + "]]></statement>" +
+              "<build-statement><![CDATA[" + SECONDARY_COUNT_SQL +
+                NONSENCE_WHERE_SQL + "]]></build-statement>" +
           "</sql>" +
         "</dbws-builder>";
 
@@ -279,7 +279,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      @Test
      public void checkSQLOperationModel() {
          SQLOperationModel sqlModel = (SQLOperationModel)builder.operations.get(0);
-         assertEquals(SECONDARY_ALL_SQL + NONSENCE_WHERE_SQL , sqlModel.getSecondarySqlText());
+         assertEquals(SECONDARY_ALL_SQL + NONSENCE_WHERE_SQL , sqlModel.getBuildSql());
          assertFalse(sqlModel.isSimpleXMLFormat());
          assertEquals(SECONDARY_ALL_SCHEMA_TYPE, sqlModel.getReturnType());
      }
@@ -580,8 +580,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
             "<sql " +
               "name=\"badColumns\" " +
               "returnType=\"dontCare\"> " +
-              "<text><![CDATA[dontCare]]></text>" +
-              "<secondary-text><![CDATA[select ename, ename from secondary]]></secondary-text>" +
+              "<statement><![CDATA[dontCare]]></statement>" +
+              "<build-statement><![CDATA[select ename, ename from secondary where 0=1]]></build-statement>" +
             "</sql>" +
          "</dbws-builder>";
          XMLContext context = new XMLContext(new DBWSBuilderModelProject());
