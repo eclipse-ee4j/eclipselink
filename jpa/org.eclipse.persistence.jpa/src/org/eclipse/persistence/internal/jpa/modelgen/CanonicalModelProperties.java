@@ -12,6 +12,8 @@
  *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
  *     06/01/2010-2.1 Guy Pelletier 
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
+ *     10/18/2010-2.2 Guy Pelletier 
+ *       - 322921: OutOfMemory in annotation processor
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
@@ -62,6 +64,17 @@ public abstract class CanonicalModelProperties {
      */
     public static final String CANONICAL_MODEL_LOAD_XML = "eclipselink.canonicalmodel.load_xml";
     public static final String CANONICAL_MODEL_LOAD_XML_DEFAULT = "true";
+    
+    /**
+     * This optional property can be used a performance enhancement between
+     * compile rounds within an IDE. It is used to avoid using a static metadata 
+     * factory between 'cache' metadata from incremental builds. Turning this 
+     * off in some use cases (IDE) could result in a loss of functionality. 
+     * The default value is true and should be left as such for full feature 
+     * support.
+     */
+    public static final String CANONICAL_MODEL_USE_STATIC_FACTORY = "eclipselink.canonicalmodel.use_static_factory";
+    public static final String CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT = "true";
     
     /**
      * INTERNAL:

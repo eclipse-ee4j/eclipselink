@@ -18,6 +18,8 @@
  *       - 298118: canonical metamodel generation with untyped Map throws NPE
  *     08/25/2010-2.2 Guy Pelletier 
  *       - 309445: CannonicalModelProcessor process all files
+ *     10/18/2010-2.2 Guy Pelletier 
+ *       - 322921: OutOfMemory in annotation processor
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
@@ -58,6 +60,8 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 import static javax.lang.model.SourceVersion.RELEASE_6;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT;
 
 /**
  * The main APT processor to generate the JPA 2.0 Canonical model. 
@@ -69,7 +73,8 @@ import static javax.lang.model.SourceVersion.RELEASE_6;
 @SupportedSourceVersion(RELEASE_6)
 public class CanonicalModelProcessor extends AbstractProcessor {
     protected enum AttributeType {CollectionAttribute, ListAttribute, MapAttribute, SetAttribute, SingularAttribute }
-    protected static MetadataMirrorFactory factory;
+    protected MetadataMirrorFactory nonStaticFactory;
+    protected static MetadataMirrorFactory staticFactory;
     
     /**
      * INTERNAL:
@@ -321,19 +326,33 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (! roundEnv.processingOver() && ! roundEnv.errorRaised()) {
             try {
-                if (factory == null) {
-                    // We must remember some state from one round to another.
-                    // In some rounds, the user may only change one class
-                    // meaning we only have one root element from the round.
-                    // If it is a child class to an existing already generated
-                    // parent class we need to know about this class, so the
-                    // factory will also hang onto static projects for each
-                    // persistence unit. Doing this is going to need careful
-                    // cleanup thoughts though. Adding classes ok, but what
-                    // about removing some? 
-                    MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
-                    factory = new MetadataMirrorFactory(logger, Thread.currentThread().getContextClassLoader());
-                    processingEnv.getMessager().printMessage(Kind.NOTE, "Creating the metadata factory ...");
+                MetadataMirrorFactory factory;
+                
+                if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_USE_STATIC_FACTORY, CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT, processingEnv.getOptions()))) {
+                    if (staticFactory == null) {
+                        // We must remember some state from one round to another.
+                        // In some rounds, the user may only change one class
+                        // meaning we only have one root element from the round.
+                        // If it is a child class to an existing already generated
+                        // parent class we need to know about this class, so the
+                        // factory will also hang onto static projects for each
+                        // persistence unit. Doing this is going to need careful
+                        // cleanup thoughts though. Adding classes ok, but what
+                        // about removing some? 
+                        MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
+                        staticFactory = new MetadataMirrorFactory(logger, Thread.currentThread().getContextClassLoader());
+                        processingEnv.getMessager().printMessage(Kind.NOTE, "Creating static metadata factory ...");
+                    }
+                    
+                    factory = staticFactory;
+                } else {
+                    if (nonStaticFactory == null) {
+                        MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
+                        nonStaticFactory = new MetadataMirrorFactory(logger, Thread.currentThread().getContextClassLoader());
+                        processingEnv.getMessager().printMessage(Kind.NOTE, "Creating non-static metadata factory ...");
+                    }
+                    
+                    factory = nonStaticFactory;
                 }
                 
                 // Step 1 - The factory is passed around so those who want the 
@@ -378,8 +397,6 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 }
             } catch (Exception e) {
                 processingEnv.getMessager().printMessage(Kind.ERROR, e.toString());
-                
-                
                 throw new RuntimeException(e);
             }
         }
