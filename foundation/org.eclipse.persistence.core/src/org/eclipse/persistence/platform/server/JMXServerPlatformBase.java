@@ -14,6 +14,10 @@
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
  *     07/15/2010-2.1.1 Michael O'Brien 
  *       - 316513: registration/deregistration mismatch for MBean Object name reg=- and dereg=_ - no more instance already exists on redeploy
+ *     10/18/2010-2.1.2 Michael O'Brien 
+ *       - 328006: Refactor WebLogic MBeanServer registration to use active 
+ *         WLS com.bea server when multiple instances returned 
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>        
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
@@ -29,7 +33,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.services.mbean.MBeanDevelopmentServices;
 import org.eclipse.persistence.services.mbean.MBeanRuntimeServicesMBean;
@@ -94,7 +98,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
     
     
     /** Cache the ServerPlatform MBeanServer for performance */
-    private MBeanServer mBeanServer = null;
+    protected MBeanServer mBeanServer = null;
     
     /** cache the RuntimeServices MBean - during platform construction for JMXEnabledPlatform implementors */
     private MBeanRuntimeServicesMBean runtimeServicesMBean = null;
@@ -113,14 +117,39 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
         super(newDatabaseSession);
     }
     
+    /**
+     * Return the AbstractSession required to log to the non-platform EclipseLink log.
+     * Note: The WeblogicEclipseLinkLog  defined for the WebLogic platform currently only supports the following
+     * logging categories in the categoryMap HashMap
+     * {connection=DebugJpaJdbcJdbc, 
+     * cache=DebugJpaDataCache, 
+     * transaction=DebugJpaJdbcJdbc, 
+     * weaver=DebugJpaEnhance, 
+     * query=DebugJpaQuery, 
+     * dms=DebugJpaProfile, 
+     * sequencing=DebugJpaRuntime, 
+     * properties=DebugJpaRuntime, 
+     * ejb=DebugJpaRuntime, 
+     * jpa_metamodel=DebugJpaMetaData, 
+     * sql=DebugJpaJdbcSql, 
+     * ejb_or_metadata=DebugJpaMetaData, 
+     * event=DebugJpaRuntime, 
+     * server=DebugJpaRuntime, 
+     * propagation=DebugJpaDataCache}    
+     */
+    protected AbstractSession getAbstractSession() {
+        return ((AbstractSession)getDatabaseSession());
+    }
+    
     /** 
      * INTERNAL:
      * Return the MBeanServer to be used for MBean registration and deregistration.<br>
      * This MBeanServer reference is lazy loaded and cached on the platform.<br>
      * There are multiple ways of getting the MBeanServer<br>
      * <p>
-     * 1) MBeanServerFactory static function - working for all 4 server WebLogic, WebSphere, JBoss and Glassfish in a generic way<br>
-     *   - JBoss is the only server to return 2 MBeanServers in the List<br>
+     * 1) MBeanServerFactory static function - working for 3 of 4 servers  WebSphere, JBoss and Glassfish in a generic way<br>
+     *   - JBoss returns 2 MBeanServers in the List - but one of them has a null domain - we don't use that one<br>
+     *   - WebLogic may return 2 MBeanServers - in that case we want to register with the one containing the "com.bea" tree
      * 2) ManagementFactory static function - what is the difference in using this one over the one returning a List of servers<br>
      * 3) JNDI lookup<br>
      * 4) Direct server specific native API<br></p>
@@ -136,43 +165,47 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                 List<MBeanServer> mBeanServerList = MBeanServerFactory.findMBeanServer(null);                
                 if(null == mBeanServerList || mBeanServerList.isEmpty()) {
                     // Unable to acquire a JMX specification List of MBeanServer instances
-                    // TODO: Warning required
+                    getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                            "failed_to_find_mbean_server", "null or empty List returned from MBeanServerFactory.findMBeanServer(null)");
                     // Try alternate static method
                     mBeanServer = ManagementFactory.getPlatformMBeanServer();
                     if(null == mBeanServer) {
-                        AbstractSessionLog.getLog().log(SessionLog.INFO, 
-                            "jmx_mbean_runtime_services_registration_mbeanserver_print",
-                            mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                                "failed_to_find_mbean_server", "null returned from ManagementFactory.getPlatformMBeanServer()");
                     } else {
-                        // TODO: Warning required
+                        getAbstractSession().log(SessionLog.FINER, SessionLog.SERVER, 
+                            "jmx_mbean_runtime_services_registration_mbeanserver_print",
+                            new Object[]{mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0});
                     }
                 } else {
                     // Use the first MBeanServer by default - there may be multiple domains each with their own MBeanServer
                     mBeanServer = mBeanServerList.get(JMX_MBEANSERVER_INDEX_DEFAULT_FOR_MULTIPLE_SERVERS);
                     if(mBeanServerList.size() > 1) {
-                        // There are multiple MBeanServerInstances - ust warn for now
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, 
+                        // There are multiple MBeanServerInstances (usually only JBoss)
+                        // 328006: WebLogic may also return multiple instances (we need to register the one containing the com.bea tree)
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
                                 "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances",
                                 mBeanServerList.size(), JMX_MBEANSERVER_INDEX_DEFAULT_FOR_MULTIPLE_SERVERS, mBeanServer);
                         // IE: for JBoss we need to verify we are using the correct MBean server of the two (default, null)
                         // Check the domain if it is non-null - avoid using this server
                         int index = 0;
                         for(MBeanServer anMBeanServer : mBeanServerList) {
-                            AbstractSessionLog.getLog().log(SessionLog.INFO, 
+                            getAbstractSession().log(SessionLog.FINER, SessionLog.SERVER, 
                                     "jmx_mbean_runtime_services_registration_mbeanserver_print",
-                                    anMBeanServer, anMBeanServer.getMBeanCount(), anMBeanServer.getDefaultDomain(), index);
+                                    new Object[]{anMBeanServer, anMBeanServer.getMBeanCount(), anMBeanServer.getDefaultDomain(), index});
                             if(null != anMBeanServer.getDefaultDomain()) {
                                 mBeanServer = anMBeanServer;
-                                AbstractSessionLog.getLog().log(SessionLog.WARNING, 
+                                getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
                                         "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver",
                                         mBeanServer, index);                                                                
                             }
                             index++;
                         }
                     } else {
-                        AbstractSessionLog.getLog().log(SessionLog.INFO, 
+                        // Only a single MBeanServer instance was found
+                        getAbstractSession().log(SessionLog.FINER, SessionLog.SERVER, 
                                 "jmx_mbean_runtime_services_registration_mbeanserver_print",
-                                mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0);
+                                new Object[]{mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0});
                     }
                 }                
             } catch (Exception e) {
@@ -208,9 +241,9 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     try {
                         name = new ObjectName(JMX_REGISTRATION_PREFIX + "Development-" + sessionName + ",Type=Configuration");
                     } catch (MalformedObjectNameException mne) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", mne);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", mne);
                     } catch (Exception exception) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", exception);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", exception);
                     }
 
                     // Currently the to be deprecated development MBean is generic to all server platforms
@@ -219,22 +252,22 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     try {
                         info = mBeanServerRuntime.registerMBean(developmentMBean, name);
                     } catch(InstanceAlreadyExistsException iaee) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", iaee);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", iaee);
                     } catch (MBeanRegistrationException registrationProblem) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", registrationProblem);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", registrationProblem);
                     } catch (Exception e) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", e);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", e);
                     }
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "registered_mbean", info);
+                    getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "registered_mbean", info, mBeanServerRuntime);
                 }
 
                 if (null != mBeanServerRuntime && shouldRegisterRuntimeBean) {
                     try {
                         name = new ObjectName(JMX_REGISTRATION_PREFIX + "Session(" + sessionName + ")");                        
                     } catch (MalformedObjectNameException mne) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", mne);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", mne);
                     } catch (Exception exception) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", exception);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", exception);
                     }
                     
                     ObjectInstance runtimeInstance = null;
@@ -243,13 +276,13 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                         runtimeInstance = mBeanServerRuntime.registerMBean(runtimeServicesMBean, name);
                         setRuntimeServicesMBean(runtimeServicesMBean);
                     } catch(InstanceAlreadyExistsException iaee) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", iaee);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", iaee);
                     } catch (MBeanRegistrationException registrationProblem) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", registrationProblem);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", registrationProblem);
                     } catch (Exception e) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", e);
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", e);
                     }
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "registered_mbean", runtimeInstance);          
+                    getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "registered_mbean", runtimeInstance, mBeanServerRuntime);          
                 }
         }
     }
@@ -268,51 +301,56 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
         ObjectName name = null;      
         String sessionName = getMBeanSessionName();
         if (null != sessionName && (shouldRegisterDevelopmentBean || shouldRegisterRuntimeBean)) {
-            try {
-                
-                // Attempt to register new mBean with the server
-                if (shouldRegisterDevelopmentBean) {
-                    try {
-                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Development-" + sessionName + ",Type=Configuration");                        
-                    } catch (MalformedObjectNameException mne) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", mne);
-                    } catch (Exception exception) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", exception);
+            if(null == mBeanServerRuntime) {
+                getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "jmx_unable_to_unregister_mbean", name);
+            } else {
+                try {
+                    // Attempt to register new mBean with the server
+                    if (shouldRegisterDevelopmentBean) {
+                        try {
+                            name = new ObjectName(JMX_REGISTRATION_PREFIX + "Development-" + sessionName + ",Type=Configuration");                        
+                        } catch (MalformedObjectNameException mne) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", mne);
+                        } catch (Exception exception) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", exception);
+                        }
+
+                        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "unregistering_mbean", name, mBeanServerRuntime);
+                        try {
+                            mBeanServerRuntime.unregisterMBean(name);
+                            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "jmx_unregistered_mbean", name, mBeanServerRuntime);
+                        } catch(InstanceNotFoundException inf) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", inf);
+                        } catch (MBeanRegistrationException mbre) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", mbre);                        
+                        }                                        
                     }
 
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "unregistering_mbean", name);
-                    try {
-                        mBeanServerRuntime.unregisterMBean(name);
-                    } catch(InstanceNotFoundException inf) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", inf);
-                    } catch (MBeanRegistrationException mbre) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", mbre);                        
-                    }                                        
-                }
-
-                if (shouldRegisterRuntimeBean) {
-                    try {                        
-                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Session(" + sessionName + ")");                        
-                    } catch (MalformedObjectNameException mne) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", mne);
-                    } catch (Exception exception) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", exception);
+                    if (shouldRegisterRuntimeBean) {
+                        try {                        
+                            name = new ObjectName(JMX_REGISTRATION_PREFIX + "Session(" + sessionName + ")");                        
+                        } catch (MalformedObjectNameException mne) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", mne);
+                        } catch (Exception exception) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", exception);
+                        }
+                        
+                        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "unregistering_mbean", name, mBeanServerRuntime);
+                        try {
+                            mBeanServerRuntime.unregisterMBean(name);
+                            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "jmx_unregistered_mbean", name, mBeanServerRuntime);                            
+                        } catch(InstanceNotFoundException inf) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", inf);
+                        } catch (MBeanRegistrationException registrationProblem) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", registrationProblem);
+                        }                              
                     }
-
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "unregistering_mbean", name);
-                    try {
-                        mBeanServerRuntime.unregisterMBean(name);
-                    } catch(InstanceNotFoundException inf) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", inf);
-                    } catch (MBeanRegistrationException registrationProblem) {
-                        AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", registrationProblem);
-                    }                              
+                } catch (Exception exception) {
+                    getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", exception);
+                } finally {
+                    // de reference the mbean
+                    this.setRuntimeServicesMBean(null);
                 }
-            } catch (Exception exception) {
-                AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", exception);
-            } finally {
-                // de reference the mbean
-                this.setRuntimeServicesMBean(null);
             }
         }
     }    
@@ -328,7 +366,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
             // remove any JMX reserved characters when the session name is file:/drive:/directory
             return getDatabaseSession().getName().replaceAll("[=,:]", "_");
         } else {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "session_key_for_mbean_name_is_null");
+            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "session_key_for_mbean_name_is_null");
             return null;
         }
     }
@@ -399,7 +437,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * INTERNAL:
      * Lazy initialize the application name by
      * first checking for a persistence.xml property override and then
-     * deferring to a default name in the absence of a platfrom override of this function
+     * deferring to a default name in the absence of a platform override of this function
      * @param enableDefault
      * @return
      */
@@ -456,7 +494,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
         String databaseSessionName = getDatabaseSession().getName();
         // The classLoader toString() is used to get the application name (no reflection required)
         String classLoaderName = getDatabaseSession().getPlatform().getConversionManager().getLoader().toString();
-        AbstractSessionLog.getLog().log(SessionLog.FINEST, "jmx_mbean_classloader_in_use", 
+        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "jmx_mbean_classloader_in_use", 
                 "Platform ConversionManager", classLoaderName);
         // Get property from persistence.xml or sessions.xml
         String jpaModuleName = getModuleName(false);
@@ -496,9 +534,9 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
             setApplicationName(jpaApplicationName);
         }
         // Final check for null values - incorporated into the get functions in these logs
-        AbstractSessionLog.getLog().log(SessionLog.FINEST, "mbean_get_application_name", 
+        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_application_name", 
                 getDatabaseSession().getName(), getApplicationName());
-        AbstractSessionLog.getLog().log(SessionLog.FINEST, "mbean_get_module_name", 
+        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_module_name", 
                 getDatabaseSession().getName(), getModuleName());
     }
     

@@ -326,7 +326,13 @@ public class TraceLocalizationResource extends ListResourceBundle {
 
                                             { "proxy_connection_customizer_already_proxy_session", "{0}:{1}: proxy session with unknown properties is already opened. Closing it."},
                                             { "proxy_connection_customizer_opened_proxy_session",  "{0}:{1}: opened proxy session."},
-                                            { "proxy_connection_customizer_closing_proxy_session", "{0}:{1}: closing proxy session."}
+                                            { "proxy_connection_customizer_closing_proxy_session", "{0}:{1}: closing proxy session."},
+                                            // Following 5 logs are from LoggingLocalization - required here when using a non-platform WeblogicEclipseLinkLog
+                                            { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances", "Multiple [{0}] JMX MBeanServer instances exist, we will use the server at index [{1}] : [{2}]." },
+                                            { "jmx_mbean_runtime_services_registration_mbeanserver_print", "JMX MBeanServer instance found: [{0}], # of beans: [{1}], domain: [{2}] at index: [{3}]." },
+                                            { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver", "JMX MBeanServer in use: [{0}] from index [{1}] " },
+                                            { "jmx_unregistered_mbean", "Unregistered MBean [{0}] from MBeanServer [{1}]." },        
+                                            { "jmx_unable_to_unregister_mbean", "Unable to unregister MBean [{0}] because the MBeanServer is null. Verify that your ServerPlatform is JMX enabled." }        
     };
 
     /**

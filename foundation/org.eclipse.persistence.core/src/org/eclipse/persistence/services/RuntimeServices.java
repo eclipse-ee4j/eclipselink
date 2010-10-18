@@ -1075,8 +1075,10 @@ public abstract class RuntimeServices {
          CacheKey cacheKey;
          while (objects.hasMoreElements()) {
              cacheKey = (CacheKey)objects.nextElement();
-             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_print_cache_key_value", 
+             if(null != cacheKey && null != cacheKey.getKey() && null != cacheKey.getObject()) {
+                 ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_print_cache_key_value", 
                      cacheKey.getKey().toString(), cacheKey.getObject().toString());
+             }
          }
      }
 
