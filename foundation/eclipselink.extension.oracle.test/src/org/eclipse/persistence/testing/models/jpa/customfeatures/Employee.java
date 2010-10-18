@@ -121,7 +121,7 @@ public class Employee implements Serializable {
         this.empNChar = empNChar;
     }
     
-    public String getReume_xml() {
+    public String getResume_xml() {
         return this.resume_xml;
     }
 
@@ -129,7 +129,7 @@ public class Employee implements Serializable {
         this.resume_xml = resume_xml;
     }
 
-    public Document getReume_dom() {
+    public Document getResume_dom() {
         return this.resume_dom;
     }
 
