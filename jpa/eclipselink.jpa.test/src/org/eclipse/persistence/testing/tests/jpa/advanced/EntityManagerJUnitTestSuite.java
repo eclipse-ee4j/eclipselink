@@ -1973,7 +1973,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 
                 Runnable runnable = new Runnable() {
 
-                    @Override
                     public void run() {
                         EntityManager em2 = createEntityManager();
                         

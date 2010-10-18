@@ -92,7 +92,6 @@ import org.eclipse.persistence.sessions.server.ServerSession;
         
         final Actor actor = new Actor<EntyA>() {
 
-            @Override
             public void setup(EntityManager em) {
                 EntyC c = new EntyC();
                 em.persist(c);
@@ -101,18 +100,15 @@ import org.eclipse.persistence.sessions.server.ServerSession;
                 em.persist(a);
             }
 
-            @Override
             public EntyA getEntityToLock(EntityManager em) {
                 return em.find(EntyA.class, a.getId());
             }
 
-            @Override
             public void modify(EntityManager em) {
                 EntyA a2 = em.find(EntyA.class, a.getId());
                 a2.setEntyC(null);
             }
 
-            @Override
             public void check(EntityManager em, EntyA lockedEntity) {
                 em.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyC());
@@ -130,25 +126,21 @@ import org.eclipse.persistence.sessions.server.ServerSession;
         
         final Actor actor = new Actor<EntyA>() {
 
-            @Override
             public void setup(EntityManager em) {
                 EntyB b = new EntyB();
                 a.setEntyB(b);
                 em.persist(a);
             }
 
-            @Override
             public EntyA getEntityToLock(EntityManager em1) {
                 return em1.find(EntyA.class, a.getId());
             }
 
-            @Override
             public void modify(EntityManager em2) {
                 EntyA a2 = em2.find(EntyA.class, a.getId());
                 a2.setEntyB(null);
             }
 
-            @Override
             public void check(EntityManager em1, EntyA lockedEntity) {
                 em1.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyB());
@@ -167,7 +159,6 @@ import org.eclipse.persistence.sessions.server.ServerSession;
         
         final Actor actor = new Actor<Equipment>() {
 
-            @Override
             public void setup(EntityManager em) {
                 EquipmentCode eqCode = new EquipmentCode();
                 eqCode.setCode("A");
@@ -176,18 +167,15 @@ import org.eclipse.persistence.sessions.server.ServerSession;
                 em.persist(eq);
             }
 
-            @Override
             public Equipment getEntityToLock(EntityManager em1) {
                 return em1.find(Equipment.class, eq.getId());
             }
 
-            @Override
             public void modify(EntityManager em2) {
                 Equipment eq2 = em2.find(Equipment.class, eq.getId());
                 eq2.setEquipmentCode(null);
             }
 
-            @Override
             public void check(EntityManager em1, Equipment lockedEntity) {
                 em1.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEquipmentCode());
@@ -206,25 +194,21 @@ import org.eclipse.persistence.sessions.server.ServerSession;
         
         final Actor actor = new Actor<Employee>() {
 
-            @Override
             public void setup(EntityManager em) {
                 Address ads = new Address("SomeStreet", "somecity", "province", "country", "postalcode");
                 emp.setAddress(ads);
                 em.persist(emp);
             }
 
-            @Override
             public Employee getEntityToLock(EntityManager em1) {
                 return em1.find(Employee.class, emp.getId());
             }
 
-            @Override
             public void modify(EntityManager em2) {
                 Employee emp2 = em2.find(Employee.class, emp.getId());
                 emp2.setAddress((Address)null);
             }
 
-            @Override
             public void check(EntityManager em1, Employee lockedEntity) {
                 em1.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getAddress());
@@ -243,24 +227,20 @@ import org.eclipse.persistence.sessions.server.ServerSession;
         
         final Actor actor = new Actor<EntyA>() {
 
-            @Override
             public void setup(EntityManager em) {
                 em.persist(entyA);
                 entyA.getEntyDs().add(new EntyD());
             }
 
-            @Override
             public EntyA getEntityToLock(EntityManager em1) {
                 return em1.find(EntyA.class, entyA.getId());
             }
 
-            @Override
             public void modify(EntityManager em2) {
                 EntyA entyA2 = em2.find(EntyA.class, entyA.getId());
                 entyA2.setEntyDs(null);
             }
 
-            @Override
             public void check(EntityManager em1, EntyA lockedEntity) {
                 em1.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyDs());
@@ -279,7 +259,6 @@ import org.eclipse.persistence.sessions.server.ServerSession;
         
         final Actor actor = new Actor<EntyA>() {
 
-            @Override
             public void setup(EntityManager em) {
                 Collection entyEs = new ArrayList();
                 EntyE entyE1 = new EntyE();
@@ -290,18 +269,15 @@ import org.eclipse.persistence.sessions.server.ServerSession;
                 em.persist(entyA);
             }
 
-            @Override
             public EntyA getEntityToLock(EntityManager em1) {
                 return em1.find(EntyA.class, entyA.getId());
             }
 
-            @Override
             public void modify(EntityManager em2) {
                 EntyA entyA2 = em2.find(EntyA.class, entyA.getId());
                 entyA2.setEntyEs(null);
             }
 
-            @Override
             public void check(EntityManager em1, EntyA lockedEntity) {
                 em1.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyEs());
