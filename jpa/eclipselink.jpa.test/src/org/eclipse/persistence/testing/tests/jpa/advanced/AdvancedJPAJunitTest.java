@@ -184,15 +184,16 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_DeleteSource"));
         
         suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
-        
-        suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaModelPopulate"));
-        suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteria"));
-        suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEM1"));
-        suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEM2"));
-        suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEMF"));
-        suite.addTest(new AdvancedJPAJunitTest("testComplexAdditionalCriteria"));
 
         if (!isJPA10()) {
+            // These tests use JPA 2.0 entity manager API
+            suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaModelPopulate"));
+            suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteria"));
+            suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEM1"));
+            suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEM2"));
+            suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEMF"));
+            suite.addTest(new AdvancedJPAJunitTest("testComplexAdditionalCriteria"));
+            
             // Run this test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
             suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
         }
