@@ -413,13 +413,17 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         // This also discovers unregistered new objects, (which persists them and assign sequence, so no need to assign sequence twice).
         calculateChanges(getCloneMapping(), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist);
         
-        // Write those changes to the database.
-        if (!changeSet.hasChanges() && !changeSet.hasForcedChanges() && ! this.hasDeletedObjects() && ! this.hasModifyAllQueries()) {
-            this.isWithinFlush = false; // clear the flag in the case that we don't have changes
-            log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
-            return;
-        }
+        boolean changeSetHasChanges = (changeSet.hasChanges() || changeSet.hasForcedChanges() || this.hasDeletedObjects() || this.hasModifyAllQueries());
         try {
+            //bug 323370: flush out batch statements regardless of the changeSet having changes.
+            if (!changeSetHasChanges){
+                //flushing the batch mechanism
+                writesCompleted();
+                //return if there were no changes in the change set.  
+                log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+                return;
+            }
+            // Write changes to the database.
             commitToDatabaseWithPreBuiltChangeSet(changeSet, false, false);
             writesCompleted();
         } catch (RuntimeException exception) {

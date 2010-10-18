@@ -72,12 +72,13 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
         suite.addTest(new EMCascadingModifyAndMergeTest());
         suite.addTest(new EMRemoveAndFlushTest());
         suite.addTest(new EMCascadingRemoveAndFlushTest());
+        suite.addTest(new EMFlushBatchWritingTest());
 //      Until Bug#4288681 is fixed, this test won't run
 //        suite.addTest(new ModifyAndFlushTest());
 //      Until Bug#4291927 is fixed, these tests won't run
         suite.addTest(new EMCascadingModifyAndRefreshTest());
         suite.addTest(new EMModifyAndRefreshTest());
-  
+
         return suite;
     }
     
