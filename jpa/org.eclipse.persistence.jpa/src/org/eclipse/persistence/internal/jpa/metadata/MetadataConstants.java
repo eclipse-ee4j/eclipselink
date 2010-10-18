@@ -17,7 +17,7 @@ package org.eclipse.persistence.internal.jpa.metadata;
 
 /**
  * INTERNAL:
- * Common metatata processing constants. Of particular interest are JPA 2.0
+ * Common metadata processing constants. Of particular interest are JPA 2.0
  * annotations and enums. To ensure EclipseLink remains 1.0 compliant we must
  * reference new annotations and enums by string names. 
  * 

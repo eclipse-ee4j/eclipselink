@@ -411,6 +411,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metamodel_print_type_header", "Printed list of Metamodel [{0}] Types to follow:"},        
         { "metamodel_print_type_value", "Metamodel Type: [{0}]}"},
         { "named_argument_not_found_in_query_parameters", "Missing Query parameter for named argument: {0} 'null' will be substituted." },
+        { "jmx_unregistered_mbean", "Unregistered MBean [{0}] from MBeanServer [{1}]." },        
+        { "jmx_unable_to_unregister_mbean", "Unable to unregister MBean [{0}] because the MBeanServer is null. Verify that your ServerPlatform is JMX enabled." },        
         
         // MESSAGES end
         
@@ -692,7 +694,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver.MSGID", "TOP-50244" },
         { "metamodel_print_type_header.MSGID", "TOP-50245"},        
         { "metamodel_print_type_value.MSGID", "TOP-50246"},
-        { "named_argument_not_found_in_query_parameters.MSGID", "TOP-50247" }
+        { "named_argument_not_found_in_query_parameters.MSGID", "TOP-50247" },
+        { "jmx_unregistered_mbean.MSGID", "TOP-50248" },
+        { "jmx_unable_to_unregister_mbean.MSGID", "TOP-50249" }        
         
 
         /**

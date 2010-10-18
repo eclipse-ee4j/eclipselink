@@ -20,17 +20,24 @@
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *     10/18/2010-2.1.2 Michael O'Brien 
+ *       - 328006: Refactor WebLogic MBeanServer registration to use active 
+ *         WLS com.bea server when multiple instances returned 
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>        
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.wls;
 
 import java.lang.reflect.Method;
 import java.security.AccessController;
 
+import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
 import org.eclipse.persistence.services.weblogic.MBeanWebLogicRuntimeServices;
@@ -43,6 +50,19 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * This includes WebLogic 10.3 behavior.
  */
 public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnabledPlatform {
+    // see http://e-docs.bea.com/wls/docs90/jmx/accessWLS.html#1119237
+    /** This JNDI address is for JMX MBean registration */
+    private static final String JMX_JNDI_RUNTIME_REGISTER = "java:comp/env/jmx/runtime";
+    /* 
+     * If the cached MBeanServer is not used, then the unregister jndi address must be used to create a context
+     * Note: the context must be explicitly closed after use or we may cache the user and get a
+     * weblogic.management.NoAccessRuntimeException when trying to use the associated MBeanServer
+     * see http://bugs.eclipse.org/238343
+     * see http://e-docs.bea.com/wls/docs100/jndi/jndi.html#wp467275  
+     */
+    /** This JNDI address is for JMX MBean unregistration */    
+    private static final String JMX_JNDI_RUNTIME_UNREGISTER = "java:comp/jmx/runtime";
+
     /* 
      * If the cached MBeanServer is not used, then the unregister jndi address must be used to create a context
      * Note: the context must be explicitly closed after use or we may cache the user and get a
@@ -97,6 +117,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         return true;
     }
     
+    
     /**
      * INTERNAL: 
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
@@ -136,14 +157,76 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         // get and cache module and application name during registration
         initializeApplicationNameAndModuleName();
     }
+
+    /** 
+     * INTERNAL:
+     * Return the MBeanServer to be used for MBean registration and deregistration.<br>
+     * This MBeanServer reference is lazy loaded and cached on the platform.<br>
+     * There are multiple ways of getting the MBeanServer<br>
+     * <p>
+     * 1) MBeanServerFactory static function - working for 3 of 4 servers  WebSphere, JBoss and Glassfish in a generic way<br>
+     *   - JBoss returns 2 MBeanServers in the List - but one of them has a null domain - we don't use that one<br>
+     *   - WebLogic may return 2 MBeanServers - in that case we want to register with the one containing the "com.bea" tree
+     * 2) ManagementFactory static function - what is the difference in using this one over the one returning a List of servers<br>
+     * 3) JNDI lookup<br>
+     * 4) Direct server specific native API<br></p>
+     * We are using method (3)<br>
+     * 
+     * @return the JMX specification MBeanServer
+     */
+    @Override
+    public MBeanServer getMBeanServer() {
+        // 328006: This function overrides the generic version used for WebSphere, JBoss and Glassfish
+        // Get a possible cached MBeanServer from the superclass first
+        if(null == mBeanServer) {
+            Context initialContext = null;        
+            try {
+                initialContext = new InitialContext();
+                mBeanServer = (MBeanServer) initialContext.lookup(JMX_JNDI_RUNTIME_REGISTER);                
+                if(null == mBeanServer) {
+                    getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                            "failed_to_find_mbean_server", "null returned from JNDI lookup of " + JMX_JNDI_RUNTIME_REGISTER);
+                } else {
+                    // Verify that this is a weblogic.management.jmx.mbeanserver.WLSMBeanServer
+                    if(mBeanServer.toString().indexOf("WLSMBeanServer") < 0) {
+                        // MBeanServer is not a WebLogic type - likely a com.sun.jmx.mbeanserver.JmxMBeanServer
+                        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "sequencing_connected", null);
+                    }
+                    getAbstractSession().log(SessionLog.FINER, SessionLog.SERVER,
+                            "jmx_mbean_runtime_services_registration_mbeanserver_print",
+                            new Object[]{mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0});
+                }            
+            } catch (NamingException ne) {
+                getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "failed_to_find_mbean_server", ne);
+            } catch (Exception exception) {
+                getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", exception);
+            } finally {
+                // close the context
+                // see http://forums.bea.com/thread.jspa?threadID=600004445
+                // see http://e-docs.bea.com/wls/docs81/jndi/jndi.html#471919
+                // see http://e-docs.bea.com/wls/docs100/jndi/jndi.html#wp467275
+                try {
+                    if(null != initialContext) {
+                        initialContext.close();
+                    }
+                } catch (NamingException ne) {
+                    // exceptions on context close will be ignored, the context will be GC'd                   
+                }
+            }
+        }
+        return mBeanServer;
+    } 
     
     /**
      * INTERNAL:
      * Get the applicationName and moduleName from the runtime WebLogic MBean reflectively
      * @return
+     * @deprecated
      */
     protected void initializeApplicationNameAndModuleName() {
-        // Get property from persistence.xml or sessions.xml
+        // use non-reflective superclass method that searches the database session and classLoader strings
+        // to be DEPRECATED
+        // Get property from persistence.xml or sessions.xml 
         String jpaModuleName = (String)getDatabaseSession().getProperty(SERVER_SPECIFIC_MODULENAME_PROPERTY);
         String jpaApplicationName = (String)getDatabaseSession().getProperty(SERVER_SPECIFIC_APPLICATIONNAME_PROPERTY);      
         
@@ -185,9 +268,9 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         if(null == getModuleName()) {
             setModuleName(DEFAULT_SERVER_NAME_AND_VERSION);
         }
-        AbstractSessionLog.getLog().log(SessionLog.FINEST, "mbean_get_application_name", 
+        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_application_name", 
                 getDatabaseSession().getName(), getApplicationName());
-        AbstractSessionLog.getLog().log(SessionLog.FINEST, "mbean_get_module_name", 
+        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_module_name", 
                 getDatabaseSession().getName(), getModuleName());
     }
 
@@ -233,7 +316,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                  * this an older version of WebLogic 10.3 failed, use the
                  * classloader as a backup method
                  */
-                AbstractSessionLog.getLog().log(SessionLog.WARNING,  "problem_with_reflective_weblogic_call_mbean", ex, getMethodName);
+                getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER,  "problem_with_reflective_weblogic_call_mbean", ex, getMethodName);
             }
         }
         return (String)classLoaderOrString;
@@ -262,7 +345,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                     ObjectName serverRuntime = (ObjectName) getMBeanServer().getAttribute(service, WLS_SERVER_RUNTIME);
                     wlsThreadPoolRuntime = (ObjectName) getMBeanServer().getAttribute(serverRuntime, WLS_THREADPOOL_RUNTIME);
                 } catch (Exception ex) {
-                    AbstractSessionLog.getLog().log(SessionLog.WARNING, "jmx_mbean_runtime_services_threadpool_initialize_failed", ex);                                        
+                    getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "jmx_mbean_runtime_services_threadpool_initialize_failed", ex);                                        
                 }
             }
             // Get the executeThreadRuntimeObject
@@ -277,7 +360,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                      * If the reflective call to get the executeThreadRuntime object failed on the MBean because
                      * this an older version of WebLogic 10.3, continue and use the classloader as a backup method
                      */
-                    AbstractSessionLog.getLog().log(SessionLog.WARNING,
+                    getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER,
                             "jmx_mbean_runtime_services_get_executethreadruntime_object_failed", ex);
                 }
             }
