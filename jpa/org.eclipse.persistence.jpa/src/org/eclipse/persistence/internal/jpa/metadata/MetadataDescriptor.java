@@ -961,12 +961,16 @@ public class MetadataDescriptor {
      * INTERNAL
      * Return the primary key fields for this descriptor metadata. If this is
      * an inheritance subclass and it has no primary key fields, then grab the 
-     * primary key fields from the root.
+     * primary key fields from the root. In a table per class inheritance 
+     * strategy, the primary key fields (and all mappings for that matter) are
+     * inherited from the parent meaning there is no need to check the parent
+     * in this case, it should have primary key fields and checking the parent
+     * could lead to processing errors.
      */
     public List<DatabaseField> getPrimaryKeyFields() {
         List<DatabaseField> primaryKeyFields = m_descriptor.getPrimaryKeyFields();
         
-        if (primaryKeyFields.isEmpty() && isInheritanceSubclass()) {
+        if (primaryKeyFields.isEmpty() && isInheritanceSubclass() && ! usesTablePerClassInheritanceStrategy()) {
             primaryKeyFields = getInheritanceRootDescriptor().getPrimaryKeyFields();
         }
         
