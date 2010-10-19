@@ -513,6 +513,7 @@ public class PropertiesHandler {
                 {TargetDatabase.Informix, pcg + "InformixPlatform"},
                 {TargetDatabase.JavaDB, pcg + "JavaDBPlatform"},
                 {TargetDatabase.MySQL, pcg + "MySQLPlatform"},
+                {TargetDatabase.MaxDB, pcg + "MaxDBPlatform"},
                 {TargetDatabase.MySQL4, pcg + "MySQLPlatform"}, // 211249: keep backwards compatibility
                 {TargetDatabase.PointBase,  pcg + "PointBasePlatform"},
                 {TargetDatabase.PostgreSQL,  pcg + "PostgreSQLPlatform"},
