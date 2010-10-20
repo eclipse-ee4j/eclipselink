@@ -64,6 +64,7 @@
             <property name="eclipselink.weaving.eager" value="true"/>
             <property name="eclipselink.weaving.internal" value="false"/-->
             <property name="eclipselink.orm.validate.schema" value="true"/>
+			<property name="NAME" value="Montreal%"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="default1">
