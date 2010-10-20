@@ -2449,10 +2449,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return null;
         }
         ObjectBuilder objectBuilder = getDescriptor(theClass).getObjectBuilder();
+        // bug 327900 - If don't read subclasses is set on the descriptor heed it.
+        boolean readSubclassesOrNoInheritance = (!getDescriptor(theClass).hasInheritance() || getDescriptor(theClass).getInheritancePolicy().shouldReadSubclasses());
+        
         for (Iterator newObjectsEnum = getNewObjectsCloneToOriginal().keySet().iterator();
                  newObjectsEnum.hasNext();) {
             Object object = newObjectsEnum.next();
-            if (theClass.isInstance(object)) {
+            // bug 327900 - ignore it if its a subclass and we are not reading subclasses.
+            if ((theClass.isInstance(object)) && (readSubclassesOrNoInheritance || (object.getClass().isAssignableFrom(theClass)))) {
                 Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(object, this, true);
                 if ((primaryKey != null) && primaryKey.equals(selectionKey)) {
                     return object;
@@ -2472,8 +2476,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (!hasNewObjects()) {
             return null;
         }
+        
+        // bug 327900 - If don't read subclasses is set on the descriptor heed it.
+        boolean readSubclassesOrNoInheritance = (!getDescriptor(theClass).hasInheritance() || getDescriptor(theClass).getInheritancePolicy().shouldReadSubclasses());
+        
         for (Object object : getNewObjectsCloneToOriginal().keySet()) {
-            if (theClass.isInstance(object)) {
+            // bug 327900 - ignore it if its a subclass and we are not reading subclasses.
+            if ((theClass.isInstance(object)) && (readSubclassesOrNoInheritance || (object.getClass().isAssignableFrom(theClass)))) {
                 if (selectionCriteria == null) {
                     return object;
                 }
@@ -4701,6 +4710,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (policy != InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION) {
             policy = InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED;
         }
+        
+        // bug 327900 - If don't read subclasses is set on the descriptor heed it.
+        boolean readSubclassesOrNoInheritance = (!query.getDescriptor().hasInheritance() || query.getDescriptor().getInheritancePolicy().shouldReadSubclasses());
+        
         Map<Object, Object> indexedInterimResult = new IdentityHashMap<Object, Object>();
         try {
             List fromCache = null;
@@ -4711,7 +4724,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 fromCache = getIdentityMapAccessor().getAllFromIdentityMap(selectionCriteria, referenceClass, arguments, policy);
                 for (Object object : fromCache) {
                     if (!isObjectDeleted(object)) {
-                        indexedInterimResult.put(object, object);
+                        // bug 327900 - only add it if its not a subclass or we are reading subclasses.
+                        if (readSubclassesOrNoInheritance || (object.getClass().isAssignableFrom(referenceClass))) {
+                            indexedInterimResult.put(object, object);
+                        }
                     }
                 }
             }
@@ -4721,7 +4737,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             newObjects = getAllFromNewObjects(selectionCriteria, referenceClass, arguments, policy);
             for (Object object : newObjects) {
                 if (!isObjectDeleted(object)) {
-                    indexedInterimResult.put(object, object);
+                    // bug 327900 - only add it if its not a subclass or we are reading subclasses.
+                    if (readSubclassesOrNoInheritance || (object.getClass().isAssignableFrom(referenceClass))) {
+                        indexedInterimResult.put(object, object);
+                    }
                 }
             }
         } catch (QueryException exception) {
