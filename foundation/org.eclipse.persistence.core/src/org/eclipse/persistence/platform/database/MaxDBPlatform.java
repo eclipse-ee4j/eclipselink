@@ -39,7 +39,7 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 /**
  * <b>Database Platform for SAP MaxDB.</b>
  * <p>
- * <b>Wiki page:</b> TBD
+ * <b>Wiki page:</b> {@link http://wiki.eclipse.org/EclipseLink/Development/DatabasePlatform/MaxDBPlatform}
  * <p>
  * <b>Usage</b>
  * <p>
