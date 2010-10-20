@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
+import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Project;
@@ -1475,8 +1476,17 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * field name mappings stored.
      */
     protected void translateFields(ClassDescriptor clonedDescriptor, AbstractSession session) {
-        for (Enumeration entry = clonedDescriptor.getFields().elements(); entry.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)entry.nextElement();
+        // EL Bug 326977
+        Vector fieldsToTranslate = (Vector) clonedDescriptor.getFields().clone();
+        for (Iterator qkIterator = clonedDescriptor.getQueryKeys().values().iterator(); qkIterator.hasNext();) {
+            QueryKey queryKey = (QueryKey)qkIterator.next();
+            if (queryKey.isDirectQueryKey()) {
+                DatabaseField field = ((DirectQueryKey)queryKey).getField();
+                fieldsToTranslate.add(field);
+            }
+        }
+        for (Iterator entry = fieldsToTranslate.iterator(); entry.hasNext();) {
+            DatabaseField field = (DatabaseField)entry.next();
             //322233 - get the source DatabaseField from the 
             //String nameInSource = getAggregateToSourceFieldNames().get(nameInAggregate);
             DatabaseField fieldInSource = getAggregateToSourceFields().get(field.getName());

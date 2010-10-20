@@ -338,10 +338,15 @@ public class AggregateTestModel extends TestModel {
 
         suite.addTest(new InMemoryQueryKeyToAggregateTest(true));
         suite.addTest(new InMemoryQueryKeyToAggregateTest(false));
-        // added for bug 5478648 - D.Minsky
+        // added for bug 5478648
         suite.addTest(new AggregateWithOneToOneRelationshipTest());
         // added for bug 6033380
         suite.addTest(new AggregateInvalidationIdentityTest());
+        // EL Bug 326977
+        suite.addTest(new QueryKeyInAggregateTest(true));
+        suite.addTest(new QueryKeyInAggregateTest(false));
+        suite.addTest(new QueryKeyInAggregateInheritanceTest());
+        
         return suite;
     }
 

@@ -956,8 +956,8 @@ public class QueryKeyExpression extends ObjectExpression {
         DatabaseMapping mapping = this.mapping;
         ClassDescriptor descriptor = mapping.getDescriptor();
         if (descriptor.hasInheritance() && (descriptor.getJavaClass() != object.getClass())) {
-            mapping = session.getDescriptor(object.getClass()).getObjectBuilder().getMappingForAttributeName(getName());
-            descriptor = mapping.getDescriptor();
+            descriptor = descriptor.getInheritancePolicy().getDescriptor(object.getClass());
+            mapping = descriptor.getObjectBuilder().getMappingForAttributeName(mapping.getAttributeName());
         }
 
         //fetch group support

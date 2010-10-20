@@ -843,6 +843,8 @@ public class AggregateProject extends org.eclipse.persistence.sessions.Project {
         shaftMapping.setReferenceClass(org.eclipse.persistence.testing.models.aggregate.GolfClubShaft.class);
         shaftMapping.setIsNullAllowed(false);
         shaftMapping.addFieldNameTranslation("GOLF_CLUB.SHAFT_STIFFNESS", "SHAFT_STIFFNESS");
+        // manual query key in aggregate
+        shaftMapping.addFieldNameTranslation("GOLF_CLUB.SHAFT_STIFFNESS", "QUERY_KEY flexibility");
         descriptor.addMapping(shaftMapping);
 
         org.eclipse.persistence.mappings.OneToOneMapping manufacturerMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
@@ -865,6 +867,9 @@ public class AggregateProject extends org.eclipse.persistence.sessions.Project {
         // Descriptor properties.
         descriptor.setAlias("GolfClubShaft");
 
+        // Query keys.
+        descriptor.addDirectQueryKey("flexibility", "QUERY_KEY flexibility");
+        
         // Query manager.
         //Named Queries
         // Event manager.
