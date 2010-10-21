@@ -220,6 +220,7 @@ public class Property {
         	genericType = cls.getComponentType();
         }else{
             type = cls;
+            genericType = null;
         }
         
         boolean isNewTypeMap = helper.getJavaClass(java.util.Map.class).isAssignableFrom(type);
