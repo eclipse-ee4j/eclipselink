@@ -2563,7 +2563,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Because nested transactions are allowed check if the transaction mutex has been aquired.
      */
     public boolean isInTransaction() {
-        return getTransactionMutex().isAcquired();
+        return transactionMutex != null && getTransactionMutex().isAcquired();
     }
 
     /**
@@ -3390,7 +3390,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * batch mechanism
      */
     public void writesCompleted() {
-        getAccessor().writesCompleted(this);
+        if (getAccessor()!=null) {
+            //only execute if we have an accessor
+            getAccessor().writesCompleted(this);
+        }
     }
 
     /**
