@@ -140,6 +140,43 @@ public class SDOHelperContext implements HelperContext {
     private static final int JBOSS_EAR_OFFSET = JBOSS_EAR.length();
     private static final int JBOSS_TRIM_COUNT = 2;  // for stripping off the remaining '/}' chars
     
+    // allow users to provide application info 
+    private static ApplicationResolver appResolver;
+    private static boolean isAppResolverSet = false;
+    
+    /**
+     * ADVANCED:
+     * Used to set an ApplicationResolver instance that will be used to retrieve
+     * info pertaining to a given application, such as the application name, in 
+     * the case where our logic fails.
+     * 
+     * This method can be called once and only once per active server instance.
+     * 
+     * @param aResolver the ApplicationResolver instance that will be used to retrieve
+     *                  info pertaining to a given application.  Note that null is 
+     *                  considered a valid set operation. 
+     * @throws SDOException if more than one call is made to this method 
+     *         in an active server instance.
+     */
+    public static void setApplicationResolver(ApplicationResolver aResolver) {
+        // we only allow one set operation per running server instance
+        if (isApplicationResolverSet()) {
+            throw SDOException.attemptToResetApplicationResolver();
+        }
+        appResolver = aResolver;
+        isAppResolverSet = true;
+    }
+    
+    /**
+     * Indicates if a call to setApplicationResolver has been made.
+     * 
+     * @return true if a prior call to setApplicationResolver has 
+     *         been made, false otherwise
+     */
+    public static boolean isApplicationResolverSet() {
+        return isAppResolverSet;
+    }
+    
     /**
      * Create a local HelperContext.  The current thread's context ClassLoader
      * will be used to find static instance classes.  In OSGi environments the 
@@ -589,11 +626,14 @@ public class SDOHelperContext implements HelperContext {
                 try {
                     Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), WLS_APPLICATION_NAME_GET_METHOD_NAME, WLS_PARAMETER_TYPES, false);
                     Object appName = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
-                    // if ExecuteThread returns null, we will key on loader, otherwise use the application name
-                    if (appName != null) {
-                        // assumes object returned from getApplicationName method call is a String if non-null
-                        return new MapKeyLookupResult(appName.toString(), classLoader);
+                    // if ExecuteThread returns null, attempt to use the user-set ApplicationResolver 
+                    if (appName == null && appResolver != null) {
+                        appName = appResolver.getApplicationName();
                     }
+                    // use the application name if set, otherwise key on the class loader
+                    if (appName != null) {
+                        return new MapKeyLookupResult(appName.toString(), classLoader);
+                    } 
                 } catch (Exception e) {
                     throw SDOException.errorInvokingWLSMethodReflectively(WLS_APPLICATION_NAME_GET_METHOD_NAME, WLS_EXECUTE_THREAD, e);
                 }
