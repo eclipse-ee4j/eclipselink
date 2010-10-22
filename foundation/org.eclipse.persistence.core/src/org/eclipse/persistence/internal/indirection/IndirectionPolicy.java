@@ -451,6 +451,13 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * This value is determined by the query.
      */
     public abstract Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session);
+    
+    /**
+     * INTERNAL:
+     * Return the value to be stored in the object's attribute.
+     * This value is determined by the query.
+     */
+    public abstract Object valueFromQuery(ReadQuery query, AbstractRecord row, Object sourceObject, AbstractSession session);
 
     /**
      * INTERNAL:

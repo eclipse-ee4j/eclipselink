@@ -340,7 +340,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, new Class[] { ClassConstants.PINT, ClassDescriptor.class }, false));
                     IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { Integer.valueOf(size), descriptor }));
                     if ((descriptor != null) && (descriptor.getCacheInterceptorClass() != null)) {
-                        constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, new Class[] { IdentityMap.class, AbstractSession.class }, false));
+                        constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
                         Object params[] = new Object[]{map, this.session};
                         map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, params));
                     }

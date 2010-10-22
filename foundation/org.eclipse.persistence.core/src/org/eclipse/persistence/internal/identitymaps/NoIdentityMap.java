@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.identitymaps;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
  * <p><b>Purpose</b>: Provide the capability to not cache objects at all.
@@ -111,6 +113,14 @@ public class NoIdentityMap extends AbstractIdentityMap {
         return keys();
     }
     
+    /**
+     * Notify the cache that a lazy relationship has been triggered in the object
+     * and the cache may need to be updated
+     */
+    public void lazyRelationshipLoaded(Object object, ForeignReferenceMapping mapping){
+    	//NO-OP
+    }
+
     /**
      * Do Nothing.
      */

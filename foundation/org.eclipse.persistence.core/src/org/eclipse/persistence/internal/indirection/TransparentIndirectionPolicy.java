@@ -619,7 +619,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * to the query (pessimistic locking).
      */
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, Object object, AbstractSession session) {
-        return valueFromQuery(query, row, session);
+        return this.buildIndirectContainer(new QueryBasedValueHolder(query, object, row, session));
     }
 
     /**

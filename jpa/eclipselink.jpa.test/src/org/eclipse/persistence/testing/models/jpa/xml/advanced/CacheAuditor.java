@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
 import org.eclipse.persistence.sessions.interceptors.CacheKeyInterceptor;
 
@@ -60,6 +61,13 @@ public class CacheAuditor extends CacheInterceptor {
     }
 
     public void release() {
+    }
+
+    @Override
+    public void lazyRelationshipLoaded(Object object,
+            ForeignReferenceMapping mapping) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

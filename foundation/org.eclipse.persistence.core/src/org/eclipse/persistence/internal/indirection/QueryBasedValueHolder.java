@@ -12,7 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -31,7 +33,15 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      * Stores the query to be executed.
      */
     protected transient ReadQuery query;
+    protected transient Object sourceObject;
 
+    /**
+     * Initialize the query-based value holder.
+     */
+    public QueryBasedValueHolder(ReadQuery query, AbstractRecord row, AbstractSession session) {
+        this(query, null, row, session);
+    }
+    
     /**
      * Store the uow identity so that it can be used to determine new
      * transaction logic
@@ -39,7 +49,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     /**
      * Initialize the query-based value holder.
      */
-    public QueryBasedValueHolder(ReadQuery query, AbstractRecord row, AbstractSession session) {
+    public QueryBasedValueHolder(ReadQuery query, Object sourceObject, AbstractRecord row, AbstractSession session) {
         this.row = row;
         this.session = session;
 
@@ -58,6 +68,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
             this.session = session.getRootSession(query);
         }
         this.query = query;
+        this.sourceObject = sourceObject;
     }
 
     /**
@@ -70,11 +81,11 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     public ReadQuery getQuery() {
         return query;
     }
-
+    
     protected Object instantiate() throws DatabaseException {
         return instantiate(this.session);
     }
-
+    
     /**
      * Instantiate the object by executing the query on the session.
      */
@@ -99,7 +110,21 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
         return instantiate(unitOfWorkValueHolder.getUnitOfWork());
     }
-
+    
+    /**
+     * INTERNAL:
+     * Run any extra code required after the valueholder instantiates
+     * For query based VH, we notify the cache that the valueholder has been triggered
+     */
+    public void postInstantiate(){
+        if (query.getSourceMapping() != null && query.getSourceMapping().isForeignReferenceMapping()){
+            ClassDescriptor descriptor = session.getDescriptor(sourceObject);
+            if (descriptor != null){
+                session.getIdentityMapAccessorInstance().getIdentityMap(descriptor).lazyRelationshipLoaded(sourceObject, (ForeignReferenceMapping)query.getSourceMapping());
+            }
+        }
+    } 
+    
     /**
      * Releases a wrapped valueholder privately owned by a particular unit of
      * work.

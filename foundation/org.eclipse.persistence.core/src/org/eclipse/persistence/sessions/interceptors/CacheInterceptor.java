@@ -16,10 +16,12 @@ import java.util.Enumeration;
 import java.util.HashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
  * <p>
@@ -247,6 +249,14 @@ public abstract class CacheInterceptor implements IdentityMap {
      */
     public Enumeration keys(boolean checkReadLocks) {
         return this.targetIdentityMap.keys(checkReadLocks);
+    }
+
+    /**
+     * Notify the cache that a lazy relationship has been triggered in the object
+     * and the cache may need to be updated
+     */
+    public void lazyRelationshipLoaded(Object object, ValueHolderInterface valueHolder, ForeignReferenceMapping mapping){
+    	this.targetIdentityMap.lazyRelationshipLoaded(object, mapping);
     }
 
     /**
