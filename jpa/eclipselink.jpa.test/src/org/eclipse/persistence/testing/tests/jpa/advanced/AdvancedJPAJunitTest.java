@@ -373,6 +373,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         try {
+            beginTransaction(em);
             // This should override the EMF property of Montreal%
             em.setProperty("NAME", "Ottawa%");
             
@@ -380,7 +381,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             // and the property above, we should only return Ottawa students.
             
             List students = em.createQuery("SELECT s from Student s").getResultList();
-            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [8]",  students.size() == 8);        
+            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [8]",  students.size() == 8);
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -401,6 +403,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         try {
+            beginTransaction(em);
             // This should override the EMF property of Montreal%
             em.setProperty("NAME", "Toronto%");
             
@@ -409,7 +412,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             // However, they should not have any schools loaded.
             
             List students = em.createQuery("SELECT s from Student s").getResultList();
-            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [18]",  students.size() == 18);           
+            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [18]",  students.size() == 18);
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -453,11 +457,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         try {
+            beginTransaction(em);
             em.setProperty("NUT_SIZE", 8);
             em.setProperty("NUT_COLOR", "Grey");
             
             List bolts = em.createQuery("SELECT b from Bolt b").getResultList();
             assertTrue("Incorrect number of bolts were returned [" + bolts.size() + "], expected [2]",  bolts.size() == 2);
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
