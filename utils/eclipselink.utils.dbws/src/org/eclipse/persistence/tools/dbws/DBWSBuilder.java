@@ -1298,7 +1298,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     protected ProjectConfig buildORProjectConfig() {
         ProjectConfig orProjectConfig = null;
         boolean useProjectXML = false;
-        if (dbTables.size() > 0) {
+        if (dbTables.size() > 0 || hasBuildSqlOperations()) {
             useProjectXML = true;
         }
         else if (dbStoredProcedures.size() > 0) {
@@ -1346,7 +1346,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     protected ProjectConfig buildOXProjectConfig() {
         ProjectConfig oxProjectConfig = null;
         boolean useProjectXML = false;
-        if (dbTables.size() > 0) {
+        if (dbTables.size() > 0 || hasBuildSqlOperations()) {
             useProjectXML = true;
         }
         else if (dbStoredProcedures.size() > 0) {
