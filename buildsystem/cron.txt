@@ -3,7 +3,5 @@
 05 1    * * 0-6     nice -n 10 /shared/rt/eclipselink/bootstrap.sh nightly 2.1 > /shared/rt/eclipselink/logs/nightly211.log 2>&1
 05 3    * * 0,2,4,6 nice -n 10 /shared/rt/eclipselink/bootstrap.sh nightly 2.0 > /shared/rt/eclipselink/logs/nightly203.log 2>&1
 05 3    * * 1,3,5   nice -n 10 /shared/rt/eclipselink/bootstrap.sh nightly 1.2 > /shared/rt/eclipselink/logs/nightly120.log 2>&1
-00 6-20 * * *       nice -n 10 /shared/rt/eclipselink/bootstrap.sh cb > /shared/rt/eclipselink/logs/cb220.log 2>&1
-20 6-20 * * *       nice -n 10 /shared/rt/eclipselink/bootstrap.sh cb 2.1 > /shared/rt/eclipselink/logs/cb211.log 2>&1
-40 6-20 * * *       nice -n 10 /shared/rt/eclipselink/bootstrap.sh cb 2.0 > /shared/rt/eclipselink/logs/cb203.log 2>&1
+0,20,40 * * * *     /shared/rt/eclipselink/trunk/buildsystem/buildNightlyList-cron.sh > /shared/rt/eclipselink/logs/grenNightlyResults.log 2>&1
 
