@@ -26,34 +26,6 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite("All XMLHelper Tests");
 
-        suite.addTest(new TestSuite(LoadAndSavePurchaseOrderWChangeSummaryTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveImportsDefaultNamespaceTestCases.class));
-
-        // one expected failure 
-        suite.addTest(new TestSuite(LoadAndSaveWithImportsTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveImportsElementOrderTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveIDRefTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSavePurchaseOrderComplexTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSavePurchaseOrderComplexDefaultNSTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSavePurchaseOrderTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveSimpleAttributeTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveSimpleElementTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveSchemaTypesTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveOpenContentTestCases.class));
-
-		// TODO: fix position(state) dependent error on testLoadFromDomSourceWithURIAndOptionsSaveDataObjectToStreamResult Failure expected:<...tru...> but was:<...fals...> 
-        //suite.addTest(new TestSuite(LoadAndSavePurchaseOrderWChangeSummaryTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveMimeTypeOnXSDTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveMimeTypeOnPropertyTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveMimeTypeOnXSDManyTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveMimeTypeOnPropertyManyTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveBase64AttachmentTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveDataHandlerTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSavePurchaseOrderWithAnnotations.class));
-        suite.addTest(new TestSuite(LoadAndSaveOrderBookingTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveXMLEncodingAndVersionTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveWithDataObjectDataTypeTestCases.class));
-
 
         suite.addTest(new TestSuite(LoadAndSaveValuePropTestCases.class));        
         suite.addTest(new TestSuite(LoadAndSaveWithDefaultsTestCases.class));        
@@ -64,17 +36,6 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         suite.addTest(new TestSuite(LoadAndSaveGroupTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveWithTypeBug6522867TestCases.class));
 
-        // test DirectMapping        
-        suite.addTest(new TestSuite(LoadAndSaveNillableOptionalNodeNullPolicyTestCases.class));        
-        suite.addTest(new TestSuite(LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases.class));        
-        suite.addTest(new TestSuite(LoadAndSaveNillableIsSetNodeNullPolicyFalseTestCases.class));        
-
-        // substitution groups
-        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.substitutiongroups.SingleValueBaseTypeTestCases.class));
-        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.substitutiongroups.SingleValueNonBaseTypeTestCases.class));
-        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.substitutiongroups.CollectionValueTestCases.class));
-        suite.addTest(new TestSuite(LoadAndSaveImportsWithInheritanceTestCases.class));
-        
         //read-only
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveWithReadOnlyTestCases.class));
 
