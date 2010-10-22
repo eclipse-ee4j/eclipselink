@@ -394,24 +394,36 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
         if (isReadOnly() || isWriteOnly()) {
             return null;
         }
         Object cloneAttribute = getAttributeValueFromObject(clone);
         Object backUpAttribute = null;
-        if ((cloneAttribute != null) && (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
+        if ((cloneAttribute != null) && (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
             return null;
         }
         boolean difference = false;
         if (owner.isNew()) {
             difference = true;
         } else {
+            Object backupValue = null;
             if (backUp != null) {
                 backUpAttribute = getAttributeValueFromObject(backUp);
+                backupValue = this.indirectionPolicy.getRealAttributeValueFromObject(backUp, backUpAttribute);
             }
-            boolean backUpIsInstantiated = ((backUpAttribute == null) || (getIndirectionPolicy().objectIsInstantiated(backUpAttribute)));
- 
+            boolean backUpIsInstantiated = ((backUpAttribute == null) || (this.indirectionPolicy.objectIsInstantiated(backUpAttribute)));
+            Object cloneValue = this.indirectionPolicy.getRealAttributeValueFromObject(clone, cloneAttribute);
+            if (backUpIsInstantiated) {
+                if (cloneValue == backupValue) {
+                    return null;
+                }
+                if (((cloneValue != null && (backupValue != null)) && cloneValue.equals(backupValue))) {
+                    return null;
+                }
+            }
+            
             for (Enumeration stream = getFieldToTransformers().elements();
                      stream.hasMoreElements();) {
                 Object[] pair = (Object[])stream.nextElement();
@@ -426,14 +438,21 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                     backUpFieldValue = invokeFieldTransformer(field, transformer, backUp, session);
                 }
  
-                if ((cloneFieldValue == null) && (backUpFieldValue == null)) {
-                    continue;// skip this iteration, go to the next one
+                if (cloneFieldValue == backUpFieldValue) {
+                    continue; // skip this iteration, go to the next one
                 }
-                if ((cloneFieldValue != null) && cloneFieldValue.equals(backUpFieldValue)) {
-                    continue;// skip this iteration, go to the next one
+                if ((cloneFieldValue == null) || (backUpFieldValue == null)) {
+                    difference = true;
+                    break; // There is a difference.                    
+                }
+                if (cloneFieldValue.equals(backUpFieldValue)) {
+                    continue; // skip this iteration, go to the next one
+                }
+                if (Helper.comparePotentialArrays(cloneFieldValue, backUpFieldValue)) {
+                    continue; // skip this iteration, go to the next one
                 }
                 difference = true;
-                break;// There is a difference.
+                break; // There is a difference.
             }
         }
         if (difference) {
