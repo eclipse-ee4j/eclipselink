@@ -1,0 +1,286 @@
+# !/bin/sh
+#set -x
+
+export PATH=/usr/bin:/usr/local/bin:${PATH}
+
+GeneratedDownloadPage=nightly.xml
+BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly"
+BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/nightly"
+BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
+pattern_list="eclipselink-core-[l,s]rg-[0-9] eclipselink-jpa-[l,s]rg-[0-9] eclipselink-jpa-wdf-[l,s]rg-[0-9] eclipselink-jaxb-[l,s]rg-[0-9] eclipselink-oxm-[l,s]rg-[0-9] eclipselink-sdo-[l,s]rg-[0-9] eclipselink-dbws-[l,s]rg-[0-9] eclipselink-dbws-util-[l,s]rg-[0-9]"
+
+WarningImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/warning.gif\" align=\"middle\" border=\"0\" alt=\"warn\"/>"
+PassImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/pass.gif\" align=\"middle\" border=\"0\" alt=\"pass\"/>"
+FailImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/fail.gif\" align=\"middle\" border=\"0\" alt=\"fail\"/>"
+NewImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/new.gif\" align=\"middle\" border=\"0\" alt=\"new\"/>"
+NaImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/na.gif\" align=\"middle\" border=\"0\" alt=\"na\"/>"
+
+#   Generate the results summary file (is a hack just to allow script to generate properly)
+#      Results summare in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
+#      Should be removed before go live.
+unset genResultSummary
+genResultSummary() {
+    #    Need to be in dir to generate proper strings
+    cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}
+    result_file=${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/ResultSummary.dat
+    if [ -f ${result_file} ] ; then
+        rm ${result_file}
+    fi
+    content_dir_index=`ls -d ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/* | grep -n ${contentdir} | cut -d: -f1`
+    prev_content_index=`expr ${content_dir_index} + 1`
+    last=`ls -d ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/* | grep -n "${prev_content_index}:" | cut -d: -f2`
+    if [ "${last}" = "" ] ; then
+        
+        last=${contentdir}
+    fi
+    
+    echo "Creating ${result_file}..."
+    touch ${result_file}
+    for pattern in ${pattern_list} ; do
+        file=`ls | sort -r | grep -m1 ${pattern}`
+        prev=`ls ${BaseDownloadNFSDir}/nightly/${version}/${last}/${hostdir} | sort -r | grep -m1 ${pattern}`
+        if [ "${prev}" != "" ] ; then
+            expected=`cat ${BaseDownloadNFSDir}/nightly/${version}/${last}/${hostdir}/${prev} | grep -m1 "^<td>[0-9]" | cut -d">" -f2 | cut -d"<" -f1`
+        else
+            # If the previous run didn't have this file, then expected result is 0
+            expected=0
+        fi
+        if [ "${file}" != "" ] ; then
+            actual=`cat ${file} | grep -m1 "^<td>[0-9]" | cut -d">" -f2 | cut -d"<" -f1`
+            if [ ${expected} -eq 0 ] ; then
+                expected=${actual}
+            fi
+            failures=`cat ${file} | grep -m1 "^<td>[0-9]" | cut -d">" -f4 | cut -d"<" -f1`
+            errors=`cat ${file} | grep -m1 "^<td>[0-9]" | cut -d">" -f6 | cut -d"<" -f1`
+            test_result=`expr ${failures} + ${errors}`
+        else
+            # If the file doesn't exist (tests weren't run yet) then all values should be zero
+            expected=0
+            actual=0
+            failures=0
+            errors=0
+            test_result=0
+        fi
+        summary=${file}:${expected}:${actual}:${test_result}
+        echo "${summary}(${failures}:${errors})"
+        echo "${summary}" >> ${result_file}
+    done 
+    cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}
+    echo "done."
+}
+
+#   Generate the HTML for appropriate image links based upon results summary file
+#      Results summare in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
+unset genResultEntry
+genResultEntry() {
+    pattern=$1
+
+    Image=${NaImg}
+    file=`ls | sort -r | grep -m1 ${pattern}`
+    echo "            <td ${borderstyle} align=\"middle\">" >> $tmp/index.xml
+    if [ "${file}" != "" ] ; then
+        summary=`cat ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/ResultSummary.dat | grep ${pattern}`
+        expected=`echo ${summary} | cut -d: -f2`
+        actual=`echo ${summary} | cut -d: -f3`
+        test_result=`echo ${summary} | cut -d: -f4`
+        if [ $test_result -ne 0 ] ; then
+            Image=${FailImg}
+        else
+            if [ $expected -gt $actual ] ; then
+                Image=${WarningImg}
+            fi
+            if [ $expected -lt $actual ] ; then
+                Image=${NewImg}
+            fi
+            if [ $expected -eq $actual ] ; then
+                Image=${PassImg}
+            fi
+        fi
+        echo "              <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${hostdir}/${file}\">" >> $tmp/index.xml
+        echo "                ${Image}" >> $tmp/index.xml
+        echo "              </a>" >> $tmp/index.xml
+    else
+        echo "              ${Image}" >> $tmp/index.xml
+    fi
+    echo "            </td>" >> $tmp/index.xml
+}
+
+buildir=/shared/rt/eclipselink
+cd ${buildir}
+
+echo "generating webpage..."
+
+# safe temp directory
+tmp=${TMPDIR-/tmp}
+tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
+(umask 077 && mkdir $tmp) || {
+  echo "Could not create temporary directory! Exiting." 1>&2
+  exit 1
+}
+
+cd ${BaseDownloadNFSDir}/nightly
+
+# Generate the nightly build table
+#    Dump out the table header html
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>                                   " >> $tmp/index.xml
+echo "<sections title=\"Eclipse Persistence Services Project (EclipseLink) : Nightly Builds\">" >> $tmp/index.xml
+echo "    <description>                                                            " >> $tmp/index.xml
+echo "      <p> Automated builds and the corresponding Javadocs are created every day, if code has changed, and are made available for download.  The process is kicked off shortly after midnight Eastern Time.</p>" >> $tmp/index.xml
+echo "    </description>                                                           " >> $tmp/index.xml
+echo "  <section class=\"main\" name=\"Nightly Builds\">                           " >> $tmp/index.xml
+echo "    <description>                                                            " >> $tmp/index.xml
+echo "      <p>                                                                    " >> $tmp/index.xml
+echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
+echo "          <tr>                                                               " >> $tmp/index.xml
+echo "            <th colspan=\"5\" align=\"middle\"> Symbol Key </th>            " >> $tmp/index.xml
+echo "          </tr>                                                              " >> $tmp/index.xml
+echo "          <tr>                                                               " >> $tmp/index.xml
+echo "            <td align=\"middle\">                                            " >> $tmp/index.xml
+echo "              ${PassImg} = clean, as expected     " >> $tmp/index.xml
+echo "            </td>                                                                                                                            " >> $tmp/index.xml
+echo "            <td align=\"middle\">                                                                                                            " >> $tmp/index.xml
+echo "              ${NewImg} = clean, new tests added  " >> $tmp/index.xml
+echo "            </td>                                                                                                                            " >> $tmp/index.xml
+echo "            <td align=\"middle\">                                                                                                            " >> $tmp/index.xml
+echo "              ${WarningImg} = clean, fewer tests run" >> $tmp/index.xml
+echo "            </td>                                                                                                                            " >> $tmp/index.xml
+echo "            <td align=\"middle\">                                                                                                            " >> $tmp/index.xml
+echo "              ${FailImg} = test failures or errors" >> $tmp/index.xml
+echo "            </td>                                                                                                                            " >> $tmp/index.xml
+echo "            <td align=\"middle\">                                                                                                            " >> $tmp/index.xml
+echo "              ${NaImg} = no results                 " >> $tmp/index.xml
+echo "            </td>" >> $tmp/index.xml
+echo "          </tr>" >> $tmp/index.xml
+echo "        </table>" >> $tmp/index.xml
+echo "      </p>" >> $tmp/index.xml
+
+curdir=`pwd`
+for version in `ls -dr [0-9]*` ; do
+    cd ${BaseDownloadNFSDir}/nightly/${version}
+    echo "      <p>                                                                              " >> $tmp/index.xml
+    echo "      <a name=\"${version}\"> </a>                                                     " >> $tmp/index.xml
+    echo "        <table border=\"1\">                                                           " >> $tmp/index.xml
+    echo "          <tr>                                                                         " >> $tmp/index.xml
+    echo "            <th colspan=\"12\" align=\"middle\"><b>${version} Nightly Build Results</b></th>" >> $tmp/index.xml
+    echo "          </tr>                                                                        " >> $tmp/index.xml
+    echo "          <tr>                                                                         " >> $tmp/index.xml
+    echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Build ID </th>                         " >> $tmp/index.xml
+    echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Archives </th>                         " >> $tmp/index.xml
+    echo "            <th rowspan=\"3\" align=\"middle\"> </th>                                  " >> $tmp/index.xml
+    echo "            <th colspan=\"9\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Nightly Testing Results </th>          " >> $tmp/index.xml
+    echo "          </tr>                                                                        " >> $tmp/index.xml
+    echo "          <tr>                                                                         " >> $tmp/index.xml
+    echo "            <th rowspan=\"2\" align=\"middle\"> Host </th>                             " >> $tmp/index.xml
+    echo "            <th rowspan=\"2\" align=\"middle\"> Core </th>                             " >> $tmp/index.xml
+    echo "            <th colspan=\"2\" align=\"middle\"> JPA </th>                              " >> $tmp/index.xml
+    echo "            <th colspan=\"2\" align=\"middle\"> MOXy </th>                             " >> $tmp/index.xml
+    echo "            <th rowspan=\"2\" align=\"middle\"> SDO </th>                              " >> $tmp/index.xml
+    echo "            <th colspan=\"2\" align=\"middle\"> DBWS </th>                             " >> $tmp/index.xml
+    echo "          </tr>                                                                        " >> $tmp/index.xml
+    echo "          <tr>                                                                         " >> $tmp/index.xml
+    echo "            <th align=\"middle\"> ORCL </th>                                           " >> $tmp/index.xml
+    echo "            <th align=\"middle\"> WDF </th>                                            " >> $tmp/index.xml
+    echo "            <th align=\"middle\"> JAXB </th>                                           " >> $tmp/index.xml
+    echo "            <th align=\"middle\"> OXM </th>                                            " >> $tmp/index.xml
+    echo "            <th align=\"middle\"> RT </th>                                             " >> $tmp/index.xml
+    echo "            <th align=\"middle\"> Util </th>                                           " >> $tmp/index.xml
+    echo "          </tr>                                                                        " >> $tmp/index.xml
+
+    #    Generate each table row depending upon available content
+    for contentdir in `ls -dr [0-9]*` ; do
+        cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}
+        #    Determine number of "host" result dirs - since we will always report for "eclipse", even if none result needs to be 1
+        num_hosts=`ls -Fd * | grep -c /`
+        if [ ${num_hosts} -eq 0 ] ; then
+            num_hosts=1
+        fi
+    
+        echo "          <tr>"  >> $tmp/index.xml
+        echo "            <td rowspan=\"${num_hosts}\" style=\"border-top: 2px solid #444;\" align=\"middle\"> ${contentdir} </td>" >> $tmp/index.xml
+        echo "            <td rowspan=\"${num_hosts}\" style=\"border-top: 2px solid #444;\" align=\"middle\">" >> $tmp/index.xml
+
+        #    List all files in dir, reverse sort to put newer on top
+        #    and look for the first matching filename to generate html link
+        file=`ls | sort -r | grep -m1 eclipselink-[0-9]`
+        if [ "${file}" != "" ] ; then
+            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> Install Archive </a> <br/>" >> $tmp/index.xml
+        else
+            echo "              Install archive not available <br/>" >> $tmp/index.xml
+        fi
+        file=`ls | sort -r | grep -m1 eclipselink-src-[0-9]`
+        if [ "${file}" != "" ] ; then
+            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> Source Archive </a> <br/>" >> $tmp/index.xml
+        else
+            echo "              Source archive not available <br/>" >> $tmp/index.xml
+        fi
+        file=`ls | sort -r | grep -m1 eclipselink-plugins-[0-9]`
+        if [ "${file}" != "" ] ; then
+            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> OSGi Plugins Archive </a> <br/>" >> $tmp/index.xml
+        else
+            echo "              OSGi Plugins archive not available <br/>" >> $tmp/index.xml
+        fi
+        echo "            </td>" >> $tmp/index.xml
+        echo "            <td rowspan=\"${num_hosts}\" align=\"middle\"> </td>" >> $tmp/index.xml
+
+        #    Verify existence of the Eclipse host dir. If not present create and populate as appropriate
+        hostdir=Eclipse
+        if [ ! -d ${hostdir} ] ; then
+            echo "No ${hostdir} dir... creating."
+            mkdir ${hostdir}
+            cp *.html ${hostdir}/.
+            genResultSummary
+            echo "   done."
+            last=
+        fi
+        #   Set a counter to track the number of times through the "hosts" loop
+        count=0
+        borderstyle="style=\"border-top: 2px solid #444;\""
+        #parse through host dir's ResultSummary.dat to generate "host results" table entries
+        for hostdir in `ls -Fd * | grep / | cut -d"/" -f1` ; do
+            #    Need to be in dir to generate proper strings
+            cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}
+            count=`expr $count + 1`
+            #    Set border to none, and Add row if this is after the first time through
+            if [ ${count} -gt 1 ] ; then
+                borderstyle=
+                echo "            <tr>" >> $tmp/index.xml
+            fi
+            #   Add "Host" entry
+            echo "            <td ${borderstyle} align=\"middle\">" >> $tmp/index.xml
+            echo "              <a href=\"http://wiki.eclipse.org/EclipseLink/Build/NightlyTestEnvAndResults#${hostdir}\"> ${hostdir} </a>" >> $tmp/index.xml
+            echo "            </td>" >> $tmp/index.xml
+            #   Generate the image links
+            genResultEntry eclipselink-core-[l,s]rg-[0-9]
+            genResultEntry eclipselink-jpa-[l,s]rg-[0-9]
+            genResultEntry eclipselink-jpa-wdf-[l,s]rg-[0-9]
+            genResultEntry eclipselink-jaxb-[l,s]rg-[0-9]
+            genResultEntry eclipselink-oxm-[l,s]rg-[0-9]
+            genResultEntry eclipselink-sdo-[l,s]rg-[0-9]
+            genResultEntry eclipselink-dbws-[l,s]rg-[0-9]
+            genResultEntry eclipselink-dbws-util-[l,s]rg-[0-9]
+            #    Close row if this is after the first time through
+            if [ ${count} -gt 1 ] ; then
+                echo "            </tr>" >> $tmp/index.xml
+            fi
+        done
+
+        echo "          </tr>" >> $tmp/index.xml
+    done
+    echo "        </table>" >> $tmp/index.xml
+    echo "      </p>      " >> $tmp/index.xml
+    cd ${curdir}
+done
+
+# Dump the static footer into place
+echo "      <script src=\"http://www.google-analytics.com/urchin.js\" type=\"text/javascript\"/>" >> $tmp/index.xml
+echo "      <script type=\"text/javascript\">                                                   " >> $tmp/index.xml
+echo "        _uacct = \"UA-1608008-2\";                                                        " >> $tmp/index.xml
+echo "        urchinTracker();                                                                  " >> $tmp/index.xml
+echo "      </script>                                                                           " >> $tmp/index.xml
+echo "    </description>                                                                        " >> $tmp/index.xml
+echo "  </section>                                                                              " >> $tmp/index.xml
+echo "</sections>                                                                               " >> $tmp/index.xml
+
+# Copy the completed file to the server, and cleanup
+mv -f $tmp/index.xml  ${BaseDownloadNFSDir}/${GeneratedDownloadPage}
+rm -rf $tmp
