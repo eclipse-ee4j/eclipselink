@@ -90,6 +90,7 @@ public class SDOException extends EclipseLinkException {
     public static final int SDO_JAXB_ERROR_CREATING_JAXB_UNMARSHALLER = 45206;
     public static final int ERROR_RESOLVING_ENTITY = 45207;
     public static final int MISSING_DEPENDENCY_FOR_BINARY_MAPPING = 45208;
+    public static final int ATTEMPT_TO_RESET_APP_RESOLVER = 45209;
 
     protected SDOException(String message) {
         super(message);
@@ -691,4 +692,10 @@ public class SDOException extends EclipseLinkException {
          return exception;
      }     
 
+     public static SDOException attemptToResetApplicationResolver() {
+         Object[] args = {};
+         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ATTEMPT_TO_RESET_APP_RESOLVER, args));
+         exception.setErrorCode(ATTEMPT_TO_RESET_APP_RESOLVER);
+         return exception;
+     }     
 }
