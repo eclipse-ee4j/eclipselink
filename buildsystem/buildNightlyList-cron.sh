@@ -123,6 +123,30 @@ cd ${BaseDownloadNFSDir}/nightly
 # Generate the nightly build table
 #    Dump out the table header html
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>                                   " >> $tmp/index.xml
+#    Need in Php instead
+#echo "<style>" >> $tmp/index.xml
+#echo "a.info{" >> $tmp/index.xml
+#echo "    position:relative; /*this is the key*/" >> $tmp/index.xml
+#echo "    z-index:24;" >> $tmp/index.xml
+#echo "    text-decoration:none}" >> $tmp/index.xml
+#echo "" >> $tmp/index.xml
+#echo "a.info:hover{z-index:25; background-color:#ccc}" >> $tmp/index.xml
+#echo "" >> $tmp/index.xml
+#echo "a.info span{display: none}" >> $tmp/index.xml
+#echo "" >> $tmp/index.xml
+#echo "a.info:hover span{ /*the span will display just on :hover state*/" >> $tmp/index.xml
+#echo "    display:block;" >> $tmp/index.xml
+#echo "    position:absolute;" >> $tmp/index.xml
+#echo "    top:2em; left:-4em; width:8em;" >> $tmp/index.xml
+#echo "    border:1px solid #000;" >> $tmp/index.xml
+#echo "    background-color:#eee; color:#000;" >> $tmp/index.xml
+#echo "    text-align: center}" >> $tmp/index.xml
+#echo "" >> $tmp/index.xml
+#echo "th {" >> $tmp/index.xml
+#echo "	padding-left: 4px;" >> $tmp/index.xml
+#echo "	padding-right: 4px;" >> $tmp/index.xml
+#echo "}" >> $tmp/index.xml
+#echo "</style>" >> $tmp/index.xml
 echo "<sections title=\"Eclipse Persistence Services Project (EclipseLink) : Nightly Builds\">" >> $tmp/index.xml
 echo "    <description>                                                            " >> $tmp/index.xml
 echo "      <p> Automated builds and the corresponding Javadocs are created every day, if code has changed, and are made available for download.  The process is kicked off shortly after midnight Eastern Time.</p>" >> $tmp/index.xml
@@ -165,7 +189,7 @@ for version in `ls -dr [0-9]*` ; do
     echo "          </tr>                                                                        " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
     echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Build ID </th>                         " >> $tmp/index.xml
-    echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Archives </th>                         " >> $tmp/index.xml
+    echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Downloadable Archives </th>                         " >> $tmp/index.xml
     echo "            <th rowspan=\"3\" align=\"middle\"> </th>                                  " >> $tmp/index.xml
     echo "            <th colspan=\"9\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Nightly Testing Results </th>          " >> $tmp/index.xml
     echo "          </tr>                                                                        " >> $tmp/index.xml
@@ -203,21 +227,24 @@ for version in `ls -dr [0-9]*` ; do
         #    and look for the first matching filename to generate html link
         file=`ls | sort -r | grep -m1 eclipselink-[0-9]`
         if [ "${file}" != "" ] ; then
-            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> Install Archive </a> <br/>" >> $tmp/index.xml
+#            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\"><img src=\"http://dev.eclipse.org/large_icons/actions/go-bottom.png\"/><span>Download Install Archive</span></a>" >> $tmp/index.xml
+            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Install Zip</a>" >> $tmp/index.xml
         else
-            echo "              Install archive not available <br/>" >> $tmp/index.xml
+            echo "              Z" >> $tmp/index.xml
         fi
         file=`ls | sort -r | grep -m1 eclipselink-src-[0-9]`
         if [ "${file}" != "" ] ; then
-            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> Source Archive </a> <br/>" >> $tmp/index.xml
+#            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\">S<span>Download Source Archive</span></a>" >> $tmp/index.xml
+            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Source Zip</a>" >> $tmp/index.xml
         else
-            echo "              Source archive not available <br/>" >> $tmp/index.xml
+            echo "              S" >> $tmp/index.xml
         fi
         file=`ls | sort -r | grep -m1 eclipselink-plugins-[0-9]`
         if [ "${file}" != "" ] ; then
-            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> OSGi Plugins Archive </a> <br/>" >> $tmp/index.xml
+#            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\">B<span>Download OSGi Plugins Archive</span></a>" >> $tmp/index.xml
+            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Bundle Zip</a>" >> $tmp/index.xml
         else
-            echo "              OSGi Plugins archive not available <br/>" >> $tmp/index.xml
+            echo "              B" >> $tmp/index.xml
         fi
         echo "            </td>" >> $tmp/index.xml
         echo "            <td rowspan=\"${num_hosts}\" align=\"middle\"> </td>" >> $tmp/index.xml
