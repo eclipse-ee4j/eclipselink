@@ -1,25 +1,30 @@
 # !/bin/sh
-set -x
+#set -x
 
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
 pattern_list="eclipselink-core-[l,s]rg-[0-9] eclipselink-jpa-[l,s]rg-[0-9] eclipselink-jpa-wdf-[l,s]rg-[0-9] eclipselink-jaxb-[l,s]rg-[0-9] eclipselink-oxm-[l,s]rg-[0-9] eclipselink-sdo-[l,s]rg-[0-9] eclipselink-dbws-[l,s]rg-[0-9] eclipselink-dbws-util-[l,s]rg-[0-9]"
+summaryfile=ResultSummary.dat
 
 #   Generate the results summary file (is a hack just to allow script to generate properly)
 #      Results summare in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
 unset genResultSummary
 genResultSummary() {
     #    Need to be in dir to generate proper strings
-    cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}
-    result_file=${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/ResultSummary.dat
-    if [ -f ${result_file} ] ; then
-        rm ${result_file}
-    fi
+    cd ${BaseDownloadNFSDir}/nightly/${version}
+    content_dir_index=`ls -dr * | grep -n ${contentdir} | cut -d: -f1`
+    prev_content_index=`expr ${content_dir_index} + 1`
+    last=`ls -dr * | grep -n . | grep ${prev_content_index}: | cut -d: -f2`
     if [ "${last}" = "" ] ; then
         last=${contentdir}
     fi
-    
-    echo "Creating ${result_file}..."
+    result_file=${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/${summaryfile}
+    if [ -f ${result_file} ] ; then
+        rm ${result_file}
+    fi
+    echo "    Creating ${result_file}..."
+    echo "        Previous run dir='$last'"
     touch ${result_file}
+    cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}
     for pattern in ${pattern_list} ; do
         file=`ls | sort -r | grep -m1 ${pattern}`
         prev=`ls ${BaseDownloadNFSDir}/nightly/${version}/${last}/${hostdir} | sort -r | grep -m1 ${pattern}`
@@ -46,17 +51,16 @@ genResultSummary() {
             test_result=0
         fi
         summary=${file}:${expected}:${actual}:${test_result}
-        echo "${summary}(${failures}:${errors})"
+        echo "    ${summary}(${failures}:${errors})"
         echo "${summary}" >> ${result_file}
-    done 
+    done
     cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}
-    echo "done."
+    echo "    done."
 }
 
 cd ${BaseDownloadNFSDir}/nightly
 for version in `ls -d [0-9]*` ; do
     cd ${BaseDownloadNFSDir}/nightly/${version}
-    last=
 
     #    Generate each table row depending upon available content
     for contentdir in `ls -d [0-9]*` ; do
@@ -67,17 +71,13 @@ for version in `ls -d [0-9]*` ; do
         if [ ! -d ${hostdir} ] ; then
             echo "No ${hostdir} dir... creating."
             mkdir ${hostdir}
-            cp *.html ${hostdir}/.
-            echo "   done."
-#        else
-#            for migration (clean old html files from nightly content dirs)
-#            rm eclipselink-*.html    
+            mv eclipselink-*.html ${hostdir}/.
+            echo "done."
         fi
 
         #parse through host dir's ResultSummary.dat to generate "host results" table entries
         for hostdir in `ls -Fd * | grep / | cut -d"/" -f1` ; do
             genResultSummary
-            last=${contentdir}
         done
     done
 done

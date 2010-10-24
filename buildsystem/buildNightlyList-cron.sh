@@ -26,7 +26,6 @@ genResultSummary() {
     prev_content_index=`expr ${content_dir_index} + 1`
     last=`ls -dr * | grep -n . | grep ${prev_content_index}: | cut -d: -f2`
     if [ "${last}" = "" ] ; then
-        echo "last=contentdir"
         last=${contentdir}
     fi
     result_file=${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/${summaryfile}
@@ -144,8 +143,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>                                
 #echo "    text-align: center}" >> $tmp/index.xml
 #echo "" >> $tmp/index.xml
 #echo "th {" >> $tmp/index.xml
-#echo "	padding-left: 4px;" >> $tmp/index.xml
-#echo "	padding-right: 4px;" >> $tmp/index.xml
+#echo " padding-left: 4px;" >> $tmp/index.xml
+#echo " padding-right: 4px;" >> $tmp/index.xml
 #echo "}" >> $tmp/index.xml
 #echo "</style>" >> $tmp/index.xml
 echo "<sections title=\"Eclipse Persistence Services Project (EclipseLink) : Nightly Builds\">" >> $tmp/index.xml
@@ -219,7 +218,7 @@ for version in `ls -dr [0-9]*` ; do
         if [ ${num_hosts} -eq 0 ] ; then
             num_hosts=1
         fi
-    
+
         echo "          <tr>"  >> $tmp/index.xml
         echo "            <td rowspan=\"${num_hosts}\" style=\"border-top: 2px solid #444;\" align=\"middle\"> ${contentdir} </td>" >> $tmp/index.xml
         echo "            <td rowspan=\"${num_hosts}\" style=\"border-top: 2px solid #444;\" align=\"middle\">" >> $tmp/index.xml
@@ -260,11 +259,10 @@ for version in `ls -dr [0-9]*` ; do
         fi
         if [ ! -f ${hostdir}/${summaryfile} ] ; then
             echo "No ${hostdir}/${summaryfile} file... creating."
-            last=
             genResultSummary
             echo "done."
         fi
-        
+
         #   Set a counter to track the number of times through the "hosts" loop
         count=0
         borderstyle="style=\"border-top: 2px solid #444;\""
