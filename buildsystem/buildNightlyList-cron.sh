@@ -22,9 +22,9 @@ unset genResultSummary
 genResultSummary() {
     #    Need to be in dir to generate proper strings
     cd ${BaseDownloadNFSDir}/nightly/${version}
-    content_dir_index=`ls -d * | grep -n ${contentdir} | cut -d: -f1`
-    prev_content_index=`expr ${content_dir_index} - 1`
-    last=`ls -d * | grep -n . | grep ${prev_content_index}: | cut -d: -f2`
+    content_dir_index=`ls -dr * | grep -n ${contentdir} | cut -d: -f1`
+    prev_content_index=`expr ${content_dir_index} + 1`
+    last=`ls -dr * | grep -n . | grep ${prev_content_index}: | cut -d: -f2`
     if [ "${last}" = "" ] ; then
         echo "last=contentdir"
         last=${contentdir}
