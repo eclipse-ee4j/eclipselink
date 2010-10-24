@@ -17,7 +17,6 @@ NaImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/na.gif\" align=
 
 #   Generate the results summary file (is a hack just to allow script to generate properly)
 #      Results summare in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
-#      Should be removed before go live.
 unset genResultSummary
 genResultSummary() {
     #    Need to be in dir to generate proper strings
@@ -26,11 +25,10 @@ genResultSummary() {
     if [ -f ${result_file} ] ; then
         rm ${result_file}
     fi
-    content_dir_index=`ls -d ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/* | grep -n ${contentdir} | cut -d: -f1`
-    prev_content_index=`expr ${content_dir_index} + 1`
-    last=`ls -d ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/* | grep -n "${prev_content_index}:" | cut -d: -f2`
+    content_dir_index=`ls -d ${BaseDownloadNFSDir}/nightly/${version}/* | grep -n ${contentdir} | cut -d: -f1`
+    prev_content_index=`expr ${content_dir_index} - 1`
+    last=`ls -d ${BaseDownloadNFSDir}/nightly/${version}/* | grep -n . | grep ${prev_content_index}:` | cut -d: -f2
     if [ "${last}" = "" ] ; then
-        
         last=${contentdir}
     fi
     
@@ -64,7 +62,7 @@ genResultSummary() {
         summary=${file}:${expected}:${actual}:${test_result}
         echo "${summary}(${failures}:${errors})"
         echo "${summary}" >> ${result_file}
-    done 
+    done
     cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}
     echo "done."
 }
@@ -254,7 +252,7 @@ for version in `ls -dr [0-9]*` ; do
         if [ ! -d ${hostdir} ] ; then
             echo "No ${hostdir} dir... creating."
             mkdir ${hostdir}
-            cp *.html ${hostdir}/.
+            mv eclipselink-*.html ${hostdir}/.
             genResultSummary
             echo "   done."
             last=
