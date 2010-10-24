@@ -1,5 +1,5 @@
 # !/bin/sh
-set -x
+#set -x
 
 export PATH=/usr/bin:/usr/local/bin:${PATH}
 
