@@ -1,5 +1,5 @@
 # !/bin/sh
-#set -x
+set -x
 
 export PATH=/usr/bin:/usr/local/bin:${PATH}
 
@@ -8,6 +8,7 @@ BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipsel
 BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/nightly"
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
 pattern_list="eclipselink-core-[l,s]rg-[0-9] eclipselink-jpa-[l,s]rg-[0-9] eclipselink-jpa-wdf-[l,s]rg-[0-9] eclipselink-jaxb-[l,s]rg-[0-9] eclipselink-oxm-[l,s]rg-[0-9] eclipselink-sdo-[l,s]rg-[0-9] eclipselink-dbws-[l,s]rg-[0-9] eclipselink-dbws-util-[l,s]rg-[0-9]"
+summaryfile=ResultSummary.dat
 
 WarningImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/warning.gif\" align=\"middle\" border=\"0\" alt=\"warn\"/>"
 PassImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/pass.gif\" align=\"middle\" border=\"0\" alt=\"pass\"/>"
@@ -20,20 +21,22 @@ NaImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/na.gif\" align=
 unset genResultSummary
 genResultSummary() {
     #    Need to be in dir to generate proper strings
-    cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}
-    result_file=${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/ResultSummary.dat
+    cd ${BaseDownloadNFSDir}/nightly/${version}
+    content_dir_index=`ls -d * | grep -n ${contentdir} | cut -d: -f1`
+    prev_content_index=`expr ${content_dir_index} - 1`
+    last=`ls -d * | grep -n . | grep ${prev_content_index}: | cut -d: -f2`
+    if [ "${last}" = "" ] ; then
+        echo "last=contentdir"
+        last=${contentdir}
+    fi
+    result_file=${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/${summaryfile}
     if [ -f ${result_file} ] ; then
         rm ${result_file}
     fi
-    content_dir_index=`ls -d ${BaseDownloadNFSDir}/nightly/${version}/* | grep -n ${contentdir} | cut -d: -f1`
-    prev_content_index=`expr ${content_dir_index} - 1`
-    last=`ls -d ${BaseDownloadNFSDir}/nightly/${version}/* | grep -n . | grep ${prev_content_index}:` | cut -d: -f2
-    if [ "${last}" = "" ] ; then
-        last=${contentdir}
-    fi
-    
-    echo "Creating ${result_file}..."
+    echo "    Creating ${result_file}..."
+    echo "        Previous run dir='$last'"
     touch ${result_file}
+    cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}
     for pattern in ${pattern_list} ; do
         file=`ls | sort -r | grep -m1 ${pattern}`
         prev=`ls ${BaseDownloadNFSDir}/nightly/${version}/${last}/${hostdir} | sort -r | grep -m1 ${pattern}`
@@ -60,11 +63,11 @@ genResultSummary() {
             test_result=0
         fi
         summary=${file}:${expected}:${actual}:${test_result}
-        echo "${summary}(${failures}:${errors})"
+        echo "    ${summary}(${failures}:${errors})"
         echo "${summary}" >> ${result_file}
     done
     cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}
-    echo "done."
+    echo "    done."
 }
 
 #   Generate the HTML for appropriate image links based upon results summary file
@@ -253,10 +256,15 @@ for version in `ls -dr [0-9]*` ; do
             echo "No ${hostdir} dir... creating."
             mkdir ${hostdir}
             mv eclipselink-*.html ${hostdir}/.
-            genResultSummary
-            echo "   done."
-            last=
+            echo "done."
         fi
+        if [ ! -f ${hostdir}/${summaryfile} ] ; then
+            echo "No ${hostdir}/${summaryfile} file... creating."
+            last=
+            genResultSummary
+            echo "done."
+        fi
+        
         #   Set a counter to track the number of times through the "hosts" loop
         count=0
         borderstyle="style=\"border-top: 2px solid #444;\""
