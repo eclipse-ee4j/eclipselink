@@ -477,6 +477,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
             objects = new Vector();
             IdentityMap map = getIdentityMap(descriptor, false);
+            // bug 327900 - If don't read subclasses is set on the descriptor heed it.
+            boolean readSubclassesOrNoInheritance = (!descriptor.hasInheritance() || descriptor.getInheritancePolicy().shouldReadSubclasses());
 
             // cache the current time to avoid calculating it every time through the loop
             long currentTimeInMillis = System.currentTimeMillis();
@@ -493,7 +495,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 }
 
                 // Must check for inheritance.
-                if ((object.getClass() == theClass) || (theClass.isInstance(object))) {
+                // bug 327900
+                if ((object.getClass() == theClass) || (readSubclassesOrNoInheritance && (theClass.isInstance(object)))) {
                     if (selectionCriteria == null) {
                         objects.add(object);
                     } else {
