@@ -15,11 +15,11 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode;
 import java.util.List;
 
 public class Company {
-    public List<Employee> employees;
+    public List<Object> employees;
     public List<Address> buildingAddresses;
     
     public Company() {}
-    public Company(List<Employee> employees, List<Address> buildingAddresses) {
+    public Company(List<Object> employees, List<Address> buildingAddresses) {
         this.employees = employees;
         this.buildingAddresses = buildingAddresses;
     }

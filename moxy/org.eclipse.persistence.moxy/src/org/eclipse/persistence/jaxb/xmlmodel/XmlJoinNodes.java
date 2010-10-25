@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * <p>Java class for anonymous complex type.
  * 
@@ -42,6 +41,8 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;/complexType>
  *         &lt;/element>
  *       &lt;/sequence>
+ *       &lt;attribute name="container-type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -59,6 +60,10 @@ public class XmlJoinNodes
 
     @XmlElement(name = "xml-join-node", required = true)
     protected List<XmlJoinNodes.XmlJoinNode> xmlJoinNode;
+    @XmlAttribute(name = "container-type")
+    protected String containerType;
+    @XmlAttribute(name = "type")
+    protected String type;
 
     /**
      * Gets the value of the xmlJoinNode property.
@@ -88,7 +93,7 @@ public class XmlJoinNodes
         }
         return this.xmlJoinNode;
     }
-    
+
     /**
      * Sets the value of the xmlJoinNode property.
      * 
@@ -96,6 +101,62 @@ public class XmlJoinNodes
      */
     public void setXmlJoinNode(List<XmlJoinNodes.XmlJoinNode> xmlJoinNode) {
         this.xmlJoinNode = xmlJoinNode;
+    }
+
+    /**
+     * Gets the value of the containerType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getContainerType() {
+        if (containerType == null) {
+            return "##default";
+        } else {
+            return containerType;
+        }
+    }
+
+    /**
+     * Sets the value of the containerType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setContainerType(String value) {
+        this.containerType = value;
+    }
+
+    /**
+     * Gets the value of the type property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getType() {
+        if (type == null) {
+            return "##default";
+        } else {
+            return type;
+        }
+    }
+
+    /**
+     * Sets the value of the type property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setType(String value) {
+        this.type = value;
     }
 
     /**
@@ -172,7 +233,5 @@ public class XmlJoinNodes
         public void setReferencedXmlPath(String value) {
             this.referencedXmlPath = value;
         }
-
     }
-
 }

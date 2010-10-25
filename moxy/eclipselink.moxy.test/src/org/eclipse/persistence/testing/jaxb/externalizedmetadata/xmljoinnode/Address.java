@@ -12,10 +12,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlID;
+
+import org.eclipse.persistence.oxm.annotations.XmlKey;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+
 public class Address {
+    @XmlID
+    @XmlPath("@id")
+    @XmlAttribute
     public int id;
     public String street;
     public String suite;
+    
+    @XmlKey
+    @XmlPath("city/text()")
     public String cityName;
     public String postal;
     

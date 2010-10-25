@@ -26,7 +26,9 @@ import javax.xml.namespace.QName;
 import junit.textui.TestRunner;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -41,6 +43,7 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
     private static final String INVALID_OXM_DOC = PATH + "invalid-xml-join-node-oxm.xml";
     private static final String INVALID_XPATH_OXM_DOC = PATH + "invalid-target-xpath-oxm.xml";
     private static final String INVALID_TARGET_OXM_DOC = PATH + "invalid-target-oxm.xml";
+    private static final String OXM_DOC_V2 = PATH + "company2-oxm.xml";
     private static final String XSD_DOC = PATH + "company.xsd";
     private static final String WORK_ADD_XSD_DOC = PATH + "work-address.xsd";
     private static final String INSTANCE_DOC = PATH + "company.xml";
@@ -82,7 +85,7 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
         Address kanata100 = new Address(100, "99 Some St.", "1001", "Kanata", "K0A3m0");
         Employee emp101 = new Employee(101, ottawa100);
         Employee emp102 = new Employee(102, kanata100);
-        ArrayList<Employee> empList = new ArrayList<Employee>();
+        ArrayList empList = new ArrayList();
         empList.add(emp101);
         empList.add(emp102);
         ArrayList<Address> addList = new ArrayList<Address>();
@@ -135,7 +138,7 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
             Company testCo = (Company) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshal failed - Company is null", testCo);
             // verify employee 101
-            Employee emp = testCo.employees.get(0);
+            Employee emp = (Employee) testCo.employees.get(0);
             assertNotNull(emp);
             Address workAddress = emp.workAddress;
             assertNotNull(workAddress);
@@ -144,7 +147,7 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
             assertTrue("Expected work address id [ba100] but was [" + workAddress.id + "]", workAddress.id == 100);
             assertTrue("Expected work address city [Ottawa] but was [" + workAddress.cityName + "]", workAddress.cityName.equals("Ottawa"));
             // verify employee 102
-            emp = testCo.employees.get(1);
+            emp = (Employee) testCo.employees.get(1);
             assertNotNull(emp);
             workAddress = emp.workAddress;
             assertNotNull(workAddress);
@@ -234,6 +237,22 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
         fail("The expected JAXBException was not thrown.");
     }
 
+    public void testContainerType() {
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(classes, CONTEXT_PATH, OXM_DOC_V2);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An exception occurred while creating the JAXBContext.");
+        }
+        XMLDescriptor xDesc = jCtx.getXMLContext().getDescriptor(new QName("company"));
+        assertNotNull("No descriptor was generated for Company.", xDesc);
+        DatabaseMapping mapping = xDesc.getMappingForAttributeName("employees");
+        assertNotNull("No mapping exists on Customer for attribute [employees].", mapping);
+        assertTrue("Expected an XMLCollectionReferenceMapping for attribute [employees], but was [" + mapping.toString() +"].", mapping instanceof XMLCollectionReferenceMapping);
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCollectionReferenceMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCollectionReferenceMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+    }
+    
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.XmlJoinNodeTestCases" };
         TestRunner.main(arguments);

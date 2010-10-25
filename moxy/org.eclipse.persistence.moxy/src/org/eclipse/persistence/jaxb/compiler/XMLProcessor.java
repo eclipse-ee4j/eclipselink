@@ -1127,6 +1127,25 @@ public class XMLProcessor {
      */
     private Property processXmlJoinNodes(XmlJoinNodes xmlJoinNodes, Property oldProperty) {
         oldProperty.setXmlJoinNodes(xmlJoinNodes);
+        
+        // check for container type
+        if (!xmlJoinNodes.getContainerType().equals(DEFAULT)) {
+            setContainerType(oldProperty, xmlJoinNodes.getContainerType());
+        }
+        // set type
+        if (!xmlJoinNodes.getType().equals(DEFAULT)) {
+            JavaClass pType = jModelInput.getJavaModel().getClass(xmlJoinNodes.getType());
+            if (aProcessor.isCollectionType(oldProperty.getType())) {
+                oldProperty.setGenericType(pType);
+            } else {
+                oldProperty.setType(pType);
+            }
+            oldProperty.setHasXmlElementType(true);
+            // may need to generate a type info for the type
+            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
+                aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
+            }
+        }
         return oldProperty;
     }
     

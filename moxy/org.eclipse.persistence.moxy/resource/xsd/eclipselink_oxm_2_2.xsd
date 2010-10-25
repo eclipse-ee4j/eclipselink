@@ -536,6 +536,8 @@
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
+                    <xs:attribute name="container-type" type="xs:string" default="##default" />
+                    <xs:attribute name="type" type="xs:string" default="##default" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

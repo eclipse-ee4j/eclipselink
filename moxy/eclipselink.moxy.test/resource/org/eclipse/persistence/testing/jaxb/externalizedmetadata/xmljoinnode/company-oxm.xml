@@ -7,7 +7,7 @@
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.Company">
             <xml-root-element/>
             <java-attributes>
-                <xml-element java-attribute="employees" xml-path="employee-data" />
+                <xml-element java-attribute="employees" xml-path="employee-data" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.Employee" />
                 <xml-element java-attribute="buildingAddresses" xml-path="business-address" />
             </java-attributes>
         </java-type>
