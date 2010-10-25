@@ -433,6 +433,16 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      *    This value is determined by the query.
      * In this case, wrap the query in a ValueHolder for later invocation.
      */
+    public Object valueFromQuery(ReadQuery query, AbstractRecord row, Object sourceObject, AbstractSession session) {
+        return new QueryBasedValueHolder(query, sourceObject, row, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the value to be stored in the object's attribute.
+     *    This value is determined by the query.
+     * In this case, wrap the query in a ValueHolder for later invocation.
+     */
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session) {
         return new QueryBasedValueHolder(query, row, session);
     }

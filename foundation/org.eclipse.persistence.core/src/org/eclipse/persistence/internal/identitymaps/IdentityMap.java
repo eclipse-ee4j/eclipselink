@@ -16,6 +16,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
  * <p><b>Purpose</b>: Provides the interface for IdentityMap interaction.
@@ -162,6 +164,12 @@ public interface IdentityMap extends Cloneable{
      */
     public Enumeration keys(boolean checkReadLocks);
     
+    /**
+     * Notify the cache that a lazy relationship has been triggered in the object
+     * and the cache may need to be updated
+     */
+    public void lazyRelationshipLoaded(Object object, ForeignReferenceMapping mapping);
+
     /**
      * Store the object in the cache at its primary key.
      * This is used by InsertObjectQuery, typically into the UnitOfWork identity map.

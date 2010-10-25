@@ -83,6 +83,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
                     // The value must be set directly because the setValue can also cause instantiation under UOW.
                     privilegedSetValue(instantiate());
                     this.isInstantiated = true;
+                    postInstantiate();
                     resetFields();
                 }
             }
@@ -178,7 +179,16 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
     public boolean isSerializedRemoteUnitOfWorkValueHolder() {
         return false;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Run any extra code required after the valueholder instantiates
+     * @see QueryBasedValueHolder
+     */
+    public void postInstantiate(){
+        //noop
+    }
+    
     /**
      * Set the object. This is used only by the privileged methods. One must be very careful in using this method.
      */

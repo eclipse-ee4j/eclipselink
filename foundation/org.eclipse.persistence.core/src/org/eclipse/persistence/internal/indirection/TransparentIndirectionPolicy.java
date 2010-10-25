@@ -625,7 +625,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session) {
         return this.buildIndirectContainer(new QueryBasedValueHolder(query, row, session));
     }
-
+    
     /**
      * INTERNAL:
      * A combination of valueFromQuery and valueFromRow(object).
@@ -633,7 +633,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * to the query (pessimistic locking).
      */
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, Object object, AbstractSession session) {
-        return valueFromQuery(query, row, session);
+        return this.buildIndirectContainer(new QueryBasedValueHolder(query, object, row, session));
     }
 
     /**

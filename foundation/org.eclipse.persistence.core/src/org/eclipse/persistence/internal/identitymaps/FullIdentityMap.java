@@ -17,6 +17,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+
 /**
  * <p><b>Purpose</b>: A FullIdentityMap holds all objects stored within it for the life of the application.
  * <p><b>Responsibilities</b>:<ul>
@@ -166,6 +169,14 @@ public class FullIdentityMap extends AbstractIdentityMap {
         return new IdentityMapKeyEnumeration(this, checkReadLocks);
     }
     
+    /**
+     * Notify the cache that a lazy relationship has been triggered in the object
+     * and the cache may need to be updated
+     */
+    public void lazyRelationshipLoaded(Object object, ForeignReferenceMapping mapping){
+        //NO-OP
+    }
+
     /**
      * Store the object in the cache at its primary key.
      * This is used by InsertObjectQuery, typically into the UnitOfWork identity map.
