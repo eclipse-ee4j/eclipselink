@@ -1499,6 +1499,17 @@ public class AnnotationsProcessor {
         Property property = null;
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlElements.class)) {
             property = buildChoiceProperty(javaHasAnnotations);
+        } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlElementRef.class) || helper.isAnnotationPresent(javaHasAnnotations, XmlElementRefs.class)) {
+            property = buildReferenceProperty(info, javaHasAnnotations, propertyName, ptype);
+            if (helper.isAnnotationPresent(javaHasAnnotations, XmlAnyElement.class)) {
+                XmlAnyElement anyElement = (XmlAnyElement) helper.getAnnotation(javaHasAnnotations, XmlAnyElement.class);
+                property.setIsAny(true);
+                if (anyElement.value() != null) {
+                    property.setDomHandlerClassName(anyElement.value().getName());
+                }
+                property.setLax(anyElement.lax());
+                info.setAnyElementPropertyName(propertyName);
+            }
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlAnyElement.class)) {
             XmlAnyElement anyElement = (XmlAnyElement) helper.getAnnotation(javaHasAnnotations, XmlAnyElement.class);
             property = new Property(helper);
@@ -1508,8 +1519,6 @@ public class AnnotationsProcessor {
             }
             property.setLax(anyElement.lax());
             info.setAnyElementPropertyName(propertyName);
-        } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlElementRef.class) || helper.isAnnotationPresent(javaHasAnnotations, XmlElementRefs.class)) {
-            property = buildReferenceProperty(info, javaHasAnnotations, propertyName, ptype);
         } else if (helper.isAnnotationPresent(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlTransformation.class) || helper.isAnnotationPresent(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlReadTransformer.class) || helper.isAnnotationPresent(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlWriteTransformer.class) || helper.isAnnotationPresent(javaHasAnnotations, XmlWriteTransformers.class)) {
             property = buildTransformationProperty(javaHasAnnotations, cls);
         } else {

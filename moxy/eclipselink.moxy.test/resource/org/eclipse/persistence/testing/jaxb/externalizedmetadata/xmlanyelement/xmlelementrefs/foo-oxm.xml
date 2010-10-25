@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.FooImplNoAnnotations">
+            <xml-root-element name="foo" />
+            <java-attributes>
+                <xml-any-element java-attribute="others" lax="true">
+                    <xml-element-refs xml-mixed="true">
+                        <xml-element-ref name="a" type="java.xml.bind.JAXBElement" />
+                        <xml-element-ref name="b" type="java.xml.bind.JAXBElement" />
+                    </xml-element-refs>
+                </xml-any-element>
+            </java-attributes>
+        </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.Bar">
+            <xml-root-element name="bar" namespace="otherns" />
+        </java-type>
+    </java-types>
+</xml-bindings>

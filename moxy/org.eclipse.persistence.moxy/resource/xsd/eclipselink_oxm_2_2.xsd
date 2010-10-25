@@ -18,7 +18,7 @@
     targetNamespace="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" 
     elementFormDefault="qualified"
     attributeFormDefault="unqualified"
-    version="2.1">
+    version="2.2">
 
     <xs:element name="xml-bindings">
         <xs:complexType>
@@ -317,6 +317,7 @@
                         <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
                         <xs:element ref="xml-properties" minOccurs="0" />
+                        <xs:element ref="xml-element-refs" minOccurs="0" />
                     </xs:all>
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                     <xs:attribute name="lax" type="xs:boolean" default="false" />
@@ -394,6 +395,7 @@
                     <xs:attribute name="name" type="xs:string" default="##default" />
                     <xs:attribute name="namespace" type="xs:string" />
                     <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.XmlElementRef.DEFAULT" />
+                    <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
@@ -407,6 +409,7 @@
                         <xs:element ref="xml-element-wrapper" minOccurs="0" />
                         <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:sequence>
+                    <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

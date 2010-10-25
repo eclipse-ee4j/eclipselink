@@ -540,6 +540,15 @@ public class XMLProcessor {
         if (!xmlAnyElement.getContainerType().equals(DEFAULT)) {
             setContainerType(oldProperty, xmlAnyElement.getContainerType());
         }
+        // check for xml-element-refs
+        if (xmlAnyElement.getXmlElementRefs() != null) {
+            oldProperty.setXmlElementRefs(xmlAnyElement.getXmlElementRefs().getXmlElementRef());
+            oldProperty.setIsReference(true);
+            if (xmlAnyElement.getXmlElementRefs().isSetXmlMixed()) {
+                oldProperty.setMixedContent(xmlAnyElement.getXmlElementRefs().isXmlMixed());
+            }
+        }
+        
         return oldProperty;
     }
 
@@ -954,6 +963,9 @@ public class XMLProcessor {
         if (xmlElementRef.getXmlProperties() != null  && xmlElementRef.getXmlProperties().getXmlProperty().size() > 0) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlElementRef.getXmlProperties().getXmlProperty()));
         }
+        if (xmlElementRef.isSetXmlMixed()) {
+            oldProperty.setMixedContent(xmlElementRef.isXmlMixed());
+        }
         return oldProperty;
     }
 
@@ -982,6 +994,9 @@ public class XMLProcessor {
         // set user-defined properties
         if (xmlElementRefs.getXmlProperties() != null  && xmlElementRefs.getXmlProperties().getXmlProperty().size() > 0) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlElementRefs.getXmlProperties().getXmlProperty()));
+        }
+        if (xmlElementRefs.isSetXmlMixed()) {
+            oldProperty.setMixedContent(xmlElementRefs.isXmlMixed());
         }
         return oldProperty;
     }

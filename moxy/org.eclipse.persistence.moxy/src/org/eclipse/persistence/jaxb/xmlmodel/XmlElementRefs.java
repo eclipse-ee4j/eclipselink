@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -34,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -57,6 +59,8 @@ public class XmlElementRefs
     protected XmlElementWrapper xmlElementWrapper;
     @XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
+    @XmlAttribute(name = "xml-mixed")
+    protected Boolean xmlMixed;
 
     /**
      * Gets the value of the xmlElementRef property.
@@ -135,4 +139,38 @@ public class XmlElementRefs
         this.xmlProperties = value;
     }
 
+    /**
+     * Gets the value of the xmlMixed property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlMixed() {
+        if (xmlMixed == null) {
+            return false;
+        } else {
+            return xmlMixed;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlMixed property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlMixed(Boolean value) {
+        this.xmlMixed = value;
+    }
+
+    /**
+     * Indicates if the mixed flag has been set, i.e. is non-null.    
+     */
+    public boolean isSetXmlMixed() {
+        return xmlMixed != null;
+    }
 }

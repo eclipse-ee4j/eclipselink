@@ -13,20 +13,35 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases.MySchemaOutputResolver;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.Bar;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.Foo;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.FooImpl;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.FooImplNoAnnotations;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.ObjectFactory;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -40,6 +55,9 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
     public static final String RETURN_STRING = "Giggity";
     public static final String STUFF_STRING_VALUE = "This is some stuff";
     public static final String STUFF_STRING_VALUE2 = "This is some more stuff";
+    public static final String FOO_DOC = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/xmlelementrefs/foo.xml";
+    private static final String FOO_CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs";
+    private static final String FOO_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/xmlelementrefs/";
     private Class[] employeeClassArray;
     private Class[] employeeWithListClassArray;
     private Employee ctrlEmp;
@@ -512,5 +530,105 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
         assertNotNull("No mapping exists on EmployeeWithList for attribute [stuff].", mapping);
         assertTrue("Expected an XMLAnyCollectionMapping for attribute [stuff], but was [" + mapping.toString() +"].", mapping instanceof XMLAnyCollectionMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLAnyCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLAnyCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+    }
+    
+    /**
+     * Tests use of xml-eny-element with xml-element-refs.
+     * 
+     * Positive test.
+     */
+    public void testAnyEltWithEltRefsMetadata() throws Exception {
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(FOO_CONTEXT_PATH, new StreamSource(ClassLoader.getSystemResourceAsStream(FOO_PATH + "foo-oxm.xml")));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        doTest((JAXBContext) JAXBContextFactory.createContext(new Class[] { FooImplNoAnnotations.class }, properties), FOO_PATH + "schema-oxm.xsd", new FooImplNoAnnotations()); 
+    }    
+    
+    /**
+     * Tests use of @XmlAnyElement with @XmlElementRefs
+     * 
+     * Positive test.
+     */
+    public void testAnyEltWithEltRefsViaAnnotation() throws Exception {
+        doTest((JAXBContext) JAXBContextFactory.createContext(new Class[] { FooImpl.class, Bar.class, ObjectFactory.class }, null), FOO_PATH + "schema.xsd", new FooImpl());
+    }
+    
+    private void doTest(JAXBContext jCtx, String schema, Foo foo) throws Exception {
+        // vaidate schema generation
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        jCtx.generateSchema(outputResolver);
+        ExternalizedMetadataTestCases.compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(schema));
+        
+        // validate instance doc
+        String result = validateAgainstSchema(FOO_DOC, EMPTY_NAMESPACE, outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+        
+        InputStream iStream = ClassLoader.getSystemResourceAsStream(FOO_PATH + "foo.xml");
+        
+        // test unmarshal
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Object obj = unmarshaller.unmarshal(iStream);
+        
+        // validate unmarshalled object
+        assertNotNull("Unmarshal failed - returned object is null", obj);
+        
+        List<Object> others = null;
+        if (obj instanceof Foo) {
+            others = ((Foo) obj).getOthers();
+        } else if (obj instanceof FooImplNoAnnotations) {
+            others = ((FooImplNoAnnotations) obj).getOthers();
+        } else {
+            fail("The unmarshalled object is not the expected type");
+        }
+        
+        // validate 'others' list
+        assertNotNull("'others' list is null", others);
+        assertTrue("Expected 'others' list of size [4] but was [" + others.size() + "]", others.size() == 4);
+        assertTrue("Expected type [JAXBElement] but was [" + others.get(0).getClass().getName() + "]", others.get(0) instanceof JAXBElement);
+        assertTrue("Expected type [java.lang.String] but was [" + others.get(1).getClass().getName() + "]", others.get(1) instanceof String);
+        assertTrue("Expected type [JAXBElement] but was [" + others.get(2).getClass().getName() + "]", others.get(2) instanceof JAXBElement);
+        assertTrue("Expected type [Bar] but was [" + others.get(3).getClass().getName() + "]", others.get(3) instanceof Bar);
+
+        JAXBElement aElt = (JAXBElement) others.get(0);
+        String text = (String) others.get(1);
+        JAXBElement bElt = (JAXBElement) others.get(2);
+        Bar bBar = (Bar) others.get(3);
+        
+        // validate values
+        assertTrue("Expected [66] but was [" + aElt.getValue() + "]", aElt.getValue() != null && aElt.getValue() instanceof Integer && ((Integer)aElt.getValue()) == 66);
+        assertTrue("Expected [some text] but was [" + text + "]", text != null && text.equals("some text"));
+        assertTrue("Expected [99] but was [" + bElt.getValue() + "]", bElt.getValue() != null && bElt.getValue() instanceof Integer && ((Integer)bElt.getValue()) == 99);
+        assertTrue("Expected id [i69] but was [" + bBar.id + "]", bBar.id != null && bBar.id.equals("i69"));
+        
+        // test marshal
+        Bar bar = new Bar();
+        bar.id = "i69";
+        ObjectFactory factory = new ObjectFactory();
+        
+        List<Object> things = new ArrayList<Object>();
+        things.add(factory.createFooA(66));
+        things.add("some text");
+        things.add(factory.createFooB(99));
+        things.add(bar);
+        foo.setOthers(things);
+        
+        Document testDoc = parser.newDocument();
+        Document ctrlDoc = parser.newDocument();
+        iStream = ClassLoader.getSystemResourceAsStream(FOO_PATH + "foo.xml");
+        try {
+            ctrlDoc = parser.parse(iStream);
+            OXTestCase.removeEmptyTextNodes(ctrlDoc);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred loading control document [" + FOO_DOC + "].");
+        }
+
+        Marshaller marshaller = jCtx.createMarshaller();
+        //marshaller.marshal(foo, System.out);
+        marshaller.marshal(foo, testDoc);
+        
+        // validate marshalled document        
+        assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
     }
 }

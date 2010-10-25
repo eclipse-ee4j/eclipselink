@@ -650,7 +650,7 @@ public class MappingsGenerator {
     }
 
     public DatabaseMapping generateMappingForReferenceProperty(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
-        if (property.isMixedContent()) {
+        if (property.isMixedContent() || property.isAny()) {
             XMLAnyCollectionMapping mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
             return mapping;
         }

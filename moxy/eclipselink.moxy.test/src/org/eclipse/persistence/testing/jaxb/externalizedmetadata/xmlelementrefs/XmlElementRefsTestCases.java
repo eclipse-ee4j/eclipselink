@@ -20,6 +20,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
 
 /**
@@ -91,6 +92,8 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
         Marshaller marshaller = jaxbContext.createMarshaller();
         try {
             marshaller.marshal(obj, testDoc);
+            OXTestCase.removeEmptyTextNodes(testDoc);
+            //marshaller.marshal(obj, System.out);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
         } catch (JAXBException e) {
             e.printStackTrace();

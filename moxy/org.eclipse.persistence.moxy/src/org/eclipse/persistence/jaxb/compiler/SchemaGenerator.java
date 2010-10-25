@@ -443,12 +443,12 @@ public class SchemaGenerator {
                 // handle choice
                 } else if (next.isChoice()) {
                     addChoiceToSchema(next, ownerTypeInfo, parentType, parentCompositor, currentSchema);
-                // handle any
-                } else if (next.isAny()) {
-                    addAnyToSchema(next, parentCompositor);
                 // handle reference
                 } else if (next.isReference()) {
                     addReferenceToSchema(next, currentSchema, parentCompositor);
+                // handle any
+                } else if (next.isAny()) {
+                    addAnyToSchema(next, parentCompositor);
                 // add an element
                 } else if (!(ownerTypeInfo.getXmlValueProperty() != null && ownerTypeInfo.getXmlValueProperty() == next)) {
                     addElementToSchema(buildElement(next, parentCompositor instanceof All, currentSchema, ownerTypeInfo), next.getSchemaName().getNamespaceURI(), next.isPositional(), parentCompositor, currentSchema);
@@ -1515,6 +1515,18 @@ public class SchemaGenerator {
      * @param compositor the sequence/choice/all to modify
      */
     private void addAnyToSchema(Property property, TypeDefParticle compositor) {
+        addAnyToSchema(property, compositor, isCollectionType(property));
+    }
+
+    /**
+     * Convenience method for processing an any property. Required
+     * schema components will be generated and set accordingly.
+     * 
+     * @param property the choice property to be processed 
+     * @param compositor the sequence/choice/all to modify
+     * @param isCollection if true will be unbounded
+     */
+    private void addAnyToSchema(Property property, TypeDefParticle compositor, boolean isCollection) {
         Any any = new Any();
         any.setNamespace(OTHER);
         if (property.isLax()) {
@@ -1522,7 +1534,7 @@ public class SchemaGenerator {
         } else {
             any.setProcessContents(SKIP);
         }
-        if (isCollectionType(property)) {
+        if (isCollection) {
             any.setMinOccurs(Occurs.ZERO);
             any.setMaxOccurs(Occurs.UNBOUNDED);
         }
@@ -1567,7 +1579,7 @@ public class SchemaGenerator {
      */
     private void addReferenceToSchema(Property property, Schema schema, TypeDefParticle compositor) {
         java.util.List<ElementDeclaration> referencedElements = property.getReferencedElements();
-        if (referencedElements.size() == 1) {
+        if (referencedElements.size() == 1 && !property.isAny()) {
             // if only a single reference, just add the element.
             Element element = new Element();
             ElementDeclaration decl = referencedElements.get(0);
@@ -1615,6 +1627,10 @@ public class SchemaGenerator {
                     element.setName(localName);
                 }
                 choice.addElement(element);
+            }
+            // handle XmlAnyElement case
+            if (property.isAny()) {
+                addAnyToSchema(property, choice, false);
             }
             if (compositor instanceof Sequence) {
                 ((Sequence) compositor).addChoice(choice);

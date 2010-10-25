@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-refs" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="lax" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -51,7 +52,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "xmlAccessMethods",
     "xmlJavaTypeAdapter",
-    "xmlProperties"
+    "xmlProperties",
+    "xmlElementRefs"
 })
 public class XmlAnyElement
     extends JavaAttribute
@@ -63,6 +65,8 @@ public class XmlAnyElement
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
+    @XmlElement(name = "xml-element-refs")
+    protected XmlElementRefs xmlElementRefs;
     @XmlAttribute(name = "xml-mixed")
     protected Boolean xmlMixed;
     @XmlAttribute(name = "lax")
@@ -148,6 +152,30 @@ public class XmlAnyElement
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
+    }
+
+    /**
+     * Gets the value of the xmlElementRefs property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlElementRefs }
+     *     
+     */
+    public XmlElementRefs getXmlElementRefs() {
+        return xmlElementRefs;
+    }
+
+    /**
+     * Sets the value of the xmlElementRefs property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlElementRefs }
+     *     
+     */
+    public void setXmlElementRefs(XmlElementRefs value) {
+        this.xmlElementRefs = value;
     }
 
     /**

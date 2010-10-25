@@ -12,6 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs;
 
+import java.util.List;
+
+import javax.xml.bind.JAXBElement;
+
 //@javax.xml.bind.annotation.XmlRootElement(name="my-foos")
 public class Foos {
     //@javax.xml.bind.annotation.XmlElementWrapper(name="items")
@@ -19,5 +23,5 @@ public class Foos {
     //    @javax.xml.bind.annotation.XmlElementRef(name="integer-root", namespace="myns"), 
     //    @javax.xml.bind.annotation.XmlElementRef(name="root")
     //})
-    public javax.xml.bind.JAXBElement[] items;
+    public List<JAXBElement> items;
 }

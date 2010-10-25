@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementRef.DEFAULT" />
+ *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -61,6 +62,8 @@ public class XmlElementRef
     protected String namespace;
     @XmlAttribute(name = "type")
     protected String type;
+    @XmlAttribute(name = "xml-mixed")
+    protected Boolean xmlMixed;
 
     /**
      * Gets the value of the xmlElementWrapper property.
@@ -193,4 +196,38 @@ public class XmlElementRef
         this.type = value;
     }
 
+    /**
+     * Gets the value of the xmlMixed property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlMixed() {
+        if (xmlMixed == null) {
+            return false;
+        } else {
+            return xmlMixed;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlMixed property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlMixed(Boolean value) {
+        this.xmlMixed = value;
+    }
+
+    /**
+     * Indicates if the mixed flag has been set, i.e. is non-null.    
+     */
+    public boolean isSetXmlMixed() {
+        return xmlMixed != null;
+    }
 }

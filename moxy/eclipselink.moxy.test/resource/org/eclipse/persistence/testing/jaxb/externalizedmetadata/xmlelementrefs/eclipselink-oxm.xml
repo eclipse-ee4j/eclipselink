@@ -4,7 +4,7 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.Foos">
             <xml-root-element name="my-foos" />
             <java-attributes>
-                <xml-element-refs java-attribute="items" >
+                <xml-element-refs java-attribute="items" xml-mixed="true">
                     <xml-element-ref name="integer-root" namespace="myns" />
                     <xml-element-ref name="root" />
                     <xml-element-wrapper name="items" />
