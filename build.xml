@@ -230,9 +230,9 @@
         <ant antfile="build.xml" dir="${eclipselink.util.dbws}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.rename}"      target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench}"   target="clean"/>
-        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
-        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
 
     <target name="clean-testing" description="Clean the testing projects">
@@ -241,7 +241,7 @@
         <ant antfile="build.xml" dir="${eclipselink.moxy.test}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo.test}"         target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="clean"/>
-        <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
@@ -474,7 +474,7 @@
     </target>
 
     <target name="package-eclipselink-bundles">
-        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
@@ -497,7 +497,7 @@
 
     <!-- Packages the eclipselink source jar. -->
     <target name="package-src-jar" description="build EclipseLink source jar">
-        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <jar jarfile="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Title"    value="${eclipselink.specification.title} Source"/>
@@ -519,7 +519,7 @@
 
     <!-- Packages the eclipselink examples jar. -->
     <target name="package-example-jar" description="build EclipseLink Examples jar">
-        <delete file="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <jar jarfile="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Title"    value="${eclipselink.specification.title} Source"/>
@@ -577,9 +577,9 @@
     <target name="build-javadocs">
         <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
         <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, build '${version.qualifier}' ${javadoc.postfixTitle}"/>
-        <delete dir="${build.dir}/commonj.sdo"/>
-        <delete dir="${build.dir}/javax.xml.bind"/>
-        <delete dir="${eclipselink.javadocs}"/>
+        <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
+        <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
+        <delete dir="${eclipselink.javadocs}" failonerror="false"/>
         <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
@@ -641,7 +641,7 @@
 
     <!-- Packages javadoc into a zip. -->
     <target name="package-javadoc-zip" depends="build-javadocs" description="build EclipseLink javadoc zip">
-        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <zip destfile="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="${eclipselink.javadocs}/"/>
@@ -650,7 +650,7 @@
 
     <!-- Packages the installer zip. -->
     <target name="package-installer-zip" description="build EclipseLink installer zip - includes utils and javadocs">
-        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${eclipselink.plugins}/javax.persistence_unsigned_for_testing_1.0.0.jar" tofile="${build.dir}/javax.persistence_1.0.0.jar"/>
         <zip destfile="${eclipselink.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
