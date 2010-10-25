@@ -710,10 +710,12 @@ public class AnnotationsProcessor {
                             continue;
                         }
                         boolean matched = false;
-                        for (Property xmlkeyProperty : targetInfo.getXmlKeyProperties()) {
-                            if (refXPath.equals(xmlkeyProperty.getXmlPath())) {
-                                matched = true;
-                                break;
+                        if (targetInfo.getXmlKeyProperties() != null) {
+                            for (Property xmlkeyProperty : targetInfo.getXmlKeyProperties()) {
+                                if (refXPath.equals(xmlkeyProperty.getXmlPath())) {
+                                    matched = true;
+                                    break;
+                                }
                             }
                         }
                         if (!matched) {
