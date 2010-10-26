@@ -23,4 +23,14 @@ public class ObjectFactory {
 	public javax.xml.bind.JAXBElement<Integer> createIntegerRoot() {
 		return new javax.xml.bind.JAXBElement<Integer>(new javax.xml.namespace.QName("myns", "integer-root"), Integer.class, new Integer(0));
 	}
+
+    @javax.xml.bind.annotation.XmlElementDecl(name="a")
+    public javax.xml.bind.JAXBElement<String> createA() {
+        return new javax.xml.bind.JAXBElement<String>(new javax.xml.namespace.QName("a"), String.class, "");
+    }
+
+    @javax.xml.bind.annotation.XmlElementDecl(name="b")
+    public javax.xml.bind.JAXBElement<Integer> createB() {
+        return new javax.xml.bind.JAXBElement<Integer>(new javax.xml.namespace.QName("b"), java.lang.Integer.class, 0);
+    }
 }

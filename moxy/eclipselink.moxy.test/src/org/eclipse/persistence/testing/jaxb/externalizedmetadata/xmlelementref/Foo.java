@@ -12,8 +12,27 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref;
 
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlTransient;
+
+@javax.xml.bind.annotation.XmlAccessorType(XmlAccessType.FIELD)
 //@javax.xml.bind.annotation.XmlRootElement
 public class Foo {
     //@javax.xml.bind.annotation.XmlElementRef(type=Bar.class)
     public Bar item;
+
+    @XmlTransient
+    public boolean accessedViaMethod = false;
+
+    public Bar getBarItem() {
+        accessedViaMethod = true;
+        return item;
+    }
+    
+    public void setBarItem(Bar item) {
+        this.item = item;
+    }
+
 }

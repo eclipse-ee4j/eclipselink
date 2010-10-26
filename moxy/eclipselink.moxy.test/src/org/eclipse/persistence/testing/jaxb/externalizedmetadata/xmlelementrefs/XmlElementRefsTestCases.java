@@ -74,9 +74,19 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
         try {
             obj = unmarshaller.unmarshal(iDocStream);
             assertFalse("Unmarshalled object is null.", obj == null);
+            assertTrue("Unmarshalled object was expected to be [Foos] but was [" + obj.getClass().getName() + "]", obj instanceof Foos);
+            assertNotNull("Unmarshalled object [Foos] has no 'items' set", ((Foos) obj).items);
+            assertNotNull("Unmarshalled object [Foos] has no 'stuff' set", ((Foos) obj).stuff);
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
+        }
+
+        // load write instance doc
+        src = PATH + "foos-write.xml";
+        iDocStream = loader.getResourceAsStream(src);
+        if (iDocStream == null) {
+            fail("Couldn't load instance doc [" + src + "]");
         }
 
         Document testDoc = parser.newDocument();
@@ -95,6 +105,7 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
             OXTestCase.removeEmptyTextNodes(testDoc);
             //marshaller.marshal(obj, System.out);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+            assertTrue("Method accessor was not called as expected.", ((Foos) obj).accessedViaMethod);
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");

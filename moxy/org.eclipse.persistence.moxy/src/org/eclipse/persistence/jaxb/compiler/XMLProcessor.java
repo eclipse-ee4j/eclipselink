@@ -966,6 +966,20 @@ public class XMLProcessor {
         if (xmlElementRef.isSetXmlMixed()) {
             oldProperty.setMixedContent(xmlElementRef.isXmlMixed());
         }
+        // handle get/set methods
+        if (xmlElementRef.getXmlAccessMethods() != null) {
+            oldProperty.setMethodProperty(true);
+            oldProperty.setGetMethodName(xmlElementRef.getXmlAccessMethods().getGetMethod());
+            oldProperty.setSetMethodName(xmlElementRef.getXmlAccessMethods().getSetMethod());
+        }
+        // handle read-only
+        if (xmlElementRef.isSetReadOnly()) {
+            oldProperty.setReadOnly(xmlElementRef.isReadOnly());
+        }
+        // handle write-only
+        if (xmlElementRef.isSetWriteOnly()) {
+            oldProperty.setWriteOnly(xmlElementRef.isWriteOnly());
+        }
         return oldProperty;
     }
 
@@ -997,6 +1011,20 @@ public class XMLProcessor {
         }
         if (xmlElementRefs.isSetXmlMixed()) {
             oldProperty.setMixedContent(xmlElementRefs.isXmlMixed());
+        }
+        // handle get/set methods
+        if (xmlElementRefs.getXmlAccessMethods() != null) {
+            oldProperty.setMethodProperty(true);
+            oldProperty.setGetMethodName(xmlElementRefs.getXmlAccessMethods().getGetMethod());
+            oldProperty.setSetMethodName(xmlElementRefs.getXmlAccessMethods().getSetMethod());
+        }
+        // handle read-only
+        if (xmlElementRefs.isSetReadOnly()) {
+            oldProperty.setReadOnly(xmlElementRefs.isReadOnly());
+        }
+        // handle write-only
+        if (xmlElementRefs.isSetWriteOnly()) {
+            oldProperty.setWriteOnly(xmlElementRefs.isWriteOnly());
         }
         return oldProperty;
     }

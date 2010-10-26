@@ -4,7 +4,9 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.Foo">
             <xml-root-element name="foo" />
             <java-attributes>
-                <xml-element-ref java-attribute="item" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.Bar" />
+                <xml-element-ref java-attribute="item" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.Bar" write-only="true"> 
+                    <xml-access-methods set-method="setBarItem" get-method="getBarItem" />
+                </xml-element-ref>
             </java-attributes>
 		</java-type>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.Bar">

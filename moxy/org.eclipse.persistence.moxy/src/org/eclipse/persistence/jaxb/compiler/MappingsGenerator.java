@@ -660,9 +660,18 @@ public class MappingsGenerator {
             mapping = new XMLChoiceCollectionMapping();
             ((XMLChoiceCollectionMapping) mapping).setReuseContainer(true);
             ((XMLChoiceCollectionMapping) mapping).setConverter(new JAXBElementRootConverter(Object.class));
+            if (property.isSetWriteOnly()) {
+                ((XMLChoiceCollectionMapping) mapping).setIsWriteOnly(property.isWriteOnly());
+            }
         } else {
             mapping = new XMLChoiceObjectMapping();
             ((XMLChoiceObjectMapping) mapping).setConverter(new JAXBElementRootConverter(Object.class));
+            if (property.isSetWriteOnly()) {
+                ((XMLChoiceObjectMapping) mapping).setIsWriteOnly(property.isWriteOnly());
+            }
+        }
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
         }
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
@@ -770,7 +779,6 @@ public class MappingsGenerator {
             }
         }
         return mapping;
-
     }
 
     public XMLAnyCollectionMapping generateAnyCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, boolean isMixed) {

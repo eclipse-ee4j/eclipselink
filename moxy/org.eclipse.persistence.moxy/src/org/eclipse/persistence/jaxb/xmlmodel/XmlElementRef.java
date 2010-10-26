@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;all>
+ *         &lt;element name="xml-access-methods" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *       &lt;/all>
@@ -36,6 +37,8 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementRef.DEFAULT" />
  *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="read-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="write-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -45,6 +48,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
+    "xmlAccessMethods",
     "xmlElementWrapper",
     "xmlProperties"
 })
@@ -52,6 +56,8 @@ public class XmlElementRef
     extends JavaAttribute
 {
 
+    @XmlElement(name = "xml-access-methods")
+    protected XmlAccessMethods xmlAccessMethods;
     @XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;
     @XmlElement(name = "xml-properties")
@@ -64,6 +70,34 @@ public class XmlElementRef
     protected String type;
     @XmlAttribute(name = "xml-mixed")
     protected Boolean xmlMixed;
+    @XmlAttribute(name = "read-only")
+    protected Boolean readOnly;
+    @XmlAttribute(name = "write-only")
+    protected Boolean writeOnly;
+
+    /**
+     * Gets the value of the xmlAccessMethods property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlAccessMethods }
+     *     
+     */
+    public XmlAccessMethods getXmlAccessMethods() {
+        return xmlAccessMethods;
+    }
+
+    /**
+     * Sets the value of the xmlAccessMethods property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlAccessMethods }
+     *     
+     */
+    public void setXmlAccessMethods(XmlAccessMethods value) {
+        this.xmlAccessMethods = value;
+    }
 
     /**
      * Gets the value of the xmlElementWrapper property.
@@ -229,5 +263,81 @@ public class XmlElementRef
      */
     public boolean isSetXmlMixed() {
         return xmlMixed != null;
+    }
+
+    /**
+     * Gets the value of the readOnly property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isReadOnly() {
+        if (readOnly == null) {
+            return false;
+        } else {
+            return readOnly;
+        }
+    }
+
+    /**
+     * Sets the value of the readOnly property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setReadOnly(Boolean value) {
+        this.readOnly = value;
+    }
+
+    /**
+     * Indicates if the readOnly property has been set, i.e.
+     * is non-null.
+     * 
+     * @return true if readOnly is non-null, otherwise false
+     */
+    public boolean isSetReadOnly() {
+        return readOnly != null;
+    }
+
+    /**
+     * Gets the value of the writeOnly property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isWriteOnly() {
+        if (writeOnly == null) {
+            return false;
+        } else {
+            return writeOnly;
+        }
+    }
+
+    /**
+     * Sets the value of the writeOnly property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setWriteOnly(Boolean value) {
+        this.writeOnly = value;
+    }
+
+    /**
+     * Indicates if the writeOnly property has been set, i.e.
+     * is non-null.
+     * 
+     * @return true if writeOnly is non-null, otherwise false
+     */
+    public boolean isSetWriteOnly() {
+        return writeOnly != null;
     }
 }

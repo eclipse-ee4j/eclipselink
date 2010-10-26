@@ -389,6 +389,7 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:all>
+                        <xs:element name="xml-access-methods" type="xml-access-methods" minOccurs="0"/>
                         <xs:element ref="xml-element-wrapper" minOccurs="0"/>
                         <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:all>
@@ -396,6 +397,8 @@
                     <xs:attribute name="namespace" type="xs:string" />
                     <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.XmlElementRef.DEFAULT" />
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
+                    <xs:attribute name="read-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="write-only" type="xs:boolean" default="false" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
@@ -405,11 +408,14 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:sequence>
+                        <xs:element name="xml-access-methods" type="xml-access-methods" minOccurs="0"/>
                         <xs:element ref="xml-element-ref" minOccurs="0" maxOccurs="unbounded" />
                         <xs:element ref="xml-element-wrapper" minOccurs="0" />
                         <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:sequence>
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
+                    <xs:attribute name="read-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="write-only" type="xs:boolean" default="false" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

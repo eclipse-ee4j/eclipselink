@@ -5,6 +5,4 @@
         <ns0:integer-root xmlns:ns0="myns">66</ns0:integer-root>
         some random text
     </items>
-    <a>This is some read-only text</a>
-    <b>0</b>
 </my-foos>

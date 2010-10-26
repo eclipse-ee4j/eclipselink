@@ -15,7 +15,10 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlTransient;
 
+@javax.xml.bind.annotation.XmlAccessorType(XmlAccessType.FIELD)
 //@javax.xml.bind.annotation.XmlRootElement(name="my-foos")
 public class Foos {
     //@javax.xml.bind.annotation.XmlElementWrapper(name="items")
@@ -24,4 +27,17 @@ public class Foos {
     //    @javax.xml.bind.annotation.XmlElementRef(name="root")
     //})
     public List<JAXBElement> items;
+    public List<Object> stuff;
+    
+    @XmlTransient
+    public boolean accessedViaMethod = false;
+    
+    public List<JAXBElement> getItemList() {
+        accessedViaMethod = true;
+        return items;
+    }
+    
+    public void setItemList(List<JAXBElement> items) {
+        this.items = items;
+    }
 }

@@ -90,6 +90,9 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
         try {
             obj = unmarshaller.unmarshal(iDocStream);
             assertFalse("Unmarshalled object is null.", obj == null);
+            assertTrue("Unmarshalled object was expected to be [Foo] but was [" + obj.getClass().getName() + "]", obj instanceof Foo);
+            Foo f = (Foo) obj;
+            assertNull("Item is non-null after unmarshal but is set write-only.", f.item);
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
@@ -106,9 +109,16 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
 
         // marshal
         Marshaller marshaller = jaxbContext.createMarshaller();
+        // set item manually, as it is write-only and was not set during unmarshal
+        Bar b = new Bar();
+        b.id = 66;
+        Foo f = (Foo) obj;
+        f.item = b;
         try {
+            //marshaller.marshal(obj, System.out);
             marshaller.marshal(obj, testDoc);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+            assertTrue("Method accessor was not called as expected.", ((Foo) obj).accessedViaMethod);
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");

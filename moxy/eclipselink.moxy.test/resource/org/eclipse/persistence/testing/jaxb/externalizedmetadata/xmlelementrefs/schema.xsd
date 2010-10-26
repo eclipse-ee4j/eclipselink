@@ -13,8 +13,14 @@
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
+         <xsd:choice maxOccurs="unbounded">
+            <xsd:element ref="a"/>
+            <xsd:element ref="b"/>
+         </xsd:choice>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="root" type="xsd:string"/>
+   <xsd:element name="b" type="xsd:int"/>
+   <xsd:element name="a" type="xsd:string"/>
    <xsd:element name="my-foos" type="foos"/>
 </xsd:schema>
