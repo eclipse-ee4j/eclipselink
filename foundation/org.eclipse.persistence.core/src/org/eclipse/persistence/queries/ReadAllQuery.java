@@ -830,13 +830,29 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             ContainerPolicy cp = getContainerPolicy();
             int size = rows.size();
             Object clones = cp.containerInstance(size);
-            for (int index = 0; index < size; index++) {
-                AbstractRecord row = rows.get(index);
+            if(cp.shouldAddAll()) {
+                List clonesIn = new ArrayList(size);
+                List<AbstractRecord> rowsIn = new ArrayList(size);
+                for (int index = 0; index < size; index++) {
+                    AbstractRecord row = rows.get(index);
 
-                // null is placed in the row collection for 1-m joining to filter duplicate rows.
-                if (row != null) {
-                    Object clone = buildObject(row);
-                    cp.addInto(clone, clones, unitOfWork, row, this);
+                    // null is placed in the row collection for 1-m joining to filter duplicate rows.
+                    if (row != null) {
+                        Object clone = buildObject(row);
+                        clonesIn.add(clone);
+                        rowsIn.add(row);
+                    }
+                }
+                cp.addAll(clonesIn, clones, unitOfWork, rowsIn, this);
+            } else {
+                for (int index = 0; index < size; index++) {
+                    AbstractRecord row = rows.get(index);
+
+                    // null is placed in the row collection for 1-m joining to filter duplicate rows.
+                    if (row != null) {
+                        Object clone = buildObject(row);
+                        cp.addInto(clone, clones, unitOfWork, row, this);
+                    }
                 }
             }
             return clones;

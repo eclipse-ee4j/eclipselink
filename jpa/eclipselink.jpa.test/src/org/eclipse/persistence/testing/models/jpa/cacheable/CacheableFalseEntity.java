@@ -15,15 +15,24 @@ package org.eclipse.persistence.testing.models.jpa.cacheable;
 
 import static javax.persistence.GenerationType.TABLE;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 
 @Entity(name="JPA_CACHEABLE_FALSE")
 @Cacheable(false)
 public class CacheableFalseEntity {
     private int id;
+    List<CacheableFalseDetail> details = new ArrayList<CacheableFalseDetail>();
     
     public CacheableFalseEntity() {}
     
@@ -35,5 +44,19 @@ public class CacheableFalseEntity {
     
     public void setId(int id) {
         this.id = id;
+    }
+
+    @OneToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "JPA_CACHEABLE_FALSE_TO_DETAIL",
+            joinColumns=@JoinColumn(name="ENTITY_ID"),
+            inverseJoinColumns=@JoinColumn(name="DETAIL_ID")
+    )
+    @OrderColumn(name = "IND")
+    public List<CacheableFalseDetail> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<CacheableFalseDetail> details) {
+        this.details = details;
     }
 }

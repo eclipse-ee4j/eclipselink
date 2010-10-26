@@ -17,7 +17,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
@@ -27,10 +29,13 @@ import javax.persistence.Query;
 import junit.framework.*;
 
 import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail;
+import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity;
@@ -204,7 +209,11 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         suite.addTest(new CacheableModelJunitTest("testEMPropertiesOnCommit1"));
         suite.addTest(new CacheableModelJunitTest("testEMPropertiesOnCommit2"));
         suite.addTest(new CacheableModelJunitTest("testInheritanceCacheable"));
-        
+            
+        suite.addTest(new CacheableModelJunitTest("testDetailsOrder_Isolated"));
+        suite.addTest(new CacheableModelJunitTest("testDetailsOrder_Isolated_BeginEarlyTransaction"));
+        suite.addTest(new CacheableModelJunitTest("testDetailsOrder_Shared"));
+        suite.addTest(new CacheableModelJunitTest("testDetailsOrder_Shared_BeginEarlyTransaction"));
         return suite;
     }
     
@@ -851,6 +860,122 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             fail("Error occurred creating some entities");
         } finally {
             closeEntityManager(em);   
+        }
+    }
+    
+    public void testDetailsOrder_Isolated() {
+        testDetailsOrder(false, false);
+    }
+    
+    public void testDetailsOrder_Isolated_BeginEarlyTransaction() {
+        testDetailsOrder(false, true);
+    }
+    
+    public void testDetailsOrder_Shared() {
+        testDetailsOrder(true, false);
+    }
+    
+    public void testDetailsOrder_Shared_BeginEarlyTransaction() {
+        testDetailsOrder(true, true);
+    }
+    
+    /*
+     * @param useSharedCache if true both Entity and Detail use shared cache (otherwise both use isolated cache)
+     * @param beginEarlyTransaction if true both EntityManagers that read back objects to verify order will beginEarlyTransaction 
+     */
+    void testDetailsOrder(boolean useSharedCache, boolean beginEarlyTransaction) {
+        String puName = useSharedCache ? "ALL" : "NONE";
+        int entityId;
+        int nDetails = 2;
+        
+        // create entity and details, persist them
+        EntityManager em = createEntityManager(puName);        
+        try {
+            beginTransaction(em);
+            CacheableFalseEntity entity = new CacheableFalseEntity();
+            for(int i=0; i < nDetails; i++) {
+                CacheableFalseDetail detail = new CacheableFalseDetail();
+                detail.setDescription(Integer.toString(i));
+                entity.getDetails().add(detail);
+            }
+            em.persist(entity);
+            commitTransaction(em);
+            entityId = entity.getId();
+        } finally {
+            if(isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+                
+        try {
+            // verify that the order is correct, then reverse the order
+            clearCache(puName);
+            em = createEntityManager(puName);        
+            try {
+                beginTransaction(em);
+                if(beginEarlyTransaction) {
+                    em.setProperty(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, "true");
+                }
+                // verify that the order is correct
+                CacheableFalseEntity entity = em.find(CacheableFalseEntity.class, entityId);
+                assertTrue("Read back wrong number of details", nDetails == entity.getDetails().size());
+                for(int i=0; i < nDetails; i++) {
+                    CacheableFalseDetail detail = entity.getDetails().get(i);
+                    int iExpected = Integer.parseInt(detail.getDescription());
+                    assertTrue("Wrong index " + i + "; was expected " + iExpected, i == iExpected);
+                }
+    
+                // reverse the order
+                List<CacheableFalseDetail> copyDetails = new ArrayList(entity.getDetails());
+                entity.getDetails().clear();
+                for(int i=nDetails-1; i >= 0; i--) {
+                    entity.getDetails().add(copyDetails.get(i));
+                }
+                commitTransaction(em);
+            } finally {
+                if(isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+            }
+    
+            // verify that the order is still correct
+            clearCache(puName);
+            em = createEntityManager(puName);        
+            try {
+                beginTransaction(em);
+                if(beginEarlyTransaction) {
+                    em.setProperty(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, "true");
+                }
+                CacheableFalseEntity entity = em.find(CacheableFalseEntity.class, entityId);
+                assertTrue("After reverse read back wrong number of details", nDetails == entity.getDetails().size());
+                for(int i=0; i < nDetails; i++) {
+                    CacheableFalseDetail detail = entity.getDetails().get(i);
+                    // the order has been reversed
+                    int iExpected = nDetails - Integer.parseInt(detail.getDescription()) - 1;
+                    assertTrue("After reverse wrong index " + i + "; was expected " + iExpected, i == iExpected);
+                }
+            } finally {
+                if(isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+            }
+        } finally {
+            // clean up
+            em = createEntityManager(puName);        
+            try {
+                beginTransaction(em);
+                CacheableFalseEntity entity = em.find(CacheableFalseEntity.class, entityId);
+                em.remove(entity);
+                commitTransaction(em);
+            } finally {
+                if(isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+            }
         }
     }
     
