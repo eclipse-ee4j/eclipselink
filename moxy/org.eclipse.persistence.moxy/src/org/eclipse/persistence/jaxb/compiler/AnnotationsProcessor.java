@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.bind.Marshaller;
@@ -150,6 +151,7 @@ import org.eclipse.persistence.oxm.annotations.XmlWriteTransformers;
 public class AnnotationsProcessor {
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
+    private static final String JAVAX_XML_BIND_JAXBELEMENT = "javax.xml.bind.JAXBElement";
     private static final String TYPE_METHOD_NAME = "type";
     private static final String VALUE_METHOD_NAME = "value";
     private static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
@@ -1837,12 +1839,18 @@ public class AnnotationsProcessor {
             // and from annotations the value will be "XmlElementref$DEFAULT"
             if (!(nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef.DEFAULT") || nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef$DEFAULT"))) {
                 typeName = nextRef.getType();
+                type = helper.getJavaClass(typeName);
             }
 
-            ElementDeclaration referencedElement = this.xmlRootElements.get(typeName);
-            if (referencedElement != null) {
-                addReferencedElement(property, referencedElement);
-            } else {
+            boolean missingReference = true;
+            for(Entry<String, ElementDeclaration> entry : xmlRootElements.entrySet()) {
+                ElementDeclaration entryValue = entry.getValue();
+                if(type.isAssignableFrom(entryValue.getJavaType())) {
+                    addReferencedElement(property, entryValue);
+                    missingReference = false;
+                }
+            }
+            if (missingReference) {
                 String name = nextRef.getName();
                 String namespace = nextRef.getNamespace();
                 if (namespace.equals("##default")) {
@@ -1850,6 +1858,7 @@ public class AnnotationsProcessor {
                 }
                 QName qname = new QName(namespace, name);
                 JavaClass scopeClass = cls;
+                ElementDeclaration referencedElement = null;
                 while (!(scopeClass.getName().equals("java.lang.Object"))) {
                     HashMap<QName, ElementDeclaration> elements = getElementDeclarationsForScope(scopeClass.getName());
                     if (elements != null) {
@@ -2801,7 +2810,7 @@ public class AnnotationsProcessor {
             JavaMethod next = (JavaMethod) methodsIter.next();
             if (next.getName().startsWith("create")) {
                 JavaClass type = next.getReturnType();
-                if (type.getName().equals("javax.xml.bind.JAXBElement")) {
+                if (JAVAX_XML_BIND_JAXBELEMENT.equals(type.getName())) {
                     type = (JavaClass) next.getReturnType().getActualTypeArguments().toArray()[0];
                 } else {
                     this.factoryMethods.put(next.getReturnType().getRawName(), next);
