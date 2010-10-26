@@ -63,7 +63,6 @@
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
     <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
-    <property name="equinox.jar" value="org.eclipse.osgi_3.5.0.v20090520.jar"/>
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
@@ -79,7 +78,7 @@
 
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
-    <!-- Tests for dependency jars (equinox), etc. Will bypass build if not found -->
+    <!-- Tests for dependency jars. Will bypass build if not found -->
     <target name="pre-init">
         <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
         <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
@@ -88,18 +87,6 @@
             <available file="${osgi.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
-
-        <!-- Check for Equinox library -->
-        <condition property="equinox.lib" value="${extensions.depend.dir}/${equinox.jar}">
-            <available file="${extensions.depend.dir}/${equinox.jar}"/>
-        </condition>
-        <condition property="equinox.lib" value="${osgi.2.jpa.plugins.dir}/${equinox.jar}">
-            <available file="${osgi.2.jpa.plugins.dir}/${equinox.jar}"/>
-        </condition>
-        <condition property="equinox.lib" value="${osgi.2.common.plugins.dir}/${equinox.jar}">
-            <available file="${osgi.2.common.plugins.dir}/${equinox.jar}"/>
-        </condition>
-        <echo message="equinox.lib                 = '${equinox.lib}'"/>
 
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -145,33 +132,24 @@
                 <isset property="persistence.bundle.exist"/>
                 <isset property="core.bundle.exist"/>
                 <isset property="jpa.bundle.exist"/>
-                <isset property="equinox.lib"/>
             </and>
         </condition>
     </target>
 
-    <target name="dep-report" depends="pre-init, verify-required-deps, no-equinox-dep"/>
+    <target name="dep-report" depends="pre-init, verify-required-deps"/>
     <target name="verify-required-deps">
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
         <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
         <fail message="Cannot find: '${jpa.lib}'"         unless="jpa.bundle.exist"/>
     </target>
-    <target name="no-equinox-dep" unless="equinox.lib">
-        <echo message="Compile will be skipped..."/>
-        <echo message="    Cannot find: '${equinox.jar}'"/>
-        <echo message="        In: '${extensions.depend.dir}'"/>
-        <echo message="        or: '${osgi.2.common.plugins.dir}'"/>
-        <echo message="        or: '${osgi.2.jpa.plugins.dir}'"/>
-    </target>
 
-    <target name="init" if="build.ok" depends="pre-init, dep-report">
+	<target name="init" if="build.ok" depends="pre-init, dep-report">
         <!-- Set Compile Path-->
         <path id="osgi.compile.path">
             <pathelement path="${core.lib}"/>
             <pathelement path="${jpa.lib}"/>
             <pathelement path="${osgi.2.common.plugins.dir}/osgi.core.zip"/>
             <pathelement path="${persistence.lib}"/>
-            <pathelement path="${equinox.lib}"/>
         </path>
         <condition property="package.ok">
             <and>

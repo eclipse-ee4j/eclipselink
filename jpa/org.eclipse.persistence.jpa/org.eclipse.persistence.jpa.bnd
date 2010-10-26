@@ -9,7 +9,6 @@ Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";
 Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}
 Bundle-Version: ${version.string}
-Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
 Include-Resource:\
  ${jpa.2.base.dir}/about.html,\
  ${jpa.2.base.dir}/readme.html,\

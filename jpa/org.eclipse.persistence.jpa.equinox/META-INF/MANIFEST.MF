@@ -16,8 +16,7 @@ HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.e
  quinox
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Fragment-Host: org.eclipse.persistence.jpa;bundle-version="2.1.0.quali
- fier"
+Fragment-Host: org.eclipse.persistence.jpa.osgi;bundle-version="2.1.0.qualifier"
 Bundle-Version: 2.1.0.qualifier
 Bnd-LastModified: 1256134735762
 Bundle-ManifestVersion: 2

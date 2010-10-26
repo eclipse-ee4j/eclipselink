@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment.osgi.equinox;
 
-import java.security.ProtectionDomain;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;

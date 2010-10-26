@@ -64,8 +64,6 @@
     <property name="bndtool.prefix" value="bnd"/>
     <property name="bndtool.separator" value="-"/>
     <property name="bndtool.criteria" value="[0.0.350,0.1.0)"/>
-    <property name="equinox.prefix" value="org.eclipse.osgi"/>
-    <property name="equinox.criteria" value="[3.5.0,4.0.0)"/>
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
@@ -81,7 +79,7 @@
 
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
-    <!-- Tests for dependency jars (equinox), etc. Will bypass build if not found -->
+    <!-- Tests for dependency jars. Will bypass build if not found -->
     <target name="pre-init">
         <property name="custom.tasks.lib" value="${equinox.2.buildsys.dir}/ant_customizations.jar"/>
         <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
@@ -96,20 +94,6 @@
             <available file="${equinox.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
-
-        <!-- Check for Equinox library -->
-        <selectbundle basename="${equinox.prefix}" directory="${extensions.depend.dir}" criterion="${equinox.criteria}"
-                      property="equinox.lib" includepath="true"
-        />
-        <selectbundle basename="${equinox.prefix}" directory="${equinox.2.jpa.plugins.dir}" criterion="${equinox.criteria}"
-                      property="equinox.lib" includepath="true"
-        />
-        <selectbundle basename="${equinox.prefix}" directory="${equinox.2.common.plugins.dir}" criterion="${equinox.criteria}"
-                      property="equinox.lib" includepath="true"
-        />
-        <say message="equinox.lib                  = '${equinox.lib}'" if="equinox.lib"/>
-        <say message="Equinox bundle matching '${equinox.prefix}_${equinox.criteria}.jar' not found in " unless="equinox.lib"/>
-        <say message="   '${extensions.depend.dir}','${equinox.2.jpa.plugins.dir}' or '${equinox.2.common.plugins.dir}'!" unless="equinox.lib"/>
 
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -129,12 +113,14 @@
         <property name="persistence.lib"      value="${equinox.2.jpa.plugins.dir}/${persistence20.jar}"/>
         <property name="core.lib"             value="${equinox.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <property name="jpa.lib"              value="${equinox.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
+        <property name="jpa.osgi.lib"         value="${equinox.2.common.plugins.dir}/org.eclipse.persistence.jpa.osgi_${version.string}.jar"/>
         <property name="weaving.lib"          value="${equinox.2.common.plugins.dir}/${ant.project.name}.weaving_${version.string}.jar"/>
 
         <!-- dependency tests -->
         <available file="${persistence.lib}"   property="persistence.bundle.exist"/>
         <available file="${core.lib}"          property="core.bundle.exist"/>
         <available file="${jpa.lib}"           property="jpa.bundle.exist"/>
+        <available file="${jpa.osgi.lib}"      property="jpa.osgi.bundle.exist"/>
         <available file="${weaving.lib}"       property="weaving.bundle.exist"/>
 
         <!-- Check for BND library -->
@@ -161,24 +147,18 @@
                 <isset property="persistence.bundle.exist"/>
                 <isset property="core.bundle.exist"/>
                 <isset property="jpa.bundle.exist"/>
-                <isset property="equinox.lib"/>
+                <isset property="jpa.osgi.bundle.exist"/>
                 <isset property="weaving.bundle.exist"/>
             </and>
         </condition>
     </target>
 
-    <target name="dep-report" depends="pre-init, verify-required-deps, no-equinox-dep, no-weaving-dep"/>
+    <target name="dep-report" depends="pre-init, verify-required-deps, no-weaving-dep"/>
     <target name="verify-required-deps">
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
         <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
         <fail message="Cannot find: '${jpa.lib}'"         unless="jpa.bundle.exist"/>
-    </target>
-    <target name="no-equinox-dep" unless="equinox.lib">
-        <echo message="Compile will be skipped..."/>
-        <echo message="    Cannot find: '${equinox.jar}'"/>
-        <echo message="        In: '${extensions.depend.dir}'"/>
-        <echo message="        or: '${equinox.2.common.plugins.dir}'"/>
-        <echo message="        or: '${equinox.2.jpa.plugins.dir}'"/>
+        <fail message="Cannot find: '${jpa.osgi.lib}'"    unless="jpa.osgi.bundle.exist"/>
     </target>
     <target name="no-weaving-dep" unless="weaving.bundle.exist">
         <echo message="Compile will be skipped...    Cannot find: '${weaving.lib}'"/>
@@ -189,10 +169,10 @@
         <path id="equinox.compile.path">
             <pathelement path="${core.lib}"/>
             <pathelement path="${jpa.lib}"/>
+            <pathelement path="${jpa.osgi.lib}"/>
             <pathelement path="${weaving.lib}"/>
             <pathelement path="${equinox.2.common.plugins.dir}/osgi.core.zip"/>
             <pathelement path="${persistence.lib}"/>
-            <pathelement path="${equinox.lib}"/>
         </path>
         <condition property="package.ok">
             <and>
