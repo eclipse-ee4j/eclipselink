@@ -1858,7 +1858,7 @@
         <path id="run.path">
             <pathelement path="${eclipselink.jpa.test}/${build.dir}/${TEST_NAME}_client.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
-            <!--this path is used for WebSphere and WebLogic JPA2.0 support-->
+            <!--this path is used for WebSphere and WebLogic JPA2.0 support, also for JBoss-eap testing ,and it actually point to JPA1.0 unsigned jar-->
             <pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/>
             <fileset dir="${server.lib}" includes="${server.depend}"/>
             <path refid="compile.server.path"/>
