@@ -15,6 +15,8 @@
  *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     10/27/2010-2.2 Guy Pelletier 
+ *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
@@ -71,6 +73,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSCHOOLTable());
         addTableDefinition(buildBOLTTable());
         addTableDefinition(buildNUTTable());
+        addTableDefinition(buildLOOTTable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -1030,6 +1033,44 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setIsIdentity(false );
         table.addField(field1);
     
+        return table;
+    }
+    
+    public TableDefinition buildLOOTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_LOOT");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldQUANTITY = new FieldDefinition();
+        fieldQUANTITY.setName("QTY_VALUE");
+        fieldQUANTITY.setTypeName("NUMERIC");
+        fieldQUANTITY.setSize(15);
+        fieldQUANTITY.setIsPrimaryKey(false);
+        fieldQUANTITY.setIsIdentity(false);
+        fieldQUANTITY.setUnique(false);
+        fieldQUANTITY.setShouldAllowNull(true);
+        table.addField(fieldQUANTITY);
+
+        FieldDefinition fieldCOSTVALUE = new FieldDefinition();
+        fieldCOSTVALUE.setName("COST_VALUE");
+        fieldCOSTVALUE.setTypeName("NUMERIC");
+        fieldCOSTVALUE.setSize(15);
+        fieldCOSTVALUE.setIsPrimaryKey(false);
+        fieldCOSTVALUE.setIsIdentity(false);
+        fieldCOSTVALUE.setUnique(false);
+        fieldCOSTVALUE.setShouldAllowNull(true);
+        table.addField(fieldCOSTVALUE);
+        
         return table;
     }
     

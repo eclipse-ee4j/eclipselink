@@ -78,6 +78,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     10/27/2010-2.2 Guy Pelletier 
+ *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -834,21 +836,42 @@ public class MetadataDescriptor {
         }
         
         if (accessor == null) {
-            // We didn't find an accessor on our descriptor (or a parent descriptor), 
-            // check our aggregate descriptors now.
-            for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
-                // If the attribute name employs the dot notation, rip off the first 
-                // bit (up to the first dot and keep burying down the embeddables)
-                String subAttributeName = new String(fieldOrPropertyName);
-                if (subAttributeName.contains(".")) {
-                    subAttributeName = subAttributeName.substring(fieldOrPropertyName.indexOf(".") + 1);
+            // Traverse any dot notation (nested embeddables) if specified.
+            if (fieldOrPropertyName.contains(".")) {
+                String attributeName = fieldOrPropertyName.substring(0, fieldOrPropertyName.indexOf("."));
+                String subAttributeName = fieldOrPropertyName.substring(fieldOrPropertyName.indexOf(".") + 1);
+            
+                MappingAccessor embeddedAccessor = m_mappingAccessors.get(attributeName);
+            
+                if (embeddedAccessor != null) {
+                    accessor = embeddedAccessor.getReferenceDescriptor().getMappingAccessor(subAttributeName, checkForMethodName);
                 }
+            }
+
+            // If we are still null, maybe the user has not used a dot notation
+            // that is, has not been fully specific. At this point this is value
+            // add in that we will dig through the embeddable descriptors and 
+            // look for and return the first mapping for the given attribute
+            // name. This could be error prone, but looks like we have a number
+            // of tests that don't use the dot notation.
+            if (accessor == null) {
+                // We didn't find an accessor on our descriptor (or a parent 
+                // descriptor), check our aggregate descriptors now.
+                for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
+                    // If the attribute name employs the dot notation, rip off 
+                    // the first  bit (up to the first dot and keep burying down 
+                    // the embeddables)
+                    String subAttributeName = new String(fieldOrPropertyName);
+                    if (subAttributeName.contains(".")) {
+                       subAttributeName = subAttributeName.substring(fieldOrPropertyName.indexOf(".") + 1);
+                    }
             
-                accessor = embeddableDescriptor.getMappingAccessor(subAttributeName, checkForMethodName);
+                    accessor = embeddableDescriptor.getMappingAccessor(fieldOrPropertyName, checkForMethodName);
             
-                if (accessor != null) {
-                    // Found one, stop looking ...
-                    return accessor;
+                    if (accessor != null) {
+                        // Found one, stop looking ...
+                        break;
+                    }
                 }
             }
         }

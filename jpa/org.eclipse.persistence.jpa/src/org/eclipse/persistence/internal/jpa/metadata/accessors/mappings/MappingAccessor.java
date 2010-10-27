@@ -63,6 +63,8 @@
  *       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     10/27/2010-2.2 Guy Pelletier 
+ *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -213,13 +215,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
         
         if (overrideName.indexOf(".") > -1) {
-            // Set the nested field name translation on the mapping. In an
-            // Embedded case, this call will do the same thing that 
-            // addFieldNameTranslation would do, there is no special treatment
-            // and is implemented on aggregate object mapping only to satisfy
-            // the EmbeddableMapping interface requirements. Nested attribute
-            // overrides on an aggregate collection mapping are handled slightly
-            // different though.
+            // Set the nested field name translation on the mapping. Nested 
+            // (dot notation) overrides are initialized slightly different then
+            // core field name translations which are based on column names. In
+            // JPA we need to rely and differentiate based on the override
+            // (attribute) name.
             embeddableMapping.addNestedFieldTranslation(overrideName, overrideField, aggregatesMappingField.getName());
         } else {
             // Set the field name translation on the mapping.

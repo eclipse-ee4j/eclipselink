@@ -19,6 +19,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     10/27/2010-2.2 Guy Pelletier 
+ *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -76,7 +78,9 @@ import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Bag;
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Cost;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
@@ -87,8 +91,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
 import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Loot;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.advanced.Quantity;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Violation;
 import org.eclipse.persistence.testing.models.jpa.advanced.ViolationCode;
@@ -185,6 +191,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedJPAJunitTest("testMapBuildReferencesPKList"));
         suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
+        
+        suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
 
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
@@ -484,6 +492,38 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             List bolts = em.createQuery("SELECT b from Bolt b").getResultList();
             assertTrue("Incorrect number of bolts were returned [" + bolts.size() + "], expected [2]",  bolts.size() == 2);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+
+    /**
+     * Bug 328114
+     */
+    public void testAttributeOverrideToMultipleSameDefaultColumnName() {
+        EntityManager em = createEntityManager();
+
+        try {
+            beginTransaction(em);
+            Loot loot = new Loot();
+            Bag bag = new Bag();
+            Quantity quantity = new Quantity();
+            quantity.value = 11;
+            bag.quantity = quantity;
+            Cost cost = new Cost();
+            cost.value = 5.99;
+            bag.cost = cost;
+            loot.bag = bag;
+            em.persist(loot);
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){

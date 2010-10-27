@@ -63,9 +63,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected DatabaseTable aggregateKeyTable  = null;
     
     /** Map the name of a field in the aggregate descriptor to a field in the source table. */
-    /** 322233 - changed to store the source DatabaseField to hold Case and other colun info*/
+    /** 322233 - changed to store the source DatabaseField to hold Case and other colunm info*/
     protected transient Map<String, DatabaseField> aggregateToSourceFields;
 
+    /**
+     * Map of nested attributes that need to apply an override name to their
+     * a nested aggregate mapping's database field. Aggregate to source fields 
+     * map is the existing EclipseLink functionality and works well when all 
+     * embeddable mappings have unique database fields. This map adds specific 
+     * attribute to database field override.
+     * @see addFieldTranslation()
+     */
+    protected transient Map<String, DatabaseField> nestedFieldTranslations;
+    
     /** 
      * List of many to many mapping overrides to apply at initialize time to 
      * their cloned aggregate mappings. 
@@ -82,13 +92,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * List of maps id mappings that need to be set to read only at initialize
      * time on their cloned aggregate mappings.
      */
-    protected transient List<DatabaseMapping> mapsIdMappings; 
+    protected transient List<DatabaseMapping> mapsIdMappings;
     
     /**
      * Default constructor.
      */
     public AggregateObjectMapping() {
         aggregateToSourceFields = new HashMap(5);
+        nestedFieldTranslations = new HashMap<String, DatabaseField>();
         mapsIdMappings = new ArrayList<DatabaseMapping>();
         overrideManyToManyMappings = new ArrayList<ManyToManyMapping>();
         overrideUnidirectionalOneToManyMappings = new ArrayList<UnidirectionalOneToManyMapping>();
@@ -167,15 +178,18 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
-     * Add a nested field translation that maps from a field in the
-     * source table to a field name in a nested aggregate descriptor. This 
-     * method is implemented only to satisfy the interface requirements and 
-     * calling this method yields the same result as calling 
-     * addFieldTranslation directly.
-     * @see addFieldNameTranslation
+     * Add a nested field translation that maps from a field in the source table 
+     * to a field name in a nested aggregate descriptor. These are handled 
+     * slightly different that regular field translations in that they are 
+     * unique based on the attribute name. It solves the case where multiple 
+     * nested embeddables have mappings to similarly named default columns.
      */
-    public void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateField) {
-        addFieldTranslation(sourceField, aggregateField);
+    public void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateFieldName) {
+        // Aggregate field name is redundant here as we will look up the field
+        // through the attribute name. This method signature is to  satisfy the 
+        // Embeddable interface. AggregateCollectionMapping uses the aggregate 
+        // field name.
+        nestedFieldTranslations.put(attributeName, sourceField);
     }
 
     /**
@@ -1476,6 +1490,41 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * field name mappings stored.
      */
     protected void translateFields(ClassDescriptor clonedDescriptor, AbstractSession session) {
+        // Once the cloned descriptor is initialized, go through our nested 
+        // field name translations. Any errors are silently ignored as
+        // validation is assumed to be done before hand (JPA metadata processing
+        // does validate any nested field translation)
+        for (String attributeName : nestedFieldTranslations.keySet()) {
+            DatabaseMapping mapping = null;
+            ClassDescriptor currentDescriptor = clonedDescriptor;
+            String currentAttributeName = attributeName.substring(0, attributeName.indexOf("."));
+            String remainingAttributeName = attributeName.substring(attributeName.indexOf(".")+ 1);
+            
+            while (currentAttributeName != null || currentDescriptor != null) {
+                mapping = currentDescriptor.getMappingForAttributeName(currentAttributeName);
+                currentDescriptor = mapping.getReferenceDescriptor();
+                
+                // Keep breaking down the dot notation name.
+                if (remainingAttributeName != null && remainingAttributeName.contains(".")) {
+                    currentAttributeName = remainingAttributeName.substring(0, remainingAttributeName.indexOf("."));
+                    remainingAttributeName = remainingAttributeName.substring(remainingAttributeName.indexOf(".")+ 1);
+                } else {
+                    currentAttributeName = remainingAttributeName;
+                    // Null out the dot notation name to break the loop.
+                    remainingAttributeName = null;
+                }
+            }
+            
+            // This shouldn't be possible since we validate in metadata processing.
+            if (mapping != null && mapping.isDirectToFieldMapping()) {
+                // Override the mapping field with the one from the map.
+                DatabaseField mappingField = ((DirectToFieldMapping) mapping).getField();
+                DatabaseField overrideField = nestedFieldTranslations.get(attributeName);
+                overrideField.setTable(mappingField.getTable());
+                ((DirectToFieldMapping) mapping).setField(overrideField);
+            }
+        }
+        
         // EL Bug 326977
         Vector fieldsToTranslate = (Vector) clonedDescriptor.getFields().clone();
         for (Iterator qkIterator = clonedDescriptor.getQueryKeys().values().iterator(); qkIterator.hasNext();) {
@@ -1485,6 +1534,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                 fieldsToTranslate.add(field);
             }
         }
+        
         for (Iterator entry = fieldsToTranslate.iterator(); entry.hasNext();) {
             DatabaseField field = (DatabaseField)entry.next();
             //322233 - get the source DatabaseField from the 
