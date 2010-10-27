@@ -256,7 +256,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Notify the cache that a lazy relationship has been triggered in the object
      * and the cache may need to be updated
      */
-    public void lazyRelationshipLoaded(Object object, ValueHolderInterface valueHolder, ForeignReferenceMapping mapping){
+    public void lazyRelationshipLoaded(Object object, ForeignReferenceMapping mapping){
         this.targetIdentityMap.lazyRelationshipLoaded(object, mapping);
     }
 
