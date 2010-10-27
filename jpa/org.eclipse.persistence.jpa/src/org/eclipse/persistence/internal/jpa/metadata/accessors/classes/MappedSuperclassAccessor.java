@@ -54,6 +54,8 @@
  *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     10/28/2010-2.2 Guy Pelletier 
+ *       - 3223850: Primary key metadata issues
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -108,8 +110,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.PrimaryKeyMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
@@ -1203,23 +1205,23 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process the primary key annotation.
      */
     protected void processPrimaryKey() {
-        MetadataAnnotation primaryKey = getAnnotation(PrimaryKey.class);
-        
-        if (m_primaryKey == null) {
-            if (primaryKey != null) {
-                // Process the meta data for this accessor's descriptor.
-                new PrimaryKeyMetadata(primaryKey, getAccessibleObject()).process(getDescriptor());
+        if (m_primaryKey != null || isAnnotationPresent(PrimaryKey.class)) {
+            if (getDescriptor().hasPrimaryKey()) {
+                // Ignore primary key on mapped superclass if primary key 
+                // metadata is already defined on the entity.
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_PRIMARY_KEY, getDescriptor().getJavaClass(), getJavaClass());
+            } else {
+                if (m_primaryKey == null) {
+                    new PrimaryKeyMetadata(getAnnotation(PrimaryKey.class), getAccessibleObject()).process(getDescriptor());
+                } else {                    
+                    if (isAnnotationPresent(PrimaryKey.class)) {
+                        getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(PrimaryKey.class), getJavaClassName(), getLocation());
+                    }
+                    
+                    m_primaryKey.process(getDescriptor());
+                }
             }
-        } else {
-            // If there is an annotation log a warning that we are 
-            // ignoring it.
-            if (primaryKey != null) {
-                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, primaryKey, getJavaClassName(), getLocation());
-            }
-        
-            // Process the meta data for this accessor's descriptor.
-            m_primaryKey.process(getDescriptor());
-        }
+        }  
     }
     
     /**

@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/28/2010-2.2 Guy Pelletier 
+ *       - 3223850: Primary key metadata issues
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
@@ -37,7 +39,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 @Entity(name = "PhoneNumber")
 @Table(name = "CMP3_FA_PHONENUMBER")
 @PrimaryKey(columns = { @Column(name = "OWNER_ID"), @Column(name = "TYPE") })
-public class PhoneNumber implements Serializable {
+public class PhoneNumber extends PhoneNumberMappedSuperclass implements Serializable {
     public enum PhoneStatus {
         ACTIVE, ASSIGNED, UNASSIGNED, DEAD
     }

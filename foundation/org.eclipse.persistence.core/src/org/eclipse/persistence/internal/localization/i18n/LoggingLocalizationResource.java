@@ -17,6 +17,8 @@
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     10/28/2010-2.2 Guy Pelletier 
+ *       - 3223850: Primary key metadata issues
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -286,7 +288,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_mapped_superclass_id_class", "Ignoring the id class on the mapped superclass [{1}] for the entity class [{0}] since an id class was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_read_only", "Ignoring the read only setting on the mapped superclass [{1}] for the entity class [{0}] since read only metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_fetch_group", "Ignoring the fetch group named [{2}] on the mapped superclass [{1}] for the entity class [{0}] since a fetch group with the same name was previously discovered for that entity (either on the entity itself or another mapped-superclass)." }, 
-        { "metadata_warning_ignore_mapped_superclass_existence_checking", "Ignoring the existence checking setting on the mapped superclass [{1}] for the entity class [{0}] since existence checking metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },                               
+        { "metadata_warning_ignore_mapped_superclass_existence_checking", "Ignoring the existence checking setting on the mapped superclass [{1}] for the entity class [{0}] since existence checking metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
+        { "metadata_warning_ignore_mapped_superclass_primary_key", "Ignoring the primary key setting on the mapped superclass [{1}] for the entity class [{0}] since primary key metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." }, 
 
         { "metadata_warning_ignore_fetch_group", "Ignoring the fetch groups specified on class [{0}] for the entity [{1}] since weaving is not enabled and the entity class does not implement the FetchGroupTracker interface." },
         { "metadata_warning_ignore_mapping_metadata", "Ignoring the javax.persistence metadata applied to the attribute [{0}] from class [{1}]. javax.persistence metadata is ignored on fields or properties that are transient, static or abstract." },

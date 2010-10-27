@@ -35,6 +35,8 @@
  *       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     10/28/2010-2.2 Guy Pelletier 
+ *       - 3223850: Primary key metadata issues
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -110,6 +112,7 @@ public class MetadataLogger {
     public static final String IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING = "metadata_warning_ignore_mapped_superclass_optimistic_locking";
     public static final String IGNORE_MAPPED_SUPERCLASS_READ_ONLY = "metadata_warning_ignore_mapped_superclass_read_only";
     public static final String IGNORE_MAPPED_SUPERCLASS_FETCH_GROUP = "metadata_warning_ignore_mapped_superclass_fetch_group";
+    public static final String IGNORE_MAPPED_SUPERCLASS_PRIMARY_KEY = "metadata_warning_ignore_mapped_superclass_primary_key";
     
     public static final String IGNORE_FETCH_GROUP = "metadata_warning_ignore_fetch_group";
     public static final String IGNORE_MAPPING_METADATA = "metadata_warning_ignore_mapping_metadata";
@@ -249,6 +252,7 @@ public class MetadataLogger {
         addContextString(IGNORE_MAPPED_SUPERCLASS_READ_ONLY);
         addContextString(IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING);
         addContextString(IGNORE_MAPPED_SUPERCLASS_FETCH_GROUP);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_PRIMARY_KEY);
         
         addContextString(IGNORE_FETCH_GROUP);
         addContextString(IGNORE_MAPPING_METADATA);

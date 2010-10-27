@@ -406,6 +406,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_DERIVED_COMPOSITE_PK_ATTRIBUTE = 7332;
     
     public static final int INVALID_REFERENCE_COLUMN_NAME = 7333;
+    public static final int PRIMARY_KEY_COLUMN_NAME_NOT_SPECIFIED = 7334;
     
     /**
      * INTERNAL:
@@ -2374,6 +2375,14 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = {entityClass, embeddableClass, accessType};
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EMBEDDED_ID_CLASS_HAS_NO_ATTRIBUTES, args));
         validationException.setErrorCode(EMBEDDED_ID_CLASS_HAS_NO_ATTRIBUTES);
+        return validationException;
+    }
+    
+    public static ValidationException primaryKeyColumnNameNotSpecified(Object entityClass) {
+        Object[] args = { entityClass };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, PRIMARY_KEY_COLUMN_NAME_NOT_SPECIFIED, args));
+        validationException.setErrorCode(PRIMARY_KEY_COLUMN_NAME_NOT_SPECIFIED);
         return validationException;
     }
     

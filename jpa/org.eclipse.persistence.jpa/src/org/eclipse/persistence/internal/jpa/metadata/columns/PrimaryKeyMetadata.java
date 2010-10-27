@@ -15,8 +15,10 @@
  *       - 300458: EclispeLink should throw a more specific exception than NPE
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     10/28/2010-2.2 Guy Pelletier 
+ *       - 3223850: Primary key metadata issues
  ******************************************************************************/
-package org.eclipse.persistence.internal.jpa.metadata;
+package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,13 +131,15 @@ public class PrimaryKeyMetadata extends ORMetadata {
         if (m_validation != null) {
             descriptor.getClassDescriptor().setIdValidation(IdValidation.valueOf(m_validation));
         }
+        
         if (m_cacheKeyType != null) {
             descriptor.getClassDescriptor().setCacheKeyType(CacheKeyType.valueOf(m_cacheKeyType));
         }
+        
         if (hasColumns()) {
             for (ColumnMetadata column : m_columns) {
-                if (column.getName().equals("")) {  
-                    throw ValidationException.optimisticLockingSelectedColumnNamesNotSpecified(descriptor.getJavaClass());
+                if (column.getName().equals("")) {
+                    throw ValidationException.primaryKeyColumnNameNotSpecified(descriptor.getJavaClass());
                 } else {
                     descriptor.addPrimaryKeyField(column.getDatabaseField());
                 }

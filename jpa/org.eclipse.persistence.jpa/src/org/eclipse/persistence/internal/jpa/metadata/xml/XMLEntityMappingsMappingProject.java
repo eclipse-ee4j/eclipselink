@@ -51,12 +51,13 @@
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     10/28/2010-2.2 Guy Pelletier 
+ *       - 3223850: Primary key metadata issues
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
-import org.eclipse.persistence.internal.jpa.metadata.PrimaryKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
@@ -94,6 +95,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumn
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConversionValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
@@ -1853,6 +1855,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(OptimisticLockingMetadata.class);
         
+        // Element mappings - must remain in order of definition in XML.
         XMLCompositeCollectionMapping selectedColumnsMapping = new XMLCompositeCollectionMapping();
         selectedColumnsMapping.setAttributeName("m_selectedColumns");
         selectedColumnsMapping.setGetMethodName("getSelectedColumns");
@@ -1861,6 +1864,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         selectedColumnsMapping.setXPath("orm:selected-column");
         descriptor.addMapping(selectedColumnsMapping);
         
+        // Attribute mappings.
         XMLDirectMapping typeMapping = new XMLDirectMapping();
         typeMapping.setAttributeName("m_type");
         typeMapping.setGetMethodName("getType");
@@ -1886,6 +1890,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(OrderColumnMetadata.class);
     
+        // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getNullableAttributeMapping());
         descriptor.addMapping(getInsertableAttributeMapping());
@@ -1910,6 +1915,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(PrimaryKeyMetadata.class);
         
+        // Element mappings - must remain in order of definition in XML.
+        XMLCompositeCollectionMapping columnsMapping = new XMLCompositeCollectionMapping();
+        columnsMapping.setAttributeName("m_columns");
+        columnsMapping.setReferenceClass(ColumnMetadata.class);
+        columnsMapping.setGetMethodName("getColumns");
+        columnsMapping.setSetMethodName("setColumns");
+        columnsMapping.setXPath("orm:column");
+        descriptor.addMapping(columnsMapping);
+        
+        // Attribute mappings.
         XMLDirectMapping validationMapping = new XMLDirectMapping();
         validationMapping.setAttributeName("m_validation");
         validationMapping.setGetMethodName("getValidation");
@@ -1923,14 +1938,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cacheKeyMapping.setSetMethodName("setCacheKeyType");
         cacheKeyMapping.setXPath("@cache-key-type");
         descriptor.addMapping(cacheKeyMapping);
-        
-        XMLCompositeCollectionMapping columnsMapping = new XMLCompositeCollectionMapping();
-        columnsMapping.setAttributeName("m_columns");
-        columnsMapping.setReferenceClass(ColumnMetadata.class);
-        columnsMapping.setGetMethodName("getColumns");
-        columnsMapping.setSetMethodName("setColumns");
-        columnsMapping.setXPath("orm:column");
-        descriptor.addMapping(columnsMapping);
         
         return descriptor;
     }
