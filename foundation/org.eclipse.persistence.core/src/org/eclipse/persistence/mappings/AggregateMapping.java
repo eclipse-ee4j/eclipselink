@@ -56,6 +56,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      */
     public AggregateMapping() {
         super();
+        this.setWeight(WEIGHT_AGGREGATE);
     }
 
     /**

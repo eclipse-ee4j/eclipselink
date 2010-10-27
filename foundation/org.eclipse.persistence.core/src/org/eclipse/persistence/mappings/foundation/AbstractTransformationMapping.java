@@ -78,6 +78,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         fieldToTransformers = new ArrayList();
         setIsMutable(true);
         dontUseIndirection();
+        this.setWeight(WEIGHT_TRANSFORM);
     }
  
     /**

@@ -208,7 +208,13 @@ public class CommitOrderDependencyNode {
             InheritancePolicy policy = node.getDescriptor().getInheritancePolicy();
 
             // For bug 3019934 replace getChildDescriptors with getAllChildDescriptors.
-            for (ClassDescriptor child : policy.getAllChildDescriptors()) {
+            List<ClassDescriptor> childDescriptors = new ArrayList<ClassDescriptor>();
+            childDescriptors.addAll(policy.getAllChildDescriptors());
+            
+            // Sort Child Descriptors before adding them to related nodes.
+            Collections.sort(childDescriptors, new DescriptorCompare());
+            
+            for (ClassDescriptor child : childDescriptors) {
                 results.add(getOwner().nodeFor(child));
             }
         }

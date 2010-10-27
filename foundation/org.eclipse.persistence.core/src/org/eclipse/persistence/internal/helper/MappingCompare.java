@@ -27,6 +27,17 @@ public class MappingCompare implements Comparator {
     public int compare(Object arg1, Object arg2) {
         int arg1Value = ((DatabaseMapping)arg1).getWeight().intValue();
         int arg2Value = ((DatabaseMapping)arg2).getWeight().intValue();
+        if (arg1Value == arg2Value) {
+            int result = ((DatabaseMapping)arg1).getClass().getName().compareTo(((DatabaseMapping)arg2).getClass().getName());
+            // For same classes, compare attribute names.
+            if (result == 0) {
+                // Can be null for TransformationMapping.
+                if (((DatabaseMapping)arg1).getAttributeName() != null && ((DatabaseMapping)arg2).getAttributeName() != null) {
+                    result = ((DatabaseMapping)arg1).getAttributeName().compareTo(((DatabaseMapping)arg2).getAttributeName());
+                }
+            }
+            return result;
+        }
         return (arg1Value - arg2Value);
     }
 }

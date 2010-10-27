@@ -57,6 +57,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
         super();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.elementDataTypeName = "";
+        this.setWeight(WEIGHT_AGGREGATE);
     }
 
     /**

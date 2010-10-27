@@ -34,6 +34,11 @@ public class ReferenceMapping extends ObjectReferenceMapping {
 
     /** A ref is always stored in a single field. */
     protected DatabaseField field;
+    
+    public ReferenceMapping() {
+        super();
+        this.setWeight(WEIGHT_AGGREGATE);
+    }
 
     /**
      * Returns all the aggregate fields.

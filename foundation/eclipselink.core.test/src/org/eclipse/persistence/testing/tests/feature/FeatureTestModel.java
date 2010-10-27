@@ -32,6 +32,7 @@ import org.eclipse.persistence.testing.tests.expressions.ExpressionUnitTestSuite
 import org.eclipse.persistence.testing.tests.identitymaps.IdentityMapTestSuite;
 import org.eclipse.persistence.testing.tests.transactions.ReadingThroughWriteConnectionInTransactionTest;
 import org.eclipse.persistence.testing.tests.transactions.TransactionTestSuite;
+import org.eclipse.persistence.testing.tests.writing.CommitOrderTest;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.testing.tests.sessioncache.SessionCacheTestSuite;
 
@@ -112,6 +113,7 @@ public class FeatureTestModel extends TestModel {
         addTest(getInstantiationPoicyTestSuite());
         addTest(new SessionCacheTestSuite());
         addTest(getSessionAPITestSuite());
+        addTest(new CommitOrderTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.

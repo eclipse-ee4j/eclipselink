@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.sessions;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.DescriptorCompare;
+
 import java.util.*;
 
 /**
@@ -112,7 +114,13 @@ public class CommitOrderCalculator {
         int second;
         first = ((CommitOrderDependencyNode)o1).getFinishingTime();
         second = ((CommitOrderDependencyNode)o2).getFinishingTime();
-        if (first >= second) {
+        if (first == second) {
+            return new DescriptorCompare().compare(
+                    ((CommitOrderDependencyNode)o1).getDescriptor(), 
+                    ((CommitOrderDependencyNode)o2).getDescriptor());
+        }
+        
+        if (first > second) {
             return 1;
         } else {
             return -1;

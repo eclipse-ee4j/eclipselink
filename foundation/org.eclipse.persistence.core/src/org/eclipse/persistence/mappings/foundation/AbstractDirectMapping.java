@@ -103,7 +103,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     public AbstractDirectMapping() {
         super();
-        this.setWeight(WEIGHT_1);
+        this.setWeight(WEIGHT_DIRECT);
     }
 
     /**

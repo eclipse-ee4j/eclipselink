@@ -104,6 +104,32 @@ public class ConstantExpression extends Expression {
     public boolean isValueExpression() {
         return true;
     }
+    
+    /**
+     * INTERNAL:
+     * Normalize collection of values if they are expressions.
+     * or collection of collection expressions.
+     */
+    public Expression normalize(ExpressionNormalizer normalizer) {
+        super.normalize(normalizer);
+        if (value == null)
+            return this;
+        
+        if (value instanceof Collection) {
+            normalizeValueList(normalizer, (Collection)value);
+        }
+        return this;
+    }
+    
+    private void normalizeValueList(ExpressionNormalizer normalizer, Collection valueCollection) {
+        for (Object obj : valueCollection) {
+            if (obj instanceof Collection) {
+                normalizeValueList(normalizer, (Collection)obj);
+            } else if (obj instanceof Expression) {
+                ((Expression)obj).normalize(normalizer);
+            }
+        }
+    }
 
     /**
      * INTERNAL:

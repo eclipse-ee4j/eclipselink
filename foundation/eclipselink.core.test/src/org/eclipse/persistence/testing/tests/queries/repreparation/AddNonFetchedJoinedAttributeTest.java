@@ -26,8 +26,8 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 public class AddNonFetchedJoinedAttributeTest extends AutoVerifyTestCase {
     private ReadAllQuery query1, query2;
     private Vector employees1, employees2;
-    private static String EXPECTED_SQL1 = "SELECT t1.EMP_ID, t2.EMP_ID, t1.F_NAME, t1.L_NAME, t2.SALARY, t1.GENDER, t1.START_TIME, t1.END_TIME, t1.END_DATE, t1.START_DATE, t1.ADDR_ID, t1.MANAGER_ID, t1.VERSION FROM ADDRESS t0, SALARY t2, EMPLOYEE t1 WHERE ((t2.EMP_ID = t1.EMP_ID) AND (t0.ADDRESS_ID = t1.ADDR_ID))";
-    private static String EXPECTED_SQL2 = "SELECT t3.EMP_ID, t4.EMP_ID, t3.F_NAME, t3.L_NAME, t4.SALARY, t3.GENDER, t3.START_TIME, t3.END_TIME, t3.END_DATE, t3.START_DATE, t3.ADDR_ID, t3.MANAGER_ID, t3.VERSION FROM SALARY t4, EMPLOYEE t3, SALARY t2, EMPLOYEE t1, ADDRESS t0 WHERE ((t4.EMP_ID = t3.EMP_ID) AND (((t1.EMP_ID = t3.MANAGER_ID) AND (t2.EMP_ID = t1.EMP_ID)) AND (t0.ADDRESS_ID = t1.ADDR_ID)))";
+    private static String EXPECTED_SQL1 = "SELECT t1.EMP_ID, t2.EMP_ID, t1.F_NAME, t1.GENDER, t1.L_NAME, t2.SALARY, t1.START_TIME, t1.END_TIME, t1.END_DATE, t1.START_DATE, t1.ADDR_ID, t1.MANAGER_ID, t1.VERSION FROM ADDRESS t0, SALARY t2, EMPLOYEE t1 WHERE ((t2.EMP_ID = t1.EMP_ID) AND (t0.ADDRESS_ID = t1.ADDR_ID))";
+    private static String EXPECTED_SQL2 = "SELECT t3.EMP_ID, t4.EMP_ID, t3.F_NAME, t3.GENDER, t3.L_NAME, t4.SALARY, t3.START_TIME, t3.END_TIME, t3.END_DATE, t3.START_DATE, t3.ADDR_ID, t3.MANAGER_ID, t3.VERSION FROM SALARY t4, EMPLOYEE t3, SALARY t2, EMPLOYEE t1, ADDRESS t0 WHERE ((t4.EMP_ID = t3.EMP_ID) AND (((t1.EMP_ID = t3.MANAGER_ID) AND (t2.EMP_ID = t1.EMP_ID)) AND (t0.ADDRESS_ID = t1.ADDR_ID)))";
 
 
     public AddNonFetchedJoinedAttributeTest() {

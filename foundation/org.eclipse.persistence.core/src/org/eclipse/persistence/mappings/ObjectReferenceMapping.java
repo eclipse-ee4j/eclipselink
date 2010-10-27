@@ -41,6 +41,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
 
     protected ObjectReferenceMapping() {
         super();
+        this.setWeight(WEIGHT_TO_ONE);
     }
 
     /**

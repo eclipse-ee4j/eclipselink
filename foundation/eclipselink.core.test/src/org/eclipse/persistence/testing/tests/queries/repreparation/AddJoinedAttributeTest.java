@@ -23,7 +23,7 @@ import org.eclipse.persistence.queries.*;
 public class AddJoinedAttributeTest extends AutoVerifyTestCase {
     private ReadAllQuery query;
     private Vector employees;
-    private static String EXPECTED_SQL = "SELECT t1.EMP_ID, t2.EMP_ID, t1.F_NAME, t1.L_NAME, t2.SALARY, t1.GENDER, t1.START_TIME, t1.END_TIME, t1.END_DATE, t1.START_DATE, t1.ADDR_ID, t1.MANAGER_ID, t1.VERSION, t0.ADDRESS_ID, t0.CITY, t0.COUNTRY, t0.P_CODE, t0.PROVINCE, t0.STREET FROM ADDRESS t0, SALARY t2, EMPLOYEE t1 WHERE ((t2.EMP_ID = t1.EMP_ID) AND (t0.ADDRESS_ID = t1.ADDR_ID))";
+    private static String EXPECTED_SQL = "SELECT t1.EMP_ID, t2.EMP_ID, t1.F_NAME, t1.GENDER, t1.L_NAME, t2.SALARY, t1.START_TIME, t1.END_TIME, t1.END_DATE, t1.START_DATE, t1.ADDR_ID, t1.MANAGER_ID, t1.VERSION, t0.ADDRESS_ID, t0.CITY, t0.COUNTRY, t0.P_CODE, t0.PROVINCE, t0.STREET FROM ADDRESS t0, SALARY t2, EMPLOYEE t1 WHERE ((t2.EMP_ID = t1.EMP_ID) AND (t0.ADDRESS_ID = t1.ADDR_ID))";
 
     public AddJoinedAttributeTest() {
         setDescription("Test if SQL is reprepared the second time");
