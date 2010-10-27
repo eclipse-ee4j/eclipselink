@@ -14,5 +14,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.bind"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.validation"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.jpa.modelgen.test"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa.osgi"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
