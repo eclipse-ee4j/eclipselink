@@ -453,8 +453,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         	assertTrue("Equipment not found in ValueFromPKList list", equipments.containsKey(equip.getId()));
         }
         rollbackTransaction(em);
-
-
     }
 
     /**

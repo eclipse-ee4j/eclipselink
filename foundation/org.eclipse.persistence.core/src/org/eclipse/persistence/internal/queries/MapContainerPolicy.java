@@ -109,7 +109,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         if (element instanceof Map.Entry){
             return addInto(((Map.Entry)element).getKey(), ((Map.Entry)element).getValue(), container, session);
         } else {
-            return super.addInto(element, container, session);
+            return addInto(keyFrom(element, session), element, container, session);
         }
     }
     
@@ -192,11 +192,13 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      */
     @Override
     public Object[] buildReferencesPKList(Object container, AbstractSession session){
-        Object[] result = new Object[this.sizeFor(container)];
+        Object[] result = new Object[this.sizeFor(container)*2];
         Iterator iterator = (Iterator)this.iteratorFor(container);
         int index = 0;
         while(iterator.hasNext()){
             Map.Entry entry = (Entry) iterator.next();
+            result[index] = entry.getKey();
+            ++index;
             CMPPolicy policy = elementDescriptor.getCMPPolicy();
             if (policy != null && policy.isCMP3Policy()){
                 result[index] = policy.createPrimaryKeyInstance(entry.getValue(), session);
@@ -815,6 +817,8 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     public Object valueFromPKList(Object[] pks, AbstractSession session){
         Object result = containerInstance(pks.length);
         for (int index = 0; index < pks.length; ++index){
+            Object key = pks[index];
+            ++index;
             Object pk = null;
             if (elementDescriptor.hasCMPPolicy()){
                 pk = elementDescriptor.getCMPPolicy().createPrimaryKeyFromId(pks[index], session);
@@ -826,7 +830,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             query.setSelectionId(pk);
             query.setIsExecutionClone(true);
             Object element = session.executeQuery(query);
-            addInto(keyFrom(element, session), element, result, session);
+            addInto(key, element, result, session);
         }
         return result;
     }
