@@ -192,7 +192,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      */
     @Override
     public Object[] buildReferencesPKList(Object container, AbstractSession session){
-        Object[] result = new Object[this.sizeFor(container)*2];
+        Object[] result = new Object[this.sizeFor(container)];
         Iterator iterator = (Iterator)this.iteratorFor(container);
         int index = 0;
         while(iterator.hasNext()){
