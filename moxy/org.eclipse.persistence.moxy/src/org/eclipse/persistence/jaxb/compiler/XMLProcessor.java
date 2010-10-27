@@ -1064,6 +1064,14 @@ public class XMLProcessor {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
+        // handle XmlJavaTypeAdapter
+        if (xmlValue.getXmlJavaTypeAdapter() != null) {
+            try {
+                oldProperty.setXmlJavaTypeAdapter(xmlValue.getXmlJavaTypeAdapter());
+            } catch(JAXBException e) {
+                throw JAXBException.invalidPropertyAdapterClass(xmlValue.getXmlJavaTypeAdapter().getValue(), xmlValue.getJavaAttribute(), javaType.getName());
+            }
+        }
         // handle read-only
         if (xmlValue.isSetReadOnly()) {
             oldProperty.setReadOnly(xmlValue.isReadOnly());

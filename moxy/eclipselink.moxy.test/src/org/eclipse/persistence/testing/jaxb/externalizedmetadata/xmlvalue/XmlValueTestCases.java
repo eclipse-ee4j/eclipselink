@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -28,6 +30,9 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapter.MyValueAdapter;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapter.MyValueClass;
+import org.w3c.dom.Document;
 
 /**
  * Tests XmlValue via eclipselink-oxm.xml
@@ -37,6 +42,11 @@ public class XmlValueTestCases extends ExternalizedMetadataTestCases {
     private MySchemaOutputResolver outputResolver; 
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/";
+    private static final String ADAPTER_CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapter";
+    private static final String ADAPTER_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/adapter/";
+    private static final String ADAPTER_OXM_DOC = ADAPTER_PATH + "oxm.xml";
+    private static final String ADAPTER_INSTANCE_DOC = ADAPTER_PATH + "boolean.xml";
+    private JAXBContext jCtx;
     
     /**
      * This is the preferred (and only) constructor.
@@ -46,7 +56,44 @@ public class XmlValueTestCases extends ExternalizedMetadataTestCases {
     public XmlValueTestCases(String name) {
         super(name);
     }
+
+    private JAXBContext getValueClassContext() {
+        if (jCtx == null) {
+            InputStream iStream = loader.getResourceAsStream(ADAPTER_OXM_DOC);
+            if (iStream == null) {
+                fail("Couldn't load metadata file [" + ADAPTER_OXM_DOC + "]");
+            }
+            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            metadataSourceMap.put(ADAPTER_CONTEXT_PATH, new StreamSource(iStream));
+            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            try {
+                jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { MyValueClass.class }, properties);
+            } catch (JAXBException e) {
+                e.printStackTrace();
+                fail("JAXBContext creation failed.");
+            }
+        }
+        return jCtx;
+    }
+
+    private MyValueClass getControlValueClass() {
+        MyValueClass mvc = new MyValueClass();
+        mvc.blah = new Boolean("true");
+        return mvc;        
+    }
     
+    private Document getControlDocument() {
+        Document ctrlDoc = parser.newDocument();
+        try {
+            ctrlDoc = getControlDocument(ADAPTER_INSTANCE_DOC);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred loading control document [" + ADAPTER_INSTANCE_DOC + "].");
+        }
+        return ctrlDoc;
+    }
+
     /**
      * Tests @XmlValue via eclipselink-oxm.xml.
      * 
@@ -199,5 +246,35 @@ public class XmlValueTestCases extends ExternalizedMetadataTestCases {
         assertNotNull("No mapping exists on CDNPricesNoAnnotation for attribute [prices].", mapping);
         assertTrue("Expected an XMLCompositeDirectCollectionMapping for attribute [prices], but was [" + mapping.toString() +"].", mapping instanceof XMLCompositeDirectCollectionMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+    }
+    
+    /**
+     * Tests unmarshal XmlValue with an adapter set.
+     * 
+     * Positive test.
+     */
+    public void testXmlAdapterUnmarshal() throws Exception {
+        JAXBContext jaxbCtx = getValueClassContext();
+        Unmarshaller unmarshaller = jaxbCtx.createUnmarshaller();
+        Object o = unmarshaller.unmarshal(new File(ADAPTER_INSTANCE_DOC));
+        assertNotNull("Unmarshalled object is null", o);
+        assertTrue("Expected [MyValueClass] but was [" + o.getClass().getName() + "]", o instanceof MyValueClass);
+        assertNotNull("'blah' property is null", ((MyValueClass) o).blah);
+        assertEquals(((MyValueClass) o).blah, new Boolean("True"));
+    }
+    
+    /**
+     * Tests marshal XmlValue with an adapter set.
+     * 
+     * Positive test.
+     */
+    public void testXmlAdapterMarshal() throws Exception {
+        JAXBContext jaxbCtx = getValueClassContext();
+        // setup control document
+        Document testDoc = parser.newDocument();
+        Marshaller marshaller = jaxbCtx.createMarshaller();
+        marshaller.marshal(getControlValueClass(), testDoc);
+        //marshaller.marshal(mvc, System.out);
+        assertTrue("Document comparison failed unxepectedly: ", compareDocuments(getControlDocument(), testDoc));
     }
 }

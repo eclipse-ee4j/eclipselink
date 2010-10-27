@@ -445,11 +445,12 @@
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="java-attribute">
-                    <xs:sequence>
+                    <xs:all>
                         <xs:element ref="xml-abstract-null-policy" minOccurs="0" />
                         <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-properties" minOccurs="0" />
-                    </xs:sequence>
+                        <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
+                    </xs:all>
                     <xs:attribute name="cdata" type="xs:boolean" default="false" />
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="type" type="xs:string" default="##default" />

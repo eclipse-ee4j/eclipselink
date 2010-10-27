@@ -30,11 +30,12 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
- *       &lt;sequence>
+ *       &lt;all>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-abstract-null-policy" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
- *       &lt;/sequence>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
+ *       &lt;/all>
  *       &lt;attribute name="cdata" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="read-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
@@ -51,7 +52,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "xmlAbstractNullPolicy",
     "xmlAccessMethods",
-    "xmlProperties"
+    "xmlProperties",
+    "xmlJavaTypeAdapter"
 })
 public class XmlValue
     extends JavaAttribute
@@ -63,6 +65,8 @@ public class XmlValue
     protected XmlAccessMethods xmlAccessMethods;
     @XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
+    @XmlElement(name = "xml-java-type-adapter")
+    protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @XmlAttribute(name = "cdata")
     protected Boolean cdata;
     @XmlAttribute(name = "read-only")
@@ -148,6 +152,30 @@ public class XmlValue
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
+    }
+
+    /**
+     * Gets the value of the xmlJavaTypeAdapter property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlJavaTypeAdapter }
+     *     
+     */
+    public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
+        return xmlJavaTypeAdapter;
+    }
+
+    /**
+     * Sets the value of the xmlJavaTypeAdapter property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlJavaTypeAdapter }
+     *     
+     */
+    public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
+        this.xmlJavaTypeAdapter = value;
     }
 
     /**
