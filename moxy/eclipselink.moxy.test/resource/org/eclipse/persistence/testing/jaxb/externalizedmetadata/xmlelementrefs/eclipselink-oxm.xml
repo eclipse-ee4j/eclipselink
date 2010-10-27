@@ -11,10 +11,10 @@
                     <xml-element-wrapper name="items" />
                 </xml-element-refs>
                 <xml-element-refs java-attribute="stuff" read-only="true">
-                    <xml-element-ref name="a">
+                    <xml-element-ref name="a" type="javax.xml.bind.JAXBElement">
                         <xml-access-methods set-method="shoudBeIgnored" get-method="shoudBeIgnored"/>
                     </xml-element-ref>
-                    <xml-element-ref name="b" read-only="false" />
+                    <xml-element-ref name="b" type="javax.xml.bind.JAXBElement" read-only="false" />
                 </xml-element-refs>
             </java-attributes>
 		</java-type>
