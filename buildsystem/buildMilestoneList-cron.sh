@@ -229,21 +229,21 @@ for version in `ls -dr [0-9]*` ; do
         file=`ls | sort -r | grep -m1 eclipselink-[0-9]`
         if [ "${file}" != "" ] ; then
 #            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\"><img src=\"http://dev.eclipse.org/large_icons/actions/go-bottom.png\"/><span>Download Install Archive</span></a>" >> $tmp/index.xml
-            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Install Zip</a>" >> $tmp/index.xml
+            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Installer</a>" >> $tmp/index.xml
         else
             echo "              Z" >> $tmp/index.xml
         fi
         file=`ls | sort -r | grep -m1 eclipselink-src-[0-9]`
         if [ "${file}" != "" ] ; then
 #            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\">S<span>Download Source Archive</span></a>" >> $tmp/index.xml
-            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Source Zip</a>" >> $tmp/index.xml
+            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Source</a>" >> $tmp/index.xml
         else
             echo "              S" >> $tmp/index.xml
         fi
         file=`ls | sort -r | grep -m1 eclipselink-plugins-[0-9]`
         if [ "${file}" != "" ] ; then
 #            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\">B<span>Download OSGi Plugins Archive</span></a>" >> $tmp/index.xml
-            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Bundle Zip</a>" >> $tmp/index.xml
+            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Bundle</a>" >> $tmp/index.xml
         else
             echo "              B" >> $tmp/index.xml
         fi

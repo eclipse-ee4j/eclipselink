@@ -199,13 +199,11 @@ postProcess() {
 
 curdir=`pwd`
 cd $HOME_DIR
-handoff=`ls handoff-file*.dat | grep -m1 hand` > /dev/null
-
-if [ "$handoff" != "" ] ; then
+for handoff in `ls handoff-file*.dat` ; do
     echo "Detected handoff file:'${handoff}'. Process starting..."
     # Do stuff
     parseHandoff ${handoff}
     runAnt ${BRANCH} ${QUALIFIER} ${PROC}
     postProcess
-fi
+done
 
