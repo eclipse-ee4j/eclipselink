@@ -294,12 +294,27 @@ for version in `ls -dr [0-9]*` ; do
 done
 
 # Dump the static footer into place
-echo "      <p>Generated `date`</p>" >> $tmp/index.xml
-echo "      <script src=\"http://www.google-analytics.com/urchin.js\" type=\"text/javascript\"/>" >> $tmp/index.xml
-echo "      <script type=\"text/javascript\">                                                   " >> $tmp/index.xml
-echo "        _uacct = \"UA-1608008-2\";                                                        " >> $tmp/index.xml
-echo "        urchinTracker();                                                                  " >> $tmp/index.xml
-echo "      </script>                                                                           " >> $tmp/index.xml
+echo "    </description>                                                                        " >> $tmp/index.xml
+echo "  </section>                                                                              " >> $tmp/index.xml
+echo "  <section class=\"main\" name=\"EclipseLink Licenses\">                                  " >> $tmp/index.xml
+echo "    <description>                                                                         " >> $tmp/index.xml
+echo "      <p>                                                                                 " >> $tmp/index.xml
+echo "        The EclipseLink Project produced contents are dual licensed under the terms of the" >> $tmp/index.xml
+echo "        <a href=\"http://www.eclipse.org/legal/epl-v10.html\">Eclipse Public License v1.0</a>" >> $tmp/index.xml
+echo "      and <a href=\"http://www.eclipse.org/org/documents/edl-v10.php\">Eclipse Distribution License v1.0</a>." >> $tmp/index.xml
+echo "      </p><p>                                                                             " >> $tmp/index.xml
+echo "        For the license of dependent libraries included within a distribution please refer to the about.html file within each distribution." >> $tmp/index.xml
+echo "      </p>                                                                                " >> $tmp/index.xml
+echo "    </description>                                                                        " >> $tmp/index.xml
+echo "  </section>                                                                              " >> $tmp/index.xml
+echo "  <section class=\"main\" name=\" \">                                                     " >> $tmp/index.xml
+echo "    <description>                                                                         " >> $tmp/index.xml
+echo "      <p>Generated on `date`</p>                                                          " >> $tmp/index.xml
+#echo "      <script src=\"http://www.google-analytics.com/urchin.js\" type=\"text/javascript\"/>" >> $tmp/index.xml
+#echo "      <script type=\"text/javascript\">                                                   " >> $tmp/index.xml
+#echo "        _uacct = \"UA-1608008-2\";                                                        " >> $tmp/index.xml
+#echo "        urchinTracker();                                                                  " >> $tmp/index.xml
+#echo "      </script>                                                                           " >> $tmp/index.xml
 echo "    </description>                                                                        " >> $tmp/index.xml
 echo "  </section>                                                                              " >> $tmp/index.xml
 echo "</sections>                                                                               " >> $tmp/index.xml

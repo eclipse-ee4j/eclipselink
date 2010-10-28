@@ -303,7 +303,11 @@ for version in `ls -dr [0-9]*` ; do
 done
 
 # Dump the static footer into place
-echo "      <p>Generated `date`</p>" >> $tmp/index.xml
+echo "    </description>                                                                        " >> $tmp/index.xml
+echo "  </section>                                                                              " >> $tmp/index.xml
+echo "  <section class=\"main\" name=\" \">                                                     " >> $tmp/index.xml
+echo "    <description>                                                                         " >> $tmp/index.xml
+echo "      <p>Generated on `date`</p>                                                          " >> $tmp/index.xml
 echo "      <script src=\"http://www.google-analytics.com/urchin.js\" type=\"text/javascript\"/>" >> $tmp/index.xml
 echo "      <script type=\"text/javascript\">                                                   " >> $tmp/index.xml
 echo "        _uacct = \"UA-1608008-2\";                                                        " >> $tmp/index.xml
