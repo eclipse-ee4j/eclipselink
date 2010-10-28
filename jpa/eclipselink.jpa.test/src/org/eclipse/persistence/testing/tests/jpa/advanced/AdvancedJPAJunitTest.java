@@ -446,7 +446,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Department dept = (Department) em.createQuery("SELECT d FROM ADV_DEPT d WHERE d.equipment IS NOT EMPTY").getResultList().get(0);
         ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("equipment");
         Object[] pks = mapping.buildReferencesPKList(dept, mapping.getAttributeValueFromObject(dept), session);
-        assertTrue ("PK list is of incorrect size.  pks.size: " + pks.length + " expected: " + dept.getEquipment().size(), pks.length == dept.getEquipment().size());
+        assertTrue ("PK list is of incorrect size.  pks.size: " + pks.length + " expected: " + (dept.getEquipment().size() * 2), pks.length == (dept.getEquipment().size() * 2));
         Map<Integer, Equipment> equipments = (Map<Integer, Equipment>) mapping.valueFromPKList(pks, session);
         assertTrue("ValueFromPKList returned list of different size from actual entity.", equipments.size() == dept.getEquipment().size());
         for (Equipment equip : dept.getEquipment().values()){
