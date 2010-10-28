@@ -43,8 +43,10 @@
    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
             classpathref="maven-ant-tasks.classpath" />
 
+    <!-- root of "download dir" defined so can be overridden for testing -->
+    <property name="eclipselink.root.download.dir" value="home/data/httpd/download.eclipse.org/rt/eclipselink"/>
     <!-- The repository where maven artifacts will be uploaded -->
-    <artifact:remoteRepository id="eclipselink.repository" url="file:///home/data/httpd/download.eclipse.org/rt/eclipselink/maven.repo" />
+    <artifact:remoteRepository id="eclipselink.repository" url="file:///${eclipselink.root.download.dir}/maven.repo" />
 
     <target name = "upload-maven-init">
         <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
@@ -91,7 +93,7 @@
 
         <!-- Setup static dependency definitions -->
         <!--  Would be nice to setup in the beginning, but the library definitions need version.string defined -->
-        
+
         <!-- These need to be used in order -->
         <property name="deps.head" value="&lt;dependencies&gt;"/>
         <property name="dep.grp"   value="&lt;dependency&gt;&lt;groupId&gt;"/>
@@ -140,6 +142,21 @@
         <property name="sdo.dependencies"      value="${deps.head}${dep.moxy}${dep.core}${deps.foot}"/>
     </target>
 
+    <target name = "upload-javax-persistence" depends = "upload-maven-init">
+        <!-- need to figure out correct version and if it already exists,  -->
+        <!-- so we only upload the latest dependency if it hasn't already been uploaded -->
+
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="javax.persistence"/>
+            <param name="artifactVersion" value="2.0.3"/>
+            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_2.0.3.v201010191057.jar"/>
+            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_2.0.3.v201010191057.jar"/>
+            <param name="artifactName" value="Javax Persistence API 2.0"/>
+            <param name="dependencies" value=""/>
+        </antcall>
+    </target>
+
     <target name = "upload-maven-all" depends = "upload-maven-init">
         <!-- call upload for each artifact we want to upload -->
         <antcall target="upload-artifact">
@@ -149,15 +166,6 @@
             <param name="artifact" value="${eclipselink.jar}"/>
             <param name="artifactSrc" value="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
             <param name="artifactName" value="EclipseLink (non-OSGi)"/>
-            <param name="dependencies" value=""/>
-        </antcall>
-        <antcall target="upload-artifact">
-            <param name="groupId" value="org.eclipse.persistence"/>
-            <param name="artifactId" value="javax.persistence"/>
-            <param name="artifactVersion" value="2.0.3"/>
-            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_2.0.3.v201010191057.jar"/>
-            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_2.0.3.v201010191057.jar"/>
-            <param name="artifactName" value="Javax Persistence API 2.0"/>
             <param name="dependencies" value=""/>
         </antcall>
         <antcall target="upload-artifact">

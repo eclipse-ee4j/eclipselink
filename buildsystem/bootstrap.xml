@@ -215,11 +215,18 @@
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-milestone"/>
     </target>
 
-    <target name="nightly" if="_DoBuild" depends="query-svn-changed, get-src, build-aborted" description="Trigger the nightly automated build and lrg tests">
+    <target name="nightly" if="_DoBuild" depends="query-svn-changed, get-src, build-aborted" description="Trigger the nightly automated build">
         <!-- Don't move current to latest until source sucessfully retrieved -->
         <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
         <echo message="'nightly' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
+    </target>
+
+    <target name="nightly-test" depends="properties-init" description="Trigger the nightly automated lrg tests">
+        <!-- Don't move current to latest until source sucessfully retrieved -->
+        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
+        <echo message="'nightly-test' target: Calling 'test-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="test-nightly"/>
     </target>
 
     <target name="oracle" depends="properties-init" description="Trigger the oracle automated build">
@@ -283,13 +290,26 @@
     </target>
 
     <target name="publish-all" depends="properties-init" description="Manually trigger all publish targets">
-        <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <echo message="'publish-all' target: Calling 'publish-all' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-all"/>
     </target>
 
-    <target name="publish-build" depends="properties-init" description="Manually trigger Build publish target">
-        <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+    <target name="cannot-handoff" unless="handoff.file">
+        <fail message="'handoff.file' is not set. Cannot initiate publish phase!"/>
+    </target>
+    <target name="load-handoff" if="handoff.file" depends="cannot-handoff">
+        <!-- pull in the properties stored in the handoff file -->
+        <property file="${handoff.file}"/>
+    </target>
+    <target name="publish-build" depends="load-handoff, properties-init" description="Trigger the nightly publish for a build">
+        <echo message="'publish-build' target: Calling 'publish-build' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-build"/>
+        <delete file="${handoff.file}" failonerror="false"/>
+    </target>
+    <target name="publish-test" depends="load-handoff, properties-init" description="Trigger the nightly publish for a build">
+        <echo message="'publish-test' target: Calling 'publish-tests' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-tests"/>
+        <delete file="${handoff.file}" failonerror="false"/>
     </target>
 
     <target name="publish-maven" depends="properties-init" description="Manually trigger just Maven publish">
@@ -309,7 +329,7 @@
     </target>
 
     <target name="custom" if="custom.target" depends="get-src" description="Trigger custom target in build.xml">
-        <echo message="'custome' target: Calling 'custom' target in '${build.root.dir}/${autobld.file}' with end-target set to ${custom.target}"/>
+        <echo message="'custom' target: Calling 'custom' target in '${build.root.dir}/${autobld.file}' with end-target set to ${custom.target}"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="custom"/>
     </target>
 

@@ -88,7 +88,7 @@ then
 fi
 if [ "${TARGET}" = "release" ]
 then
-    echo "Error: 'release' is not a valid initial target. Use 'milestone release'. Exiting..."
+    echo "Error: 'release' is not a valid initial target. Use 'milestone release' instead. Exiting..."
     exit 2
 fi
 if [ "${TARGET}" = "uploadDeps" ]
@@ -132,15 +132,6 @@ then
     fi
 fi
 
-# safe temp directory
-tmp=${TMPDIR-/tmp}
-tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
-(umask 077 && mkdir $tmp) || {
-  echo "Could not create temporary directory! Exiting." 1>&2
-  exit 1
-}
-echo "results stored in: '${tmp}'"
-
 #Define common variables
 START_DATE=`date '+%y%m%d-%H%M'`
 #Directories
@@ -160,7 +151,7 @@ else
         JAVA_HOME=/shared/common/jdk-1.6.x86_64
     fi
     ANT_HOME=/shared/common/apache-ant-1.7.0
-    HOME_DIR=/shared/rt/eclipselink
+    HOME_DIR=/shared/rt/eclipselink/staging
 fi
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
@@ -219,6 +210,43 @@ getPrevRevision() {
             break
         fi
     done
+}
+
+unset setDbLogin
+setDbLogin() {
+    if [ ! -f $JDBC_LOGIN_INFO_FILE ]
+    then
+        echo "No db Login info available!"
+        exit
+    else
+        DB_USER=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f1`
+        DB_PWD=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f2`
+        DB_URL=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f3`
+        DB_NAME=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f4`
+    fi
+}
+
+unset cleanDB
+cleanDB() {
+    echo "Cleaning the db for build..."
+    echo "Cleaning the db for build..." >> ${DATED_LOG}
+    echo "drop schema ${DB_NAME};" > sql.sql
+    echo "create schema ${DB_NAME};" >> sql.sql
+    mysql -u${DB_USER} -p${DB_PWD} < sql.sql
+    rm sql.sql
+    echo "done."
+    echo "done." >> ${DATED_LOG}
+}
+
+unset genSafeTmpDir
+genSafeTmpDir() {
+    tmp=${TMPDIR-/tmp}
+    tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
+    (umask 077 && mkdir $tmp) || {
+      echo "Could not create temporary directory! Exiting." 1>&2
+      exit 1
+    }
+    echo "results stored in: '${tmp}'"
 }
 
 unset genTestSummary
@@ -461,6 +489,9 @@ fi
 echo "Post-build Processing Starting..."
 ## Post-build Processing
 ##
+
+genSafeTmpDir
+
 MAILFROM=eric.gwin@oracle.com
 if [ "${ORACLEBLD}" = "true" ]
 then

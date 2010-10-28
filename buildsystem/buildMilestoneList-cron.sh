@@ -3,9 +3,9 @@
 
 export PATH=/usr/bin:/usr/local/bin:${PATH}
 
-GeneratedDownloadPage=nightly.xml
-BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly"
-BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/nightly"
+GeneratedDownloadPage=milestone.xml
+BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/milestones"
+BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/milestones"
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
 pattern_list="eclipselink-core-[l,s]rg-[0-9] eclipselink-jpa-[l,s]rg-[0-9] eclipselink-jpa-wdf-[l,s]rg-[0-9] eclipselink-jaxb-[l,s]rg-[0-9] eclipselink-oxm-[l,s]rg-[0-9] eclipselink-sdo-[l,s]rg-[0-9] eclipselink-dbws-[l,s]rg-[0-9] eclipselink-dbws-util-[l,s]rg-[0-9]"
 summaryfile=ResultSummary.dat
@@ -21,26 +21,26 @@ NaImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/na.gif\" align=
 unset genResultSummary
 genResultSummary() {
     #    Need to be in dir to generate proper strings
-    cd ${BaseDownloadNFSDir}/nightly/${version}
+    cd ${BaseDownloadNFSDir}/milestones/${version}
     content_dir_index=`ls -dr * | grep -n ${contentdir} | cut -d: -f1`
     prev_content_index=`expr ${content_dir_index} + 1`
     last=`ls -dr * | grep -n . | grep ${prev_content_index}: | cut -d: -f2`
     if [ "${last}" = "" ] ; then
         last=${contentdir}
     fi
-    result_file=${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/${summaryfile}
+    result_file=${BaseDownloadNFSDir}/milestones/${version}/${contentdir}/${hostdir}/${summaryfile}
     if [ -f ${result_file} ] ; then
         rm ${result_file}
     fi
     echo "    Creating ${result_file}..."
     echo "        Previous run dir='$last'"
     touch ${result_file}
-    cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}
+    cd ${BaseDownloadNFSDir}/milestones/${version}/${contentdir}/${hostdir}
     for pattern in ${pattern_list} ; do
         file=`ls | sort -r | grep -m1 ${pattern}`
-        prev=`ls ${BaseDownloadNFSDir}/nightly/${version}/${last}/${hostdir} | sort -r | grep -m1 ${pattern}`
+        prev=`ls ${BaseDownloadNFSDir}/milestones/${version}/${last}/${hostdir} | sort -r | grep -m1 ${pattern}`
         if [ "${prev}" != "" ] ; then
-            expected=`cat ${BaseDownloadNFSDir}/nightly/${version}/${last}/${hostdir}/${prev} | grep -m1 "^<td>[0-9]" | cut -d">" -f2 | cut -d"<" -f1`
+            expected=`cat ${BaseDownloadNFSDir}/milestones/${version}/${last}/${hostdir}/${prev} | grep -m1 "^<td>[0-9]" | cut -d">" -f2 | cut -d"<" -f1`
         else
             # If the previous run didn't have this file, then expected result is 0
             expected=0
@@ -65,7 +65,7 @@ genResultSummary() {
         echo "    ${summary}(${failures}:${errors})"
         echo "${summary}" >> ${result_file}
     done
-    cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}
+    cd ${BaseDownloadNFSDir}/milestones/${version}/${contentdir}
     echo "    done."
 }
 
@@ -79,7 +79,7 @@ genResultEntry() {
     file=`ls | sort -r | grep -m1 ${pattern}`
     echo "            <td ${borderstyle} align=\"middle\">" >> $tmp/index.xml
     if [ "${file}" != "" ] ; then
-        summary=`cat ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/ResultSummary.dat | grep ${pattern}`
+        summary=`cat ${BaseDownloadNFSDir}/milestones/${version}/${contentdir}/${hostdir}/ResultSummary.dat | grep ${pattern}`
         expected=`echo ${summary} | cut -d: -f2`
         actual=`echo ${summary} | cut -d: -f3`
         test_result=`echo ${summary} | cut -d: -f4`
@@ -118,9 +118,9 @@ tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
   exit 1
 }
 
-cd ${BaseDownloadNFSDir}/nightly
+cd ${BaseDownloadNFSDir}/milestones
 
-# Generate the nightly build table
+# Generate the milestone build table
 #    Dump out the table header html
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>                                   " >> $tmp/index.xml
 #    Need in Php instead
@@ -147,11 +147,11 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>                                
 #echo " padding-right: 4px;" >> $tmp/index.xml
 #echo "}" >> $tmp/index.xml
 #echo "</style>" >> $tmp/index.xml
-echo "<sections title=\"Eclipse Persistence Services Project (EclipseLink) : Nightly Builds\">" >> $tmp/index.xml
+echo "<sections title=\"Eclipse Persistence Services Project (EclipseLink) : Milestone Builds\">" >> $tmp/index.xml
 echo "    <description>                                                            " >> $tmp/index.xml
-echo "      <p> Automated builds and the corresponding Javadocs are created every day, if code has changed, and are made available for download.  The process is kicked off shortly after midnight Eastern Time.</p>" >> $tmp/index.xml
+echo "      <p> Milestone builds corresponding Javadocs are promoted regularly from 'clean' nightly runs. There should be no test failures, however, it is possible that an intermittent failure will be allowed on a regular milestone.</p>" >> $tmp/index.xml
 echo "    </description>                                                           " >> $tmp/index.xml
-echo "  <section class=\"main\" name=\"Nightly Builds\">                           " >> $tmp/index.xml
+echo "  <section class=\"main\" name=\"Milestone Builds\">                           " >> $tmp/index.xml
 echo "    <description>                                                            " >> $tmp/index.xml
 echo "      <p>                                                                    " >> $tmp/index.xml
 echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
@@ -180,18 +180,18 @@ echo "      </p>" >> $tmp/index.xml
 
 curdir=`pwd`
 for version in `ls -dr [0-9]*` ; do
-    cd ${BaseDownloadNFSDir}/nightly/${version}
+    cd ${BaseDownloadNFSDir}/milestones/${version}
     echo "      <p>                                                                              " >> $tmp/index.xml
     echo "      <a name=\"${version}\"> </a>                                                     " >> $tmp/index.xml
     echo "        <table border=\"1\">                                                           " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
-    echo "            <th colspan=\"12\" align=\"middle\"><b>${version} Nightly Build Results</b></th>" >> $tmp/index.xml
+    echo "            <th colspan=\"12\" align=\"middle\"><b>${version} Milestone Build Results</b></th>" >> $tmp/index.xml
     echo "          </tr>                                                                        " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
     echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Build ID </th>                         " >> $tmp/index.xml
     echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Downloadable Archives </th>                         " >> $tmp/index.xml
     echo "            <th rowspan=\"3\" align=\"middle\"> </th>                                  " >> $tmp/index.xml
-    echo "            <th colspan=\"9\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Nightly Testing Results </th>          " >> $tmp/index.xml
+    echo "            <th colspan=\"9\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Milestone Testing Results </th>          " >> $tmp/index.xml
     echo "          </tr>                                                                        " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
     echo "            <th rowspan=\"2\" align=\"middle\"> Host </th>                             " >> $tmp/index.xml
@@ -211,8 +211,9 @@ for version in `ls -dr [0-9]*` ; do
     echo "          </tr>                                                                        " >> $tmp/index.xml
 
     #    Generate each table row depending upon available content
-    for contentdir in `ls -dr [0-9]*` ; do
-        cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}
+    for contentdir in `ls -dr [MR]*[0-9]*` ; do
+        echo ${contentdir}
+        cd ${BaseDownloadNFSDir}/milestones/${version}/${contentdir}
         #    Determine number of "host" result dirs - since we will always report for "eclipse", even if none result needs to be 1
         num_hosts=`ls -Fd * | grep -c /`
         if [ ${num_hosts} -eq 0 ] ; then
@@ -249,27 +250,13 @@ for version in `ls -dr [0-9]*` ; do
         echo "            </td>" >> $tmp/index.xml
         echo "            <td rowspan=\"${num_hosts}\" align=\"middle\"> </td>" >> $tmp/index.xml
 
-        #    Verify existence of the Eclipse host dir. If not present create and populate as appropriate
-        hostdir=Eclipse
-        if [ ! -d ${hostdir} ] ; then
-            echo "No ${hostdir} dir... creating."
-            mkdir ${hostdir}
-            mv eclipselink-*.html ${hostdir}/.
-            echo "done."
-        fi
-        if [ ! -f ${hostdir}/${summaryfile} ] ; then
-            echo "No ${hostdir}/${summaryfile} file... creating."
-            genResultSummary
-            echo "done."
-        fi
-
         #   Set a counter to track the number of times through the "hosts" loop
         count=0
         borderstyle="style=\"border-top: 2px solid #444;\""
         #parse through host dir's ResultSummary.dat to generate "host results" table entries
         for hostdir in `ls -Fd * | grep / | cut -d"/" -f1` ; do
             #    Need to be in dir to generate proper strings
-            cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}
+            cd ${BaseDownloadNFSDir}/milestones/${version}/${contentdir}/${hostdir}
             count=`expr $count + 1`
             #    Set border to none, and Add row if this is after the first time through
             if [ ${count} -gt 1 ] ; then

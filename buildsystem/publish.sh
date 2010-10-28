@@ -2,7 +2,7 @@
 
 #------------------------------------------------------------------------------------------------------
 #    This script is designed to run from cron on the Eclipse foundation's build server
-#       It tests for the existence of a completed build or test run 
+#       It tests for the existence of a completed build or test run
 #       then initiates the publication of the results to the appropriate locations and
 #       sends out notifiacation when complete.
 #
@@ -34,7 +34,7 @@ UD2M_BLDFILE=uploadDepsToMaven.xml
 
 PATH=${JAVA_HOME}/bin:${ANT_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 
-# Export necessary global environment variables 
+# Export necessary global environment variables
 export ANT_ARGS ANT_OPTS ANT_HOME HOME_DIR JAVA_HOME JUNIT_HOME LOG_DIR PATH BLD_DEPS_DIR JUNIT_HOME SVN_EXEC
 
 #==========================
@@ -81,7 +81,7 @@ unset getHandoff
 getHandoff() {
     curdir=`pwd`
     cd $HOME_DIR
-    
+
     handoff=`ls handoff-file*.dat | grep -m1 *`
 
 }
@@ -110,7 +110,7 @@ parseHandoff() {
         echo "PROC ${handoff_error_string}"
         exit 2
     fi
-    echo "BRANCH='$BRANCH' QUALIFIER='$QUALIFIER' PROC='$PROC'"
+#    echo "BRANCH='${BRANCH}' QUALIFIER='${QUALIFIER}' PROC='${PROC}'"
 }
 
 unset runAnt
@@ -119,7 +119,7 @@ runAnt() {
     BRANCH=$1
     QUALIFIER=$2
     PROC=$3
-     
+
     if [ ! "${BRANCH}" = "trunk" ] ; then
         BRANCH_NM=${BRANCH}
         BRANCH=branches/${BRANCH}/
@@ -127,12 +127,12 @@ runAnt() {
         BRANCH_NM="trunk"
         BRANCH=
     fi
-        
+
     #Directories
     BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
     BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
     JUNIT_HOME=${BLD_DEPS_DIR}/junit
-    
+
     #Files
     JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db-${BRANCH_NM}.dat
     LOGFILE_NAME=bsb-${BRANCH_NM}_pub${PROC}_${START_DATE}.log
@@ -143,7 +143,7 @@ runAnt() {
     CLASSPATH=${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar
 
     # Export run specific variables
-    export BLD_DEPS_DIR BRANCH_NM CLASSPATH JUNIT_HOME TARGET
+    export BLD_DEPS_DIR BRANCH_NM BRANCH_PATH CLASSPATH JUNIT_HOME TARGET
 
     ## Parse $QUALIFIER for build date value
     BLDDATE=`echo ${QUALIFIER} | cut -s -d'-' -f1 | cut -s -dv -f2`
@@ -162,23 +162,32 @@ runAnt() {
     fi
 
     # Setup parameters for Ant build
-    ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -Dsvn.revision=${SVNREV} -Dbuild.date=${BLDDATE}"
+    ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" ${ANT_BASEARG} -Dsvn.revision=${SVNREV}"
+    ANT_BASEARG="${ANT_BASEARG} -Dbuild.date=${BLDDATE} -Dhandoff.file=${handoff}"
 
     cd ${HOME_DIR}
     echo "Results logged to: ${DATED_LOG}"
     touch ${DATED_LOG}
-        
-    echo "Publish starting..."
-    echo "Publish started at: `date`" >> ${DATED_LOG}
+
+    echo ""
+    echo "${PROC} publish starting for ${BRANCH} build:${QUALIFIER}..."
+    echo "${PROC} publish started at: '`date`' for ${BRANCH} build:${QUALIFIER}" >> ${DATED_LOG}
+    echo "   ant ${ANT_BASEARG} publish-${PROC}"
     echo "ant ${ANT_BASEARG} publish-${PROC}" >> ${DATED_LOG}
-#    ant ${ANT_BASEARG} publish-${PROC} >> ${DATED_LOG} 2>&1
+    ant ${ANT_BASEARG} publish-${PROC} >> ${DATED_LOG} 2>&1
     echo "Publish completed at: `date`" >> ${DATED_LOG}
     echo "Publish complete."
 }
 
 unset postProcess
 postProcess() {
-    echo "PostProcessing for $BRANCH $PROC ${QUALIFIER}..."
+    #genSafeTmpDir
+    echo "PostProcessing..."
+    echo "   Generating notification for ${PROC} publishing for ${BRANCH} build ${QUALIFIER}..."
+    echo "   Not sent..."
+    # cleanup
+    #rm -r ${tmp}
+    echo "Done."
 }
 
 #==========================
@@ -190,17 +199,13 @@ postProcess() {
 
 curdir=`pwd`
 cd $HOME_DIR
-handoff=`ls handoff-file*.dat | grep -m1 hand`
-echo "handoff='$handoff'"
+handoff=`ls handoff-file*.dat | grep -m1 hand` > /dev/null
 
 if [ "$handoff" != "" ] ; then
-    genSafeTmpDir
+    echo "Detected handoff file:'${handoff}'. Process starting..."
     # Do stuff
-    parseHandoff $handoff
-    runAnt $BRANCH $QUALIFIER $PROC
+    parseHandoff ${handoff}
+    runAnt ${BRANCH} ${QUALIFIER} ${PROC}
     postProcess
-    
-    # cleanup
-    rm -r ${tmp}
 fi
 
