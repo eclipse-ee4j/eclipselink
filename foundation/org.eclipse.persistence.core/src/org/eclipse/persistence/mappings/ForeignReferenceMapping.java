@@ -602,6 +602,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             nestedQuery.getJoinedAttributeManager().computeJoiningMappingQueries(session);
         }
         nestedQuery.setSession(null);
+        nestedQuery.setRequiresDeferredLocks(baseQuery.requiresDeferredLocks() && nestedQuery.getDescriptor().hasRelationships());
 
         return nestedQuery;
     }
@@ -1842,6 +1843,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     executionSession.executeQuery(dedicatedQuery, row);
                 }
             }
+            ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks() && targetQuery.getDescriptor().hasRelationships());
         }
         targetQuery = prepareHistoricalQuery(targetQuery, sourceQuery, executionSession);
 
@@ -1963,6 +1965,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             nestedQuery.getJoinedAttributeManager().setDataResults(nestedDataResults, executionSession);
         }
+        nestedQuery.setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks() && nestedQuery.getDescriptor().hasRelationships());
         return nestedQuery;
     }
     

@@ -131,7 +131,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             return null;
         }
         
-        if (descriptor.shouldAcquireCascadedLocks()) {
+        if (query.isObjectBuildingQuery() && ((ObjectBuildingQuery)query).requiresDeferredLocks() || descriptor.shouldAcquireCascadedLocks()) {
             return session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(primaryKey, getReadObjectQuery().getReferenceClass(), false, descriptor);
         } else {
             return session.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, getReadObjectQuery().getReferenceClass(), false, descriptor);

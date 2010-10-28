@@ -13,8 +13,11 @@
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.sessions.Record;
@@ -29,12 +32,18 @@ public class ConcurrentPerson implements java.io.Serializable {
     public BigDecimal luckyNumber;
     public static boolean isForBackup = false;
     public ConcurrentProject hobby = null;
+    public List<ConcurrentPhoneNumber> phoneNumbers = null;
 
     //USED TO DETERMINE WHICH TEST IS RUNNING
     public static int RUNNING_TEST;
     public static final int NONE = Integer.MIN_VALUE;
     public static int ONE_TO_ONE_INHERITANCE = 1;
-       
+    public static int READ_FETCH_JOIN = 1;
+    
+    public ConcurrentPerson(){
+        phoneNumbers = new ArrayList();
+    }
+    
     public BigDecimal calculateLuckyNumber(Record row, Session session) {
         Number code = (Number)row.get("ID");
         return new BigDecimal(code.doubleValue() * 2.435);
@@ -78,6 +87,13 @@ public class ConcurrentPerson implements java.io.Serializable {
         hobbyMapping.dontUseIndirection();
         hobbyMapping.addForeignKeyFieldName("CONCURRENT_EMP.PROJ_ID", "CONCURRENT_PROJECT.ID");
         descriptor.addMapping(hobbyMapping);
+        
+        OneToManyMapping phoneNumbersMapping = new OneToManyMapping();
+        phoneNumbersMapping.setAttributeName("phoneNumbers");
+        phoneNumbersMapping.setReferenceClass(ConcurrentPhoneNumber.class);
+        phoneNumbersMapping.dontUseIndirection();
+        phoneNumbersMapping.addTargetForeignKeyFieldName("CONCURRENT_PHONE.EMP_ID", "CONCURRENT_EMP.ID");
+        descriptor.addMapping(phoneNumbersMapping);
         
         return descriptor;
     }
@@ -147,6 +163,24 @@ public class ConcurrentPerson implements java.io.Serializable {
         this.hobby = hobby;
     }
     
+    public List<ConcurrentPhoneNumber> getPhoneNumbers() {
+        return phoneNumbers;
+    }
+
+    public void setPhoneNumbers(List<ConcurrentPhoneNumber> phoneNumbers) {
+        if (ConcurrentPerson.RUNNING_TEST == ConcurrentPerson.READ_FETCH_JOIN) {
+            if (!isForBackup) {
+                try{
+                    Thread.sleep(10000); // let the read go
+                } catch (InterruptedException ex) {}
+                isForBackup = true; //the next call to this methd will be for backup
+            } else {
+                isForBackup = false;
+            }
+        }
+        this.phoneNumbers = phoneNumbers;
+    }
+    
     /**
      * Return a platform independant definition of the database table.
      */
@@ -159,7 +193,7 @@ public class ConcurrentPerson implements java.io.Serializable {
         definition.addField("NAME", String.class, 20);
         definition.addField("ADDR_ID", java.math.BigDecimal.class, 15);
         definition.addField("PROJ_ID", java.math.BigDecimal.class, 15);
-        
+
         return definition;
     }
 }

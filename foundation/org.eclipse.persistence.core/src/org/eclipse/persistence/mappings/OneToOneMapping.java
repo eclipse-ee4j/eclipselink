@@ -830,7 +830,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     }
 
     /**
-     * Return the appropriate hashtable that maps the "foreign keys"
+     * Return the appropriate map that maps the "foreign keys"
      * to the "primary keys".
      */
     protected Map getForeignKeysToPrimaryKeys() {
@@ -1591,6 +1591,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         // these should be cached on the query during prepare.
         ObjectLevelReadQuery nestedQuery = prepareNestedJoinQueryClone(row, null, joinManager, sourceQuery, executionSession);
         nestedQuery.setTranslationRow(targetRow);
+        nestedQuery.setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks() && nestedQuery.getDescriptor().hasRelationships());
         referenceObject = this.referenceDescriptor.getObjectBuilder().buildObject(nestedQuery, targetRow);
 
         // For bug 3641713 buildObject doesn't wrap if called on a UnitOfWork for performance reasons,

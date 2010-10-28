@@ -238,6 +238,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** stores fields that are written by Map key mappings so they can be checked for multiple writable mappings */
     protected transient List<DatabaseField> additionalWritableMapKeyFields;
     
+    /** whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates */
+    protected boolean hasRelationships = false;
+
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -1173,7 +1176,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             clonedDescriptor.getReturningPolicy().setDescriptor(clonedDescriptor);
         }
 
-        // The Object builder    
+        // The Object builder
         clonedDescriptor.setObjectBuilder((ObjectBuilder)getObjectBuilder().clone());
         clonedDescriptor.getObjectBuilder().setDescriptor(clonedDescriptor);
 
@@ -2573,6 +2576,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     *  return whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates 
+     * @return
+     */
+    public boolean hasRelationships() {
+        return hasRelationships;
+    }
+
+    /**
+     * INTERNAL:
      * Return if this descriptor has Returning policy.
      */
     public boolean hasReturningPolicy() {
@@ -3197,11 +3209,19 @@ public class ClassDescriptor implements Cloneable, Serializable {
             mapping.postInitialize(session);
             // PERF: computed if deferred locking is required.
             if (!shouldAcquireCascadedLocks()) {
-                if ((mapping instanceof ForeignReferenceMapping) && (!((ForeignReferenceMapping)mapping).usesIndirection())) {
-                    setShouldAcquireCascadedLocks(true);
+                if (mapping.isForeignReferenceMapping()){
+                    if (!((ForeignReferenceMapping)mapping).usesIndirection()){
+                        setShouldAcquireCascadedLocks(true);
+                    }
+                    hasRelationships = true;
                 }
-                if ((mapping instanceof AggregateObjectMapping) && mapping.getReferenceDescriptor().shouldAcquireCascadedLocks()) {
-                    setShouldAcquireCascadedLocks(true);
+                if ((mapping instanceof AggregateObjectMapping)){
+                    if (mapping.getReferenceDescriptor().shouldAcquireCascadedLocks()) {
+                        setShouldAcquireCascadedLocks(true);
+                    }
+                    if (mapping.getReferenceDescriptor().hasRelationships()){
+                        hasRelationships = true;
+                    }
                 }
             }
         }
@@ -3536,7 +3556,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         } else if (session.getIntegrityChecker().shouldCheckInstantiationPolicy()) {
             getInstantiationPolicy().buildNewInstance();
         }
-        
+
         if (hasReturningPolicy()) {
             getReturningPolicy().validationAfterDescriptorInitialization(session);
         }
@@ -4013,7 +4033,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             cacheSynchronizationType = DO_NOT_SEND_CHANGES;
         }
     }
-      
+
     /**
      * INTERNAL:
      * Return if the unit of work should by-pass the session cache.
@@ -4072,6 +4092,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void setUnitOfWorkCacheIsolationLevel(int unitOfWorkCacheIsolationLevel) {
         this.unitOfWorkCacheIsolationLevel = unitOfWorkCacheIsolationLevel;
+    }
+
+    /**
+     * INTERNAL:
+     * set whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates 
+     * @param isSimpleDescriptor
+     */
+    public void setHasRelationships(boolean hasRelationships) {
+        this.hasRelationships = hasRelationships;
     }
 
     /**
@@ -4163,7 +4192,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.multipleTableInsertOrder = newValue;
     }
     
-
     /**
      * INTERNAL:
      * Set the ObjectBuilder.

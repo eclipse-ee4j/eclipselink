@@ -32,6 +32,7 @@ public class UOWSystem extends TestSystem {
         descriptors.addElement(ConcurrentAddress.descriptor());
         descriptors.addElement(ConcurrentPerson.descriptor());
         descriptors.addElement(ConcurrentProject.descriptor());
+        descriptors.addElement(ConcurrentPhoneNumber.descriptor());
         descriptors.addElement(ConcurrentLargeProject.descriptor());
         descriptors.addElement(MutableAttributeObject.descriptor());
         
@@ -48,6 +49,7 @@ public class UOWSystem extends TestSystem {
         schemaManager.replaceObject(ConcurrentAddress.tableDefinition());
         schemaManager.replaceObject(ConcurrentPerson.tableDefinition());
         schemaManager.replaceObject(ConcurrentProject.tableDefinition());
+        schemaManager.replaceObject(ConcurrentPhoneNumber.tableDefinition());
         schemaManager.replaceObject(MutableAttributeObject.tableDefinition());
 
         schemaManager.createSequences();
