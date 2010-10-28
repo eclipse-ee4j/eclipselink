@@ -151,7 +151,7 @@ else
         JAVA_HOME=/shared/common/jdk-1.6.x86_64
     fi
     ANT_HOME=/shared/common/apache-ant-1.7.0
-    HOME_DIR=/shared/rt/eclipselink/staging
+    HOME_DIR=/shared/rt/eclipselink
 fi
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
