@@ -469,7 +469,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // If weaving was disabled, and the class was not static weaved,
         // then disable indirection.
         if (usesIndirection && (!getProject().isWeavingEnabled())
-                && (!ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getJavaClass(getDescriptor().getJavaClass())))) {
+                && (!getDescriptor().getJavaClass().extendsInterface(ClassConstants.PersistenceWeavedLazy_Class))) {
             usesIndirection = false;
         }
         
