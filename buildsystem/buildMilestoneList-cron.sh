@@ -185,10 +185,11 @@ for version in `ls -dr [0-9]*` ; do
     echo "      <a name=\"${version}\"> </a>                                                     " >> $tmp/index.xml
     echo "        <table border=\"1\">                                                           " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
-    echo "            <th colspan=\"12\" align=\"middle\"><b>${version} Milestone Build Results</b></th>" >> $tmp/index.xml
+    echo "            <th colspan=\"13\" align=\"middle\"><b>${version} Milestone Build Results</b></th>" >> $tmp/index.xml
     echo "          </tr>                                                                        " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
-    echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Build ID </th>                         " >> $tmp/index.xml
+    echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Milestone ID </th>                         " >> $tmp/index.xml
+    echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Date Released </th>                         " >> $tmp/index.xml
     echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Downloadable Archives </th>                         " >> $tmp/index.xml
     echo "            <th rowspan=\"3\" align=\"middle\"> </th>                                  " >> $tmp/index.xml
     echo "            <th colspan=\"9\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Milestone Testing Results </th>          " >> $tmp/index.xml
@@ -214,6 +215,8 @@ for version in `ls -dr [0-9]*` ; do
     for contentdir in `ls -dr [MR]*[0-9]*` ; do
         echo ${contentdir}
         cd ${BaseDownloadNFSDir}/milestones/${version}/${contentdir}
+        #    Determine milestone date
+        milestone_date=`ls -FlSr --sort=t --time-style="+%b %d, %Y" | grep "eclipselink-[0-9]" | tr -s ' ' ' ' | cut -d' ' -f6-8`
         #    Determine number of "host" result dirs - since we will always report for "eclipse", even if none result needs to be 1
         num_hosts=`ls -Fd * | grep -c /`
         if [ ${num_hosts} -eq 0 ] ; then
@@ -222,6 +225,7 @@ for version in `ls -dr [0-9]*` ; do
 
         echo "          <tr>"  >> $tmp/index.xml
         echo "            <td rowspan=\"${num_hosts}\" style=\"border-top: 2px solid #444;\" align=\"middle\"> ${contentdir} </td>" >> $tmp/index.xml
+        echo "            <td rowspan=\"${num_hosts}\" style=\"border-top: 2px solid #444;\" align=\"middle\"> ${milestone_date} </td>" >> $tmp/index.xml
         echo "            <td rowspan=\"${num_hosts}\" style=\"border-top: 2px solid #444;\" align=\"middle\">" >> $tmp/index.xml
 
         #    List all files in dir, reverse sort to put newer on top
