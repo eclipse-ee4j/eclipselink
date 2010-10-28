@@ -757,7 +757,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * Employee's descriptor will be used as the descriptor for Employee
      */
     public boolean getDescribesNonPersistentSubclasses(){
-    	return describesNonPersistentSubclasses;
+        return describesNonPersistentSubclasses;
     }
     
     /**
@@ -1118,7 +1118,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
                 parent.setShouldAcquireCascadedLocks(true);
             }
             if (descriptor.hasRelationships()){
-                parent.setHasRelationshipds(true);
+                parent.setHasRelationships(true);
             }
             while (parent != null) {
                 if (parent.hasMultipleTableConstraintDependecy()) {
@@ -1598,7 +1598,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * @param describesNonPersistenceSubclasses
      */
     public void setDescribesNonPersistentSubclasses(boolean describesNonPersistentSubclasses){
-    	this.describesNonPersistentSubclasses = describesNonPersistentSubclasses;
+        this.describesNonPersistentSubclasses = describesNonPersistentSubclasses;
     }
     
     /**

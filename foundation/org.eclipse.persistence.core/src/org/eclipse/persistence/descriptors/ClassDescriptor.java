@@ -1181,7 +1181,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             clonedDescriptor.getReturningPolicy().setDescriptor(clonedDescriptor);
         }
 
-        // The Object builder	
+        // The Object builder
         clonedDescriptor.setObjectBuilder((ObjectBuilder)getObjectBuilder().clone());
         clonedDescriptor.getObjectBuilder().setDescriptor(clonedDescriptor);
 
@@ -2586,7 +2586,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public boolean hasRelationships() {
         return hasRelationships;
     }
-    
+
     /**
      * INTERNAL:
      * Return if this descriptor has Returning policy.
@@ -3019,7 +3019,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Convenience method to return true if the java class from this descriptor is abstract.
      */
     public boolean isAbstract() {
-    	return java.lang.reflect.Modifier.isAbstract(getJavaClass().getModifiers());
+        return java.lang.reflect.Modifier.isAbstract(getJavaClass().getModifiers());
     }
     
     /**
@@ -3152,7 +3152,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public boolean isPrimaryKeySetAfterInsert(AbstractSession session) {
         return (usesSequenceNumbers() && getSequence().shouldAcquireValueAfterInsert()) || (hasReturningPolicy() && getReturningPolicy().isUsedToSetPrimaryKey());
     }
-    
+
     /**
      * INTERNAL:
      * Return if change sets are required for new objects.
@@ -3226,7 +3226,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     if (mapping.getReferenceDescriptor().hasRelationships()){
                         hasRelationships = true;
                     }
-                    
                 }
             }
         }
@@ -3287,7 +3286,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         getObjectBuilder().postInitialize(session);
         getQueryManager().postInitialize(session);
-        
+
         validateAfterInitialization(session);
 
         checkDatabase(session);
@@ -3555,14 +3554,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     protected void selfValidationAfterInitialization(AbstractSession session) throws DescriptorException {
         // This has to be done after, because read subclasses must be initialized.
-    	if ( (hasInheritance() && (getInheritancePolicy().shouldReadSubclasses() || isAbstract())) || hasTablePerClassPolicy() && isAbstract() ) {
-    		// Avoid building a new instance if the inheritance class is abstract.
-    		// There is an empty statement here, and this was done if anything for the 
-    		// readability sake of the statement logic.
-    	} else if (session.getIntegrityChecker().shouldCheckInstantiationPolicy()) {
-    		getInstantiationPolicy().buildNewInstance();
-    	}
-    	
+        if ( (hasInheritance() && (getInheritancePolicy().shouldReadSubclasses() || isAbstract())) || hasTablePerClassPolicy() && isAbstract() ) {
+            // Avoid building a new instance if the inheritance class is abstract.
+            // There is an empty statement here, and this was done if anything for the 
+            // readability sake of the statement logic.
+        } else if (session.getIntegrityChecker().shouldCheckInstantiationPolicy()) {
+            getInstantiationPolicy().buildNewInstance();
+        }
+
         if (hasReturningPolicy()) {
             getReturningPolicy().validationAfterDescriptorInitialization(session);
         }
@@ -4105,10 +4104,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * set whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates 
      * @param isSimpleDescriptor
      */
-    public void setHasRelationshipds(boolean hasRelationships) {
+    public void setHasRelationships(boolean hasRelationships) {
         this.hasRelationships = hasRelationships;
     }
-    
+
     /**
     * PUBLIC:
     * Set the Java class that this descriptor maps.
@@ -4197,7 +4196,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public void setMultipleTableInsertOrder(List<DatabaseTable> newValue) {
         this.multipleTableInsertOrder = newValue;
     }
-    
+
     /**
      * ADVANCED:
      * Return if delete cascading has been set on the database for the descriptor's
@@ -4217,7 +4216,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables = isCascadeOnDeleteSetOnDatabaseOnSecondaryTables;
     }
     
-
     /**
      * INTERNAL:
      * Set the ObjectBuilder.
@@ -4443,7 +4441,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public void setShouldBeReadOnly(boolean shouldBeReadOnly) {
         this.shouldBeReadOnly = shouldBeReadOnly;
     }
-    
+
     /**
      * PUBLIC:
      * Set the descriptor to be read-only.
