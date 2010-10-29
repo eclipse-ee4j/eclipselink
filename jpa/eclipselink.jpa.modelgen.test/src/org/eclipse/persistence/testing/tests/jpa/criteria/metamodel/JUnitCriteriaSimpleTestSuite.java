@@ -102,6 +102,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLSimpleTestSuite");
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testSetup"));
+		suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleModTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest2"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("baseTestCase"));
@@ -149,7 +150,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleNullTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleNotNullTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("distinctTest"));
-        suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleModTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleIsEmptyTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleIsNotEmptyTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleEscapeUnderscoreTest"));
