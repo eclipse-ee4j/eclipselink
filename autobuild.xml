@@ -467,6 +467,8 @@
         <copy file="${build.root.dir}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"  tofile="${host.dir}/eclipselink-sdo-lrg-${version.string}.html"       failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"      tofile="${host.dir}/eclipselink-dbws-lrg-${version.string}.html"      failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html" tofile="${host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
+        <!-- Remove any old results summary file, if it exists -->
+        <delete file="${host.dir}/ResultsSummary.dat" failonerror="false"/>
         <!-- Run gen summary dat script -->
     </target>
 

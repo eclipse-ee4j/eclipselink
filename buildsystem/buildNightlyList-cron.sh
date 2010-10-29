@@ -83,9 +83,7 @@ genResultEntry() {
         expected=`echo ${summary} | cut -d: -f2`
         actual=`echo ${summary} | cut -d: -f3`
         test_result=`echo ${summary} | cut -d: -f4`
-        if [ $test_result -ne 0 ] ; then
-            Image=${FailImg}
-        else
+        if [ $test_result -eq 0 ] ; then
             if [ $expected -gt $actual ] ; then
                 Image=${WarningImg}
             fi
@@ -95,6 +93,8 @@ genResultEntry() {
             if [ $expected -eq $actual ] ; then
                 Image=${PassImg}
             fi
+        else
+            Image=${FailImg}
         fi
         echo "              <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${hostdir}/${file}\">" >> $tmp/index.xml
         echo "                ${Image}" >> $tmp/index.xml
