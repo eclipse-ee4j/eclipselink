@@ -1485,6 +1485,35 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     
     /**
      * INTERNAL:
+     * Apply the field translation from the sourceField to the mappingField.
+     */
+    protected void translateField(DatabaseField sourceField, DatabaseField mappingField, ClassDescriptor clonedDescriptor) {
+        // Do not modify non-translated fields.
+        if (sourceField != null) {
+            //merge fieldInSource into the field from the Aggregate descriptor
+            mappingField.setName(sourceField.getName());
+            mappingField.setUseDelimiters(sourceField.shouldUseDelimiters());
+            mappingField.useUpperCaseForComparisons(sourceField.getUseUpperCaseForComparisons());
+            mappingField.setNameForComparisons(sourceField.getNameForComparisons());
+            //copy type information 
+            mappingField.setNullable(sourceField.isNullable());
+            mappingField.setUpdatable(sourceField.isUpdatable());
+            mappingField.setInsertable(sourceField.isInsertable());
+            mappingField.setUnique(sourceField.isUnique());
+            mappingField.setScale(sourceField.getScale());
+            mappingField.setLength(sourceField.getLength());
+            mappingField.setPrecision(sourceField.getPrecision());
+            mappingField.setColumnDefinition(sourceField.getColumnDefinition());
+
+            // Check if the translated field specified a table qualifier.
+            if (sourceField.hasTableName()) {
+                mappingField.setTable(clonedDescriptor.getTable(sourceField.getTable().getName()));
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * If field names are different in the source and aggregate objects then the translation
      * is done here. The aggregate field name is converted to source field name from the
      * field name mappings stored.
@@ -1515,13 +1544,11 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                 }
             }
             
-            // This shouldn't be possible since we validate in metadata processing.
+            // This shouldn't be possible since we validate in metadata processing. That is
+			// the mapping can't be null and can't be anything but a direct to field mapping.
             if (mapping != null && mapping.isDirectToFieldMapping()) {
-                // Override the mapping field with the one from the map.
-                DatabaseField mappingField = ((DirectToFieldMapping) mapping).getField();
-                DatabaseField overrideField = nestedFieldTranslations.get(attributeName);
-                overrideField.setTable(mappingField.getTable());
-                ((DirectToFieldMapping) mapping).setField(overrideField);
+                // Translate the mapping field with the override field.
+                translateField(nestedFieldTranslations.get(attributeName), ((DirectToFieldMapping) mapping).getField(), clonedDescriptor);
             }
         }
         
@@ -1537,32 +1564,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         
         for (Iterator entry = fieldsToTranslate.iterator(); entry.hasNext();) {
             DatabaseField field = (DatabaseField)entry.next();
-            //322233 - get the source DatabaseField from the 
-            //String nameInSource = getAggregateToSourceFieldNames().get(nameInAggregate);
-            DatabaseField fieldInSource = getAggregateToSourceFields().get(field.getName());
-
-            // Do not modify non-translated fields.
-            if (fieldInSource != null) {
-                //merge fieldInSource into the field from the Aggregate descriptor
-                field.setName(fieldInSource.getName());
-                field.setUseDelimiters(fieldInSource.shouldUseDelimiters());
-                field.useUpperCaseForComparisons(fieldInSource.getUseUpperCaseForComparisons());
-                field.setNameForComparisons(fieldInSource.getNameForComparisons());
-                //copy type information 
-                field.setNullable(fieldInSource.isNullable());
-                field.setUpdatable(fieldInSource.isUpdatable());
-                field.setInsertable(fieldInSource.isInsertable());
-                field.setUnique(fieldInSource.isUnique());
-                field.setScale(fieldInSource.getScale());
-                field.setLength(fieldInSource.getLength());
-                field.setPrecision(fieldInSource.getPrecision());
-                field.setColumnDefinition(fieldInSource.getColumnDefinition());
-
-                // Check if the translated field specified a table qualifier.
-                if (fieldInSource.hasTableName()) {
-                    field.setTable(clonedDescriptor.getTable(fieldInSource.getTable().getName()));
-                }
-            }
+            //322233 - get the source DatabaseField from the translation map. 
+            translateField(getAggregateToSourceFields().get(field.getName()), field, clonedDescriptor);
         }
 
         clonedDescriptor.rehashFieldDependancies(session);
