@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.jaxb;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 /**
@@ -35,16 +36,17 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo;
  */
 public class JaxbClassLoader extends ClassLoader {
 
-	private ClassLoader nestedClassLoader;
+    private static final String GENERATED_CLASS_NAME = "org.eclipse.persistence.jaxb.generated";
 	private Map<String, Type> generatedClasses;
+    private AtomicInteger generatedClassCounter = new AtomicInteger();
 	
 	public JaxbClassLoader(ClassLoader nestedClassLoader) {
-		this.nestedClassLoader = nestedClassLoader;
+	    super(nestedClassLoader);
 		this.generatedClasses = new HashMap<String, Type>();
 	}
 	
 	public JaxbClassLoader(ClassLoader nestedClassLoader, Class[] classes) {
-		this.nestedClassLoader = nestedClassLoader;
+	    super(nestedClassLoader);
 		this.generatedClasses = new HashMap();
 		if(classes != null){
 			for(int i=0; i<classes.length; i++){
@@ -55,7 +57,7 @@ public class JaxbClassLoader extends ClassLoader {
 	}
 	
 	public JaxbClassLoader(ClassLoader nestedClassLoader, Type[] types) {
-		this.nestedClassLoader = nestedClassLoader;
+	    super(nestedClassLoader);
 		this.generatedClasses = new HashMap();
 		if(types != null){
 			for(int i=0; i<types.length; i++){
@@ -69,7 +71,7 @@ public class JaxbClassLoader extends ClassLoader {
 	}
 	
     public JaxbClassLoader(ClassLoader nestedClassLoader, TypeMappingInfo[] types) {
-        this.nestedClassLoader = nestedClassLoader;
+	    super(nestedClassLoader);
         this.generatedClasses = new HashMap();
         if(types != null){
             for(int i=0; i<types.length; i++){
@@ -88,7 +90,7 @@ public class JaxbClassLoader extends ClassLoader {
     public Class loadClass(String className) throws ClassNotFoundException {
         Class javaClass = null;
         try {
-            javaClass = nestedClassLoader.loadClass(className);
+            javaClass = getParent().loadClass(className);
         } catch (ClassNotFoundException e) {
             javaClass = (Class)generatedClasses.get(className);
             if (javaClass != null) {
@@ -112,6 +114,10 @@ public class JaxbClassLoader extends ClassLoader {
 
     public void putClass(String className, Class clazz) {
         generatedClasses.put(className, clazz);
+    }
+
+    public String nextAvailableGeneratedClassName() {
+        return GENERATED_CLASS_NAME + generatedClassCounter.getAndIncrement();
     }
 
 }

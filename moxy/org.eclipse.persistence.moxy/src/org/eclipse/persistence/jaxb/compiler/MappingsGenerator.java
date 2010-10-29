@@ -127,10 +127,8 @@ import org.eclipse.persistence.sessions.Project;
 public class MappingsGenerator {
     private static final String ATT = "@";
     private static final String TXT = "/text()";
-    private static String WRAPPER_CLASS = "org.eclipse.persistence.jaxb.generated";
     private static String OBJECT_CLASS_NAME = "java.lang.Object";
     public static final QName RESERVED_QNAME = new QName("urn:ECLIPSELINK_RESERVEDURI", "RESERVEDNAME");
-    private static int wrapperCounter = 0;
 
     String outputDir = ".";
     private HashMap<String, QName> userDefinedSchemaTypes;
@@ -213,7 +211,6 @@ public class MappingsGenerator {
         }
 
         processGlobalElements(project);
-        wrapperCounter = 0;
         return project;
     }
 
@@ -1374,7 +1371,7 @@ public class MappingsGenerator {
         if(valueType == null){
         	valueType = helper.getJavaClass("java.lang.Object");
         }
-        String mapEntryClassName = WRAPPER_CLASS + wrapperCounter++;
+        String mapEntryClassName = ((JaxbClassLoader)helper.getClassLoader()).nextAvailableGeneratedClassName();
 
         MapEntryGeneratedKey mapKey = new MapEntryGeneratedKey(keyType.getQualifiedName(),valueType.getQualifiedName());
     	Class generatedClass = getGeneratedMapEntryClasses().get(mapKey);
@@ -2332,15 +2329,16 @@ public class MappingsGenerator {
 
       	TypeMappingInfo tmi = nextElement.getTypeMappingInfo();
       	Class generatedClass = null;
+      	JaxbClassLoader loader = (JaxbClassLoader)helper.getClassLoader();
       	if(tmi != null){
             generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
             if(generatedClass == null){
-            	generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
+            	generatedClass = this.generateWrapperClass(loader.nextAvailableGeneratedClassName(), attributeTypeName, nextElement.isList(), next);
             }
 
             typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
       	}else{
-      	    generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
+      	    generatedClass = this.generateWrapperClass(loader.nextAvailableGeneratedClassName(), attributeTypeName, nextElement.isList(), next);
       	}
 
           this.qNamesToGeneratedClasses.put(next, generatedClass);
