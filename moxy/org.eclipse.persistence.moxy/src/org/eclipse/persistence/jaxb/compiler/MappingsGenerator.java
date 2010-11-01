@@ -657,6 +657,7 @@ public class MappingsGenerator {
         if (isCollection) {
             mapping = new XMLChoiceCollectionMapping();
             ((XMLChoiceCollectionMapping) mapping).setReuseContainer(true);
+            ((XMLChoiceCollectionMapping) mapping).useCollectionClassName(jotArrayList.getRawName());
             ((XMLChoiceCollectionMapping) mapping).setConverter(new JAXBElementRootConverter(Object.class));
             if (property.isSetWriteOnly()) {
                 ((XMLChoiceCollectionMapping) mapping).setIsWriteOnly(property.isWriteOnly());
