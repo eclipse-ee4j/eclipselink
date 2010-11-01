@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -52,6 +53,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MapAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.DoesExistQuery;
@@ -159,6 +161,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_AddRemoveTarget"));
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_DeleteSource"));
         
+        suite.addTest(new AdvancedJPAJunitTest("testMapBuildReferencesPKList"));
         if (!isJPA10()) {
             // Run this test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
             suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
@@ -191,6 +194,24 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         descriptor.setShouldBeReadOnly(shouldBeReadOnly);
 
         clearCache();
+    }
+    
+    public void testMapBuildReferencesPKList(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        ClassDescriptor descriptor;
+        AbstractSession session = (AbstractSession) JpaHelper.getEntityManager(em).getActiveSession();
+        descriptor = session.getDescriptorForAlias("ADV_DEPT");
+        Department dept = (Department) em.createQuery("SELECT d FROM ADV_DEPT d WHERE d.equipment IS NOT EMPTY").getResultList().get(0);
+        ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("equipment");
+        Object[] pks = mapping.buildReferencesPKList(dept, mapping.getAttributeValueFromObject(dept), session);
+        assertTrue ("PK list is of incorrect size.  pks.size: " + pks.length + " expected: " + dept.getEquipment().size() *2 , pks.length == (dept.getEquipment().size()*2));
+        Map<Integer, Equipment> equipments = (Map<Integer, Equipment>) mapping.valueFromPKList(pks, session);
+        assertTrue("ValueFromPKList returned list of different size from actual entity.", equipments.size() == dept.getEquipment().size());
+        for (Equipment equip : dept.getEquipment().values()){
+            assertTrue("Equipment not found in ValueFromPKList list", equipments.containsKey(equip.getId()));
+        }
+        rollbackTransaction(em);
     }
     
     /**
