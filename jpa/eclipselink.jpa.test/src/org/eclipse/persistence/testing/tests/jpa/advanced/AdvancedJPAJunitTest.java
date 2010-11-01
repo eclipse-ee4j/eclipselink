@@ -21,6 +21,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     10/27/2010-2.2 Guy Pelletier 
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
+ *     11/01/2010-2.2 Guy Pelletier 
+ *       - 322916: getParameter on Query throws NPE
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -37,6 +39,7 @@ import java.util.Vector;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
@@ -194,6 +197,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
         
         suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
+        
+        suite.addTest(new AdvancedJPAJunitTest("testQueryGetParameter"));
 
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
@@ -235,6 +240,22 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         descriptor.setShouldBeReadOnly(shouldBeReadOnly);
 
         clearCache();
+    }
+    
+    /**
+     * Bug 322916
+     */
+    public void testQueryGetParameter() {
+        EntityManager em = createEntityManager();
+
+        try {
+            Query query = em.createQuery("select e from Employee e where e.salary = :sal").setParameter("sal", 1000);
+            query.getParameter("sal");
+        } catch (Exception e) {
+            fail("Get parameter on test failed: " + e);
+        } finally {
+            closeEntityManager(em);
+        }
     }
     
     /**

@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Zoltan NAGY & tware - updated support for MaxRows
+ *     11/01/2010-2.2 Guy Pelletier 
+ *       - 322916: getParameter on Query throws NPE
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -18,6 +20,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,7 +85,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     protected EntityManagerImpl entityManager = null;
     protected String queryName = null;
     protected Map<String, Object> parameterValues = null;
-    protected Map<Parameter<?>, Parameter<?>> parameters;
+    protected Map<String, Parameter<?>> parameters;
     protected int firstResultIndex = UNDEFINED; 
     protected int maxResults = UNDEFINED; 
 
@@ -582,6 +585,28 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         return entityManager;
     }
 
+    /**
+     * Return the internal map of parameters.
+     */
+    protected Map<String, Parameter<?>> getInternalParameters() {
+        if (this.parameters == null) {
+            DatabaseQuery query = getDatabaseQueryInternal(); // Retrieve named
+                                                              // query
+            int count = 0;
+            if (query.getArguments() != null && !query.getArguments().isEmpty()) {
+                this.parameters = new HashMap<String, Parameter<?>>();
+                for (String argName : query.getArguments()) {
+                    Parameter<?> param = new ParameterExpressionImpl(null, query.getArgumentTypes().get(count), argName);
+                    this.parameters.put(argName, param);
+                    ++count;
+                }
+            }
+
+        }
+
+        return this.parameters;
+    }
+    
     /**
      * Get the current lock mode for the query.
      * 
@@ -1281,7 +1306,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     public <T> Parameter<T> getParameter(String name, Class<T> type) {
         try {
             entityManager.verifyOpen();
-            Parameter param = (Parameter) this.parameters.get(name);
+            Parameter param = (Parameter) getInternalParameters().get(name);
             if (param == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { name, this.databaseQuery }));
 
@@ -1300,7 +1325,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     public <T> Parameter<T> getParameter(int position, Class<T> type) {
         try {
             entityManager.verifyOpen();
-            Parameter param = (Parameter) this.parameters.get(String.valueOf(position));
+            Parameter param = (Parameter) getInternalParameters().get(String.valueOf(position));
             if (param == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX", new Object[] { position, this.databaseQuery }));
 
@@ -1319,7 +1344,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     public Parameter<?> getParameter(String name) {
         try {
             entityManager.verifyOpen();
-            Parameter param = (Parameter) this.parameters.get(name);
+            Parameter param = (Parameter) getInternalParameters().get(name);
             if (param == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { name, this.databaseQuery }));
             }
@@ -1337,7 +1362,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     public Parameter<?> getParameter(int position) {
         try {
             entityManager.verifyOpen();
-            Parameter param = (Parameter) this.parameters.get(String.valueOf(position));
+            Parameter param = (Parameter) getInternalParameters().get(String.valueOf(position));
             if (param == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX", new Object[] { position, this.databaseQuery }));
             }
@@ -1369,7 +1394,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     public Object getParameterValue(String name) {
         try {
             entityManager.verifyOpen();
-            if (!this.parameters.containsKey(new ParameterExpressionImpl(null, null, name))) {
+            if (!getInternalParameters().containsKey(name)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { name, this.databaseQuery }));
             }
             if (!this.parameterValues.containsKey(name)) { // must check for
@@ -1407,21 +1432,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence 2.0
      */
     public Set<Parameter<?>> getParameters() {
-        if (this.parameters == null) {
-            DatabaseQuery query = getDatabaseQueryInternal(); // Retrieve named
-                                                              // query
-            int count = 0;
-            if (query.getArguments() != null && !query.getArguments().isEmpty()) {
-                this.parameters = new HashMap<Parameter<?>, Parameter<?>>();
-                for (String argName : query.getArguments()) {
-                    Parameter<?> param = new ParameterExpressionImpl(null, query.getArgumentTypes().get(count), argName);
-                    this.parameters.put(param, param);
-                    ++count;
-                }
-            }
-
-        }
-        return this.parameters.keySet();
+        return new HashSet(getInternalParameters().values());
     }
 
     /**
