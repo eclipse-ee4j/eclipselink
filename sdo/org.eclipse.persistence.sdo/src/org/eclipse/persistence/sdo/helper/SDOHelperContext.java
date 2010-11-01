@@ -621,23 +621,25 @@ public class SDOHelperContext implements HelperContext {
         }
         // Helper contexts in WebLogic server will be keyed on application name if available
         if (classLoaderName.contains(WLS_CLASSLOADER_NAME)) {
+            Object appName = null;
             Object executeThread = getExecuteThread();
             if (executeThread != null) {
                 try {
                     Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), WLS_APPLICATION_NAME_GET_METHOD_NAME, WLS_PARAMETER_TYPES, false);
-                    Object appName = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
-                    // if ExecuteThread returns null, attempt to use the user-set ApplicationResolver 
-                    if (appName == null && appResolver != null) {
-                        appName = appResolver.getApplicationName();
-                    }
-                    // use the application name if set, otherwise key on the class loader
-                    if (appName != null) {
-                        return new MapKeyLookupResult(appName.toString(), classLoader);
-                    } 
+                    appName = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
                 } catch (Exception e) {
                     throw SDOException.errorInvokingWLSMethodReflectively(WLS_APPLICATION_NAME_GET_METHOD_NAME, WLS_EXECUTE_THREAD, e);
                 }
             }
+            // if ExecuteThread is null or doesn't return the app name, attempt 
+            // to use the user-set ApplicationResolver (if set)
+            if (appName == null && appResolver != null) {
+                appName = appResolver.getApplicationName();
+            }
+            // use the application name if set, otherwise key on the class loader
+            if (appName != null) {
+                return new MapKeyLookupResult(appName.toString(), classLoader);
+            } 
             // couldn't get the application name, so default to the context loader
             return new MapKeyLookupResult(classLoader);
         }            
