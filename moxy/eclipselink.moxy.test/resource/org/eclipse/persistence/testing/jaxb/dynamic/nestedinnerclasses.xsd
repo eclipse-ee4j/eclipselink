@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="myNamespace" xmlns:myns="myNamespace"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="person" type="myns:Person" />
+
+    <xs:complexType name="Person">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string" />
+            <xs:element name="RelatedResource">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="resourceName" type="xs:string"/>
+                        <xs:element name="Link" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="linkName" type="xs:string" />
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

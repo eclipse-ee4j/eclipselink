@@ -45,51 +45,7 @@ import org.xml.sax.SAXException;
 
 public class DynamicJAXBFromXSDTestCases extends TestCase {
 
-    private static final String RESOURCE_DIR = "org/eclipse/persistence/testing/jaxb/dynamic/";
-    private static final String CONTEXT_PATH = "mynamespace";
-
-    // Schema files used to test each annotation
-    private static final String XMLSCHEMA_QUALIFIED = RESOURCE_DIR + "xmlschema-qualified.xsd";
-    private static final String XMLSCHEMA_UNQUALIFIED = RESOURCE_DIR +  "xmlschema-unqualified.xsd";
-    private static final String XMLSCHEMA_DEFAULTS = RESOURCE_DIR + "xmlschema-defaults.xsd";
-    private static final String XMLSCHEMA_IMPORT = RESOURCE_DIR + "xmlschema-import.xsd";
-    private static final String XMLSCHEMA_CURRENCY = RESOURCE_DIR + "xmlschema-currency.xsd";
-    private static final String XMLSEEALSO = RESOURCE_DIR + "xmlseealso.xsd";
-    private static final String XMLROOTELEMENT = RESOURCE_DIR + "xmlrootelement.xsd";
-    private static final String XMLTYPE = RESOURCE_DIR + "xmltype.xsd";
-    private static final String XMLATTRIBUTE = RESOURCE_DIR + "xmlattribute.xsd";
-    private static final String XMLELEMENT = RESOURCE_DIR + "xmlelement.xsd";
-    private static final String XMLLIST = RESOURCE_DIR + "xmllist.xsd";
-    private static final String XMLVALUE = RESOURCE_DIR + "xmlvalue.xsd";
-    private static final String XMLANYELEMENT = RESOURCE_DIR + "xmlanyelement.xsd";
-    private static final String XMLANYATTRIBUTE = RESOURCE_DIR + "xmlanyattribute.xsd";
-    private static final String XMLMIXED = RESOURCE_DIR + "xmlmixed.xsd";
-    private static final String XMLID = RESOURCE_DIR + "xmlid.xsd";
-    private static final String XMLELEMENTS = RESOURCE_DIR + "xmlelements.xsd";
-    private static final String XMLELEMENTREF = RESOURCE_DIR + "xmlelementref.xsd";
-    private static final String XMLSCHEMATYPE = RESOURCE_DIR + "xmlschematype.xsd";
-    private static final String XMLENUM = RESOURCE_DIR + "xmlenum.xsd";
-    private static final String XMLELEMENTDECL = RESOURCE_DIR + "xmlelementdecl.xsd";
-    private static final String XMLELEMENTCOLLECTION = RESOURCE_DIR + "xmlelement-collection.xsd";
-    private static final String JAXBCUSTOM = RESOURCE_DIR + "jaxbcustom.xsd";
-    private static final String SUBSTITUTION = RESOURCE_DIR + "substitution.xsd";
-
-    // Test Instance Docs
-    private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";
-    private static final String PERSONNE_XML = RESOURCE_DIR + "sub-personne-fr.xml";
-
-    // Names of types to instantiate
-    private static final String PACKAGE = "mynamespace";
-    private static final String PERSON = "Person";
-    private static final String EMPLOYEE = "Employee";
-    private static final String INDIVIDUO = "Individuo";
-    private static final String CDN_CURRENCY = "CdnCurrency";
-    private static final String DATA = "Data";
-    private static final String COMPANY = "Company";
-    private static final String COMPASS_DIRECTION = "CompassDirection";
-    private static final String NORTH_CONSTANT = "NORTH";
-
-    DynamicJAXBContext jaxbContext;
+	DynamicJAXBContext jaxbContext;
 
     static {
         try {
@@ -809,6 +765,33 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         assertEquals("Property type was not preserved during unmarshal.", Integer.class, readPerson.<Object>get("id").getClass());
     }
 
+    public void testNestedInnerClasses() throws Exception {
+    	// Tests multiple levels of inner classes, eg. mynamespace.Person.RelatedResource.Link
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(NESTEDINNERCLASSES);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+
+		DynamicEntity person = jaxbContext.newDynamicEntity("mynamespace.Person");
+		DynamicEntity resource = jaxbContext.newDynamicEntity("mynamespace.Person.RelatedResource");
+		DynamicEntity link = jaxbContext.newDynamicEntity("mynamespace.Person.RelatedResource.Link");
+		DynamicEntity link2 = jaxbContext.newDynamicEntity("mynamespace.Person.RelatedResource.Link");
+
+		link.set("linkName", "LINKFOO");
+		link2.set("linkName", "LINKFOO2");
+		
+		resource.set("resourceName", "RESBAR");
+		
+		ArrayList<DynamicEntity> links = new ArrayList<DynamicEntity>();
+		links.add(link);
+		links.add(link2);
+		
+		resource.set("link", links);
+		person.set("name", "Bob Smith");
+		person.set("relatedResource", resource);
+		
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+    }
+    
     // ====================================================================
 
     private void print(Object o) throws Exception {
@@ -830,4 +813,52 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         }
     }
 
+    // ====================================================================
+    
+    private static final String RESOURCE_DIR = "org/eclipse/persistence/testing/jaxb/dynamic/";
+    private static final String CONTEXT_PATH = "mynamespace";
+
+    // Schema files used to test each annotation
+    private static final String XMLSCHEMA_QUALIFIED = RESOURCE_DIR + "xmlschema-qualified.xsd";
+    private static final String XMLSCHEMA_UNQUALIFIED = RESOURCE_DIR +  "xmlschema-unqualified.xsd";
+    private static final String XMLSCHEMA_DEFAULTS = RESOURCE_DIR + "xmlschema-defaults.xsd";
+    private static final String XMLSCHEMA_IMPORT = RESOURCE_DIR + "xmlschema-import.xsd";
+    private static final String XMLSCHEMA_CURRENCY = RESOURCE_DIR + "xmlschema-currency.xsd";
+    private static final String XMLSEEALSO = RESOURCE_DIR + "xmlseealso.xsd";
+    private static final String XMLROOTELEMENT = RESOURCE_DIR + "xmlrootelement.xsd";
+    private static final String XMLTYPE = RESOURCE_DIR + "xmltype.xsd";
+    private static final String XMLATTRIBUTE = RESOURCE_DIR + "xmlattribute.xsd";
+    private static final String XMLELEMENT = RESOURCE_DIR + "xmlelement.xsd";
+    private static final String XMLLIST = RESOURCE_DIR + "xmllist.xsd";
+    private static final String XMLVALUE = RESOURCE_DIR + "xmlvalue.xsd";
+    private static final String XMLANYELEMENT = RESOURCE_DIR + "xmlanyelement.xsd";
+    private static final String XMLANYATTRIBUTE = RESOURCE_DIR + "xmlanyattribute.xsd";
+    private static final String XMLMIXED = RESOURCE_DIR + "xmlmixed.xsd";
+    private static final String XMLID = RESOURCE_DIR + "xmlid.xsd";
+    private static final String XMLELEMENTS = RESOURCE_DIR + "xmlelements.xsd";
+    private static final String XMLELEMENTREF = RESOURCE_DIR + "xmlelementref.xsd";
+    private static final String XMLSCHEMATYPE = RESOURCE_DIR + "xmlschematype.xsd";
+    private static final String XMLENUM = RESOURCE_DIR + "xmlenum.xsd";
+    private static final String XMLELEMENTDECL = RESOURCE_DIR + "xmlelementdecl.xsd";
+    private static final String XMLELEMENTCOLLECTION = RESOURCE_DIR + "xmlelement-collection.xsd";
+    private static final String JAXBCUSTOM = RESOURCE_DIR + "jaxbcustom.xsd";
+    private static final String SUBSTITUTION = RESOURCE_DIR + "substitution.xsd";
+    private static final String NESTEDINNERCLASSES = RESOURCE_DIR + "nestedinnerclasses.xsd";    
+
+    // Test Instance Docs
+    private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";
+    private static final String PERSONNE_XML = RESOURCE_DIR + "sub-personne-fr.xml";
+
+    // Names of types to instantiate
+    private static final String PACKAGE = "mynamespace";
+    private static final String PERSON = "Person";
+    private static final String EMPLOYEE = "Employee";
+    private static final String INDIVIDUO = "Individuo";
+    private static final String CDN_CURRENCY = "CdnCurrency";
+    private static final String DATA = "Data";
+    private static final String COMPANY = "Company";
+    private static final String COMPASS_DIRECTION = "CompassDirection";
+    private static final String NORTH_CONSTANT = "NORTH";
+
+    
 }

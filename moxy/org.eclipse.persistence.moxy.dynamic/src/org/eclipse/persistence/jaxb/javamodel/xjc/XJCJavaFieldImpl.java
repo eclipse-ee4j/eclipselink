@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Rick Barkhouse = 2.1 - initial implementation
+ *     Rick Barkhouse - 2.1 - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
@@ -40,22 +40,22 @@ public class XJCJavaFieldImpl implements JavaField {
     private JFieldVar xjcField;
     private JCodeModel jCodeModel;
     private DynamicClassLoader dynamicClassLoader;
+    private JavaClass owningClass;
 
     private static Field JVAR_ANNOTATIONS = null;
-    private static Field JFIELDVAR_OWNER = null;
     static {
         try {
             JVAR_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JVar.class, "annotations", true);
-            JFIELDVAR_OWNER = PrivilegedAccessHelper.getDeclaredField(JFieldVar.class, "owner", true);
         } catch (Exception e) {
             throw JAXBException.errorCreatingDynamicJAXBContext(e);
         }
     }
 
-    public XJCJavaFieldImpl(JFieldVar javaField, JCodeModel codeModel, DynamicClassLoader loader) {
+    public XJCJavaFieldImpl(JFieldVar javaField, JCodeModel codeModel, DynamicClassLoader loader, JavaClass owner) {
         this.xjcField = javaField;
         this.jCodeModel = codeModel;
         this.dynamicClassLoader = loader;
+        this.owningClass = owner;
     }
 
     @SuppressWarnings("unchecked")
@@ -111,18 +111,6 @@ public class XJCJavaFieldImpl implements JavaField {
         return xjcField.name();
     }
 
-    public JavaClass getOwningClass() {
-        JDefinedClass ownerXJCClass = null;
-
-        try {
-            ownerXJCClass = (JDefinedClass) PrivilegedAccessHelper.getValueFromField(JFIELDVAR_OWNER, xjcField);
-        } catch (Exception e) {
-            return null;
-        }
-
-        return new XJCJavaClassImpl(ownerXJCClass, jCodeModel, dynamicClassLoader);
-    }
-
     @SuppressWarnings("unchecked")
     public JavaClass getResolvedType() {
         JType type = xjcField.type();
@@ -169,9 +157,15 @@ public class XJCJavaFieldImpl implements JavaField {
         }
 
         if (classToReturn instanceof JDefinedClass) {
+            if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
+                return ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(classToReturn.fullName());
+            }
             return new XJCJavaClassImpl((JDefinedClass) classToReturn, jCodeModel, dynamicClassLoader);
         } else {
-            return new XJCJavaClassImpl(classToReturn, jCodeModel, dynamicClassLoader);
+            if (((XJCJavaClassImpl) this.owningClass).getJavaModel() != null) {
+                return ((XJCJavaClassImpl) this.owningClass).getJavaModel().getClass(classToReturn.fullName());
+            }
+            return new XJCJavaClassImpl((JDefinedClass) classToReturn, jCodeModel, dynamicClassLoader);
         }
     }
 
@@ -215,4 +209,11 @@ public class XJCJavaFieldImpl implements JavaField {
         return getAnnotations();
     }
 
+    public void setOwningClass(JavaClass owningClass) {
+        this.owningClass = owningClass;
+    }
+
+    public JavaClass getOwningClass() {
+        return this.owningClass;
+    }
 }

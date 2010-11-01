@@ -396,8 +396,14 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         }
 
         // Use the JavaModel to setup a Generator to generate an EclipseLink project
-        XJCJavaModelImpl javaModel = new XJCJavaModelImpl(jaxbLoader, codeModel, dynamicClassLoader);
+        XJCJavaModelImpl javaModel = new XJCJavaModelImpl(codeModel, dynamicClassLoader);
         XJCJavaModelInputImpl javaModelInput = new XJCJavaModelInputImpl(jotClasses, javaModel);
+
+        for (JavaClass javaClass : jotClasses) {
+            ((XJCJavaClassImpl) javaClass).setJavaModel(javaModel);
+            javaModel.getJavaModelClasses().put(javaClass.getQualifiedName(), javaClass);
+        }
+
         Generator g = new Generator(javaModelInput, bindings, dynamicClassLoader, null);
 
         Project p = null;
@@ -414,7 +420,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
 
-        this.xmlContext = new XMLContext(dp);
+        this.xmlContext = new XMLContext(dp, dynamicClassLoader);
 
         List<Session> sessions = (List<Session>) this.xmlContext.getSessions();
         for (Object session : sessions) {

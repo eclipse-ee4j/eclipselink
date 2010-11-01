@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Rick Barkhouse = 2.1 - Initial implementation
+ *     Rick Barkhouse - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
@@ -125,6 +125,12 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
                         Field valClField = PrivilegedAccessHelper.getDeclaredField(objValue.getClass(), "val$cl", true);
                         JClass wrappedValue = (JClass) PrivilegedAccessHelper.getValueFromField(valClField, objValue);
                         Object tempDynClass = null;
+
+                        if (!(wrappedValue.getTypeParameters().isEmpty())) {
+                            // Parameterized type, so get the actual parameter type and create that.
+                            wrappedValue = wrappedValue.getTypeParameters().get(0);
+                        }
+
                         try {
                             // Attempt to look up the class normally
                             tempDynClass = Class.forName(wrappedValue.fullName());

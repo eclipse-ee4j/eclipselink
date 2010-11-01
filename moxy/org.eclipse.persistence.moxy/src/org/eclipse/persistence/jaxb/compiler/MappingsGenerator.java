@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlValue;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.DefaultElementConverter;
@@ -2329,7 +2330,14 @@ public class MappingsGenerator {
 
       	TypeMappingInfo tmi = nextElement.getTypeMappingInfo();
       	Class generatedClass = null;
-      	JaxbClassLoader loader = (JaxbClassLoader)helper.getClassLoader();
+
+        JaxbClassLoader loader;
+        if (helper.getClassLoader() instanceof DynamicClassLoader) {
+            loader = (JaxbClassLoader) helper.getClassLoader().getParent();
+        } else {
+            loader = (JaxbClassLoader) helper.getClassLoader();
+        }
+
       	if(tmi != null){
             generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
             if(generatedClass == null){
@@ -2547,7 +2555,12 @@ public class MappingsGenerator {
 
         byte[] classBytes = cw.toByteArray();
 
-        JaxbClassLoader loader = (JaxbClassLoader)helper.getClassLoader();
+        JaxbClassLoader loader;
+        if (helper.getClassLoader() instanceof DynamicClassLoader) {
+            loader = (JaxbClassLoader) helper.getClassLoader().getParent();
+        } else {
+            loader = (JaxbClassLoader) helper.getClassLoader();
+        }
         Class generatedClass = loader.generateClass(className, classBytes);
         return generatedClass;
     }

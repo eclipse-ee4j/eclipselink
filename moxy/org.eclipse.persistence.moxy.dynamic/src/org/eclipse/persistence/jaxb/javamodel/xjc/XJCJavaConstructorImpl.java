@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Rick Barkhouse = 2.1 - Initial implementation
+ *     Rick Barkhouse - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
@@ -28,11 +28,13 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
     private JMethod xjcConstructor;
     private JCodeModel jCodeModel;
     private DynamicClassLoader dynamicClassLoader;
+    private JavaClass owningClass;
 
-    public XJCJavaConstructorImpl(JMethod constructor, JCodeModel codeModel, DynamicClassLoader loader) {
+    public XJCJavaConstructorImpl(JMethod constructor, JCodeModel codeModel, DynamicClassLoader loader, JavaClass owner) {
         this.xjcConstructor = constructor;
         this.jCodeModel = codeModel;
         this.dynamicClassLoader = loader;
+        this.owningClass = owner;
     }
 
     public int getModifiers() {
@@ -43,16 +45,19 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
         return xjcConstructor.name();
     }
 
-    public JavaClass getOwningClass() {
-        return new XJCJavaClassImpl((JDefinedClass) xjcConstructor.type(), jCodeModel, dynamicClassLoader);
-    }
-
     public JavaClass[] getParameterTypes() {
         JType[] params = xjcConstructor.listParamTypes();
         JavaClass[] paramArray = new JavaClass[params.length];
 
         for (int i = 0; i < params.length; i++) {
-            paramArray[i] = new XJCJavaClassImpl((JDefinedClass) params[i], jCodeModel, dynamicClassLoader);
+            JavaClass dc;
+            if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
+                dc = ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(params[i].fullName());
+            } else {
+                dc = new XJCJavaClassImpl((JDefinedClass) params[i], jCodeModel, dynamicClassLoader);
+            }
+
+            paramArray[i] = dc;
         }
         return paramArray;
     }
@@ -83,6 +88,14 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
+    }
+
+    public JavaClass getOwningClass() {
+        return owningClass;
+    }
+
+    public void setOwningClass(JavaClass owningClass) {
+        this.owningClass = owningClass;
     }
 
 }

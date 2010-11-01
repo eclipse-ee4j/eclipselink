@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Rick Barkhouse = 2.1 - Initial implementation
+ *     Rick Barkhouse - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
@@ -39,22 +39,22 @@ public class XJCJavaMethodImpl implements JavaMethod {
     private JMethod xjcMethod;
     private JCodeModel jCodeModel;
     private DynamicClassLoader dynamicClassLoader;
+    private JavaClass owningClass;
 
     private static Field JMETHOD_ANNOTATIONS = null;
-    private static Field JMETHOD_OUTER = null;
     static {
         try {
             JMETHOD_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JMethod.class, "annotations", true);
-            JMETHOD_OUTER = PrivilegedAccessHelper.getDeclaredField(JMethod.class, "outer", true);
         } catch (Exception e) {
             throw JAXBException.errorCreatingDynamicJAXBContext(e);
         }
     }
 
-    public XJCJavaMethodImpl(JMethod javaMethod, JCodeModel codeModel, DynamicClassLoader loader) {
+    public XJCJavaMethodImpl(JMethod javaMethod, JCodeModel codeModel, DynamicClassLoader loader, JavaClass owner) {
         this.xjcMethod = javaMethod;
         this.jCodeModel = codeModel;
         this.dynamicClassLoader = loader;
+        this.owningClass = owner;
     }
 
     @SuppressWarnings("unchecked")
@@ -115,12 +115,20 @@ public class XJCJavaMethodImpl implements JavaMethod {
         JavaClass[] paramArray = new JavaClass[params.length];
 
         for (int i = 0; i < params.length; i++) {
-            paramArray[i] = new XJCJavaClassImpl((JDefinedClass) params[i], jCodeModel, dynamicClassLoader);
+            if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
+                paramArray[i] = ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(params[i].fullName());
+            } else {
+                paramArray[i] = new XJCJavaClassImpl((JDefinedClass) params[i], jCodeModel, dynamicClassLoader);
+            }
         }
         return paramArray;
     }
 
     public JavaClass getResolvedType() {
+        if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
+            return ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(xjcMethod.type().fullName());
+        }
+
         try {
             return new XJCJavaClassImpl(jCodeModel._class(xjcMethod.type().fullName()), jCodeModel, dynamicClassLoader);
         } catch (JClassAlreadyExistsException ex) {
@@ -137,6 +145,10 @@ public class XJCJavaMethodImpl implements JavaMethod {
             List<JClass> args = (List<JClass>) PrivilegedAccessHelper.getValueFromField(argsField, type);
             type = args.get(0);
         } catch (Exception e) {
+        }
+
+        if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
+            return ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(type.fullName());
         }
 
         try {
@@ -168,18 +180,6 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     public int getModifiers() {
         return xjcMethod.mods().getValue();
-    }
-
-    public JavaClass getOwningClass() {
-        JDefinedClass ownerXJCClass = null;
-
-        try {
-            ownerXJCClass = (JDefinedClass) PrivilegedAccessHelper.getValueFromField(JMETHOD_OUTER, xjcMethod);
-        } catch (Exception e) {
-            return null;
-        }
-
-        return new XJCJavaClassImpl(ownerXJCClass, jCodeModel, dynamicClassLoader);
     }
 
     public boolean isAbstract() {
@@ -216,6 +216,14 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
+    }
+
+    public JavaClass getOwningClass() {
+        return owningClass;
+    }
+
+    public void setOwningClass(JavaClass owningClass) {
+        this.owningClass = owningClass;
     }
 
 }
