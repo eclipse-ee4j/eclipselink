@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
@@ -22,6 +23,7 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -54,8 +56,15 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         XMLMapping xmlMapping = xmlChoiceCollectionMapping.getChoiceElementMappings().get(xmlField);
         if(xmlMapping instanceof XMLCompositeDirectCollectionMapping) {
             choiceElementNodeValue = new XMLCompositeDirectCollectionMappingNodeValue((XMLCompositeDirectCollectionMapping)xmlMapping);
-        } else {
+        } else if(xmlMapping instanceof XMLCompositeCollectionMapping) {
             choiceElementNodeValue = new XMLCompositeCollectionMappingNodeValue((XMLCompositeCollectionMapping)xmlMapping);
+        } else {
+            XMLCollectionReferenceMapping refMapping = ((XMLCollectionReferenceMapping)xmlMapping);
+            if(refMapping.usesSingleNode() || refMapping.getFields().size() == 1) {
+                choiceElementNodeValue = new XMLCollectionReferenceMappingNodeValue(refMapping, xmlField);
+            } else {
+                choiceElementNodeValue = new XMLCollectionReferenceMappingMarshalNodeValue((XMLCollectionReferenceMapping)xmlMapping);
+            }
         }
     }
 
@@ -71,8 +80,8 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         ContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(value);
         if (cp.hasNext(iterator)) {
-            XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-            marshalRecord.closeStartGroupingElements(groupingFragment);
+             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
             return false;
         }
@@ -108,7 +117,13 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	} else {
     		associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());
     	}
-
+    	if(associatedField == null) {
+    	    //check the field associations
+    	    List<XMLField> sourceFields = xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(value.getClass());
+    	    if(sourceFields != null) {
+    	        associatedField = sourceFields.get(0);
+    	    }
+    	}
     	if(associatedField != null) {
 			associatedNodeValue = this.fieldToNodeValues.get(associatedField);
 		}
@@ -116,16 +131,17 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	if(associatedNodeValue != null) {
     		//Find the correct fragment
     		XPathFragment frag = associatedField.getXPathFragment();
+    		associatedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue();
     		while(frag != null) {
     			if(associatedNodeValue.isOwningNode(frag)) {
-    				ContainerValue nestedNodeValue = (ContainerValue)((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementNodeValue();
+    				ContainerValue nestedNodeValue = (ContainerValue)associatedNodeValue;
     				nestedNodeValue.marshalSingleValue(frag, marshalRecord, object, fieldValue, session, namespaceResolver, marshalContext);
     				break;
     			}
                 frag = frag.getNextFragment();
                 //if next frag is null, call node value before the loop breaks
                 if(frag == null) {
-                    ContainerValue nestedNodeValue = (ContainerValue)((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementNodeValue();
+                    ContainerValue nestedNodeValue = (ContainerValue)associatedNodeValue;
                     nestedNodeValue.marshalSingleValue(frag, marshalRecord, object, fieldValue, session, namespaceResolver, marshalContext);
                 }
             }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="phoneNumber">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="id" type="xsd:ID"/>
+         <xsd:element minOccurs="0" name="number" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="root">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="employee" type="employeeWithElements"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="address" type="address"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="phone-number" type="phoneNumber"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="street" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="city" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="country" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="zip" type="xsd:string"/>
+      </xsd:sequence>
+      <xsd:attribute name="aid" type="xsd:ID"/>
+   </xsd:complexType>
+   <xsd:complexType name="employeeWithElements">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="name" type="xsd:string"/>
+         <xsd:choice maxOccurs="unbounded">
+            <xsd:element minOccurs="0" name="address-id" type="xsd:IDREF"/>
+            <xsd:element minOccurs="0" name="phone-id" type="xsd:IDREF"/>
+         </xsd:choice>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID"/>
+   </xsd:complexType>
+   <xsd:element name="root" type="root"/>
+   <xsd:element name="address" type="address"/>
+   <xsd:element name="employee" type="employeeWithElements"/>
+</xsd:schema>

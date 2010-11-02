@@ -32,6 +32,8 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementDataHa
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsIdRefTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsSingleIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidrefs.XmlIdRefsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidrefs.object.XmlIdRefsObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinlinebinary.XmlInlineBinaryDataTestCases;
@@ -86,6 +88,8 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(XmlIdRefObjectTestCases.class);
         suite.addTestSuite(XmlIdRefsTestCases.class);
         suite.addTestSuite(XmlIdRefsObjectTestCases.class);
+        suite.addTestSuite(XmlElementsIdRefTestCases.class);
+        suite.addTestSuite(XmlElementsSingleIdRefTestCases.class);
         suite.addTestSuite(XmlInlineBinaryDataTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.XmlPathTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.XmlPathOverrideTestCases.class);

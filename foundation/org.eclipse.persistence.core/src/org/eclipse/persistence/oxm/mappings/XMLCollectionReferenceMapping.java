@@ -156,13 +156,16 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * @return
      */
     public void buildReference(UnmarshalRecord record, XMLField xmlField, Object object, AbstractSession session) {
+         buildReference(record.getCurrentObject(), xmlField, object, session);
+    }
+
+    public void buildReference(Object srcObject, XMLField xmlField, Object object, AbstractSession session) {
         ReferenceResolver resolver = ReferenceResolver.getInstance(session);
         if (resolver == null) {
             return;
         }
 
-        Object srcObject = record.getCurrentObject();
-        Reference reference = resolver.getReference(this, srcObject);
+        Reference reference = resolver.getReference(this, srcObject, xmlField);
         if (reference == null) {
             // if reference is null, create a new instance and set it on the resolver
             reference = new Reference(this, srcObject, referenceClass, new HashMap());
@@ -180,6 +183,19 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             if(usesSingleNode) {
                 for (StringTokenizer stok = new StringTokenizer((String) object); stok.hasMoreTokens();) {
                     pks.add(stok.nextToken());
+                    reference = resolver.getReference(this, srcObject, xmlField);
+                    if (reference == null) {
+                        // if reference is null, create a new instance and set it on the resolver
+                        reference = new Reference(this, srcObject, referenceClass, new HashMap());
+                        resolver.addReference(reference);
+                    }
+                    primaryKeyMap = reference.getPrimaryKeyMap();
+                    pks = (CacheId) primaryKeyMap.get(null);
+                    if (pks == null){
+                        Object[] pkValues = new Object[1];
+                        pks = new CacheId(pkValues);
+                        primaryKeyMap.put(null, pks);
+                    }
                 }
             } else {
                 pks.add(object);
@@ -194,7 +210,6 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                 pks = new CacheId(new Object[0]);
                 primaryKeyMap.put(tgtXPath, pks);
             }
-
             Class type = descriptor.getTypedField(tgtFld).getType();
             XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
             if(usesSingleNode) {
@@ -203,6 +218,18 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                     if (value != null) {
                         pks.add(value);
                     }
+                    reference = resolver.getReference(this, srcObject, xmlField);
+                    if (reference == null) {
+                        // if reference is null, create a new instance and set it on the resolver
+                        reference = new Reference(this, srcObject, referenceClass, new HashMap());
+                        resolver.addReference(reference);
+                    }
+                    primaryKeyMap = reference.getPrimaryKeyMap();
+                    pks = (CacheId) primaryKeyMap.get(null);
+                    if (pks == null){
+                        pks = new CacheId(new Object[0]);
+                        primaryKeyMap.put(tgtXPath, pks);
+                    }                    
                 }
             } else {
                 Object value = xmlConversionManager.convertObject(object, type);
@@ -264,7 +291,6 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(getReferenceClass());
         ContainerPolicy cp = getContainerPolicy();
-        HashMap primaryKeyMap = new HashMap();
         // for each source xmlField, get the value from the row and store
         for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext();) {
             XMLField fld = (XMLField) fieldIt.next();
@@ -276,32 +302,10 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             // fix for bug# 5687430
             // need to get the actual type of the target (i.e. int, String, etc.) 
             // and use the converted value when checking the cache.
-            XMLConversionManager xmlConversionManager = (XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager();
-            XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(fld);
-            CacheId newValues = new CacheId(new Object[0]);
             for (Iterator valIt = ((Vector) fieldValue).iterator(); valIt.hasNext();) {
-                for (StringTokenizer stok = new StringTokenizer((String) valIt.next()); stok.hasMoreTokens();) {
-                    Object value;
-                    if(null == tgtFld) {
-                        value = stok.nextToken();
-                    } else {
-                        value = xmlConversionManager.convertObject(stok.nextToken(), descriptor.getTypedField(tgtFld).getType());
-                    }
-                    if (value != null) {
-                        newValues.add(value);
-                    }
-                }
+                Object nextValue = valIt.next();
+                this.buildReference(((XMLRecord)databaseRow).getCurrentObject(), fld, nextValue, sourceQuery.getSession());
             }
-            if(null == tgtFld) {
-                primaryKeyMap.put(null, newValues);
-            } else {
-                primaryKeyMap.put(tgtFld.getXPath(), newValues);
-            }
-        }
-        // store the Reference instance on the resolver for use during mapping resolution phase
-        ReferenceResolver resolver = ReferenceResolver.getInstance(sourceQuery.getSession());
-        if (resolver != null) {
-            resolver.addReference(new Reference(this, targetObject, referenceClass, primaryKeyMap));
         }
         return null;
     }

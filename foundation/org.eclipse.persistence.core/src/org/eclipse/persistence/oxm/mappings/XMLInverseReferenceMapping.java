@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Vector;
 
@@ -103,7 +104,42 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
             XMLObjectReferenceMapping oppositeMapping = (XMLObjectReferenceMapping) mapping;
             oppositeMapping.setInverseReferenceMapping(this);
         }
+        
+        if (mapping instanceof XMLChoiceObjectMapping) {
+            XMLChoiceObjectMapping oppositeMapping = (XMLChoiceObjectMapping) mapping;
+            Collection<XMLMapping> nestedMappings = oppositeMapping.getChoiceElementMappings().values();
+            for(XMLMapping next:nestedMappings) {
+                if(next instanceof XMLCompositeObjectMapping) {
+                    XMLCompositeObjectMapping compositeMapping = ((XMLCompositeObjectMapping)next);
+                    if(compositeMapping.getReferenceClass() == this.getDescriptor().getJavaClass()) {
+                        compositeMapping.setInverseReferenceMapping(this);
+                    }
+                } else if(next instanceof XMLObjectReferenceMapping) {
+                    XMLObjectReferenceMapping refMapping = ((XMLObjectReferenceMapping)next);
+                    if(refMapping.getReferenceClass() == this.getDescriptor().getJavaClass()) {
+                        refMapping.setInverseReferenceMapping(this);
+                    }
+                }
+            }
+        }
 
+        if (mapping instanceof XMLChoiceCollectionMapping) {
+            XMLChoiceCollectionMapping oppositeMapping = (XMLChoiceCollectionMapping) mapping;
+            Collection<XMLMapping> nestedMappings = oppositeMapping.getChoiceElementMappings().values();
+            for(XMLMapping next:nestedMappings) {
+                if(next instanceof XMLCompositeCollectionMapping) {
+                    XMLCompositeCollectionMapping compositeMapping = ((XMLCompositeCollectionMapping)next);
+                    if(compositeMapping.getReferenceClass() == this.getDescriptor().getJavaClass()) {
+                        compositeMapping.setInverseReferenceMapping(this);
+                    }
+                } else if(next instanceof XMLCollectionReferenceMapping) {
+                    XMLCollectionReferenceMapping refMapping = ((XMLCollectionReferenceMapping)next);
+                    if(refMapping.getReferenceClass() == this.getDescriptor().getJavaClass()) {
+                        refMapping.setInverseReferenceMapping(this);
+                    }
+                }
+            }
+        }
     }
 
     public String getMappedBy() {

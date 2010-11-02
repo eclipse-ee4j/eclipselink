@@ -581,17 +581,35 @@ public class MappingsGenerator {
             }
         }
         Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
+        boolean isIdRef = property.isXmlIdRef();
         while(choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
             // if the XPath is set (via xml-path) use it; otherwise figure it out
-            XMLField xpath;
-            if (next.getXmlPath() != null) {
-                xpath = new XMLField(next.getXmlPath());
+            if(isIdRef) {
+                String tgtXPath = null;
+                TypeInfo referenceType = typeInfo.get(type.getQualifiedName());
+                if (null != referenceType && referenceType.isIDSet()) {
+                    Property prop = referenceType.getIDProperty();
+                    tgtXPath = getXPathForField(prop, namespace, !prop.isAttribute()).getXPath();
+                }
+                // if the XPath is set (via xml-path) use it, otherwise figure it out
+                XMLField srcXPath;
+                if (next.getXmlPath() != null) {
+                    srcXPath = new XMLField(next.getXmlPath());
+                } else {
+                    srcXPath = getXPathForField(next, namespace, true);
+                }
+                mapping.addChoiceElement(srcXPath.getXPath(), type.getQualifiedName(), tgtXPath);
             } else {
-                xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+                XMLField xpath;
+                if (next.getXmlPath() != null) {
+                    xpath = new XMLField(next.getXmlPath());
+                } else {
+                    xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+                }
+                mapping.addChoiceElement(xpath.getName(), type.getQualifiedName(), false);
             }
-            mapping.addChoiceElement(xpath.getName(), type.getQualifiedName(), false);
         }
         return mapping;
     }
@@ -632,17 +650,35 @@ public class MappingsGenerator {
         mapping.useCollectionClassName(collectionType.getRawName());
 
         Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
+        boolean isIdRef = property.isXmlIdRef();
         while(choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
             // if the XPath is set (via xml-path) use it; otherwise figure it out
-            XMLField xpath;
-            if (next.getXmlPath() != null) {
-                xpath = new XMLField(next.getXmlPath());
+            if(isIdRef) {
+                String tgtXPath = null;
+                TypeInfo referenceType = typeInfo.get(type.getQualifiedName());
+                if (null != referenceType && referenceType.isIDSet()) {
+                    Property prop = referenceType.getIDProperty();
+                    tgtXPath = getXPathForField(prop, namespace, !prop.isAttribute()).getXPath();
+                }
+                // if the XPath is set (via xml-path) use it, otherwise figure it out
+                XMLField srcXPath;
+                if (next.getXmlPath() != null) {
+                    srcXPath = new XMLField(next.getXmlPath());
+                } else {
+                    srcXPath = getXPathForField(next, namespace, true);
+                }
+                mapping.addChoiceElement(srcXPath.getXPath(), type.getQualifiedName(), tgtXPath);
             } else {
-                xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+                XMLField xpath;
+                if (next.getXmlPath() != null) {
+                    xpath = new XMLField(next.getXmlPath());
+                } else {
+                    xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+                }
+                mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
             }
-            mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
         }
         return mapping;
     }
@@ -2555,6 +2591,7 @@ public class MappingsGenerator {
         cw.visitEnd();
 
         byte[] classBytes = cw.toByteArray();
+        //byte[] classBytes = new byte[]{};
 
         JaxbClassLoader loader;
         if (helper.getClassLoader() instanceof DynamicClassLoader) {

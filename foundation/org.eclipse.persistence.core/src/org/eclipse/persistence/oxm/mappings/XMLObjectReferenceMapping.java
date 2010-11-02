@@ -83,6 +83,11 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
             sourceToTargetKeyFieldAssociations.put(srcFld, new XMLField(tgtXPath));
         }
     }
+    
+    public void addSourceToTargetKeyFieldAssociation(XMLField srcField, XMLField tgtField) {
+        sourceToTargetKeys.add(srcField);
+        sourceToTargetKeyFieldAssociations.put(srcField, tgtField);
+    }
 
     /**    
      * INTERNAL:
@@ -481,6 +486,10 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
 
     void setInverseReferenceMapping(XMLInverseReferenceMapping inverseReferenceMapping) {
         this.inverseReferenceMapping = inverseReferenceMapping;
+    }
+    @Override
+    public boolean isObjectReferenceMapping() {
+        return true;
     }
     
 }

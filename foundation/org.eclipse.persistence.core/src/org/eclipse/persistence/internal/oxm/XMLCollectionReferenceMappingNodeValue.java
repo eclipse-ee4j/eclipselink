@@ -117,6 +117,10 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, value, unmarshalRecord.getSession());
     }
 
+    public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object container) {
+        this.endElement(xPathFragment, unmarshalRecord);
+    }
+    
     /**
      * Indicate if the next XPathFragment is an attribute or text() node.
      */

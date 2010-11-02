@@ -51,6 +51,8 @@ import org.eclipse.persistence.oxm.XMLRoot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -82,6 +84,8 @@ import javax.xml.namespace.QName;
 public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMapping {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
+    private Map<Class, List<XMLField>> classToSourceFieldsMappings;
+    private Map<String, List<XMLField>> classNameToSourceFieldsMappings;
     private Map<XMLField, String> fieldToClassNameMappings;
     private Map<XMLField, XMLMapping> choiceElementMappings;
     private Map<XMLField, Converter> fieldsToConverters;
@@ -94,7 +98,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         fieldToClassMappings = new HashMap<XMLField, Class>();
         fieldToClassNameMappings = new HashMap<XMLField, String>();
         classToFieldMappings = new HashMap<Class, XMLField>();
-        choiceElementMappings = new HashMap<XMLField, XMLMapping>();
+        choiceElementMappings = new LinkedHashMap<XMLField, XMLMapping>();
         fieldsToConverters = new HashMap<XMLField, Converter>();
 
     }
@@ -268,6 +272,16 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
 
     }
 
+    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+        Object toReturn = super.readFromRowIntoObject(databaseRow, joinManager, targetObject, sourceQuery, executionSession);
+        for(XMLMapping next:choiceElementMappings.values()) {
+            if(((DatabaseMapping)next).isObjectReferenceMapping()) {
+                ((DatabaseMapping)next).readFromRowIntoObject(databaseRow, joinManager, targetObject, sourceQuery, executionSession);
+            }
+        }
+        return toReturn;
+    }
+    
     public boolean isXMLMapping() {
         return true;
     }
@@ -285,7 +299,13 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         XMLField field = new XMLField(xpath);
         addChoiceElement(field, elementType);
     }
-
+    
+    public void addChoiceElement(String srcXPath, Class elementType, String tgtXPath) {
+        XMLField srcField = new XMLField(srcXPath);
+        XMLField tgtField = new XMLField(tgtXPath);
+        addChoiceElement(srcField, elementType, tgtField);
+    }
+    
     public void addChoiceElement(String xpath, String elementTypeName, boolean xmlRoot) {
         XMLField field = new XMLField(xpath);
         this.fieldToClassNameMappings.put(field, elementTypeName);
@@ -295,6 +315,12 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         addChoiceElementMapping(field, elementTypeName);
     }
     
+    public void addChoiceElement(String srcXpath, String elementTypeName, String tgtXpath) {
+        XMLField field = new XMLField(srcXpath);
+        XMLField tgtField = new XMLField(tgtXpath);
+        this.fieldToClassNameMappings.put(field, elementTypeName);
+        addChoiceElementMapping(field, elementTypeName, tgtField);        
+    }
     public void addChoiceElement(String xpath, String elementTypeName) {
         addChoiceElement(xpath, elementTypeName, false);
     }
@@ -307,6 +333,42 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         }
         addChoiceElementMapping(xmlField, elementType);
     }
+    
+    public void addChoiceElement(XMLField sourceField, Class elementType, XMLField targetField) {
+        getFieldToClassMappings().put(sourceField, elementType);
+        this.fieldToClassNameMappings.put(sourceField, elementType.getName());
+        if (classToFieldMappings.get(elementType) == null) {
+            classToFieldMappings.put(elementType, sourceField);
+        }
+        addChoiceElementMapping(sourceField, elementType, targetField);
+    }
+    
+    public void addChoiceElement(XMLField sourceField, String elementTypeName, XMLField targetField) {
+        this.fieldToClassNameMappings.put(sourceField, elementTypeName);
+        addChoiceElementMapping(sourceField, elementTypeName, targetField);        
+    }
+    
+    public void addChoiceElement(List<XMLField> srcFields, Class elementType, List<XMLField> tgtFields) {
+        for(XMLField sourceField:srcFields) {
+            getFieldToClassMappings().put(sourceField, elementType);
+            this.fieldToClassNameMappings.put(sourceField, elementType.getName());
+        }
+        if (getClassToSourceFieldsMappings().get(elementType) == null) {
+            getClassToSourceFieldsMappings().put(elementType, srcFields);
+        }
+        addChoiceElementMapping(srcFields, elementType, tgtFields);
+    }
+    
+    public void addChoiceElement(List<XMLField> srcFields, String elementTypeName, List<XMLField> tgtFields) {
+        for(XMLField sourceField:srcFields) {
+            this.fieldToClassNameMappings.put(sourceField, elementTypeName);
+        }
+        if (getClassNameToSourceFieldsMappings().get(elementTypeName) == null) {
+            getClassNameToSourceFieldsMappings().put(elementTypeName, srcFields);
+        }
+        addChoiceElementMapping(srcFields, elementTypeName, tgtFields);
+    }
+    
     
     public void addChoiceElement(XMLField field, String elementTypeName) {
         this.fieldToClassNameMappings.put(field, elementTypeName);
@@ -344,7 +406,9 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
                      ((XMLField)nextMapping.getField()).setSchemaType(schemaType);
                  }
                 
-            }else{
+            }else if(nextMapping instanceof XMLObjectReferenceMapping) {
+                ((XMLObjectReferenceMapping)nextMapping).setIsWriteOnly(this.isWriteOnly);
+            } else {
                 ((XMLCompositeObjectMapping)nextMapping).setIsWriteOnly(this.isWriteOnly());
                 if(converter != null){
                     ((AbstractCompositeObjectMapping)nextMapping).setConverter(converter);
@@ -383,10 +447,35 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
                 throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
             }
 
-            if (classToFieldMappings.get(elementType) == null) {
-                classToFieldMappings.put(elementType, entry.getKey());
+            XMLMapping mapping = this.choiceElementMappings.get(entry.getKey());
+            if(!((mapping instanceof XMLObjectReferenceMapping) && ((XMLObjectReferenceMapping)mapping).getSourceToTargetKeyFieldAssociations().size() > 1)) {
+                if (classToFieldMappings.get(elementType) == null) {
+                    classToFieldMappings.put(elementType, entry.getKey());
+                }
             }
-
+        }
+        if(classNameToSourceFieldsMappings != null) {
+            Iterator<Entry<String, List<XMLField>>> sourceFieldEntries = classNameToSourceFieldsMappings.entrySet().iterator();
+            while(sourceFieldEntries.hasNext()) {
+                Entry<String, List<XMLField>> nextEntry = sourceFieldEntries.next();
+                String className = nextEntry.getKey();
+                List<XMLField> fields = nextEntry.getValue();
+                Class elementType = null;
+                try {
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        try {
+                            elementType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                        } catch (PrivilegedActionException exception) {
+                            throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
+                        }
+                    } else {
+                        elementType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, classLoader);
+                    }
+                } catch (ClassNotFoundException exc) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
+                }
+                this.getClassToSourceFieldsMappings().put(elementType,fields);
+            }
         }
     }
     
@@ -482,6 +571,44 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         }
     }
     
+    private void addChoiceElementMapping(XMLField sourceField, Class theClass, XMLField targetField) {
+        XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
+        mapping.setReferenceClass(theClass);
+        mapping.setAttributeAccessor(temporaryAccessor);
+        mapping.addSourceToTargetKeyFieldAssociation(sourceField, targetField);
+        this.choiceElementMappings.put(sourceField, mapping);
+    }
+    
+    private void addChoiceElementMapping(XMLField sourceField, String className, XMLField targetField) {
+        XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
+        mapping.setReferenceClassName(className);
+        mapping.setAttributeAccessor(temporaryAccessor);
+        mapping.addSourceToTargetKeyFieldAssociation(sourceField, targetField);
+        this.choiceElementMappings.put(sourceField, mapping);
+    }
+    
+    private void addChoiceElementMapping(List<XMLField> sourceFields, Class theClass, List<XMLField> targetFields) {
+        XMLObjectReferenceMapping xmlMapping = new XMLObjectReferenceMapping();
+        xmlMapping.setReferenceClass(theClass);
+        xmlMapping.setAttributeAccessor(temporaryAccessor);
+        for(int i = 0; i < sourceFields.size(); i++) {
+            XMLField sourceField = sourceFields.get(i);
+            xmlMapping.addSourceToTargetKeyFieldAssociation(sourceField, targetFields.get(i));
+            this.choiceElementMappings.put(sourceField, xmlMapping);
+        }
+    }
+    
+    private void addChoiceElementMapping(List<XMLField> sourceFields, String theClass, List<XMLField> targetFields) {
+        XMLObjectReferenceMapping xmlMapping = new XMLObjectReferenceMapping();
+        xmlMapping.setReferenceClassName(theClass);
+        xmlMapping.setAttributeAccessor(temporaryAccessor);
+        for(int i = 0; i < sourceFields.size(); i++) {
+            XMLField sourceField = sourceFields.get(i);
+            xmlMapping.addSourceToTargetKeyFieldAssociation(sourceField, targetFields.get(i));
+            this.choiceElementMappings.put(sourceField, xmlMapping);
+        }
+    }    
+    
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
@@ -512,6 +639,19 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             return;
         }
         super.setAttributeValueInObject(object, value);
-    }    
+    } 
     
+    public Map<Class, List<XMLField>> getClassToSourceFieldsMappings() {
+        if(this.classToSourceFieldsMappings == null) {
+            this.classToSourceFieldsMappings = new HashMap<Class, List<XMLField>>();
+        }
+        return this.classToSourceFieldsMappings;
+    }
+    
+    private Map<String, List<XMLField>> getClassNameToSourceFieldsMappings() {
+        if(this.classNameToSourceFieldsMappings == null) {
+            this.classNameToSourceFieldsMappings = new HashMap<String, List<XMLField>>();
+        }
+        return this.classNameToSourceFieldsMappings;
+    }
 }

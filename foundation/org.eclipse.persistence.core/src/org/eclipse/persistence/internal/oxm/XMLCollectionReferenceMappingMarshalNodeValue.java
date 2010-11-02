@@ -40,6 +40,11 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
             branchNode.addChild(fkField.getXPathFragment(), new XMLCollectionReferenceMappingFKMarshalNodeValue(xmlCollectionReferenceMapping, fkField), namespaceResolver);
         }
     }
+    
+    @Override
+    public boolean isOwningNode(XPathFragment fragment) {
+        return true;
+    }
 
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
@@ -133,6 +138,11 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
             this.xmlCollectionReferenceMapping = xmlCollectionReferenceMapping;
             this.xmlField = xmlField;
         }
+        
+        @Override
+        public boolean isUnmarshalNodeValue() {
+            return false;
+        }        
 
         @Override
         public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {

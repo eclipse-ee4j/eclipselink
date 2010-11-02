@@ -121,7 +121,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         // build a reference which will be resolved after unmarshalling is complete
         xmlObjectReferenceMapping.buildReference(unmarshalRecord, xmlField, value, unmarshalRecord.getSession());
     }
-
+    
     /**
      * Indicate if the XPathFragment is an attribute or text() node.
      */

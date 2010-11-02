@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.List;
+
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
@@ -22,6 +24,7 @@ import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
+import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.sessions.Session;
@@ -57,6 +60,8 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         XMLMapping xmlMapping = xmlChoiceMapping.getChoiceElementMappings().get(xmlField);
         if(xmlMapping instanceof XMLDirectMapping) {
             choiceElementNodeValue = new XMLDirectMappingNodeValue((XMLDirectMapping)xmlMapping);
+        } else if(xmlMapping instanceof XMLObjectReferenceMapping) {
+            choiceElementNodeValue = new XMLObjectReferenceMappingNodeValue((XMLObjectReferenceMapping)xmlMapping, xmlField);
         } else {
             choiceElementNodeValue = new XMLCompositeObjectMappingNodeValue((XMLCompositeObjectMapping)xmlMapping);
         }
@@ -101,6 +106,11 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         } else {
             if(value != null && xmlChoiceMapping.getClassToFieldMappings().get(value.getClass()) == this.xmlField) {
                 return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
+            } else if(value != null) {
+                List<XMLField> sourceFields = xmlChoiceMapping.getClassToSourceFieldsMappings().get(value.getClass());
+                if(sourceFields != null && sourceFields.contains(this.xmlField)) {
+                    return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
+                }
             }
         }
         return false;

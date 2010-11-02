@@ -18,6 +18,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -36,6 +37,7 @@ import org.xml.sax.Attributes;
  */
 public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue implements ContainerValue {
     private NodeValue choiceElementNodeValue;
+    private NodeValue choiceElementMarshalNodeValue;
     private XMLChoiceCollectionMapping xmlChoiceCollectionMapping;
     private XMLField xmlField;
     private ContainerValue containerNodeValue;
@@ -54,8 +56,13 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
         XMLMapping xmlMapping = xmlChoiceCollectionMapping.getChoiceElementMappings().get(xmlField);
         if(xmlMapping instanceof XMLCompositeDirectCollectionMapping) {
             choiceElementNodeValue = new XMLCompositeDirectCollectionMappingNodeValue((XMLCompositeDirectCollectionMapping)xmlMapping);
-        } else {
+            choiceElementMarshalNodeValue = choiceElementNodeValue;
+        } else if(xmlMapping instanceof XMLCompositeCollectionMapping){
             choiceElementNodeValue = new XMLCompositeCollectionMappingNodeValue((XMLCompositeCollectionMapping)xmlMapping);
+            choiceElementMarshalNodeValue = choiceElementNodeValue;
+        } else {
+            choiceElementNodeValue = new XMLCollectionReferenceMappingNodeValue((XMLCollectionReferenceMapping)xmlMapping, xmlField);
+            choiceElementMarshalNodeValue = new XMLCollectionReferenceMappingMarshalNodeValue((XMLCollectionReferenceMapping)xmlMapping);
         }
     }
     
@@ -118,11 +125,15 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
         return this.choiceElementNodeValue;
     }
     
+    public NodeValue getChoiceElementMarshalNodeValue() {
+        return this.choiceElementMarshalNodeValue;
+    }
+    
     public boolean isUnmarshalNodeValue() {
         return true;
     }
     
-    public boolean inMarshalNodeValue() {
+    public boolean isMarshalNodeValue() {
         return false;
     }
     
