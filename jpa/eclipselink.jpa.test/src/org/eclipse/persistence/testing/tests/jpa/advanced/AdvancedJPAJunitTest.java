@@ -197,11 +197,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
         
         suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
-        
-        suite.addTest(new AdvancedJPAJunitTest("testQueryGetParameter"));
 
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
+            suite.addTest(new AdvancedJPAJunitTest("testQueryGetParameter"));
             suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaModelPopulate"));
             suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteria"));
             suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEM1"));
