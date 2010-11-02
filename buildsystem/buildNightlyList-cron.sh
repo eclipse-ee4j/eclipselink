@@ -17,7 +17,7 @@ NewImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/new.gif\" alig
 NaImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/na.gif\" align=\"middle\" border=\"0\" alt=\"na\"/>"
 
 #   Generate the results summary file (is a hack just to allow script to generate properly)
-#      Results summare in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
+#      Results summary in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
 unset genResultSummary
 genResultSummary() {
     #    Need to be in dir to generate proper strings
@@ -70,7 +70,7 @@ genResultSummary() {
 }
 
 #   Generate the HTML for appropriate image links based upon results summary file
-#      Results summare in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
+#      Results summary in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
 unset genResultEntry
 genResultEntry() {
     pattern=$1
@@ -97,6 +97,7 @@ genResultEntry() {
             Image=${FailImg}
         fi
         echo "              <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${hostdir}/${file}\">" >> $tmp/index.xml
+#        echo "                ${Image}<span>er:${expected} ar:${actual} f+e:${test_result}</span>" >> $tmp/index.xml
         echo "                ${Image}" >> $tmp/index.xml
         echo "              </a>" >> $tmp/index.xml
     else
@@ -270,12 +271,22 @@ for version in `ls -dr [0-9]*` ; do
         for hostdir in `ls -Fd * | grep / | cut -d"/" -f1` ; do
             #    Need to be in dir to generate proper strings
             cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}
+            #    increment count for number of times through (which host is this)
             count=`expr $count + 1`
             #    Set border to none, and Add row if this is after the first time through
             if [ ${count} -gt 1 ] ; then
                 borderstyle=
                 echo "            <tr>" >> $tmp/index.xml
             fi
+            #    if summary is 'blank', and it isn't the only file in host dir, then regen
+            if [ `cat ${summaryfile} | grep -m1 . | cut -d: -f2` -eq 0 ] ; then
+                if [ `ls | grep -c .` -gt 1 ] ; then
+                    echo "Result Summary 'blank', but test results now exist. Recreating..."
+                    genResultSummary
+                    echo "done."
+                fi
+            fi
+
             #   Add "Host" entry
             echo "            <td ${borderstyle} align=\"middle\">" >> $tmp/index.xml
             echo "              <a href=\"http://wiki.eclipse.org/EclipseLink/Build/NightlyTestEnvAndResults#${hostdir}\"> ${hostdir} </a>" >> $tmp/index.xml
