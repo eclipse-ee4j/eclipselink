@@ -237,7 +237,11 @@
     </target>
 
     <!-- Package rename targets -->
-    <target name="update-package-names" depends="update-sax-package, update-deploymentxml-package, update-docpres-package" description="modify package names to avoid duplicates"/>
+    <target name="update-package-names" depends="wait-if-unix, update-sax-package, update-deploymentxml-package, update-docpres-package" description="modify package names to avoid duplicates"/>
+    <target name="wait-if-unix" if="_Unix">
+        <echo message="Forcing sync to disk..."/>
+        <exec executable="sync"/>
+    </target>
     <target name="update-sax-package">
         <replace dir="${report.dir}/oxm/default" value='"org.eclipse.persistence.testing.oxm.sax'
             token='"org.eclipse.persistence.testing.oxm'>
