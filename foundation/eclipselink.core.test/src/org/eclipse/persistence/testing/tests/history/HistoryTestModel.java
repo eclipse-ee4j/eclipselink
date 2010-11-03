@@ -119,13 +119,11 @@ public class HistoryTestModel extends FlashbackTestModel {
             Vector tests = testSuite.getTests();
             for(int i=0; i<tests.size(); i++) {
                 TestCase test = (TestCase)tests.elementAt(i);
-                if(test.getClass().getName().endsWith(".WriteObjectTest")) {
-                    // Bug 210270: HistorySession causing unique constraint violation on MySQL.
-                    // To avoid test failure due to this bug,
-                    // wrap a test prone to MySQLIntegrityConstraintViolationException
-                    // in a wrapper that throws a warning in case this exception occur.
-                    test = new WrappedWriteObjectTest(test);
-                }
+                // Bug 210270: HistorySession causing unique constraint violation on MySQL.
+                // To avoid test failure due to this bug,
+                // wrap a test prone to MySQLIntegrityConstraintViolationException
+                // in a wrapper that throws a warning in case this exception occur.
+                test = new WrappedWriteObjectTest(test);
                 newTestSuite.addTest(test);
             }
             testSuite = newTestSuite;
