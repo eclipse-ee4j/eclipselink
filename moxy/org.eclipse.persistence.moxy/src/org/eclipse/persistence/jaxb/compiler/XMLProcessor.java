@@ -70,8 +70,9 @@ public class XMLProcessor {
     private static final String SLASH = "/";
     private static final String SELF = ".";
     private static final String OPEN_BRACKET =  "[";
-    private static final String DEFAULT = "##default";
     private static final String JAVA_LANG_OBJECT = "java.lang.Object";
+
+    public static final String DEFAULT = "##default";
 
     /**
      * This is the preferred constructor.

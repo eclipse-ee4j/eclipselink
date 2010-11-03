@@ -16,10 +16,15 @@ import java.lang.reflect.Modifier;
 
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 
 public class OXMJavaConstructorImpl implements JavaConstructor {
 
-    public OXMJavaConstructorImpl() {
+    private JavaClass owningClass;
+	
+    public OXMJavaConstructorImpl(JavaClass owner) {
+    	this.owningClass = owner;
     }
 
     public int getModifiers() {
@@ -31,7 +36,7 @@ public class OXMJavaConstructorImpl implements JavaConstructor {
     }
 
     public JavaClass getOwningClass() {
-        return new OXMJavaClassImpl("java.lang.Object");
+    	return this.owningClass;
     }
 
     public JavaClass[] getParameterTypes() {

@@ -8,9 +8,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     rbarkhouse - 2010-03-04 12:22:11 - initial implementation
+ *     rbarkhouse - 2.2 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.dynamic;
+package org.eclipse.persistence.testing.jaxb.dynamic.util;
 
 import org.eclipse.persistence.mappings.transformers.AttributeTransformerAdapter;
 import org.eclipse.persistence.sessions.Record;

@@ -16,9 +16,13 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModel;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 
 public class OXMJavaModelImpl implements JavaModel {
 
@@ -45,6 +49,17 @@ public class OXMJavaModelImpl implements JavaModel {
             return cachedClass;
         }
 
+        // try actually finding the class, might be concrete
+        try {
+            Class<?> realClass = PrivilegedAccessHelper.getClassForName(className);
+            if (realClass != null) {
+                JavaModelImpl jm = new JavaModelImpl(this.classLoader);
+                JavaClassImpl jc = new JavaClassImpl(realClass, jm);
+                return jc;
+            }
+        } catch (Exception e) {
+        }
+
         return new OXMJavaClassImpl(jClass.getCanonicalName());
     }
 
@@ -53,10 +68,26 @@ public class OXMJavaModelImpl implements JavaModel {
             return null;
         }
 
+        // javax.xml.bind.annotation.XmlElement.DEFAULT
+        if (className.contains(DEFAULT)) {
+        	return getClass(JAVA_LANG_OBJECT);
+        }
+
         JavaClass cachedClass = this.javaModelClasses.get(className);
 
         if (cachedClass != null) {
             return cachedClass;
+        }
+
+        // try actually finding the class, might be concrete
+        try {
+            Class<?> realClass = PrivilegedAccessHelper.getClassForName(className);
+            if (realClass != null) {
+                JavaModelImpl jm = new JavaModelImpl(this.classLoader);
+                JavaClassImpl jc = new JavaClassImpl(realClass, jm);
+                return jc;
+            }
+        } catch (Exception e) {
         }
 
         return new OXMJavaClassImpl(className);
@@ -66,8 +97,23 @@ public class OXMJavaModelImpl implements JavaModel {
         return this.classLoader;
     }
 
+    public JaxbClassLoader getJaxbClassLoader() {
+        ClassLoader parent = getClassLoader().getParent();
+        if (parent instanceof JaxbClassLoader) {
+            return (JaxbClassLoader) parent;
+        }
+
+        return null;
+    }
+
     public Annotation getAnnotation(JavaAnnotation annotation, Class<?> jClass) {
         return null;
     }
 
+    // ========================================================================
+    
+    private static String DEFAULT = "DEFAULT";
+    private static String JAVA_LANG_OBJECT = "java.lang.Object";
+    
+    
 }

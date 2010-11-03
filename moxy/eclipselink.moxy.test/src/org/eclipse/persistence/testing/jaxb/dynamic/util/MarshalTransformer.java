@@ -8,20 +8,19 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     rbarkhouse - 2010-03-04 12:22:11 - initial implementation
+ *     rbarkhouse - 2.2 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.dynamic;
+package org.eclipse.persistence.testing.jaxb.dynamic.util;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.mappings.transformers.FieldTransformerAdapter;
 import org.eclipse.persistence.sessions.Session;
 
-public class SecondFieldTransformer extends FieldTransformerAdapter {
+public class MarshalTransformer extends FieldTransformerAdapter {
 
-    public Object buildFieldValue(Object instance, String fieldName, Session session) {
-        DynamicEntity entity = (DynamicEntity) instance;
-        String[] objectValue = entity.get("transform");
-        return objectValue[1];
+    public String buildFieldValue(Object instance, String fieldName, Session session) {
+        DynamicEntity person = (DynamicEntity) instance;
+        return person.get("start-time");
     }
 
 }

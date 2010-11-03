@@ -38,6 +38,9 @@ import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.AttributeTransformer;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.FirstFieldTransformer;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.SecondFieldTransformer;
 
 public class TestModelProject extends Project {
 

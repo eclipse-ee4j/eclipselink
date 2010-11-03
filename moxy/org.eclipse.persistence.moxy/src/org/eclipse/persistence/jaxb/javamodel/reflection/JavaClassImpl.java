@@ -357,10 +357,10 @@ public class JavaClassImpl implements JavaClass {
     	return jClass;
     }
 
-    /**
-     * Assumes JavaType is a JavaClassImpl instance
-     */
     public boolean isAssignableFrom(JavaClass arg0) {
+        if (!(arg0 instanceof JavaClassImpl)) {
+            return false;
+        }
         return jClass.isAssignableFrom(((JavaClassImpl) arg0).getJavaClass());
     }
 

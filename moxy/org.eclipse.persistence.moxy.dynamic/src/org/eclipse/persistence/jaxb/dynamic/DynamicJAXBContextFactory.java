@@ -75,7 +75,10 @@ public class DynamicJAXBContextFactory {
      * or EclipseLink sessions.xml as the metadata source, according to the contents of the
      * <tt>properties</tt> argument.<p>
      *
-     * <b>From XML Schema:</b><p>
+     * This creation method will be called if the user uses the <tt>newInstance()</tt> method
+     * on <tt>javax.xml.bind.JAXBContext</tt>.<p>
+     *
+     * <b>Context Creation From XML Schema:</b><p>
      *
      * The <tt>properties</tt> map must contain the following key/value pairs:
      * <dl>
@@ -86,9 +89,41 @@ public class DynamicJAXBContextFactory {
      * </dl>
      *
      * <i>Example:</i>
+     * <pre>
+     * ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+     * InputStream iStream = classLoader.getResourceAsStream("resource/MySchema.xsd");
      *
-
-
+     * Map<String, InputStream> properties = new HashMap<String, InputStream>();
+     * properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, iStream);
+     *
+     * DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.example", classLoader, properties);
+     * DynamicEntity emp = jaxbContext.newDynamicEntity("org.example.Employee");
+     * ...
+     * </pre>
+     *
+     * <b>Context Creation From EclipseLink OXM:</b><p>
+     *
+     * The <tt>properties</tt> map must contain the following key/value pairs:
+     * <dl>
+     * <dt>JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY
+     * <dd>A <tt>Map&lt;String, Source&gt;, containing one or more <tt>Sources</tt> pointing to OXM files, keyed on package name.</tt>
+     * </dl>
+     *
+     * <i>Example:</i>
+     * <pre>
+     * ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+     * InputStream iStream = classLoader.getResourceAsStream("resource/eclipselink-oxm.xml");
+     *
+     * HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+     * metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.dynamic", new StreamSource(iStream));
+     *
+     * Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+     * properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+     *
+     * DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.example", classLoader, properties);
+     * DynamicEntity emp = jaxbContext.newDynamicEntity("org.example.Employee");
+     * ...
+     * </pre>
      *
      * The <tt>sessionNames</tt> parameter is a colon-delimited list of session names within the
      * <tt>sessions.xml</tt> file.  <tt>Descriptors</tt> in this session's <tt>Project</tt> must <i>not</i>

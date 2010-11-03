@@ -43,6 +43,8 @@ import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelInputImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlEnum;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlEnumValue;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
@@ -252,10 +254,14 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
 
         Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, classLoader);
 
-        JavaClass[] elinkClasses = createClassModelFromOXM(bindings);
+        JavaClass[] elinkClasses = createClassModelFromOXM(bindings, dynamicClassLoader);
 
         // Use the JavaModel to setup a Generator to generate an EclipseLink project
         OXMJavaModelImpl javaModel = new OXMJavaModelImpl(classLoader, elinkClasses);
+        for (JavaClass javaClass : elinkClasses) {
+            ((OXMJavaClassImpl) javaClass).setJavaModel(javaModel);
+
+        }
         OXMJavaModelInputImpl javaModelInput = new OXMJavaModelInputImpl(elinkClasses, javaModel);
         Generator g = new Generator(javaModelInput, bindings, dynamicClassLoader, null);
 
@@ -273,7 +279,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
 
-        this.xmlContext = new XMLContext(dp);
+        this.xmlContext = new XMLContext(dp, dynamicClassLoader);
 
         List<Session> sessions = (List<Session>) this.xmlContext.getSessions();
         for (Object session : sessions) {
@@ -281,18 +287,40 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         }
     }
 
-    private JavaClass[] createClassModelFromOXM(Map<String, XmlBindings> bindings) throws JAXBException {
-        List<OXMJavaClassImpl> oxmJavaClasses = new ArrayList<OXMJavaClassImpl>();
+    private JavaClass[] createClassModelFromOXM(Map<String, XmlBindings> bindings, DynamicClassLoader dynamicClassLoader) throws JAXBException {
+        List<JavaClass> oxmJavaClasses = new ArrayList<JavaClass>();
 
         Iterator<String> keys = bindings.keySet().iterator();
 
         while (keys.hasNext()) {
             XmlBindings b = bindings.get(keys.next());
 
-            List<JavaType> javaTypes = b.getJavaTypes().getJavaType();
-            for (Iterator<JavaType> iterator = javaTypes.iterator(); iterator.hasNext();) {
-                JavaType type = iterator.next();
-                oxmJavaClasses.add(new OXMJavaClassImpl(type));
+            if (b.getJavaTypes() != null) {
+                List<JavaType> javaTypes = b.getJavaTypes().getJavaType();
+                for (Iterator<JavaType> iterator = javaTypes.iterator(); iterator.hasNext();) {
+                    JavaType type = iterator.next();
+                    oxmJavaClasses.add(new OXMJavaClassImpl(type));
+                }
+            }
+
+            if (b.getXmlEnums() != null) {
+                List<XmlEnum> enums = b.getXmlEnums().getXmlEnum();
+                for (Iterator<XmlEnum> iterator = enums.iterator(); iterator.hasNext();) {
+                    XmlEnum xmlEnum = iterator.next();
+
+                    List<XmlEnumValue> enumValues = xmlEnum.getXmlEnumValue();
+                    List<String> enumValueStrings = new ArrayList<String>();
+                    for (Iterator<XmlEnumValue> iterator2 = enumValues.iterator(); iterator2.hasNext();) {
+                        XmlEnumValue xmlEnumValue = iterator2.next();
+                        enumValueStrings.add(xmlEnumValue.getJavaEnumValue());
+                    }
+
+                    oxmJavaClasses.add(new OXMJavaClassImpl(xmlEnum.getJavaEnum(), enumValueStrings));
+
+                    // Trigger a dynamic class generation, because we won't
+                    // be creating a descriptor for this
+                    dynamicClassLoader.addEnum(xmlEnum.getJavaEnum(), enumValueStrings.toArray());
+                }
             }
         }
 

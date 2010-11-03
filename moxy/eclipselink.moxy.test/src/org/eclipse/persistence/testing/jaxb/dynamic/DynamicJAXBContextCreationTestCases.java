@@ -18,8 +18,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
@@ -36,6 +38,8 @@ import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.FirstFieldTransformer;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.SecondFieldTransformer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -58,9 +62,13 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         "org.eclipse.persistence.testing.jaxb.dynamic.Person";
     private static final String DOCWRAPPER_CLASS_NAME =
         "org.persistence.testing.jaxb.dynamic.xxx.DocWrapper";
-    
+
     public DynamicJAXBContextCreationTestCases(String name) throws Exception {
         super(name);
+    }
+    
+    public String getName() {
+    	return "Dynamic JAXB: Context Creation: " + super.getName();
     }
 
     public void testNewInstanceString() throws JAXBException {
@@ -76,13 +84,13 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceStringLoaderProps() throws JAXBException {
-        DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance(SESSION_NAMES, Thread.currentThread().getContextClassLoader(), new HashMap());
+    	DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance(SESSION_NAMES, Thread.currentThread().getContextClassLoader(), new HashMap());
         DynamicEntity docWrapper = jaxbContext.newDynamicEntity(DOCWRAPPER_CLASS_NAME);
         assertNotNull(docWrapper);
     }
 
     public void testNewInstanceClassesError() throws JAXBException {
-        Class[] classes = new Class[] { FirstFieldTransformer.class, SecondFieldTransformer.class };
+        Class[] classes = new Class[] { this.getClass() };
 
         JAXBException caughtException = null;
         try {
@@ -96,7 +104,8 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceClassesPropsError() throws JAXBException {
-        Class[] classes = new Class[] { FirstFieldTransformer.class, SecondFieldTransformer.class };
+        Class[] classes = new Class[] { this.getClass() };
+
         JAXBException ex = null;
         try {
             DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance(classes, new HashMap());
@@ -107,7 +116,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         assertNotNull("Did not catch exception as expected.", ex);
         assertEquals("Incorrect exception thrown.", 50038, ((org.eclipse.persistence.exceptions.JAXBException) ex.getLinkedException()).getErrorCode());
     }
-
+    
     public void testNewInstanceOXM() throws JAXBException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -126,7 +135,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         DynamicEntity person = jaxbContext.newDynamicEntity(PERSON_CLASS_NAME);
         assertNotNull(person);
     }
-    
+
     public void testNewInstanceXSD() throws JAXBException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -143,9 +152,9 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         DynamicEntity emp = jaxbContext.newDynamicEntity(EMPLOYEE_CLASS_NAME);
         assertNotNull(emp);
     }
-    
+
     // ========================================================================
-    
+
     public void testCreateContextFromXSDInputStream() throws JAXBException {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
 
@@ -275,7 +284,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         assertNotNull("Did not catch exception as expected.", caughtException);
         assertEquals("Incorrect exception thrown.", 50042, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
-    
+
     public void testCreateContextFromOXM() throws JAXBException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -290,11 +299,17 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
-    	
+
         DynamicEntity person = jaxbContext.newDynamicEntity(PERSON_CLASS_NAME);
         assertNotNull(person);
+
+        //DynamicEntity person2 = jaxbContext.getObjectFactory().createInstance(PERSON_CLASS_NAME);
+        //assertNotNull(person2);
+
+        //JAXBElement<DynamicEntity> personElem = jaxbContext.getObjectFactory().createElementInstance(new QName("mynamespace", "human"), person2);
+        //assertNotNull(personElem);
     }
-    
+
     public void testCreateContextFromOXMError() throws JAXBException {
         JAXBException caughtException = null;
 
@@ -309,11 +324,11 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
 
         try {
             Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        	DynamicJAXBContextFactory.createContextFromOXM(null, properties);
+            DynamicJAXBContextFactory.createContextFromOXM(null, properties);
         } catch (JAXBException e) {
             caughtException = e;
         }
-        
+
         assertNotNull("Did not catch exception as expected.", caughtException);
         assertEquals("Incorrect exception thrown.", 50055, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }

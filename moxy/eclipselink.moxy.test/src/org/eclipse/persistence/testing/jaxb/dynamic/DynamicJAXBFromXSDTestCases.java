@@ -59,7 +59,13 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     public DynamicJAXBFromXSDTestCases(String name) throws Exception {
         super(name);
     }
+    
+    public String getName() {
+    	return "Dynamic JAXB: XSD: " + super.getName();
+    }
 
+    // ====================================================================
+    
     public void testXmlSchemaQualified() throws Exception {
         // <xs:schema targetNamespace="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema"
         //      attributeFormDefault="qualified" elementFormDefault="qualified">

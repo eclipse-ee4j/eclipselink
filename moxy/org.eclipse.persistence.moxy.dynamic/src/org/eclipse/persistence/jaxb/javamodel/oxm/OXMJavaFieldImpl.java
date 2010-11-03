@@ -22,10 +22,12 @@ import org.eclipse.persistence.jaxb.javamodel.JavaField;
 public class OXMJavaFieldImpl implements JavaField {
 
     private String fieldName;
+    private String fieldTypeName;
     private JavaClass owningClass;
 
-    public OXMJavaFieldImpl(String aFieldName, JavaClass owner) {
+    public OXMJavaFieldImpl(String aFieldName, String aFieldTypeName, JavaClass owner) {
         this.fieldName = aFieldName;
+        this.fieldTypeName = aFieldTypeName;
         this.owningClass = owner;
     }
 
@@ -50,7 +52,7 @@ public class OXMJavaFieldImpl implements JavaField {
     }
 
     public JavaClass getResolvedType() {
-        return new OXMJavaClassImpl("java.lang.Object");
+        return ((OXMJavaClassImpl) this.owningClass).getJavaModel().getClass(this.fieldTypeName);
     }
 
     public boolean isFinal() {
