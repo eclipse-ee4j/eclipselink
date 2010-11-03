@@ -46,6 +46,9 @@
                 <equals arg1="${os.name}" arg2="Windows NT"/>
             </or>
         </condition>
+        <condition property="_Unix" value="true">
+            <os family="unix"/>
+        </condition>
 
         <property name="build.compiler" value="javac1.5"/>
         <tstamp>
@@ -73,6 +76,9 @@
         <echo message="ant.home        = '${ant.home}'"/>
         <echo message=" "/>
         <echo message="basedir         = '${basedir}'"/>
+        <echo message=" "/>
+        <echo message="_Win            = '${_Win}'"/>
+        <echo message="_Unix           = '${_Unix}'"/>
     </target>
 
     <!-- Set svn.exec to os appropriate value                                 -->
