@@ -234,13 +234,15 @@ public class MappingsGenerator {
         XMLDescriptor descriptor = new XMLDescriptor();
         org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement rootElem = info.getXmlRootElement();
         if (rootElem == null) {
-            elementName = Introspector.decapitalize(javaClass.getRawName().substring(jClassName.lastIndexOf(".") + 1));
+            String rawName = javaClass.getRawName();
+            elementName = Introspector.decapitalize(rawName.substring(rawName.lastIndexOf(".") + 1));
             namespace = packageNamespace;
             descriptor.setResultAlwaysXMLRoot(true);
         } else {
             elementName = rootElem.getName();
             if (elementName.equals("##default")) {
-                elementName = Introspector.decapitalize(javaClass.getRawName().substring(jClassName.lastIndexOf(".") + 1));
+                String rawName = javaClass.getRawName();
+                elementName = Introspector.decapitalize(rawName.substring(rawName.lastIndexOf(".") + 1));
             }
             namespace = rootElem.getNamespace();
             descriptor.setResultAlwaysXMLRoot(false);
