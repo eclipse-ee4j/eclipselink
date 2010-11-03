@@ -78,6 +78,7 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
+import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -1170,7 +1171,10 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                      * We check the type on the attributeField of the attributeAccessor on the mapping
                      */
                     Class aType = null;
-                    if(colMapping.getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
+                    // 325699: AttributeAccessor is subclassed by both IntanceVariableAttributeAccessor (JPA) and ValuesAccessor (Dynamic JPA)
+                    if(colMapping.getAttributeAccessor() instanceof ValuesAccessor) {
+                        member = new ListAttributeImpl(this, colMapping);
+                    } else if(colMapping.getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
                         Field aField = ((InstanceVariableAttributeAccessor)colMapping.getAttributeAccessor()).getAttributeField();                        
                         // MappedSuperclasses need special handling to get their type from an inheriting subclass
                         if(null == aField) { // MappedSuperclass field will not be set
@@ -1310,6 +1314,11 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             } else {
                 // Handle 1:1 single object and direct mappings including EnumSet
                 member = new SingularAttributeImpl(this, mapping, true);
+            }
+            // 303063: secondary check for a null value put - should never happen but this will show on code coverage
+            if(null == member) {
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_getmember_is_null", 
+                        mapping.getAttributeName(), this, descriptor);
             }
 
             this.members.put(mapping.getAttributeName(), member);
