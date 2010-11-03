@@ -14,6 +14,7 @@ package org.eclipse.persistence.oxm.schema;
 
 import java.net.URL;
 
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -35,11 +36,15 @@ public class XMLSchemaClassPathReference extends XMLSchemaReference {
     }
     
     public URL getURL() {
-        // The URL must be passed to the resource, not just the input stream, as it is 
-        // required to resolve the relative URL for imports and includes.
-        if(null == loader) {
-            return Thread.currentThread().getContextClassLoader().getResource(this.getResource());
-        }
-        return loader.getResource(this.getResource());
+        try {
+            // The URL must be passed to the resource, not just the input stream, as it is 
+            // required to resolve the relative URL for imports and includes.
+            if(null == loader) {
+                return Thread.currentThread().getContextClassLoader().getResource(this.getResource());
+            }
+            return loader.getResource(this.getResource());
+        } catch(Exception e) {
+            throw XMLMarshalException.errorResolvingXMLSchema(e);
+       }
     }
 }
