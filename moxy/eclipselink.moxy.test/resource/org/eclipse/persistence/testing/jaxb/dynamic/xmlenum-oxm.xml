@@ -7,12 +7,20 @@
         <xml-ns prefix="xsi" namespace-uri="http://www.w3.org/2001/XMLSchema-instance"/>
     </xml-schema>
 
+    <xml-enums>
+        <xml-enum java-enum="mynamespace.CompassDirection" value="java.lang.String">
+            <xml-enum-value java-enum-value="N">NORTH</xml-enum-value>
+            <xml-enum-value java-enum-value="S">SOUTH</xml-enum-value>
+            <xml-enum-value java-enum-value="E">EAST</xml-enum-value>
+            <xml-enum-value java-enum-value="W">WEST</xml-enum-value>
+        </xml-enum>
+    </xml-enums>
+
     <java-types>
         <java-type name="mynamespace.Person">
             <xml-root-element name="person"/>
             <java-attributes>
-                <xml-element java-attribute="type" type="java.lang.String"/>
-                <xml-element java-attribute="nicknames" type="java.lang.String" container-type="java.util.ArrayList"/>
+                <xml-element java-attribute="quadrant" type="mynamespace.CompassDirection"/>
             </java-attributes>
         </java-type>
     </java-types>

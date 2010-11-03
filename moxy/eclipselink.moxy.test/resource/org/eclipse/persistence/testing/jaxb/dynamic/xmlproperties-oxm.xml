@@ -10,9 +10,17 @@
     <java-types>
         <java-type name="mynamespace.Person">
             <xml-root-element name="person"/>
+            <xml-properties>
+                <xml-property name="identifier" value="101" value-type="java.lang.Integer"/>
+                <xml-property name="active" value="false" value-type="java.lang.Boolean"/>
+            </xml-properties>
             <java-attributes>
-                <xml-element java-attribute="type" type="java.lang.String"/>
-                <xml-element java-attribute="nicknames" type="java.lang.String" container-type="java.util.ArrayList"/>
+                <xml-element java-attribute="name" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="language" value="ENGLISH" value-type="java.lang.String"/>
+                        <xml-property name="comment" value="first and last name" value-type="java.lang.String"/>
+                    </xml-properties>
+                </xml-element>
             </java-attributes>
         </java-type>
     </java-types>

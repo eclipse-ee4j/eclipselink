@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xml-schema>
+        <xml-ns prefix="xsd" namespace-uri="http://www.w3.org/2001/XMLSchema" />
+        <xml-ns prefix="xsi" namespace-uri="http://www.w3.org/2001/XMLSchema-instance" />
+    </xml-schema>
+
+    <java-types>
+        <java-type name="mynamespace.Person">
+            <xml-root-element name="person"/>
+            <java-attributes>
+                <xml-element java-attribute="phones" type="mynamespace.Phone" container-type="java.util.HashMap">
+                    <xml-map>
+                        <key type='java.lang.String'/>
+                        <value type='java.lang.Object'/>
+                    </xml-map>
+                </xml-element>
+            </java-attributes>
+        </java-type>
+
+        <java-type name="mynamespace.Phone">
+            <java-attributes>
+                <xml-attribute java-attribute="type" type="java.lang.String"/>
+                <xml-element java-attribute="number" type="java.lang.String"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+
+</xml-bindings>

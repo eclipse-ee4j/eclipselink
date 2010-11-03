@@ -8,11 +8,24 @@
     </xml-schema>
 
     <java-types>
+        <java-type name="mynamespace.Data">
+            <xml-root-element name="data"/>
+            <java-attributes>
+                <xml-element java-attribute="person" type="mynamespace.Person"/>
+                <xml-element java-attribute="company" type="mynamespace.Company"/>
+            </java-attributes>
+        </java-type>
         <java-type name="mynamespace.Person">
-            <xml-root-element name="person"/>
             <java-attributes>
                 <xml-element java-attribute="name" type="java.lang.String"/>
-                <xml-any-element java-attribute="mixed" xml-mixed="true" container-type="java.util.ArrayList"/>
+                <xml-element java-attribute="company" type="mynamespace.Company" xml-idref="true"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="mynamespace.Company">
+            <java-attributes>
+                <xml-element java-attribute="name" type="java.lang.String"/>
+                <xml-element java-attribute="address" type="java.lang.String"/>
+                <xml-attribute java-attribute="id" type="java.lang.Integer" xml-id="true"/>
             </java-attributes>
         </java-type>
     </java-types>

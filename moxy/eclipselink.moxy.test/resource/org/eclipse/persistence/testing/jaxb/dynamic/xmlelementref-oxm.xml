@@ -11,10 +11,19 @@
         <java-type name="mynamespace.Person">
             <xml-root-element name="person"/>
             <java-attributes>
-                <xml-element java-attribute="type" type="java.lang.String"/>
-                <xml-element java-attribute="nicknames" type="java.lang.String" container-type="java.util.ArrayList"/>
+                <xml-element java-attribute="name" type="java.lang.String"/>
+                <xml-element-ref java-attribute="phones" type="mynamespace.Phone">
+                    <xml-element-wrapper name="gsm_phones"/>
+                </xml-element-ref>
+            </java-attributes>
+        </java-type>
+        
+        <java-type name="mynamespace.Phone">
+            <xml-root-element name="phone"/>
+            <java-attributes>
+                <xml-attribute java-attribute="id" type="java.lang.Integer"/>
+                <xml-element java-attribute="number" type="java.lang.String"/>
             </java-attributes>
         </java-type>
     </java-types>
-
 </xml-bindings>
