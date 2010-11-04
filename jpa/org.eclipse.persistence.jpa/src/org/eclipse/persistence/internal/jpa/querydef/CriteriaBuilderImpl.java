@@ -333,14 +333,14 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
         }
         
         
-        if (yp.isPredicate() && yp.expressions.isEmpty()){
+        if (yp.isPredicate() && yp.getCurrentNode() == null){
             if (yp.isNegated()){
                 return yp;
             }else{
                 return xp;
             }
         }
-        if (xp.isPredicate() && xp.expressions.isEmpty()){
+        if (xp.isPredicate() && xp.getCurrentNode() == null){
             if (xp.isNegated()){
                 return xp;
             }else{
@@ -376,12 +376,12 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
         }else{
             yp = (CompoundExpressionImpl)y;
         }
-        if (yp.isPredicate() && yp.expressions.isEmpty()){
+        if (yp.isPredicate() && yp.getCurrentNode() == null){
             if (yp.isNegated()){
                 return xp;
             }
         }
-        if (xp.isPredicate() && xp.expressions.isEmpty()){
+        if (xp.isPredicate() && xp.getCurrentNode() == null){
             if (xp.isNegated()){
                 return yp;
             }

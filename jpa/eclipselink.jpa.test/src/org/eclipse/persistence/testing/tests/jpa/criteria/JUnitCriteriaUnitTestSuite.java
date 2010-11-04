@@ -13,6 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.criteria;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
@@ -95,7 +96,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
   {
     TestSuite suite = new TestSuite();
     suite.setName("JUnitCriteriaUnitTestSuite");
-    suite.addTest(new JUnitCriteriaUnitTestSuite("testSetup"));   
+    suite.addTest(new JUnitCriteriaUnitTestSuite("testSetup"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testExistWithJoin"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberAreaCode"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberAreaCodeWithEmployee"));   
@@ -113,6 +114,8 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
     suite.addTest(new JUnitCriteriaUnitTestSuite("testDistinctSelectForEmployeeWithNullAddress"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testConstructorWithFunctionParameters"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testNonExistentConstructorCriteriaQuery"));
+    suite.addTest(new JUnitCriteriaUnitTestSuite("testIsNullAndIsNotNull"));
+    suite.addTest(new JUnitCriteriaUnitTestSuite("testIsNullOrIsNull"));
     
     return suite;
   }
@@ -711,4 +714,55 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         this.assertNotNull("Expected IllegalArgumentException not thrown when using a non-existing constructor", expectedException);
     }
     
+    public void testIsNullAndIsNotNull(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'John' and e.lastName = 'Way'").getSingleResult();
+        emp.setFirstName(null);
+        emp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'Charles' and e.lastName = 'Chanley'").getSingleResult();
+        emp.setFirstName(null);
+        emp.setLastName(null);
+        em.flush();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<?> cq = qb.createQuery(Employee.class);
+        Root<Employee> from = cq.from(Employee.class);
+        EntityType<Employee> Emp_ = em.getMetamodel().entity(Employee.class);
+        
+        List<Predicate> criteriaList = new ArrayList<Predicate>();
+        criteriaList.add(qb.isNotNull(from.get(Emp_.getSingularAttribute("lastName", String.class)))); 
+        criteriaList.add(qb.isNull(from.get(Emp_.getSingularAttribute("firstName", String.class))));
+        Predicate criteria = qb.and(criteriaList.toArray(new Predicate[0]));
+        cq.where(criteria);
+        Query query = em.createQuery(cq);
+        List results = query.getResultList();
+        assertTrue(results.size() == 1);
+        emp = (Employee)results.get(0);
+        assertTrue(emp.getFirstName() == null);
+        assertTrue(emp.getLastName() != null);
+        rollbackTransaction(em);
+    }
+    
+    public void testIsNullOrIsNull(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'John' and e.lastName = 'Way'").getSingleResult();
+        emp.setFirstName(null);
+        emp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'Charles' and e.lastName = 'Chanley'").getSingleResult();
+        emp.setLastName(null);
+        em.flush();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<?> cq = qb.createQuery(Employee.class);
+        Root<Employee> from = cq.from(Employee.class);
+        EntityType<Employee> Emp_ = em.getMetamodel().entity(Employee.class);
+        
+        List<Predicate> criteriaList = new ArrayList<Predicate>();
+        criteriaList.add(qb.isNull(from.get(Emp_.getSingularAttribute("lastName", String.class)))); 
+        criteriaList.add(qb.isNull(from.get(Emp_.getSingularAttribute("firstName", String.class))));
+        Predicate criteria = qb.or(criteriaList.toArray(new Predicate[0]));
+        cq.where(criteria);
+        Query query = em.createQuery(cq);
+        List results = query.getResultList();
+        assertTrue(results.size() == 2);
+        rollbackTransaction(em);
+    }
 }
