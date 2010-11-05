@@ -613,19 +613,6 @@ public class XMLProcessor {
         // set isAttribute
         oldProperty.setIsAttribute(true);
 
-        // handle XmlJavaTypeAdapter
-        if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
-            oldProperty.setXmlJavaTypeAdapter(xmlAttribute.getXmlJavaTypeAdapter());
-        }
-
-        // handle required - for required, if set by user than true/false;  
-        // if not set by user, true if property type == primitive
-        if (xmlAttribute.isSetRequired()) {
-            oldProperty.setIsRequired(xmlAttribute.isRequired());
-        } else if (oldProperty.getActualType().isPrimitive()) {
-            oldProperty.setIsRequired(true);
-        }
-
         // set xml-inline-binary-data
         oldProperty.setisInlineBinaryData(xmlAttribute.isXmlInlineBinaryData());
 
@@ -678,7 +665,22 @@ public class XMLProcessor {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
+        
+        
+        reapplyPackageAndClassAdapters(oldProperty, typeInfo);
+        // handle XmlJavaTypeAdapter
+        if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
+            oldProperty.setXmlJavaTypeAdapter(xmlAttribute.getXmlJavaTypeAdapter());
+        }
 
+        // handle required - for required, if set by user than true/false;  
+        // if not set by user, true if property type == primitive
+        if (xmlAttribute.isSetRequired()) {
+            oldProperty.setIsRequired(xmlAttribute.isRequired());
+        } else if (oldProperty.getActualType().isPrimitive()) {
+            oldProperty.setIsRequired(true);
+        }
+        
         // handle xml-mime-type
         if (xmlAttribute.getXmlMimeType() != null) {
             oldProperty.setMimeType(xmlAttribute.getXmlMimeType());
@@ -833,6 +835,7 @@ public class XMLProcessor {
             }
         }
 
+        reapplyPackageAndClassAdapters(oldProperty, typeInfo);
         // handle XmlJavaTypeAdapter
         if (xmlElement.getXmlJavaTypeAdapter() != null) {
             try {
@@ -1091,6 +1094,8 @@ public class XMLProcessor {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
+        
+        reapplyPackageAndClassAdapters(oldProperty, info);
         // handle XmlJavaTypeAdapter
         if (xmlValue.getXmlJavaTypeAdapter() != null) {
             try {
@@ -1358,7 +1363,6 @@ public class XMLProcessor {
         unsetXmlValue(oldProperty, tInfo);
         unsetXmlID(oldProperty, tInfo);
         unsetXmlKey(oldProperty, tInfo);
-        reapplyPackageAndClassAdapters(oldProperty, tInfo);
         return oldProperty;
     }
 
@@ -1573,6 +1577,10 @@ public class XMLProcessor {
     }
     
     public void reapplyPackageAndClassAdapters(Property prop, TypeInfo owningInfo) {
+        if(prop.getXmlJavaTypeAdapter() != null) {
+            //if there's already a property level adapter, don't apply package/class level
+            return;
+        }
         JavaClass type = prop.getActualType();
         //if a class level adapter is present on the target class, set it
         TypeInfo targetInfo = aProcessor.getTypeInfo().get(type.getQualifiedName());

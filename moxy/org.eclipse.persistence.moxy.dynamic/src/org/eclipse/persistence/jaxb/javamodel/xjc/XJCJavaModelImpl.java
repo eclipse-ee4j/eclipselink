@@ -87,7 +87,6 @@ public class XJCJavaModelImpl implements JavaModel {
         this.javaModelClasses = javaModelClasses;
     }
 
-    @Override
     public ClassLoader getClassLoader() {
         return this.dynamicClassLoader;
     }

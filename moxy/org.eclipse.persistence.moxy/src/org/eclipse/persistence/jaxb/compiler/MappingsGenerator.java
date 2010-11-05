@@ -1026,7 +1026,13 @@ public class MappingsGenerator {
         }
 
         if (property.getType() != null) {
-            Class theClass = helper.getClassForJavaClass(property.getType());
+            Class theClass = null;
+            if(property.isSetXmlJavaTypeAdapter()) {
+                theClass = helper.getClassForJavaClass(property.getOriginalType());
+            } else {
+                theClass = helper.getClassForJavaClass(property.getType());
+                
+            }
             mapping.setAttributeClassification(theClass);
         }
 

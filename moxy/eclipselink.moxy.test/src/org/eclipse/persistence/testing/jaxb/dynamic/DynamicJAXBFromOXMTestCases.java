@@ -1077,11 +1077,6 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     }
 
     public void testXmlAdapter() throws Exception {
-    	// TODO: re-enable test
-    	if (true) return;
-    	
-        fail("Not implemented - bug 327561 XMLAdapter gets lost when property is defined in OXM");
-
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream iStream = classLoader.getResourceAsStream(XMLADAPTER_PACKAGE);
         if (iStream == null) {
