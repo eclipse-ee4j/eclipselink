@@ -61,14 +61,20 @@ public class PublisherWalker implements PublisherVisitor {
         }
         catch (Exception e) {
         }
+        listener.beginObjectType(sqlObjectType.getName());
         listener.handleObjectType(sqlObjectType.getName(), targetTypeName, numAttributes);
-        if (numAttributes > 0) {
-            for (AttributeField field : fields) {
+        if (fields != null && numAttributes > 0) {
+            for (int idx = 0; idx < numAttributes; idx++) {
+                AttributeField field = fields.get(idx);
                 TypeClass typeClass = field.getType();
-                listener.handleAttributeField(field.getName());
+                listener.handleAttributeField(field.getName(), idx);
                 ((SqlType)typeClass).accept(this);
             }
         }
+        try {
+            listener.endObjectType(sqlObjectType.getName());
+        }
+        catch (Exception e) { /* ignore */ }
     }
 
     public void visit(SqlArrayType sqlArrayType) {

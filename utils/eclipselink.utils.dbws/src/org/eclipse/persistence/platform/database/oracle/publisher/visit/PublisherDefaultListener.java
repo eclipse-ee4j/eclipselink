@@ -47,7 +47,11 @@ public class PublisherDefaultListener implements PublisherListener {
     public void endMethod(String methodName) {
     }
 
+    public void beginObjectType(String objectTypeName) {
+    }
     public void handleObjectType(String objectTypeName, String targetTypeName, int numAttributes) {
+    }
+    public void endObjectType(String objectTypeName) {
     }
 
     public void handleSqlType(String sqlTypeName, int typecode, String targetTypeName) {
@@ -59,7 +63,7 @@ public class PublisherDefaultListener implements PublisherListener {
     public void handleSqlTableType(String tableTypeName, String targetTypeName) {
     }
 
-    public void handleAttributeField(String attributeFieldName) {
+    public void handleAttributeField(String attributeFieldName, int idx) {
     }
 
     public String trimDotPrefix(String prefix) {
@@ -171,9 +175,18 @@ public class PublisherDefaultListener implements PublisherListener {
         public String objectTypename() {
             return objectTypename;
         }
+        public String targetTypeName() {
+            return targetTypeName;
+        }
+        public void setTargetTypeName(String targetTypeName) {
+           this.targetTypeName = targetTypeName;
+        }
         public int numAttributes() {
             return numAttributes;
         }
+        public void setNumAttributes(int numAttributes) {
+            this.numAttributes = numAttributes;
+         }
         @Override
         public boolean isObject() {
             return true;

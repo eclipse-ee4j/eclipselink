@@ -203,6 +203,15 @@ public class DBWSTestHelper {
     public static final String LTBL_PROJECT_SERVICE_NAMESPACE = "urn:" + LTBL_PROJECT_SERVICE;
     public static final String LTBL_PROJECT_PORT = LTBL_PROJECT_SERVICE + "Port";
 
+    public static final String F17_PACKAGE_NAME = "TESMANPACK";
+    public static final String PROCF17 = "f17";
+    public static final String PROCF17_NAME = "TESMANPROC17";
+    public static final String PROCF17_NAMESPACE = "urn:" + PROCF17;
+    public static final String PROCF17_SERVICE_NAMESPACE = PROCF17_NAMESPACE + "Service";
+    public static final String PROCF17_PORT = PROCF17 + "Port";
+    public static final String PROCF17_SERVICE = PROCF17 + "Service";
+    public static final String PROCF17_TEST = "f17Test";
+    
     public static String documentToString(Document doc) {
         DOMSource domSource = new DOMSource(doc);
         StringWriter stringWriter = new StringWriter();

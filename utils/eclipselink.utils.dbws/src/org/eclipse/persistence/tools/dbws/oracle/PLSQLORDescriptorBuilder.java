@@ -153,41 +153,47 @@ public class PLSQLORDescriptorBuilder extends PublisherDefaultListener {
     @Override
     public void endPlsqlRecordField(String fieldName, int idx) {
         ListenerHelper top = stac.pop();
-        RecordHelper recordHelper = (RecordHelper)stac.peek();
-        ObjectRelationalDataTypeDescriptor ordt =
-            descriptorMap.get(recordHelper.targetTypeName().toLowerCase());
-        String lFieldName = fieldName.toLowerCase();
-        if (ordt.getMappingForAttributeName(lFieldName) == null) {
-            if (top.isComplex()) {
-                if (top.isTable()) {
-                    if (((TableHelper)top).isNestedComplex()) {
-                        ObjectArrayMapping objectArrayMapping = new ObjectArrayMapping();
-                        objectArrayMapping.setAttributeName(lFieldName);
-                        objectArrayMapping.setFieldName(lFieldName);
-                        objectArrayMapping.setStructureName(top.targetTypeName());
-                        objectArrayMapping.setReferenceClassName(((TableHelper)top).tableName()
-                            .toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
-                        ordt.addMapping(objectArrayMapping);
+        ListenerHelper listenerHelper = stac.peek();
+        if (listenerHelper.isRecord()) {
+            RecordHelper recordHelper = (RecordHelper)stac.peek();
+            ObjectRelationalDataTypeDescriptor ordt =
+                descriptorMap.get(recordHelper.targetTypeName().toLowerCase());
+            String lFieldName = fieldName.toLowerCase();
+            if (ordt.getMappingForAttributeName(lFieldName) == null) {
+                if (top.isComplex()) {
+                    if (top.isTable()) {
+                        if (((TableHelper)top).isNestedComplex()) {
+                            ObjectArrayMapping objectArrayMapping = new ObjectArrayMapping();
+                            objectArrayMapping.setAttributeName(lFieldName);
+                            objectArrayMapping.setFieldName(lFieldName);
+                            objectArrayMapping.setStructureName(top.targetTypeName());
+                            objectArrayMapping.setReferenceClassName(((TableHelper)top).tableName()
+                                .toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
+                            ordt.addMapping(objectArrayMapping);
+                        }
+                        else {
+                            ArrayMapping arrayMapping = new ArrayMapping();
+                            arrayMapping.setAttributeName(lFieldName);
+                            arrayMapping.setFieldName(lFieldName);
+                            arrayMapping.setStructureName(top.targetTypeName());
+                            ordt.addMapping(arrayMapping);
+                        }
                     }
-                    else {
-                        ArrayMapping arrayMapping = new ArrayMapping();
-                        arrayMapping.setAttributeName(lFieldName);
-                        arrayMapping.setFieldName(lFieldName);
-                        arrayMapping.setStructureName(top.targetTypeName());
-                        ordt.addMapping(arrayMapping);
+                    else if (top.isRecord()) {
+                        StructureMapping structureMapping = new StructureMapping();
+                        structureMapping.setAttributeName(lFieldName);
+                        structureMapping.setFieldName(lFieldName);
+                        structureMapping.setReferenceClassName(((RecordHelper)top).recordName().toLowerCase());
+                        ordt.addMapping(structureMapping);
                     }
                 }
-                else if (top.isRecord()) {
-                    StructureMapping structureMapping = new StructureMapping();
-                    structureMapping.setAttributeName(lFieldName);
-                    structureMapping.setFieldName(lFieldName);
-                    structureMapping.setReferenceClassName(((RecordHelper)top).recordName().toLowerCase());
-                    ordt.addMapping(structureMapping);
+                else {
+                    ordt.addDirectMapping(lFieldName, lFieldName);
                 }
             }
-            else {
-                ordt.addDirectMapping(lFieldName, lFieldName);
-            }
+        }
+        else {
+            System.identityHashCode(listenerHelper);
         }
     }
     @Override

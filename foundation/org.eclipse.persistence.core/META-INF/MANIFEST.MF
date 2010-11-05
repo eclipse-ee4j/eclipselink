@@ -929,7 +929,8 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  s,org.eclipse.persistence.oxm.mappings,org.eclipse.persistence.intern
  al.queries,org.eclipse.persistence.internal.databaseaccess,org.eclips
  e.persistence.internal.helper,org.eclipse.persistence.descriptors";ve
- rsion="2.1.0.qualifier"
+ rsion="2.1.0.qualifier",org.eclipse.persistence.platform.database.ora
+ cle.jdbc
 Private-Package: .,xsd
 Bundle-ClassPath: .
 Tool: Bnd-0.0.366

@@ -356,7 +356,7 @@ public class AdvancedJDBCQueryBuilder extends PublisherDefaultListener {
         }
     }
     @Override
-    public void handleAttributeField(String attributeFieldName) {
+    public void handleAttributeField(String attributeFieldName, int idx) {
         stac.push(new AttributeFieldHelper(attributeFieldName, null));
     }
 

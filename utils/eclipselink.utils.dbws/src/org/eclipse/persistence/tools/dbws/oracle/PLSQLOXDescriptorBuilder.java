@@ -37,6 +37,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
+
 import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
 import static org.eclipse.persistence.internal.helper.ClassConstants.INTEGER;
@@ -197,97 +198,103 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
     @Override
     public void endPlsqlRecordField(String fieldName, int idx) {
         ListenerHelper top = stac.pop();
-        RecordHelper recordHelper = (RecordHelper)stac.peek();
-        XMLDescriptor xdesc = descriptorMap.get(recordHelper.targetTypeName().toLowerCase());
-        String lfieldName = fieldName.toLowerCase();
-        if (xdesc.getMappingForAttributeName(lfieldName) == null) {
-            if (top.isComplex()) {
-                if (top.isTable()) {
-                    TableHelper tblHelper = (TableHelper)top;
-                    if (tblHelper.isNestedComplex()) {
+        ListenerHelper listenerHelper = stac.peek();
+        if (listenerHelper.isRecord()) {
+            RecordHelper recordHelper = (RecordHelper)stac.peek();
+            XMLDescriptor xdesc = descriptorMap.get(recordHelper.targetTypeName().toLowerCase());
+            String lfieldName = fieldName.toLowerCase();
+            if (xdesc.getMappingForAttributeName(lfieldName) == null) {
+                if (top.isComplex()) {
+                    if (top.isTable()) {
+                        TableHelper tblHelper = (TableHelper)top;
+                        if (tblHelper.isNestedComplex()) {
+                            XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
+                            fieldMapping.setAttributeName(lfieldName);
+                            fieldMapping.setXPath(lfieldName);
+                            XMLField xField = (XMLField)fieldMapping.getField();
+                            xField.setRequired(true);
+                            fieldMapping.setReferenceClassName(tblHelper.tableName().toLowerCase());
+                            xdesc.addMapping(fieldMapping);
+                        }
+                        else {
+                            XMLCompositeDirectCollectionMapping fieldMapping =
+                                new XMLCompositeDirectCollectionMapping();
+                            String foo = tblHelper.targetTypeName().toLowerCase();
+                            XMLDescriptor xdesc2 = descriptorMap.get(foo);
+                            if (xdesc2 != null) {
+                                XMLCompositeDirectCollectionMapping itemsMapping =
+                                    (XMLCompositeDirectCollectionMapping)xdesc2.getMappingForAttributeName(
+                                    ITEMS_MAPPING_ATTRIBUTE_NAME);
+                                Class<?> attributeElementClass = itemsMapping.getAttributeElementClass();
+                                fieldMapping.setAttributeElementClass(attributeElementClass);
+                            }
+                            else {
+                                fieldMapping.setAttributeElementClass(String.class); //TODO
+                            }
+                            fieldMapping.setAttributeName(lfieldName);
+                            fieldMapping.setUsesSingleNode(true);
+                            fieldMapping.setXPath(lfieldName + "/item/text()");
+                            XMLField xField = (XMLField)fieldMapping.getField();
+                            xField.setRequired(true);
+                            fieldMapping.useCollectionClassName("java.util.ArrayList");
+                            AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
+                            nullPolicy.setNullRepresentedByEmptyNode(false);
+                            nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                            nullPolicy.setNullRepresentedByXsiNil(true);
+                            fieldMapping.setNullPolicy(nullPolicy);
+                            xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                                W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
+                            xdesc.addMapping(fieldMapping);
+                        }
+                    }
+                    else if (top.isRecord()) {
                         XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
                         fieldMapping.setAttributeName(lfieldName);
                         fieldMapping.setXPath(lfieldName);
                         XMLField xField = (XMLField)fieldMapping.getField();
                         xField.setRequired(true);
-                        fieldMapping.setReferenceClassName(tblHelper.tableName().toLowerCase());
-                        xdesc.addMapping(fieldMapping);
-                    }
-                    else {
-                        XMLCompositeDirectCollectionMapping fieldMapping =
-                            new XMLCompositeDirectCollectionMapping();
-                        String foo = tblHelper.targetTypeName().toLowerCase();
-                        XMLDescriptor xdesc2 = descriptorMap.get(foo);
-                        if (xdesc2 != null) {
-                            XMLCompositeDirectCollectionMapping itemsMapping =
-                                (XMLCompositeDirectCollectionMapping)xdesc2.getMappingForAttributeName(
-                                ITEMS_MAPPING_ATTRIBUTE_NAME);
-                            Class<?> attributeElementClass = itemsMapping.getAttributeElementClass();
-                            fieldMapping.setAttributeElementClass(attributeElementClass);
-                        }
-                        else {
-                            fieldMapping.setAttributeElementClass(String.class); //TODO
-                        }
-                        fieldMapping.setAttributeName(lfieldName);
-                        fieldMapping.setUsesSingleNode(true);
-                        fieldMapping.setXPath(lfieldName + "/item/text()");
-                        XMLField xField = (XMLField)fieldMapping.getField();
-                        xField.setRequired(true);
-                        fieldMapping.useCollectionClassName("java.util.ArrayList");
-                        AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
-                        nullPolicy.setNullRepresentedByEmptyNode(false);
-                        nullPolicy.setMarshalNullRepresentation(XSI_NIL);
-                        nullPolicy.setNullRepresentedByXsiNil(true);
-                        fieldMapping.setNullPolicy(nullPolicy);
-                        xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
-                            W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
+                        fieldMapping.setReferenceClassName(((RecordHelper)top).recordName().toLowerCase());
                         xdesc.addMapping(fieldMapping);
                     }
                 }
-                else if (top.isRecord()) {
-                    XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
+                else {
+                    XMLDirectMapping fieldMapping = new XMLDirectMapping();
                     fieldMapping.setAttributeName(lfieldName);
-                    fieldMapping.setXPath(lfieldName);
-                    XMLField xField = (XMLField)fieldMapping.getField();
+                    XMLField xField = new XMLField(lfieldName + "/text()");
                     xField.setRequired(true);
-                    fieldMapping.setReferenceClassName(((RecordHelper)top).recordName().toLowerCase());
+                    QName qnameFromDatabaseType = qnameFromDatabaseType(top);
+                    xField.setSchemaType(qnameFromDatabaseType);
+                    // special case to avoid Calendar problems
+                    if (qnameFromDatabaseType == DATE_QNAME) {
+                        fieldMapping.setAttributeClassification(java.sql.Date.class);
+                        xField.addXMLConversion(DATE_QNAME, java.sql.Date.class);
+                        xField.addJavaConversion(java.sql.Date.class, DATE_QNAME);
+                        xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                            W3C_XML_SCHEMA_INSTANCE_NS_URI);
+                        xdesc.getNamespaceResolver().put(SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
+                    }
+                    else {
+                        Class<?> attributeClass = (Class<?>)XMLConversionManager.getDefaultXMLTypes().
+                            get(qnameFromDatabaseType);
+                        if (attributeClass == null) {
+                            attributeClass =  Object_Class;
+                        }
+                        fieldMapping.setAttributeClassification(attributeClass);
+                    }
+                    fieldMapping.setField(xField);
+                    AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
+                    nullPolicy.setNullRepresentedByEmptyNode(false);
+                    nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                    nullPolicy.setNullRepresentedByXsiNil(true);
+                    fieldMapping.setNullPolicy(nullPolicy);
+                    xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
+                        W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
                     xdesc.addMapping(fieldMapping);
                 }
             }
-            else {
-                XMLDirectMapping fieldMapping = new XMLDirectMapping();
-                fieldMapping.setAttributeName(lfieldName);
-                XMLField xField = new XMLField(lfieldName + "/text()");
-                xField.setRequired(true);
-                QName qnameFromDatabaseType = qnameFromDatabaseType(top);
-                xField.setSchemaType(qnameFromDatabaseType);
-                // special case to avoid Calendar problems
-                if (qnameFromDatabaseType == DATE_QNAME) {
-                    fieldMapping.setAttributeClassification(java.sql.Date.class);
-                    xField.addXMLConversion(DATE_QNAME, java.sql.Date.class);
-                    xField.addJavaConversion(java.sql.Date.class, DATE_QNAME);
-                    xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
-                        W3C_XML_SCHEMA_INSTANCE_NS_URI);
-                    xdesc.getNamespaceResolver().put(SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
-                }
-                else {
-                    Class<?> attributeClass = (Class<?>)XMLConversionManager.getDefaultXMLTypes().
-                        get(qnameFromDatabaseType);
-                    if (attributeClass == null) {
-                        attributeClass =  Object_Class;
-                    }
-                    fieldMapping.setAttributeClassification(attributeClass);
-                }
-                fieldMapping.setField(xField);
-                AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
-                nullPolicy.setNullRepresentedByEmptyNode(false);
-                nullPolicy.setMarshalNullRepresentation(XSI_NIL);
-                nullPolicy.setNullRepresentedByXsiNil(true);
-                fieldMapping.setNullPolicy(nullPolicy);
-                xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX,
-                    W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
-                xdesc.addMapping(fieldMapping);
-            }
+        }
+        else {
+            System.identityHashCode(listenerHelper);
         }
     }
     @Override

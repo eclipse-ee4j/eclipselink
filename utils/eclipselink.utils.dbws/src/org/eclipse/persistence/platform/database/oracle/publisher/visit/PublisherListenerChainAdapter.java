@@ -101,9 +101,19 @@ public class PublisherListenerChainAdapter implements PublisherListener {
         }
     }
 
+    public void beginObjectType(String objectTypeName) {
+        for (PublisherListener listener : chain) {
+            listener.beginObjectType(objectTypeName);
+        }
+    }
     public void handleObjectType(String objectTypeName, String targetTypeName, int numAttributes) {
         for (PublisherListener listener : chain) {
             listener.handleObjectType(objectTypeName, targetTypeName, numAttributes);
+        }
+    }
+    public void endObjectType(String objectTypeName) {
+        for (PublisherListener listener : chain) {
+            listener.endObjectType(objectTypeName);
         }
     }
 
@@ -125,9 +135,9 @@ public class PublisherListenerChainAdapter implements PublisherListener {
         }
     }
 
-    public void handleAttributeField(String attributeFieldName) {
+    public void handleAttributeField(String attributeFieldName, int idx) {
         for (PublisherListener listener : chain) {
-            listener.handleAttributeField(attributeFieldName);
+            listener.handleAttributeField(attributeFieldName, idx);
         }
     }
 }

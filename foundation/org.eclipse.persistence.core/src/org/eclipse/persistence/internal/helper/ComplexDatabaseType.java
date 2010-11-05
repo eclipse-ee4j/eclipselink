@@ -20,7 +20,6 @@ import java.util.Vector;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.queries.StoredProcedureCall;
@@ -35,7 +34,7 @@ import static org.eclipse.persistence.internal.helper.Helper.NL;
  * @author Mike Norman - michael.norman@oracle.com
  * @since Oracle TopLink 11.x.x
  */
-public abstract class ComplexDatabaseType implements DatabaseType, Cloneable, OraclePLSQLType {
+public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
 
     protected String typeName;
     protected String compatibleType;

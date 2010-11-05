@@ -22,6 +22,7 @@ import java.util.Stack;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
@@ -45,7 +46,7 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
         this.dbwsBuilder = dbwsBuilder;
     }
 
-    protected String trimOffSchemaName(String s) {
+    public String trimOffSchemaName(String s) {
         if (s.startsWith(schemaName)) {
             return s.substring(schemaName.length() + 1);
         }
@@ -244,23 +245,61 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
             if (top.isComplexDatabaseType()) {
                 ComplexDatabaseType cdt = (ComplexDatabaseType)top;
                 if (cdt.isCollection()) {
-                    PLSQLCollection coll = (PLSQLCollection)cdt;
-                    if (coll.getNestedType() == null) {
-                        coll.setNestedType(databaseType);
+                    if (cdt.isJDBCType()) {
+                        //TODO Oracle Varray
+                    }
+                    else {
+                        PLSQLCollection coll = (PLSQLCollection)cdt;
+                        if (coll.getNestedType() == null) {
+                            coll.setNestedType(databaseType);
+                        }
                     }
                 }
-                else if (cdt.isRecord()) {
-                    PLSQLrecord rec = (PLSQLrecord)cdt;
-                    List<PLSQLargument> fields = rec.getFields();
-                    PLSQLargument arg = fields.get(fields.size() - 1);
-                    if (arg.databaseType == null) {
-                        arg.databaseType = databaseType;
+                else {
+                    if (cdt.isRecord()) {
+                        PLSQLrecord rec = (PLSQLrecord)cdt;
+                        List<PLSQLargument> fields = rec.getFields();
+                        PLSQLargument arg = fields.get(fields.size() - 1);
+                        if (arg.databaseType == null) {
+                            arg.databaseType = databaseType;
+                        }
+                    }
+                    else if (cdt.isJDBCType()) {
+                        OracleObjectType oot = (OracleObjectType)cdt;
+                        Map<String, DatabaseType> fields = oot.getFields();
+                        Object[] keys = oot.getFields().keySet().toArray();
+                        String lastInsertedKey = (String)keys[oot.getLastFieldIndex()];
+                        fields.put(lastInsertedKey, databaseType);
                     }
                 }
             }
         }
         else {
             typeStack.push(databaseType);
+        }
+    }
+
+    @Override
+    public void beginObjectType(final String objectTypeName) {
+        DatabaseType databaseType = OraclePLSQLTypes.getDatabaseTypeForCode(objectTypeName);
+        if (databaseType == null) {
+            OracleObjectType objectType = new OracleObjectType();
+            objectType.setTypeName(objectTypeName);
+            DatabaseType top = typeStack.peek();
+            if (top.isComplexDatabaseType()) {
+                ComplexDatabaseType cdt = (ComplexDatabaseType)top;
+                if (cdt.isJDBCType()) {
+                    OracleObjectType oot = (OracleObjectType)cdt;
+                    Map<String, DatabaseType> fields = oot.getFields();
+                    Object[] keys = oot.getFields().keySet().toArray();
+                    String lastInsertedKey = (String)keys[oot.getLastFieldIndex()];
+                    if (fields.get(lastInsertedKey) == JDBCTypes.NULL_TYPE) {
+                        // nested OracleObjectTypes
+                        fields.put(lastInsertedKey, objectType);
+                    }
+                }
+            }
+            typeStack.push(objectType);
         }
     }
 
@@ -285,10 +324,55 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
                         arg.databaseType = databaseType;
                     }
                 }
+                else if (cdt.isJDBCType()) {
+                    if (typeStack.size() > 1) {
+                        typeStack.pop();
+                        DatabaseType topMinus1 = typeStack.peek();
+                        if (topMinus1.isComplexDatabaseType()) {
+                            ComplexDatabaseType cdtMinus1 = (ComplexDatabaseType)topMinus1;
+                            if (cdtMinus1.isRecord()) {
+                                PLSQLrecord rec = (PLSQLrecord)cdtMinus1;
+                                List<PLSQLargument> fields = rec.getFields();
+                                PLSQLargument arg = fields.get(fields.size() - 1);
+                                if (arg.databaseType == null) {
+                                    arg.databaseType = cdt;
+                                }
+                            }
+                        }
+                        typeStack.push(top);
+                    }
+                }
             }
         }
         else {
             typeStack.push(databaseType);
         }
     }
+
+    @Override
+    public void handleAttributeField(String attributeFieldName, int idx) {
+        if (!typeStack.empty()) {
+            DatabaseType top = typeStack.peek();
+            if (top.isComplexDatabaseType() && top.isJDBCType()) {
+                ComplexDatabaseType cdt = (ComplexDatabaseType)top;
+                if (cdt.isCollection()) {
+                    // TODO - OracleVarrayType
+                }
+                else {
+                    OracleObjectType oot = (OracleObjectType)cdt;
+                    oot.getFields().put(attributeFieldName, JDBCTypes.NULL_TYPE); // placeholder
+                    oot.setLastFieldIndex(idx);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void endObjectType(String objectTypeName) {
+        DatabaseType databaseType = OraclePLSQLTypes.getDatabaseTypeForCode(objectTypeName);
+        if (databaseType == null) {
+            typeStack.pop();
+        }
+    }
+    
 }
