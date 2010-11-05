@@ -21,9 +21,14 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -68,7 +73,7 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
         address.city = CONTROL_ADD_CITY_1;
         address.country = CONTROL_ADD_COUNTRY_1;
         address.zip = CONTROL_ADD_ZIP_1;
-        address.emp = new Vector<Employee>();
+        address.emp = new Vector<Object>();
         address.emp.add(employee);
         
         employee.address = address;
@@ -106,7 +111,7 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
         address.city = CONTROL_ADD_CITY_1;
         address.country = CONTROL_ADD_COUNTRY_1;
         address.zip = CONTROL_ADD_ZIP_1;
-        address.emp = new Vector<Employee>();
+        address.emp = new Vector<Object>();
         address.emp.add(employee);
         rootAddresses.add(address);
         
@@ -207,5 +212,14 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
+    }
+    
+    public void testAddressContainerType() {
+        XMLDescriptor xDesc = jaxbContext.getXMLContext().getDescriptor(new QName("address"));
+        assertNotNull("No descriptor was generated for Address.", xDesc);
+        DatabaseMapping mapping = xDesc.getMappingForAttributeName("emp");
+        assertNotNull("No mapping exists on Address for attribute [emp].", mapping);
+        assertTrue("Expected an XMLInverseReferenceMapping for attribute [emp], but was [" + mapping.toString() +"].", mapping instanceof XMLInverseReferenceMapping);
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLInverseReferenceMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLInverseReferenceMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 }

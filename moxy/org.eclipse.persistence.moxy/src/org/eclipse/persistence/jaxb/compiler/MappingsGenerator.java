@@ -499,7 +499,13 @@ public class MappingsGenerator {
         invMapping.setMappedBy(property.getInverseReferencePropertyName());
 
         if (isCollectionType(property.getType())) {
-            invMapping.setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
+            JavaClass collectionType = property.getType();
+            if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+                collectionType = jotArrayList;
+            } else if (areEquals(collectionType, Set.class)) {
+                collectionType = jotHashSet;
+            }
+            invMapping.useCollectionClass(helper.getClassForJavaClass(collectionType));
         }
         return invMapping;
     }

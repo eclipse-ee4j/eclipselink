@@ -40,7 +40,7 @@ public class Address {
     @XmlElement(name="zip")
 	public String zip;
     
-    public List<Employee> emp;
+    public List<Object> emp;
 	
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof Address)) {

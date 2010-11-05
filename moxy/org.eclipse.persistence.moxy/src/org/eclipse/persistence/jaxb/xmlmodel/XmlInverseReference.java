@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="mapped-by" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="container-type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -55,6 +57,10 @@ public class XmlInverseReference
     protected XmlProperties xmlProperties;
     @XmlAttribute(name = "mapped-by")
     protected String mappedBy;
+    @XmlAttribute(name = "container-type")
+    protected String containerType;
+    @XmlAttribute(name = "type")
+    protected String type;
 
     /**
      * Gets the value of the xmlAccessMethods property.
@@ -126,6 +132,62 @@ public class XmlInverseReference
      */
     public void setMappedBy(String value) {
         this.mappedBy = value;
+    }
+
+    /**
+     * Gets the value of the containerType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getContainerType() {
+        if (containerType == null) {
+            return "##default";
+        } else {
+            return containerType;
+        }
+    }
+
+    /**
+     * Sets the value of the containerType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setContainerType(String value) {
+        this.containerType = value;
+    }
+
+    /**
+     * Gets the value of the type property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getType() {
+        if (type == null) {
+            return "##default";
+        } else {
+            return type;
+        }
+    }
+
+    /**
+     * Sets the value of the type property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setType(String value) {
+        this.type = value;
     }
 
 }

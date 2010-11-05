@@ -3,12 +3,12 @@
 	<java-types>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference.Address">
             <java-attributes>
-                <xml-inverse-reference java-attribute="emp" mapped-by="address"/>
+                <xml-inverse-reference java-attribute="emp" mapped-by="address" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference.Employee" container-type="java.util.LinkedList" />
             </java-attributes>
         </java-type>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference.PhoneNumber">
             <java-attributes>
-                <xml-inverse-reference java-attribute="emp" mapped-by="phones"/>
+                <xml-inverse-reference java-attribute="emp" mapped-by="phones" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference.Employee"/>
             </java-attributes>
         </java-type>
 	</java-types>

@@ -429,6 +429,8 @@
                         <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:all>
                     <xs:attribute name="mapped-by" type="xs:string" />
+                    <xs:attribute name="container-type" type="xs:string" default="##default" />
+                    <xs:attribute name="type" type="xs:string" default="##default" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

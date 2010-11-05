@@ -416,10 +416,17 @@ public class XMLProcessor {
         return oldProperty;
     }
 
+    /**
+     * Handle xml-inverse-reference.
+     * 
+     * @param xmlInverseReference
+     * @param oldProperty
+     * @return
+     */
     private Property processXmlInverseReference(XmlInverseReference xmlInverseReference, Property oldProperty) {
         oldProperty.setInverseReference(true);
         oldProperty.setInverseReferencePropertyName(xmlInverseReference.getMappedBy());
-        if(xmlInverseReference.getXmlAccessMethods() != null) {
+        if (xmlInverseReference.getXmlAccessMethods() != null) {
             oldProperty.setInverseReferencePropertyGetMethodName(xmlInverseReference.getXmlAccessMethods().getGetMethod());
             oldProperty.setInverseReferencePropertySetMethodName(xmlInverseReference.getXmlAccessMethods().getSetMethod());
         }
@@ -427,8 +434,27 @@ public class XMLProcessor {
         if (xmlInverseReference.getXmlProperties() != null  && xmlInverseReference.getXmlProperties().getXmlProperty().size() > 0) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlInverseReference.getXmlProperties().getXmlProperty()));
         }
+        // check for container type
+        if (!xmlInverseReference.getContainerType().equals(DEFAULT)) {
+            setContainerType(oldProperty, xmlInverseReference.getContainerType());
+        }
+        // set type
+        if (!xmlInverseReference.getType().equals(DEFAULT)) {
+            JavaClass pType = jModelInput.getJavaModel().getClass(xmlInverseReference.getType());
+            if (aProcessor.isCollectionType(oldProperty.getType())) {
+                oldProperty.setGenericType(pType);
+            } else {
+                oldProperty.setType(pType);
+            }
+            oldProperty.setHasXmlElementType(true);
+            // may need to generate a type info for the type
+            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
+                aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
+            }
+        }
         return oldProperty;
     }
+    
     /**
      * Handle xml-any-attribute.
      * 
