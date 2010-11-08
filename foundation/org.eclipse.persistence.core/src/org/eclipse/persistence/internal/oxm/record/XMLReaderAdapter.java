@@ -12,6 +12,10 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
+import javax.xml.validation.Schema;
+import javax.xml.validation.ValidatorHandler;
+
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.EntityResolver;
@@ -30,6 +34,20 @@ public abstract class XMLReaderAdapter extends XMLReader {
     private EntityResolver entityResolver;
     private ErrorHandler errorHandler;
     protected LexicalHandler lexicalHandler;
+    private ValidatorHandler validatorHandler;
+
+    public XMLReaderAdapter() {
+    }
+
+    public XMLReaderAdapter(XMLUnmarshaller xmlUnmarshaller) {
+        if(null != xmlUnmarshaller) {
+            Schema schema = xmlUnmarshaller.getSchema();
+            if(null != schema) {
+                validatorHandler = schema.newValidatorHandler();
+            }
+            setErrorHandler(xmlUnmarshaller.getErrorHandler());
+        }
+    }
 
     @Override
     public ContentHandler getContentHandler() {
@@ -38,7 +56,12 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
     @Override
     public void setContentHandler(ContentHandler contentHandler) {
-        this.contentHandler = contentHandler;
+        if(null == validatorHandler) {
+            this.contentHandler = contentHandler;
+        } else {
+            validatorHandler.setContentHandler(contentHandler);
+            this.contentHandler = validatorHandler;
+        }
     }
 
     @Override
@@ -69,6 +92,9 @@ public abstract class XMLReaderAdapter extends XMLReader {
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
+        if(null != validatorHandler) {
+            validatorHandler.setErrorHandler(errorHandler);
+        }
     }
 
     @Override

@@ -350,7 +350,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(Node node) {
-        DOMReader reader = new DOMReader();
+        DOMReader reader = new DOMReader(xmlUnmarshaller);
         return unmarshal(reader, node);
     }
 
@@ -372,7 +372,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(Node node, Class clazz) {
-        DOMReader reader = new DOMReader();
+        DOMReader reader = new DOMReader(xmlUnmarshaller);
         return unmarshal(reader, node, clazz);
     }
 
@@ -519,7 +519,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         InputStream inputStream = null;
         try {
             inputStream = url.openStream();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw XMLMarshalException.unmarshalException(e);
         }
 

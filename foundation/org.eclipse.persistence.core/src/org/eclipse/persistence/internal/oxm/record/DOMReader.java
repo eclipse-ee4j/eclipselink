@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
@@ -49,8 +50,17 @@ import org.xml.sax.ext.Locator2;
  *  
  */
 public class DOMReader extends XMLReaderAdapter {
+
     private Node currentNode;
     private DocumentPreservationPolicy docPresPolicy;
+
+    public DOMReader() {
+        super();
+    }
+
+    public DOMReader(XMLUnmarshaller xmlUnmarshaller) {
+        super(xmlUnmarshaller);
+    }
 
     @Override
     public void parse(InputSource input) throws SAXException {

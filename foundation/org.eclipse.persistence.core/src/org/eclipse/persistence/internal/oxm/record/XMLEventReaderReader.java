@@ -30,6 +30,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -45,6 +46,11 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
     private Map<Integer, List<Namespace>> namespaces;
 
     public XMLEventReaderReader() {
+        this.namespaces = new HashMap<Integer, List<Namespace>>();
+    }
+
+    public XMLEventReaderReader(XMLUnmarshaller xmlUnmarshaller) {
+        super(xmlUnmarshaller);
         this.namespaces = new HashMap<Integer, List<Namespace>>();
     }
 

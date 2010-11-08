@@ -21,6 +21,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceContext;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -38,6 +39,12 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
     private boolean qNameAware;
 
     public XMLStreamReaderReader() {
+        unmarshalNamespaceContext = new UnmarshalNamespaceContext();
+        indexedAttributeList = new IndexedAttributeList();
+    }
+
+    public XMLStreamReaderReader(XMLUnmarshaller xmlUnmarshaller) {
+        super(xmlUnmarshaller);
         unmarshalNamespaceContext = new UnmarshalNamespaceContext();
         indexedAttributeList = new IndexedAttributeList();
     }

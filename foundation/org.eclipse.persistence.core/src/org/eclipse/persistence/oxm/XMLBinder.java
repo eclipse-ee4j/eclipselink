@@ -68,7 +68,7 @@ public class XMLBinder {
         saxUnmarshaller = new SAXUnmarshaller(unmarshaller, null);
         this.context = context;
         documentPreservationPolicy = new XMLBinderPolicy();
-        reader = new DOMReader();
+        reader = new DOMReader(unmarshaller);
     }
 
     /**
