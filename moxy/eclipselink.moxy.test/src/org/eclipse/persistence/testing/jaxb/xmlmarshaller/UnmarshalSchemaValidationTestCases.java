@@ -23,6 +23,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -181,11 +182,13 @@ public class UnmarshalSchemaValidationTestCases extends TestCase {
     }
 
     public void testFailOnSecondErrorXMLEventReader() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
-        XMLInputFactory xif = XMLInputFactory.newInstance();
-        XMLEventReader xmlEventReader = xif.createXMLEventReader(stream);
+        XMLEventReader xmlEventReader = createXMLEventReader(stream);
+        if(null == xmlEventReader) {
+            return;
+        }
         try {
+            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlEventReader);
         } catch (UnmarshalException ex) {
             assertTrue(true);
@@ -195,11 +198,13 @@ public class UnmarshalSchemaValidationTestCases extends TestCase {
     }
 
     public void testFailOnSecondErrorXMLEventReaderWithClass() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
-        XMLInputFactory xif = XMLInputFactory.newInstance();
-        XMLEventReader xmlEventReader = xif.createXMLEventReader(stream);
+        XMLEventReader xmlEventReader = createXMLEventReader(stream);
+        if(null == xmlEventReader) {
+            return;
+        }
         try {
+            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlEventReader, Employee.class);
         } catch (UnmarshalException ex) {
             assertTrue(true);
@@ -209,11 +214,13 @@ public class UnmarshalSchemaValidationTestCases extends TestCase {
     }
 
     public void testFailOnSecondErrorXMLEventReaderWithType() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
-        XMLInputFactory xif = XMLInputFactory.newInstance();
-        XMLEventReader xmlEventReader = xif.createXMLEventReader(stream);
+        XMLEventReader xmlEventReader = createXMLEventReader(stream);
+        if(null == xmlEventReader) {
+            return;
+        }
         try {
+            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlEventReader, (Type) Employee.class);
         } catch (UnmarshalException ex) {
             assertTrue(true);
@@ -223,11 +230,13 @@ public class UnmarshalSchemaValidationTestCases extends TestCase {
     }
 
     public void testFailOnSecondErrorXMLStreamReader() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
-        XMLInputFactory xif = XMLInputFactory.newInstance();
-        XMLStreamReader xmlStreamReader = xif.createXMLStreamReader(stream);
+        XMLStreamReader xmlStreamReader = createXMLStreamReader(stream);
+        if(null == xmlStreamReader) {
+            return;
+        }
         try {
+            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlStreamReader);
         } catch (UnmarshalException ex) {
             assertTrue(true);
@@ -237,11 +246,13 @@ public class UnmarshalSchemaValidationTestCases extends TestCase {
     }
 
     public void testFailOnSecondErrorXMLStreamReaderWithClass() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
-        XMLInputFactory xif = XMLInputFactory.newInstance();
-        XMLStreamReader xmlStreamReader = xif.createXMLStreamReader(stream);
+        XMLStreamReader xmlStreamReader = createXMLStreamReader(stream);
+        if(null == xmlStreamReader) {
+            return;
+        }
         try {
+            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlStreamReader, Employee.class);
         } catch (UnmarshalException ex) {
             assertTrue(true);
@@ -251,11 +262,13 @@ public class UnmarshalSchemaValidationTestCases extends TestCase {
     }
 
     public void testFailOnSecondErrorXMLStreamReaderWithType() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
-        XMLInputFactory xif = XMLInputFactory.newInstance();
-        XMLStreamReader xmlStreamReader = xif.createXMLStreamReader(stream);
+        XMLStreamReader xmlStreamReader = createXMLStreamReader(stream);
+        if(null == xmlStreamReader) {
+            return;
+        }
         try {
+            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlStreamReader, (Type) Employee.class);
         } catch (UnmarshalException ex) {
             assertTrue(true);
@@ -274,6 +287,26 @@ public class UnmarshalSchemaValidationTestCases extends TestCase {
             return;
         }
         fail("No Exceptions thrown.");
+    }
+
+    private XMLEventReader createXMLEventReader(InputStream stream) {
+        try {
+            XMLInputFactory xif = XMLInputFactory.newInstance();
+            XMLEventReader xmlEventReader = xif.createXMLEventReader(stream);
+            return xmlEventReader;
+        } catch(XMLStreamException e) {
+            return null;
+        }
+    }
+
+    private XMLStreamReader createXMLStreamReader(InputStream stream) {
+        try {
+            XMLInputFactory xif = XMLInputFactory.newInstance();
+            XMLStreamReader xmlStreamReader = xif.createXMLStreamReader(stream);
+            return xmlStreamReader;
+        } catch(XMLStreamException e) {
+            return null;
+        }
     }
 
 }
