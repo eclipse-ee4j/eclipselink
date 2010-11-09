@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     James Sutherland - Update to HSQL 1.8.1 and LRG
+ *     11/04/2010-2.2 Michael O'Brien 
+ *       - 319592: HSQL 2.0.0 requires VARCHAR length specified
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -69,6 +71,9 @@ public class HSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("LONGVARCHAR", false));
         fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("LONGVARBINARY", false));
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONGVARCHAR", false));
+        // 319592: HSQL 2.0.0 requires VARCHAR length specified
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR",DEFAULT_VARCHAR_SIZE));
+        
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("LONGVARBINARY", false));
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONGVARCHAR", false));
         
