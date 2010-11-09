@@ -60,6 +60,7 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * <b>Limitations:</b>
  * <br>
  * <ul>
+ * <li>The platform class must not be used with XA transactions - see bug 329773.</li>
  * <li>SetQueryTimeout or the hint "javax.persistence.query.timeout" do not work on MaxDB - see bug 326503.</li>
  * <li>The hint "javax.persistence.lock.timeout" has no effect with a positive value; a value of 0 is translated to NOWAIT.</li>
  * <li>The maximum width of an index is 1024 bytes on MaxDB. This also limits the size of a primary key. Moreover the primary key of join tables must not exceed this limit either. As it is composed of the primary key of the two tables that are joined, the combined width of the PKs of these two tables must not exceed this limit. See bug bug 326968.</li>
