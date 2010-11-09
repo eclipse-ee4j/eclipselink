@@ -54,17 +54,20 @@ public class JavaClassImpl implements JavaClass {
     protected ParameterizedType jType;
     protected Class jClass;
     protected JavaModelImpl javaModelImpl;
+    protected Boolean isMetadataComplete;
+    protected static String XML_REGISTRY_CLASS_NAME = "javax.xml.bind.annotation.XmlRegistry";
 
     public JavaClassImpl(Class javaClass, JavaModelImpl javaModelImpl) {
         this.jClass = javaClass;
         this.javaModelImpl = javaModelImpl;
+        isMetadataComplete = false;
     }
 
     public JavaClassImpl(ParameterizedType javaType, Class javaClass, JavaModelImpl javaModelImpl) {
         this.jType = javaType;
         this.jClass = javaClass;
         this.javaModelImpl = javaModelImpl;
-        
+        isMetadataComplete = false;
     }
 
     public Collection getActualTypeArguments() {
@@ -104,7 +107,8 @@ public class JavaClassImpl implements JavaClass {
      * Assumes JavaType is a JavaClassImpl instance
      */
     public JavaAnnotation getAnnotation(JavaClass arg0) {
-        if (arg0 != null) {
+        // the only annotation we will return if isMetadataComplete == true is XmlRegistry
+        if (arg0 != null && (!isMetadataComplete || arg0.getQualifiedName().equals(XML_REGISTRY_CLASS_NAME))) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
             if (javaModelImpl.getAnnotationHelper().isAnnotationPresent(getAnnotatedElement(), annotationClass)) {
                 return new JavaAnnotationImpl(this.javaModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass));
@@ -115,9 +119,11 @@ public class JavaClassImpl implements JavaClass {
 
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
-        Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
-        for (Annotation annotation : annotations) {
-            annotationCollection.add(new JavaAnnotationImpl(annotation));
+        if (!isMetadataComplete) {
+            Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
+            for (Annotation annotation : annotations) {
+                annotationCollection.add(new JavaAnnotationImpl(annotation));
+            }
         }
         return annotationCollection;
     }
@@ -293,7 +299,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public JavaPackage getPackage() {
-        return new JavaPackageImpl(jClass.getPackage(), javaModelImpl);
+        return new JavaPackageImpl(jClass.getPackage(), javaModelImpl, isMetadataComplete);
     }
 
     public String getPackageName() {
@@ -334,11 +340,11 @@ public class JavaClassImpl implements JavaClass {
     }
     
     public JavaField getJavaField(Field field) {
-    	return new JavaFieldImpl(field, javaModelImpl);
+    	return new JavaFieldImpl(field, javaModelImpl, isMetadataComplete);
     }
     
     public JavaMethod getJavaMethod(Method method) {
-    	return new JavaMethodImpl(method, javaModelImpl);
+    	return new JavaMethodImpl(method, javaModelImpl, isMetadataComplete);
     }
 
     public JavaClass getOwningClass() {
@@ -412,7 +418,6 @@ public class JavaClassImpl implements JavaClass {
         return jClass.isSynthetic();
     }
 
-//---------------- unimplemented methods ----------------//
     public JavaClass getComponentType() {
         if(!isArray()) {
             return null;
@@ -420,6 +425,17 @@ public class JavaClassImpl implements JavaClass {
         return javaModelImpl.getClass(this.jClass.getComponentType());
     }
 
+    /**
+     * Set the indicator for XML metadata complete - if true, 
+     * annotations will be ignored.
+     * 
+     * @param isMetadataComplete
+     */
+    void setIsMetadataComplete(Boolean isMetadataComplete) {
+        this.isMetadataComplete = isMetadataComplete;
+    }
+
+    //---------------- unimplemented methods ----------------//
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         return null;
     }
@@ -427,5 +443,4 @@ public class JavaClassImpl implements JavaClass {
     public Collection getDeclaredAnnotations() {
         return null;
     }
-
 }

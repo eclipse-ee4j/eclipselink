@@ -233,15 +233,28 @@ public class JAXBContextFactory {
 
         JaxbClassLoader loader = new JaxbClassLoader(classLoader, typesToBeBound);
         typesToBeBound = updateTypesWithObjectFactory(typesToBeBound, loader);
+
         JavaModelImpl jModel;
         if(annotationHelper != null) {
         	jModel = new JavaModelImpl(loader, annotationHelper);
         } else {
         	jModel = new JavaModelImpl(loader);
         }
+        
+        // create Map of package names to metadata complete indicators
+        Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
+        for (String packageName : xmlBindings.keySet()) {
+            if (xmlBindings.get(packageName).isXmlMappingMetadataComplete()) {
+                metadataComplete.put(packageName, true);
+            }
+        }
+        if (metadataComplete.size() > 0) {
+            jModel.setMetadataCompletePackageMap(metadataComplete);
+        }
+        
         JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, jModel);
         try {
-             Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace);
+            Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace);
             return createContext(generator, properties, classLoader, loader, typesToBeBound);
         } catch (Exception ex) {
             throw new JAXBException(ex.getMessage(), ex);
@@ -261,12 +274,25 @@ public class JAXBContextFactory {
             defaultTargetNamespace = (String)properties.get(DEFAULT_TARGET_NAMESPACE_KEY);
             annotationHelper = (AnnotationHelper)properties.get(ANNOTATION_HELPER_KEY);
         }
+        
         JavaModelImpl jModel;
         if(annotationHelper != null) {
         	jModel = new JavaModelImpl(loader, annotationHelper);
         } else {
         	jModel = new JavaModelImpl(loader);
         }
+        
+        // create Map of package names to metadata complete indicators
+        Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
+        for (String packageName : xmlBindings.keySet()) {
+            if (xmlBindings.get(packageName).isXmlMappingMetadataComplete()) {
+                metadataComplete.put(packageName, true);
+            }
+        }
+        if (metadataComplete.size() > 0) {
+            jModel.setMetadataCompletePackageMap(metadataComplete);
+        }
+        
         JavaModelInputImpl inputImpl = new JavaModelInputImpl(classesToBeBound, jModel);
         try {
             Generator generator = new Generator(inputImpl, xmlBindings, loader, defaultTargetNamespace);

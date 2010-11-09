@@ -51,6 +51,7 @@
             </xs:all>
             <xs:attribute name="xml-accessor-type" type="xml-access-type" default="PUBLIC_MEMBER" />
             <xs:attribute name="xml-accessor-order" type="xml-access-order" default="UNDEFINED" />
+            <xs:attribute name="xml-mapping-metadata-complete" type="xs:boolean" default="false" />
         </xs:complexType>
     </xs:element>
     <xs:element name="xml-registry">

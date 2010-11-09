@@ -264,34 +264,38 @@ public class Helper {
     }
     
     public Class getClassForJavaClass(JavaClass javaClass){
-    	
     	String javaClassName = javaClass.getRawName();
-    	if(javaClass.isPrimitive() || javaClass.isArray() && javaClass.getComponentType().isPrimitive()){
-    		if(ClassConstants.APBYTE.getName().equals(javaClassName)){
+    	if (javaClass.isPrimitive() || javaClass.isArray() && javaClass.getComponentType().isPrimitive()){
+    		if (ClassConstants.APBYTE.getName().equals(javaClassName)){
     			return Byte[].class;    			
-    		}else if(ClassConstants.PBYTE.getName().equals(javaClassName)){
-    			return Byte.class;
-    		}else if(ClassConstants.PBOOLEAN.getName().equals(javaClassName)){
-    			return Boolean.class;
-    		}else if(ClassConstants.PSHORT.getName().equals(javaClassName)){
-    			return Short.class;
-    		}else if(ClassConstants.PFLOAT.getName().equals(javaClassName)){
-    			return Float.class;
-    		}else if(ClassConstants.PCHAR.getName().equals(javaClassName)){
-    			return Character.class;
-    		}else if(ClassConstants.PDOUBLE.getName().equals(javaClassName)){
-    			return Double.class;
-    		}else if(ClassConstants.PINT.getName().equals(javaClassName)){
-    			return Integer.class;
-    		}else if(ClassConstants.PLONG.getName().equals(javaClassName)){
-    			return Long.class;
-    		}else{
-    			return null;
     		}
-    	}else{
-    		
-    		return org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(javaClass.getQualifiedName(), loader);                          		
+    		if (ClassConstants.PBYTE.getName().equals(javaClassName)){
+    			return Byte.class;
+    		}
+    		if (ClassConstants.PBOOLEAN.getName().equals(javaClassName)){
+    			return Boolean.class;
+    		}
+    		if (ClassConstants.PSHORT.getName().equals(javaClassName)){
+    			return Short.class;
+    		}
+    		if (ClassConstants.PFLOAT.getName().equals(javaClassName)){
+    			return Float.class;
+    		}
+    		if (ClassConstants.PCHAR.getName().equals(javaClassName)){
+    			return Character.class;
+    		}
+    		if (ClassConstants.PDOUBLE.getName().equals(javaClassName)){
+    			return Double.class;
+    		}
+    		if (ClassConstants.PINT.getName().equals(javaClassName)){
+    			return Integer.class;
+    		}
+    		if (ClassConstants.PLONG.getName().equals(javaClassName)){
+    			return Long.class;
+    		}
+			return null;
     	}
+		return org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(javaClass.getQualifiedName(), loader);                          		
     }
     
     /**
@@ -317,7 +321,6 @@ public class Helper {
         if (classA == classB) {
             return true;
         }
-
         if (!(classA.getQualifiedName().equals(classB.getQualifiedName()))) {
             return false;
         }
@@ -337,7 +340,8 @@ public class Helper {
                 }
             }
             return true;
-        } else if (classB.getActualTypeArguments() == null) {
+        }
+        if (classB.getActualTypeArguments() == null) {
             return true;
         }
         return false;

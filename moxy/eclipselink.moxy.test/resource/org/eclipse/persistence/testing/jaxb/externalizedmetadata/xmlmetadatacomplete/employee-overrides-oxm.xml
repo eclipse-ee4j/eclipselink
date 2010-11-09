@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xml-mapping-metadata-complete="true">
+    <xml-schema attribute-form-default="QUALIFIED" element-form-default="QUALIFIED">
+        <xml-ns namespace-uri="http://www.example.com/xsds/real" prefix="nsx"/>
+    </xml-schema>
+    <xml-registries>
+        <xml-registry name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmetadatacomplete.ObjectFactory">
+            <xml-element-decl java-method="createFoo" name="foo" />
+            <xml-element-decl java-method="createBar" name="bar" />
+        </xml-registry>
+    </xml-registries>
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmetadatacomplete.Employee">
+            <xml-root-element name="emp" />
+            <java-attributes>
+                <xml-attribute java-attribute="id" />
+                <xml-element java-attribute="name" xml-path="contact-info/name/text()" />
+                <xml-any-element java-attribute="things" xml-path="nsx:my-things/text()"/>
+                <xml-element-refs java-attribute="fooOrBar">
+                    <xml-element-ref name="foo" type="javax.xml.bind.JAXBElement" />
+                    <xml-element-ref name="bar" type="javax.xml.bind.JAXBElement" />
+                </xml-element-refs>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

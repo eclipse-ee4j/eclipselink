@@ -71,6 +71,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/all>
  *       &lt;attribute name="xml-accessor-type" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-type" default="PUBLIC_MEMBER" />
  *       &lt;attribute name="xml-accessor-order" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-order" default="UNDEFINED" />
+ *       &lt;attribute name="xml-mapping-metadata-complete" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -103,6 +104,8 @@ public class XmlBindings {
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessorType;
     @XmlAttribute(name = "xml-accessor-order")
     protected XmlAccessOrder xmlAccessorOrder;
+    @XmlAttribute(name = "xml-mapping-metadata-complete")
+    protected Boolean xmlMappingMetadataComplete;
 
     /**
      * Gets the value of the xmlSchema property.
@@ -346,7 +349,33 @@ public class XmlBindings {
         return xmlAccessorOrder != null;
     }
 
+    /**
+     * Gets the value of the xmlMappingMetadataComplete property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlMappingMetadataComplete() {
+        if (xmlMappingMetadataComplete == null) {
+            return false;
+        } else {
+            return xmlMappingMetadataComplete;
+        }
+    }
 
+    /**
+     * Sets the value of the xmlMappingMetadataComplete property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlMappingMetadataComplete(Boolean value) {
+        this.xmlMappingMetadataComplete = value;
+    }
 
     /**
      * <p>Java class for anonymous complex type.

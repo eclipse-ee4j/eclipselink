@@ -40,17 +40,23 @@ public class JavaPackageImpl implements JavaPackage {
 
     protected Package jPkg;
     protected JavaModelImpl jModelImpl;
+    protected Boolean isMetadataComplete;
     
     public JavaPackageImpl(Package javaPackage, JavaModelImpl javaModelImpl) {
+        this(javaPackage, javaModelImpl, false);
+    }
+
+    public JavaPackageImpl(Package javaPackage, JavaModelImpl javaModelImpl, Boolean isMetadataComplete) {
         jPkg = javaPackage;
         jModelImpl = javaModelImpl;
+        this.isMetadataComplete = isMetadataComplete;
     }
 
     /**
      * Assumes JavaType is a JavaClassImpl instance
      */
     public JavaAnnotation getAnnotation(JavaClass arg0) {
-        if (arg0 != null) {
+        if (arg0 != null && !isMetadataComplete) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
             if (jPkg != null && jModelImpl.getAnnotationHelper().isAnnotationPresent(getAnnotatedElement(), annotationClass)) {
                return new JavaAnnotationImpl(jModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass));
@@ -61,7 +67,7 @@ public class JavaPackageImpl implements JavaPackage {
 
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
-        if(jPkg != null){
+        if(jPkg != null && !isMetadataComplete){
             Annotation[] annotations = jModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {
                 annotationCollection.add(new JavaAnnotationImpl(annotation));

@@ -145,10 +145,8 @@ public class Generator {
             new XMLProcessor(xmlBindings).processXML(annotationsProcessor, jModelInput, typeMappingInfos, javaClasses);
         } else {
         	annotationsProcessor.processClassesAndProperties(javaClasses, typeMappingInfos);
-        	//annotationsProcessor.processTypeInfoMappings(typeMappingInfos, javaClasses);
         }
     }
-
     
     /**
      * 

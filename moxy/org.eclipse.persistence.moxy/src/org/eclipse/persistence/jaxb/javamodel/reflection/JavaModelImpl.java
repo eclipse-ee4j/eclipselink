@@ -13,6 +13,7 @@
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
@@ -39,6 +40,7 @@ public class JavaModelImpl implements JavaModel {
 
     private ClassLoader classLoader;
     private AnnotationHelper annotationHelper;
+    private Map<String, Boolean> metadataCompletePackages;
     
     public JavaModelImpl(ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -52,7 +54,11 @@ public class JavaModelImpl implements JavaModel {
 
     public JavaClass getClass(Class<?> jClass) {
         try {
-            JavaClass javaClass = new JavaClassImpl(jClass, this);
+            JavaClassImpl javaClass = new JavaClassImpl(jClass, this);
+            // may need to set metadata complete indicator on the class
+            if (metadataCompletePackages != null && metadataCompletePackages.containsKey(javaClass.getPackageName())) {
+                javaClass.setIsMetadataComplete(metadataCompletePackages.get(javaClass.getPackageName()));
+            }
             if(classLoader instanceof JaxbClassLoader) {
                 ((JaxbClassLoader) classLoader).putClass(jClass.getCanonicalName(), jClass);
             }
@@ -81,5 +87,16 @@ public class JavaModelImpl implements JavaModel {
 
     public AnnotationHelper getAnnotationHelper() {
     	return this.annotationHelper;
+    }
+    
+    /**
+     * Set the Map of package names to metadata complete indicators for this
+     * JavaModelInput.  If a given package has no entry in this map it is
+     * assumed to be metadata incomplete.
+     *   
+     * @param metadataCompletePackageMap
+     */
+    public void setMetadataCompletePackageMap(Map<String, Boolean> metadataCompletePackageMap) {
+        this.metadataCompletePackages = metadataCompletePackageMap;
     }
 }

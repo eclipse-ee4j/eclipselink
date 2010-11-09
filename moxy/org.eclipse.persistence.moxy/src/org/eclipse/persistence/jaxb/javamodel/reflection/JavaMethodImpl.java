@@ -46,10 +46,16 @@ public class JavaMethodImpl implements JavaMethod {
 
     protected Method jMethod;
     private JavaModelImpl javaModelImpl;
+    protected Boolean isMetadataComplete;
 
     public JavaMethodImpl(Method javaMethod, JavaModelImpl javaModelImpl) {
+        this(javaMethod, javaModelImpl, false);
+    }
+
+    public JavaMethodImpl(Method javaMethod, JavaModelImpl javaModelImpl, Boolean isMetadataComplete) {
         this.jMethod = javaMethod;
         this.javaModelImpl = javaModelImpl;
+        this.isMetadataComplete = isMetadataComplete;
     }
 
     public Collection getActualTypeArguments() {
@@ -67,7 +73,7 @@ public class JavaMethodImpl implements JavaMethod {
     }
 
     public JavaAnnotation getAnnotation(JavaClass arg0) {
-        if (arg0 != null) {
+        if (arg0 != null && !isMetadataComplete) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
             if (javaModelImpl.getAnnotationHelper().isAnnotationPresent(getAnnotatedElement(), annotationClass)) {
                 return new JavaAnnotationImpl(javaModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass));
@@ -78,9 +84,11 @@ public class JavaMethodImpl implements JavaMethod {
 
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
-        Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
-        for (Annotation annotation : annotations) {
-            annotationCollection.add(new JavaAnnotationImpl(annotation));
+        if (!isMetadataComplete) {
+            Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
+            for (Annotation annotation : annotations) {
+                annotationCollection.add(new JavaAnnotationImpl(annotation));
+            }
         }
         return annotationCollection;
     }
@@ -134,6 +142,7 @@ public class JavaMethodImpl implements JavaMethod {
     public AnnotatedElement getAnnotatedElement() {
     	return jMethod;
     }
+    
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }

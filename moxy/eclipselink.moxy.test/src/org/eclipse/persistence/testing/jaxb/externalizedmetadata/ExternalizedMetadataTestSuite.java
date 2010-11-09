@@ -46,6 +46,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref.XmlIdR
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlinlinebinarydata.XmlInlineBinaryDataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.XmlJoinNodeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmllist.XmlListTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmetadatacomplete.XmlMetadataCompleteTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype.XmlMimeTypeCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmixed.XmlMixedTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry.XmlRegistryTestCases;
@@ -108,6 +109,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlClassExtractorTestCases.class);
         suite.addTestSuite(XmlDiscriminatorTestCases.class);
         suite.addTestSuite(XmlJoinNodeTestCases.class);
+        suite.addTestSuite(XmlMetadataCompleteTestCases.class);
         return suite;
     }
     

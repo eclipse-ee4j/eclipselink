@@ -46,14 +46,20 @@ public class JavaFieldImpl implements JavaField {
 
     protected Field jField;
     private JavaModelImpl javaModelImpl;
+    protected Boolean isMetadataComplete;
 
     public JavaFieldImpl(Field javaField, JavaModelImpl javaModelImpl) {
+        this(javaField, javaModelImpl, false);
+    }
+
+    public JavaFieldImpl(Field javaField, JavaModelImpl javaModelImpl, Boolean isMetadataComplete) {
         this.jField = javaField;
         this.javaModelImpl = javaModelImpl;
+        this.isMetadataComplete = isMetadataComplete;
     }
 
     public JavaAnnotation getAnnotation(JavaClass arg0) {
-        if (arg0 != null) {
+        if (arg0 != null && !isMetadataComplete) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
             if (javaModelImpl.getAnnotationHelper().isAnnotationPresent(getAnnotatedElement(), annotationClass)) {
                 return new JavaAnnotationImpl(javaModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass));
@@ -64,9 +70,11 @@ public class JavaFieldImpl implements JavaField {
 
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
-        Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
-        for (Annotation annotation : annotations) {
-            annotationCollection.add(new JavaAnnotationImpl(annotation));
+        if (!isMetadataComplete) {
+            Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
+            for (Annotation annotation : annotations) {
+                annotationCollection.add(new JavaAnnotationImpl(annotation));
+            }
         }
         return annotationCollection;
     }
@@ -129,11 +137,11 @@ public class JavaFieldImpl implements JavaField {
         return Modifier.isStatic(getModifiers());
     }
 
-//  ---------------- unimplemented methods ----------------//
     public boolean isEnumConstant() {
         return jField.isEnumConstant();
     }
 
+    //  ---------------- unimplemented methods ----------------//
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         return null;
     }
@@ -141,5 +149,4 @@ public class JavaFieldImpl implements JavaField {
     public Collection getDeclaredAnnotations() {
         return null;
     }
-
 }
