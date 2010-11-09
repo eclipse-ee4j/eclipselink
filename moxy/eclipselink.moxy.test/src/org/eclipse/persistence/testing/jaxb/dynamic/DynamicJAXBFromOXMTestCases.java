@@ -1188,11 +1188,11 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
             DynamicEntity emp = (DynamicEntity) iterator.next();
             DynamicEntity add = emp.get("address");
 
-            String idString = emp.get("id").toString();
+            String idString = ((Integer)emp.get("id")).toString();
             // Employee # xxxx  ==> Address # xxxxx
             String expectedAddressIdString = idString + idString.charAt(0);
 
-            assertEquals("Incorrect Employee/Address relationship.", add.get("id").toString(), expectedAddressIdString);
+            assertEquals("Incorrect Employee/Address relationship.", ((Integer)add.get("id")).toString(), expectedAddressIdString);
         }
     }
 

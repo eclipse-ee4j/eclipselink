@@ -251,7 +251,6 @@ public class XMLProcessor {
                     }
                 }
             }
-
             // apply package-level @XmlJavaTypeAdapters
             if (xmlBindings.getXmlJavaTypeAdapters() != null) {
                 Map<String, TypeInfo> typeInfos = aProcessor.getTypeInfosForPackage(packageName);
@@ -270,7 +269,16 @@ public class XMLProcessor {
                     }
                 }
             }
+        }
+        for (String packageName : xmlBindingMap.keySet()) {
+            ArrayList classesToProcess = pkgToClassMap.get(packageName);
+            if (classesToProcess == null) {
+                getLogger().logWarning("jaxb_metadata_warning_no_classes_to_process", new Object[] { packageName });
+                continue;
+            }
 
+            xmlBindings = xmlBindingMap.get(packageName);
+            JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
             // post-build the TypeInfo objects
             javaClasses = annotationsProcessor.postBuildTypeInfo(javaClasses);
 
@@ -302,7 +310,8 @@ public class XMLProcessor {
             }
 
             // update TypeInfo objects based on the JavaTypes
-            jTypes = xmlBindings.getJavaTypes();
+            JavaTypes jTypes = xmlBindings.getJavaTypes();
+            NamespaceInfo nsInfo = annotationsProcessor.getPackageToNamespaceMappings().get(packageName);
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
                     processJavaType(javaType, typeInfosForPackage.get(javaType.getName()), nsInfo);
