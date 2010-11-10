@@ -43,8 +43,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
     public boolean isComplexDatabaseType() {
         return true;
     }
-    
-    @Override
+
     public int getSqlCode() {
         return ARRAY;
     }

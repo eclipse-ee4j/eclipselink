@@ -36,8 +36,7 @@ public class OracleObjectType extends ComplexDatabaseType implements Cloneable {
     public boolean isComplexDatabaseType() {
         return true;
     }
-    
-    @Override
+
     public int getSqlCode() {
         return Types.JAVA_OBJECT;
     }
