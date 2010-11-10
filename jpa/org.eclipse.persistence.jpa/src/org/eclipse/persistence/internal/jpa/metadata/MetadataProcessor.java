@@ -37,10 +37,12 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
@@ -82,16 +84,18 @@ public class MetadataProcessor {
     protected MetadataFactory m_factory;
     protected MetadataProject m_project;
     protected AbstractSession m_session;
+    protected Map m_predeployProperties;
 
     /**
      * INTERNAL:
      * Called from EntityManagerSetupImpl. The 'real' EJB 3.0 processing
      * that includes XML and annotations.
      */
-    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean enableLazyForOneToOne, boolean weaveEager) {
+    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean enableLazyForOneToOne, boolean weaveEager, Map predeployProperties) {
         m_loader = loader;
         m_session = session;
         m_project = new MetadataProject(puInfo, session, enableLazyForOneToOne, weaveEager);
+        m_predeployProperties = predeployProperties;
     }
     
     /**
@@ -259,12 +263,12 @@ public class MetadataProcessor {
 
         // Add all the classes from the <jar> specifications.
         for (URL url : persistenceUnitInfo.getJarFileUrls()) {
-            classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(url, m_loader));
+            classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(url, m_loader, null));
         }
 
         // Add all the classes off the classpath at the persistence unit root url.
         if (! persistenceUnitInfo.excludeUnlistedClasses()) {
-            classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), m_loader));
+            classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), m_loader, m_predeployProperties));
         }
         
         // 5 - Go through all the class names we found and add those classes 
@@ -326,6 +330,10 @@ public class MetadataProcessor {
             try {
                 Enumeration<URL> mappingFileURLs = m_loader.getResources(mappingFileName);
                 
+                if (!mappingFileURLs.hasMoreElements()){
+                    mappingFileURLs = m_loader.getResources("/./" + mappingFileName);
+                }
+                
                 if (mappingFileURLs.hasMoreElements()) {
                     URL nextURL = mappingFileURLs.nextElement();
 
@@ -360,7 +368,7 @@ public class MetadataProcessor {
 
             Archive par = null;
             try {
-                par = PersistenceUnitProcessor.getArchiveFactory(m_loader).createArchive(rootURL);
+                par = PersistenceUnitProcessor.getArchiveFactory(m_loader).createArchive(rootURL, null);
                 ormURL = par.getEntryAsURL(ormXMLFile);
 
                 if (ormURL != null) {

@@ -182,7 +182,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @return a DatabaseQuery representing the given jpql.
      */
     public static DatabaseQuery buildEJBQLDatabaseQuery(String jpql, Session session) {
-        return buildEJBQLDatabaseQuery(null, jpql, session, null, null, null);
+        return buildEJBQLDatabaseQuery(null, jpql, session, null, null, session.getDatasourcePlatform().getConversionManager().getLoader());
     }
 
     /**

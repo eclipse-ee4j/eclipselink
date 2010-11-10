@@ -64,8 +64,5 @@ public abstract class ArchiveBase {
     public void setDescriptorLocation(String descriptorLocation) {
         this.descriptorLocation = descriptorLocation;
     }
-
-    
-    
-    
 }
+

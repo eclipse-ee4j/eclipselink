@@ -45,12 +45,19 @@ import org.eclipse.persistence.logging.SessionLog;
  */
 public abstract class JPAInitializer {
 
+    /**
+     * This is used by OSGi related bundles.  In some OSGi implementations (like Eclipse PDE), the
+     * resources in a bundle will potentially be stored somewhere other than ".".  This stores the prefix
+     * under which the resources are stored.
+     */
+    public static String BUNDLE_RESOURCE_PREFIX = "";
+    
     // The internal loader is used by applications that do weaving to pre load classes
     // When this flag is set to false, we will not be able to weave.
     protected boolean shouldCreateInternalLoader = true;
     
     protected ClassLoader initializationClassloader = null;
-
+    
     /**
      * Initialize the logging file if it is specified by the system property.
      */
@@ -76,7 +83,7 @@ public abstract class JPAInitializer {
         // Bug#4452468  When globalInstrumentation is null, there is no weaving
         checkWeaving(mergedProperties);
         
-        Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m));
+        Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, persistenceHelper.getClassLoader(persistenceUnitInfo.getPersistenceUnitName(), m), m);
         // Create the temp loader that will not cache classes for entities in our persistence unit
         ClassLoader tempLoader = createTempLoader(tempLoaderSet);
         persistenceUnitInfo.setNewTempClassLoader(tempLoader);

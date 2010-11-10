@@ -19,6 +19,7 @@ import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -36,12 +37,13 @@ import org.eclipse.persistence.jpa.ArchiveFactory;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class ArchiveFactoryImpl implements ArchiveFactory {
+    
     /*
      * Implementation Note: This class does not have any dependency on either
      * EclipseLink or GlassFish implementation classes. Please retain this separation.
      */
 
-    private Logger logger;
+    protected Logger logger;
 
     @SuppressWarnings("deprecation")
     public ArchiveFactoryImpl() {
@@ -51,12 +53,12 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
     public ArchiveFactoryImpl(Logger logger) {
         this.logger = logger;
     }
-
-    public Archive createArchive(URL rootUrl) throws URISyntaxException, IOException {
-        return createArchive(rootUrl, null);
+    
+    public Archive createArchive(URL rootUrl, Map properties) throws URISyntaxException, IOException {
+        return createArchive(rootUrl, null, properties);
     }
 
-    public Archive createArchive(URL rootUrl, String descriptorLocation) throws URISyntaxException, IOException {
+    public Archive createArchive(URL rootUrl, String descriptorLocation, Map properties) throws URISyntaxException, IOException {
         logger.entering("ArchiveFactoryImpl", "createArchive", new Object[]{rootUrl, descriptorLocation});
         Archive result = null;
         String protocol = rootUrl.getProtocol();
@@ -123,7 +125,7 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
      * format InputStream can be obtained.
      * @param url
      */
-    private boolean isJarInputStream(URL url) throws IOException {
+    protected boolean isJarInputStream(URL url) throws IOException {
         InputStream in = null;
         try {
         	in = url.openStream();

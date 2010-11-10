@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
@@ -73,7 +74,11 @@ public class MetadataAsmFactory extends MetadataFactory {
         ClassMetadataVisitor visitor = new ClassMetadataVisitor();
         InputStream stream = null;
         try {
-            stream = m_loader.getResourceAsStream(className.replace('.', '/') + ".class");
+            String resourceString = className.replace('.', '/') + ".class";
+            stream = m_loader.getResourceAsStream(resourceString);
+            if (stream == null){
+                stream = m_loader.getResourceAsStream(JPAInitializer.BUNDLE_RESOURCE_PREFIX + resourceString);
+            }
             ClassReader reader = new ClassReader(stream);
             Attribute[] attributes = new Attribute[] { new RuntimeVisibleAnnotations(), new RuntimeVisibleParameterAnnotations(), new SignatureAttribute() };
             reader.accept(visitor, attributes, false);

@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 
 /**
  * This interface should be implemented by users that want to provide a custom way
@@ -33,7 +34,7 @@ public interface ArchiveFactory {
      * @throws URISyntaxException
      * @throws IOException
      */
-    public Archive createArchive(URL rootUrl) throws URISyntaxException, IOException;
+    public Archive createArchive(URL rootUrl, Map properties) throws URISyntaxException, IOException;
 
     /**
      * Return an instance of an implementer of Archive that can process the URL provided
@@ -43,5 +44,5 @@ public interface ArchiveFactory {
      * @throws URISyntaxException
      * @throws IOException
      */
-    public Archive createArchive(URL rootUrl, String descriptorLocation) throws URISyntaxException, IOException;
+    public Archive createArchive(URL rootUrl, String descriptorLocation, Map properties) throws URISyntaxException, IOException;
 }

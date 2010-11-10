@@ -110,7 +110,7 @@ public class StaticWeaveClassTransformer {
         Archive archive = null;
         try {
             
-            archive = (new ArchiveFactoryImpl()).createArchive(inputArchiveURL, persistenceXMLLocation == null ? PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT : persistenceXMLLocation);
+            archive = (new ArchiveFactoryImpl()).createArchive(inputArchiveURL, persistenceXMLLocation == null ? PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT : persistenceXMLLocation, null);
             
             List<SEPersistenceUnitInfo> persistenceUnitsList = 
             PersistenceUnitProcessor.processPersistenceArchive(archive, aclassloader);
@@ -157,7 +157,7 @@ public class StaticWeaveClassTransformer {
         }
         
         // Create an instance of MetadataProcessor for specified persistence unit info
-        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, true, weaveEager);
+        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, true, weaveEager, null);
         
         //bug:299926 - Case insensitive table / column matching with native SQL queries
         EntityManagerSetupImpl.updateCaseSensitivitySettings(unitInfo.getProperties(), processor.getProject(), session);

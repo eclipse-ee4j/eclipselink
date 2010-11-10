@@ -251,7 +251,7 @@ public class StaticWeaveProcessor {
         }
 
         // Starting process.
-        Archive sourceArchive =(new ArchiveFactoryImpl()).createArchive(source);
+        Archive sourceArchive =(new ArchiveFactoryImpl()).createArchive(source, null, null);
         try {
             Iterator entries = sourceArchive.getEntries();
             while (entries.hasNext()){

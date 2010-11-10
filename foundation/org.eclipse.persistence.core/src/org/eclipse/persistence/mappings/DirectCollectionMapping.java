@@ -865,6 +865,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
         if(null != this.attributeClassification) {
             this.attributeObjectClassification = Helper.getObjectClass(this.attributeClassification);
+            this.directField.setType(this.attributeClassification);
         }
         
 
@@ -2614,6 +2615,18 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         getDirectField().setType(fieldType);
     }
 
+    
+    /**
+     * ADVANCED:
+     * Set the class type of the field value.
+     * This can be used if field value differs from the object value,
+     * has specific typing requirements such as usage of java.sql.Blob or NChar.
+     * This must be called after the field name has been set.
+     */
+    public void setDirectFieldClassificationName(String className) {
+        getDirectField().setTypeName(className);
+    }
+    
     /**
      * PUBLIC:
      * Set the direct field name in the reference table.

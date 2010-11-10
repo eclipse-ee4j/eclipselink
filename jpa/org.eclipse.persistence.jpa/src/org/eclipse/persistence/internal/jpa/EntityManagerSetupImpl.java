@@ -966,7 +966,7 @@ public class EntityManagerSetupImpl {
             }
             if (!isSessionLoadedFromSessionsXML ) {
                 // Create an instance of MetadataProcessor for specified persistence unit info
-                processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving, weaveEager);
+                processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving, weaveEager, predeployProperties);
 
                 //bug:299926 - Case insensitive table / column matching with native SQL queries
                 EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);

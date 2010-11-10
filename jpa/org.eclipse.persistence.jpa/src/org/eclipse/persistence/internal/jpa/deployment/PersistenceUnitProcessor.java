@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.StringTokenizer;
@@ -64,6 +65,11 @@ import org.eclipse.persistence.jpa.ArchiveFactory;
 public class PersistenceUnitProcessor {    
     
     /**
+     * Cache the ArchiveFactory used to derive Archives.  This allows applications
+     * to set the ArchiveFactory
+     */
+    public static ArchiveFactory ARCHIVE_FACTORY = null;
+    /**
      * Entries in a zip file are directory entries using slashes to separate 
      * them. Build a class name using '.' instead of slash and removing the 
      * '.class' extension.
@@ -81,15 +87,15 @@ public class PersistenceUnitProcessor {
      * Build a set that contains all the class names at a URL.
      * @return a Set of class name strings
      */
-    public static Set<String> buildClassSet(PersistenceUnitInfo persistenceUnitInfo, ClassLoader loader){
+    public static Set<String> buildClassSet(PersistenceUnitInfo persistenceUnitInfo, ClassLoader loader, Map properties){
         Set<String> set = new HashSet<String>();
         set.addAll(persistenceUnitInfo.getManagedClassNames());
         Iterator i = persistenceUnitInfo.getJarFileUrls().iterator();
         while (i.hasNext()) {
-            set.addAll(getClassNamesFromURL((URL)i.next(), loader));
+            set.addAll(getClassNamesFromURL((URL)i.next(), loader, properties));
         }
         if (!persistenceUnitInfo.excludeUnlistedClasses()){
-            set.addAll(getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), loader));
+            set.addAll(getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), loader, properties));
         }
         // No longer need to add classes from XML, as temp class loader is only used for sessions.xml.
         return set;
@@ -252,7 +258,7 @@ public class PersistenceUnitProcessor {
 
                     URL descUrl = resources.nextElement();
                     URL puRootUrl = computePURootURL(descUrl, descriptorPath);
-                    archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath);
+                    archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath, null);
     
                    // archive = new BundleArchive(puRootUrl, descUrl);
                     if (archive != null){
@@ -265,7 +271,7 @@ public class PersistenceUnitProcessor {
                 String descPath = descriptorPath.substring(splitPosition+2);
                 // TODO This causes the bundle to be resolved (not what we want)!
                 URL prefixUrl = loader.getResource(jarPrefixPath);
-                archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(prefixUrl, descPath);
+                archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(prefixUrl, descPath, null);
 
                 if (archive != null){
                     archives.add(archive);
@@ -282,6 +288,9 @@ public class PersistenceUnitProcessor {
     }
 
     public static ArchiveFactory getArchiveFactory(ClassLoader loader){
+        if (ARCHIVE_FACTORY != null){
+            return ARCHIVE_FACTORY;
+        }
         String factoryClassName = System.getProperty(SystemProperties.ARCHIVE_FACTORY, null);
         if (factoryClassName == null){
             return new ArchiveFactoryImpl();
@@ -313,12 +322,12 @@ public class PersistenceUnitProcessor {
         }
     }
     
-    public static Set<String> getClassNamesFromURL(URL url, ClassLoader loader) {
+    public static Set<String> getClassNamesFromURL(URL url, ClassLoader loader, Map properties) {
         Set<String> classNames = new HashSet<String>();
         Archive archive = null;
         try {
-            archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(url);
-        
+            archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(url, properties);
+
             for (Iterator<String> entries = archive.getEntries(); entries.hasNext();) {
                 String entry = entries.next();
                 if (entry.endsWith(".class")){ // NOI18N
@@ -508,6 +517,10 @@ public class PersistenceUnitProcessor {
             info.setPersistenceUnitRootUrl(baseURL);           
         }
         return myContentHandler.getPersistenceUnits();
+    }
+    
+    public static void setArchiveFactory(ArchiveFactory factory){
+        ARCHIVE_FACTORY = factory;
     }
     
     /**

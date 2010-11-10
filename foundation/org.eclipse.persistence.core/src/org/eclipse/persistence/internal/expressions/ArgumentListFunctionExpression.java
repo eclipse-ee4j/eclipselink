@@ -12,11 +12,8 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.expressions.ListExpressionOperator;

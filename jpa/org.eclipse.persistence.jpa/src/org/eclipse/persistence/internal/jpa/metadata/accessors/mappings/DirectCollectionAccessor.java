@@ -365,7 +365,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // specification) we need to set the attribute classification on the 
         // mapping to ensure we do the right conversions.
         if (hasAttributeType() || getAccessibleObject().isGenericCollectionType()) {
-            mapping.setDirectFieldClassification(getJavaClass(getReferenceClass()));
+            mapping.setDirectFieldClassificationName(getReferenceClassName());
         }
         
         // Process a converter for this mapping. We will look for a convert
