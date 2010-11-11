@@ -12,6 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Employee {
     private int id;
     private String name;
@@ -24,6 +28,7 @@ public class Employee {
         super();
     }
 
+    @XmlElement(name="id")
     public int getID() {
         return id;
     }

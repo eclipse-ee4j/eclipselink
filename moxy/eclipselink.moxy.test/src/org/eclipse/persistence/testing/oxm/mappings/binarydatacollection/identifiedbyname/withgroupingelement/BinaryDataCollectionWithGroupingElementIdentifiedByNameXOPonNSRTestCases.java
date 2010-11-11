@@ -26,6 +26,7 @@ import javax.activation.DataHandler;
 
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.Employee;
@@ -80,11 +81,17 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTest
 
     public void setUp() throws Exception {
         super.setUp();
-        xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
         xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
         
     	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
         
     }
-    
+
+    @Override
+    protected XMLMarshaller createMarshaller() {
+        XMLMarshaller marshaller = super.createMarshaller();
+        marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
+        return marshaller;
+    }
+
 }

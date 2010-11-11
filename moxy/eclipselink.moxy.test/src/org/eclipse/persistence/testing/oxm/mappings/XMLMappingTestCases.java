@@ -19,6 +19,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,6 +32,11 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.TypeInfoProvider;
+import javax.xml.validation.Validator;
+import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
@@ -49,7 +55,14 @@ import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
+import org.w3c.dom.ls.LSResourceResolver;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 public abstract class XMLMappingTestCases extends OXTestCase {
@@ -103,10 +116,14 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         setupControlDocs();
 
         xmlContext = getXMLContext(project);
-        xmlMarshaller = xmlContext.createMarshaller();
-        xmlMarshaller.setFormattedOutput(false);
+        xmlMarshaller = createMarshaller();
         xmlUnmarshaller = xmlContext.createUnmarshaller();
+    }
 
+    protected XMLMarshaller createMarshaller() {
+        XMLMarshaller xmlMarshaller = xmlContext.createMarshaller();
+        xmlMarshaller.setFormattedOutput(false);
+        return xmlMarshaller;
     }
 
     public void tearDown() {
@@ -307,6 +324,34 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         int sizeAfter = getNamespaceResolverSize(desc);
 
         assertEquals(sizeBefore, sizeAfter);
+
+        StringReader reader = new StringReader(writer.toString());
+        InputSource inputSource = new InputSource(reader);
+        Document testDocument = parser.parse(inputSource);
+        writer.close();
+        reader.close();
+
+        objectToXMLDocumentTest(testDocument);
+    }
+
+    public void testValidatingMarshal() throws Exception {
+        StringWriter writer = new StringWriter();
+        Object objectToWrite = getWriteControlObject();
+        XMLDescriptor desc = null;
+        if (objectToWrite instanceof XMLRoot) {
+            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+            if(null != xmlRoot.getObject()) {
+                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+            }
+        } else {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+        }
+
+        int sizeBefore = getNamespaceResolverSize(desc);
+
+        XMLMarshaller validatingMarshaller = createMarshaller();
+        validatingMarshaller.setSchema(FakeSchema.INSTANCE);
+        validatingMarshaller.marshal(objectToWrite, writer);
 
         StringReader reader = new StringReader(writer.toString());
         InputSource inputSource = new InputSource(reader);
@@ -526,6 +571,96 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     public void setShouldRemoveEmptyTextNodesFromControlDoc(boolean value) {
         this.shouldRemoveEmptyTextNodesFromControlDoc = value;
+    }
+
+    protected static class FakeSchema extends Schema {
+
+        public static FakeSchema INSTANCE = new FakeSchema();
+
+        private ValidatorHandler validatorHandler;
+
+        private FakeSchema() {
+            validatorHandler = new FakeValidatorHandler();
+        }
+
+        @Override
+        public Validator newValidator() {
+            return null;
+        }
+
+        @Override
+        public ValidatorHandler newValidatorHandler() {
+            return validatorHandler;
+        }
+        
+    }
+
+    private static class FakeValidatorHandler extends ValidatorHandler {
+
+        public void setDocumentLocator(Locator locator) {
+        }
+
+        public void startDocument() throws SAXException {
+        }
+
+        public void endDocument() throws SAXException {
+        }
+
+        public void startPrefixMapping(String prefix, String uri) throws SAXException {
+        }
+
+        public void endPrefixMapping(String prefix) throws SAXException {
+        }
+
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+        }
+
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+        }
+
+        public void characters(char[] ch, int start, int length) throws SAXException {
+        }
+
+        public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+        }
+
+        public void processingInstruction(String target, String data) throws SAXException {
+        }
+
+        public void skippedEntity(String name) throws SAXException {
+        }
+
+        @Override
+        public void setContentHandler(ContentHandler receiver) {
+        }
+
+        @Override
+        public ContentHandler getContentHandler() {
+            return null;
+        }
+
+        @Override
+        public void setErrorHandler(ErrorHandler errorHandler) {
+        }
+
+        @Override
+        public ErrorHandler getErrorHandler() {
+            return null;
+        }
+
+        @Override
+        public void setResourceResolver(LSResourceResolver resourceResolver) {
+        }
+
+        @Override
+        public LSResourceResolver getResourceResolver() {
+            return null;
+        }
+
+        @Override
+        public TypeInfoProvider getTypeInfoProvider() {
+            return null;
+        }
     }
 
 }

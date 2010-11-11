@@ -27,6 +27,10 @@ public class CustomErrorValidationEventHandler implements ValidationEventHandler
         ignore = numberOfErrorsToIgnore;
     }
 
+    public int getErrorCount() {
+        return errorCount;
+    }
+
     public boolean handleEvent(ValidationEvent event) {
         if (event.getSeverity() != ValidationEvent.ERROR) {
             return false;

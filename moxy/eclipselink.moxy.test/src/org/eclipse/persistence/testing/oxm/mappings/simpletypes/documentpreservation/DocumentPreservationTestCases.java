@@ -149,6 +149,20 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
+    public void testValidatingMarshal() throws Exception {
+        StringWriter writer = new StringWriter();
+        XMLMarshaller marshaller = getXMLContext().createMarshaller();
+        marshaller.setFormattedOutput(false);
+        marshaller.setSchema(FakeSchema.INSTANCE);
+        marshaller.marshal(getWriteControlObject(), writer);
+
+        StringReader reader = new StringReader(writer.toString());
+        InputSource inputSource = new InputSource(reader);
+        Document testDocument = parser.parse(inputSource);
+        objectToXMLDocumentTest(testDocument);
+    }
+
     public void testObjectToOutputStream() throws Exception {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
     	XMLMarshaller marshaller = getXMLContext().createMarshaller();

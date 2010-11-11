@@ -22,6 +22,7 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identi
 
 import java.util.Vector;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.Employee;
@@ -58,8 +59,14 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameEmptyNSRTest
 
     public void setUp() throws Exception {
         super.setUp();
-        xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
         xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
     }
-    
+
+    @Override
+    protected XMLMarshaller createMarshaller() {
+        XMLMarshaller marshaller = super.createMarshaller();
+        marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
+        return marshaller;
+    }
+
 }

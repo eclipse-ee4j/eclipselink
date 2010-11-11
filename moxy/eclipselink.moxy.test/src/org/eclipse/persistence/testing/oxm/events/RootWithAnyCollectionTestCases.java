@@ -19,6 +19,7 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Document;
 
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
@@ -55,12 +56,18 @@ public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
     
     public void setUp() throws Exception {
         super.setUp();
-        listener = new MarshalListenerImpl();
         unmarshalListener = new UnmarshalListenerImpl();
-        
-        this.xmlMarshaller.setMarshalListener(listener);
         this.xmlUnmarshaller.setUnmarshalListener(unmarshalListener);
     }
+
+    @Override
+    protected XMLMarshaller createMarshaller() {
+        XMLMarshaller marshaller = super.createMarshaller();
+        listener = new MarshalListenerImpl();
+        marshaller.setMarshalListener(listener);
+        return marshaller;
+    }
+
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
         assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));

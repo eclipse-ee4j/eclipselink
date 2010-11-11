@@ -18,6 +18,7 @@ import javax.activation.DataHandler;
 
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
@@ -56,7 +57,6 @@ public class BinaryDataByteObjectArrayTestCases extends XMLMappingTestCases{
 
 	  public void setUp() throws Exception {
 	        super.setUp();
-	        xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
 	        attachmentUnmarshaller = new MyAttachmentUnmarshaller();
 	        xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
 	        
@@ -64,8 +64,15 @@ public class BinaryDataByteObjectArrayTestCases extends XMLMappingTestCases{
 	    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
 	   
 	    }
-	    
-	    public void xmlToObjectTest(Object testObject) throws Exception {
+
+    @Override
+    protected XMLMarshaller createMarshaller() {
+        XMLMarshaller marshaller = super.createMarshaller();
+        marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
+        return marshaller;
+    }
+
+        public void xmlToObjectTest(Object testObject) throws Exception {
 	        super.xmlToObjectTest(testObject);
 	        
 	        assertTrue(attachmentUnmarshaller.getAttachmentAsDataHandlerWasCalled());

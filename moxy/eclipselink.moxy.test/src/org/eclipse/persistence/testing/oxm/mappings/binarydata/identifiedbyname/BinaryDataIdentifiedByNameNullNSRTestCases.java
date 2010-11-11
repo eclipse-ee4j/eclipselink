@@ -41,6 +41,7 @@
 package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.Employee;
@@ -68,11 +69,17 @@ public class BinaryDataIdentifiedByNameNullNSRTestCases extends XMLMappingTestCa
 
     public void setUp() throws Exception {
         super.setUp();
-        xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
         xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
         
         byte[] bytes = MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes();
     	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
     }
-    
+
+    @Override
+    protected XMLMarshaller createMarshaller() {
+        XMLMarshaller marshaller = super.createMarshaller();
+        marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
+        return marshaller;
+    }
+
 }

@@ -61,4 +61,8 @@ public class UnmarshalTestCases extends XMLMappingTestCases {
     public void testObjectToXMLStringWriter() throws Exception {
     }
 
+    @Override
+    public void testValidatingMarshal() throws Exception {
+    }
+
 }

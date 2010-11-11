@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
 import javax.activation.DataHandler;
 
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -35,13 +36,19 @@ public class BinaryDataCompositeSelfTestCases extends XMLMappingTestCases{
     public void setUp() throws Exception {
     	super.setUp();
     	
-    	this.attachmentMarshaller = new MyAttachmentMarshaller();
-    	xmlMarshaller.setAttachmentMarshaller(this.attachmentMarshaller);
     	xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
     	
     	byte[] bytes = new byte[] {1, 2, 3, 4, 5, 6};    	
     	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
     	
+    }
+
+    @Override
+    protected XMLMarshaller createMarshaller() {
+        XMLMarshaller marshaller = super.createMarshaller();
+        this.attachmentMarshaller = new MyAttachmentMarshaller();
+        marshaller.setAttachmentMarshaller(this.attachmentMarshaller);
+        return marshaller;
     }
 
     protected Object getControlObject() {

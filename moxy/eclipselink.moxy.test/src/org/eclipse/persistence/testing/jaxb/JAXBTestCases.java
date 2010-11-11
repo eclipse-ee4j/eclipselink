@@ -238,6 +238,11 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     public void testObjectToXMLStringWriter() throws Exception {
         objectToXMLStringWriter(getWriteControlObject());
     }
+
+    @Override
+    public void testValidatingMarshal() {
+    }
+
     public void objectToXMLStringWriter(Object objectToWrite) throws Exception {
         StringWriter writer = new StringWriter();
 

@@ -49,6 +49,7 @@ import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.OutputStreamRecord;
+import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord;
 import org.eclipse.persistence.oxm.record.WriterRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -61,6 +62,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
 
@@ -96,6 +98,7 @@ public class XMLMarshaller implements Cloneable {
     private XMLContext xmlContext;
     private XMLMarshalListener marshalListener;
     private XMLAttachmentMarshaller attachmentMarshaller;
+    private ErrorHandler errorHandler;
     private Properties marshalProperties;
     private Schema schema;
     
@@ -177,6 +180,14 @@ public class XMLMarshaller implements Cloneable {
      */
     public void setXMLContext(XMLContext value) {
         xmlContext = value;
+    }
+
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
+
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
     /**
@@ -818,6 +829,9 @@ public class XMLMarshaller implements Cloneable {
      * @param descriptor the XMLDescriptor for the object being marshalled
      */
     private void marshal(Object object, MarshalRecord marshalRecord, AbstractSession session, XMLDescriptor descriptor, boolean isXMLRoot) {
+        if(null != schema) {
+            marshalRecord = new ValidatingMarshalRecord(marshalRecord, this);
+        }
         if (getAttachmentMarshaller() != null) {
             marshalRecord.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
         }

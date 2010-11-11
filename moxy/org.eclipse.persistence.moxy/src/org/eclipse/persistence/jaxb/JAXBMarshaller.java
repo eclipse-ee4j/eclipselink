@@ -490,6 +490,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         } else {
             validationEventHandler = newValidationEventHandler;
         }
+        xmlMarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
     }
 
     public void setListener(Marshaller.Listener listener) {
