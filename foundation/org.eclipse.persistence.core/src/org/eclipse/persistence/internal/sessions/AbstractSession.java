@@ -3572,6 +3572,16 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
+     * Return true if SQL logging should log visible bind parameters. If the 
+     * shouldDisplayData is not set, check the session log level and return 
+     * true for a level greater than CONFIG.
+     */
+    public boolean shouldDisplayData() {
+        return getSessionLog().shouldDisplayData();
+    }
+    
+    /**
+     * PUBLIC:
      * <p>
      * Check if a message of the given level would actually be logged.
      * </p><p>

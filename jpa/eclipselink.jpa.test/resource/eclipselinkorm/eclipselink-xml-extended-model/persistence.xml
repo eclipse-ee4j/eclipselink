@@ -18,6 +18,8 @@
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="extended-xml-advanced-model-drop.jdbc"/>
             <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.logging.level" value="FINE"/>
+            <property name="eclipselink.logging.parameters" value="false"/>
             <property name="NAME" value="Montreal%"/>
         </properties>
     </persistence-unit> 

@@ -353,21 +353,27 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public static void appendLogParameters(Collection parameters, Accessor accessor, StringWriter writer, AbstractSession session) {
         writer.write("\tbind => [");
-        for (Iterator paramsEnum = parameters.iterator(); paramsEnum.hasNext();) {
-            Object parameter = paramsEnum.next();
-            if (parameter instanceof DatabaseField) {
-                writer.write("null");
-            } else {
-                if (session != null) {
-                    parameter = session.getPlatform().convertToDatabaseType(parameter);
+        
+        if (session == null || (session != null && session.shouldDisplayData())) {
+            for (Iterator paramsEnum = parameters.iterator(); paramsEnum.hasNext();) {
+                Object parameter = paramsEnum.next();
+                if (parameter instanceof DatabaseField) {
+                    writer.write("null");
+                } else {
+                    if (session != null) {
+                        parameter = session.getPlatform().convertToDatabaseType(parameter);
+                    }
+                    writer.write(String.valueOf(parameter));
                 }
-                writer.write(String.valueOf(parameter));
+                if (paramsEnum.hasNext()) {
+                    writer.write(", ");
+                } else {
+                    writer.write("]");
+                }
             }
-            if (paramsEnum.hasNext()) {
-                writer.write(", ");
-            } else {
-                writer.write("]");
-            }
+        } else {
+            String parameterString = parameters.size() == 1 ? " parameter" : " parameters";
+            writer.write(parameters.size() + parameterString + " bound]");
         }
     }
     

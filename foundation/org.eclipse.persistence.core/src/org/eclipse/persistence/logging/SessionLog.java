@@ -137,7 +137,12 @@ public interface SessionLog extends Cloneable {
      * By default the thread is logged at FINE or less level, this can be turned off.
      */
     public boolean shouldPrintThread();
-
+    
+    /**
+     * Return whether bind parameters should be displayed when logging SQL, default is true.
+     */
+    public boolean shouldDisplayData();
+    
     /**
      * By default the connection is always printed whenever available, this can be turned off.
      */
@@ -148,6 +153,11 @@ public interface SessionLog extends Cloneable {
      */
     public boolean shouldPrintSession();
 
+    /**
+     * Set whether bind parameters should be displayed when logging SQL.
+     */
+    public void setShouldDisplayData(Boolean shouldDisplayData);
+    
     /**
      * By default stack trace is logged for SEVERE all the time and at FINER level for WARNING or less.
      * This can be turned off.

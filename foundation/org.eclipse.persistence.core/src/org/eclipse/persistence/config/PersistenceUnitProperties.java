@@ -711,6 +711,17 @@ public class PersistenceUnitProperties {
      * @see SessionLog#SERVER
      */
     public static final String CATEGORY_LOGGING_LEVEL_ = LOGGING_LEVEL + ".";
+    
+    /**
+     * By default sql bind paramters are displayed in exceptions and logs
+     * when the log level is FINE or greater. To override this behavior you
+     * may set this property to specify that the data should or should not be
+     * visible. Note: this property applies only to bind parameters. When not
+     * using binding, the parameters are always displayed.
+     * 
+     * @see JDBC_BIND_PARAMETERS 
+     */
+    public static final String LOGGING_PARAMETERS = "eclipselink.logging.parameters";
 
     /**
      * The <code>"eclipselink.logging.timestamp"</code> property configures if

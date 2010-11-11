@@ -1549,6 +1549,10 @@ public class EntityManagerSetupImpl {
         if (exString != null) {
             log.setShouldLogExceptionStackTrace(Boolean.parseBoolean(exString));
         }
+        String shouldDisplayData = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.LOGGING_PARAMETERS, m, session);
+        if (shouldDisplayData != null) {
+            log.setShouldDisplayData(Boolean.parseBoolean(shouldDisplayData));
+        }
     }
 
     protected void processDescriptorCustomizers(Map m, ClassLoader loader) {

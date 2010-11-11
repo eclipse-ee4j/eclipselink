@@ -148,6 +148,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintConnection;
+    
+    /** Used to determine if bingdparameters should be logged or hidden. */
+    protected Boolean shouldDisplayData;
 
 
     /**
@@ -254,6 +257,20 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         this.level = level;
     }
 
+    /**
+     * PUBLIC:
+     * Return true if SQL logging should log visible bind parameters. If the 
+     * shouldDisplayData is not set, check the session log level and return 
+     * true for a level greater than CONFIG.
+     */
+    public boolean shouldDisplayData() {
+        if (this.shouldDisplayData != null) {
+            return shouldDisplayData.booleanValue();
+        } else {
+            return this.level < SessionLog.CONFIG;
+        }
+    }
+    
     /**
      * PUBLIC:
      * <p>
@@ -558,6 +575,14 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         }
     }
 
+    /**
+     * PUBLIC:
+     * Set whether bind parameters should be displayed when logging SQL.
+     */
+    public void setShouldDisplayData(Boolean shouldDisplayData) {
+        this.shouldDisplayData = shouldDisplayData;
+    }
+    
     /**
      * By default the stack is logged for FINER or less (finest).
      * The logging of the stack can also be explicitly turned on or off.
