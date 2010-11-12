@@ -60,6 +60,11 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
 
     public Archive createArchive(URL rootUrl, String descriptorLocation, Map properties) throws URISyntaxException, IOException {
         logger.entering("ArchiveFactoryImpl", "createArchive", new Object[]{rootUrl, descriptorLocation});
+        
+        if (rootUrl == null) {
+            return null;
+        }
+        
         Archive result = null;
         String protocol = rootUrl.getProtocol();
         logger.logp(Level.FINER, "ArchiveFactoryImpl", "createArchive", "protocol = {0}", protocol);

@@ -42,7 +42,6 @@ import java.util.Set;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
@@ -369,16 +368,18 @@ public class MetadataProcessor {
             Archive par = null;
             try {
                 par = PersistenceUnitProcessor.getArchiveFactory(m_loader).createArchive(rootURL, null);
-                ormURL = par.getEntryAsURL(ormXMLFile);
+                
+                if (par != null) {
+                    ormURL = par.getEntryAsURL(ormXMLFile);
 
-                if (ormURL != null) {
-                    logMessage("Found a default mapping file at " + ormURL + " for root URL " + rootURL);
+                    if (ormURL != null) {
+                        logMessage("Found a default mapping file at " + ormURL + " for root URL " + rootURL);
 
-                    // Read the document through OX and add it to the project., pass persistence unit properties for any orm properties set there
-                    XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(
-                            ormURL, m_loader, m_project.getPersistenceUnitInfo().getProperties());
-                    entityMappings.setIsEclipseLinkORMFile(ormXMLFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE));
-                    m_project.addEntityMappings(entityMappings);
+                        // Read the document through OX and add it to the project., pass persistence unit properties for any orm properties set there
+                        XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(ormURL, m_loader, m_project.getPersistenceUnitInfo().getProperties());
+                        entityMappings.setIsEclipseLinkORMFile(ormXMLFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE));
+                        m_project.addEntityMappings(entityMappings);
+                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

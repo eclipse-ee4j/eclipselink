@@ -291,35 +291,36 @@ public class PersistenceUnitProcessor {
         if (ARCHIVE_FACTORY != null){
             return ARCHIVE_FACTORY;
         }
+        
+        ArchiveFactory factory = null;
         String factoryClassName = System.getProperty(SystemProperties.ARCHIVE_FACTORY, null);
-        if (factoryClassName == null){
+        
+        if (factoryClassName == null) {
             return new ArchiveFactoryImpl();
-        }
-        try{
-            if (factoryClassName != null){
-                ArchiveFactory factory = null;
+        } else {
+            try {
                 if (loader != null) {
                     Class archiveClass = loader.loadClass(factoryClassName);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
                             factory = (ArchiveFactory)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(archiveClass));
-                      } catch (PrivilegedActionException exception) {
-                          throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, exception);
-                      }
+                        } catch (PrivilegedActionException exception) {
+                            throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, exception);
+                        }
                     } else {
                         factory = (ArchiveFactory)PrivilegedAccessHelper.newInstanceFromClass(archiveClass);
                     }
                 }
-                return factory;
+            } catch (ClassNotFoundException cnfe) {
+                throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, cnfe);
+            } catch (IllegalAccessException iae) {
+                throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, iae);
+            } catch (InstantiationException ie) {
+                throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, ie);
             }
-            return new ArchiveFactoryImpl();
-        } catch (ClassNotFoundException cnfe) {
-            throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, cnfe);
-        } catch (IllegalAccessException iae) {
-            throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, iae);
-        } catch (InstantiationException ie) {
-            throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, ie);
         }
+        
+        return factory;
     }
     
     public static Set<String> getClassNamesFromURL(URL url, ClassLoader loader, Map properties) {
@@ -328,10 +329,12 @@ public class PersistenceUnitProcessor {
         try {
             archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(url, properties);
 
-            for (Iterator<String> entries = archive.getEntries(); entries.hasNext();) {
-                String entry = entries.next();
-                if (entry.endsWith(".class")){ // NOI18N
-                     classNames.add(buildClassNameFromEntryString(entry));
+            if (archive != null) {
+                for (Iterator<String> entries = archive.getEntries(); entries.hasNext();) {
+                    String entry = entries.next();
+                    if (entry.endsWith(".class")){ // NOI18N
+                        classNames.add(buildClassNameFromEntryString(entry));
+                    }
                 }
             }
         } catch (URISyntaxException e) {

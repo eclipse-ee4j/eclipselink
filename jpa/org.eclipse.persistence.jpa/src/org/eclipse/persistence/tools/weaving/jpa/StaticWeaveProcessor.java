@@ -252,91 +252,92 @@ public class StaticWeaveProcessor {
 
         // Starting process.
         Archive sourceArchive =(new ArchiveFactoryImpl()).createArchive(source, null, null);
-        try {
-            Iterator entries = sourceArchive.getEntries();
-            while (entries.hasNext()){
-                String entryName = (String)entries.next();
-                InputStream entryInputStream = sourceArchive.getEntry(entryName);
+        if (sourceArchive != null) {
+            try {
+                Iterator entries = sourceArchive.getEntries();
+                while (entries.hasNext()){
+                    String entryName = (String)entries.next();
+                    InputStream entryInputStream = sourceArchive.getEntry(entryName);
                 
-                // Add a directory entry
-                swoh.addDirEntry(getDirectoryFromEntryName(entryName));
+                    // Add a directory entry
+                    swoh.addDirEntry(getDirectoryFromEntryName(entryName));
                 
-                // Add a regular entry
-                JarEntry newEntry = new JarEntry(entryName);
+                    // Add a regular entry
+                    JarEntry newEntry = new JarEntry(entryName);
                 
-                // Ignore non-class files.
-                if (!(entryName.endsWith(".class"))) {
-                    swoh.addEntry(entryInputStream, newEntry);
-                    continue;            
-                }
-                
-                String className = PersistenceUnitProcessor.buildClassNameFromEntryString(entryName) ;
-                
-                byte[] originalClassBytes=null;
-                byte[] transferredClassBytes=null;
-                try {
-                    Class thisClass = this.classLoader.loadClass(className);
-                    // If the class is not in the classpath, we simply copy the entry
-                    // to the target(no weaving).
-                    if (thisClass == null){
+                    // Ignore non-class files.
+                    if (!(entryName.endsWith(".class"))) {
                         swoh.addEntry(entryInputStream, newEntry);
-                        continue;
+                        continue;            
                     }
-                    
-                    // Try to read the loaded class bytes, the class bytes is required for
-                    // classtransformer to perform transfer. Simply copy entry to the target(no weaving)
-                    // if the class bytes can't be read.
-                    InputStream is = this.classLoader.getResourceAsStream(entryName);
-                    if (is!=null){
-                        ByteArrayOutputStream baos = null;
-                        try{
-                            baos = new ByteArrayOutputStream();
-                            byte[] bytes = new byte[NUMBER_OF_BYTES];
-                            int bytesRead = is.read(bytes, 0, NUMBER_OF_BYTES);
-                            while (bytesRead >= 0){
-                                baos.write(bytes, 0, bytesRead);
-                                bytesRead = is.read(bytes, 0, NUMBER_OF_BYTES);
-                            }
-                            originalClassBytes = baos.toByteArray();
-                        } finally {
-                            baos.close();
+                
+                    String className = PersistenceUnitProcessor.buildClassNameFromEntryString(entryName) ;
+                
+                    byte[] originalClassBytes=null;
+                    byte[] transferredClassBytes=null;
+                    try {
+                        Class thisClass = this.classLoader.loadClass(className);
+                        // If the class is not in the classpath, we simply copy the entry
+                        // to the target(no weaving).
+                        if (thisClass == null){
+                            swoh.addEntry(entryInputStream, newEntry);
+                            continue;
                         }
-                    } else {
+                    
+                        // Try to read the loaded class bytes, the class bytes is required for
+                        // classtransformer to perform transfer. Simply copy entry to the target(no weaving)
+                        // if the class bytes can't be read.
+                        InputStream is = this.classLoader.getResourceAsStream(entryName);
+                        if (is!=null){
+                            ByteArrayOutputStream baos = null;
+                            try{
+                                baos = new ByteArrayOutputStream();
+                                byte[] bytes = new byte[NUMBER_OF_BYTES];
+                                int bytesRead = is.read(bytes, 0, NUMBER_OF_BYTES);
+                                while (bytesRead >= 0){
+                                    baos.write(bytes, 0, bytesRead);
+                                    bytesRead = is.read(bytes, 0, NUMBER_OF_BYTES);
+                                }
+                                originalClassBytes = baos.toByteArray();
+                            } finally {
+                                baos.close();
+                            }
+                        } else {
+                            swoh.addEntry(entryInputStream, newEntry);
+                            continue;
+                        }
+                    
+                        // If everything is OK so far, we perform the weaving. we need three parameters in order to
+                        // class to perform weaving for that class, the class name,the class object and class bytes.
+                        transferredClassBytes = classTransformer.transform(className.replace('.', '/'), thisClass, originalClassBytes);
+                    
+                        // If transferredClassBytes is null means the class dose not get woven.
+                        if (transferredClassBytes!=null){
+                            swoh.addEntry(newEntry, transferredClassBytes);
+                        } else {
+                            swoh.addEntry(entryInputStream, newEntry);
+                        }
+                    } catch (IllegalClassFormatException e) {
+                        AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, e);
+                        // Anything went wrong, we need log a warning message, copy the entry to the target and
+                        // process next entry.
                         swoh.addEntry(entryInputStream, newEntry);
                         continue;
-                    }
-                    
-                    // If everything is OK so far, we perform the weaving. we need three parameters in order to
-                    // class to perform weaving for that class, the class name,the class object and class bytes.
-                    transferredClassBytes = classTransformer.transform(className.replace('.', '/'), thisClass, originalClassBytes);
-                    
-                    // If transferredClassBytes is null means the class dose not get woven.
-                    if (transferredClassBytes!=null){
-                        swoh.addEntry(newEntry, transferredClassBytes);
-                    } else {
+                    } catch (ClassNotFoundException e) {
+                        AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, e);
                         swoh.addEntry(entryInputStream, newEntry);
+                        continue;
+                    } finally {
+                        // Need close the inputstream for current entry before processing next one. 
+                        entryInputStream.close();
                     }
-                } catch (IllegalClassFormatException e) {
-                    AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, e);
-                    // Anything went wrong, we need log a warning message, copy the entry to the target and
-                    // process next entry.
-                    swoh.addEntry(entryInputStream, newEntry);
-                    continue;
-                } catch (ClassNotFoundException e) {
-                    AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, e);
-                    swoh.addEntry(entryInputStream, newEntry);
-                    continue;
-                } finally {
-                    // Need close the inputstream for current entry before processing next one. 
-                    entryInputStream.close();
                 }
+            } finally {
+                sourceArchive.close();
+                swoh.closeOutputStream();
             }
-        } finally {
-            sourceArchive.close();
-            swoh.closeOutputStream();
         }
     }
-
     
     //Extract directory from entry name.    
     public static String getDirectoryFromEntryName(String entryName){
