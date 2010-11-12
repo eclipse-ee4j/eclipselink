@@ -12,6 +12,8 @@
  *     Zoltan NAGY & tware - updated support for MaxRows
  *     11/01/2010-2.2 Guy Pelletier 
  *       - 322916: getParameter on Query throws NPE
+ *     11/09/2010-2.1 Michael O'Brien 
+ *       - 329089: PERF: EJBQueryImpl.setParamenterInternal() move indexOf check inside non-native block
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -1213,8 +1215,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      */
     protected void setParameterInternal(String name, Object value, boolean isIndex) {
         DatabaseQuery query = getDatabaseQueryInternal();
-        int index = query.getArguments().indexOf(name);
         if (query.getQueryMechanism().isJPQLCallQueryMechanism()) { // only non native queries
+            int index = query.getArguments().indexOf(name);
             if (index == -1) {
                 if (isIndex) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", new Object[] { name, query.getEJBQLString() }));
