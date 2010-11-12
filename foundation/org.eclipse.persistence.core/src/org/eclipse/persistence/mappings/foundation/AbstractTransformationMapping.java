@@ -502,24 +502,24 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
 
-        if (this.attributeTransformerClassName == null) {
-            return;
-        }
-        Class attributeTransformerClass = null;
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                try {
-                    attributeTransformerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(attributeTransformerClassName, true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(attributeTransformerClassName, exception.getException());
+        if (attributeTransformerClassName != null) {
+            Class attributeTransformerClass = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        attributeTransformerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(attributeTransformerClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(attributeTransformerClassName, exception.getException());
+                    }
+                } else {
+                    attributeTransformerClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(attributeTransformerClassName, true, classLoader);
                 }
-            } else {
-                attributeTransformerClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(attributeTransformerClassName, true, classLoader);
+            } catch (ClassNotFoundException exc){
+                throw ValidationException.classNotFoundWhileConvertingClassNames(attributeTransformerClassName, exc);
             }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeTransformerClassName, exc);
+            
+            this.setAttributeTransformerClass(attributeTransformerClass);
         }
-        this.setAttributeTransformerClass(attributeTransformerClass);
         
         for (FieldTransformation transformation : getFieldTransformations()) {
             if (transformation instanceof TransformerBasedFieldTransformation) {
