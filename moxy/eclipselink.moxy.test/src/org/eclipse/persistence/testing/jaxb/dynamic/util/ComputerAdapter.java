@@ -26,8 +26,6 @@ public final class ComputerAdapter extends XmlAdapter<String, Computer> {
     private final String DELIM = "::";
 
     public String marshal(Computer arg0) throws Exception {
-        System.out.println("ADAPTER MARSHAL");
-
         String marshalString = "";
 
         marshalString += arg0.ipCode + DELIM;
@@ -38,8 +36,6 @@ public final class ComputerAdapter extends XmlAdapter<String, Computer> {
     }
 
     public Computer unmarshal(String arg0) throws Exception {
-        System.out.println("ADAPTER UNMARSHAL");
-
         Computer c = new Computer();
 
         StringTokenizer tokenizer = new StringTokenizer(arg0, DELIM);
