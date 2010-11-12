@@ -16,8 +16,6 @@ import java.lang.reflect.Modifier;
 
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 
 public class OXMJavaConstructorImpl implements JavaConstructor {
 
