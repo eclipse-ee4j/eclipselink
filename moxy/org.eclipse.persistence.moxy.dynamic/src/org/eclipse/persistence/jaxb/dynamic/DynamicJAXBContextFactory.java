@@ -103,7 +103,7 @@ public class DynamicJAXBContextFactory {
      *
      * <b>Context Creation From EclipseLink OXM:</b><p>
      *
-     * The <tt>properties</tt> map must contain the following key/value pairs:
+     * The <tt>properties</tt> map must contain the following key/value pair:
      * <dl>
      * <dt>JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY
      * <dd>A <tt>Map&lt;String, Source&gt;, containing one or more <tt>Sources</tt> pointing to OXM files, keyed on package name.</tt>
@@ -306,7 +306,7 @@ public class DynamicJAXBContextFactory {
      * @param properties
      *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  This map must
      *      contain a key of JAXBContext.ECLIPSELINK_OXM_XML_KEY, with a value of Map<String, Source>,
-     *      where String is the package name and Source is the metadata file for that packages.  Can be null.
+     *      where String is the package name and Source is the metadata file for that package.
      *
      * @return
      *      A new instance of <tt>DynamicJAXBContext</tt>.
