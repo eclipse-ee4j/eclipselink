@@ -520,8 +520,7 @@ public class PersistenceUnitProperties {
     /**
      * The <code>"javax.persistence.validation.factory"</code> property
      * specifies an instance of <a href =
-     * http://java.sun.com/javaee/6/docs/api/javax/validation
-     * /ValidatorFactory.html>javax.validation.ValidatorFactory</a> used by
+     * http://download.oracle.com/javaee/6/docs/api/javax/validation/ValidatorFactory.html>javax.validation.ValidatorFactory</a> used by
      * EclipseLink to perform Automatic Validation upon Lifecycle Events. If the
      * propoerty is not specified, and if Bean Validation API is visible to
      * Eclipselink, it will try to instantiate an insance of

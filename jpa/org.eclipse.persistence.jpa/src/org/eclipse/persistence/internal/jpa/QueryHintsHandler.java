@@ -12,7 +12,9 @@
  *     07/13/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     corteggiano, Frank Schwarz, Tom Ware - Fix for bug Bug 320254 - EL 2.1.0 JPA: Query with hint eclipselink.batch 
- *              and org.eclipse.persistence.exceptions.QueryException.queryHintNavigatedNonExistantRelationship 
+ *              and org.eclipse.persistence.exceptions.QueryException.queryHintNavigatedNonExistantRelationship
+ *     10/29/2010-2.2 Michael O'Brien 
+ *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -208,7 +210,8 @@ public class QueryHintsHandler {
     
     /**
      * Define a generic Hint.
-     * Hints should subclass this and override the applyToDatabaseQuery and set the valueArray.
+     * Hints should subclass this and override the applyToDatabaseQuery 
+     * and set the valueArray if the set of valid values is finite.
      */
     protected static abstract class Hint {
         static HashMap mainMap = new HashMap();
@@ -275,6 +278,8 @@ public class QueryHintsHandler {
             addHint(new QueryCacheTypeHint());
             addHint(new QueryCacheIgnoreNullHint());
             addHint(new QueryCacheRandomizedExpiryHint());
+            // 325167: Make reserved # bind parameter char generic to enable native SQL pass through
+            addHint(new ParameterDelimiterHint());
         }
         
         Hint(String name, String defaultValue) {
@@ -439,6 +444,25 @@ public class QueryHintsHandler {
                 query.ignoreBindAllParameters();
             } else {
                 query.setShouldBindAllParameters(((Boolean)valueToApply).booleanValue());
+            }
+            return query;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * 325167: Make reserved # bind parameter char generic to enable native SQL pass through
+     */
+    protected static class ParameterDelimiterHint extends Hint {
+        ParameterDelimiterHint() {
+            super(QueryHints.PARAMETER_DELIMITER, ParameterDelimiterType.DEFAULT);
+            // No valueArray modification is required for unrestricted values
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            // Only change the default set by the DatabaseQuery constructor - if an override is requested via the Hint
+            if (valueToApply != null) {
+                query.setParameterDelimiter(((String)valueToApply));
             }
             return query;
         }

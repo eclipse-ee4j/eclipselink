@@ -337,9 +337,9 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     public void setCallHasCustomSQLArguments() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatabaseCall databseCall = (DatabaseCall)callsEnum.nextElement();
-                if (databseCall.isSQLCall()) {
-                    ((SQLCall)databseCall).setHasCustomSQLArguments(true);
+                DatabaseCall databaseCall = (DatabaseCall)callsEnum.nextElement();
+                if (databaseCall.isSQLCall()) {
+                    ((SQLCall)databaseCall).setHasCustomSQLArguments(true);
                 }
             }
         } else if (getCall().isSQLCall()) {

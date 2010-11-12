@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     07/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     10/29/2010-2.2 Michael O'Brien 
+ *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
  ******************************************************************************/  
 package org.eclipse.persistence.config;
 
@@ -46,6 +48,16 @@ public class QueryHints {
      */
     public static final String BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
 
+    /**
+     * "eclipselink.jdbc.parameter-delimiter"
+     * <p>Configures parameter binding char to a user defined character (overrides default hash symbol).
+     * Valid values are:  ParameterDelimiterType.DEFAULT, other valid single character,
+     * "" can not be used and will instead default to ParameterDelimiterType.DEFAULT
+     * @see PersistenceUnitProperties#JDBC_BIND_PARAMETERS
+     * @see org.eclipse.persistence.queries.DatabaseQuery#setShouldBindAllParameters(boolean)
+     */
+    public static final String PARAMETER_DELIMITER = "eclipselink.jdbc.parameter-delimiter";
+    
     /**
      * "javax.persistence.cacheRetrieveMode"
      * <p>Configures the behavior when data is retrieved by the find methods and 

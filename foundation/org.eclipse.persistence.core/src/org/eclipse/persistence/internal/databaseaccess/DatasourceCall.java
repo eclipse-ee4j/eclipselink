@@ -9,6 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/29/2010-2.2 Michael O'Brien 
+ *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
+ *     
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -82,7 +85,7 @@ public abstract class DatasourceCall implements Call {
     }
 
     /**
-     * The parameter types determine if the parameter is a modify, translation or litreral type.
+     * The parameter types determine if the parameter is a modify, translation or literal type.
      */
     public Vector getParameterTypes() {
         if (parameterTypes == null) {
@@ -92,14 +95,14 @@ public abstract class DatasourceCall implements Call {
     }
 
     /**
-     * The parameters are the values in order of occurance in the SQL statement.
+     * The parameters are the values in order of occurrence in the SQL statement.
      */
     public void setParameters(Vector parameters) {
         this.parameters = parameters;
     }
 
     /**
-     * The parameter types determine if the parameter is a modify, translation or litteral type.
+     * The parameter types determine if the parameter is a modify, translation or literal type.
      */
     public void setParameterTypes(Vector parameterTypes) {
         this.parameterTypes = parameterTypes;
@@ -332,7 +335,7 @@ public abstract class DatasourceCall implements Call {
      */
     public void translateCustomQuery() {
         if(this.shouldProcessTokenInQuotes){
-            if (getQueryString().indexOf("#") == -1) {
+            if (getQueryString().indexOf(this.query.getParameterDelimiter()) == -1) {
                 if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf("?") == -1){
                     return;
                 }
@@ -340,7 +343,7 @@ public abstract class DatasourceCall implements Call {
                 return;
             }
         }else{
-            if (!hasArgumentMark(getQueryString(),'#')) {
+            if (!hasArgumentMark(getQueryString(), this.query.getParameterDelimiterChar())) {
                 if (this.getQuery().shouldBindAllParameters() && !hasArgumentMark(getQueryString(),'?')){
                     return;
                 }
@@ -355,7 +358,7 @@ public abstract class DatasourceCall implements Call {
         try {
             // ** This method is heavily optimized do not touch anything unless you "know" what your doing.
             while (lastIndex != -1) {
-                int poundIndex = queryString.indexOf('#', lastIndex);
+                int poundIndex = queryString.indexOf(this.query.getParameterDelimiterChar(), lastIndex);
                 String token;
                 if (poundIndex == -1) {
                     token = queryString.substring(lastIndex, queryString.length());
@@ -364,20 +367,20 @@ public abstract class DatasourceCall implements Call {
                     if(this.shouldProcessTokenInQuotes){//Always process token no matter whether the quotes around it or not. 
                         token = queryString.substring(lastIndex, poundIndex);
                     }else{
-                        boolean hasPairedQuoteBeforePond = true;
+                        boolean hasPairedQuoteBeforePound = true;
                         int quotePairIndex=poundIndex;
 
                         do{
                             quotePairIndex=queryString.lastIndexOf('\'',quotePairIndex-1);
                             if(quotePairIndex!=-1 && quotePairIndex > lastIndex){
-                                hasPairedQuoteBeforePond = !hasPairedQuoteBeforePond;
+                                hasPairedQuoteBeforePound = !hasPairedQuoteBeforePound;
                             } else {
                                break;
                             }
                         }while(true);
                         
                         int endQuoteIndex = -1;
-                        if(!hasPairedQuoteBeforePond){//There is begin quote, so search end quote.
+                        if(!hasPairedQuoteBeforePound){//There is begin quote, so search end quote.
                             endQuoteIndex = queryString.indexOf('\'', poundIndex+1);
                         }
                         if(endQuoteIndex!=-1){//There is quote around pound.
@@ -398,11 +401,11 @@ public abstract class DatasourceCall implements Call {
                     }
 
                     // Check for ## which means field from modify row.
-                    if (queryString.charAt(poundIndex + 1) == '#') {
+                    if (queryString.charAt(poundIndex + 1) == this.query.getParameterDelimiterChar()) {
                         // Check for ### which means OUT parameter type.
-                        if (queryString.charAt(poundIndex + 2) == '#') {
+                        if (queryString.charAt(poundIndex + 2) == this.query.getParameterDelimiterChar()) {
                             // Check for #### which means INOUT parameter type.
-                            if (queryString.charAt(poundIndex + 3) == '#') {
+                            if (queryString.charAt(poundIndex + 3) == this.query.getParameterDelimiterChar()) {
                                 String fieldName = queryString.substring(poundIndex + 4, wordEndIndex);
                                 DatabaseField field = createField(fieldName);
                                 appendInOut(writer, field);
@@ -432,7 +435,7 @@ public abstract class DatasourceCall implements Call {
 
     /**
      * INTERNAL:
-     * Parse the query string for # markers for custom query based on a query language.
+     * Parse the query string for ? markers for custom query based on a query language.
      * This is used by SQLCall and XQuery call, but can be reused by other query languages.
      */
     public void translatePureSQLCustomQuery() {
@@ -441,7 +444,7 @@ public abstract class DatasourceCall implements Call {
         int parameterIndex = 1; // this is the parameter index
         Writer writer = new CharArrayWriter(queryString.length() + 50);
         try {
-            // ** This method is heavily optimized do not touch anyhthing unless you "know" what your doing.
+            // ** This method is heavily optimized do not touch anything unless you "know" what your doing.
             while (lastIndex != -1) {
                 int markIndex = queryString.indexOf('?', lastIndex);
                 String token;
@@ -749,7 +752,7 @@ public abstract class DatasourceCall implements Call {
      * INTERNAL:
      * Returns value for IN parameter. Called by translate and translateSQLString methods.
      * In case shouldBind==true tries to return a DatabaseField with type instead of null,
-     * returns null only in case no DatabaseField with type was found.
+     * returns null only in case no DatabaseField with type was found (case sensitive).
      */
     protected Object getValueForInParameter(Object parameter, AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session, boolean shouldBind) {
         Object value = parameter;
@@ -816,7 +819,7 @@ public abstract class DatasourceCall implements Call {
     /**
      * INTERNAL:
      * Returns INOUT parameter. Called by getValueForInOutParameter method.
-     * Descendents may override this method.
+     * Descendants may override this method.
      */
     protected Object createInOutParameter(Object inValue, Object outParameter, AbstractSession session) {
         Object[] inOut = { inValue, outParameter };
@@ -824,7 +827,7 @@ public abstract class DatasourceCall implements Call {
     }
     
     /**
-     * Return true if the specific mark is existing and not quota around.
+     * Return true if the specific mark is existing and not quoted around.
      */
     private boolean hasArgumentMark(String string, char mark){
         int quoteIndex = -1;

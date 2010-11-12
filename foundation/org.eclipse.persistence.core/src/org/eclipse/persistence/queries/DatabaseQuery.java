@@ -13,12 +13,15 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     10/29/2010-2.2 Michael O'Brien 
+ *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.config.ParameterDelimiterType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.expressions.*;
@@ -273,7 +276,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     
     /** Allow additional validation to be performed before using the update call cache */
     protected boolean shouldValidateUpdateCallCacheUse;
-    
+
+    /** Allow the reserved pound char used to delimit bind parameters to be overridden */
+    protected String parameterDelimiter;
+
     /**
      * PUBLIC: Initialize the state of the query
      */
@@ -292,6 +298,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.shouldCacheStatement = null;
         this.isExecutionClone = false;
         this.shouldValidateUpdateCallCacheUse = false;
+        this.parameterDelimiter = ParameterDelimiterType.DEFAULT;
     }
 
     /**
@@ -527,16 +534,17 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 synchronized (this) {
                     if (!isPrepared()) {
                         // When custom SQL is used there is a possibility that the
-                        // SQL contains the # token.
+                        // SQL contains the # token (for stored procedures or temporary tables).
                         // Avoid this by telling the call if this is custom SQL with parameters.
                         // This must not be called for SDK calls.
-                        if ((isReadQuery() || isDataModifyQuery()) && isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism) && ((translationRow == null) || translationRow.isEmpty())) {
+                        if ((isReadQuery() || isDataModifyQuery()) && isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism) 
+                                && ((translationRow == null) || translationRow.isEmpty())) {
                             // Must check for read object queries as the row will be
                             // empty until the prepare.
                             if (isReadObjectQuery() || isUserDefined()) {
                                 ((CallQueryMechanism) getQueryMechanism()).setCallHasCustomSQLArguments();
                             }
-                        } else if (isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism)) {
+                        } else if (isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism)) { 
                             ((CallQueryMechanism) getQueryMechanism()).setCallHasCustomSQLArguments();
                         }
                         setSession(session);// Session is required for some init stuff.
@@ -976,6 +984,25 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Return the String used to delimit an SQL parameter.
+     */
+    public String getParameterDelimiter() {
+        if(null == parameterDelimiter || parameterDelimiter.length() == 0) {
+            parameterDelimiter = ParameterDelimiterType.DEFAULT;
+        }
+        return parameterDelimiter;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the char used to delimit an SQL parameter.
+     */
+    public char getParameterDelimiterChar() {
+        return getParameterDelimiter().charAt(0);
+    }
+    
+    /**
      * INTERNAL: Property support for use by mappings.
      */
     public Map<Object, Object> getProperties() {
@@ -1312,13 +1339,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
     
     /**
-     * PUBLIC: Return true if this query uses an SQL or stored procedure, or SDK
+     * PUBLIC: Return true if this query uses SQL, a stored procedure, or SDK
      * call.
      */
     public boolean isCallQuery() {
         return getQueryMechanism().isCallQueryMechanism();
     }
-
+    
     /**
      * INTERNAL: Returns true if this query has been created as the result of
      * cascading a delete of an aggregate collection in a UnitOfWork CR 2811
@@ -1585,6 +1612,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.doNotRedirect = query.doNotRedirect;
         this.shouldRetrieveBypassCache = query.shouldRetrieveBypassCache;
         this.shouldStoreBypassCache = query.shouldStoreBypassCache;
+        this.parameterDelimiter = query.parameterDelimiter;
     }
 
     /**
@@ -1938,6 +1966,18 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Set the String char used to delimit an SQL parameter.
+     */
+    public void setParameterDelimiter(String aParameterDelimiter) {
+        // 325167: if the parameterDelimiter is invalid - use the default # symbol
+        if(null == aParameterDelimiter || aParameterDelimiter.length() == 0) {
+            aParameterDelimiter = ParameterDelimiterType.DEFAULT;
+        }
+        parameterDelimiter = aParameterDelimiter;
+    }
+    
+    /**
      * INTERNAL: Property support used by mappings.
      */
     public void setProperties(Map<Object, Object> properties) {
@@ -2242,7 +2282,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * the query the SQL does not need to be generated again only the arguments
      * need to be translated. This option is provide to disable this
      * optimization as in can cause problems with certain types of queries that
-     * require dynamic SQL basd on their arguments.
+     * require dynamic SQL based on their arguments.
      * <p>
      * These queries include:
      * <ul>
