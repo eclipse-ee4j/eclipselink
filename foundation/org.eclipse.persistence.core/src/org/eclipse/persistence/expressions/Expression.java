@@ -19,6 +19,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.jpa.parsing.SubqueryNode;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -3772,12 +3773,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * equally fast operation in SQL, requiring a correlated subselect.
      */
     public Expression size(String attributeName) {
-        // Create an anoymous subquery that will get its reference class
-        // set during SubSelectExpression.normalize.
-        ReportQuery subQuery = new ReportQuery();
-        subQuery.addCount();
-        subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().equal(this.anyOf(attributeName)));
-        return subQuery(subQuery);
+        return SubSelectExpression.createSubSelectExpressionForCount(this, this, attributeName, null);
     }
 
     /**
@@ -3793,15 +3789,10 @@ public abstract class Expression implements Serializable, Cloneable {
      * equally fast operation in SQL, requiring a correlated subselect.
      */
     public Expression size(Class returnType) {
-        // Create an anonymous subquery that will get its reference class
-        // set during SubSelectExpression.normalize.
-        ReportQuery subQuery = new ReportQuery();
-        subQuery.addCount("COUNT", subQuery.getExpressionBuilder(), returnType);
-        subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().equal(this));
         if (((BaseExpression)this).getBaseExpression() == null){
-            return this.subQuery(subQuery);
+            return SubSelectExpression.createSubSelectExpressionForCount(this, this, null, returnType);
         }
-        return ((BaseExpression)this).getBaseExpression().subQuery(subQuery);
+        return SubSelectExpression.createSubSelectExpressionForCount(((BaseExpression)this).getBaseExpression(), this, null, returnType);
     }
 
     /**

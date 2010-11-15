@@ -50,10 +50,12 @@ import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * <p>
@@ -171,6 +173,9 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleAsOrderByTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralDateTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleSingleArgSubstringTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("elementCollectionIsNotEmptyTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("relationshipElementCollectionIsNotEmptyTest"));
+
         
         return suite;
     }
@@ -2088,6 +2093,30 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         List result = em.createQuery(ejbqlString).getResultList();
 
         Assert.assertTrue("simpleSingleArgSubstringTest", comparer.compareObjects(result, expectedResult));
+    }
+    
+    // bug 318195
+    public void elementCollectionIsNotEmptyTest(){
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.responsibilities IS NOT EMPTY", Employee.class);
+        List results  = query.getResultList(); 
+        Iterator i = results.iterator();
+        while (i.hasNext()){
+            Employee emp = (Employee)i.next();
+            assertTrue(emp.getResponsibilities() != null && !emp.getResponsibilities().isEmpty());
+        }
+    }
+    
+    // bug 318195
+    public void relationshipElementCollectionIsNotEmptyTest(){
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT distinct o FROM PhoneNumber p join p.owner o WHERE o.responsibilities IS NOT EMPTY", Employee.class);
+        List results  = query.getResultList();
+        Iterator i = results.iterator();
+        while (i.hasNext()){
+            Employee emp = (Employee)i.next();
+            assertTrue(emp.getResponsibilities() != null && !emp.getResponsibilities().isEmpty());
+        }
     }
 }
 

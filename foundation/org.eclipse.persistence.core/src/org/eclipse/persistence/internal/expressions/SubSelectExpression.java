@@ -14,7 +14,10 @@ package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
 import java.util.*;
+
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.queries.*;
 
@@ -26,13 +29,26 @@ import org.eclipse.persistence.internal.queries.*;
 public class SubSelectExpression extends BaseExpression {
     protected ReportQuery subQuery;
 
+    protected String attribute;
+    protected Class returnType;
+    protected Expression criteriaBase;
+
     public SubSelectExpression() {
         super();
+        subQuery = new ReportQuery();
     }
 
     public SubSelectExpression(ReportQuery query, Expression baseExpression) {
         super(baseExpression);
         this.subQuery = query;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public Expression copiedVersionFrom(Map alreadyDone) {
+        return super.copiedVersionFrom(alreadyDone);
     }
     
     /**
@@ -57,9 +73,44 @@ public class SubSelectExpression extends BaseExpression {
     }
 
     public ReportQuery getSubQuery() {
+        initializeCountSubQuery();
         return subQuery;
     }
 
+    /**
+     * INTERNAL:
+     * This method creates a report query that counts the number of values in baseExpression.anyOf(attribute)
+     * 
+     * For most queries, a ReportQuery will be created that does a simple count using an anonymous query.  In the case of
+     * a DirectCollectionMapping, the ReportQuery will use the baseExpression to create a join to the table
+     * containing the Direct fields and count based on that join.
+     */
+    protected void initializeCountSubQuery(){
+        if (criteriaBase != null && (subQuery.getItems() == null || subQuery.getItems().isEmpty())){
+            if (baseExpression.getSession() != null && ((ObjectExpression)baseExpression).getDescriptor() != null){
+                Class sourceClass = ((ObjectExpression)baseExpression).getDescriptor().getJavaClass();
+                ClassDescriptor descriptor = baseExpression.getSession().getDescriptor(sourceClass);
+                if (descriptor != null){
+                    DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
+                    if (mapping != null && mapping.isDirectCollectionMapping()){
+                        subQuery.setExpressionBuilder(baseExpression.getBuilder());
+                        subQuery.setReferenceClass(sourceClass);
+                        subQuery.addCount(attribute, subQuery.getExpressionBuilder().anyOf(attribute), returnType);
+                        return;
+                    }
+                }
+             }
+            // Use an anonymous subquery that will get its reference class
+            // set during SubSelectExpression.normalize.
+             subQuery.addCount("COUNT", subQuery.getExpressionBuilder(), returnType);
+             if (attribute != null){
+                 subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().equal(criteriaBase.anyOf(attribute)));
+             } else {
+                 subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().equal(criteriaBase));
+             }
+        }
+    }
+    
     /**
      * INTERNAL:
      * For iterating using an inner class
@@ -98,7 +149,7 @@ public class SubSelectExpression extends BaseExpression {
 
     /**
      * INTERNAL:
-     * Normalize this expression now that the parent statment has been normalized.
+     * Normalize this expression now that the parent statement has been normalized.
      * For CR#4223
      */
     public Expression normalizeSubSelect(ExpressionNormalizer normalizer, Map clonedExpressions) {
@@ -117,7 +168,12 @@ public class SubSelectExpression extends BaseExpression {
             if (criteria instanceof RelationExpression) {
                 Expression rightChild = ((RelationExpression)criteria).getSecondChild();
                 if (rightChild instanceof QueryKeyExpression) {
-                    subQuery.setReferenceClass(((QueryKeyExpression)rightChild).getDescriptor().getJavaClass());
+                    ClassDescriptor descriptor = ((QueryKeyExpression)rightChild).getDescriptor();
+                    // descriptor will be null here for query key expressions
+                    if (descriptor ==null){
+                        descriptor = ((ObjectExpression)((QueryKeyExpression)rightChild).getBaseExpression()).getDescriptor();
+                    }
+                    subQuery.setReferenceClass(descriptor.getJavaClass());
                 }
             }
         }
@@ -140,6 +196,7 @@ public class SubSelectExpression extends BaseExpression {
      * The query must be cloned, and the sub-expression must be cloned using the same outer expression identity.
      */
     protected void postCopyIn(Map alreadyDone) {
+        initializeCountSubQuery();
         super.postCopyIn(alreadyDone);
         ReportQuery clonedQuery = (ReportQuery)getSubQuery().clone();
         if (!clonedQuery.isCallQuery()) {
@@ -241,5 +298,27 @@ public class SubSelectExpression extends BaseExpression {
         if (getSubQuery().getSelectionCriteria() != null) {
             getSubQuery().getSelectionCriteria().toString(writer, indent);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * This factory method is used to build a subselect that will do a count.
+     * 
+     * It will count the number of items in baseExpression.anyOf(attribute).
+     * @param outerQueryBaseExpression
+     * @param outerQueryCriteria
+     * @param attribute
+     * @param returnType
+     * @return
+     */
+    public static SubSelectExpression createSubSelectExpressionForCount(Expression outerQueryBaseExpression, Expression outerQueryCriteria, String attribute, Class returnType){
+        SubSelectExpression expression = new SubSelectExpression();
+        expression.setBaseExpression(outerQueryBaseExpression);
+        expression.attribute = attribute;
+        expression.criteriaBase = outerQueryCriteria;
+        if (returnType != null){
+            expression.returnType = returnType;
+        }
+        return expression;
     }
 }
