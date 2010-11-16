@@ -37,6 +37,7 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.NoExtensionEntityResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
@@ -804,19 +805,6 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.marshal(o, System.err);
-    }
-
-    private class NoExtensionEntityResolver implements EntityResolver {
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            // Grab only the filename part from the full path
-            File f = new File(systemId);
-
-            String correctedId = RESOURCE_DIR + f.getName() + ".xsd";
-
-            InputSource is = new InputSource(ClassLoader.getSystemResourceAsStream(correctedId));
-            is.setSystemId(correctedId);
-            return is;
-        }
     }
 
     // ====================================================================
