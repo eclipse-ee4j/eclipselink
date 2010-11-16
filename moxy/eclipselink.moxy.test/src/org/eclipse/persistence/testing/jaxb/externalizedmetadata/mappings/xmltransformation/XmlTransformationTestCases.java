@@ -149,10 +149,8 @@ public class XmlTransformationTestCases extends ExternalizedMetadataTestCases {
     /**
      * Tests setting an attribute transformer method name on a type.
      * 
-     * NOTE: THIS TEST CAN BE ENABLED WHEN ISSUE# 322562 IS RESOLVED.
-     * 
      * Positive test.
-     *
+     */
     public void testMethodSetOnType() {
         // create a JAXBContext
         JAXBContext jaxbContext = null;
@@ -181,7 +179,7 @@ public class XmlTransformationTestCases extends ExternalizedMetadataTestCases {
             e.printStackTrace();
             fail("An unexpected exception occurred");
         }
-    }*/
+    }
 
     /**
      * Test exception handling:  in this case both a transformer class and
