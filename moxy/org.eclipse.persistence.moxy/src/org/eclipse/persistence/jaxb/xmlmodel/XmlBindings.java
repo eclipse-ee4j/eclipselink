@@ -72,6 +72,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="xml-accessor-type" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-type" default="PUBLIC_MEMBER" />
  *       &lt;attribute name="xml-accessor-order" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-order" default="UNDEFINED" />
  *       &lt;attribute name="xml-mapping-metadata-complete" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="package-name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -106,6 +107,8 @@ public class XmlBindings {
     protected XmlAccessOrder xmlAccessorOrder;
     @XmlAttribute(name = "xml-mapping-metadata-complete")
     protected Boolean xmlMappingMetadataComplete;
+    @XmlAttribute(name = "package-name")
+    protected String packageName;
 
     /**
      * Gets the value of the xmlSchema property.
@@ -376,6 +379,35 @@ public class XmlBindings {
     public void setXmlMappingMetadataComplete(Boolean value) {
         this.xmlMappingMetadataComplete = value;
     }
+
+    /**
+     * Gets the value of the packageName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPackageName() {
+        if (packageName == null) {
+            return "##default";
+        } else {
+            return packageName;
+        }
+    }
+
+    /**
+     * Sets the value of the packageName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPackageName(String value) {
+        this.packageName = value;
+    }
+
 
     /**
      * <p>Java class for anonymous complex type.

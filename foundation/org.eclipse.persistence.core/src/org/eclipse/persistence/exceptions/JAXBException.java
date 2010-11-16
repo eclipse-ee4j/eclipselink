@@ -97,6 +97,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_PACKAGE_ADAPTER_CLASS = 50065;
     public static final int INVALID_TYPE_ADAPTER_CLASS = 50066;
     public static final int INVALID_PROPERTY_ADAPTER_CLASS = 50067;
+    public static final int NULL_METADATA_FILE = 50068;
+    public static final int BINDINGS_PKG_NOT_SET = 50069;
 
     protected JAXBException(String message) {
         super(message);
@@ -294,6 +296,35 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { key };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_METADATA_SOURCE, args));
         exception.setErrorCode(NULL_METADATA_SOURCE);
+        return exception;
+    }
+
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where the handle to the OXM metadata file is
+     * null.
+     *
+     * @return
+     */
+    public static JAXBException nullMetadataSource() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_METADATA_FILE, args));
+        exception.setErrorCode(NULL_METADATA_FILE);
+        return exception;
+    }
+    
+    /**
+     * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
+     * eclipselink-oxm.xml).  This exception applies to the case where the handle to the OXM metadata file has 
+     * not been passes in with an associated String (for package name) and the unmarshalled XmlBindings object
+     * does not have a package-name set. 
+     *
+     * @return
+     */
+    public static JAXBException packageNotSetForBindingException() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, BINDINGS_PKG_NOT_SET, args));
+        exception.setErrorCode(BINDINGS_PKG_NOT_SET);
         return exception;
     }
 

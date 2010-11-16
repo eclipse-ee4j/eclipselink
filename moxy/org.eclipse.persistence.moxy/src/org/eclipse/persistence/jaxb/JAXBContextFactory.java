@@ -13,9 +13,12 @@
 package org.eclipse.persistence.jaxb;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +29,8 @@ import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -48,6 +53,8 @@ import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 /**
  * INTERNAL:
@@ -78,6 +85,7 @@ public class JAXBContextFactory {
     public static final String ECLIPSELINK_OXM_XML_KEY = "eclipselink-oxm-xml";
     public static final String DEFAULT_TARGET_NAMESPACE_KEY = "defaultTargetNamespace";
     public static final String ANNOTATION_HELPER_KEY = "annotationHelper";
+    public static final String PKG_SEPARATOR = ".";
 
     /**
      * Create a JAXBContext on the array of Class objects.  The JAXBContext will
@@ -162,7 +170,7 @@ public class JAXBContextFactory {
                 try {
                     String line = reader.readLine();
                     while (line != null) {
-                        String className = path + "." + line.trim();
+                        String className = path + PKG_SEPARATOR + line.trim();
                         try {
                             classes.add(classLoader.loadClass(className));
                         } catch (Exception ex) {
@@ -379,36 +387,58 @@ public class JAXBContextFactory {
             return false;
         }
     }
-
+    
     /**
-     * Convenience method for processing a properties map and creating a map of package names to
-     * XmlBindings instances.
+     * Convenience method for processing a properties map and creating a map of 
+     * package names to XmlBindings instances.
      *
-     * It is assumed that the given map's key will be ECLIPSELINK_OXM_XML_KEY, and the value will be
-     * Map<String, Source>, where String = package, Source = metadata file
+     * It is assumed that the given map's key will be ECLIPSELINK_OXM_XML_KEY,
+     * and the value will be:
+     * 
+     * 1)  Map<String, Object>
+     *     - Object is one of those listed in 3) below
+     * 2)  List<Object>
+     *     - Object is one of those listed in 3) below
+     *     - Bindings file must contain package-name attribute on 
+     *       xml-bindings element
+     * 3)  One of:
+     *     - java.io.File
+     *     - java.io.InputStream
+     *     - java.io.Reader
+     *     - java.net.URL
+     *     - javax.xml.stream.XMLEventReader
+     *     - javax.xml.stream.XMLStreamReader
+     *     - javax.xml.transform.Source
+     *     - org.w3c.dom.Node
+     *     - org.xml.sax.InputSource
+     *      
+     *     - Bindings file must contain package-name attribute on 
+     *       xml-bindings element
      */
     public static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
         Map<String, XmlBindings> bindings = new HashMap<String, XmlBindings>();
-        if (properties != null) {
-            Map<String, Source> metadataFiles = null;
-            try {
-                metadataFiles = (Map<String, Source>) properties.get(ECLIPSELINK_OXM_XML_KEY);
-            } catch (ClassCastException x) {
-                throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
-            }
-            if (metadataFiles != null) {
-                for(Entry<String, Source> entry : metadataFiles.entrySet()) {
-                    String key = null;
-                    try {
-                        key = entry.getKey();
-                        if (key == null) {
-                            throw org.eclipse.persistence.exceptions.JAXBException.nullMapKey();
+        Object value;
+        if (properties != null && ((value = properties.get(ECLIPSELINK_OXM_XML_KEY)) != null)) {
+            // handle Map<String, Object>
+            if (value instanceof Map) {
+                Map<String, Object> metadataFiles = null;
+                try {
+                    metadataFiles = (Map<String, Object>) properties.get(ECLIPSELINK_OXM_XML_KEY);
+                } catch (ClassCastException x) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+                }
+                if (metadataFiles != null) {
+                    for(Entry<String, Object> entry : metadataFiles.entrySet()) {
+                        String key = null;
+                        try {
+                            key = entry.getKey();
+                            if (key == null) {
+                                throw org.eclipse.persistence.exceptions.JAXBException.nullMapKey();
+                            }
+                        } catch (ClassCastException cce) {
+                            throw org.eclipse.persistence.exceptions.JAXBException.incorrectKeyParameterType();
                         }
-                    } catch (ClassCastException cce) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.incorrectKeyParameterType();
-                    }
-                    try {
-                        Source metadataSource = entry.getValue();
+                        Object metadataSource = entry.getValue();
                         if (metadataSource == null) {
                             throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource(key);
                         }
@@ -416,34 +446,96 @@ public class JAXBContextFactory {
                         if (binding != null) {
                             bindings.put(key, binding);
                         }
-                    } catch (ClassCastException cce) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterType();
                     }
                 }
+            // handle List<Object>
+            } else if (value instanceof List) {
+                for (Object metadataSource : (List) value) {
+                    if (metadataSource == null) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource();
+                    }
+                    bindings = processBindingFile(bindings, metadataSource, classLoader);
+                }
+            // handle Object
+            } else {
+                bindings = processBindingFile(bindings, value, classLoader);
             }
         }
         return bindings;
     }
+    
+    /**
+     * Processing a bindings file and add it to a given Map of package name to binding
+     * files.
+     * 
+     * @param originalBindings Map of bindings to be updated
+     * @param bindingHandle handle to bindings file
+     * @param classLoader
+     * @return
+     */
+    private static Map<String, XmlBindings> processBindingFile(Map<String, XmlBindings> originalBindings, Object bindingHandle, ClassLoader classLoader) {
+        Map<String, XmlBindings> bindingMap = originalBindings;
+        XmlBindings binding = getXmlBindings(bindingHandle, classLoader);
+        if (binding != null) {
+            String key = binding.getPackageName();
+            if (key.equals(XMLProcessor.DEFAULT)) {
+                throw org.eclipse.persistence.exceptions.JAXBException.packageNotSetForBindingException();
+            }
+            // may need to prepend the package-name
+            JavaTypes jTypes = binding.getJavaTypes();
+            if (jTypes != null) {
+                for (JavaType javaType : jTypes.getJavaType()) {
+                    String javaTypeName = javaType.getName();
+                    if (!(javaTypeName.contains(key))) {
+                        javaType.setName(key + PKG_SEPARATOR + javaTypeName);
+                    }
+                }
+            }
+            bindingMap.put(key, binding);
+        }
+        return bindingMap;
+    }
 
     /**
-     * Convenience method for creating an XmlBindings object based on a given Source. The method
-     * will load the eclipselink metadata model and unmarshal the Source. This assumes that the
-     * Source represents the eclipselink-oxm.xml metadata file to be unmarshalled.
+     * Convenience method for creating an XmlBindings object based on a given Object. The method
+     * will load the eclipselink metadata model and unmarshal the Object. This assumes that the
+     * Object represents the eclipselink-oxm.xml metadata file to be unmarshalled.
+     * 
+     * @param metadata assumed to be one of:  File, InputSource, InputStream, Reader, Source
      */
-    private static XmlBindings getXmlBindings(Source metadataSource, ClassLoader classLoader) {
+    private static XmlBindings getXmlBindings(Object metadata, ClassLoader classLoader) {
         XmlBindings xmlBindings = null;
         Unmarshaller unmarshaller;
         // only create the JAXBContext for our XmlModel once
         JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
         try {
             unmarshaller = jaxbContext.createUnmarshaller();
-            xmlBindings = (XmlBindings) unmarshaller.unmarshal(metadataSource);
+            if (metadata instanceof File) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((File) metadata);
+            } else if (metadata instanceof InputSource) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((InputSource) metadata);
+            } else if (metadata instanceof InputStream) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((InputStream) metadata);
+            } else if (metadata instanceof Node) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((Node) metadata);
+            } else if (metadata instanceof Reader) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((Reader) metadata);
+            } else if (metadata instanceof Source) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((Source) metadata);
+            } else if (metadata instanceof URL) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((URL) metadata);
+            } else if (metadata instanceof XMLEventReader) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((XMLEventReader) metadata);
+            } else if (metadata instanceof XMLStreamReader) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((XMLStreamReader) metadata);
+            } else {
+                throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+            }
         } catch (JAXBException jaxbEx) {
             throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
         }
         return xmlBindings;
     }
-
 
     /**
      * Convenience method that returns an array of Types based on a given XmlBindings. The resulting
