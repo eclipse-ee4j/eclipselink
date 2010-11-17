@@ -20,14 +20,14 @@
         <java-type name="mynamespace.Address">
             <java-attributes>
                 <xml-element java-attribute="value" type="java.lang.String"/>
-                <xml-inverse-reference java-attribute="person" mapped-by="address"/>
+                <xml-inverse-reference java-attribute="person" type="mynamespace.Person" mapped-by="address"/>
             </java-attributes>
         </java-type>
 
         <java-type name="mynamespace.Phone">
             <java-attributes>
                 <xml-element java-attribute="value" type="java.lang.String"/>
-                <xml-inverse-reference java-attribute="person" mapped-by="phoneNumbers"/>
+                <xml-inverse-reference java-attribute="person" type="mynamespace.Person" mapped-by="phoneNumbers"/>
             </java-attributes>
         </java-type>
     </java-types>
