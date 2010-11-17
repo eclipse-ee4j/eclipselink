@@ -2098,7 +2098,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     // bug 318195
     public void elementCollectionIsNotEmptyTest(){
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.responsibilities IS NOT EMPTY", Employee.class);
+        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.responsibilities IS NOT EMPTY");
         List results  = query.getResultList(); 
         Iterator i = results.iterator();
         while (i.hasNext()){
@@ -2110,7 +2110,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     // bug 318195
     public void relationshipElementCollectionIsNotEmptyTest(){
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("SELECT distinct o FROM PhoneNumber p join p.owner o WHERE o.responsibilities IS NOT EMPTY", Employee.class);
+        Query query = em.createQuery("SELECT distinct o FROM PhoneNumber p join p.owner o WHERE o.responsibilities IS NOT EMPTY");
         List results  = query.getResultList();
         Iterator i = results.iterator();
         while (i.hasNext()){
