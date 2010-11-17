@@ -137,7 +137,7 @@ public class JpaHelper {
         }
 
         if (entityManager.getDelegate() != null) { 
-            return getEntityManager((JpaEntityManager)entityManager.getDelegate()); 
+            return getEntityManager((javax.persistence.EntityManager)entityManager.getDelegate()); 
         }
 
         return null; 

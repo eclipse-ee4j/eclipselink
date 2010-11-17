@@ -817,6 +817,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
+        descriptor.addMapping(getTableCreationSuffixMapping());
         
         return descriptor;
     }
@@ -1547,6 +1548,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());        
         descriptor.addMapping(getSchemaAttributeMapping());
+        descriptor.addMapping(getTableCreationSuffixMapping());
         
         return descriptor;
     }
@@ -2232,6 +2234,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
+        descriptor.addMapping(getTableCreationSuffixMapping());
         
         return descriptor;
     } 
@@ -2369,6 +2372,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
+        descriptor.addMapping(getTableCreationSuffixMapping());
         
         return descriptor;
     }
@@ -2399,6 +2403,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
+        descriptor.addMapping(getTableCreationSuffixMapping());
         
         XMLDirectMapping pkColumnNameMapping = new XMLDirectMapping();
         pkColumnNameMapping.setAttributeName("m_pkColumnName");
@@ -4032,6 +4037,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return tableMapping;
     }
     
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getTableCreationSuffixMapping() {
+        XMLDirectMapping nameMapping = new XMLDirectMapping();
+        nameMapping.setAttributeName("m_creationSuffix");
+        nameMapping.setGetMethodName("getCreationSuffix");
+        nameMapping.setSetMethodName("setCreationSuffix");
+        nameMapping.setXPath("@creation-suffix");
+        return nameMapping;
+    }
+
     /**
      * INTERNAL:
      */

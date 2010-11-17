@@ -34,13 +34,16 @@ import org.eclipse.persistence.internal.helper.Helper;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class TableMetadata extends ORMetadata {    
+public class TableMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private DatabaseTable m_databaseTable = new DatabaseTable();
     private List<UniqueConstraintMetadata> m_uniqueConstraints = new ArrayList<UniqueConstraintMetadata>();
     private String m_name;
     private String m_schema;
     private String m_catalog;
-    
+    public String m_creationSuffix;
+
     /**
      * INTERNAL:
      */
@@ -65,13 +68,13 @@ public class TableMetadata extends ORMetadata {
             m_name = (String) table.getAttribute("name"); 
             m_schema = (String) table.getAttribute("schema"); 
             m_catalog = (String) table.getAttribute("catalog");
-            
+
             for (Object uniqueConstraint : (Object[]) table.getAttributeArray("uniqueConstraints")) {
                 m_uniqueConstraints.add(new UniqueConstraintMetadata((MetadataAnnotation)uniqueConstraint, accessibleObject));
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -83,21 +86,25 @@ public class TableMetadata extends ORMetadata {
             if (! valuesMatch(m_name, table.getName())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_schema, table.getSchema())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_catalog, table.getCatalog())) {
                 return false;
             }
-            
+
+            if (! valuesMatch(m_creationSuffix, table.getCreationSuffix())) {
+                return false;
+            }
+
             return valuesMatch(m_uniqueConstraints, table.getUniqueConstraints());
         }
         
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -105,21 +112,29 @@ public class TableMetadata extends ORMetadata {
     public String getCatalog() {
         return m_catalog;
     }
-    
+
     /**
      * INTERNAL:
      */
     public String getCatalogContext() {
         return MetadataLogger.TABLE_CATALOG;
     }
-    
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getCreationSuffix() {
+        return m_creationSuffix;
+    }
+
     /**
      * INTERNAL:
      */
     public DatabaseTable getDatabaseTable() {
         return m_databaseTable;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -127,14 +142,14 @@ public class TableMetadata extends ORMetadata {
     public String getName() {
         return m_name;
     }
-    
+
     /**
      * INTERNAL:
      */
     public String getNameContext() {
         return MetadataLogger.TABLE_NAME;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -142,7 +157,7 @@ public class TableMetadata extends ORMetadata {
     public String getSchema() {
         return m_schema;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -157,7 +172,7 @@ public class TableMetadata extends ORMetadata {
     public List<UniqueConstraintMetadata> getUniqueConstraints() {
         return m_uniqueConstraints;
     }
-    
+
     /**
      * INTERNAL:
      * Add the unique constraints to the database table.
@@ -173,14 +188,14 @@ public class TableMetadata extends ORMetadata {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setFullyQualifiedTableName(String fullyQualifiedTableName) {
         m_databaseTable.setPossiblyQualifiedName(fullyQualifiedTableName, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());  
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -188,14 +203,22 @@ public class TableMetadata extends ORMetadata {
     public void setCatalog(String catalog) {
         m_catalog = catalog;
     }
-    
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCreationSuffix(String creationSuffix) {
+        m_creationSuffix = creationSuffix;
+    }
+
     /**
      * INTERNAL:
      */
     public void setDatabaseTable(DatabaseTable databaseTable) {
         m_databaseTable = databaseTable;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -203,7 +226,7 @@ public class TableMetadata extends ORMetadata {
     public void setName(String name) {
         m_name = name;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -211,7 +234,7 @@ public class TableMetadata extends ORMetadata {
     public void setSchema(String schema) {
         m_schema = schema;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -219,7 +242,7 @@ public class TableMetadata extends ORMetadata {
     public void setUniqueConstraints(List<UniqueConstraintMetadata> uniqueConstraints) {
         m_uniqueConstraints = uniqueConstraints;
     }
-    
+
     /**
      * INTERNAL:
      */

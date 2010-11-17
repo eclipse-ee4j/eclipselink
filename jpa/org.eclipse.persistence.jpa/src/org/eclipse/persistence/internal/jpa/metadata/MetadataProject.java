@@ -1544,7 +1544,9 @@ public class MetadataProject {
         if (useDelimitedIdentifier()){
             table.setUseDelimiters(useDelimitedIdentifier());
         }
-        
+
+        table.getDatabaseTable().setCreationSuffix(table.getCreationSuffix());
+
         // Process the unique constraints
         table.processUniqueConstraints();
     }
@@ -1580,14 +1582,6 @@ public class MetadataProject {
     public void removeMappedSuperclassAccessor(MetadataClass metadataClass) {
         m_mappedSuperclasseAccessors.remove(metadataClass.getName());
     }
-    
-    /**
-     * INTERNAL:
-     * Used to uppercase default and user defined column field names
-     */
-    public void setShouldForceFieldNamesToUpperCase(boolean shouldForceFieldNamesToUpperCase){
-        m_forceFieldNamesToUpperCase = shouldForceFieldNamesToUpperCase;
-    }
 
     /** 
      * INTERNAL:
@@ -1600,7 +1594,15 @@ public class MetadataProject {
             m_persistenceUnitMetadata.merge(persistenceUnitMetadata);
         }
     }
-    
+
+    /**
+     * INTERNAL:
+     * Used to uppercase default and user defined column field names
+     */
+    public void setShouldForceFieldNamesToUpperCase(boolean shouldForceFieldNamesToUpperCase){
+        m_forceFieldNamesToUpperCase = shouldForceFieldNamesToUpperCase;
+    }
+
     /**
      * INTERNAL:
      * This flag represents dynamic weaving state for 1-1, many-1, fetch groups 
