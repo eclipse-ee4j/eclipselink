@@ -13,8 +13,8 @@
             <java-attributes>
                 <xml-element java-attribute="phones" type="mynamespace.Phone" container-type="java.util.HashMap">
                     <xml-map>
-                        <key type='java.lang.String'/>
-                        <value type='java.lang.Object'/>
+                        <key type="java.lang.String"/>
+                        <value type="java.lang.Object"/>
                     </xml-map>
                 </xml-element>
             </java-attributes>
