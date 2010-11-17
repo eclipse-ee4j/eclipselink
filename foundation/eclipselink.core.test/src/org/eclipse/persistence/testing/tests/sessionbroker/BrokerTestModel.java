@@ -139,7 +139,7 @@ public class BrokerTestModel extends TestModel {
         } catch (Exception e) {
         }
         login.useOracleThinJDBCDriver();
-        login.setDatabaseURL("tlsvrdb7.ca.oracle.com:1521:toplink");
+        login.setDatabaseURL("ottvm028.ca.oracle.com:1521:toplink");
         login.setUserName("QA7");
         login.setPassword("password");
         login.useNativeSequencing();
