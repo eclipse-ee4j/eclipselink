@@ -340,7 +340,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL:
      * Set the end of the sql create statement - the part after the field list.
-     * Use to create temp table.
      */
     public void setCreationSuffix(String  creationSuffix) {
         this.creationSuffix = creationSuffix;
@@ -382,9 +381,9 @@ public class TableDefinition extends DatabaseObjectDefinition {
                 }
             }
             writer.write(")");
-            if(getCreationSuffix().length() > 0) {
-                writer.write(getCreationSuffix());
-            }
+            //let the platform write out the CreationSuffix and the platform's default tableCreationSuffix
+            session.getPlatform().writeTableCreationSuffix(writer, getCreationSuffix());
+
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }

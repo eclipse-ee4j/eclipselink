@@ -180,7 +180,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         if(!(session.getPlatform().usesBatchWriting() && 
            !session.getPlatform().usesJDBCBatchWriting() &&
            !session.getPlatform().usesNativeBatchWriting())){
-            fail("The BatcheWriting setting set to BUFFERED by the property eclipselink.jdbc.batch-writing in persistence.xml, JDBC batch writing or natvie batch writing however may be wrong.");
+            fail("The BatcheWriting setting set to BUFFERED by the property eclipselink.jdbc.batch-writing in persistence.xml, JDBC batch writing or native batch writing however may be wrong.");
         }
         closeEntityManager(em);
     }

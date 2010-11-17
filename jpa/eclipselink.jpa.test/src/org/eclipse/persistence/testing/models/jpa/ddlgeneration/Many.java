@@ -10,10 +10,13 @@
  * Contributors:
  *     01/07/2010-2.0.1 Laird Nelson  
  *       - 282075: DDL generation is unpredictable
+ *     11/17/2010-2.2.0 Chris Delahunt 
+ *       - 214519: Allow appending strings to CREATE TABLE statements
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -24,6 +27,10 @@ public class Many implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", scale = 10, precision = 0, nullable = false)
     private long id;
+    
+    @ManyToMany
+    @JoinTable(name="DDL_MANY_MANY")
+    private List<Many> many;
 
     @ManyToOne
     @JoinColumn(name = "o", referencedColumnName = "id")
@@ -31,6 +38,14 @@ public class Many implements Serializable {
 
     public Many() {
         super();
+    }
+
+    public List<Many> getMany() {
+        return many;
+    }
+
+    public void setMany(List<Many> many) {
+        this.many = many;
     }
 
     public void setOne(final One one) {

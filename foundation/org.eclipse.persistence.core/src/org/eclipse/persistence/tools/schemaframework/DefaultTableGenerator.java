@@ -247,7 +247,7 @@ public class DefaultTableGenerator {
     /**
      * Build tables/fields information into the table creator object from a EclipseLink descriptor.
      * This should handle most of the direct/relational mappings except many-to-many and direct
-     * collection/map mappings, witch must be down in postInit method.
+     * collection/map mappings, which must be down in postInit method.
      */
     protected void initTableSchema(ClassDescriptor descriptor) {
         TableDefinition tableDefintion = null;
@@ -655,7 +655,7 @@ public class DefaultTableGenerator {
         }
         addJoinColumnsFkConstraint(fkFields, targetFields, cascadeOnDelete);
     }
-    
+
     /**
      * Build a table definition object from a database table object
      */
@@ -672,6 +672,9 @@ public class DefaultTableGenerator {
             }
             if (databaseTable.hasIndexes()) {
                 tableDefinition.getIndexes().addAll(databaseTable.getIndexes());
+            }
+            if (databaseTable.getCreationSuffix() !=null){
+                tableDefinition.setCreationSuffix(databaseTable.getCreationSuffix());
             }
             tableMap.put(databaseTable.getName(), tableDefinition);
         }

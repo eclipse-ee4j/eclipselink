@@ -2133,7 +2133,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             setWasDefaultLockMode(true);            
         }
         setRequiresDeferredLocks(DeferredLockManager.SHOULD_USE_DEFERRED_LOCKS && (hasJoining() || (descriptor.shouldAcquireCascadedLocks())));
-           
+
         if(hasJoining() && hasPartialAttributeExpressions()) {
             session.log(SessionLog.WARNING, SessionLog.QUERY, "query_has_both_join_attributes_and_partial_attributes", new Object[]{this, this.getName()});
         }

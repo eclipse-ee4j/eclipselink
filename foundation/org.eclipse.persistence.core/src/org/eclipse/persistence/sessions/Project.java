@@ -620,7 +620,7 @@ public class Project implements Serializable, Cloneable {
         }
         return (SQLResultSetMapping)this.sqlResultSetMappings.get(sqlResultSetMapping);
     }
-    
+
     /**
      * INTERNAL:
      * Answers if at least one Descriptor or Mapping had a HistoryPolicy at initialize time.

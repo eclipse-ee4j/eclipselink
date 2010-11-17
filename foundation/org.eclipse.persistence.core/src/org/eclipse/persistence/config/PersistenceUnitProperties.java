@@ -786,6 +786,16 @@ public class PersistenceUnitProperties {
     public static final String LOGGING_FILE = "eclipselink.logging.file";
 
     // Platforms & Customization
+    
+    /**
+     * The <code>"eclipselink.ddl.table-creation-suffix"</code> property is used in 
+     * conjunction with DDL generation options to append a string to the end of 
+     * generated CREATE Table statements
+     * 
+     * This value is applied to all Table creation statements through the DDL generation feature
+     * ie <property name="eclipselink.ddl.table-creation-suffix" value="engine=InnoDB"/>
+     */
+    public static final String TABLE_CREATION_SUFFIX = "eclipselink.ddl-generation.table-creation-suffix";
 
     /**
      * The <code>"eclipselink.target-database"</code> property configures the

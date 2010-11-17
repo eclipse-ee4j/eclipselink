@@ -13,15 +13,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
+import java.util.Collection;
+
 import javax.persistence.AssociationOverride;
+import javax.persistence.Column;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
+import javax.persistence.SecondaryTable;
+
+import org.eclipse.persistence.annotations.Property;
 
 @Entity(name="DDL_EMP")
+@SecondaryTable(name="DDL_SALARY")
 public class Employee {
     @Id
     @GeneratedValue
@@ -39,6 +48,13 @@ public class Employee {
     )
     @Embedded 
     public ContactInfo contactInfo;
+    
+    @ElementCollection
+    @CollectionTable(name="DDL_RESPONS")
+    private Collection<String> responsibilities;
+    
+    @Column(table="DDL_SALARY")
+    private Integer salary;
 
     public void addPhoneNumber(PhoneNumber phoneNumber) {
         phoneNumber.addEmployee(this);
@@ -57,11 +73,19 @@ public class Employee {
         return id;
     }
 
+    public Collection<String> getResponsibilities() {
+        return responsibilities;
+    }
+
     public void setContactInfo(ContactInfo contactInfo) {
         this.contactInfo = contactInfo;
     }
     
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setResponsibilities(Collection<String> responsibilities) {
+        this.responsibilities = responsibilities;
     }
 }

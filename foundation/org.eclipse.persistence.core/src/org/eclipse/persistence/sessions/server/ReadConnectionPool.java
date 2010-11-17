@@ -76,7 +76,7 @@ public class ReadConnectionPool extends ConnectionPool {
                     --index;
                     //reset size as there are one less connection in the pool now.
                     --size;
-                    continue; //skip back to biginning of loop
+                    continue; //skip back to beginning of loop
                 }else{
                     this.checkConnections = false;
                 }

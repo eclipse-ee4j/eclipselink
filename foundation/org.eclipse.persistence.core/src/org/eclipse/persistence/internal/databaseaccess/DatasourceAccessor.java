@@ -330,7 +330,7 @@ public abstract class DatasourceAccessor implements Accessor {
                 customizer.customize();
             }
         }catch (DatabaseException ex){
-            //Set the accessor to ensure the retry code has an oportunity to retry.
+            //Set the accessor to ensure the retry code has an opportunity to retry.
             ex.setAccessor(this);
             throw ex;
         }

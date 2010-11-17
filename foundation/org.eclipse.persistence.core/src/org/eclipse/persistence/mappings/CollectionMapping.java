@@ -468,7 +468,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return null;
         }
 
-        if (!owner.isNew()) {// if the changeSet is for a new object then we must record all off the attributes
+        if (!owner.isNew()) {// if the changeSet is for a new object then we must record all of the attributes
             backUpAttribute = getAttributeValueFromObject(backUp);
 
             if ((cloneAttribute == null) && (backUpAttribute == null)) {

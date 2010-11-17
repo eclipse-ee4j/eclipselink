@@ -444,6 +444,16 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
+     * PUBLIC: 
+     * Get the String used on all table creation statements generated from the DefaultTableGenerator
+     * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
+     * stored on the DatabaseTable or TableDefinition.  
+     */
+    public String getTableCreationSuffix(){
+        return getPlatform().getTableCreationSuffix();
+    }
+
+    /**
      * PUBLIC:
      * Return the transaction isolation setting for the connection.
      * Return -1 if it has not been set.
@@ -877,6 +887,17 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     public void setStringBindingSize(int stringBindingSize) {
         getPlatform().setStringBindingSize(stringBindingSize);
+    }
+
+    /**
+     * PUBLIC: 
+     * Get the String used on all table creation statements generated from the DefaultTableGenerator
+     * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
+     * stored on the DatabaseTable or TableDefinition.  
+     * ie setTableCreationSuffix("engine=InnoDB");
+     */
+    public void setTableCreationSuffix(String tableCreationSuffix){
+        this.getPlatform().setTableCreationSuffix(tableCreationSuffix);
     }
 
     /**

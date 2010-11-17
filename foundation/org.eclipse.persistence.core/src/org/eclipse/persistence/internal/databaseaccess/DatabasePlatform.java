@@ -213,6 +213,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public final static int Types_SQLXML = 2009;
     
+    
+    /**
+     * String used on all table creation statements generated from the DefaultTableGenerator
+     * with a session using this project.  This value will be appended to CreationSuffix strings
+     * stored within the DatabaseTable creationSuffix.  
+     */
+    protected String tableCreationSuffix;
+    
     public DatabasePlatform() {
         this.tableQualifier = "";
         this.usesNativeSQL = false;
@@ -266,6 +274,16 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public Map<String, StructConverter> getStructConverters() {
         return this.structConverters;
+    }
+
+    /**
+     * PUBLIC: 
+     * Get the String used on all table creation statements generated from the DefaultTableGenerator
+     * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
+     * stored on the DatabaseTable or TableDefinition.  
+     */
+    public String getTableCreationSuffix(){
+        return this.tableCreationSuffix;
     }
 
     /**
@@ -1683,6 +1701,17 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void setSupportsAutoCommit(boolean supportsAutoCommit) {
         this.supportsAutoCommit = supportsAutoCommit;
     }
+    
+    /**
+     * PUBLIC: 
+     * Get the String used on all table creation statements generated from the DefaultTableGenerator
+     * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
+     * stored on the DatabaseTable or TableDefinition.  
+     * ie setTableCreationSuffix("engine=InnoDB");
+     */
+    public void setTableCreationSuffix(String tableCreationSuffix){
+        this.tableCreationSuffix = tableCreationSuffix;
+    }
 
     /**
      * Set the transaction isolation setting for a connection.
@@ -2316,7 +2345,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
      protected String getCreateTempTableSqlPrefix() {
          throw ValidationException.platformDoesNotOverrideGetCreateTempTableSqlPrefix(Helper.getShortClassName(this));
-     }          
+     }
 
     /**
      * INTERNAL:
@@ -2459,6 +2488,22 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public boolean isNullAllowedInSelectClause() {
         return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Write used on all table creation statements generated from the DefaultTableGenerator
+     * with a session using this project (DDL generation).  This writes the passed in string argument as 
+     * well as the value returned from the DatabasePlatform's getTableCreationSuffix(0  
+     */
+    public void writeTableCreationSuffix(Writer writer, String tableCreationSuffix) throws IOException {
+        if(tableCreationSuffix!=null && tableCreationSuffix.length() > 0) {
+            writer.write(" " + tableCreationSuffix);
+        }
+        String defaultTableCreationSuffix = getTableCreationSuffix();
+        if (defaultTableCreationSuffix !=null && defaultTableCreationSuffix.length()>0) {
+            writer.write(" " + defaultTableCreationSuffix);
+        }
     }
 
     /**

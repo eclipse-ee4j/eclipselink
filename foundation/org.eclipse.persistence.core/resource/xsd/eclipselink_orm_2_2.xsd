@@ -1280,6 +1280,7 @@
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
+    <xsd:attribute name="creation-suffix" type="xsd:string" />
     </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -1340,6 +1341,7 @@
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
+    <xsd:attribute name="creation-suffix" type="xsd:string" />
   </xsd:complexType>
 
 
@@ -2307,6 +2309,7 @@
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
+    <xsd:attribute name="creation-suffix" type="xsd:string" />
   </xsd:complexType>
 
 <!-- **************************************************** -->
@@ -3527,6 +3530,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
+    <xsd:attribute name="creation-suffix" type="xsd:string" />
   </xsd:complexType>
 
 <!-- **************************************************** -->
@@ -3692,6 +3696,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
+    <xsd:attribute name="creation-suffix" type="xsd:string" />
   </xsd:complexType>
   
 <!-- **************************************************** -->
@@ -3776,6 +3781,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="table" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
+    <xsd:attribute name="creation-suffix" type="xsd:string"/>
     <xsd:attribute name="pk-column-name" type="xsd:string"/>
     <xsd:attribute name="value-column-name" type="xsd:string"/>
     <xsd:attribute name="pk-column-value" type="xsd:string"/>

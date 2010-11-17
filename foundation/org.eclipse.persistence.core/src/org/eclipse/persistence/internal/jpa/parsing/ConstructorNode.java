@@ -121,7 +121,7 @@ public class ConstructorNode extends Node {
     }
 
     /**
-     * Check the specifid constructor class and return its class instance. 
+     * Check the specific constructor class and return its class instance. 
      * @exception JPQLException if the specified constructor class could not
      * be found.
      */

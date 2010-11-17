@@ -5322,7 +5322,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
     /**
      * INTERNAL:
-     * THis method is used to transition an object from the deleted objects list
+     * This method is used to transition an object from the deleted objects list
      * to be simply be register.
      */
     protected void undeleteObject(Object object) {

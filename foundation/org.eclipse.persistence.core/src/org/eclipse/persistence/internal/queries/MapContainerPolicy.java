@@ -224,7 +224,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
                 valueDescriptor = tempValueDescriptor;
             }
         }
-        ObjectChangeSet changeSet = valueDescriptor.getObjectBuilder().createObjectChangeSet(((Map.Entry)object).getValue(), uowChangeSet, session);
+        ObjectChangeSet changeSet = valueDescriptor.getObjectBuilder().createObjectChangeSet(value, uowChangeSet, session);
         Object key = ((Map.Entry)object).getKey();
         changeSet.setNewKey(key);
     }

@@ -46,14 +46,16 @@ public class DatabaseTable implements Cloneable, Serializable {
      * have their names defaulted (as we did before).
      */
     protected Map<String, List<List<String>>> uniqueConstraints;
-    
+
     /**
      * Store the set of indexes defined through meta-data for the table.
      */
     protected List<IndexDefinition> indexes;
-    
+
     protected boolean useDelimiters = false;
-    
+
+    protected String creationSuffix;
+
     /** 
      * Initialize the newly allocated instance of this class.
      * By default their is no qualifier.
@@ -144,7 +146,14 @@ public class DatabaseTable implements Cloneable, Serializable {
 
         return false;
     }
-    
+
+    /** 
+     * returns the suffix applied to the CREATE table statement on this field for DDL generation.
+     */
+    public String getCreationSuffix() {
+        return creationSuffix;
+   }
+
     /** 
      * Get method for table name.
      */
@@ -202,7 +211,7 @@ public class DatabaseTable implements Cloneable, Serializable {
     public String getTableQualifier() {
         return tableQualifier;
     }
-    
+
     public boolean hasUniqueConstraints() {
         return (this.uniqueConstraints != null) && (!this.uniqueConstraints.isEmpty());
     }
@@ -266,6 +275,10 @@ public class DatabaseTable implements Cloneable, Serializable {
         this.qualifiedName = null;
     }
     
+    public void setCreationSuffix(String creationSuffix) {
+        this.creationSuffix = creationSuffix;
+    }
+
     /**
      * This method will set the table name regardless if the name has
      * a qualifier. Used when aliasing table names.
@@ -336,7 +349,7 @@ public class DatabaseTable implements Cloneable, Serializable {
         }
         resetQualifiedName();
     }
-    
+
     public String toString() {
         return "DatabaseTable(" + getQualifiedName() + ")";
     }
