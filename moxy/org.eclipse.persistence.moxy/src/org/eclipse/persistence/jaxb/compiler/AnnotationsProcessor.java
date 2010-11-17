@@ -158,6 +158,11 @@ public class AnnotationsProcessor {
     private static final String ARRAY_NAMESPACE = "http://jaxb.dev.java.net/array";
     private static final String ARRAY_CLASS_NAME_SUFFIX = "Array";
     private static final String ORG_W3C_DOM = "org.w3c.dom";
+    private static final String CREATE = "create";
+    private static final String ELEMENT_DECL_GLOBAL = "javax.xml.bind.annotation.XmlElementDecl.GLOBAL";
+    private static final String ELEMENT_DECL_DEFAULT = "\u0000";
+    private static final String EMPTY_STRING = "";
+    private static final String JAVA_UTIL_LIST = "java.util.List";
 
     private ArrayList<JavaClass> typeInfoClasses;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
@@ -1155,7 +1160,7 @@ public class AnnotationsProcessor {
         String factoryMethodName = xmlType.getFactoryMethod();
 
         if (factoryClassName.equals("javax.xml.bind.annotation.XmlType.DEFAULT")) {
-            if (factoryMethodName != null && !factoryMethodName.equals("")) {
+            if (factoryMethodName != null && !factoryMethodName.equals(EMPTY_STRING)) {
                 // factory method applies to the current class verify method
                 // exists
                 JavaMethod method = javaClass.getDeclaredMethod(factoryMethodName, new JavaClass[] {});
@@ -1166,7 +1171,7 @@ public class AnnotationsProcessor {
                 info.setFactoryMethodName(factoryMethodName);
             }
         } else {
-            if (factoryMethodName == null || factoryMethodName.equals("")) {
+            if (factoryMethodName == null || factoryMethodName.equals(EMPTY_STRING)) {
                 throw org.eclipse.persistence.exceptions.JAXBException.factoryClassWithoutFactoryMethod(javaClass.getName());
             }
             info.setObjectFactoryClassName(factoryClassName);
@@ -1175,7 +1180,7 @@ public class AnnotationsProcessor {
 
         // figure out type name
         String typeName = xmlType.getName();
-        if (typeName.equals("##default")) {
+        if (typeName.equals(XMLProcessor.DEFAULT)) {
             typeName = getSchemaTypeNameForClassName(javaClass.getName());
         }
         info.setSchemaTypeName(typeName);
@@ -1185,15 +1190,15 @@ public class AnnotationsProcessor {
             List<String> props = xmlType.getPropOrder();
             if (props.size() == 0) {
                 info.setPropOrder(new String[0]);
-            } else if (props.get(0).equals("")) {
-                info.setPropOrder(new String[] { "" });
+            } else if (props.get(0).equals(EMPTY_STRING)) {
+                info.setPropOrder(new String[] { EMPTY_STRING });
             } else {
                 info.setPropOrder(xmlType.getPropOrder().toArray(new String[xmlType.getPropOrder().size()]));
             }
         }
 
         // figure out namespace
-        if (xmlType.getNamespace().equals("##default")) {
+        if (xmlType.getNamespace().equals(XMLProcessor.DEFAULT)) {
             info.setClassNamespace(packageNamespace.getNamespace());
         } else {
             info.setClassNamespace(xmlType.getNamespace());
@@ -1285,7 +1290,7 @@ public class AnnotationsProcessor {
                 property.setHasXmlElementType(true);
             }
             // handle default value
-            if (!element.defaultValue().equals("\u0000")) {
+            if (!element.defaultValue().equals(ELEMENT_DECL_DEFAULT)) {
                 property.setDefaultValue(element.defaultValue());
             }
             validateElementIsInPropOrder(info, property.getPropertyName());
@@ -1368,7 +1373,7 @@ public class AnnotationsProcessor {
     private void removeTypeInfo(String qualifiedName, TypeInfo info) {
         this.typeInfo.remove(qualifiedName);
         String typeName = info.getSchemaTypeName();
-        if (typeName != null && !("".equals(typeName))) {
+        if (typeName != null && !(EMPTY_STRING.equals(typeName))) {
             QName typeQName = new QName(info.getClassNamespace(), typeName);
             this.typeQNames.remove(typeQName);
         }        
@@ -1389,7 +1394,7 @@ public class AnnotationsProcessor {
      */
     private void processTypeQName(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         String typeName = info.getSchemaTypeName();
-        if (typeName != null && !("".equals(typeName))) {
+        if (typeName != null && !(EMPTY_STRING.equals(typeName))) {
             QName typeQName = new QName(info.getClassNamespace(), typeName);
 
             boolean containsQName = typeQNames.contains(typeQName);
@@ -1642,7 +1647,7 @@ public class AnnotationsProcessor {
             org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer xmlReadTransformer = new org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer();
             if (!(readTransformer.transformerClass() == AttributeTransformer.class)) {
                 xmlReadTransformer.setTransformerClass(readTransformer.transformerClass().getName());
-            } else if (!(readTransformer.method().equals(""))) {
+            } else if (!(readTransformer.method().equals(EMPTY_STRING))) {
                 xmlReadTransformer.setMethod(readTransformer.method());
             }
             transformation.setXmlReadTransformer(xmlReadTransformer);
@@ -1663,7 +1668,7 @@ public class AnnotationsProcessor {
                 org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer xmlWriteTransformer = new org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer();
                 if (!(next.transformerClass() == FieldTransformer.class)) {
                     xmlWriteTransformer.setTransformerClass(next.transformerClass().getName());
-                } else if (!(next.method().equals(""))) {
+                } else if (!(next.method().equals(EMPTY_STRING))) {
                     xmlWriteTransformer.setMethod(next.method());
                 }
                 xmlWriteTransformer.setXmlPath(next.xpath());
@@ -1714,14 +1719,14 @@ public class AnnotationsProcessor {
             if (next.getXmlPath() != null) {
                 choiceProp.setXmlPath(next.getXmlPath());
                 name = XMLProcessor.getNameFromXPath(next.getXmlPath(), propertyName, false);
-                namespace = "##default";
+                namespace = XMLProcessor.DEFAULT;
             } else {
                 // no xml-path, so use name/namespace from xml-element
                 name = next.getName();
                 namespace = next.getNamespace();
             }
 
-            if (name == null || name.equals("##default")) {
+            if (name == null || name.equals(XMLProcessor.DEFAULT)) {
                 if (next.getJavaAttribute() != null) {
                     name = next.getJavaAttribute();
                 } else {
@@ -1739,7 +1744,7 @@ public class AnnotationsProcessor {
             }
 
             QName qName = null;
-            if (!namespace.equals("##default")) {
+            if (!namespace.equals(XMLProcessor.DEFAULT)) {
                 qName = new QName(namespace, name);
             } else {
                 NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(cls);
@@ -1853,8 +1858,8 @@ public class AnnotationsProcessor {
             if (missingReference) {
                 String name = nextRef.getName();
                 String namespace = nextRef.getNamespace();
-                if (namespace.equals("##default")) {
-                    namespace = "";
+                if (namespace.equals(XMLProcessor.DEFAULT)) {
+                    namespace = EMPTY_STRING;
                 }
                 QName qname = new QName(namespace, name);
                 JavaClass scopeClass = cls;
@@ -1988,10 +1993,10 @@ public class AnnotationsProcessor {
         }
         if (helper.isAnnotationPresent(property.getElement(), XmlAccessMethods.class)) {
             XmlAccessMethods accessMethods = (XmlAccessMethods) helper.getAnnotation(property.getElement(), XmlAccessMethods.class);
-            if (!(accessMethods.getMethodName().equals(""))) {
+            if (!(accessMethods.getMethodName().equals(EMPTY_STRING))) {
                 property.setGetMethodName(accessMethods.getMethodName());
             }
-            if (!(accessMethods.setMethodName().equals(""))) {
+            if (!(accessMethods.setMethodName().equals(EMPTY_STRING))) {
                 property.setSetMethodName(accessMethods.setMethodName());
             }
             if (!(property.isMethodProperty())) {
@@ -2204,7 +2209,7 @@ public class AnnotationsProcessor {
         for (int i = 0; i < propertyMethods.size(); i++) {
             boolean isPropertyTransient = false;
             JavaMethod nextMethod = propertyMethods.get(i);
-            String propertyName = "";
+            String propertyName = EMPTY_STRING;
 
             JavaMethod getMethod;
             JavaMethod setMethod;
@@ -2481,7 +2486,7 @@ public class AnnotationsProcessor {
     }
 
     public String getSchemaTypeNameForClassName(String className) {
-        String typeName = "";
+        String typeName = EMPTY_STRING;
         if (className.indexOf('$') != -1) {
             typeName = decapitalize(className.substring(className.lastIndexOf('$') + 1));
         } else {
@@ -2546,9 +2551,9 @@ public class AnnotationsProcessor {
         String packageNamespace = null;
         if (xmlSchema != null) {
             String namespaceMapping = xmlSchema.namespace();
-            if (!(namespaceMapping.equals("") || namespaceMapping.equals("##default"))) {
+            if (!(namespaceMapping.equals(EMPTY_STRING) || namespaceMapping.equals(XMLProcessor.DEFAULT))) {
                 packageNamespace = namespaceMapping;
-            } else if (namespaceMapping.equals("##default")) {
+            } else if (namespaceMapping.equals(XMLProcessor.DEFAULT)) {
                 packageNamespace = this.defaultTargetNamespace;
             }
             info.setNamespace(packageNamespace);
@@ -2568,7 +2573,7 @@ public class AnnotationsProcessor {
                 if (location != null) {
                     if (location.equals("##generate")) {
                         location = null;
-                    } else if (location.equals("")) {
+                    } else if (location.equals(EMPTY_STRING)) {
                         location = null;
                     }
                 }
@@ -2602,7 +2607,7 @@ public class AnnotationsProcessor {
     }
 
     public String getSchemaTypeNameFor(JavaClass javaClass, XmlType xmlType) {
-        String typeName = "";
+        String typeName = EMPTY_STRING;
         if (javaClass == null) {
             return typeName;
         }
@@ -2622,19 +2627,19 @@ public class AnnotationsProcessor {
     }
 
     public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo, String uri) {
-        String name = "##default";
-        String namespace = "##default";
+        String name = XMLProcessor.DEFAULT;
+        String namespace = XMLProcessor.DEFAULT;
         QName qName = null;
         if (helper.isAnnotationPresent(element, XmlAttribute.class)) {
             XmlAttribute xmlAttribute = (XmlAttribute) helper.getAnnotation(element, XmlAttribute.class);
             name = xmlAttribute.name();
             namespace = xmlAttribute.namespace();
 
-            if (name.equals("##default")) {
+            if (name.equals(XMLProcessor.DEFAULT)) {
                 name = defaultName;
             }
 
-            if (!namespace.equals("##default")) {
+            if (!namespace.equals(XMLProcessor.DEFAULT)) {
                 qName = new QName(namespace, name);
                 isDefaultNamespaceAllowed = false;
             } else {
@@ -2651,11 +2656,11 @@ public class AnnotationsProcessor {
                 namespace = xmlElement.namespace();
             }
 
-            if (name.equals("##default")) {
+            if (name.equals(XMLProcessor.DEFAULT)) {
                 name = defaultName;
             }
 
-            if (!namespace.equals("##default")) {
+            if (!namespace.equals(XMLProcessor.DEFAULT)) {
                 qName = new QName(namespace, name);
                 if (namespace.equals(XMLConstants.EMPTY_STRING)) {
                     isDefaultNamespaceAllowed = false;
@@ -2704,7 +2709,7 @@ public class AnnotationsProcessor {
 
             // if it's still null, generate based on package name
             if (packageNamespace.getNamespace() == null) {
-                packageNamespace.setNamespace("");
+                packageNamespace.setNamespace(EMPTY_STRING);
             }
             if (helper.isAnnotationPresent(pack, XmlAccessorType.class)) {
                 XmlAccessorType xmlAccessorType = (XmlAccessorType) helper.getAnnotation(pack, XmlAccessorType.class);
@@ -2790,9 +2795,8 @@ public class AnnotationsProcessor {
 
     public JavaClass[] processObjectFactory(JavaClass objectFactoryClass, ArrayList<JavaClass> classes) {
         // if there is an xml-registry from XML for this JavaClass, create a map
-        // of method
-        // names to XmlElementDecl objects to simplify processing later on in
-        // this method
+        // of method names to XmlElementDecl objects to simplify processing 
+        // later on in this method
         Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl> elemDecls = new HashMap<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl>();
         org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry xmlReg = xmlRegistries.get(objectFactoryClass.getQualifiedName());
         if (xmlReg != null) {
@@ -2808,7 +2812,7 @@ public class AnnotationsProcessor {
         NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(objectFactoryClass);
         while (methodsIter.hasNext()) {
             JavaMethod next = (JavaMethod) methodsIter.next();
-            if (next.getName().startsWith("create")) {
+            if (next.getName().startsWith(CREATE)) {
                 JavaClass type = next.getReturnType();
                 if (JAVAX_XML_BIND_JAXBELEMENT.equals(type.getName())) {
                     type = (JavaClass) next.getReturnType().getActualTypeArguments().toArray()[0];
@@ -2830,7 +2834,7 @@ public class AnnotationsProcessor {
                         url = xmlEltDecl.getNamespace();
                         localName = xmlEltDecl.getName();
                         String scopeClassName = xmlEltDecl.getScope();
-                        if (!scopeClassName.equals("javax.xml.bind.annotation.XmlElementDecl.GLOBAL")) {
+                        if (!scopeClassName.equals(ELEMENT_DECL_GLOBAL)) {
                             JavaClass jScopeClass = helper.getJavaClass(scopeClassName);
                             if (jScopeClass != null) {
                                 scopeClass = helper.getClassForJavaClass(jScopeClass);
@@ -2839,15 +2843,15 @@ public class AnnotationsProcessor {
                                 }
                             }
                         }
-                        if (!xmlEltDecl.getSubstitutionHeadName().equals("")) {
+                        if (!xmlEltDecl.getSubstitutionHeadName().equals(EMPTY_STRING)) {
                             String subHeadLocal = xmlEltDecl.getSubstitutionHeadName();
                             String subHeadNamespace = xmlEltDecl.getSubstitutionHeadNamespace();
-                            if (subHeadNamespace.equals("##default")) {
+                            if (subHeadNamespace.equals(XMLProcessor.DEFAULT)) {
                                 subHeadNamespace = namespaceInfo.getNamespace();
                             }
                             substitutionHead = new QName(subHeadNamespace, subHeadLocal);
                         }
-                        if (!(xmlEltDecl.getDefaultValue().length() == 1 && xmlEltDecl.getDefaultValue().startsWith("\u0000"))) {
+                        if (!(xmlEltDecl.getDefaultValue().length() == 1 && xmlEltDecl.getDefaultValue().startsWith(ELEMENT_DECL_DEFAULT))) {
                             defaultValue = xmlEltDecl.getDefaultValue();
                         }
                     } else {
@@ -2857,27 +2861,27 @@ public class AnnotationsProcessor {
                         url = elementDecl.namespace();
                         localName = elementDecl.name();
                         scopeClass = elementDecl.scope();
-                        if (!elementDecl.substitutionHeadName().equals("")) {
+                        if (!elementDecl.substitutionHeadName().equals(EMPTY_STRING)) {
                             String subHeadLocal = elementDecl.substitutionHeadName();
                             String subHeadNamespace = elementDecl.substitutionHeadNamespace();
-                            if (subHeadNamespace.equals("##default")) {
+                            if (subHeadNamespace.equals(XMLProcessor.DEFAULT)) {
                                 subHeadNamespace = namespaceInfo.getNamespace();
                             }
 
                             substitutionHead = new QName(subHeadNamespace, subHeadLocal);
                         }
-                        if (!(elementDecl.defaultValue().length() == 1 && elementDecl.defaultValue().startsWith("\u0000"))) {
+                        if (!(elementDecl.defaultValue().length() == 1 && elementDecl.defaultValue().startsWith(ELEMENT_DECL_DEFAULT))) {
                             defaultValue = elementDecl.defaultValue();
                         }
                     }
 
-                    if ("##default".equals(url)) {
+                    if (XMLProcessor.DEFAULT.equals(url)) {
                         url = namespaceInfo.getNamespace();
                     }
                     qname = new QName(url, localName);
 
                     boolean isList = false;
-                    if ("java.util.List".equals(type.getName())) {
+                    if (JAVA_UTIL_LIST.equals(type.getName())) {
                         isList = true;
                         if (type.hasActualTypeArguments()) {
                             type = (JavaClass) type.getActualTypeArguments().toArray()[0];
@@ -2950,7 +2954,7 @@ public class AnnotationsProcessor {
                 namespaceInfo = getNamespaceInfoForPackage(javaClass);
 
                 String elementName = xmlRE.getName();
-                if (elementName.equals("##default") || elementName.equals("")) {
+                if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {
                     if (javaClass.getName().indexOf("$") != -1) {
                         elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('$') + 1));
                     } else {
@@ -2968,7 +2972,7 @@ public class AnnotationsProcessor {
                 }
                 String rootNamespace = xmlRE.getNamespace();
                 QName rootElemName = null;
-                if (rootNamespace.equals("##default")) {
+                if (rootNamespace.equals(XMLProcessor.DEFAULT)) {
                     if (namespaceInfo == null) {
                         rootElemName = new QName(elementName);
                     } else {
@@ -3034,7 +3038,7 @@ public class AnnotationsProcessor {
         // and propOrder is not empty then it must be in the proporder list
         String[] propOrder = info.getPropOrder();
         if (propOrder.length > 0) {
-            if (propOrder.length == 1 && propOrder[0].equals("")) {
+            if (propOrder.length == 1 && propOrder[0].equals(EMPTY_STRING)) {
                 return;
             }
             List<String> propOrderList = Arrays.asList(info.getPropOrder());
@@ -3054,7 +3058,7 @@ public class AnnotationsProcessor {
         if (propOrderLength > 0) {
             for (int i = 1; i < propOrderLength; i++) {
                 String nextPropName = propOrder[i];
-                if (!nextPropName.equals("") && !info.getPropertyNames().contains(nextPropName)) {
+                if (!nextPropName.equals(EMPTY_STRING) && !info.getPropertyNames().contains(nextPropName)) {
                     throw JAXBException.nonExistentPropertyInPropOrder(nextPropName);
                 }
             }
@@ -3124,7 +3128,7 @@ public class AnnotationsProcessor {
         }
         String namespace = this.defaultTargetNamespace;
         if (namespace == null) {
-            namespace = "";
+            namespace = EMPTY_STRING;
         }
         NamespaceInfo namespaceInfo = packageToNamespaceMappings.get(mapClass.getPackageName());
         if (namespaceInfo == null) {
@@ -3420,7 +3424,7 @@ public class AnnotationsProcessor {
 
         NamespaceInfo namespaceInfo = packageToNamespaceMappings.get(collectionClass.getPackageName());
 
-        String namespace = "";
+        String namespace = EMPTY_STRING;
         if (this.defaultTargetNamespace != null) {
             namespace = this.defaultTargetNamespace;
         }
@@ -3570,7 +3574,7 @@ public class AnnotationsProcessor {
         cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "setItem", "(Ljava/lang/Object;)V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitTypeInsn(Constants.CHECKCAST, "" + collectionType.getInternalName() + "");
+        cv.visitTypeInsn(Constants.CHECKCAST, EMPTY_STRING + collectionType.getInternalName() + EMPTY_STRING);
         cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L" + collectionType.getInternalName() + ";)V");
         cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(2, 2);
@@ -3720,7 +3724,7 @@ public class AnnotationsProcessor {
         if (info.isSetXmlRootElement()) {
             org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = info.getXmlRootElement();
             String elementName = xmlRE.getName();
-            if (elementName.equals("##default") || elementName.equals("")) {
+            if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {
                 if (javaClass.getName().indexOf("$") != -1) {
                     elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('$') + 1));
                 } else {
@@ -3740,7 +3744,7 @@ public class AnnotationsProcessor {
             }
             String rootNamespace = xmlRE.getNamespace();
             QName rootElemName = null;
-            if (rootNamespace.equals("##default")) {
+            if (rootNamespace.equals(XMLProcessor.DEFAULT)) {
                 rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
             } else {
                 rootElemName = new QName(rootNamespace, elementName);

@@ -67,6 +67,7 @@
                         <xs:attribute name="scope" type="xs:string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" />
                         <xs:attribute name="substitutionHeadName" type="xs:string" default="" />
                         <xs:attribute name="substitutionHeadNamespace" type="xs:string" default="##default" />
+                        <xs:attribute name="type" type="xs:string" default="##default" />
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
@@ -397,6 +398,7 @@
                     </xs:all>
                     <xs:attribute name="name" type="xs:string" default="##default" />
                     <xs:attribute name="namespace" type="xs:string" />
+                    <xs:attribute name="container-type" type="xs:string" default="##default" />
                     <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.XmlElementRef.DEFAULT" />
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />

@@ -18,7 +18,11 @@ import java.io.InputStream;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -134,6 +138,14 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
     public void testXmlElementRefWithWrapper() {
         String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Foos.class, Bar.class }, CONTEXT_PATH, metadataFile, 1);
+
+        // make sure container-type was processed correctly
+        XMLDescriptor xDesc = jaxbContext.getXMLContext().getDescriptor(new QName("foos"));
+        assertNotNull("No descriptor was generated for Foos.", xDesc);
+        DatabaseMapping mapping = xDesc.getMappingForAttributeName("items");
+        assertNotNull("No mapping exists on Foos for attribute [items].", mapping);
+        assertTrue("Expected an XMLChoiceCollectionMapping for attribute [items], but was [" + mapping.toString() +"].", mapping instanceof XMLChoiceCollectionMapping);
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLChoiceCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLChoiceCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
         
         // load instance doc
         String src = PATH + "foo-wrapper.xml";

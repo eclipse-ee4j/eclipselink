@@ -44,6 +44,7 @@ import javax.xml.bind.annotation.XmlType;
  *                 &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" />
  *                 &lt;attribute name="substitutionHeadName" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *                 &lt;attribute name="substitutionHeadNamespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
+ *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
@@ -139,6 +140,7 @@ public class XmlRegistry {
      *       &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" />
      *       &lt;attribute name="substitutionHeadName" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
      *       &lt;attribute name="substitutionHeadNamespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
+     *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
      * &lt;/complexType>
@@ -164,6 +166,8 @@ public class XmlRegistry {
         protected String substitutionHeadName;
         @XmlAttribute
         protected String substitutionHeadNamespace;
+        @XmlAttribute(name = "type")
+        protected String type;
 
         /**
          * Gets the value of the javaMethod property.
@@ -353,6 +357,32 @@ public class XmlRegistry {
             this.substitutionHeadNamespace = value;
         }
 
-    }
+        /**
+         * Gets the value of the type property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getType() {
+            if (type == null) {
+                return "##default";
+            } else {
+                return type;
+            }
+        }
 
+        /**
+         * Sets the value of the type property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setType(String value) {
+            this.type = value;
+        }
+    }
 }

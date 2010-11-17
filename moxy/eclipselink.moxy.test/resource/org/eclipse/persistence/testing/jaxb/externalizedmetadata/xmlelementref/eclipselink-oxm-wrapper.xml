@@ -4,7 +4,7 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.Foos">
             <xml-root-element name="foos" />
             <java-attributes>
-                <xml-element-ref java-attribute="items" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.Bar" >
+                <xml-element-ref java-attribute="items" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.Bar" container-type="java.util.LinkedList">
                     <xml-element-wrapper name="items" />
                 </xml-element-ref>
             </java-attributes>

@@ -994,6 +994,10 @@ public class XMLProcessor {
         eltRefs.add(xmlElementRef);
         oldProperty.setXmlElementRefs(eltRefs);
         oldProperty.setIsReference(true);
+        // check for container type
+        if (!xmlElementRef.getContainerType().equals(DEFAULT)) {
+            setContainerType(oldProperty, xmlElementRef.getContainerType());
+        }
         // handle XmlElementWrapper
         if (xmlElementRef.getXmlElementWrapper() != null) {
             oldProperty.setXmlElementWrapper(xmlElementRef.getXmlElementWrapper());

@@ -701,7 +701,13 @@ public class MappingsGenerator {
         if (isCollection) {
             mapping = new XMLChoiceCollectionMapping();
             ((XMLChoiceCollectionMapping) mapping).setReuseContainer(true);
-            ((XMLChoiceCollectionMapping) mapping).useCollectionClassName(jotArrayList.getRawName());
+            JavaClass collectionType = property.getType();
+            if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+                collectionType = jotArrayList;
+            } else if (areEquals(collectionType, Set.class)) {
+                collectionType = jotHashSet;
+            }
+            ((XMLChoiceCollectionMapping) mapping).useCollectionClassName(collectionType.getRawName());
             ((XMLChoiceCollectionMapping) mapping).setConverter(new JAXBElementRootConverter(Object.class));
             if (property.isSetWriteOnly()) {
                 ((XMLChoiceCollectionMapping) mapping).setIsWriteOnly(property.isWriteOnly());
