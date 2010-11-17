@@ -19,9 +19,13 @@
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *     07/05/2010-2.1.1 Guy Pelletier 
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+ *     11/17/2010-2.2 Guy Pelletier 
+ *       - 329008: Support dynamic context creation without persistence.xml
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
@@ -38,14 +43,20 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 
 import org.eclipse.persistence.queries.DoesExistQuery;
 
+import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
@@ -53,6 +64,9 @@ import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.DynamicTableCreator;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.MyDynamicEntity;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.AdvancedDynamicTableCreator;
 
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
@@ -156,6 +170,14 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
         return createEntityManager("extended-dynamic-advanced", getDynamicProperties());
     }
     
+    
+    /**
+     * Create a dynamic entity manager from no persistence.xml file.
+     */
+    protected EntityManager createDynamicEntityManager(String persistenceUnitName, List<ClassDescriptor> descriptors) {
+        return createEntityManager(persistenceUnitName, getDynamicProperties(), descriptors);
+    }
+    
     /**
      * Return the class descriptor for the given dynamic entity alias.
      */
@@ -198,6 +220,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
         // This test suite should only be called when we are using the
         // extended-dynamic-advanced test suite.
         TestSuite suite = new TestSuite("Advanced Dynamic Model");
+        
         suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testSetup"));
              
         suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testExistenceCheckingSetting"));
@@ -219,6 +242,8 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testNamedStoredProcedureQueryInOut"));
         
         suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testDeleteEmployee"));
+        
+        suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testDynamicWithNoPersistenceXML"));
         
         return suite;
     }
@@ -469,6 +494,53 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
         }
     } 
+    
+    /**
+     * Test a dynamic persistence unit using no persistence.xml.
+     */
+    public void testDynamicWithNoPersistenceXML() {
+        // This is a Java SE feature only.
+        if (! isOnServer()) {
+            List<ClassDescriptor> descriptors = new ArrayList<ClassDescriptor>();
+            RelationalDescriptor descriptor = new RelationalDescriptor();
+            descriptor.setJavaClassName("org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.MyDynamicEntity");
+            descriptor.setAlias("MyDynamicEntity");
+            descriptor.setTableName("JPA_DYNAMIC_ENTITY");
+            descriptor.addPrimaryKeyFieldName("ID");
+            descriptor.setSequenceNumberFieldName("ID");
+            descriptor.setSequenceNumberName("DYNAMIC_SEQ");
+            descriptor.addDirectMapping("id", "ID");
+            descriptor.addDirectMapping("firstName", "F_NAME");
+            descriptor.addDirectMapping("lastName", "L_NAME");
+            descriptors.add(descriptor);
+        
+            EntityManager em = createDynamicEntityManager("dynamic-test", descriptors);
+            new DynamicTableCreator().replaceTables(((JpaEntityManager) em).getServerSession());
+        
+            try {
+                beginTransaction(em);
+                
+                em.persist(new MyDynamicEntity("Doug", "Clarke"));
+                em.persist(new MyDynamicEntity("Peter", "Krogh"));
+                
+                commitTransaction(em);
+                
+                clearCache("dynamic-test");
+                em.clear();
+                
+                List<MyDynamicEntity> results = em.createQuery("SELECT d FROM MyDynamicEntity d").getResultList();
+                assertFalse("No dynamic entities were returned from the query", results.isEmpty());
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+    
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
     
     /**
      * Verifies that existence-checking metadata is correctly processed.

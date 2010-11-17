@@ -19,6 +19,8 @@
  *                       implementations that use the metamodel before the 1st EntityManager creation.
  *                       Login will continue to only be called in EM deploy for users 
  *                       that do not request the Metamodel
+ *     11/17/2010-2.2 Guy Pelletier 
+ *       - 329008: Support dynamic context creation without persistence.xml
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -36,6 +38,7 @@ import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -137,6 +140,24 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     public EntityManagerFactoryImpl(EntityManagerSetupImpl setupImpl, Map properties) {
         this.setupImpl = setupImpl;
         this.properties = properties;
+    }
+    
+    /**
+     * Create a dynamic persistence unit which does not use the persistence.xml.
+     * Instead all configuration is driven from the provided persistence unit
+     * properties and descriptors.
+     */
+    public EntityManagerFactoryImpl(String persistenceUnitName, Map<String, Object> properties, List<ClassDescriptor> descriptors) {
+        this.properties = properties;
+        
+        SEPersistenceUnitInfo info = new SEPersistenceUnitInfo();
+        info.setClassLoader((ClassLoader) properties.get(PersistenceUnitProperties.CLASSLOADER));
+        info.setPersistenceUnitName(persistenceUnitName);
+        info.getProperties().putAll(properties);
+
+        this.setupImpl = new EntityManagerSetupImpl();
+        this.setupImpl.predeploy(info, null);
+        this.setupImpl.getSession().addDescriptors(descriptors);
     }
 
     /**

@@ -9,9 +9,12 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/17/2010-2.2 Guy Pelletier 
+ *       - 329008: Support dynamic context creation without persistence.xml
  ******************************************************************************/  
 package org.eclipse.persistence.testing.framework.junit;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -23,8 +26,10 @@ import javax.persistence.*;
 import junit.framework.*;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.server.JEEPlatform;
@@ -362,10 +367,19 @@ public abstract class JUnitTestCase extends TestCase {
      * If in JEE this will create or return the active managed entity manager.
      */
     public static EntityManager createEntityManager(String persistenceUnitName, Map properties) {
+        return createEntityManager(persistenceUnitName, properties, null);      
+    }
+    
+    /**
+     * Create a new entity manager for the persistence unit using the properties.
+     * The properties will only be used the first time this entity manager is accessed.
+     * If in JEE this will create or return the active managed entity manager.
+     */
+    public static EntityManager createEntityManager(String persistenceUnitName, Map properties, List<ClassDescriptor> descriptors) {
         if (isOnServer()) {
             return getServerPlatform().getEntityManager(persistenceUnitName);
         } else {
-            return getEntityManagerFactory(persistenceUnitName, properties).createEntityManager();
+            return getEntityManagerFactory(persistenceUnitName, properties, descriptors).createEntityManager();
         }      
     }
 
@@ -381,11 +395,23 @@ public abstract class JUnitTestCase extends TestCase {
         return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName, properties).createEntityManager()).getServerSession();        
     }
     
+    public static EntityManagerFactory getEntityManagerFactory() {
+        return getEntityManagerFactory("default");
+    }
+    
+    public static EntityManagerFactory getEntityManagerFactory(Map properties) {
+        return getEntityManagerFactory("default", properties, null);
+    }
+    
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName) {
-        return getEntityManagerFactory(persistenceUnitName,  JUnitTestCaseHelper.getDatabaseProperties());
+        return getEntityManagerFactory(persistenceUnitName,  JUnitTestCaseHelper.getDatabaseProperties(), null);
     }
     
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, Map properties) {
+        return getEntityManagerFactory(persistenceUnitName, properties, null);
+    }
+    
+    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, Map properties, List<ClassDescriptor> descriptors) {
         if (isOnServer()) {
             return getServerPlatform().getEntityManagerFactory(persistenceUnitName);
         } else {
@@ -397,23 +423,23 @@ public abstract class JUnitTestCase extends TestCase {
                     System.out.println(ignore);
                 }
             }
+            
             EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory)emfNamedPersistenceUnits.get(persistenceUnitName);
-            if (emfNamedPersistenceUnit == null){
-                emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
+            
+            if (emfNamedPersistenceUnit == null) {
+                if (descriptors == null) {
+                    emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
+                } else {
+                    emfNamedPersistenceUnit = new EntityManagerFactoryImpl(persistenceUnitName, properties, descriptors);
+                }
+                
                 emfNamedPersistenceUnits.put(persistenceUnitName, emfNamedPersistenceUnit);
 
                 // Force uppercase for Postgres. - no longer needed with fix for 299926: Case insensitive table / column matching 
             }
+            
             return emfNamedPersistenceUnit;
         }
-    }
-    
-    public static EntityManagerFactory getEntityManagerFactory() {
-        return getEntityManagerFactory("default");
-    }
-    
-    public static EntityManagerFactory getEntityManagerFactory(Map properties) {
-        return getEntityManagerFactory("default", properties);
     }
     
     public static boolean doesEntityManagerFactoryExist() {
