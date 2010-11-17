@@ -1429,7 +1429,8 @@ public class MappingsGenerator {
         if(valueType == null){
         	valueType = helper.getJavaClass("java.lang.Object");
         }
-        String mapEntryClassName = ((JaxbClassLoader)helper.getClassLoader()).nextAvailableGeneratedClassName();
+        
+        String mapEntryClassName = getJaxbClassLoader().nextAvailableGeneratedClassName();
 
         MapEntryGeneratedKey mapKey = new MapEntryGeneratedKey(keyType.getQualifiedName(),valueType.getQualifiedName());
     	Class generatedClass = getGeneratedMapEntryClasses().get(mapKey);
@@ -1539,8 +1540,7 @@ public class MappingsGenerator {
         cw.visitEnd();
 
         byte[] classBytes =cw.toByteArray();
-        JaxbClassLoader loader = (JaxbClassLoader)helper.getClassLoader();
-        Class generatedClass = loader.generateClass(className, classBytes);
+        Class generatedClass = getJaxbClassLoader().generateClass(className, classBytes);
         return generatedClass;
     }
 
@@ -2388,12 +2388,7 @@ public class MappingsGenerator {
       	TypeMappingInfo tmi = nextElement.getTypeMappingInfo();
       	Class generatedClass = null;
 
-        JaxbClassLoader loader;
-        if (helper.getClassLoader() instanceof DynamicClassLoader) {
-            loader = (JaxbClassLoader) helper.getClassLoader().getParent();
-        } else {
-            loader = (JaxbClassLoader) helper.getClassLoader();
-        }
+        JaxbClassLoader loader = getJaxbClassLoader();
 
       	if(tmi != null){
             generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
@@ -2613,13 +2608,7 @@ public class MappingsGenerator {
         byte[] classBytes = cw.toByteArray();
         //byte[] classBytes = new byte[]{};
 
-        JaxbClassLoader loader;
-        if (helper.getClassLoader() instanceof DynamicClassLoader) {
-            loader = (JaxbClassLoader) helper.getClassLoader().getParent();
-        } else {
-            loader = (JaxbClassLoader) helper.getClassLoader();
-        }
-        Class generatedClass = loader.generateClass(className, classBytes);
+        Class generatedClass = getJaxbClassLoader().generateClass(className, classBytes);
         return generatedClass;
     }
 
@@ -2726,4 +2715,12 @@ public class MappingsGenerator {
         return getBaseComponentType(componentType);
     }
 
+    public JaxbClassLoader getJaxbClassLoader() {
+        if (helper.getClassLoader() instanceof DynamicClassLoader) {
+            return (JaxbClassLoader) helper.getClassLoader().getParent();
+        } else {
+            return (JaxbClassLoader) helper.getClassLoader();
+        }
+    }
+    
 }
