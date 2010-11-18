@@ -652,20 +652,22 @@
         <!-- Publish from nightly published location to Milestone dir -->
         <mkdir dir="${download.dir}"/>
         <copy todir="${download.dir}" failonerror="false">
-            <fileset>
+            <fileset dir="${temp.rebuild.dir}">
                 <!-- Populate new "signed" version of archives (from temp rebuild location) -->
-                <include name="${temp.rebuild.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
-                <!-- Populated directly from original (nightly) build area -->
-                <!-- copy signed P2 archive for safekeeping (in case rebuild needed) -->
-                <include name="${promote.source.dir}/${p2.archive.signed.zip}"/>
-                <!-- copy original zip installer, src, and test src archives -->
-                <include name="${promote.source.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
-                <include name="${promote.source.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
-                <include name="${promote.source.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"/>
-                <!-- copy all test results pages -->
-                <include name="${promote.source.dir}/*/eclipselink-*${version.string}.html"/>
+                <include name="${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
                 <!-- copy eclipse build file for safekeeping (in case rebuild needed) -->
-                <include name="${temp.rebuild.dir}/signed/eclipselink.build"/>
+                <include name="**/eclipselink.build"/>
+            </fileset>
+            <!-- Populated directly from original (nightly) build area -->
+            <fileset dir="${promote.source.dir}">
+                <!-- copy signed P2 archive for safekeeping (in case rebuild needed) -->
+                <include name="${p2.archive.signed.zip}"/>
+                <!-- copy original zip installer, src, and test src archives -->
+                <include name="${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+                <include name="${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+                <include name="${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+                <!-- copy all test results pages -->
+                <include name="**/eclipselink-*${version.string}.html"/>
             </fileset>
         </copy>
         <!-- Copy for maven to run -->
