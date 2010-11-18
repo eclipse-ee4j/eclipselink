@@ -12,7 +12,7 @@
             <xml-root-element name="person"/>
             <java-attributes>
                 <xml-element java-attribute="name" type="java.lang.String"/>
-                <xml-element-ref java-attribute="phones" type="mynamespace.Phone">
+                <xml-element-ref java-attribute="phones" type="mynamespace.Phone" container-type="java.util.List">
                     <xml-element-wrapper name="gsm_phones"/>
                 </xml-element-ref>
             </java-attributes>

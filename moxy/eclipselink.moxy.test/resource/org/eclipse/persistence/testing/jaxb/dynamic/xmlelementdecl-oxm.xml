@@ -9,7 +9,7 @@
 
     <xml-registries>
         <xml-registry name="mynamespace.ObjectFactory">
-            <xml-element-decl java-method="createIndividuo" name="individuo"/>
+            <xml-element-decl java-method="createIndividuo" name="individuo" type="mynamespace.Person"/>
         </xml-registry>
     </xml-registries>
 

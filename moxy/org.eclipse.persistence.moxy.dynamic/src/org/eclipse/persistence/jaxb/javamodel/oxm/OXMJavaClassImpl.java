@@ -32,8 +32,6 @@ import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAnyAttribute;
@@ -72,7 +70,8 @@ public class OXMJavaClassImpl implements JavaClass {
             jType = this.javaType;
         } else {
             try {
-                jType = Class.forName(this.javaName).newInstance();
+                Class<?> jTypeClass = PrivilegedAccessHelper.getClassForName(this.javaName);
+                jType = PrivilegedAccessHelper.newInstanceFromClass(jTypeClass);
             } catch (Exception e) {
                 return new ArrayList<JavaClass>();
             }
@@ -91,7 +90,7 @@ public class OXMJavaClassImpl implements JavaClass {
                     if (upperTypes.length >0) {
                         Type upperType = upperTypes[0];
                         if (upperType instanceof Class<?>) {
-                        	argCollection.add(this.javaModel.getClass(upperType.getClass()));
+                            argCollection.add(this.javaModel.getClass(upperType.getClass()));
                         }
                     }
                 } else if (type instanceof Class<?>) {
@@ -107,7 +106,7 @@ public class OXMJavaClassImpl implements JavaClass {
     }
 
     public JavaClass getComponentType() {
-        throw new UnsupportedOperationException("getComponentType");
+        return null;
     }
 
     public JavaConstructor getConstructor(JavaClass[] parameterTypes) {
@@ -129,7 +128,9 @@ public class OXMJavaClassImpl implements JavaClass {
     }
 
     public Collection<JavaConstructor> getDeclaredConstructors() {
-        throw new UnsupportedOperationException("getDeclaredConstructors");
+        ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>(1);
+        constructors.add(new OXMJavaConstructorImpl(this));
+        return constructors;
     }
 
     public JavaField getDeclaredField(String arg0) {
@@ -173,7 +174,7 @@ public class OXMJavaClassImpl implements JavaClass {
                 } else if (att instanceof XmlElementRef) {
                     XmlElementRef xmer = (XmlElementRef) att;
                     String fieldName = xmer.getJavaAttribute();
-                    String fieldType = JAVA_UTIL_LIST;
+                    String fieldType = xmer.getType();
                     fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
                 } else if (att instanceof XmlAttribute) {
                     XmlAttribute xma = (XmlAttribute) att;
@@ -203,8 +204,7 @@ public class OXMJavaClassImpl implements JavaClass {
                 } else if (att instanceof XmlInverseReference) {
                     XmlInverseReference xmir = (XmlInverseReference) att;
                     String fieldName = xmir.getJavaAttribute();
-                    // TODO: update after bug fix
-                    String fieldType = null;
+                    String fieldType = xmir.getType();
                     fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
                 }
             }
@@ -214,7 +214,7 @@ public class OXMJavaClassImpl implements JavaClass {
     }
 
     public JavaMethod getDeclaredMethod(String arg0, JavaClass[] arg1) {
-        throw new UnsupportedOperationException("getDeclaredMethod");
+        return null;
     }
 
     public Collection<JavaMethod> getDeclaredMethods() {
@@ -360,15 +360,15 @@ public class OXMJavaClassImpl implements JavaClass {
     }
 
     public Collection<JavaAnnotation> getAnnotations() {
-        throw new UnsupportedOperationException("getAnnotations");
+        return new ArrayList<JavaAnnotation>();
     }
 
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
-        throw new UnsupportedOperationException("getDeclaredAnnotation");
+        return null;
     }
 
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
-        throw new UnsupportedOperationException("getDeclaredAnnotations");
+        return new ArrayList<JavaAnnotation>();
     }
 
     public void setJavaModel(JavaModel model) {
@@ -380,12 +380,11 @@ public class OXMJavaClassImpl implements JavaClass {
     }
 
     // ========================================================================
-    
+
     private static String EMPTY_STRING = "";
     private static String JAVA = "java";
-    private static String DOT = ".";    
+    private static String DOT = ".";
     private static String JAVA_LANG_OBJECT = "java.lang.Object";
-    private static String JAVA_UTIL_LIST = "java.util.List";
     private static String JAVA_UTIL_MAP = "java.util.Map";
-    
+
 }

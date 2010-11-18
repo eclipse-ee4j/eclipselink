@@ -235,10 +235,8 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         assertEquals("Incorrect phoneNumber type.", "HOME", firstPhoneNumber.get("type"));
     }
 
+    /*
     public void testOXMSingleListMap() throws Exception {
-    	// TODO: re-enable test
-    	if (true) return;
-    	
         InputStream iStream = classLoader.getResourceAsStream(OXM_SINGLE_MAP);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + OXM_SINGLE_MAP + "]");
@@ -278,6 +276,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         DynamicEntity firstPhoneNumber = (DynamicEntity) readPhones.get(0);
         assertEquals("Incorrect phoneNumber type.", "HOME", firstPhoneNumber.get("type"));
     }
+    */
 
     // Utility methods
     // ====================================================================

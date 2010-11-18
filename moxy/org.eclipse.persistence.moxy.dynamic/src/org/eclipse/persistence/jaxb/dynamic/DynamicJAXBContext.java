@@ -38,6 +38,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaModelInputImpl;
+import org.eclipse.persistence.jaxb.javamodel.oxm.OXMObjectFactoryImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelInputImpl;
@@ -45,6 +46,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlEnum;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlEnumValue;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
@@ -257,11 +259,16 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         JavaClass[] elinkClasses = createClassModelFromOXM(bindings, dynamicClassLoader);
 
         // Use the JavaModel to setup a Generator to generate an EclipseLink project
-        OXMJavaModelImpl javaModel = new OXMJavaModelImpl(classLoader, elinkClasses);
+        OXMJavaModelImpl javaModel = new OXMJavaModelImpl(dynamicClassLoader, elinkClasses);
         for (JavaClass javaClass : elinkClasses) {
-            ((OXMJavaClassImpl) javaClass).setJavaModel(javaModel);
-
+            try {
+                ((OXMJavaClassImpl) javaClass).setJavaModel(javaModel);
+            } catch (ClassCastException cce) {
+                ((OXMObjectFactoryImpl) javaClass).setJavaModel(javaModel);
+                ((OXMObjectFactoryImpl) javaClass).init();
+            }
         }
+
         OXMJavaModelInputImpl javaModelInput = new OXMJavaModelInputImpl(elinkClasses, javaModel);
         Generator g = new Generator(javaModelInput, bindings, dynamicClassLoader, null);
 
@@ -300,6 +307,14 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 for (Iterator<JavaType> iterator = javaTypes.iterator(); iterator.hasNext();) {
                     JavaType type = iterator.next();
                     oxmJavaClasses.add(new OXMJavaClassImpl(type));
+                }
+            }
+
+            if (b.getXmlRegistries() != null) {
+                List<XmlRegistry> registries = b.getXmlRegistries().getXmlRegistry();
+                for (Iterator<XmlRegistry> iterator = registries.iterator(); iterator.hasNext();) {
+                    XmlRegistry reg = iterator.next();
+                    oxmJavaClasses.add(new OXMObjectFactoryImpl(reg));
                 }
             }
 

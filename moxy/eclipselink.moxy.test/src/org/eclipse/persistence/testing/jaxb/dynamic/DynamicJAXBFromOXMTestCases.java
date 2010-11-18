@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.jaxb.dynamic;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -69,9 +70,9 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     public DynamicJAXBFromOXMTestCases(String name) throws Exception {
         super(name);
     }
-    
+
     public String getName() {
-    	return "Dynamic JAXB: OXM: " + super.getName();
+        return "Dynamic JAXB: OXM: " + super.getName();
     }
 
     // Standard OXM Annotation tests
@@ -87,7 +88,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
@@ -615,8 +616,6 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     }
 
     public void testXmlElementRef() throws Exception {
-        //fail("Not implemented - bug 328155 Support for type on xml-elements");
-        
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
         InputStream iStream = classLoader.getResourceAsStream(XMLELEMENTREF);
@@ -630,32 +629,32 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
-        
+
         DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
         assertNotNull("Could not create Dynamic Entity.", person);
         person.set("name", "Jim Watson");
-        
+
         DynamicEntity phone1 = jaxbContext.newDynamicEntity(PACKAGE + "." + PHONE);
         phone1.set("id", 111);
         phone1.set("number", "118-123-1124");
-        
+
         DynamicEntity phone2 = jaxbContext.newDynamicEntity(PACKAGE + "." + PHONE);
         phone2.set("id", 222);
         phone2.set("number", "623-121-7425");
-        
+
         ArrayList<DynamicEntity> phones = new ArrayList<DynamicEntity>();
         phones.add(phone1);
         phones.add(phone2);
         person.set("phones", phones);
-        
+
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
-        
+
         Node node = marshalDoc.getDocumentElement().getChildNodes().item(1);
         assertEquals("Element wrapper not written as expected.", "gsm_phones", node.getNodeName());
-        
+
         DynamicEntity readPerson = (DynamicEntity) jaxbContext.createUnmarshaller().unmarshal(marshalDoc);
-        
+
         ArrayList<DynamicEntity> l = readPerson.get("phones");
         assertEquals("Phones not unmarshalled as expected.", 111, l.get(0).get("id"));
     }
@@ -745,9 +744,6 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     }
 
     public void testXmlElementDecl() throws Exception {
-    	// TODO: re-enable test
-    	if (true) return;
-    	
         // Also tests XmlRegistry
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -763,13 +759,17 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
-        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
-        assertNotNull("Could not create Dynamic Entity.", person);
+        DynamicEntity individuo = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+        assertNotNull("Could not create Dynamic Entity.", individuo);
+        individuo.set("name", "Bob Dobbs");
 
-        person.set("name", "Bob Dobbs");
+        QName individuoQName = new QName(PACKAGE, INDIVIDUO);
 
+        JAXBElement<DynamicEntity> individuoElement = new JAXBElement<DynamicEntity>(individuoQName, DynamicEntity.class, individuo);
+        individuoElement.setValue(individuo);
+        
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        jaxbContext.createMarshaller().marshal(individuoElement, marshalDoc);
 
         Node node = marshalDoc.getChildNodes().item(0);
 
@@ -779,18 +779,106 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     // Other tests
     // ====================================================================
 
-    public void testSubstitutionGroupsUnmarshal() throws Exception {
-    	// TODO: re-enable test
-    	if (true) return;
-    	
-        throw new Exception("Not Implemented");
+    public void testSubstitutionGroupsMarshal() throws Exception {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+            InputStream iStream = classLoader.getResourceAsStream(SUBSTITUTION);
+            if (iStream == null) {
+                fail("Couldn't load metadata file [" + SUBSTITUTION + "]");
+            }
+            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            metadataSourceMap.put("myNamespace", new StreamSource(iStream));
+
+            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+            jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
+
+            QName personQName = new QName("myNamespace", "person");
+            DynamicEntity person = jaxbContext.newDynamicEntity("myNamespace" + "." + PERSON);
+            JAXBElement<DynamicEntity> personElement = new JAXBElement<DynamicEntity>(personQName, DynamicEntity.class, person);
+            personElement.setValue(person);
+
+            QName nameQName = new QName("myNamespace", "name");
+            JAXBElement<String> nameElement = new JAXBElement<String>(nameQName, String.class, "Marty Friedman");
+
+            person.set("name", nameElement);
+
+            Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            jaxbContext.createMarshaller().marshal(personElement, marshalDoc);
+
+            Node node1 = marshalDoc.getDocumentElement();
+            assertEquals("Incorrect element name: ", "person", node1.getLocalName());
+
+            Node node2 = node1.getFirstChild();
+            assertEquals("Incorrect element name: ", "name", node2.getLocalName());
+
+            // ====================================================================
+
+            QName personneQName = new QName("myNamespace", "personne");
+            DynamicEntity personne = jaxbContext.newDynamicEntity("myNamespace" + "." + PERSON);
+            JAXBElement<DynamicEntity> personneElement = new JAXBElement<DynamicEntity>(personneQName, DynamicEntity.class, personne);
+            personneElement.setValue(personne);
+
+            QName nomQName = new QName("myNamespace", "nom");
+            JAXBElement<String> nomElement = new JAXBElement<String>(nomQName, String.class, "Marty Friedman");
+
+            personne.set("name", nomElement);
+
+            Document marshalDoc2 = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            jaxbContext.createMarshaller().marshal(personneElement, marshalDoc2);
+
+            Node node3 = marshalDoc2.getDocumentElement();
+            assertEquals("Incorrect element name: ", "personne", node3.getLocalName());
+
+            Node node4 = node3.getFirstChild();
+            assertEquals("Incorrect element name: ", "nom", node4.getLocalName());
+        } catch (UndeclaredThrowableException e) {
+            if (e.getUndeclaredThrowable() instanceof NoSuchMethodException) {
+                // We will get NoSuchMethod: XmlElementRef.required() if not running JAXB 2.2
+                // or greater, so just pass in this case.
+                assertTrue(true);
+            }
+        }
     }
 
-    public void testSubstitutionGroupsMarshal() throws Exception {
-    	// TODO: re-enable test
-    	if (true) return;
-    	
-    	throw new Exception("Not Implemented");
+    public void testSubstitutionGroupsUnmarshal() throws Exception {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+            InputStream iStream = classLoader.getResourceAsStream(SUBSTITUTION);
+            if (iStream == null) {
+                fail("Couldn't load metadata file [" + SUBSTITUTION + "]");
+            }
+            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            metadataSourceMap.put("myNamespace", new StreamSource(iStream));
+
+            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+            jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
+
+            InputStream xmlStream = ClassLoader.getSystemResourceAsStream(PERSON_XML);
+            JAXBElement person = (JAXBElement) jaxbContext.createUnmarshaller().unmarshal(xmlStream);
+            assertEquals("Element was not substituted properly: ", new QName("myNamespace", "person"), person.getName());
+            JAXBElement name = (JAXBElement) ((DynamicEntity) person.getValue()).get("name");
+            assertEquals("Element was not substituted properly: ", new QName("myNamespace", "name"), name.getName());
+
+            // ====================================================================
+
+            InputStream xmlStream2 = ClassLoader.getSystemResourceAsStream(PERSONNE_XML);
+            JAXBElement person2 = (JAXBElement) jaxbContext.createUnmarshaller().unmarshal(xmlStream2);
+            assertEquals("Element was not substituted properly: ", new QName("myNamespace", "personne"), person2.getName());
+            JAXBElement name2 = (JAXBElement) ((DynamicEntity) person2.getValue()).get("name");
+            assertEquals("Element was not substituted properly: ", new QName("myNamespace", "nom"), name2.getName());
+        } catch (UndeclaredThrowableException e) {
+            if (e.getUndeclaredThrowable() instanceof NoSuchMethodException) {
+                // We will get NoSuchMethod: XmlElementRef.required() if not running JAXB 2.2
+                // or greater, so just pass in this case.
+                assertTrue(true);
+            }
+        }
     }
 
     public void testTypePreservation() throws Exception {
@@ -1101,8 +1189,6 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         person.set("name", "Jim Watson");
         person.set("computer", computer);
 
-        print(person);
-
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
 
@@ -1197,11 +1283,6 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     }
 
     public void testXmlInverseReference() throws Exception {
-    	// TODO: re-enable test
-    	if (true) return;
-    	
-        fail("Not implemented - bug 327826 Support for type/container-type on xml-inverse-reference");
-
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
         InputStream iStream = classLoader.getResourceAsStream(XMLINVERSEREFERENCE);
@@ -1340,10 +1421,16 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     private static final String XMLINVERSEREFERENCE = RESOURCE_DIR + "xmlinversereference-oxm.xml";
     private static final String XMLLIST = RESOURCE_DIR + "xmllist-oxm.xml";
     private static final String XMLELEMENTREF = RESOURCE_DIR + "xmlelementref-oxm.xml";
+    private static final String SUBSTITUTION = RESOURCE_DIR + "substitution-oxm.xml";
+
+    // Test Instance Docs
+    private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";
+    private static final String PERSONNE_XML = RESOURCE_DIR + "sub-personne-fr.xml";
 
     // Names of types used in test cases
     private static final String PACKAGE = "mynamespace";
     private static final String PERSON = "Person";
+    private static final String INDIVIDUO = "individuo";
     private static final String EMPLOYEE = "Employee";
     private static final String PHONE = "Phone";
     private static final String CUSTOMER = "Customer";
