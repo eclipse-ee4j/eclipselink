@@ -43,7 +43,7 @@
     <!-- The repository where maven artifacts will be uploaded -->
     <artifact:remoteRepository id="eclipselink.repository" url="file:///${maven.repo.dir}" />
 
-    <target name="upload-maven-all" depends="upload-eclipselink"/> <!--, upload-dependencies"/ -->
+    <target name="upload-maven-all" depends="upload-eclipselink"/>
 
     <target name = "upload-maven-init">
         <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
