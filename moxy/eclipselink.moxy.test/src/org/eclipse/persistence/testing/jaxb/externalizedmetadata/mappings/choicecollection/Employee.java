@@ -48,7 +48,8 @@ public class Employee {
             return empObj.things == null;
         }
         for (Object thing : things) {
-            if (!thingExistsInList(thing, empObj.things)) {
+            boolean exists = thingExistsInList(thing, empObj.things);
+            if (!exists) {
                 return false;
             }
         }

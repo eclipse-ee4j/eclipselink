@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -471,6 +472,29 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
      */
     public Class getCollectionContentType() {
     	return getAttributeElementClass();
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the class each element in the object's
+     * collection should be converted to, before the collection
+     * is inserted into the object.
+     * This is optional - if left null, the elements will be added
+     * to the object's collection unconverted.
+     */
+    @Override
+    public void setAttributeElementClass(Class attributeElementClass) {
+        super.setAttributeElementClass(attributeElementClass);
+        this.collectionContentType = attributeElementClass;
+    }
+    
+    @Override
+    public Class getAttributeElementClass() {
+        Class elementClass = super.getAttributeElementClass();
+        if(elementClass == null) {
+            return this.collectionContentType;
+        }
+        return elementClass;
     }
 
 }

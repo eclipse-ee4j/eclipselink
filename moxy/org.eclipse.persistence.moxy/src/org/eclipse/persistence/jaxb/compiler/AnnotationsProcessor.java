@@ -149,8 +149,8 @@ import org.eclipse.persistence.oxm.annotations.XmlWriteTransformers;
  * @since Oracle TopLink 11.1.1.0.0
  */
 public class AnnotationsProcessor {
-    private static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
-    private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
+    static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
+    static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
     private static final String JAVAX_XML_BIND_JAXBELEMENT = "javax.xml.bind.JAXBElement";
     private static final String TYPE_METHOD_NAME = "type";
     private static final String VALUE_METHOD_NAME = "value";

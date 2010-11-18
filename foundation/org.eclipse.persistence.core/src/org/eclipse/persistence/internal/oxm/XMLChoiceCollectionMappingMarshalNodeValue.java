@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
@@ -54,7 +56,9 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
 
     private void initializeNodeValue() {
         XMLMapping xmlMapping = xmlChoiceCollectionMapping.getChoiceElementMappings().get(xmlField);
-        if(xmlMapping instanceof XMLCompositeDirectCollectionMapping) {
+        if(xmlMapping instanceof XMLBinaryDataCollectionMapping) {
+            choiceElementNodeValue = new XMLBinaryDataCollectionMappingNodeValue((XMLBinaryDataCollectionMapping)xmlMapping);
+        } else if(xmlMapping instanceof XMLCompositeDirectCollectionMapping) {
             choiceElementNodeValue = new XMLCompositeDirectCollectionMappingNodeValue((XMLCompositeDirectCollectionMapping)xmlMapping);
         } else if(xmlMapping instanceof XMLCompositeCollectionMapping) {
             choiceElementNodeValue = new XMLCompositeCollectionMappingNodeValue((XMLCompositeCollectionMapping)xmlMapping);
@@ -169,6 +173,10 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	return null;
     }
     
+    public Collection<NodeValue> getAllNodeValues() {
+        return this.fieldToNodeValues.values();
+    }
+
     public boolean isMarshalNodeValue() {
         return true;
     }

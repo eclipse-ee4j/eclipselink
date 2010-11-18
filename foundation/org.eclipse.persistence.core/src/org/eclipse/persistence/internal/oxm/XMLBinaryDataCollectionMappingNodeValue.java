@@ -148,6 +148,10 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         unmarshalRecord.getStringBuffer().reset();
     }
 
+    public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object container) {
+        this.endElement(xPathFragment, unmarshalRecord);
+    }
+
     public DataHandler getDataHandlerForObjectValue(Object obj, Class classification) {
         if (classification == DataHandler.class) {
             return (DataHandler) obj;

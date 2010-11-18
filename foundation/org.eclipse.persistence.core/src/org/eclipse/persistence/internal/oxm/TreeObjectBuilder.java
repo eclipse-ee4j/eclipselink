@@ -242,6 +242,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     HashMap<XMLField, NodeValue> fieldToNodeValues = new HashMap<XMLField, NodeValue>();
                     unmarshalValue.setContainerNodeValue(unmarshalValue);
                     marshalValue.setFieldToNodeValues(fieldToNodeValues);
+                    unmarshalValue.setFieldToNodeValues(fieldToNodeValues);
                     this.addContainerValue(unmarshalValue);
                     fieldToNodeValues.put(firstField, unmarshalValue);
                     addChild(firstField.getXPathFragment(), unmarshalValue, xmlDescriptor.getNamespaceResolver());

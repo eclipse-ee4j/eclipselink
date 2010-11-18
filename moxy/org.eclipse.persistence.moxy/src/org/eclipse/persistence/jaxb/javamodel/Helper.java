@@ -266,31 +266,31 @@ public class Helper {
     public Class getClassForJavaClass(JavaClass javaClass){
     	String javaClassName = javaClass.getRawName();
     	if (javaClass.isPrimitive() || javaClass.isArray() && javaClass.getComponentType().isPrimitive()){
-    		if (ClassConstants.APBYTE.getName().equals(javaClassName)){
+    		if (ClassConstants.APBYTE.getCanonicalName().equals(javaClassName)){
     			return Byte[].class;    			
     		}
-    		if (ClassConstants.PBYTE.getName().equals(javaClassName)){
+    		if (ClassConstants.PBYTE.getCanonicalName().equals(javaClassName)){
     			return Byte.class;
     		}
-    		if (ClassConstants.PBOOLEAN.getName().equals(javaClassName)){
+    		if (ClassConstants.PBOOLEAN.getCanonicalName().equals(javaClassName)){
     			return Boolean.class;
     		}
-    		if (ClassConstants.PSHORT.getName().equals(javaClassName)){
+    		if (ClassConstants.PSHORT.getCanonicalName().equals(javaClassName)){
     			return Short.class;
     		}
-    		if (ClassConstants.PFLOAT.getName().equals(javaClassName)){
+    		if (ClassConstants.PFLOAT.getCanonicalName().equals(javaClassName)){
     			return Float.class;
     		}
-    		if (ClassConstants.PCHAR.getName().equals(javaClassName)){
+    		if (ClassConstants.PCHAR.getCanonicalName().equals(javaClassName)){
     			return Character.class;
     		}
-    		if (ClassConstants.PDOUBLE.getName().equals(javaClassName)){
+    		if (ClassConstants.PDOUBLE.getCanonicalName().equals(javaClassName)){
     			return Double.class;
     		}
-    		if (ClassConstants.PINT.getName().equals(javaClassName)){
+    		if (ClassConstants.PINT.getCanonicalName().equals(javaClassName)){
     			return Integer.class;
     		}
-    		if (ClassConstants.PLONG.getName().equals(javaClassName)){
+    		if (ClassConstants.PLONG.getCanonicalName().equals(javaClassName)){
     			return Long.class;
     		}
 			return null;

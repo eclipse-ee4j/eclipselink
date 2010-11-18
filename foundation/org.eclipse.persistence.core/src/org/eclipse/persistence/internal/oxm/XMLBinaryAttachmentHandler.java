@@ -101,6 +101,7 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
             } else {
                 data = attachmentUnmarshaller.getAttachmentAsByteArray(this.c_id);
             }
+            data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification(), record.getSession());
             if (this.converter != null) {
                 Converter converter = this.converter;
                 if (converter instanceof XMLConverter) {
@@ -109,7 +110,6 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
                     data = converter.convertDataValueToObjectValue(data, record.getSession());
                 }
             }
-            data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification(), record.getSession());
             //check for collection case
             if (isCollection) {
                 if(data != null) {

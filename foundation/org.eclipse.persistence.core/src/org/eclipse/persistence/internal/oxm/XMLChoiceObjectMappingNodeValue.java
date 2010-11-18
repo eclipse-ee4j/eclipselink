@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -58,7 +59,9 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     
     public void initializeNodeValue() {
         XMLMapping xmlMapping = xmlChoiceMapping.getChoiceElementMappings().get(xmlField);
-        if(xmlMapping instanceof XMLDirectMapping) {
+        if(xmlMapping instanceof XMLBinaryDataMapping){
+            choiceElementNodeValue = new XMLBinaryDataMappingNodeValue((XMLBinaryDataMapping)xmlMapping);
+        } else if(xmlMapping instanceof XMLDirectMapping) {
             choiceElementNodeValue = new XMLDirectMappingNodeValue((XMLDirectMapping)xmlMapping);
         } else if(xmlMapping instanceof XMLObjectReferenceMapping) {
             choiceElementNodeValue = new XMLObjectReferenceMappingNodeValue((XMLObjectReferenceMapping)xmlMapping, xmlField);

@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
+import java.awt.Image;
 import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +31,7 @@ import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -614,7 +616,7 @@ public class MappingsGenerator {
                 if (next.getXmlPath() != null) {
                     xpath = new XMLField(next.getXmlPath());
                 } else {
-                    xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+                    xpath = getXPathForField(next, namespace, (!(this.typeInfo.containsKey(type.getQualifiedName()))) || next.isMtomAttachment());
                 }
                 mapping.addChoiceElement(xpath.getName(), type.getQualifiedName(), false);
             }
@@ -692,11 +694,11 @@ public class MappingsGenerator {
     }
 
     public DatabaseMapping generateMappingForReferenceProperty(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
-        if (property.isMixedContent() || property.isAny()) {
+        boolean isCollection = isCollectionType(property) || property.getType().isArray();
+        if ((property.isMixedContent() && isCollection) || property.isAny()) {
             XMLAnyCollectionMapping mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
             return mapping;
         }
-        boolean isCollection = isCollectionType(property) || property.getType().isArray();
         DatabaseMapping mapping;
         if (isCollection) {
             mapping = new XMLChoiceCollectionMapping();
@@ -753,7 +755,9 @@ public class MappingsGenerator {
         }
         for (ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
-            boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME));
+            JavaClass pType = element.getJavaType();
+            boolean isBinaryType = (areEquals(pType, AnnotationsProcessor.JAVAX_ACTIVATION_DATAHANDLER) || areEquals(pType, byte[].class) || areEquals(pType, Byte[].class) || areEquals(pType, Image.class) || areEquals(pType, Source.class) || areEquals(pType, AnnotationsProcessor.JAVAX_MAIL_INTERNET_MIMEMULTIPART));        
+            boolean isText = !isBinaryType && !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME));
             String xPath = "";
 
             // handle XmlElementWrapper
@@ -774,7 +778,6 @@ public class MappingsGenerator {
                     xPath += getQualifiedString(prefix, wrapper.getName() + "/");
                 }
             }
-
             XMLField xmlField = this.getXPathForElement(xPath, elementName, namespaceInfo, isText);
             //ensure byte[] goes to base64 instead of the default hex.
             if(helper.getXMLToJavaTypeMap().get(element.getJavaType().getRawName()) == XMLConstants.BASE_64_BINARY_QNAME) {

@@ -37,6 +37,8 @@ import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.SAXFragmentBuilder;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
+import org.eclipse.persistence.internal.oxm.XMLChoiceCollectionMappingMarshalNodeValue;
+import org.eclipse.persistence.internal.oxm.XMLChoiceCollectionMappingUnmarshalNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.record.ObjectUnmarshalContext;
@@ -52,6 +54,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.oxm.unmapped.DefaultUnmappedContentHandler;
@@ -462,6 +465,13 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                         containerInstance = containerValue.getContainerInstance();
                     }
                     containersMap.put(containerValue, containerInstance);
+                    if(containerValue.getMapping() instanceof XMLChoiceCollectionMapping) {
+                        XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = (XMLChoiceCollectionMappingUnmarshalNodeValue)containerValue;
+                        for(NodeValue next:nodeValue.getAllNodeValues()) {
+                            NodeValue nestedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)next).getChoiceElementNodeValue();
+                            containersMap.put((ContainerValue)nestedNodeValue, containerInstance);
+                        }
+                    }
                 }
             }
 

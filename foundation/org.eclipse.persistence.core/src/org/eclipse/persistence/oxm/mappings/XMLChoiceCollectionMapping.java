@@ -99,6 +99,10 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
     private boolean reuseContainer;
     private Converter converter;
+    
+    private static final String DATA_HANDLER = "javax.activation.DataHandler";
+    private static final String MIME_MULTIPART = "javax.mail.MimeMultipart";
+    private static final String IMAGE = "java.awt.Image";
 
     public XMLChoiceCollectionMapping() {
         fieldToClassMappings = new HashMap<XMLField, Class>();
@@ -497,6 +501,11 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                     ((AbstractCompositeCollectionMapping)nextMapping).setConverter(converter);
                 }
                 ((AbstractCompositeCollectionMapping)nextMapping).setContainerPolicy(getContainerPolicy());
+            } else if(nextMapping instanceof XMLBinaryDataCollectionMapping) {
+                ((XMLBinaryDataCollectionMapping)nextMapping).setContainerPolicy(getContainerPolicy());
+                if(converter != null) {
+                    ((XMLBinaryDataCollectionMapping)nextMapping).setValueConverter(converter);
+                }
             } else {
                 ((XMLCollectionReferenceMapping)nextMapping).setContainerPolicy(getContainerPolicy());
                 ((XMLCollectionReferenceMapping)nextMapping).setReuseContainer(true);
@@ -647,13 +656,23 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
              xmlMapping.setAttributeAccessor(temporaryAccessor);
              this.choiceElementMappings.put(xmlField, xmlMapping);                
          } else {
-             XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();  
-             if(!className.equals("java.lang.Object")){
-                xmlMapping.setReferenceClassName(className);
-             }      
-             xmlMapping.setField(xmlField);
-             xmlMapping.setAttributeAccessor(temporaryAccessor);
-             this.choiceElementMappings.put(xmlField, xmlMapping);                
+             if(isBinaryType(className)) {
+                 XMLBinaryDataCollectionMapping xmlMapping = new XMLBinaryDataCollectionMapping();
+                 xmlMapping.setField(xmlField);
+                 xmlMapping.setAttributeAccessor(temporaryAccessor);
+                 Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
+                 xmlMapping.setAttributeElementClass(theClass);
+                 this.fieldsToConverters.put(xmlField, xmlMapping.getValueConverter());
+                 this.choiceElementMappings.put(xmlField, xmlMapping);
+             } else {
+                 XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();  
+                 if(!className.equals("java.lang.Object")){
+                     xmlMapping.setReferenceClassName(className);
+                 }      
+                 xmlMapping.setField(xmlField);
+                 xmlMapping.setAttributeAccessor(temporaryAccessor);
+                 this.choiceElementMappings.put(xmlField, xmlMapping);
+             }
          }        
     }    
     
@@ -666,13 +685,22 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             xmlMapping.setAttributeAccessor(temporaryAccessor);
             this.choiceElementMappings.put(xmlField, xmlMapping);                
         } else {
-            XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();            
-            if(!theClass.equals(ClassConstants.OBJECT)){
-                xmlMapping.setReferenceClass(theClass);
+            if(isBinaryType(theClass)) {
+                XMLBinaryDataCollectionMapping xmlMapping = new XMLBinaryDataCollectionMapping();
+                xmlMapping.setField(xmlField);
+                xmlMapping.setAttributeElementClass(theClass);
+                xmlMapping.setAttributeAccessor(temporaryAccessor);
+                this.fieldsToConverters.put(xmlField, xmlMapping.getValueConverter());
+                this.choiceElementMappings.put(xmlField, xmlMapping);
+            } else {
+                XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();            
+                if(!theClass.equals(ClassConstants.OBJECT)){
+                    xmlMapping.setReferenceClass(theClass);
+                }
+                xmlMapping.setField(xmlField);
+                xmlMapping.setAttributeAccessor(temporaryAccessor);
+                this.choiceElementMappings.put(xmlField, xmlMapping);
             }
-            xmlMapping.setField(xmlField);
-            xmlMapping.setAttributeAccessor(temporaryAccessor);
-            this.choiceElementMappings.put(xmlField, xmlMapping);                
         }        
     }
     
@@ -695,6 +723,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             if(nextMapping.getAttributeAccessor() == temporaryAccessor){
             	nextMapping.setAttributeAccessor(getAttributeAccessor());
             }
+            nextMapping.setIsReadOnly(this.isReadOnly());
+            ((XMLMapping)nextMapping).setIsWriteOnly(this.isWriteOnly());
             
             nextMapping.setDescriptor(getDescriptor());
             
@@ -740,4 +770,21 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         }
         return this.classNameToSourceFieldsMappings;
     } 
+    
+    private boolean isBinaryType(String className) {
+        if(className.equals(byte[].class.getName()) || className.equals(Byte[].class.getName()) || className.equals(DATA_HANDLER)
+                || className.equals(IMAGE) || className.equals(MIME_MULTIPART)) {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean isBinaryType(Class theClass) {
+        String className = theClass.getName();
+        if(className.equals(byte[].class.getName()) || className.equals(Byte[].class.getName()) || className.equals(DATA_HANDLER)
+                || className.equals(IMAGE) || className.equals(MIME_MULTIPART)) {
+            return true;
+        }
+        return false;
+    }    
 }

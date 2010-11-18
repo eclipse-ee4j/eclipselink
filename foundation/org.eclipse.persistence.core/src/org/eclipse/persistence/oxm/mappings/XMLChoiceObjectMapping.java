@@ -93,7 +93,11 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     private boolean isWriteOnly;
     
     private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
-
+    
+    private static final String DATA_HANDLER = "javax.activation.DataHandler";
+    private static final String MIME_MULTIPART = "javax.mail.MimeMultipart";
+    private static final String IMAGE = "java.awt.Image";
+    
     public XMLChoiceObjectMapping() {
         fieldToClassMappings = new HashMap<XMLField, Class>();
         fieldToClassNameMappings = new HashMap<XMLField, String>();
@@ -408,6 +412,11 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
                 
             }else if(nextMapping instanceof XMLObjectReferenceMapping) {
                 ((XMLObjectReferenceMapping)nextMapping).setIsWriteOnly(this.isWriteOnly);
+            } else if(nextMapping instanceof XMLBinaryDataMapping) {
+                ((XMLBinaryDataMapping)nextMapping).setIsCDATA(this.isWriteOnly);
+                if(converter != null) {
+                    ((XMLBinaryDataMapping)nextMapping).setConverter(converter);
+                }
             } else {
                 ((XMLCompositeObjectMapping)nextMapping).setIsWriteOnly(this.isWriteOnly());
                 if(converter != null){
@@ -534,21 +543,30 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     private void addChoiceElementMapping(XMLField xmlField, String className){
                 
          if (xmlField.getLastXPathFragment().nameIsText()) {
+             Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
              XMLDirectMapping xmlMapping = new XMLDirectMapping();
              xmlMapping.setAttributeAccessor(temporaryAccessor);
-             Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
              xmlMapping.setAttributeClassification(theClass);
              xmlMapping.setField(xmlField);
              this.choiceElementMappings.put(xmlField, xmlMapping);
              
          } else {
-             XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
-             xmlMapping.setAttributeAccessor(temporaryAccessor);
-             if(!className.equals("java.lang.Object")){
-                 xmlMapping.setReferenceClassName(className);
-             }            
-             xmlMapping.setField(xmlField);          
-             this.choiceElementMappings.put(xmlField, xmlMapping);            
+             if(isBinaryType(className)) {
+                 XMLBinaryDataMapping xmlMapping = new XMLBinaryDataMapping();
+                 xmlMapping.setField(xmlField);
+                 Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
+                 xmlMapping.setAttributeClassification(theClass);
+                 xmlMapping.setAttributeAccessor(temporaryAccessor);
+                 this.choiceElementMappings.put(xmlField, xmlMapping);
+             } else {
+                 XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
+                 xmlMapping.setAttributeAccessor(temporaryAccessor);
+                 if(!className.equals("java.lang.Object")){
+                     xmlMapping.setReferenceClassName(className);
+                 }            
+                 xmlMapping.setField(xmlField);          
+                 this.choiceElementMappings.put(xmlField, xmlMapping);
+             }
          }   
     }
        
@@ -561,13 +579,21 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             xmlMapping.setField(xmlField);
             this.choiceElementMappings.put(xmlField, xmlMapping);            
         } else {
-            XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
-            xmlMapping.setAttributeAccessor(temporaryAccessor);
-            if(!theClass.equals(ClassConstants.OBJECT)){
-                xmlMapping.setReferenceClass(theClass);
-            }            
-            xmlMapping.setField(xmlField);
-            this.choiceElementMappings.put(xmlField, xmlMapping);            
+            if(isBinaryType(theClass)) {
+                XMLBinaryDataMapping xmlMapping = new XMLBinaryDataMapping();
+                xmlMapping.setField(xmlField);
+                xmlMapping.setAttributeClassification(theClass);
+                xmlMapping.setAttributeAccessor(temporaryAccessor);
+                this.choiceElementMappings.put(xmlField, xmlMapping);
+            } else {
+                XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
+                xmlMapping.setAttributeAccessor(temporaryAccessor);
+                if(!theClass.equals(ClassConstants.OBJECT)){
+                    xmlMapping.setReferenceClass(theClass);
+                }            
+                xmlMapping.setField(xmlField);
+                this.choiceElementMappings.put(xmlField, xmlMapping);
+            }
         }
     }
     
@@ -653,5 +679,22 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             this.classNameToSourceFieldsMappings = new HashMap<String, List<XMLField>>();
         }
         return this.classNameToSourceFieldsMappings;
+    }
+    
+    private boolean isBinaryType(String className) {
+        if(className.equals(byte[].class.getName()) || className.equals(Byte[].class.getName()) || className.equals(DATA_HANDLER)
+                || className.equals(IMAGE) || className.equals(MIME_MULTIPART)) {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean isBinaryType(Class theClass) {
+        String className = theClass.getName();
+        if(className.equals(byte[].class.getName()) || className.equals(Byte[].class.getName()) || className.equals(DATA_HANDLER)
+                || className.equals(IMAGE) || className.equals(MIME_MULTIPART)) {
+            return true;
+        }
+        return false;
     }
 }
