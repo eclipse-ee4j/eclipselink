@@ -481,7 +481,7 @@ public class EntityManagerSetupImpl {
     }
 
     /**
-     * Assign a CMP3Policy to each descriptor
+     * Assign a CMP3Policy to each descriptor, and sets the OptimisticLockingPolicy's LockOnChangeMode if applicable.
      */
     protected void assignCMP3Policy() {
         // all descriptors assigned CMP3Policy
@@ -1103,7 +1103,7 @@ public class EntityManagerSetupImpl {
                 }
                 
             } else if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMI) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
-                if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS)){
+                if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)){
                     ((RMITransportManager)rcm.getTransportManager()).setIsRMIOverIIOP(true);
                }
                 // Default protocol.
@@ -1477,6 +1477,7 @@ public class EntityManagerSetupImpl {
         updateUppercaseSetting(m);
         updateCacheStatementSettings(m);
         updateTemporalMutableSetting(m);
+        updateTableCreationSettings(m);
         updateAllowZeroIdSetting(m);
         updateIdValidation(m);
         updatePessimisticLockTimeout(m);
@@ -1894,6 +1895,16 @@ public class EntityManagerSetupImpl {
             session.getProject().setDefaultIdValidation(IdValidation.valueOf(idValidationString));
         }
     }
+    
+    /**
+     * sets the TABLE_CREATION_SUFFIX property on the session's project to be applied to all table creation statements (DDL)
+     */
+    protected void updateTableCreationSettings(Map m) {
+        String tableCreationSuffix = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TABLE_CREATION_SUFFIX, m, session);
+        if (tableCreationSuffix != null && !tableCreationSuffix.isEmpty()) {
+            session.getPlatform().setTableCreationSuffix(tableCreationSuffix);
+        }
+    }
 
     /**
      * Enable or disable default temporal mutable setting. 
@@ -1912,7 +1923,7 @@ public class EntityManagerSetupImpl {
             }
         }
     }
-    
+
     /**
      * Copy named queries defined in EclipseLink descriptor into the session if it was indicated to do so.
      */
