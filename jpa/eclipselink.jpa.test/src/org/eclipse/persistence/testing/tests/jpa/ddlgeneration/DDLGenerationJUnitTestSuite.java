@@ -56,8 +56,6 @@ import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.Por
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.*;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.Equipment;
 
-import sun.tools.tree.ThisExpression;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
@@ -88,7 +86,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -102,7 +100,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         closeEntityManager(emDDLTPC);
         clearCache(DDL_TPC_PU);
     }
-    
+
     /**
      * 214519 - Allow appending strings to CREATE TABLE statements 
      * This test uses PU ddlTableSuffix to create file  DDL_TABLE_CREATION_SUFFIX_DDL_FILENAME, which it then
@@ -113,7 +111,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         String property_suffix = " propertyCreationSuffix";
         String xml_suffix = "creationSuffixString";
         final String CREATE_TABLE = "CREATE TABLE ";
-                
+
       //results:
         //used for checking eclipselink-orm.xml settings:
         ArrayList<String> statements = new ArrayList();//used to output the create statement should it not have the suffix set in the orm.xml
@@ -124,8 +122,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         String property_statement = "";//used to output the create statement should it not have the suffix set through properties
 
         EntityManager em = createEntityManager(DDL_TABLE_CREATION_SUFFIX_PU);
-            
-            
+
         List<String> strings = getDDLFile(DDL_TABLE_CREATION_SUFFIX_DDL_FILENAME);
         for (String statement: strings){
             if (statement.startsWith(CREATE_TABLE)) {
@@ -149,7 +146,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                 }
             }
         }
-        
+
         assertTrue("missing creation suffix from properties on statement: "+property_statement, has_property_suffix);
         int size = statements.size();
         assertTrue("Missing some create Table statements, only got "+size+" of the 4 expected", size==4);
@@ -161,89 +158,89 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     public void testDDLTablePerClassModel() {
         EntityManager em = createEntityManager(DDL_TPC_PU);
         beginTransaction(em);
-        
+
         GoldCustomer goldCustomer = new GoldCustomer();;
         PlatinumCustomer platinumCustomer = new PlatinumCustomer();
-        
+
         try {
             goldCustomer.setFullName("GoldCustomer");
             goldCustomer.setAge(21);
             goldCustomer.setGender("Male");
             goldCustomer.setNationality("Canadian");
             em.persist(goldCustomer);
-            
+
             platinumCustomer.setFullName("PlatinumCustomer");
             platinumCustomer.setAge(22);
             platinumCustomer.setGender("Female");
             platinumCustomer.setNationality("American");
             em.persist(platinumCustomer);
-            
+
             LuxuryCar luxuryCar1 = new LuxuryCar();
             em.persist(luxuryCar1);
-            
+
             GoldBenefit goldBenefit1 = new GoldBenefit();
             goldBenefit1.setBenefitDescription("Gold benefit 1");
             goldBenefit1.setLuxuryCar(luxuryCar1);
             goldBenefit1.setCustomer(goldCustomer);
             em.persist(goldBenefit1);
-            
+
             LuxuryCar luxuryCar2 = new LuxuryCar();
             em.persist(luxuryCar2);
-            
+
             GoldBenefit goldBenefit2 = new GoldBenefit();
             goldBenefit2.setBenefitDescription("Gold benefit 2");
             goldBenefit2.setLuxuryCar(luxuryCar2);
             em.persist(goldBenefit2);
-            
+
             LuxuryCar luxuryCar3 = new LuxuryCar();
             em.persist(luxuryCar3);
-            
+
             PlatinumBenefit platinumBenefit1 = new PlatinumBenefit();
             platinumBenefit1.setBenefitDescription("Platinum benefit 1");
             platinumBenefit1.setCar(luxuryCar3);
             em.persist(platinumBenefit1);
-            
+
             List<GoldBenefit> goldBenefits1 = new ArrayList<GoldBenefit>();
             List<GoldBenefit> goldBenefits2 = new ArrayList<GoldBenefit>();
             List<PlatinumBenefit> platinumBenefits1 = new ArrayList<PlatinumBenefit>();
-            
+
             goldCustomer.setGoldBenefitList(goldBenefits1);
             platinumCustomer.setGoldBenefitList(goldBenefits2);
-            platinumCustomer.setPlatinumBenefitList(platinumBenefits1);           
-            
+            platinumCustomer.setPlatinumBenefitList(platinumBenefits1);
+
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
+
             throw e;
         } finally {
             closeEntityManager(em);
         }
-        
+
         clearCache(DDL_TPC_PU);
         em = createEntityManager(DDL_TPC_PU);  
-        
+
         assertTrue("ReadAll did not find subclasses.", !em.createQuery("Select c from Customer c").getResultList().isEmpty());
-        
+
         GoldCustomer refreshedGoldCustomer = em.find(GoldCustomer.class, goldCustomer.getCustomerId());
         assertTrue("The gold customer read back did not match the original", getServerSession(DDL_TPC_PU).compareObjects(goldCustomer, refreshedGoldCustomer));
 
         PlatinumCustomer refreshedPlatinumCustomer = em.find(PlatinumCustomer.class, platinumCustomer.getCustomerId());
         assertTrue("The platinum customer read back did not match the original", getServerSession(DDL_TPC_PU).compareObjects(platinumCustomer, refreshedPlatinumCustomer));
     }
-    
+
     public void testDDLTablePerClassModelQuery() {
         EntityManager em = createEntityManager(DDL_TPC_PU);
         
         List goldCustomers = em.createNamedQuery("GoldCustomer.findAll").getResultList();
         List platinumCustomers = em.createNamedQuery("PlatinumCustomer.findAll").getResultList();
-        
+
         assertFalse("No gold customers returned", goldCustomers.isEmpty());
         assertFalse("No platinum customers returned", platinumCustomers.isEmpty());
     }
-    
+
     // Test for GF#1392
     // If there is a same name column for the entity and many-to-many table, wrong pk constraint generated.
     public void testDDLPkConstraintErrorIncludingRelationTableColumnName() {
@@ -263,25 +260,25 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     // Test for bug 294361
     public void testDDLEmbeddableMapKey() {
         EntityManager em = createEntityManager(DDL_PU);
         beginTransaction(em);
-        
+
         try {
             PropertyRecord propertyRecord = new PropertyRecord();
             
             Zipcode zipCode = new Zipcode();
             zipCode.plusFour = "1234";
             zipCode.zip = "78627";
-            
+
             Address address = new Address();
             address.city = "Ottawa";
             address.state = "Ontario";
             address.street = "Main";
             address.zipcode = zipCode;
-            
+
             PropertyInfo propertyInfo = new PropertyInfo();
             propertyInfo.parcelNumber = 1;
             propertyInfo.size = 2;
@@ -296,7 +293,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
+
             fail("Error persisting the PropertyRecord : " + e);
         } finally {
             closeEntityManager(em);
@@ -325,7 +322,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         }
         this.assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
     }
-    
+
     // Test for bug 322233, that optional field info defined in Overrides are used in DDL
     public void testDDLAttributeOverridesOnElementCollection() {
         EntityManager em = createEntityManager(DDL_PU);
@@ -449,7 +446,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             return;
         }
         UniqueConstraintsEntity1 ucEntity;
-        
+
         EntityManager em = createEntityManager(DDL_PU);
         beginTransaction(em);
         try {
@@ -466,14 +463,14 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        
+
         beginTransaction(em);
         try {
             ucEntity = new UniqueConstraintsEntity1(2);
             ucEntity.setColumns(1, 2, 2, 2);
             em.persist(ucEntity);
             em.flush();
-            
+
             fail("Unique constraint violation is expected");
         } catch (PersistenceException e) {
             //expected
@@ -490,7 +487,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             ucEntity.setColumns(2, 1, 2, 2);
             em.persist(ucEntity);
             em.flush();
-            
+
             fail("Unique constraint violation is expected");
         } catch (PersistenceException e) {
             //expected
@@ -499,7 +496,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             closeEntityManager(em);
         }
-        
+
         em = createEntityManager(DDL_PU);
         beginTransaction(em);
         try {
@@ -507,7 +504,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             ucEntity.setColumns(2, 2, 1, 1);
             em.persist(ucEntity);
             em.flush();
-            
+
             fail("Unique constraint violation is expected");
         } catch (PersistenceException e) {
             //expected
@@ -532,14 +529,14 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     // Test to check if unique constraints are generated correctly
     public void testDDLUniqueConstraintsByXML() {
         if(!getServerSession(DDL_PU).getPlatform().supportsUniqueKeyConstraints()) {
             return;
         }
         UniqueConstraintsEntity2 ucEntity;
-        
+
         EntityManager em = createEntityManager(DDL_PU);
         beginTransaction(em);
         try {
@@ -556,7 +553,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        
+
         beginTransaction(em);
         try {
             ucEntity = new UniqueConstraintsEntity2(2);
@@ -580,7 +577,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             ucEntity.setColumns(2, 1, 2, 2);
             em.persist(ucEntity);
             em.flush();
-            
+
             fail("Unique constraint violation is expected");
         } catch (PersistenceException e) {
             //expected
@@ -589,7 +586,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             closeEntityManager(em);
         }
-        
+
         em = createEntityManager(DDL_PU);
         beginTransaction(em);
         try {
@@ -597,7 +594,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             ucEntity.setColumns(2, 2, 1, 1);
             em.persist(ucEntity);
             em.flush();
-            
+
             fail("Unique constraint violation is expected");
         } catch (PersistenceException e) {
             //expected
@@ -644,9 +641,9 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             Object result = em.createQuery(query).setParameter("seq", seq).setParameter("code", code)
                             .getSingleResult();
             assertNotNull(result);
-            
+
             rollbackTransaction(em);
-            
+
         } catch (RuntimeException e) {
             if (isTransactionActive(em))
                 rollbackTransaction(em);
@@ -661,30 +658,30 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     public void testBug241308() {
         EntityManager em = createEntityManager(DDL_PU);
         beginTransaction(em);
-     
+
         try {
             ThreadInfo threadInfo1 = new ThreadInfo();
             threadInfo1.setId(0);
             threadInfo1.setName("main");
-            
+
             MachineState machineState1 = new MachineState();
             machineState1.setId(0);
             machineState1.setThread(threadInfo1);
-            
+
             em.persist(machineState1);
-            
+
             ThreadInfo threadInfo2 = new ThreadInfo();
             threadInfo2.setId(0);
             threadInfo2.setName("main");
-            
+
             MachineState machineState2 = new MachineState();
             machineState2.setId(1);
             machineState2.setThread(threadInfo2);
-            
+
             em.persist(machineState2);
-            
+
             commitTransaction(em);
-            
+
         } catch (RuntimeException e) {
             if (isTransactionActive(em))
                 rollbackTransaction(em);
@@ -693,7 +690,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDDLUnidirectionalOneToMany() {    
         EntityManager em = createEntityManager(DDL_PU);
         beginTransaction(em);
@@ -710,7 +707,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             b.setUnq2("u0004");
             em.persist(b);
             commitTransaction(em);
-            
+
             // clean-up
             beginTransaction(em);
             CKeyEntityB b0 = em.find(CKeyEntityB.class, b.getKey());
@@ -726,29 +723,29 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testCascadeMergeOnManagedEntityWithOrderedList() {
         EntityManagerFactory factory = getEntityManagerFactory(DDL_PU);
-        
+
         // Clean up first
         cleanupEquipmentAndPorts(factory);
-        
+
         // Create a piece equipment with one port.
         createEquipment(factory);
-            
+
         // Add two ports to the equipment
         addPorts(factory);
-            
+
         // Fetch the equipment and validate there is no null elements in
         // the ArrayList of Port.
         verifyPorts(factory);
     }
-    
+
     public void testDirectCollectionMapping(){
         EntityManager em = createEntityManager(DDL_PU);
         try{
             beginTransaction(em);
-            
+
             MapHolder holder = new MapHolder();
             holder.setId(1);
             EntityMapKey key = new EntityMapKey();
@@ -756,35 +753,35 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             holder.getDCMap().put(key, "test1");
             em.persist(holder);
             em.persist(key);
-            
+
             try{
                 em.flush();
             } catch (Exception e){
                 e.printStackTrace();
                 fail("Caught Exception while trying to flush a new ddl-generated DirectCollectionMapping." + e);
             }
-            
+
             clearCache(DDL_PU);
             em.refresh(holder);
             assertTrue(holder.getDCMap().get(key) != null);
-            
+
             holder.getDCMap().remove(key);
             em.remove(holder);
             em.remove(key);
-            
+
             em.flush();
-            
+
             rollbackTransaction(em);
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
     public void testAggregateCollectionMapping(){
         EntityManager em = createEntityManager(DDL_PU);
         try{
             beginTransaction(em);
-            
+
             MapHolder holder = new MapHolder();
             holder.setId(2);
             EntityMapKey key = new EntityMapKey();
@@ -794,30 +791,30 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             holder.getACMap().put(key, value);
             em.persist(holder);
             em.persist(key);
-            
+
             em.flush();
-            
+
             clearCache(DDL_PU);
             em.refresh(holder);
             assertTrue(holder.getACMap().get(key) != null);
-            
+
             holder.getACMap().remove(key);
             em.remove(holder);
             em.remove(key);
-            
+
             em.flush();
-            
+
             rollbackTransaction(em);
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
     public void testOneToManyMapping(){
         EntityManager em = createEntityManager(DDL_PU);
         try{
             beginTransaction(em);
-            
+
             MapHolder holder = new MapHolder();
             holder.setId(3);
             AggregateMapKey key = new AggregateMapKey();
@@ -828,32 +825,32 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             holder.getOTMMap().put(key, value);
             em.persist(holder);
             em.persist(value);
-            
+
             em.flush();
-            
+
             clearCache(DDL_PU);
             em.refresh(holder);
             holder.getOTMMap().get(key);
             assertTrue(holder.getOTMMap().get(key) != null);
-            
+
             holder.getOTMMap().remove(key);
             value.setHolder(null);
             em.remove(holder);
             em.remove(value);
-            
+
             em.flush();
-            
+
             rollbackTransaction(em);
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
     public void testUnidirectionalOneToManyMapping(){
         EntityManager em = createEntityManager(DDL_PU);
         try{
             beginTransaction(em);
-            
+
             MapHolder holder = new MapHolder();
             holder.setId(4);
             EntityMapValue value = new EntityMapValue();
@@ -861,25 +858,25 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             holder.getUOTMMap().put(4, value);
             em.persist(holder);
             em.persist(value);
-            
+
             em.flush();
-            
+
             clearCache(DDL_PU);
             em.refresh(holder);
             assertTrue(holder.getUOTMMap().get(4) != null);
-            
+
             holder.getUOTMMap().remove(4);
             em.remove(holder);
             em.remove(value);
-            
+
             em.flush();
-            
+
             rollbackTransaction(em);
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
     public void testManyToManyMapping(){
         EntityManager em = createEntityManager(DDL_PU);
         try{
@@ -896,32 +893,32 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.persist(holder);
             em.persist(key);
             em.persist(value);
-            
+
             em.flush();
-            
+
             clearCache(DDL_PU);
             em.refresh(holder);
             assertTrue(holder.getMTMMap().get(key) != null);
-            
+
             holder.getMTMMap().remove(key);
             value.getHolders().remove(0);
             em.remove(holder);
             em.remove(key);
             em.remove(value);
-            
+
             try{
                 em.flush();
             } catch (Exception e){
                 e.printStackTrace();
                 fail("Caught Exception while trying to remove a new ddl-generated OneToManyMapping." + e);
             }
-            
+
             rollbackTransaction(em);
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
     // Bug 279784 - Incomplete OUTER JOIN based on JoinTable 
     public void testManyToManyWithMultipleJoinColumns() {
         String prefix = "testManyToManyWithMultipleJoinColumns";
@@ -967,7 +964,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
 
         commitTransaction(em);
         closeEntityManager(em);
-        
+
         clearCache(DDL_PU);
         em = createEntityManager(DDL_PU);
         List<CKeyEntityC> clist = em.createQuery("SELECT c from CKeyEntityC c LEFT OUTER JOIN c.bs bs WHERE c.key = :key").setParameter("key", c1KeyPK).getResultList();
@@ -995,7 +992,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         } else {
             errorMsg = "Read "+nSize+" cs, 1 or 2 were expected - test problem.";
         }
-        
+
         // clean-up
         beginTransaction(em);
         c1 = em.find(CKeyEntityC.class, c1KeyPK);
@@ -1010,7 +1007,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         em.remove(b2);
         commitTransaction(em);
         closeEntityManager(em);
-        
+
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
@@ -1032,7 +1029,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.flush();
             em.clear();
             clearCache(DDL_PU);
-            
+
             inventor = em.find(Inventor.class, 1);
             assertTrue("Embeddable is null", inventor.getPatentCollection() != null);
             assertFalse("Collection is empty", inventor.getPatentCollection().getPatents().isEmpty());
@@ -1042,7 +1039,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Fix for bug 264417: Table generation is incorrect for JoinTables in 
      * AssociationOverrides. Problem is that non-owning mappings were processed 
@@ -1053,10 +1050,10 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
      */
     public void testAssociationOverrideToEmbeddedManyToMany(){
         EntityManager em = createEntityManager(DDL_PU);
-        
+
         try {
             beginTransaction(em);
-            
+
             Employee employee = new Employee();
             PhoneNumber phoneNumber = new PhoneNumber();
             employee.addPhoneNumber(phoneNumber);
@@ -1064,7 +1061,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             
             getServerSession(DDL_PU).setLogLevel(0);
             commitTransaction(em);
-            
+
             // Force the read to hit the database and make sure the phone number is read back.
             clearCache(DDL_PU);
             em.clear();
@@ -1075,17 +1072,17 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     protected void cleanupEquipmentAndPorts(EntityManagerFactory factory) {
         EntityManager em = null;
-        
+
         try {
             em = factory.createEntityManager();
             beginTransaction(em);
-            
+
             em.createQuery("DELETE FROM PortDAO").executeUpdate();     
             em.createQuery("DELETE FROM EquipmentDAO").executeUpdate();
-            
+
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)) {
@@ -1098,31 +1095,31 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     protected void createEquipment(EntityManagerFactory factory) {
         EntityManager em = null;
 
         try {
             em = factory.createEntityManager();
-            
+
             beginTransaction(em);
-            
+
             Equipment eq = new EquipmentDAO();
             eq.setId("eq");
-            
+
             Port port = new PortDAO();
             port.setId("p1");
             port.setPortOrder(0);
-            
+
             eq.addPort(port);
-            
+
             em.persist(eq);
             commitTransaction(em);
         } catch (Exception e) {
             if (em != null && isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
+
             fail("En error occurred creating new equipment: " + e.getMessage());
         } finally {
             if (em != null) {
@@ -1133,7 +1130,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
 
     protected void addPorts(EntityManagerFactory factory) {
         EntityManager em = null;
-        
+
         try {
             em = factory.createEntityManager();
             beginTransaction(em);
@@ -1141,7 +1138,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             query.setParameter("id", "eq");
             Equipment eq = (Equipment) query.getResultList().get(0);
             commitTransaction(em);
-            
+
             em = factory.createEntityManager();
             beginTransaction(em); 
             eq = em.merge(eq);
@@ -1150,7 +1147,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             port.setId("p2");
             port.setPortOrder(1);
             eq.addPort(port);
-            
+
             port = new PortDAO();
             port.setId("p3");
             port.setPortOrder(2);
@@ -1162,7 +1159,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
+
             fail("En error occurred adding new ports: " + e.getMessage());
         } finally {
             if (em != null) {
@@ -1173,7 +1170,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
 
     protected void verifyPorts(EntityManagerFactory factory) {
         EntityManager em = null;
-        
+
         try {
             em = factory.createEntityManager();
             beginTransaction(em);
@@ -1191,7 +1188,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
+
             fail("En error occurred fetching the results to verify: " + e.getMessage());
         } finally {
             if (em != null) {
@@ -1199,7 +1196,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Returns a List of strings representing the lines within the fileName. 
      * @param fileName
@@ -1236,8 +1233,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                     array.add(line);
                 }
             }
-            
-            
+
         }catch (Exception e) {
             //ignore exception
         } finally {
@@ -1254,7 +1250,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         }
         return array;
     }
-    
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
