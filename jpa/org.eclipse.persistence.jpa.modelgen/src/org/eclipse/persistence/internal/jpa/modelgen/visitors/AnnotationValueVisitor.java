@@ -46,7 +46,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
     @Override
     public Object visitAnnotation(AnnotationMirror annotationMirror, Object arg1) {
         // Set the name of the annotation.
-        MetadataAnnotation annotation = new MetadataAnnotation();           
+        MetadataAnnotation annotation = new MetadataAnnotation();
         annotation.setName(annotationMirror.getAnnotationType().toString());
 
         // Process the values.
