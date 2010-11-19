@@ -686,11 +686,7 @@ public class AnnotationsProcessor {
                         throw JAXBException.invalidElementWrapper(property.getPropertyName());
                     }
                 }
-                // handle XmlElements - validate and build the required
-                // properties
-                if (property.isChoice()) {
-                    processChoiceProperty(property, tInfo, jClass, property.getActualType());
-                }
+
                 // handle XmlElementRef(s) - validate and build the required
                 // ElementDeclaration object
                 if (property.isReference()) {
@@ -774,6 +770,16 @@ public class AnnotationsProcessor {
                     if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
                         JavaClass[] jClassArray = new JavaClass[] { type };
                         buildNewTypeInfo(jClassArray);
+                    }
+                    if(property.isChoice()) {
+                        processChoiceProperty(property, info, next, type);
+                        for(Property choiceProp:property.getChoiceProperties()) {
+                            type = choiceProp.getActualType();
+                            if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
+                                JavaClass[] jClassArray = new JavaClass[] { type };
+                                buildNewTypeInfo(jClassArray);
+                            }
+                        }
                     }
                 }
             }
@@ -1772,6 +1778,10 @@ public class AnnotationsProcessor {
             choiceProp.setIsXmlIdRef(choiceProperty.isXmlIdRef());
             choiceProp.setXmlElementWrapper(choiceProperty.getXmlElementWrapper());
             choiceProperties.add(choiceProp);
+            if (!(this.typeInfo.containsKey(choiceProp.getType().getQualifiedName())) && shouldGenerateTypeInfo(choiceProp.getType())) {
+                JavaClass[] jClassArray = new JavaClass[] { choiceProp.getType() };
+                buildNewTypeInfo(jClassArray);
+            }            
         }
         choiceProperty.setChoiceProperties(choiceProperties);
     }
