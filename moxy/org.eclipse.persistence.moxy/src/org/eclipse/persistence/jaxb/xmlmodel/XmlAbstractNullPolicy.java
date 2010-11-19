@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attribute name="xsi-nil-represents-null" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="empty-node-represents-null" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *       &lt;attribute name="null-representation-for-xml" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-marshal-null-representation" />
+ *       &lt;attribute name="null-representation-for-xml" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-marshal-null-representation" default="ABSENT_NODE" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -118,7 +118,11 @@ public abstract class XmlAbstractNullPolicy {
      *     
      */
     public XmlMarshalNullRepresentation getNullRepresentationForXml() {
-        return nullRepresentationForXml;
+        if (nullRepresentationForXml == null) {
+            return XmlMarshalNullRepresentation.ABSENT_NODE;
+        } else {
+            return nullRepresentationForXml;
+        }
     }
 
     /**

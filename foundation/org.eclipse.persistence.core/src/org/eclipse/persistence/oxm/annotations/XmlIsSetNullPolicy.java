@@ -48,9 +48,9 @@ public @interface XmlIsSetNullPolicy {
 
     boolean emptyNodeRepresentsNull() default false;
 
-    XmlMarshalNullRepresentation nullRepresentationForXml();
+    XmlMarshalNullRepresentation nullRepresentationForXml() default org.eclipse.persistence.oxm.annotations.XmlMarshalNullRepresentation.ABSENT_NODE;
 
     String isSetMethodName();
 
-    XmlParameter[] isSetMethodParameters() default {};
+    XmlParameter[] isSetParameters() default {};
 }

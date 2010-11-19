@@ -68,7 +68,7 @@ public class Employee {
     @XmlIsSetNullPolicy(xsiNilRepresentsNull = true, emptyNodeRepresentsNull= false, 
             nullRepresentationForXml=XmlMarshalNullRepresentation.XSI_NIL, 
             isSetMethodName="isSetSomeString",
-            isSetMethodParameters={@XmlParameter(value="false", type=Boolean.class)})
+            isSetParameters={@XmlParameter(value="false", type=Boolean.class)})
     @XmlElement(name="some-string")
     public String getSomeString() { 
         return someString; 

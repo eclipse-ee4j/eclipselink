@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *       &lt;/all>
- *       &lt;attribute name="mapped-by" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="mapped-by" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="container-type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *     &lt;/extension>
@@ -55,7 +55,7 @@ public class XmlInverseReference
     protected XmlAccessMethods xmlAccessMethods;
     @XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
-    @XmlAttribute(name = "mapped-by")
+    @XmlAttribute(name = "mapped-by", required = true)
     protected String mappedBy;
     @XmlAttribute(name = "container-type")
     protected String containerType;

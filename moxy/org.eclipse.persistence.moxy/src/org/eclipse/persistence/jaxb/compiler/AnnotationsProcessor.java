@@ -1671,7 +1671,7 @@ public class AnnotationsProcessor {
                 } else if (!(next.method().equals(EMPTY_STRING))) {
                     xmlWriteTransformer.setMethod(next.method());
                 }
-                xmlWriteTransformer.setXmlPath(next.xpath());
+                xmlWriteTransformer.setXmlPath(next.xmlPath());
                 transformation.getXmlWriteTransformer().add(xmlWriteTransformer);
             }
         }
@@ -2153,7 +2153,7 @@ public class AnnotationsProcessor {
             policy.setXsiNilRepresentsNull(new Boolean(nullPolicy.xsiNilRepresentsNull()));
             policy.setNullRepresentationForXml(org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation.valueOf(nullPolicy.nullRepresentationForXml().toString()));
             policy.setIsSetMethodName(nullPolicy.isSetMethodName());
-            for (XmlParameter next : nullPolicy.isSetMethodParameters()) {
+            for (XmlParameter next : nullPolicy.isSetParameters()) {
                 org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy.IsSetParameter param = new org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy.IsSetParameter();
                 param.setValue(next.value());
                 param.setType(next.type().getName());

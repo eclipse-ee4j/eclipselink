@@ -28,8 +28,8 @@ public class EmployeeTransformationMethod {
     @XmlTransformation
     @XmlReadTransformer(method = "buildAttributeValue")
     @XmlWriteTransformers({
-        @XmlWriteTransformer(method = "getStartTime", xpath= "normal-hours/start-time/text()"),
-        @XmlWriteTransformer(method = "getEndTime", xpath="normal-hours/end-time/text()")
+        @XmlWriteTransformer(method = "getStartTime", xmlPath= "normal-hours/start-time/text()"),
+        @XmlWriteTransformer(method = "getEndTime", xmlPath="normal-hours/end-time/text()")
     })
     public String[] normalHours;
     

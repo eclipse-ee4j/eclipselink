@@ -49,14 +49,14 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;attribute name="method" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="xml-path" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *                 &lt;attribute name="xml-path" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *                 &lt;attribute name="transformer-class" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
  *       &lt;/sequence>
- *       &lt;attribute name="optional" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="optional" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -83,7 +83,7 @@ public class XmlTransformation
     protected XmlTransformation.XmlReadTransformer xmlReadTransformer;
     @XmlElement(name = "xml-write-transformer")
     protected List<XmlTransformation.XmlWriteTransformer> xmlWriteTransformer;
-    @XmlAttribute
+    @XmlAttribute(name = "optional")
     protected Boolean optional;
 
     /**
@@ -217,7 +217,7 @@ public class XmlTransformation
      */
     public boolean isOptional() {
         if (optional == null) {
-            return false;
+            return true;
         } else {
             return optional;
         }
@@ -258,7 +258,7 @@ public class XmlTransformation
     @XmlType(name = "")
     public static class XmlReadTransformer {
 
-        @XmlAttribute
+        @XmlAttribute(name = "method")
         protected String method;
         @XmlAttribute(name = "transformer-class")
         protected String transformerClass;
@@ -342,7 +342,7 @@ public class XmlTransformation
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;attribute name="method" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="xml-path" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *       &lt;attribute name="xml-path" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
      *       &lt;attribute name="transformer-class" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -355,9 +355,9 @@ public class XmlTransformation
     @XmlType(name = "")
     public static class XmlWriteTransformer {
 
-        @XmlAttribute
+        @XmlAttribute(name = "method")
         protected String method;
-        @XmlAttribute(name = "xml-path")
+        @XmlAttribute(name = "xml-path", required = true)
         protected String xmlPath;
         @XmlAttribute(name = "transformer-class")
         protected String transformerClass;

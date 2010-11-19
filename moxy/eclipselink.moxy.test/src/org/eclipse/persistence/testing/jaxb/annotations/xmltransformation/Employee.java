@@ -29,8 +29,8 @@ public class Employee {
     
     @XmlReadTransformer(transformerClass = NormalHoursTransformer.class)
     @XmlWriteTransformers({
-        @XmlWriteTransformer(transformerClass = StartTimeTransformer.class, xpath= "normal-hours/start-time/text()"),
-        @XmlWriteTransformer(transformerClass = EndTimeTransformer.class, xpath="normal-hours/end-time/text()")
+        @XmlWriteTransformer(transformerClass = StartTimeTransformer.class, xmlPath= "normal-hours/start-time/text()"),
+        @XmlWriteTransformer(transformerClass = EndTimeTransformer.class, xmlPath="normal-hours/end-time/text()")
     })
     public String[] normalHours;
     

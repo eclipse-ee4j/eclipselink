@@ -61,7 +61,7 @@
                 <xs:element name="xml-element-decl" maxOccurs="unbounded" >
                     <xs:complexType>
                         <xs:attribute name="java-method" type="xs:string" />
-                        <xs:attribute name="name" type="xs:string" />
+                        <xs:attribute name="name" type="xs:string" use="required" />
                         <xs:attribute name="defaultValue" type="xs:string" default="\u0000" />
                         <xs:attribute name="namespace" type="xs:string" default="##default" />
                         <xs:attribute name="scope" type="xs:string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" />
@@ -203,7 +203,7 @@
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="java-attribute">
-                    <xs:attribute name="value" type="xs:string" />
+                    <xs:attribute name="value" type="xs:string" use="required" />
                     <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
                 </xs:extension>
             </xs:complexContent>
@@ -432,7 +432,7 @@
                         <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:all>
-                    <xs:attribute name="mapped-by" type="xs:string" />
+                    <xs:attribute name="mapped-by" type="xs:string" use="required" />
                     <xs:attribute name="container-type" type="xs:string" default="##default" />
                     <xs:attribute name="type" type="xs:string" default="##default" />
                 </xs:extension>
@@ -486,7 +486,7 @@
     <xs:complexType name="xml-abstract-null-policy" abstract="true">
         <xs:attribute name="xsi-nil-represents-null" type="xs:boolean" default="false" />
         <xs:attribute name="empty-node-represents-null" type="xs:boolean" default="false" />
-        <xs:attribute name="null-representation-for-xml" type="xml-marshal-null-representation" />
+        <xs:attribute name="null-representation-for-xml" type="xml-marshal-null-representation" default="ABSENT_NODE" />
     </xs:complexType>
     <xs:element name="xml-null-policy" substitutionGroup="xml-abstract-null-policy">
         <xs:complexType>
@@ -504,12 +504,12 @@
                     <xs:sequence>
                         <xs:element name="is-set-parameter" minOccurs="0" maxOccurs="unbounded">
                             <xs:complexType>
-                                <xs:attribute name="value" type="xs:string"/>
-                                <xs:attribute name="type" type="xs:string"/>
+                                <xs:attribute name="value" type="xs:string" use="required" />
+                                <xs:attribute name="type" type="xs:string" use="required" />
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
-                    <xs:attribute name="is-set-method-name" type="xs:string" />
+                    <xs:attribute name="is-set-method-name" type="xs:string" use="required" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
@@ -530,12 +530,12 @@
                         <xs:element name="xml-write-transformer" minOccurs="0" maxOccurs="unbounded">
                             <xs:complexType>
                                 <xs:attribute name="method" type="xs:string" />
-                                <xs:attribute name="xml-path" type="xs:string" />
+                                <xs:attribute name="xml-path" type="xs:string" use="required" />
                                 <xs:attribute name="transformer-class" type="xs:string" />
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
-                    <xs:attribute name="optional" type="xs:boolean" default="false"/>
+                    <xs:attribute name="optional" type="xs:boolean" default="true"/>
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

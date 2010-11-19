@@ -67,6 +67,6 @@ public @interface XmlWriteTransformer {
      * annotates an attribute - the attribute's name will be
      * used as an element name.
      */ 
-    String xpath();
+    String xmlPath();
 
 }

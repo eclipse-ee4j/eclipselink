@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;attribute name="java-method" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *                 &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *                 &lt;attribute name="defaultValue" type="{http://www.w3.org/2001/XMLSchema}string" default="\u0000" />
  *                 &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *                 &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" />
@@ -67,7 +67,7 @@ public class XmlRegistry {
 
     @XmlElement(name = "xml-element-decl", required = true)
     protected List<XmlRegistry.XmlElementDecl> xmlElementDecl;
-    @XmlAttribute
+    @XmlAttribute(name = "name")
     protected String name;
 
     /**
@@ -134,7 +134,7 @@ public class XmlRegistry {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;attribute name="java-method" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
      *       &lt;attribute name="defaultValue" type="{http://www.w3.org/2001/XMLSchema}string" default="\u0000" />
      *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
      *       &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" />
@@ -154,17 +154,17 @@ public class XmlRegistry {
 
         @XmlAttribute(name = "java-method")
         protected String javaMethod;
-        @XmlAttribute
+        @XmlAttribute(name = "name", required = true)
         protected String name;
-        @XmlAttribute
+        @XmlAttribute(name = "defaultValue")
         protected String defaultValue;
-        @XmlAttribute
+        @XmlAttribute(name = "namespace")
         protected String namespace;
-        @XmlAttribute
+        @XmlAttribute(name = "scope")
         protected String scope;
-        @XmlAttribute
+        @XmlAttribute(name = "substitutionHeadName")
         protected String substitutionHeadName;
-        @XmlAttribute
+        @XmlAttribute(name = "substitutionHeadNamespace")
         protected String substitutionHeadNamespace;
         @XmlAttribute(name = "type")
         protected String type;

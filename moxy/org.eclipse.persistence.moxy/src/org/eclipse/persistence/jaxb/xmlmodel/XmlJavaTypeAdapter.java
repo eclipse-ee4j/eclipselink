@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -42,9 +42,9 @@ public class XmlJavaTypeAdapter
     extends JavaAttribute
 {
 
-    @XmlAttribute
+    @XmlAttribute(name = "value", required = true)
     protected String value;
-    @XmlAttribute
+    @XmlAttribute(name = "type")
     protected String type;
 
     /**

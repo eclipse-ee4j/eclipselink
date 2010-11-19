@@ -44,5 +44,5 @@ public @interface XmlNullPolicy {
     
     boolean isSetPerformedForAbsentNode() default true;
 
-    XmlMarshalNullRepresentation nullRepresentationForXml();
+    XmlMarshalNullRepresentation nullRepresentationForXml() default org.eclipse.persistence.oxm.annotations.XmlMarshalNullRepresentation.ABSENT_NODE;
 }

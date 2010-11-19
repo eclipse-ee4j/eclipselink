@@ -35,14 +35,14 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *                 &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *                 &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
  *       &lt;/sequence>
- *       &lt;attribute name="is-set-method-name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="is-set-method-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -60,7 +60,7 @@ public class XmlIsSetNullPolicy
 
     @XmlElement(name = "is-set-parameter")
     protected List<XmlIsSetNullPolicy.IsSetParameter> isSetParameter;
-    @XmlAttribute(name = "is-set-method-name")
+    @XmlAttribute(name = "is-set-method-name", required = true)
     protected String isSetMethodName;
 
     /**
@@ -126,8 +126,8 @@ public class XmlIsSetNullPolicy
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
      * &lt;/complexType>
@@ -139,9 +139,9 @@ public class XmlIsSetNullPolicy
     @XmlType(name = "")
     public static class IsSetParameter {
 
-        @XmlAttribute
+        @XmlAttribute(name = "value", required = true)
         protected String value;
-        @XmlAttribute
+        @XmlAttribute(name = "type", required = true)
         protected String type;
 
         /**
