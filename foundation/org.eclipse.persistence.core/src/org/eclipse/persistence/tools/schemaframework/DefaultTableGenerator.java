@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle, Sei Syvalta. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Sei Syvalta  - Bug 330237 - Tables are created in unspecified order (DDL creation)
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -16,7 +17,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -132,9 +133,9 @@ public class DefaultTableGenerator {
         if (project.getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform){
             this.databasePlatform = (DatabasePlatform)project.getDatasourceLogin().getDatasourcePlatform();
         }
-        this.tableMap = new HashMap();
-        this.fieldMap = new HashMap();
-        this.databaseFields = new HashMap();
+        this.tableMap = new LinkedHashMap();
+        this.fieldMap = new LinkedHashMap();
+        this.databaseFields = new LinkedHashMap();
     }
     
     /**
@@ -153,7 +154,7 @@ public class DefaultTableGenerator {
         TableCreator tblCreator = new TableCreator();
 
         //go through each descriptor and build the table/field definitions out of mappings
-        for (ClassDescriptor descriptor : this.project.getDescriptors().values()) {
+        for (ClassDescriptor descriptor : this.project.getOrderedDescriptors()) {
 
             if ((descriptor instanceof XMLDescriptor) || (descriptor instanceof EISDescriptor) || (descriptor instanceof ObjectRelationalDataTypeDescriptor)) {
                 //default table generator does not support ox, eis and object-relational descriptor
@@ -900,7 +901,7 @@ public class DefaultTableGenerator {
             boolean resolved = false;
             boolean error = false;
             
-            Map<String, String> targetToFkField = new HashMap<String, String>();
+            Map<String, String> targetToFkField = new LinkedHashMap<String, String>();
             for (int index = 0; index < fkFields.size(); index++) {
                 String targetField = targetFields.get(index);
                 if (targetToFkField.containsKey(targetField)) {
