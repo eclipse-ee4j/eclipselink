@@ -67,6 +67,8 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * <li>VARCHAR [UNICODE] columns do not preserve trailing spaces - see bug 327435.</li>
  * <li>VARCHAR BYTE columns do not preserve trailing 0 bytes.</li>
  * <li>The hint "javax.persistence.lock.timeout=0" (NOWAIT) has no effect when atempting to pessimistically lock an entity with inheritance type JOINED - see bug 326799.</li>
+ * <li>Pessimistic locking with lock scope EXTENDED should be used cautiously in the presence of foreign key constraints - see bug 327472.</li>
+
  * </ul>
  * <br> 
  * @author Markus KARG (markus at headcrashing.eu)

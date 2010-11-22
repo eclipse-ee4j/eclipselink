@@ -13,24 +13,36 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.advanced.*;
-import org.eclipse.persistence.testing.models.jpa.advanced.entities.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PessimisticLockScope;
+import javax.persistence.Query;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
+import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
+import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyA;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyB;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyD;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
 
 /**
  * <p>
@@ -244,7 +256,18 @@ import org.eclipse.persistence.sessions.server.ServerSession;
             public void check(EntityManager em1, EntyA lockedEntity) {
                 em1.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyDs());
-                assertFalse("other transaction modified row concurrently", lockedEntity.getEntyDs().isEmpty());
+                
+                final Collection collection;
+                if (getServerSession().getPlatform().isMaxDB()) {
+                    // avoid accessing EntyD's table as this would lead to a dead lock
+                    Query query = em1.createNativeQuery("SELECT t2.entyDs_ID FROM ADV_ENTYA_ADV_ENTYD t2, ADV_ENTYA t1 WHERE ((? = t1.ID) AND ((t2.EntyA_ID = t1.ID)))");
+                    query.setParameter(1, lockedEntity.getId());
+                    collection = query.getResultList();
+                } else {
+                    collection = lockedEntity.getEntyDs();
+                }
+                
+                assertFalse("other transaction modified row concurrently", collection.isEmpty());
             }
             
         };
