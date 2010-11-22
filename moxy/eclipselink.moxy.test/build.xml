@@ -261,6 +261,7 @@
         </replace>
     </target>
     <target name="update-docpres-package">
+        <antcall target="wait-if-unix"/>
         <replace dir="${report.dir}/oxm/docpres" value='"org.eclipse.persistence.testing.oxm.docpres'
             token='"org.eclipse.persistence.testing.oxm'>
                 <include name="**/*.xml"/>
