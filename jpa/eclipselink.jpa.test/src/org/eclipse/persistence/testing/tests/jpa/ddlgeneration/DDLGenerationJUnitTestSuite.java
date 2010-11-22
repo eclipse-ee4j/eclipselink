@@ -107,6 +107,9 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
      * reads back in to verify the CREATE TABLE statements have the correct strings appended to them
      */
     public void testDDLTableCreationWithSuffix(){
+        if(this.isOnServer){
+            return;
+        }
       //strings searched for:
         String property_suffix = " propertyCreationSuffix";
         String xml_suffix = "creationSuffixString";

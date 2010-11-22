@@ -32,15 +32,6 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ContactInfo</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
         <properties>
-            <property name="eclipselink.session=name" value="mergeinherited-session"/>
-            <property name="eclipselink.jdbc.read-connections.shared" value="true"/>
-            <property name="eclipselink.jdbc.write-connections.min" value="3"/>
-            <property name="eclipselink.jdbc.write-connections.max" value="8"/>
-            <property name="eclipselink.jdbc.read-connections.min" value="3"/>
-            <property name="eclipselink.jdbc.read-connections.max" value="3"/>
-            <property name="eclipselink.cache.size.default" value="500"/>
-            <property name="eclipselink.cache.type.default" value="Full"/>
-            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
@@ -70,7 +61,6 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Team</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Player</class>
         <properties>
-            <property name="eclipselink.session=name" value="ddlTablePerClass"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
@@ -105,7 +95,6 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ContactInfo</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
         <properties>
-            <property name="eclipselink.session=name" value="ddlCreationTableSuffix-session"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>

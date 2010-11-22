@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
+<entity-mappings version="2.2" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <package>org.eclipse.persistence.testing.models.jpa.ddlgeneration</package>
 
+    <entity class="CKeyEntityB">
+        <attributes>
+            <one-to-many name="as" mapped-by="bs">
+                <cascade-on-delete>true</cascade-on-delete>
+            </one-to-many>
+            <one-to-one name="uniqueA" mapped-by="uniqueB">
+                <cascade-on-delete>true</cascade-on-delete>
+            </one-to-one>
+        </attributes>
+    </entity>
     <entity class="CKeyEntityA"/>
-    <entity class="CKeyEntityB"/>
     <entity class="CKeyEntityB2"/>
     <entity class="CKeyEntityC"/>
     <entity class="MachineState"/>
@@ -26,8 +35,12 @@
             <basic name="column32"><column nullable="false"/></basic>
         </attributes>
     </entity>
-	<entity class="Comment"/>
-	<entity class="Purchase"/>
+    <entity class="Comment"/>
+    <entity class="Purchase">
+        <index>
+            <column-name>FEE_AMOUNT</column-name>
+        </index>
+    </entity>
     <entity class="Currency">
 		<attributes>
 			<id name="id">
