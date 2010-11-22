@@ -1,6 +1,6 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle, Hans Harz, Andrew Rustleund. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,8 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
  *     James Sutherland - initial impl
  *     05/14/2010-2.1 Guy Pelletier 
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+ *     Hans Harz, Andrew Rustleund - Bug 324862 - IndexOutOfBoundsException in 
+ *           DatabaseSessionImpl.initializeDescriptors because @MapKey Annotation is not found.
  ******************************************************************************/  
 import java.io.IOException;
 import java.io.InputStream;
@@ -356,26 +358,31 @@ public class MetadataAsmFactory extends MetadataFactory {
                 addAnnotations(attr, classMetadata.getAnnotations());
             }
         }
-
+        
         /**
          * If the attribute is an annotations attribute, add all annotations attached to it.
          */
-        public void addAnnotations(Attribute attr, Map<String, MetadataAnnotation> annotations) {
-            if (!(attr instanceof RuntimeVisibleAnnotations)) {
-                return;
+        public void addAnnotations(Attribute attr, Map<String,MetadataAnnotation> annotations) {
+            Attribute toUse = attr;
+            while (toUse != null) {
+                if (toUse instanceof RuntimeVisibleAnnotations) {
+                    addAnnotationsHelper(annotations,(RuntimeVisibleAnnotations) toUse);
+                }
+                toUse = toUse.next;
             }
-            RuntimeVisibleAnnotations visibleAnnotations = (RuntimeVisibleAnnotations) attr;
-            for (Iterator iterator = visibleAnnotations.annotations.iterator(); iterator.hasNext(); ) {
-                Annotation visibleAnnotation = (Annotation)iterator.next();
+        }
+
+        private void addAnnotationsHelper(Map<String, MetadataAnnotation> annotations, RuntimeVisibleAnnotations visibleAnnotations) {
+            for (Iterator iterator = visibleAnnotations.annotations.iterator();iterator.hasNext();) {
+                Annotation visibleAnnotation = (Annotation) iterator.next();
                 // Only add annotations that we care about.
-                if ((visibleAnnotation.type.indexOf("javax/persistence") != -1)
-                        || (visibleAnnotation.type.indexOf("org/eclipse/persistence") != -1)) {
-                    MetadataAnnotation annotation = buildAnnotation(visibleAnnotation);
+                if ((visibleAnnotation.type.indexOf("javax/persistence") != -1) || (visibleAnnotation.type.indexOf("org/eclipse/persistence") != -1)) {
+                    MetadataAnnotation annotation =buildAnnotation(visibleAnnotation);
                     annotations.put(annotation.getName(), annotation);
                 }
             }
         }
-
+        
         /**
          * Build the metadata annotation from the asm values.
          */
