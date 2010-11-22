@@ -25,6 +25,7 @@ import javax.persistence.Query;
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
+import org.eclipse.persistence.platform.server.sunas.SunAS9ServerPlatform;
 import org.eclipse.persistence.platform.server.wls.WebLogicPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.JNDIConnector;
@@ -34,6 +35,7 @@ import org.eclipse.persistence.testing.models.jpa.proxyauthentication.*;
 import org.eclipse.persistence.transaction.JTATransactionController;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 /**
@@ -293,6 +295,10 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             employee.setLastName("1");
             em.persist(employee);
             em.flush();
+            // https://glassfish.dev.java.net/issues/show_bug.cgi?id=14753   Oracle proxy session problems  
+            if(SunAS9ServerPlatform.class.isAssignableFrom(serverSession.getServerPlatform().getClass())) {
+                JpaHelper.getEntityManager(em).getUnitOfWork().getParent().getAccessor().releaseCustomizer(JpaHelper.getEntityManager(em).getUnitOfWork().getParent());
+            }
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -361,16 +367,27 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
 
         mngr.begin();
         Connection conn = jtaDs.getConnection();
-        ((OracleConnection)conn).openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
+        OracleConnection oracleConn;
+        if(conn instanceof OracleConnection) {
+            oracleConn = (OracleConnection)conn;
+        } else {
+            oracleConn = (OracleConnection)serverSession.getServerPlatform().unwrapConnection(conn);
+        }
+        oracleConn.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
         System.out.println("====testJtaDataSource openProxySession ok");
         mngr.rollback();
         
         mngr.begin();
         conn = jtaDs.getConnection();
+        if(conn instanceof OracleConnection) {
+            oracleConn = (OracleConnection)conn;
+        } else {
+            oracleConn = (OracleConnection)serverSession.getServerPlatform().unwrapConnection(conn);
+        }
         try {
-            if(((OracleConnection)conn).isProxySession()) {
+            if(oracleConn.isProxySession()) {
                 // close proxy session
-                ((OracleConnection)conn).close(OracleConnection.PROXY_SESSION);
+                oracleConn.close(OracleConnection.PROXY_SESSION);
                 fail("Connection has been released into connection pool with the proxy session still open");
             }
             System.out.println("====testJtaDataSource not a proxy session");
@@ -402,13 +419,24 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         props.setProperty(OracleConnection.PROXY_USER_NAME, System.getProperty("proxy.user.name"));
 
         Connection conn = nonJtaDs.getConnection();
-        ((OracleConnection)conn).openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
+        OracleConnection oracleConn;
+        if(conn instanceof OracleConnection) {
+            oracleConn = (OracleConnection)conn;
+        } else {
+            oracleConn = (OracleConnection)serverSession.getServerPlatform().unwrapConnection(conn);
+        }
+        oracleConn.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
         System.out.println("====testJtaDataSource openProxySession ok");
         conn.close();
         
         conn = nonJtaDs.getConnection();
+        if(conn instanceof OracleConnection) {
+            oracleConn = (OracleConnection)conn;
+        } else {
+            oracleConn = (OracleConnection)serverSession.getServerPlatform().unwrapConnection(conn);
+        }
         try {
-            if(((OracleConnection)conn).isProxySession()) {
+            if(oracleConn.isProxySession()) {
                 fail("Connection has been released into connection pool with the proxy session still open");
             }
             System.out.println("====testJtaDataSource not a proxy session");
