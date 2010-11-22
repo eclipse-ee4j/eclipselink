@@ -55,6 +55,7 @@ public class EclipsePackager extends IDEPackager {
 
     public EclipsePackager() {
         super(null, "eclipse", noArchive);
+        srcDirname = SRC_DIR;
         publicHTMLDirname = ECLIPSE_PUBLIC_HTML_DIR;
     }
 }

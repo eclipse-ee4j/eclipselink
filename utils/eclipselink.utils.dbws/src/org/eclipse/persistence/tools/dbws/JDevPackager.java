@@ -54,11 +54,11 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchi
  */
 public class JDevPackager extends IDEPackager {
 
-    public static final String SRC_DIR = "src";
     public static final String PUBLIC_HTML_DIR = "public_html";
 
     public JDevPackager() {
         this(null, "jdev", noArchive);
+        srcDirname = SRC_DIR;
         publicHTMLDirname = PUBLIC_HTML_DIR;
     }
     protected JDevPackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {

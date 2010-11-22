@@ -47,7 +47,6 @@ public class IDEPackager extends JSR109WebServicePackager {
 
     public IDEPackager() {
         super();
-        srcDirname = SRC_DIR;
     }
     public IDEPackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
         super(archiver, packagerLabel, useJavaArchive);
