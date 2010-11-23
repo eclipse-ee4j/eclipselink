@@ -67,13 +67,14 @@
             </path>
         </pathconvert>
         <property file="${user.home}/build.properties"/>
-        <property name="feature.2.base.dir"           value=".."/>
+        <property name="feature.2.base.dir"           value="${feature.build.location}/.."/>
         <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
         <property name="feature.common.dir"           value="${feature.build.location}/common"/>
         <property name="feature.2.jpa.plugins.dir"    value="${feature.2.base.dir}/jpa/plugins"/>
         <property name="feature.2.sdo.plugins.dir"    value="${feature.2.base.dir}/sdo/plugins"/>
         <property name="feature.2.buildsys.dir"       value="${feature.2.base.dir}/buildsystem"/>
         <echo message="ant.project.name            ='${ant.project.name}'"/>
+        <echo message="basedir                     ='${basedir}'"/>
         <echo message="feature.build.location      ='${feature.build.location}'"/>
         <echo message="feature.2.base.dir          ='${feature.2.base.dir}'"/>
         <echo message="feature.2.common.plugins.dir='${feature.2.common.plugins.dir}'"/>
@@ -270,21 +271,23 @@
         <selectbundle basename="${xml.stream.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${xml.stream.criteria}" property="xml.stream.version" versiononly="true"
         />
-        <say message="sdo.version         = '${sdo.version}'"         if="${sdo.version}"/>        
-        <say message="activation.version  = '${activation.version}'"  if="${activation.version}"/> 
-        <say message="mail.version        = '${mail.version}'"        if="${mail.version}"/>       
-        <say message="persistence.version = '${persistence.version}'" if="${persistence.version}"/>
-        <say message="servlet.version     = '${servlet.version}'"     if="${servlet.version}"/>    
-        <say message="xml.bind.version    = '${xml.bind.version}'"    if="${xml.bind.version}"/>   
-        <say message="xml.stream.version  = '${xml.stream.version}'"  if="${xml.stream.version}"/> 
-
-        <say message="'${sdo.prefix}_${sdo.criteria}.jar' not found! Generated features will be invalid."                 unless="${sdo.version}"/>
-        <say message="'${activation.prefix}_${activation.criteria}.jar' not found! Generated features will be invalid."   unless="${activation.version}"/>
-        <say message="'${mail.prefix}_${mail.criteria}.jar' not found! Generated features will be invalid."               unless="${mail.version}"/>
-        <say message="'${persistence.prefix}_${persistence.criteria}.jar' not found! Generated features will be invalid." unless="${persistence.version}"/>
-        <say message="'${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."         unless="${servlet.version}"/>
-        <say message="'${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="${xml.bind.version}"/>
-        <say message="'${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="${xml.stream.version}"/>
+        <echo message="Searching ${feature.2.sdo.plugins.dir}..."/>
+        <say  message="   sdo.version         = '${sdo.version}'"         if="${sdo.version}"/>        
+        <say  message="   '${sdo.prefix}_${sdo.criteria}.jar' not found! Generated features will be invalid."                 unless="${sdo.version}"/>
+        <echo message="Searching ${feature.2.jpa.plugins.dir}..."/>
+        <say  message="   persistence.version = '${persistence.version}'" if="${persistence.version}"/>
+        <say  message="   '${persistence.prefix}_${persistence.criteria}.jar' not found! Generated features will be invalid." unless="${persistence.version}"/>
+        <echo message="Searching feature.2.common.plugins.dir..."/>
+        <say  message="   activation.version  = '${activation.version}'"  if="${activation.version}"/> 
+        <say  message="   '${activation.prefix}_${activation.criteria}.jar' not found! Generated features will be invalid."   unless="${activation.version}"/>
+        <say  message="   mail.version        = '${mail.version}'"        if="${mail.version}"/>       
+        <say  message="   '${mail.prefix}_${mail.criteria}.jar' not found! Generated features will be invalid."               unless="${mail.version}"/>
+        <say  message="   servlet.version     = '${servlet.version}'"     if="${servlet.version}"/>    
+        <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."         unless="${servlet.version}"/>
+        <say  message="   xml.bind.version    = '${xml.bind.version}'"    if="${xml.bind.version}"/>   
+        <say  message="   '${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="${xml.bind.version}"/>
+        <say  message="   xml.stream.version  = '${xml.stream.version}'"  if="${xml.stream.version}"/> 
+        <say  message="   '${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="${xml.stream.version}"/>
     </target>
 
     <target name="create-deployable-features" depends="resolve-feature-dependencies">
