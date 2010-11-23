@@ -67,8 +67,9 @@
             </path>
         </pathconvert>
         <property file="${user.home}/build.properties"/>
+        <!-- feature.2.base.dir needs to be explicit (not relative) for antcall usage            -->   
+        <!-- (I think the selectbundle call reverts to calling dir - despite the antcall "dir=") -->
         <property name="feature.2.base.dir"           value="${feature.build.location}/.."/>
-        <!-- property name="feature.2.base.dir"           value=".."/ -->
         <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
         <property name="feature.common.dir"           value="${feature.build.location}/common"/>
         <property name="feature.2.jpa.plugins.dir"    value="${feature.2.base.dir}/jpa/plugins"/>
