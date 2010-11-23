@@ -668,6 +668,8 @@
                 <include name="${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"/>
                 <!-- copy all test results pages -->
                 <include name="**/eclipselink-*${version.string}.html"/>
+                <include name="**/ResultSummary.dat"/>
+                <include name="**/TestConfig.html"/>
             </fileset>
         </copy>
         <!-- Copy for maven to run -->

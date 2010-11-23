@@ -424,22 +424,6 @@ then
     ANT_BASEARG="${ANT_BASEARG} -D_LocalRepos=1"
 fi
 
-#Depends upon a valid putty install and config for "eclipse-dev"
-#if [ "${ORACLEBLD}" = "true" ]
-#then
-#    #Only needed for dev behind firewall
-#    ANT_OPTS="${ANT_OPTS}"
-#    ANT_BASEARG="${ANT_BASEARG} -Dsvn.server.name=eclipse-dev"
-#fi
-
-## Save for future reference
-#if [ "${RHB}" = "true" ]
-#then
-#    #Only needed for dev behind firewall
-#    ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com ${ANT_OPTS}"
-#    ANT_ARGS="-autoproxy"
-#    ANT_BASEARG="${ANT_BASEARG} -D_RHB=1"
-#fi
 
 if [ "${TEST}" = "true" ]
 then

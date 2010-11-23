@@ -331,40 +331,21 @@
         <property name="activation.prefix" value="javax.activation"/>
         <property name="activation.criteria" value="[1.1.0,1.2.0)"/>
         <property name="activation.name" value="Javax Activation"/>
-        <property name="jms.prefix" value="javax.jms"/>
+        <!-- property name="jms.prefix" value="javax.jms"/>
         <property name="jms.criteria" value="[1.1.0,1.2.0)"/>
-        <property name="jms.name" value="Javax JMS"/>
+        <property name="jms.name" value="Javax JMS"/ -->
         <property name="mail.prefix" value="javax.mail"/>
         <property name="mail.criteria" value="[1.4.0,1.5.0)"/>
         <property name="mail.name" value="Javax Mail"/>
-        <property name="resource.prefix" value="javax.resource"/>
-        <property name="resource.criteria" value="[1.5.0,1.6.0)"/>
-        <property name="resource.name" value="Javax Resource"/>
         <property name="servlet.prefix" value="javax.servlet"/>
         <property name="servlet.criteria" value="[2.4.0,2.5.0)"/>
         <property name="servlet.name" value="Javax Servlet"/>
-        <property name="transaction.prefix" value="javax.transaction"/>
-        <property name="transaction.criteria" value="[1.1.0,1.2.0)"/>
-        <property name="transaction.name" value="Javax Transaction"/>
-        <property name="xjc.prefix" value="com.sun.tools.xjc"/>
-        <property name="xjc.criteria" value="[2.2.0,2.3.0)"/>
-        <property name="xjc.name" value="Sun XJC"/>
-        <property name="xml.bind.impl.prefix" value="com.sun.xml.bind"/>
-        <property name="xml.bind.impl.criteria" value="[2.2.0,2.3.0)"/>
-        <property name="xml.bind.impl.name" value="Sun XML Bind Impl"/>
         <property name="xml.bind.prefix" value="javax.xml.bind"/>
         <property name="xml.bind.criteria" value="[2.2.0,2.3.0)"/>
         <property name="xml.bind.name" value="Javax XML Bind"/>
-        <property name="xml.rcp.prefix" value="javax.xml.rcp"/>
-        <property name="xml.rcp.criteria" value="[1.1.0,1.2.0)"/>
-        <property name="xml.rcp.name" value="Javax XML RCP"/>
-        <property name="xml.soap.prefix" value="javax.xml.soap"/>
-        <property name="xml.soap.criteria" value="[1.3.0,1.4.0)"/>
-        <property name="xml.soap.name" value="Javax XML SOAP"/>
         <property name="xml.stream.prefix" value="javax.xml.stream"/>
         <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
         <property name="xml.stream.name" value="Javax XML Stream"/>
-        <!-- javax.xml.ws Javax XML WebServices -->
 
         <!-- Discover dependencies for branch/build -->
         <selectbundle basename="${sdo.prefix}" directory="${maven.2.sdo.plugins.dir}"
@@ -394,12 +375,6 @@
         <!-- selectbundle basename="${jms.prefix}" directory="${maven.2.common.plugins.dir}"
                      criterion="${jms.criteria}" property="jms.version" versiononly="true"
         />
-        <selectbundle basename="${resource.prefix}" directory="${maven.2.common.plugins.dir}"
-                     criterion="${resource.criteria}" property="resource.version" versiononly="true"
-        />
-        <selectbundle basename="${transaction.prefix}" directory="${maven.2.common.plugins.dir}"
-                     criterion="${transaction.criteria}" property="transaction.version" versiononly="true"
-        />
         <selectbundle basename="${xjc.prefix}" directory="${maven.2.common.plugins.dir}"
                      criterion="${xjc.criteria}" property="xjc.version" versiononly="true"
         />
@@ -414,8 +389,6 @@
         />
         <echo message="====================================="/>
         <echo message="jms.version           = ${jms.version}"/>
-        <echo message="resource.version      = ${resource.version}"/>
-        <echo message="transaction.version   = ${transaction.version}"/>
         <echo message="xjc.version           = ${xjc.version}"/>
         <echo message="xml.bind.impl.version = ${xml.bind.impl.version}"/>
         <echo message="xml.rcp.version       = ${xml.rcp.version}"/>
@@ -516,6 +489,7 @@
         <available file="${repo.dir}" property="repo.version.exist" type="dir" value="true"/>
         <say message="'${artifactName}' version '${artifactVersion}' already deployed to repository... skipping." if="repo.version.exist"/>
      </target>
+
     <!-- Uploads a single artifact & source to maven repository only if one doesn't already exist -->
     <target name="upload-release-artifact" unless="repo.version.exist" depends="verify-no-exist, prepare-pom">
         <echo message="Deploying '${artifactName}' version '${artifactVersion}' to repository..."/>
@@ -526,10 +500,10 @@
           <pom refid="maven.project"/>
           <artifact:attach file="${artifactSrc}" classifier="sources"/>
         </artifact:deploy>
-
         <!-- cleanup -->
         <delete file="pom.xml"/>
     </target>
+
     <!-- Uploads a single artifact without src to maven repository only if one doesn't already exist -->
     <target name="upload-release-artifact-no-src" unless="repo.version.exist" depends="verify-no-exist, prepare-pom">
         <echo message="Deploying '${artifactName}' version '${artifactVersion}' to repository..."/>
@@ -539,7 +513,6 @@
           <remoteRepository refid="eclipselink.repository"/>
           <pom refid="maven.project"/>
         </artifact:deploy>
-
         <!-- cleanup -->
         <delete file="pom.xml"/>
     </target>
@@ -553,7 +526,6 @@
           <pom refid="maven.project"/>
           <artifact:attach file="${artifactSrc}" classifier="sources"/>
         </artifact:deploy>
-
         <!-- cleanup -->
         <delete file="pom.xml"/>
     </target>
@@ -566,7 +538,6 @@
           <remoteRepository refid="eclipselink.repository"/>
           <pom refid="maven.project"/>
         </artifact:deploy>
-
         <!-- cleanup -->
         <delete file="pom.xml"/>
     </target>
