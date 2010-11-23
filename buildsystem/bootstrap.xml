@@ -58,7 +58,9 @@
         <property environment="env"/>
         <!-- This needs to be here because if not set we need to check OS     -->
         <!-- and define appropriate default locations for svn                 -->
-        <property name="svn.exec"        value="${env.SVN_EXEC}"/>
+        <condition property="svn.exec"   value="${env.SVN_EXEC}">
+            <isset property="env.SVN_EXEC"/>
+        </condition>
 
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
@@ -87,7 +89,13 @@
         <property name="svn.exec" value="/usr/local/bin/svn"/>
     </target>
     <target name="init-win" if="_Win" depends="init-linux">
+        <!-- property file="${user.home}/build.properties"/ -->
         <property name="svn.exec" value="svn"/>
+        <!-- property name="build.root.dir"  value="."/>
+        <property name="build.deps.dir"  value="${extensions.depend.dir}"/>
+        <property name="log.dir"         value="./logs"/>
+        <property name="junit.dir"       value="${build.deps.dir}/junit"/>
+        <property name="current.svnrev.file" value="${log.dir}/.current_svnrev_this_current"/ -->
     </target>
 
     <!-- Setup properties needed if testing using a local repos on RedHat     -->
@@ -104,7 +112,7 @@
     </target>
 
     <target name="properties-init" depends="init-win,init-test2">
-        <echo message="svn.exec        ='${svn.exec}'"/>
+        <echo message="svn.exec        = '${svn.exec}'"/>
 
         <!-- # Build environment definitions                                  -->
         <!-- #  build.root.dir is the directory the branch's build            -->
@@ -143,7 +151,6 @@
         <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
         <echo message="env.PATH        = '${env.PATH}'"/>
         <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
-        <echo message="env.SVN_EXEC    = '${env.SVN_EXEC}'"/>
         <echo message="env.TARGET      = '${env.TARGET}'"/>
         <echo message=""/>
         <echo message="branch.name     = '${branch.name}'"/>
