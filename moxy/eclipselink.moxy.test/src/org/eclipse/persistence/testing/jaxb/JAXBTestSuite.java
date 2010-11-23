@@ -39,6 +39,7 @@ import org.eclipse.persistence.testing.jaxb.xmlidrefs.object.XmlIdRefsObjectTest
 import org.eclipse.persistence.testing.jaxb.xmlinlinebinary.XmlInlineBinaryDataTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.XmlAdapterTestSuite;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite;
+import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBDOMTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
@@ -166,6 +167,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.UnmarshalSchemaValidationTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.UnmarshallerNullTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.NoSchemaRefTestCases.class);
+        suite.addTestSuite(XMLStreamWriterDefaultNamespaceTestCases.class);
         return suite;
     }
 
