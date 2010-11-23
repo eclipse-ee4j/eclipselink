@@ -12,6 +12,8 @@
  *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
  *     08/25/2010-2.2 Guy Pelletier 
  *       - 309445: CannonicalModelProcessor process all files
+ *     11/23/2010-2.2 Guy Pelletier 
+ *       - 330660: Canonical model generator throws ClassCastException when using package-info.java
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.visitors;
 
@@ -179,10 +181,15 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
 
     /**
      * INTERNAL:
+     * Visit a packing-info.java file. We currently don't support package level
+     * annotations, but if we did and they impacted canonical model generation
+     * we would pick them up here. We should never hit this visit since we
+     * filter out package elements, and package elements can not be referenced
+     * from classes.
      */
     @Override
-    public MetadataClass visitPackage(PackageElement arg0, MetadataClass metadataClass) {
-        processingEnv.getMessager().printMessage(Kind.NOTE, "ElementVisitor Package NOT IMPLEMENTED : " + arg0);
+    public MetadataClass visitPackage(PackageElement packageElement, MetadataClass metadataClass) {
+        processingEnv.getMessager().printMessage(Kind.NOTE, "ElementVisitor Package NOT IMPLEMENTED : " + packageElement);
         return null;
     }
 

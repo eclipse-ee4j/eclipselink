@@ -20,6 +20,8 @@
  *       - 309445: CannonicalModelProcessor process all files
  *     10/18/2010-2.2 Guy Pelletier 
  *       - 322921: OutOfMemory in annotation processor
+ *     11/23/2010-2.2 Guy Pelletier 
+ *       - 330660: Canonical model generator throws ClassCastException when using package-info.java
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.*;
@@ -79,11 +82,11 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     /**
      * INTERNAL:
      */
-    protected void generateCanonicalModelClass(Element element, PersistenceUnit persistenceUnit) throws IOException {
+    protected void generateCanonicalModelClass(MetadataClass metadataClass, Element element, PersistenceUnit persistenceUnit) throws IOException {
         Writer writer = null;
         
         try {
-            ClassAccessor accessor = persistenceUnit.getClassAccessor(element);
+            ClassAccessor accessor = persistenceUnit.getClassAccessor(metadataClass);
             String qualifiedName = accessor.getAccessibleObjectName();
             String className = getName(qualifiedName);
             String classPackage = getPackage(qualifiedName);
@@ -212,12 +215,16 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     /**
      * INTERNAL:
      */
-    protected void generateCanonicalModelClasses(RoundEnvironment roundEnv, PersistenceUnit persistenceUnit) throws IOException {
-        for (Element element : roundEnv.getRootElements()) {
-            if (persistenceUnit.containsElement(element)) {                
+    protected void generateCanonicalModelClasses(MetadataMirrorFactory factory, PersistenceUnit persistenceUnit) throws IOException {
+        Map<Element, MetadataClass> roundElements = factory.getRoundElements();
+        
+        for (Element roundElement : roundElements.keySet()) {
+            MetadataClass roundClass = roundElements.get(roundElement);
+            
+            if (persistenceUnit.containsClass(roundClass)) {
                 //processingEnv.getMessager().printMessage(Kind.NOTE, "Generating class: " + element);
-                generateCanonicalModelClass(element, persistenceUnit);
-            }    
+                generateCanonicalModelClass(roundClass, roundElement, persistenceUnit);
+            }
         }
     }
     
@@ -393,7 +400,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                     persistenceUnit.preProcessForCanonicalModel();
                     
                     // Step 3e - We're set, generate the canonical model classes.
-                    generateCanonicalModelClasses(roundEnv, persistenceUnit);
+                    generateCanonicalModelClasses(factory, persistenceUnit);
                 }
             } catch (Exception e) {
                 processingEnv.getMessager().printMessage(Kind.ERROR, e.toString());

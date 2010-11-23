@@ -16,11 +16,12 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/01/2010-2.1 Guy Pelletier 
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
+ *     11/23/2010-2.2 Guy Pelletier 
+ *       - 330660: Canonical model generator throws ClassCastException when using package-info.java
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
@@ -109,13 +111,16 @@ public class PersistenceUnit {
         if (project.hasEmbeddable(metadataClass)) {
             EmbeddableAccessor embeddableAccessor = project.getEmbeddableAccessor(metadataClass);
             
-            // Don't touch it if it was loaded from XML.
-            if (! embeddableAccessor.loadedFromXML()) {
+            // If it was loaded from XML, reset the pre-processed flag.
+            if (embeddableAccessor.loadedFromXML()) {
+                embeddableAccessor.clearPreProcessed();
+            } else {
+                // Was not loaded from XML and existed in the project.
                 if (excludeUnlistedClasses(metadataClass)) {
-                    // remove it!
+                    // Exclude unlisted classes is now false, remove it!
                     removeEmbeddableAccessor(metadataClass);
                 } else {
-                    // override it!
+                    // Otherwise, override the existing accessor!
                     addEmbeddableAccessor(new EmbeddableAccessor(metadataClass.getAnnotation(Embeddable.class), metadataClass, project));
                 }
             }
@@ -169,16 +174,19 @@ public class PersistenceUnit {
         if (project.hasEntity(metadataClass)) {
             EntityAccessor entityAccessor = project.getEntityAccessor(metadataClass);
             
-            // Don't touch it if it was loaded from XML.
-            if (! entityAccessor.loadedFromXML()) {
+            // If it was loaded from XML, reset the pre-processed flag.
+            if (entityAccessor.loadedFromXML()) {
+                entityAccessor.clearPreProcessed();
+            } else {
+                // Was not loaded from XML and existed in the project. 
                 if (excludeUnlistedClasses(metadataClass)) {
-                    // remove it!
+                    // Exclude unlisted classes is now false, remove it!
                     removeEntityAccessor(metadataClass);
                 } else {
-                    // override it!
+                    // Otherwise, override the existing accessor!
                     project.addEntityAccessor(new EntityAccessor(metadataClass.getAnnotation(Entity.class), metadataClass, project));
                 }
-            }     
+            }
         } else if (! excludeUnlistedClasses(metadataClass)) {
             // add it!
             project.addEntityAccessor(new EntityAccessor(metadataClass.getAnnotation(Entity.class), metadataClass, project));
@@ -205,13 +213,16 @@ public class PersistenceUnit {
         if (project.hasMappedSuperclass(metadataClass)) {
             MappedSuperclassAccessor mappedSuperclassAccessor = project.getMappedSuperclassAccessor(metadataClass);
             
-            // Don't touch it if it was loaded from XML.
-            if (! mappedSuperclassAccessor.loadedFromXML()) {
+            // If it was loaded from XML, reset the pre-processed flag.
+            if (mappedSuperclassAccessor.loadedFromXML()) {
+                mappedSuperclassAccessor.clearPreProcessed();
+            } else {
+                // Was not loaded from XML and existed in the project.
                 if (excludeUnlistedClasses(metadataClass)) {
-                    // remove it!
+                    // Exclude unlisted classes is now false, remove it!
                     project.removeMappedSuperclassAccessor(metadataClass);
                 } else {
-                    // override it!
+                    // Otherwise, override the existing accessor!
                     project.addMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, project));
                 }
             }
@@ -276,19 +287,17 @@ public class PersistenceUnit {
      * removing the accessor from the project. For now I don't think it's 
      * a big deal.
      */
-    public boolean containsElement(Element element) {
-        MetadataClass cls = factory.getMetadataClass(element);
-        
-        if (project.hasEntity(cls)) {
-            return isValidAccessor(project.getEntityAccessor(cls), element.getAnnotation(javax.persistence.Entity.class));
+    public boolean containsClass(MetadataClass metadataClass) {
+        if (project.hasEntity(metadataClass)) {
+            return isValidAccessor(project.getEntityAccessor(metadataClass), metadataClass.getAnnotation(javax.persistence.Entity.class));
         }
         
-        if (project.hasEmbeddable(cls)) {
-            return isValidAccessor(project.getEmbeddableAccessor(cls), element.getAnnotation(javax.persistence.Embeddable.class));
+        if (project.hasEmbeddable(metadataClass)) {
+            return isValidAccessor(project.getEmbeddableAccessor(metadataClass), metadataClass.getAnnotation(javax.persistence.Embeddable.class));
         }
         
-        if (project.hasMappedSuperclass(cls)) {
-            return isValidAccessor(project.getMappedSuperclassAccessor(cls), element.getAnnotation(javax.persistence.MappedSuperclass.class));
+        if (project.hasMappedSuperclass(metadataClass)) {
+            return isValidAccessor(project.getMappedSuperclassAccessor(metadataClass), metadataClass.getAnnotation(javax.persistence.MappedSuperclass.class));
         }
         
         return false;
@@ -306,19 +315,17 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
-    public ClassAccessor getClassAccessor(Element element) {
-        String elementString = element.toString();
-        
-        if (project.hasEntity(elementString)) {
-            return project.getEntityAccessor(elementString);
+    public ClassAccessor getClassAccessor(MetadataClass metadataClass) {
+        if (project.hasEntity(metadataClass)) {
+            return project.getEntityAccessor(metadataClass);
         }
         
-        if (project.hasEmbeddable(elementString)) {
-            return project.getEmbeddableAccessor(elementString);
+        if (project.hasEmbeddable(metadataClass)) {
+            return project.getEmbeddableAccessor(metadataClass);
         }
         
-        if (project.hasMappedSuperclass(elementString)) {
-            return project.getMappedSuperclassAccessor(elementString);
+        if (project.hasMappedSuperclass(metadataClass)) {
+            return project.getMappedSuperclassAccessor(metadataClass);
         }
         
         return null;
@@ -427,7 +434,7 @@ public class PersistenceUnit {
     /**
      * INTERNAL:
      */
-    protected boolean isValidAccessor(ClassAccessor accessor, Annotation annotation) {
+    protected boolean isValidAccessor(ClassAccessor accessor, MetadataAnnotation annotation) {
         if (! accessor.loadedFromXML()) {
             // If it wasn't loaded from XML, we need to look at it further. It
             // could have been deleted and brought back (without an annotation)
@@ -502,29 +509,19 @@ public class PersistenceUnit {
      * If it is not already pre-processed or is included in the round elements
      * (presumably because something changed), then pre-process the accessor.
      * You may get a previously loaded and processed XML class accessor that
-     * may have had a change made to its associated class with the load xml
-     * flag turned off. Therefore we must make sure we preProcess the accessor
-     * again. Since inheritance classes can be fast tracked we keep the factory
-     * round element processing list since we want to avoid processing an
-     * inheritance parent several times now only because it is part of the 
-     * round elements. The first inheritance child will fast track the 
-     * pre-processing of the parent if it hasn't already been done so. 
+     * may have had a change made to its associated class (that does not have
+     * either an Entity, Embeddable or MappedSuperclass annotation) with the 
+     * load xml flag turned off. Therefore we must make sure we preProcess the 
+     * accessor again.  
      */
     protected boolean shouldPreProcess(ClassAccessor accessor) {
         MetadataClass cls = (MetadataClass) accessor.getAccessibleObject();
         
-        if (! accessor.isPreProcessed() || ! factory.isPreProcessedRoundElement(cls)) {
-            // If it is a non pre-processed round element this will set the 
-            // pre-processed flag to true. If it is not a round element, e.g.
-            // a VIRTUAL class this will set nothing and we need not worry about 
-            // it since the user will not be able to modify the class if it does 
-            // exist hence can never be a round element and we can solely rely
-            // on the accessor pre-processed flag.
-            factory.setIsPreProcessedRoundElement(cls);
-            return true;
+        if (accessor.isPreProcessed() && factory.isRoundElement(cls)) {
+            accessor.clearPreProcessed();
         }
         
-        return false;
+        return ! accessor.isPreProcessed();
     }
     
     /**

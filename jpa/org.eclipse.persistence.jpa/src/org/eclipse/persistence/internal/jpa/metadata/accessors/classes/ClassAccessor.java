@@ -555,6 +555,18 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * In some cases the pre-processing may need to be re-done. Namely, during
+     * the canonical model generation between compile rounds.
+     */
+    public void clearPreProcessed() {
+        m_isPreProcessed = false;
+        
+        // Clear any accessors previously gathered.
+        getDescriptor().clearMappingAccessors();
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -1062,11 +1074,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Process the exclude default mappings flag now before we start
         // looking for annotations.
         processExcludeDefaultMappings();
-
-        // Before gathering our accessors, clear any accessors previously 
-        // gathered. When generating the canonical model the accessors need 
-        // to be re-gathered in each compile round.
-        getDescriptor().clearMappingAccessors();
         
         // Add the accessors and converters on this embeddable.
         addAccessors();
@@ -1638,6 +1645,17 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Returns true if this class uses field access. It will first check for 
+     * an explicit access type specification, otherwise will use the default 
+     * access as specified on the descriptor for this accessor since we may be 
+     * processing a mapped superclass.
+     */
+    public boolean usesFieldAccess() {
+        return getAccessType().equals(MetadataConstants.FIELD);
+    }
+    
+    /**
+     * INTERNAL:
      * Returns true if this class uses property access. It will first check for 
      * an explicit access type specification, otherwise will use the default 
      * access as specified on the descriptor for this accessor since we may be 
@@ -1656,16 +1674,5 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public boolean usesVirtualAccess() {
         return getAccessType().equals(MetadataConstants.VIRTUAL);
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns true if this class uses field access. It will first check for 
-     * an explicit access type specification, otherwise will use the default 
-     * access as specified on the descriptor for this accessor since we may be 
-     * processing a mapped superclass.
-     */
-    public boolean usesFieldAccess() {
-        return getAccessType().equals(MetadataConstants.FIELD);
     }
 }
