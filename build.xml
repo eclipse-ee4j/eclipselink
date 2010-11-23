@@ -338,6 +338,54 @@
         <ant antfile="build.xml" dir="${eclipselink.util.dbws.test}" target="build"/>
     </target>
 
+    <target name="test-host" description="verify host is defined">
+        <condition property="host.is.Eclipse" value="true">
+            <and>
+                <equals arg1="${host}" arg2="Eclipse"/>
+                <isset property="_Unix"/>
+            </and>
+        </condition>
+    </target>
+    <target name="init-default-testconfig" if="host.is.Eclipse" depends="test-host" description="initialize to Eclipse build config details">
+        <property name="host"              value="Eclipse"/>
+        <property name="platform.string"   value="SUSE Linux Enterprise Server 11 SP1 (Kernal: 2.6.32.19-0.3-default) (x86_64)"/>
+        <property name="jvm.string"        value="Sun Java 6 64-bit ${java.version}"/>
+        <property name="junit.string"      value="1.4.5"/>
+        <property name="dbplat.string"     value="MySql 5.1"/>
+        <property name="jdbcdriver.string" value="MySQL 5.0.8"/>
+        <property name="GTC.ready"         value="true"/>
+    </target>
+    <target name="init-testconfig" depends="init-default-testconfig" description="initialize to Eclipse build config details">
+        <condition property="GTC.ready" value="true">
+            <and>
+                <isset property="host"/>
+                <isset property="platform.string"/>
+                <isset property="jvm.string"/>
+                <isset property="junit.string"/>
+                <isset property="dbplat.string"/>
+                <isset property="jdbcdriver.string"/>
+            </and>
+        </condition>
+        <echo message="host:              '${host}'"/>
+        <echo message="platform.string:   '${platform.string}'"/>
+        <echo message="jvm.string:        '${jvm.string}'"/>
+        <echo message="junit.string:      '${junit.string}'"/>
+        <echo message="dbplat.string:     '${dbplat.string}'"/>
+        <echo message="jdbcdriver.string: '${jdbcdriver.string}'"/>
+        <fail message="'generate-testconfig' cannot proceed. Missing configuration information." unless="GTC.ready"/>
+    </target>
+    <target name="generate-testconfig" if="GTC.ready" depends="init-testconfig" description="generate a 'TestConfig.html' file for test publishing">
+        <echo message="&lt;html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en' dir='ltr'&gt;" file="${trunk.build.location}/TestConfig.html" append="false"/>
+        <echo message="&lt;head&gt;&lt;title&gt;EclipseLink Project: '${host}' hosted Test Environment Details&lt;/title&gt;&lt;/head&gt;" file="${trunk.build.location}/TestConfig.html" append="false"/>
+        <echo message="&lt;body&gt;&lt;h3&gt;EclipseLink Project: '${host}' hosted Test Environment Details&lt;/h3&gt;&lt;table&gt;" file="${trunk.build.location}/TestConfig.html" append="true"/>
+        <echo message="&lt;tr&gt;&lt;td&gt;&lt;i&gt;Platform:&lt;/i&gt;&lt;/td&gt;&lt;td&gt; ${platform.string} &lt;/td&gt;&lt;/tr&gt;" file="${trunk.build.location}/TestConfig.html" append="true"/>
+        <echo message="&lt;tr&gt;&lt;td&gt;&lt;i&gt;JVM:&lt;/i&gt;&lt;/td&gt;&lt;td&gt; ${jvm.string} &lt;/td&gt;&lt;/tr&gt;" file="${trunk.build.location}/TestConfig.html" append="true"/>
+        <echo message="&lt;tr&gt;&lt;td&gt;&lt;i&gt;JUnit:&lt;/i&gt;&lt;/td&gt;&lt;td&gt; ${junit.string} &lt;/td&gt;&lt;/tr&gt;" file="${trunk.build.location}/TestConfig.html" append="true"/>
+        <echo message="&lt;tr&gt;&lt;td&gt;&lt;i&gt;Db:&lt;/i&gt;&lt;/td&gt;&lt;td&gt; ${dbplat.string} &lt;/td&gt;&lt;/tr&gt;" file="${trunk.build.location}/TestConfig.html" append="true"/>
+        <echo message="&lt;tr&gt;&lt;td&gt;&lt;i&gt;JDBC Driver:&lt;/i&gt;&lt;/td&gt;&lt;td&gt; ${jdbcdriver.string} &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" file="${trunk.build.location}/TestConfig.html" append="true"/>
+        <echo message="&lt;/body&gt;&lt;/html&gt;" file="${trunk.build.location}/TestConfig.html" append="true"/>
+    </target>
+
     <!-- Packages the eclipselink.jar. -->
     <target name="package-eclipselink-jar" description="build EclipseLink jar">
         <delete file="${eclipselink.jar}"/>
