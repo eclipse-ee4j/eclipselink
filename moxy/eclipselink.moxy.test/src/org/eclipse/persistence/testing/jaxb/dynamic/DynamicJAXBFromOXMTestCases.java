@@ -80,16 +80,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlSchemaQualified() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLSCHEMA_QUALIFIED);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLSCHEMA_QUALIFIED + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -121,16 +118,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlSchemaUnqualified() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLSCHEMA_UNQUALIFIED);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLSCHEMA_UNQUALIFIED + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -168,7 +162,6 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlSchemaDefaults() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLSCHEMA_DEFAULTS);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLSCHEMA_DEFAULTS + "]");
@@ -207,20 +200,15 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         assertNull("Child node should not have namespace prefix.", childNode.getPrefix());
     }
 
-
-
     public void testXmlRootElement() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLROOTELEMENT);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLROOTELEMENT + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -239,17 +227,14 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlType() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLTYPE);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLTYPE + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
         DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
@@ -288,16 +273,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlAttribute() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLATTRIBUTE);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLATTRIBUTE + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -318,16 +300,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlElement() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLELEMENT);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLELEMENT + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -351,18 +330,14 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlList() throws Exception {
         // Also tests collection of XmlElement
-
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLLIST);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLLIST + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -397,16 +372,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlValue() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLVALUE);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLVALUE + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -429,16 +401,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlAnyElement() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLANYELEMENT);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLANYELEMENT + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -458,16 +427,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlAnyAttribute() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLANYATTRIBUTE);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLANYATTRIBUTE + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -493,16 +459,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlMixed() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLMIXED);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLMIXED + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -531,16 +494,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     public void testXmlId() throws Exception {
         // Tests both XmlId and XmlIdRef
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLID);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLID + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -574,19 +534,14 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     }
 
     public void testXmlElements() throws Exception {
-        //fail("Not implemented - bug 328155 Support for type on xml-elements");
-
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLELEMENTS);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLELEMENTS + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -617,16 +572,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlElementRef() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLELEMENTREF);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLELEMENTREF + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -661,16 +613,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlSchemaType() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLSCHEMATYPE);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLSCHEMATYPE + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -689,16 +638,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlEnum() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLENUM);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLENUM + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -719,17 +665,14 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlEnumError() throws Exception {
         // Tests XmlEnum and XmlEnumValue
-
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream iStream = classLoader.getResourceAsStream(XMLENUM);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLENUM + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -745,17 +688,14 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlElementDecl() throws Exception {
         // Also tests XmlRegistry
-
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream iStream = classLoader.getResourceAsStream(XMLELEMENTDECL);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLELEMENTDECL + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -782,16 +722,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     public void testSubstitutionGroupsMarshal() throws Exception {
         try {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
             InputStream iStream = classLoader.getResourceAsStream(SUBSTITUTION);
             if (iStream == null) {
                 fail("Couldn't load metadata file [" + SUBSTITUTION + "]");
             }
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-            metadataSourceMap.put("myNamespace", new StreamSource(iStream));
 
-            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> properties = new HashMap<String, Object>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
             jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -846,16 +783,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     public void testSubstitutionGroupsUnmarshal() throws Exception {
         try {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
             InputStream iStream = classLoader.getResourceAsStream(SUBSTITUTION);
             if (iStream == null) {
                 fail("Couldn't load metadata file [" + SUBSTITUTION + "]");
             }
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-            metadataSourceMap.put("myNamespace", new StreamSource(iStream));
 
-            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> properties = new HashMap<String, Object>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
             jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -883,7 +817,6 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testTypePreservation() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(DATATYPES);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + DATATYPES + "]");
@@ -927,11 +860,9 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLREADONLY + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -955,11 +886,9 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLWRITEONLY + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -983,11 +912,9 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLCDATA + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1010,11 +937,9 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLPATH + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1036,11 +961,9 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLNULLPOLICY + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1092,11 +1015,9 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLPROPERTIES + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1119,11 +1040,9 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLCLASSEXTRACTOR + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1144,11 +1063,9 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLCUSTOMIZER + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1170,11 +1087,9 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLADAPTER_PACKAGE + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1197,16 +1112,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlDiscriminatorNode() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLDISCRIMINATORNODE);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLDISCRIMINATORNODE + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1246,18 +1158,14 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlJoinNode() throws Exception {
         // Tests xml-join-node, xml-join-nodes, xml-key
-
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLJOINNODE);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLJOINNODE + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1284,16 +1192,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     public void testXmlInverseReference() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
         InputStream iStream = classLoader.getResourceAsStream(XMLINVERSEREFERENCE);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + XMLINVERSEREFERENCE + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
