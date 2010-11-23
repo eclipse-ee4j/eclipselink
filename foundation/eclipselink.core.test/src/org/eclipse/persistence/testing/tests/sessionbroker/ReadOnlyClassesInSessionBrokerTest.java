@@ -38,7 +38,7 @@ public class ReadOnlyClassesInSessionBrokerTest extends AutoVerifyTestCase {
         DatabaseLogin login = project.getLogin();
         login.usePlatform(new OraclePlatform());
         login.setDriverClassName("oracle.jdbc.OracleDriver");
-        login.setConnectionString("jdbc:oracle:thin:@tlsvrdb7.ca.oracle.com:1521:toplink");
+        login.setConnectionString("jdbc:oracle:thin:@ottvm028.ca.oracle.com:1521:toplink");
         login.setUserName("QA6");
         login.setPassword("password");
 
