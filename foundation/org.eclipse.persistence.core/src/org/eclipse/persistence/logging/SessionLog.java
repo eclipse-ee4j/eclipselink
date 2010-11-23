@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/17/2010-2.2 Michael O'Brien 
+ *       - 325605: Add new category "SQL_WARNING" for SQL Warnings that could be logged as FINEST
  ******************************************************************************/  
 package org.eclipse.persistence.logging;
 
@@ -27,30 +29,35 @@ import org.eclipse.persistence.sessions.Session;
  * <p>
  * This class defines Eclipselink logging levels (that are used throughout EclipseLink code) with the following integer values:
  * <table>
- * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
- * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
- * <tr><td>&nbsp;</td><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
- * <tr><td>&nbsp;</td><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
- * <tr><td>&nbsp;</td><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
- * <tr><td>&nbsp;</td><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
- * <tr><td>&nbsp;</td><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
- * <tr><td>&nbsp;</td><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
- * <tr><td>&nbsp;</td><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+ * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= 0</td></tr>
+ * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= 1</td></tr>
+ * <tr><td>&nbsp;</td><td>FINER</td>  <td>&nbsp;</td><td>= 2</td></tr>
+ * <tr><td>&nbsp;</td><td>FINE</td>   <td>&nbsp;</td><td>= 3</td></tr>
+ * <tr><td>&nbsp;</td><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td></tr>
+ * <tr><td>&nbsp;</td><td>INFO</td>   <td>&nbsp;</td><td>= 5</td></tr>
+ * <tr><td>&nbsp;</td><td>WARNING</td><td>&nbsp;</td><td>= 6</td></tr>
+ * <tr><td>&nbsp;</td><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td></tr>
+ * <tr><td>&nbsp;</td><td>OFF</td>    <td>&nbsp;</td><td>= 8</td></tr>
  * </table>
  * <p>
  * In addition, EclipseLink categories used for logging name space are defined with the following String values:
  * <table>
- * <tr><td>&nbsp;</td><td>SQL</td>           <td>&nbsp;</td><td>= "sql"</td>
- * <tr><td>&nbsp;</td><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td>
- * <tr><td>&nbsp;</td><td>EVENT</td>         <td>&nbsp;</td><td>= "event"</td>
- * <tr><td>&nbsp;</td><td>QUERY</td>         <td>&nbsp;</td><td>= "query"</td>
- * <tr><td>&nbsp;</td><td>CACHE</td>         <td>&nbsp;</td><td>= "cache"</td>
- * <tr><td>&nbsp;</td><td>PROPAGATION</td>   <td>&nbsp;</td><td>= "propagation"</td>
- * <tr><td>&nbsp;</td><td>SEQUENCING</td>    <td>&nbsp;</td><td>= "sequencing"</td>
- * <tr><td>&nbsp;</td><td>EJB</td>           <td>&nbsp;</td><td>= "ejb"</td>
- * <tr><td>&nbsp;</td><td>DMS</td>           <td>&nbsp;</td><td>= "dms"</td>
- * <tr><td>&nbsp;</td><td>EJB_ANNOTATION</td><td>&nbsp;</td><td>= "ejb_annotation"</td>
- * <tr><td>&nbsp;</td><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td>
+ * <tr><td>&nbsp;</td><td>SQL</td>           <td>&nbsp;</td><td>= "sql"</td></tr>
+ * <tr><td>&nbsp;</td><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td></tr>
+ * <tr><td>&nbsp;</td><td>EVENT</td>         <td>&nbsp;</td><td>= "event"</td></tr>
+ * <tr><td>&nbsp;</td><td>CONNECTION</td>         <td>&nbsp;</td><td>= "connection"</td></tr> 
+ * <tr><td>&nbsp;</td><td>QUERY</td>         <td>&nbsp;</td><td>= "query"</td></tr>
+ * <tr><td>&nbsp;</td><td>CACHE</td>         <td>&nbsp;</td><td>= "cache"</td></tr>
+ * <tr><td>&nbsp;</td><td>PROPAGATION</td>   <td>&nbsp;</td><td>= "propagation"</td></tr>
+ * <tr><td>&nbsp;</td><td>SEQUENCING</td>    <td>&nbsp;</td><td>= "sequencing"</td></tr>
+ * <tr><td>&nbsp;</td><td>EJB</td>           <td>&nbsp;</td><td>= "ejb"</td></tr>
+ * <tr><td>&nbsp;</td><td>DMS</td>           <td>&nbsp;</td><td>= "dms"</td></tr>
+ * <tr><td>&nbsp;</td><td>EJB_OR_METADATA</td><td>&nbsp;</td><td>= "ejb_or_metadata"</td></tr>
+ * <tr><td>&nbsp;</td><td>METAMODEL</td><td>&nbsp;</td><td>= "metamodel"</td></tr>
+ * <tr><td>&nbsp;</td><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td></tr>
+ * <tr><td>&nbsp;</td><td>PROPERTIES</td>        <td>&nbsp;</td><td>= "properties"</td></tr>
+ * <tr><td>&nbsp;</td><td>SERVER</td>        <td>&nbsp;</td><td>= "server"</td></tr>
+ * <tr><td>&nbsp;</td><td>SQL_WARNING</td>        <td>&nbsp;</td><td>= "sql_warning"</td></tr> 
  * </table>
  * @see AbstractSessionLog
  * @see SessionLogEntry
@@ -109,7 +116,10 @@ public interface SessionLog extends Cloneable {
     public static final String WEAVER = "weaver";
     public static final String PROPERTIES = "properties";
     public static final String SERVER = "server";
-    public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,EJB_OR_METADATA, METAMODEL ,WEAVER ,PROPERTIES ,SERVER};
+    // 304512: SQL Warnings should be logged in a separate category than SQL Statements
+    public static final String SQL_WARNING = "sql_warning";
+    
+    public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,EJB_OR_METADATA, METAMODEL, WEAVER ,PROPERTIES ,SERVER, SQL_WARNING};
 
     /**
      * PUBLIC:
@@ -204,17 +214,17 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Return the log level.  Used when session is not available.
      * <p>
-     * The EclipseLink logging levels returned correspond to:
+     * The EclipseLink logging levels returned correspond to:<br>
      * <table>
-     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
-     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
-     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
-     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
-     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
-     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
-     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
-     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
-     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td></tr>
+     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td></tr>
+     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td></tr>
+     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td></tr>
+     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td></tr>
+     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td></tr>
+     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td></tr>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td></tr>
+     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td></tr>
      * </table>
      */
     public int getLevel();
@@ -231,34 +241,37 @@ public interface SessionLog extends Cloneable {
      * Return the log level; category is only needed where name space
      * is available.
      * <p>
-     * The EclipseLink logging levels returned correspond to:
+     * The EclipseLink logging levels returned correspond to:<br>
      * <table>
-     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
-     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
-     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
-     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
-     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
-     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
-     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
-     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
-     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td></tr>
+     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td></tr>
+     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td></tr>
+     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td></tr>
+     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td></tr>
+     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td></tr>
+     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td></tr>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td></tr>
+     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td></tr>
      * </table>
      * <p>
-     * The EclipseLink categories for logging name space are: 
+     * The EclipseLink categories for the logging name space are:<br> 
      * <table>
-     * <tr><td>SQL</td>              <td>&nbsp;</td><td>= "sql"</td>
-     * <tr><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td>
-     * <tr><td>EVENT</td>          <td>&nbsp;</td><td>= "event"</td>
-     * <tr><td>QUERY</td>         <td>&nbsp;</td><td>= "query"</td>
-     * <tr><td>CACHE</td>         <td>&nbsp;</td><td>= "cache"</td>
-     * <tr><td>PROPAGATION</td>   <td>&nbsp;</td><td>= "propagation"</td>
-     * <tr><td>SEQUENCING</td>    <td>&nbsp;</td><td>= "sequencing"</td>
-     * <tr><td>EJB</td>           <td>&nbsp;</td><td>= "ejb"</td>
-     * <tr><td>DMS</td>           <td>&nbsp;</td><td>= "dms"</td>
-     * <tr><td>EJB_ANNOTATION</td><td>&nbsp;</td><td>= "ejb_annotation"</td>
-     * <tr><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td>
-     * <tr><td>PROPERTIES</td>        <td>&nbsp;</td><td>= "properties"</td>
-     * <tr><td>SERVER</td>        <td>&nbsp;</td><td>= "server"</td>
+     * <tr><td>&nbsp;</td><td>SQL</td>           <td>&nbsp;</td><td>= "sql"</td></tr>
+     * <tr><td>&nbsp;</td><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td></tr>
+     * <tr><td>&nbsp;</td><td>EVENT</td>         <td>&nbsp;</td><td>= "event"</td></tr>
+     * <tr><td>&nbsp;</td><td>CONNECTION</td>         <td>&nbsp;</td><td>= "connection"</td></tr> 
+     * <tr><td>&nbsp;</td><td>QUERY</td>         <td>&nbsp;</td><td>= "query"</td></tr>
+     * <tr><td>&nbsp;</td><td>CACHE</td>         <td>&nbsp;</td><td>= "cache"</td></tr>
+     * <tr><td>&nbsp;</td><td>PROPAGATION</td>   <td>&nbsp;</td><td>= "propagation"</td></tr>
+     * <tr><td>&nbsp;</td><td>SEQUENCING</td>    <td>&nbsp;</td><td>= "sequencing"</td></tr>
+     * <tr><td>&nbsp;</td><td>EJB</td>           <td>&nbsp;</td><td>= "ejb"</td></tr>
+     * <tr><td>&nbsp;</td><td>DMS</td>           <td>&nbsp;</td><td>= "dms"</td></tr>
+     * <tr><td>&nbsp;</td><td>EJB_OR_METADATA</td><td>&nbsp;</td><td>= "ejb_or_metadata"</td></tr>
+     * <tr><td>&nbsp;</td><td>METAMODEL</td><td>&nbsp;</td><td>= "metamodel"</td></tr>
+     * <tr><td>&nbsp;</td><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td></tr>
+     * <tr><td>&nbsp;</td><td>PROPERTIES</td>        <td>&nbsp;</td><td>= "properties"</td></tr>
+     * <tr><td>&nbsp;</td><td>SERVER</td>        <td>&nbsp;</td><td>= "server"</td></tr>
+     * <tr><td>&nbsp;</td><td>SQL_WARNING</td>        <td>&nbsp;</td><td>= "sql_warning"</td></tr> 
      * </table>
      */
     public int getLevel(String category);
@@ -267,7 +280,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Set the log level.  Used when session is not available.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -287,7 +300,7 @@ public interface SessionLog extends Cloneable {
      * Set the log level.  Category is only needed where name space
      * is available.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -300,19 +313,24 @@ public interface SessionLog extends Cloneable {
      * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
      * </table>
      * <p>
-     * The EclipseLink categories for logging name space are: 
+     * The EclipseLink categories for logging name space are:<br> 
      * <table>
-     * <tr><td>SQL</td>              <td>&nbsp;</td><td>= "sql"</td>
-     * <tr><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td>
-     * <tr><td>EVENT</td>          <td>&nbsp;</td><td>= "event"</td>
-     * <tr><td>QUERY</td>         <td>&nbsp;</td><td>= "query"</td>
-     * <tr><td>CACHE</td>         <td>&nbsp;</td><td>= "cache"</td>
-     * <tr><td>PROPAGATION</td>   <td>&nbsp;</td><td>= "propagation"</td>
-     * <tr><td>SEQUENCING</td>    <td>&nbsp;</td><td>= "sequencing"</td>
-     * <tr><td>EJB</td>           <td>&nbsp;</td><td>= "ejb"</td>
-     * <tr><td>DMS</td>           <td>&nbsp;</td><td>= "dms"</td>
-     * <tr><td>EJB_ANNOTATION</td><td>&nbsp;</td><td>= "ejb_annotation"</td>
-     * <tr><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td>
+     * <tr><td>&nbsp;</td><td>SQL</td>           <td>&nbsp;</td><td>= "sql"</td></tr>
+     * <tr><td>&nbsp;</td><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td></tr>
+     * <tr><td>&nbsp;</td><td>EVENT</td>         <td>&nbsp;</td><td>= "event"</td></tr>
+     * <tr><td>&nbsp;</td><td>CONNECTION</td>         <td>&nbsp;</td><td>= "connection"</td></tr> 
+     * <tr><td>&nbsp;</td><td>QUERY</td>         <td>&nbsp;</td><td>= "query"</td></tr>
+     * <tr><td>&nbsp;</td><td>CACHE</td>         <td>&nbsp;</td><td>= "cache"</td></tr>
+     * <tr><td>&nbsp;</td><td>PROPAGATION</td>   <td>&nbsp;</td><td>= "propagation"</td></tr>
+     * <tr><td>&nbsp;</td><td>SEQUENCING</td>    <td>&nbsp;</td><td>= "sequencing"</td></tr>
+     * <tr><td>&nbsp;</td><td>EJB</td>           <td>&nbsp;</td><td>= "ejb"</td></tr>
+     * <tr><td>&nbsp;</td><td>DMS</td>           <td>&nbsp;</td><td>= "dms"</td></tr>
+     * <tr><td>&nbsp;</td><td>EJB_OR_METADATA</td><td>&nbsp;</td><td>= "ejb_or_metadata"</td></tr>
+     * <tr><td>&nbsp;</td><td>METAMODEL</td><td>&nbsp;</td><td>= "metamodel"</td></tr>
+     * <tr><td>&nbsp;</td><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td></tr>
+     * <tr><td>&nbsp;</td><td>PROPERTIES</td>        <td>&nbsp;</td><td>= "properties"</td></tr>
+     * <tr><td>&nbsp;</td><td>SERVER</td>        <td>&nbsp;</td><td>= "server"</td></tr>
+     * <tr><td>&nbsp;</td><td>SQL_WARNING</td>        <td>&nbsp;</td><td>= "sql_warning"</td></tr> 
      * </table>
      */
     public void setLevel(int level, String category);
@@ -342,7 +360,7 @@ public interface SessionLog extends Cloneable {
      * Check if a message of the given level would actually be logged.
      * Category is only needed where name space is available.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -355,19 +373,24 @@ public interface SessionLog extends Cloneable {
      * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
      * </table>
      * <p>
-     * The EclipseLink categories for logging name space are: 
+     * The EclipseLink categories for logging name space are:<br> 
      * <table>
-     * <tr><td>SQL</td>              <td>&nbsp;</td><td>= "sql"</td>
-     * <tr><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td>
-     * <tr><td>EVENT</td>          <td>&nbsp;</td><td>= "event"</td>
-     * <tr><td>QUERY</td>         <td>&nbsp;</td><td>= "query"</td>
-     * <tr><td>CACHE</td>         <td>&nbsp;</td><td>= "cache"</td>
-     * <tr><td>PROPAGATION</td>   <td>&nbsp;</td><td>= "propagation"</td>
-     * <tr><td>SEQUENCING</td>    <td>&nbsp;</td><td>= "sequencing"</td>
-     * <tr><td>EJB</td>           <td>&nbsp;</td><td>= "ejb"</td>
-     * <tr><td>DMS</td>           <td>&nbsp;</td><td>= "dms"</td>
-     * <tr><td>EJB_ANNOTATION</td><td>&nbsp;</td><td>= "ejb_annotation"</td>
-     * <tr><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td>
+     * <tr><td>&nbsp;</td><td>SQL</td>           <td>&nbsp;</td><td>= "sql"</td></tr>
+     * <tr><td>&nbsp;</td><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td></tr>
+     * <tr><td>&nbsp;</td><td>EVENT</td>         <td>&nbsp;</td><td>= "event"</td></tr>
+     * <tr><td>&nbsp;</td><td>CONNECTION</td>         <td>&nbsp;</td><td>= "connection"</td></tr> 
+     * <tr><td>&nbsp;</td><td>QUERY</td>         <td>&nbsp;</td><td>= "query"</td></tr>
+     * <tr><td>&nbsp;</td><td>CACHE</td>         <td>&nbsp;</td><td>= "cache"</td></tr>
+     * <tr><td>&nbsp;</td><td>PROPAGATION</td>   <td>&nbsp;</td><td>= "propagation"</td></tr>
+     * <tr><td>&nbsp;</td><td>SEQUENCING</td>    <td>&nbsp;</td><td>= "sequencing"</td></tr>
+     * <tr><td>&nbsp;</td><td>EJB</td>           <td>&nbsp;</td><td>= "ejb"</td></tr>
+     * <tr><td>&nbsp;</td><td>DMS</td>           <td>&nbsp;</td><td>= "dms"</td></tr>
+     * <tr><td>&nbsp;</td><td>EJB_OR_METADATA</td><td>&nbsp;</td><td>= "ejb_or_metadata"</td></tr>
+     * <tr><td>&nbsp;</td><td>METAMODEL</td><td>&nbsp;</td><td>= "metamodel"</td></tr>
+     * <tr><td>&nbsp;</td><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td></tr>
+     * <tr><td>&nbsp;</td><td>PROPERTIES</td>        <td>&nbsp;</td><td>= "properties"</td></tr>
+     * <tr><td>&nbsp;</td><td>SERVER</td>        <td>&nbsp;</td><td>= "server"</td></tr>
+     * <tr><td>&nbsp;</td><td>SQL_WARNING</td>        <td>&nbsp;</td><td>= "sql_warning"</td></tr> 
      * </table>
      */
     public boolean shouldLog(int level, String category);
@@ -377,7 +400,7 @@ public interface SessionLog extends Cloneable {
      * Log a message that does not need to be translated.  This method is intended for 
      * external use when logging messages are wanted within the EclipseLink output.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -396,7 +419,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Log a message with one parameter that needs to be translated.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -415,7 +438,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Log a message with two parameters that needs to be translated.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -434,7 +457,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Log a message with three parameters that needs to be translated.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -453,7 +476,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Log a message with four parameters that needs to be translated.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -473,7 +496,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when the log request is from somewhere session is not available.
      * The message needs to be translated.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -493,7 +516,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when the log request is from somewhere session is not available.
      * shouldTranslate flag determines if the message needs to be translated.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -567,7 +590,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Log a throwable with level.
      * <p>
-     * The EclipseLink logging levels available are:
+     * The EclipseLink logging levels available are:<br>
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -576,7 +599,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
      * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
      * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
-     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td> 
      * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
      * </table>
      */

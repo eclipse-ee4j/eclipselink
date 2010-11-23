@@ -11,6 +11,11 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     27/07/2010 - 2.1.1 Sabine Heider 
  *          304650: fix left over entity data interfering with testSetRollbackOnly
+ *     11/17/2010-2.2 Michael O'Brien 
+ *       - 325605: Add new category "SQL_WARNING" for SQL Warnings that could be logged as FINEST
+ *         testDeleteEmployee*() will fail on DB2 9.7 Universal because cascade deletes
+ *         of an uninstantiated collection of enums must inherently be deleted even if
+ *         the actual collection is empty.  DB2 warns of nothing deleted - we convert it to a FINEST log
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -334,7 +339,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushClearQueryPk"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushClearQueryNonPK"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEmployee"));
-
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEmployee_with_status_enum_collection_instantiated"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteMan"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNestedBatchQueryHint"));
         if (!isJPA10()) {
@@ -2717,7 +2722,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertFalse("removed object found", foundBeforeFlush);
         assertFalse("removed object found after flush", foundAfterFlush);
     }
-    
+
     // Test that deleting an employee works correctly.
     public void testDeleteEmployee() {        
         Employee employee = new Employee();
@@ -2745,6 +2750,67 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             commitTransaction(em);
             if (isWeavingEnabled() && counter.getSqlStatements().size() > 13) {
                 fail("Only 13 sql statements should have occured:" + counter.getSqlStatements().size());
+            }
+            beginTransaction(em);    
+            verifyDelete(employee);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     *     Test that deleting an employee works correctly.
+     *     This test case was added in 8177 for 324321 and modified for 325605.
+     *     The issue is that the status enum will be cascade deleted even if it is not
+     *     instantiated (lazy) because the owning object does not know if the collection is empty
+     *     without instantiating it.
+     *     DB2 will therefore emit warning logs that are printed at FINEST in this lazy case.
+     *     This test is a modification of testDeleteEmployee() that verifies instantiated lists are also ok
+     *     
+     *     11/17/2010-2.2 Michael O'Brien 
+     *       - 325605: Filter out SQL warnings that are not SQL statements but are 
+     *       logged at a non-warning level.  This affects only implementors of SessionLog that
+     *       perform log diagnostics/tracking in addition to logging.
+     */
+    public void testDeleteEmployee_with_status_enum_collection_instantiated() {        
+        Employee employee = new Employee();
+        PhoneNumber homePhone = new PhoneNumber("home", "123", "4567");
+        PhoneNumber faxPhone = new PhoneNumber("fax", "456", "4567");
+        employee.addPhoneNumber(homePhone);
+        employee.addPhoneNumber(faxPhone);
+        employee.addResponsibility("work hard"); 
+        employee.addResponsibility("write code");
+        employee.addProject(new Project());
+        employee.setWorkWeek(new HashSet<Employee.Weekdays>());
+        employee.getWorkWeek().add(Employee.Weekdays.MONDAY);
+        employee.getWorkWeek().add(Employee.Weekdays.TUESDAY);
+        // set enums
+        employee.setStatus(Employee.EmployeeStatus.PART_TIME); // enum index is 1
+        // set enum on 1 of the 2 phones, leave the other Collection of enums unset - but do a later find to instantiate the Collection
+        homePhone.addStatus(PhoneNumber.PhoneStatus.ASSIGNED);
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            em.persist(employee);
+            commitTransaction(em);
+            closeEntityManager(em);
+            clearCache();
+            em = createEntityManager();
+            beginTransaction(em);
+            employee = em.find(Employee.class, employee.getId());
+            // instantiate the empty Collection of enums to verify we do not cascade delete if we "know" the Collection is empty
+            employee.getPhoneNumbers();
+            counter.getSqlStatements().clear();
+            em.remove(employee);
+            commitTransaction(em);
+            // We do not count any SQL warnings that may occur (DB2 may have 3)
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 13) {
+                fail("Only 13 sql statements should have occured: " + counter.getSqlStatements().size());
             }
             beginTransaction(em);    
             verifyDelete(employee);

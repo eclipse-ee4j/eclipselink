@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * SessionLogEntry is a simple container object that holds
- * all the information pertinent to a TopLink logging event.
+ * all the information pertinent to an EclipseLink logging event.
  * It has a date/time stamp indicating when the event took
  * place. It holds the session, thread, and accessor
  * responsible for the event. And it holds whatever message
@@ -42,7 +42,7 @@ public class SessionLogEntry implements Serializable {
     protected String nameSpace;
     protected Object[] parameters;
     protected boolean shouldTranslate;
-
+    
     /**
      * PUBLIC:
      * Create a new session log entry for a session
@@ -95,7 +95,7 @@ public class SessionLogEntry implements Serializable {
         this.parameters = params;
         this.shouldTranslate = shouldTranslate;
     }
-
+    
     /**
      * PUBLIC:
      * Create a new session log entry for a request level, a session, a message and an accessor.
@@ -106,7 +106,7 @@ public class SessionLogEntry implements Serializable {
         this(level, session, message, params, connection, shouldTranslate);
         this.nameSpace = category;
     }
-
+    
     /**
      * PUBLIC:
      * Create a new session log entry for a session, a level, a category and an exception.

@@ -23,12 +23,13 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.SessionEventListener;
 
 /**
- * This class can be used to replace the session log. It stores the SQL and TopLink queries produced
+ * This class can be used to replace the session log. It stores the SQL and EclipseLink queries produced
  * during a session.  This allows you to ensure proper amounts of SQL are run in various scenarios.
  */
 public class QuerySQLTracker extends DefaultSessionLog {
     private SessionLog originalLog;
     private SessionEventListener listener;
+    // Track SQL statements
     private List sqlStatements = new ArrayList();
     private List queries = new ArrayList();
 
@@ -57,13 +58,14 @@ public class QuerySQLTracker extends DefaultSessionLog {
     }
 
     public synchronized void log(SessionLogEntry entry) {
-        if ((entry.getNameSpace() != null) && entry.getNameSpace().equalsIgnoreCase(SessionLog.SQL)) {
+        // Extend SessionLog.log() by also adding SQL statements into a tracking List (skip SQL_WARNING)
+        if ((entry.getNameSpace() != null) && entry.getNameSpace().equalsIgnoreCase(SessionLog.SQL)) { 
             getSqlStatements().add(entry.getMessage());
         }
-	if (!this.originalLog.shouldLog(entry.getLevel())) {
-	    return;
-	}
-	this.originalLog.log(entry);
+        if (!this.originalLog.shouldLog(entry.getLevel())) {
+            return;
+        }
+        this.originalLog.log(entry);
     }
 
     private SessionEventListener buildListener() {
@@ -89,7 +91,7 @@ public class QuerySQLTracker extends DefaultSessionLog {
     }
 
     /**
-     * Get a list of all the TopLink Queries that have been executed in while this QuerySQLTracker
+     * Get a list of all the EclipseLink Queries that have been executed in while this QuerySQLTracker
      * has been logging.  Queries are gathered in the preExecuteQuery event.
      */
     public List getQueries() {
