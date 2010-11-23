@@ -2704,15 +2704,16 @@ public class AnnotationsProcessor {
     }
 
     public NamespaceInfo getNamespaceInfoForPackage(JavaClass javaClass) {
-        NamespaceInfo packageNamespace = packageToNamespaceMappings.get(javaClass.getPackageName());
+        String packageName = javaClass.getPackageName();
+        NamespaceInfo packageNamespace = packageToNamespaceMappings.get(packageName);
         if (packageNamespace == null) {
-            packageNamespace = getNamespaceInfoForPackage(javaClass.getPackage());
+            packageNamespace = getNamespaceInfoForPackage(javaClass.getPackage(), packageName);
         }
         return packageNamespace;
     }
 
-    public NamespaceInfo getNamespaceInfoForPackage(JavaPackage pack) {
-        NamespaceInfo packageNamespace = packageToNamespaceMappings.get(pack.getQualifiedName());
+    public NamespaceInfo getNamespaceInfoForPackage(JavaPackage pack, String packageName) {
+        NamespaceInfo packageNamespace = packageToNamespaceMappings.get(packageName);
         if (packageNamespace == null) {
             XmlSchema xmlSchema = (XmlSchema) helper.getAnnotation(pack, XmlSchema.class);
             packageNamespace = processNamespaceInformation(xmlSchema);
@@ -2730,7 +2731,7 @@ public class AnnotationsProcessor {
                 packageNamespace.setAccessOrder(XmlAccessOrder.fromValue(xmlAccessorOrder.value().name()));
             }
 
-            packageToNamespaceMappings.put(pack.getQualifiedName(), packageNamespace);
+            packageToNamespaceMappings.put(packageName, packageNamespace);
         }
         return packageNamespace;
     }
@@ -3343,7 +3344,7 @@ public class AnnotationsProcessor {
                     getPackageToNamespaceMappings().put(packageName, namespaceInfo);
                 }
             } else {
-                NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(componentClass.getPackage());
+                NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(componentClass.getPackage(), componentClass.getPackageName());
                 getPackageToNamespaceMappings().put(packageName, namespaceInfo);
             }
         }
