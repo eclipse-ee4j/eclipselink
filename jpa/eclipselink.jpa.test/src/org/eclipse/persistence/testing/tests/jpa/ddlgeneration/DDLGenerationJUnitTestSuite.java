@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle, Frank Schwarz. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,6 +23,8 @@
  *       - 322233 - AttributeOverrides and AssociationOverride dont change field type info
  *     11/17/2010-2.2.0 Chris Delahunt 
  *       - 214519: Allow appending strings to CREATE TABLE statements
+ *     11/23/2010-2.2 Frank Schwarz 
+ *       - 328774: TABLE_PER_CLASS-mapped key of a java.util.Map does not work for querying
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
@@ -45,11 +47,14 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.CodeExample;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.DesignPattern;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.GoldBenefit;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.GoldCustomer;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.LuxuryCar;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumBenefit;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumCustomer;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.ProgrammingLanguage;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.Port;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.EquipmentDAO;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.PortDAO;
@@ -60,6 +65,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  * JUnit test case(s) for DDL generation.
@@ -1252,6 +1258,43 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             }
         }
         return array;
+    }
+    
+    // Test for bug 328774
+    public void testTPCMappedKeyMapQuery() {
+        EntityManager em = createEntityManager(DDL_TPC_PU);
+        
+        try {
+            beginTransaction(em);
+            ProgrammingLanguage java = new ProgrammingLanguage();
+            java.setName("Java");
+            
+            DesignPattern designPattern = new DesignPattern();
+            designPattern.setName("Singleton");
+            CodeExample codeExample = new CodeExample();
+            codeExample.setContent("...");
+            designPattern.getCodeExamples().put(java, codeExample);
+            
+            em.persist(java);
+            em.persist(designPattern);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+
+            fail("Error persisting the PropertyRecord : " + e);
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        clearCache(DDL_TPC_PU);
+        em = createEntityManager(DDL_TPC_PU);  
+        
+        TypedQuery<DesignPattern> query = em.createQuery("SELECT x FROM DesignPattern x", DesignPattern.class);
+        List<DesignPattern> resultList = query.getResultList();
+        assertEquals("Unexpected number of design patterns returned", 1, resultList.size());
+        closeEntityManager(em);
     }
 
     public static void main(String[] args) {

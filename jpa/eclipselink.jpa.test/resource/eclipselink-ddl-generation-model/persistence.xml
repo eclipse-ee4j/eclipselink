@@ -60,6 +60,10 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.SUV</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Team</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Player</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.ProgrammingLanguage</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.BaseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.CodeExample</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.DesignPattern</class>
         <properties>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle, Frank Schwarz. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/23/2010-2.2 Frank Schwarz 
+ *       - 328774: TABLE_PER_CLASS-mapped key of a java.util.Map does not work for querying
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
@@ -272,8 +274,32 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             return false;
         }
         return backUpVersionKey.equals(sourceValueKey);
-    }
+    }   
 
+
+    /**
+     * INTERNAL:
+     * Build a new container, add the contents of each of the specified containers
+     * to it, and return it.
+     * Both of the containers must use the same container policy (namely, this one).
+     */
+    @Override
+    public Object concatenateContainers(Object firstContainer, Object secondContainer, AbstractSession session) {
+        Object container = containerInstance(sizeFor(firstContainer) + sizeFor(secondContainer));
+        
+        for (Object firstIter = iteratorFor(firstContainer); hasNext(firstIter);) {
+            Map.Entry<?, ?> entry = (Entry<?, ?>) nextEntry(firstIter);
+            addInto(entry.getKey(), entry.getValue(), container, session);
+        }
+        
+        for (Object secondIter = iteratorFor(secondContainer); hasNext(secondIter);) {
+            Map.Entry<?, ?> entry = (Entry<?, ?>) nextEntry(secondIter);
+            addInto(entry.getKey(), entry.getValue(), container, session);
+        }
+        
+        return container;
+    }
+    
     /**
      * INTERNAL:
      * Return the true if element exists in container.
