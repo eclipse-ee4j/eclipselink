@@ -223,7 +223,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @return the log level
      * </p><p>
-     * @param category  the string representation of a TopLink category, e.g. "sql", "transaction" ...
+     * @param category  the string representation of a EclipseLink category, e.g. "sql", "transaction" ...
      * </p>
      */
     public int getLevel(String category) {
@@ -250,7 +250,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * </p><p>
      *
      * @param level     the new log level
-     * @param category  the string representation of a TopLink category, e.g. "sql", "transaction" ...
+     * @param category  the string representation of an EclipseLink category, e.g. "sql", "transaction" ...
      * </p>
      */
     public void setLevel(int level, String category) {
@@ -298,7 +298,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @return true if the given message level will be logged
      * </p><p>
      * @param level  the log request level
-     * @param category  the string representation of a TopLink category, e.g. "sql", "transaction" ...* </p>
+     * @param category  the string representation of an EclipseLink category, e.g. "sql", "transaction" ...* </p>
      * </p>
      */
     public boolean shouldLog(int level, String category) {

@@ -12,7 +12,7 @@
  *     27/07/2010 - 2.1.1 Sabine Heider 
  *          304650: fix left over entity data interfering with testSetRollbackOnly
  *     11/17/2010-2.2 Michael O'Brien 
- *       - 325605: Add new category "SQL_WARNING" for SQL Warnings that could be logged as FINEST
+ *       - 325605: Do not track SQL category logs in QuerySQLTracker logged at FINEST
  *         testDeleteEmployee*() will fail on DB2 9.7 Universal because cascade deletes
  *         of an uninstantiated collection of enums must inherently be deleted even if
  *         the actual collection is empty.  DB2 warns of nothing deleted - we convert it to a FINEST log
@@ -2808,7 +2808,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             counter.getSqlStatements().clear();
             em.remove(employee);
             commitTransaction(em);
-            // We do not count any SQL warnings that may occur (DB2 may have 3)
+            // We do not count any SQL warnings that may occur (DB2 may have 3) at the FINEST level
             if (isWeavingEnabled() && counter.getSqlStatements().size() > 13) {
                 fail("Only 13 sql statements should have occured: " + counter.getSqlStatements().size());
             }

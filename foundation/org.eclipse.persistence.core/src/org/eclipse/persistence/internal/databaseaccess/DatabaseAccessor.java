@@ -10,8 +10,6 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Vikram Bhatia - bug fix for releasing temporary LOBs after conversion
- *     11/17/2010-2.2 Michael O'Brien 
- *       - 325605: Log SQLWarnings in the new "SQL_WARNING" category - not as SQL Statements
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -667,8 +665,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
             	SQLWarning warning = statement.getWarnings();
             	while (warning != null) {
             		String message = warning.getMessage() + ":" + warning.getSQLState() + " - " + warning.getCause();
-            		// 325605: Log SQL Warnings at FINEST but set the category to the new SQL_Warning so we can differentiate them from normal SQL Statements.
-            		session.log(SessionLog.FINEST, SessionLog.SQL_WARNING, message, (Object[])null, this, false);
+            		// 325605: This log will not be tracked by QuerySQLTracker
+            		session.log(SessionLog.FINEST, SessionLog.SQL, message, (Object[])null, this, false);
             		warning = warning.getNextWarning();
             	}
             }

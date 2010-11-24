@@ -9,6 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/17/2010-2.2 Michael O'Brien  
+ *       - 325605: Do not track SQL logs that are at the FINEST level 
+ *       these may be SQL warnings or other ORM warnings that happen to use the SQL category
  ******************************************************************************/  
 package org.eclipse.persistence.testing.framework;
 
@@ -58,8 +61,9 @@ public class QuerySQLTracker extends DefaultSessionLog {
     }
 
     public synchronized void log(SessionLogEntry entry) {
-        // Extend SessionLog.log() by also adding SQL statements into a tracking List (skip SQL_WARNING)
-        if ((entry.getNameSpace() != null) && entry.getNameSpace().equalsIgnoreCase(SessionLog.SQL)) { 
+        // Extend SessionLog.log() by also adding SQL statements into a tracking List that are above the FINEST level
+        if ((entry.getNameSpace() != null) && entry.getNameSpace().equalsIgnoreCase(SessionLog.SQL) 
+                && entry.getLevel() > SessionLog.FINER) {  // we will not use shouldLog(level, category) in case the implementation there changes
             getSqlStatements().add(entry.getMessage());
         }
         if (!this.originalLog.shouldLog(entry.getLevel())) {
@@ -84,7 +88,9 @@ public class QuerySQLTracker extends DefaultSessionLog {
 
     /**
      * Get a list of all the SQL strings that have been executed in while this QuerySQLTracker
-     * has been logging. SQL is obtained through by getting logging statements with a SQL namespace.
+     * has been logging. SQL is obtained through by getting logging statements with a SQL namespace.<br>
+     * Logs that are categorized as FINE and below will not be tracked.
+     * 
      * */
     public List getSqlStatements() {
         return sqlStatements;

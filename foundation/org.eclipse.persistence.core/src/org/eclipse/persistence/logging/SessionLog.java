@@ -9,8 +9,6 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/17/2010-2.2 Michael O'Brien 
- *       - 325605: Add new category "SQL_WARNING" for SQL Warnings that could be logged as FINEST
  ******************************************************************************/  
 package org.eclipse.persistence.logging;
 
@@ -57,7 +55,6 @@ import org.eclipse.persistence.sessions.Session;
  * <tr><td>&nbsp;</td><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td></tr>
  * <tr><td>&nbsp;</td><td>PROPERTIES</td>        <td>&nbsp;</td><td>= "properties"</td></tr>
  * <tr><td>&nbsp;</td><td>SERVER</td>        <td>&nbsp;</td><td>= "server"</td></tr>
- * <tr><td>&nbsp;</td><td>SQL_WARNING</td>        <td>&nbsp;</td><td>= "sql_warning"</td></tr> 
  * </table>
  * @see AbstractSessionLog
  * @see SessionLogEntry
@@ -116,10 +113,8 @@ public interface SessionLog extends Cloneable {
     public static final String WEAVER = "weaver";
     public static final String PROPERTIES = "properties";
     public static final String SERVER = "server";
-    // 304512: SQL Warnings should be logged in a separate category than SQL Statements
-    public static final String SQL_WARNING = "sql_warning";
     
-    public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,EJB_OR_METADATA, METAMODEL, WEAVER ,PROPERTIES ,SERVER, SQL_WARNING};
+    public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,EJB_OR_METADATA, METAMODEL, WEAVER ,PROPERTIES ,SERVER};
 
     /**
      * PUBLIC:
@@ -271,7 +266,6 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td></tr>
      * <tr><td>&nbsp;</td><td>PROPERTIES</td>        <td>&nbsp;</td><td>= "properties"</td></tr>
      * <tr><td>&nbsp;</td><td>SERVER</td>        <td>&nbsp;</td><td>= "server"</td></tr>
-     * <tr><td>&nbsp;</td><td>SQL_WARNING</td>        <td>&nbsp;</td><td>= "sql_warning"</td></tr> 
      * </table>
      */
     public int getLevel(String category);
@@ -330,7 +324,6 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td></tr>
      * <tr><td>&nbsp;</td><td>PROPERTIES</td>        <td>&nbsp;</td><td>= "properties"</td></tr>
      * <tr><td>&nbsp;</td><td>SERVER</td>        <td>&nbsp;</td><td>= "server"</td></tr>
-     * <tr><td>&nbsp;</td><td>SQL_WARNING</td>        <td>&nbsp;</td><td>= "sql_warning"</td></tr> 
      * </table>
      */
     public void setLevel(int level, String category);
@@ -390,7 +383,6 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td></tr>
      * <tr><td>&nbsp;</td><td>PROPERTIES</td>        <td>&nbsp;</td><td>= "properties"</td></tr>
      * <tr><td>&nbsp;</td><td>SERVER</td>        <td>&nbsp;</td><td>= "server"</td></tr>
-     * <tr><td>&nbsp;</td><td>SQL_WARNING</td>        <td>&nbsp;</td><td>= "sql_warning"</td></tr> 
      * </table>
      */
     public boolean shouldLog(int level, String category);
