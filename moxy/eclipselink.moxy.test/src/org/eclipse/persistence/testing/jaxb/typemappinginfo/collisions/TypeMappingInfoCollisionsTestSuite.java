@@ -42,7 +42,8 @@ public class TypeMappingInfoCollisionsTestSuite extends TestCase {
         suite.addTestSuite(ConflictingByteArrayTestCases.class);
         suite.addTestSuite(ConflictingStringArrayClassesTestCases.class);
         suite.addTestSuite(ConflictingClassAndAdapterClassTestCases.class);
-        suite.addTestSuite(ConflictingCollectionTestCases.class);       
+        suite.addTestSuite(ConflictingCollectionTestCases.class);   
+        suite.addTestSuite(StringAndListOfStringConflictTestCases.class);
         return suite;
     }
 }

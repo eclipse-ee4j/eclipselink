@@ -298,7 +298,7 @@ public class CompilerHelper {
                                 Class typeClass = ((XmlElement) nextAnnotation).type();
                                 if (!typeClass.getName().equals("javax.xml.bind.annotation.XmlElement.DEFAULT")) {
                                     final Type tmiType = tmi.getType();
-                                    if (tmiType instanceof java.util.List) {
+                                    if (isCollectionType(tmiType)) {
                                         final Class itemType = typeClass;
                                         Type parameterizedType = new ParameterizedType() {
                                             Type[] typeArgs = { itemType };
