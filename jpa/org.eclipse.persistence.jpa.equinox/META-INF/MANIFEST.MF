@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Private-Package: org.eclipse.persistence.internal.jpa.deployment.osgi.
  equinox,.
-Implementation-Version: 2.1.0.qualifier
+Implementation-Version: 2.2.0.qualifier
 JPA-Initializer: org.eclipse.persistence.internal.jpa.deployment.osgi.
  equinox.EquinoxInitializer
 Specification-Vendor: Eclipse.org - EclipseLink Project

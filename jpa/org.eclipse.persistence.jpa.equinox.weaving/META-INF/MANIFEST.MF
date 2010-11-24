@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Export-Package: org.eclipse.persistence.jpa.equinox.weaving;x-internal
- :=true;version="2.1.0.qualifier"
+ :=true;version="2.2.0.qualifier"
 Private-Package: .
 Ignore-Package: org.eclipse.osgi.framework.debug,org.eclipse.osgi.fram
  ework.log,java.util,org.eclipse.osgi.baseadaptor.hooks,java.net,java.

@@ -14,17 +14,17 @@ Export-Package: org.eclipse.persistence.internal.libraries.antlr.runti
 Private-Package: .
 Implementation-Version: 2.2.0.qualifier
 Tool: Bnd-0.0.384
-DSTAMP: 20101012
+DSTAMP: 20101124
+TODAY: November 24 2010
 Bundle-Name: EclipseLink ANTLR
-TODAY: October 12 2010
-Created-By: 1.6.0_06 (Sun Microsystems Inc.)
+Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 TSTAMP: 1400
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.2.0.qualifier
-Bnd-LastModified: 1286908222375
+Bnd-LastModified: 1290625209375
 Bundle-ManifestVersion: 2
 Include-Resource: ../../about.html,../../readme.html,../../license.htm
  l
