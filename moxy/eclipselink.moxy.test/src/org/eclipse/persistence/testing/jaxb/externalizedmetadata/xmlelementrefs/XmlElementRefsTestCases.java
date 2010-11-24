@@ -14,12 +14,17 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.Root;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
 
@@ -109,6 +114,22 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
+        }
+    }
+    
+    /**
+     * Verify that the container type is set correctly for Array types.
+     * 
+     * Positive test.
+     */
+    public void testCollectionType() {
+        try {
+            Map<String, Object> properties = new HashMap<String, Object>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(PATH + "collectiontype/oxm.xml"));
+            javax.xml.bind.JAXBContext jCtx = JAXBContextFactory.createContext(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.ObjectFactory.class, Root.class }, properties);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception was thrown while attempting to create the JAXBContext: " + e.getMessage());
         }
     }
 }

@@ -652,7 +652,7 @@ public class MappingsGenerator {
             }
         }
         JavaClass collectionType = property.getType();
-        if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+        if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
             collectionType = jotHashSet;
@@ -704,7 +704,7 @@ public class MappingsGenerator {
             mapping = new XMLChoiceCollectionMapping();
             ((XMLChoiceCollectionMapping) mapping).setReuseContainer(true);
             JavaClass collectionType = property.getType();
-            if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+            if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
                 collectionType = jotArrayList;
             } else if (areEquals(collectionType, Set.class)) {
                 collectionType = jotHashSet;
@@ -885,7 +885,7 @@ public class MappingsGenerator {
         mapping.setUseXMLRoot(true);
 
         JavaClass collectionType = property.getType();
-        if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+        if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
             collectionType = jotHashSet;
@@ -1170,12 +1170,12 @@ public class MappingsGenerator {
         			mapping.setAttributeElementClass(declaredClass);
         		}catch (Exception e) {
 
-			}
+        		}
         	}
         }else{
         	mapping.setAttributeElementClass(Byte[].class);
         }
-        if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+        if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
             collectionType = jotHashSet;
@@ -1269,7 +1269,7 @@ public class MappingsGenerator {
         mapping.setValueConverter(buildJAXBEnumTypeConverter(mapping, info));
 
         JavaClass collectionType = property.getType();
-        if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+        if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
             collectionType = jotHashSet;
@@ -2038,7 +2038,7 @@ public class MappingsGenerator {
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
 
         JavaClass collectionType = property.getType();
-        if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+        if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
             collectionType = jotHashSet;
