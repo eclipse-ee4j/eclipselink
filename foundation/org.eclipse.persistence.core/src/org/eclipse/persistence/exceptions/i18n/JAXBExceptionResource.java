@@ -88,7 +88,7 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50066", "An invalid XmlJavaTypeAdapter [{0}] was specified for class [{1}]. Possible causes are an incorrect adapter class name or the wrong loader has been set."},
         {"50067", "An invalid XmlJavaTypeAdapter [{0}] was specified for field/property [{1}] on class [{2}]. Possible causes are an incorrect adapter class name or the wrong loader has been set."},
         {"50068", "A null value was encountered while processing external metadata via properties Map.  It is required that the handle to the XML metadata file be non-null and one of [java.io.File, java.io.InputStream, java.io.Reader, java.net.URL, javax.xml.stream.XMLEventReader, javax.xml.stream.XMLStreamReader, javax.xml.transform.Source, org.w3c.dom.Node, or org.xml.sax.InputSource]."},
-        {"50068", "A package was not specified for the provided XML metadata file.  The package can be specified by passing in Map<String, Object> (where String = package, Object = handle to XML metadata file) or by setting the package-name attribute on the xml-bindings element in the XML metadata file."}
+        {"50069", "A package was not specified for the provided XML metadata file.  The package can be specified by passing in Map<String, Object> (where String = package, Object = handle to XML metadata file) or by setting the package-name attribute on the xml-bindings element in the XML metadata file."}
     };
 
     /**
