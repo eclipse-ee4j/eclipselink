@@ -32,5 +32,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface ReturnInsert {
+    
+    /**
+     * Set return only to true if you want the mapping field to be excluded 
+     * from the INSERT clause during SQL generation.
+     */
     boolean returnOnly() default false;
 }
