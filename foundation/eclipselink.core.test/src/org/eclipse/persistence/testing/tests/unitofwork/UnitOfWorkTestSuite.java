@@ -71,6 +71,8 @@ public class UnitOfWorkTestSuite extends TestSuite {
         addSRGTests();
         
         addTest(buildRefReadOnlyTest());
+        
+        addTest(new UnitOfWorkDeleteOrderTest()); // bug 331064
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.

@@ -307,6 +307,11 @@ public class CommitManager {
      */
     public void deleteAllObjects(Class theClass, List objects, AbstractSession session) {
         ClassDescriptor descriptor = null;
+        
+        if (((UnitOfWorkImpl)session).shouldOrderUpdates()) {// bug 331064 - Sort the delete order
+            objects = sort(theClass, objects);
+        }
+        
         int size = objects.size();
         for (int index = 0; index < size; index++) {
             Object objectToDelete = objects.get(index);
@@ -329,6 +334,24 @@ public class CommitManager {
                 session.executeQuery(deleteQuery);
             }
         }
+    }
+    
+    /**
+     * Sort the objects based on PK. 
+     */
+    // bug 331064 - Sort the delete order based on PKs.
+    private List sort (Class theClass, List objects) {
+        ClassDescriptor descriptor = session.getDescriptor(theClass);
+        org.eclipse.persistence.internal.descriptors.ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+        int size = objects.size();
+        TreeMap sortedObjects = new TreeMap();
+        for (int index = 0; index < size; index++) {
+            Object objectToDelete = objects.get(index);
+            if (objectToDelete.getClass() == theClass) {
+                sortedObjects.put(objectBuilder.extractPrimaryKeyFromObject(objectToDelete, session), objectToDelete);
+            }
+        }
+        return new ArrayList(sortedObjects.values());
     }
     
     /**
