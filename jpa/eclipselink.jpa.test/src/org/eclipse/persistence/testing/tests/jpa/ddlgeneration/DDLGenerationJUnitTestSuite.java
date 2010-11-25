@@ -1262,39 +1262,41 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     
     // Test for bug 328774
     public void testTPCMappedKeyMapQuery() {
-        EntityManager em = createEntityManager(DDL_TPC_PU);
-        
-        try {
-            beginTransaction(em);
-            ProgrammingLanguage java = new ProgrammingLanguage();
-            java.setName("Java");
+        if (! isJPA10()) {
+            EntityManager em = createEntityManager(DDL_TPC_PU);
             
-            DesignPattern designPattern = new DesignPattern();
-            designPattern.setName("Singleton");
-            CodeExample codeExample = new CodeExample();
-            codeExample.setContent("...");
-            designPattern.getCodeExamples().put(java, codeExample);
-            
-            em.persist(java);
-            em.persist(designPattern);
-            commitTransaction(em);
-        } catch (RuntimeException e) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
+            try {
+                beginTransaction(em);
+                ProgrammingLanguage java = new ProgrammingLanguage();
+                java.setName("Java");
+                
+                DesignPattern designPattern = new DesignPattern();
+                designPattern.setName("Singleton");
+                CodeExample codeExample = new CodeExample();
+                codeExample.setContent("...");
+                designPattern.getCodeExamples().put(java, codeExample);
+                
+                em.persist(java);
+                em.persist(designPattern);
+                commitTransaction(em);
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+    
+                fail("Error persisting the PropertyRecord : " + e);
+            } finally {
+                closeEntityManager(em);
             }
-
-            fail("Error persisting the PropertyRecord : " + e);
-        } finally {
+            
+            clearCache(DDL_TPC_PU);
+            em = createEntityManager(DDL_TPC_PU);  
+            
+            TypedQuery<DesignPattern> query = em.createQuery("SELECT x FROM DesignPattern x", DesignPattern.class);
+            List<DesignPattern> resultList = query.getResultList();
+            assertEquals("Unexpected number of design patterns returned", 1, resultList.size());
             closeEntityManager(em);
         }
-        
-        clearCache(DDL_TPC_PU);
-        em = createEntityManager(DDL_TPC_PU);  
-        
-        TypedQuery<DesignPattern> query = em.createQuery("SELECT x FROM DesignPattern x", DesignPattern.class);
-        List<DesignPattern> resultList = query.getResultList();
-        assertEquals("Unexpected number of design patterns returned", 1, resultList.size());
-        closeEntityManager(em);
     }
 
     public static void main(String[] args) {
