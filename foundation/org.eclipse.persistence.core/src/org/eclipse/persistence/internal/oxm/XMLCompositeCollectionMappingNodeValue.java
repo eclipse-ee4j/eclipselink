@@ -19,6 +19,8 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
+import org.eclipse.persistence.internal.oxm.record.deferred.CompositeCollectionMappingContentHandler;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
@@ -126,7 +128,22 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 }          
             }
 
-            if (xmlCompositeCollectionMapping.getNullPolicy().valueIsNull(atts)) {
+            if(xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByEmptyNode() || xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
+                String qnameString = xPathFragment.getLocalName();
+                if(xPathFragment.getPrefix() != null) {
+                    qnameString = xPathFragment.getPrefix()  + XMLConstants.COLON + qnameString;
+                }
+                if(null != xmlDescriptor) {
+                    // Process null capable value
+                    CompositeCollectionMappingContentHandler aHandler = new CompositeCollectionMappingContentHandler(//
+                        unmarshalRecord, this, xmlCompositeCollectionMapping, atts, xPathFragment, xmlDescriptor);
+                    // Send control to the handler
+                    aHandler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
+                    XMLReader xmlReader = unmarshalRecord.getXMLReader();
+                    xmlReader.setContentHandler(aHandler);
+                    xmlReader.setLexicalHandler(aHandler);
+                }
+            } else if (xmlCompositeCollectionMapping.getNullPolicy().valueIsNull(atts)) {
                 getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
             } else {
                 XMLField xmlFld = (XMLField) this.xmlCompositeCollectionMapping.getField();

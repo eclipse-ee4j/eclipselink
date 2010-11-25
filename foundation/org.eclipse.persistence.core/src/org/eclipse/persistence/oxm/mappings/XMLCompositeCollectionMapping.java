@@ -455,8 +455,13 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
 
         for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-            AbstractRecord nestedRow = (AbstractRecord) stream.nextElement();
-            Object objectToAdd = buildObjectFromNestedRow(nestedRow, joinManager, sourceQuery, executionSession);
+            XMLRecord nestedRow = (XMLRecord) stream.nextElement();
+            Object objectToAdd;
+            if (getNullPolicy().valueIsNull((Element) nestedRow.getDOM())) {
+                objectToAdd = null;
+            } else {
+                objectToAdd = buildObjectFromNestedRow(nestedRow, joinManager, sourceQuery, executionSession);
+            }
             cp.addInto(objectToAdd, result, sourceQuery.getSession());
             if(null != getContainerAccessor()) {
                 Object currentObject = ((XMLRecord)row).getCurrentObject();
