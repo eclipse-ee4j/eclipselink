@@ -1,4 +1,4 @@
-Export-Package: commonj*;version="${version.string}";-noimport:=true,org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Export-Package: commonj*;version="${version.string}",org.eclipse.persistence*;version="${version.string}";-noimport:=true,
 Implementation-Version: ${version.string}
 Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink SDO
