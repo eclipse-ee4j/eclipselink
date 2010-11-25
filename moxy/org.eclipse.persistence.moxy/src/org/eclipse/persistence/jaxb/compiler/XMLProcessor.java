@@ -71,7 +71,6 @@ public class XMLProcessor {
     private static final String SELF = ".";
     private static final String OPEN_BRACKET =  "[";
     private static final String JAVA_LANG_OBJECT = "java.lang.Object";
-
     public static final String DEFAULT = "##default";
 
     /**
@@ -330,9 +329,8 @@ public class XMLProcessor {
             annotationsProcessor.processJavaClasses(jClassArray);
         }
 
-        // need to ensure that any bound types (from XmlJavaTypeAdapter) have
-        // TypeInfo objects built for them - SchemaGenerator will require a
-        // descriptor for each
+        // need to ensure that any bound types (from XmlJavaTypeAdapter) have TypeInfo 
+        // objects built for them - SchemaGenerator will require a descriptor for each
         Map<String, TypeInfo> typeInfos = (Map<String, TypeInfo>) aProcessor.getTypeInfo().clone();
         for (Entry<String, TypeInfo> entry : typeInfos.entrySet()) {
             JavaClass[] jClassArray;
@@ -360,15 +358,45 @@ public class XMLProcessor {
     private void processJavaType(JavaType javaType, TypeInfo typeInfo, NamespaceInfo nsInfo) {
         // process field/property overrides
         if (null != javaType.getJavaAttributes()) {
+            List<String> processedPropertyNames = new ArrayList<String>();
             for (JAXBElement jaxbElement : javaType.getJavaAttributes().getJavaAttribute()) {
                 JavaAttribute javaAttribute = (JavaAttribute) jaxbElement.getValue();
-                Property oldProperty = typeInfo.getProperties().get(javaAttribute.getJavaAttribute());
-                if (oldProperty == null) {
+                
+                Property originalProperty = typeInfo.getOriginalProperties().get(javaAttribute.getJavaAttribute());
+                if (originalProperty == null) {
                     getLogger().logWarning(JAXBMetadataLogger.NO_PROPERTY_FOR_JAVA_ATTRIBUTE, new Object[] { javaAttribute.getJavaAttribute(), javaType.getName() });
                     continue;
                 }
-                Property newProperty = processJavaAttribute(typeInfo, javaAttribute, oldProperty, nsInfo, javaType);
-                typeInfo.getProperties().put(javaAttribute.getJavaAttribute(), newProperty);
+
+                boolean alreadyProcessed = processedPropertyNames.contains(javaAttribute.getJavaAttribute()); 
+                Property propToProcess;
+
+                // In the case where there is more than one javaAttribute for the same Property 
+                // (multiple mappings to same attribute) clone the original and put it in a 
+                // separate Map; otherwise, update the property as per usual
+                if (alreadyProcessed) {
+                    propToProcess = (Property) originalProperty.clone();
+                } else {
+                    propToProcess = typeInfo.getProperties().get(javaAttribute.getJavaAttribute());
+                }
+                
+                processJavaAttribute(typeInfo, javaAttribute, propToProcess, nsInfo, javaType);
+
+                // if we are dealing with multiple mappings for the same attribute, leave the existing
+                // property as-is and update the additionalProperties list on the owning TypeInfo
+                if (alreadyProcessed) {
+                    List<Property> additionalProps = typeInfo.getAdditionalProperties().get(javaAttribute.getJavaAttribute());
+                    if (additionalProps == null) {
+                        additionalProps = new ArrayList<Property>();
+                    }
+                    additionalProps.add(propToProcess);
+                    typeInfo.getAdditionalProperties().put(javaAttribute.getJavaAttribute(), additionalProps);
+                } else {
+                    // single mapping case; update the TypeInfo as per usual 
+                    typeInfo.getProperties().put(javaAttribute.getJavaAttribute(), propToProcess);
+                    // keep track of processed property names
+                    processedPropertyNames.add(javaAttribute.getJavaAttribute());
+                }
             }
         }
     }
@@ -384,29 +412,41 @@ public class XMLProcessor {
     private Property processJavaAttribute(TypeInfo typeInfo, JavaAttribute javaAttribute, Property oldProperty, NamespaceInfo nsInfo, JavaType javaType) {
         if (javaAttribute instanceof XmlAnyAttribute) {
             return processXmlAnyAttribute((XmlAnyAttribute) javaAttribute, oldProperty, typeInfo, javaType);
-        } else if (javaAttribute instanceof XmlAnyElement) {
+        } 
+        if (javaAttribute instanceof XmlAnyElement) {
             return processXmlAnyElement((XmlAnyElement) javaAttribute, oldProperty, typeInfo, javaType);
-        } else if (javaAttribute instanceof XmlAttribute) {
+        }
+        if (javaAttribute instanceof XmlAttribute) {
             return processXmlAttribute((XmlAttribute) javaAttribute, oldProperty, typeInfo, nsInfo);
-        } else if (javaAttribute instanceof XmlElement) {
+        }
+        if (javaAttribute instanceof XmlElement) {
             return processXmlElement((XmlElement) javaAttribute, oldProperty, typeInfo, nsInfo, javaType);
-        } else if (javaAttribute instanceof XmlElements) {
+        } 
+        if (javaAttribute instanceof XmlElements) {
             return processXmlElements((XmlElements) javaAttribute, oldProperty, typeInfo);
-        } else if (javaAttribute instanceof XmlElementRef) {
+        }
+        if (javaAttribute instanceof XmlElementRef) {
             return processXmlElementRef((XmlElementRef) javaAttribute, oldProperty, typeInfo);
-        } else if (javaAttribute instanceof XmlElementRefs) {
+        }
+        if (javaAttribute instanceof XmlElementRefs) {
             return processXmlElementRefs((XmlElementRefs) javaAttribute, oldProperty, typeInfo);
-        } else if (javaAttribute instanceof XmlTransient) {
+        }
+        if (javaAttribute instanceof XmlTransient) {
             return processXmlTransient((XmlTransient) javaAttribute, oldProperty);
-        } else if (javaAttribute instanceof XmlValue) {
+        }
+        if (javaAttribute instanceof XmlValue) {
             return processXmlValue((XmlValue) javaAttribute, oldProperty, typeInfo, javaType);
-        } else if (javaAttribute instanceof XmlJavaTypeAdapter) {
+        }
+        if (javaAttribute instanceof XmlJavaTypeAdapter) {
             return processXmlJavaTypeAdapter((XmlJavaTypeAdapter) javaAttribute, oldProperty);
-        } else if (javaAttribute instanceof XmlInverseReference) {
+        }
+        if (javaAttribute instanceof XmlInverseReference) {
             return processXmlInverseReference((XmlInverseReference)javaAttribute, oldProperty);
-        } else if (javaAttribute instanceof XmlTransformation) {
+        }
+        if (javaAttribute instanceof XmlTransformation) {
             return processXmlTransformation((XmlTransformation)javaAttribute, oldProperty, typeInfo);
-        } else if (javaAttribute instanceof XmlJoinNodes) {
+        }
+        if (javaAttribute instanceof XmlJoinNodes) {
             return processXmlJoinNodes((XmlJoinNodes) javaAttribute, oldProperty); 
         }
         getLogger().logWarning("jaxb_metadata_warning_invalid_java_attribute", new Object[] { javaAttribute.getClass() });
@@ -1400,7 +1440,15 @@ public class XMLProcessor {
      */
     private void unsetXmlKey(Property oldProperty, TypeInfo tInfo) {
         if (tInfo.hasXmlKeyProperties()) {
-            tInfo.getXmlKeyProperties().remove(oldProperty);
+            Property propToRemove = null;
+            for (Property prop : tInfo.getXmlKeyProperties()) {
+                if (prop.getPropertyName().equals(oldProperty.getPropertyName())) {
+                    propToRemove = prop;
+                }
+            }
+            if (propToRemove != null) {
+                tInfo.getXmlKeyProperties().remove(propToRemove);
+            }
         }
     }
     
@@ -1611,6 +1659,5 @@ public class XMLProcessor {
             xja.setType(type.getQualifiedName());
             prop.setXmlJavaTypeAdapter(xja);
         }
-        
     }
 }

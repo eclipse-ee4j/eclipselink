@@ -71,6 +71,8 @@ public class TypeInfo {
     private ArrayList<String> propertyNames;
     private ArrayList<Property> propertyList;// keep the keys in a list to preserve order
     private HashMap<String, Property> properties;
+    private HashMap<String, Property> originalProperties;
+    private Map<String, List<Property>> additionalProperties;
     private Property idProperty; // if there is an XmlID annotation, set the property for mappings gen
     private HashMap<String, JavaClass> packageLevelAdaptersByClass;
     private String objectFactoryClassName;
@@ -103,6 +105,8 @@ public class TypeInfo {
     private String xmlDiscriminatorNode;
     private String xmlDiscriminatorValue;
 
+    private static String EMPTY_STRING = "";
+    
     /**
      * This constructor sets the Helper to be used throughout XML and Annotations
      * processing.  Other fields are initialized here as well.
@@ -112,6 +116,7 @@ public class TypeInfo {
     public TypeInfo(Helper helper) {
         propertyNames = new ArrayList<String>();
         properties = new HashMap<String, Property>();
+        originalProperties = new HashMap<String, Property>();
         propertyList = new ArrayList<Property>();
         packageLevelAdaptersByClass = new HashMap<String, JavaClass>();
 
@@ -241,12 +246,14 @@ public class TypeInfo {
     }
 
     /**
-     * Put a Property in the Map of Properties for this TypeInfo.
+     * Put a Property in the Map of Properties for this TypeInfo. Here, the
+     * original property is put in the originalProperties map, the 
+     * properties map, and the propertyList list.  It is assumed that
+     * the originalProperties map will remain unchanged during processing.
      * 
-     * @param name
-     * @param property
      */
     public void addProperty(String name, Property property) {
+        originalProperties.put(name, property);
         properties.put(name, property);
         propertyNames.add(name);
         propertyList.add(property);
@@ -290,6 +297,13 @@ public class TypeInfo {
         }
     }
 
+    /**
+     * Indicates if this type info represents an enumeration.  Since 
+     * EnumTypeInfo is used for enum types, this method will always
+     * return false.
+     * 
+     * @return false
+     */
     public boolean isEnumerationType() {
         return false;
     }
@@ -464,42 +478,56 @@ public class TypeInfo {
      * 
      * @return
      */
-    public java.util.List<Property> getNonTransientPropertiesInPropOrder() {
-        java.util.List<Property> propertiesInOrder = new ArrayList<Property>();
+    public List<Property> getNonTransientPropertiesInPropOrder() {
+        List<Property> propertiesInOrder = new ArrayList<Property>();
         String[] propOrder = getPropOrder();
-        if (propOrder.length == 0 || propOrder[0].equals("")) {
+        if (propOrder.length == 0 || propOrder[0].equals(EMPTY_STRING)) {
             ArrayList<String> propertyNames = getPropertyNames();
             for (int i = 0; i < propertyNames.size(); i++) {
-                String nextPropertyKey = propertyNames.get(i);
-                Property next = getProperties().get(nextPropertyKey);
-                if (next != null && !next.isTransient()) {
-                    propertiesInOrder.add(next);
-                }
+                addPropertyToList(propertiesInOrder, propertyNames.get(i), null);
             }
         } else {
             ArrayList<String> propertyNamesCopy = new ArrayList<String>(getPropertyNames());
             for (int i = 0; i < propOrder.length; i++) {
                 // generate mappings based on the propOrder.
-                String propertyName = propOrder[i];
-                Property next = getProperties().get(propertyName);
-                if (next != null && !next.isTransient()) {
-                    propertyNamesCopy.remove(propertyName);
-                    propertiesInOrder.add(next);
-                }
+                addPropertyToList(propertiesInOrder, propOrder[i], propertyNamesCopy);
             }
-            // attributes may not be in the prop order in which case we need to generate those
-            // mappings also
+            // attributes may not be in the prop order in which 
+            // case we need to generate those mappings also
             for (int i = 0; i < propertyNamesCopy.size(); i++) {
-                String nextPropertyKey = propertyNamesCopy.get(i);
-                Property next = getProperties().get(nextPropertyKey);
-                if (next != null && !next.isTransient()) {
-                    propertiesInOrder.add(next);
-                }
+                addPropertyToList(propertiesInOrder, propertyNamesCopy.get(i), null);
             }
         }
         return propertiesInOrder;
     }
 
+    /**
+     * Convenience method that adds non-null, non-transient properties to a given 
+     * List<Property>.  The propertyName parameter is used to lookup the Property.
+     * If propertyNamesCopy is non-null, the Property will be removed from that 
+     * List.  Any additional properties that exist for propertyName (as in the 
+     * case of multiple mappings to the same field) will be added as well.
+     *  
+     */
+    private void addPropertyToList(List<Property> propertiesInOrder, String propertyName, ArrayList<String> propertyNamesCopy) {
+        Property next = getProperties().get(propertyName);
+        if (next != null && !next.isTransient()) {
+            if (propertyNamesCopy != null) { 
+                propertyNamesCopy.remove(propertyName);
+            }
+            propertiesInOrder.add(next);
+            // check for additional properties (i.e. multiple mappings to the same field)
+            List<Property> addProps = getAdditionalProperties().get(propertyName);
+            if (addProps != null) {
+                for (Property addProp : addProps) {
+                    if (!addProp.isTransient()) {
+                        propertiesInOrder.add(addProp);
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * Indicates if XmlTransient is set.
      * 
@@ -971,5 +999,29 @@ public class TypeInfo {
      */
     public boolean hasXmlKeyProperties() {
         return xmlKeyProperties != null;
+    }
+
+    /**
+     * Return a Map of property names to list of properties.  This Map will
+     * contain entries when one or more properties exist for a given field,
+     * as in the case of multiple mappings for a single field.
+     * 
+     */
+    public Map<String, List<Property>> getAdditionalProperties() {
+        if (additionalProperties == null) {
+            additionalProperties = new HashMap<String, List<Property>>();
+        }
+        return additionalProperties;
+    }
+
+    /**
+     * Return the list of original properties for this type info.  These
+     * properties were created during annotations processing, and have 
+     * not been modified since.  
+     * 
+     * @return
+     */
+    public HashMap<String, Property> getOriginalProperties() {
+        return originalProperties;
     }
 }

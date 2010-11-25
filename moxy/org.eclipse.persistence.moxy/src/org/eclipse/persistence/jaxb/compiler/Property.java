@@ -50,7 +50,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
  *  
  *  @author mmacivor
  */
-public class Property {
+public class Property implements Cloneable {
     private String propertyName;
     private QName schemaName;
     private boolean isMethodProperty;
@@ -1125,5 +1125,14 @@ public class Property {
      */
     public boolean isSetXmlJoinNodes() {
         return this.xmlJoinNodes != null;
+    }
+    
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            // will never get here
+        }
+        return null;
     }
 }

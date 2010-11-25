@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compos
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.CompositeCollecitonMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.DirectMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.directcollection.DirectCollectionMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple.MultipleMappingPerFieldTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objectreference.ObjectReferenceMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference.XmlInverseReferenceMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.XmlTransformationTestCases;
@@ -50,6 +51,7 @@ public class MappingsTestSuite extends TestSuite {
         suite.addTestSuite(CompositeMappingTestCases.class);
         suite.addTestSuite(DirectCollectionMappingTestCases.class);
         suite.addTestSuite(DirectMappingTestCases.class);
+        suite.addTestSuite(MultipleMappingPerFieldTestCases.class);
         suite.addTestSuite(ObjectReferenceMappingTestCases.class);
         suite.addTestSuite(XmlInverseReferenceMappingTestCases.class);
         suite.addTestSuite(XmlTransformationTestCases.class);
