@@ -35,10 +35,13 @@ public abstract class CompositeMappingContentHandler extends DeferredContentHand
     public CompositeMappingContentHandler(UnmarshalRecord parentRecord, DatabaseMapping aMapping, Attributes atts, AbstractNullPolicy aNullPolicy, XPathFragment aFragment, XMLDescriptor aDescriptor) {
         super(parentRecord);
         mapping = aMapping;
-        attributes = atts;
         nullPolicy = aNullPolicy;
         xPathFragment = aFragment;
         xmlDescriptor = aDescriptor;
+        try {
+            attributes = buildAttributeList(atts);
+        } catch(SAXException e) {
+        }
     }
 
     protected abstract XMLRelationshipMappingNodeValue getNodeValue();

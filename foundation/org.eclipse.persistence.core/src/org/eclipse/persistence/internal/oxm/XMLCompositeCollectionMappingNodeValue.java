@@ -128,7 +128,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 }          
             }
 
-            if(xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByEmptyNode() || xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
+            if(xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByEmptyNode()) {
                 String qnameString = xPathFragment.getLocalName();
                 if(xPathFragment.getPrefix() != null) {
                     qnameString = xPathFragment.getPrefix()  + XMLConstants.COLON + qnameString;
