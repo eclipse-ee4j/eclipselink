@@ -26,6 +26,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 import java.util.Vector;
 import java.io.Writer;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Collection;
@@ -255,6 +256,16 @@ public class DerbyPlatform extends DB2Platform {
         return fieldTypeMapping;
     }
 
+
+    @Override
+    protected void setNullFromDatabaseField(DatabaseField databaseField, PreparedStatement statement, int index) throws SQLException {
+        int jdbcType = databaseField.getSqlType();
+        if (jdbcType == DatabaseField.NULL_SQL_TYPE) {
+            jdbcType = statement.getParameterMetaData().getParameterType(index);
+        }
+        
+        statement.setNull(index, jdbcType);
+    }
 
     /**
      * Initialize any platform-specific operators

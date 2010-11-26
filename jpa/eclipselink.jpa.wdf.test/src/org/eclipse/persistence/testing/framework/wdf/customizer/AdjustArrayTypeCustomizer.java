@@ -20,6 +20,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.DerbyPlatform;
+import org.eclipse.persistence.platform.database.MaxDBPlatform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 
@@ -80,10 +82,12 @@ public class AdjustArrayTypeCustomizer implements DescriptorCustomizer {
 			newDefinition = columnDefintion.replace(BINARY, "RAW");
 		} else if (MySQLPlatform.class.isAssignableFrom(databasePlatformClass)) {
 			newDefinition = columnDefintion.replace(BINARY, "binary");
-		} else if (databasePlatformClass.getName().endsWith("MaxDBPlatform")) {
+		} else if (MaxDBPlatform.class.isAssignableFrom(databasePlatformClass)) {
 			newDefinition = columnDefintion.replace(BINARY, "CHAR") + " BYTE";
+		} else if (DerbyPlatform.class.isAssignableFrom(databasePlatformClass)) {
+            newDefinition = columnDefintion.replace(BINARY, "CHAR") + " FOR BIT DATA";
 		} else {
-			return;
+		    return;
 		}
 		field.setColumnDefinition(newDefinition);
 	}
@@ -92,7 +96,7 @@ public class AdjustArrayTypeCustomizer implements DescriptorCustomizer {
 		final String newDefinition;
 		if (OraclePlatform.class.isAssignableFrom(databasePlatformClass)) {
 			newDefinition = columnDefintion.replace(VARCHAR, "VARCHAR2");
-		} else if (databasePlatformClass.getName().endsWith("MaxDBPlatform")) {
+		} else if (MaxDBPlatform.class.isAssignableFrom(databasePlatformClass)) {
 			newDefinition = columnDefintion + " UNICODE";
 		} else {
 			return;

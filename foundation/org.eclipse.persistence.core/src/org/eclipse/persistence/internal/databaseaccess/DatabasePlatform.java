@@ -2106,17 +2106,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
             statement.setNull(index, getJDBCType((Class)null));
         } else if (parameter instanceof DatabaseField) {
-            // Substituted null value for the corresponding DatabaseField.
-            // Cannot bind null through set object, so we must compute the type, this is not good.
-            // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the 
-            // user defined type to setNull as well.
-            if (parameter instanceof ObjectRelationalDatabaseField) {
-                ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)parameter;
-                statement.setNull(index, field.getSqlType(), field.getSqlTypeName());
-            } else {
-                int jdbcType = getJDBCType((DatabaseField)parameter);
-                statement.setNull(index, jdbcType);
-            }
+            setNullFromDatabaseField((DatabaseField)parameter, statement, index);
         } else if (parameter instanceof byte[]) {
             if (usesStreamsForBinding()) {
                 ByteArrayInputStream inputStream = new ByteArrayInputStream((byte[])parameter);
@@ -2146,6 +2136,20 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setObject(index, parameter);
         } else {
             statement.setObject(index, parameter);
+        }
+    }
+
+    protected void setNullFromDatabaseField(DatabaseField databaseField, PreparedStatement statement, int index) throws SQLException {
+        // Substituted null value for the corresponding DatabaseField.
+        // Cannot bind null through set object, so we must compute the type, this is not good.
+        // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the 
+        // user defined type to setNull as well.
+        if (databaseField instanceof ObjectRelationalDatabaseField) {
+            ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
+            statement.setNull(index, field.getSqlType(), field.getSqlTypeName());
+        } else {
+            int jdbcType = getJDBCType(databaseField);
+            statement.setNull(index, jdbcType);
         }
     }
     
