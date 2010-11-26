@@ -308,7 +308,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         // PERF: This method is a major performance code point,
         // so has been micro optimized and uses direct variable access.
         Object fieldValue = attributeValue;
-        if ((this.nullValue != null) && (this.nullValue.equals(fieldValue))) {
+        if ((this.nullValue != null) && (this.nullValue.equals(fieldValue)) && !((XMLField)getField()).isRequired()) {
             return null;
         }
 

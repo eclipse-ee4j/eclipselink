@@ -132,7 +132,6 @@ public class Helper {
         javaTypes.put(SQL_DATE, XMLConstants.DATE_QNAME);
         javaTypes.put(SQL_TIME, XMLConstants.TIME_QNAME);
         javaTypes.put(SQL_TIMESTAMP, XMLConstants.DATE_TIME_QNAME);
-        javaTypes.put(XMLGREGORIANCALENDAR, XMLConstants.ANY_SIMPLE_TYPE_QNAME);
         javaTypes.put(DURATION, XMLConstants.DURATION_QNAME);
         javaTypes.put(UUID, XMLConstants.STRING_QNAME);
         javaTypes.put(URI, XMLConstants.STRING_QNAME);
