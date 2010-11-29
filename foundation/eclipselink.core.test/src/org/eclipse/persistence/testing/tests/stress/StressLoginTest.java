@@ -37,7 +37,7 @@ public void test( )
 	
 	try {
 		for (int i = 0; i < stressLevel; i++) {
-			Session session = new Project((Login) getSession().getDatasourceLogin().clone()).createDatabaseSession();
+			Session session = new Project(getSession().getDatasourceLogin().clone()).createDatabaseSession();
 			((DatabaseSession) session).login();
 			sessions.addElement(session);
 		}

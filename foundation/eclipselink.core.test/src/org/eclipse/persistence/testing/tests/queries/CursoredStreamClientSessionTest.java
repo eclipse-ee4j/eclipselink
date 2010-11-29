@@ -44,7 +44,7 @@ public class CursoredStreamClientSessionTest extends TestCase {
     public void setup() {
         org.eclipse.persistence.sessions.Project proj = 
             new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
-        proj.setDatasourceLogin((DatabaseLogin)getSession().getDatasourceLogin().clone());
+        proj.setDatasourceLogin(getSession().getDatasourceLogin().clone());
         this.serverSession = proj.createServerSession(1, 1);
         this.serverSession.useReadConnectionPool(1, 1);
         this.serverSession.setSessionLog(getSession().getSessionLog());

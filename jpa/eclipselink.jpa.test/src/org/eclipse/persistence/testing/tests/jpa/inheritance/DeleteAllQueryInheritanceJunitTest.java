@@ -70,7 +70,7 @@ public class DeleteAllQueryInheritanceJunitTest extends JUnitTestCase {
         return getDbSession().acquireUnitOfWork();   
     }
     
-    protected static void clearVehiclesCompanies() {
+    protected void clearVehiclesCompanies() {
         UnitOfWork uow = acquireUnitOfWork();
         // delete all Vechicles
         uow.executeQuery(new DeleteAllQuery(Vehicle.class));

@@ -139,7 +139,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Clone the login.
      * This also clones the platform as it is internal to the login.
      */
-    public Object clone() {
+    public DatasourceLogin clone() {
         DatasourceLogin clone = null;
         try {
             clone = (DatasourceLogin)super.clone();

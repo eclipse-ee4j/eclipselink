@@ -52,7 +52,7 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
  * props.put(PersistenceUnitProperties.JDBC_USER, "user-name");</br>
  * props.put(PersistenceUnitProperties.JDBC_PASSWORD, "password");</br>
  * </br>
- * EntityManagerFactory emf = Persistence.createENtityManagerFactory("pu-name", props);
+ * EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu-name", props);
  * </code>
  * <p>
  * Property values are usually case-insensitive with some common sense
@@ -180,6 +180,233 @@ public class PersistenceUnitProperties {
     public static final String SQL_CAST = "eclipselink.jdbc.sql-cast";
 
     /**
+     * The <code>"wait"</code> property.
+     * This can be append to any connection pool property,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.default.wait"</code>
+     * which specifies the timeout time in milliseconds (ms) that will be waited
+     * for an available connection before an exception is thrown. Ignored in
+     * case external connection pools are used.
+     * <p>
+     * Default: 180000 ms (3 minutes).
+     * <p>
+     * The value specified should be a string containing a positive integer
+     * value. A value of 0 means wait forever.
+     * @see #CONNECTION_POOL
+     */
+    public static final String CONNECTION_POOL_WAIT = "wait";
+    
+    /**
+     * The <code>"max"</code> property.
+     * This can be append to any connection pool property,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.default.max"</code>
+     * Specifies the maximum number of read connection in the internal connection pool. If
+     * the maximum size is reached, threads requiring a connection will wait
+     * until one is released back to the pool. By default a single shared
+     * (exclusive) read/write pool is used with min/max 32 connections and 1
+     * initial. Ignored in case external connection pools are used.
+     * <p>
+     * The value specified should be a string containing a positive integer
+     * value.
+     * @see #CONNECTION_POOL
+     */
+    public static final String CONNECTION_POOL_MAX = "max";
+
+    /**
+     * The <code>"min"</code> property.
+     * This can be append to any connection pool property,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.default.min"</code>
+     * Specifies the minimum number of connections in EclipseLink connection pool.
+     * <p>
+     * Ignored in case external connection pools are used. Connections beyond
+     * the minimum will be disconnected when returned to the pool, so this
+     * should normally be equal to the number of active threads, or server's
+     * thread pool size. By default a single shared (exclusive) read/write pool
+     * is used with min/max 32 connections and 1 initial.
+     * <p>
+     * The value specified should be a string containing a positive integer
+     * value.
+     * @see #CONNECTION_POOL
+     */
+    public static final String CONNECTION_POOL_MIN = "min";
+
+    /**
+     * The <code>"initial"</code> property.
+     * This can be append to any connection pool property,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.default.initial"</code>
+     * EclipseLink JDBC (internal) connection pools properties. Initial number
+     * of connections in EclipseLink connection pool. This is the number of
+     * connections connected at startup. By default a single shared (exclusive)
+     * read/write pool is used with min/max 32 connections and 1 initial. Ignored
+     * in case external connection pools are used.
+     * <p>
+     * The value specified should be a string containing a positive integer
+     * value.
+     * @see #CONNECTION_POOL
+     */
+    public static final String CONNECTION_POOL_INITIAL = "initial";
+    
+    /**
+     * The <code>"shared"</code> property.
+     * This can be append to the read connection pool,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.read.shared"</code>
+     * Configures whether connections in EclipseLink read connection pool should
+     * be shared (not exclusive). Connection sharing means the same JDBC
+     * connection will be used concurrently for multiple reading threads.
+     * <p>
+     * This property is ignored in case external connection pools are used.
+     * <p>
+     * Values (case insensitive):
+     * <ul>
+     * <li>"false" (DEFAULT): indicates read connections will not be shared
+     * <li>"true": indicates read connections can be shared
+     * </ul>
+     * @see #CONNECTION_POOL_READ
+     */
+    public static final String CONNECTION_POOL_SHARED = "shared";
+    
+    /**
+     * The <code>"url"</code> property.
+     * This can be append to a connection pool property,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.node1.url"</code>
+     * Configures the JDBC url to use for the connection pool.
+     * Only required if different than the default.
+     * @see #CONNECTION_POOL
+     */
+    public static final String CONNECTION_POOL_URL = "url";
+    
+    /**
+     * The <code>"jtaDataSource"</code> property.
+     * This can be append to a connection pool property,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.node1.jtaDataSource"</code>
+     * Configures the JTA DataSource name to use for the connection pool.
+     * Only required if different than the default.
+     * @see #CONNECTION_POOL
+     */
+    public static final String CONNECTION_POOL_JTA_DATA_SOURCE = "jtaDataSource";
+    
+    /**
+     * The <code>"nonJtaDataSource"</code> property.
+     * This can be append to a connection pool property,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.node1.nonJtaDataSource"</code>
+     * Configures the non JTA DataSource name to use for the connection pool.
+     * Only required if different than the default.
+     * @see #CONNECTION_POOL
+     */
+    public static final String CONNECTION_POOL_NON_JTA_DATA_SOURCE = "nonJtaDataSource";
+    
+    /**
+     * The <code>"user"</code> property.
+     * This can be append to a connection pool property,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.node1.user"</code>
+     * Configures the user name to use for the connection pool.
+     * Only required if different than the default.
+     * @see #CONNECTION_POOL
+     */
+    public static final String CONNECTION_POOL_USER = "user";
+    
+    /**
+     * The <code>"password"</code> property.
+     * This can be append to a connection pool property,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.node1.password"</code>
+     * Configures the password to use for the connection pool.
+     * Only required if different than the default.
+     * @see #CONNECTION_POOL
+     */
+    public static final String CONNECTION_POOL_PASSWORD = "password";
+
+    /**
+     * Allow configuring a <code>"eclipselink.connection-pool."</code> properties.
+     * The name of the connection pool must be appended to configure the pool,
+     * if no name is appended the default (write) pool is configured.
+     * The name of the property to configure must also be appended.
+     * <p>
+     * A user defined connection pool can be configured or one of the following system pools:
+     * <ul>
+     * <li> "read" - pool used for non-transactional read queries, (defaults to default pool if not specified).
+     * <li> "default", "write", "" - default pool used for writing and reads if no read pool configured.
+     * <li> "sequence" - pool used for sequencing, (default pool/write connection used if not specified).
+     * </ul>
+     * A user defined pool is only used if specified in the EntityManager properties or ClientSession ConnectionPolicy,
+     * or if partitioning is used.     * 
+     * <p>
+     * The following connection pool properties can be configured:
+     * <ul>
+     * <li> "initial" - number of initial connections.
+     * <li> "min" - minimum number of connections.
+     * <li> "max" - maximum number of connections.
+     * <li> "wait" - amount of time to wait for a connection from the pool.
+     * <li> "url" - JDBC URL for the connection.
+     * <li> "shared" - only for the read connection pool, shares read connections across threads.
+     * <li> "jtaDataSource" - JTA DataSource name to use for the connection, if different than the default.
+     * <li> "nonJtaDataSource" - non JTA DataSource name to use for the connection, if different than the default.
+     * <li> "user" - user to use for the connection, if different than the default.
+     * <li> "password" - password to use for the connection, if different than the default.
+     * </ul>
+     * <p>
+     * Example:
+     * <pre>
+     * &lt;property name="eclipselink.connection-pool.node2.min" value="16"/&gt;
+     * &lt;property name="eclipselink.connection-pool.node2.max" value="16"/&gt;
+     * &lt;property name="eclipselink.connection-pool.node2.url" value="jdbc:oracle:thin:@node2:1521:orcl"/&gt;
+     * </pre>
+     * @see CONNECTION_POOL_READ
+     * @see CONNECTION_POOL_SEQUENCE
+     * @see #CONNECTION_POOL_INITIAL
+     * @see #CONNECTION_POOL_MIN
+     * @see #CONNECTION_POOL_MAX
+     * @see #CONNECTION_POOL_WAIT
+     * @see #CONNECTION_POOL_USER
+     * @see #CONNECTION_POOL_PASSWORD
+     * @see #CONNECTION_POOL_URL
+     * @see #CONNECTION_POOL_JTA_DATA_SOURCE
+     * @see #CONNECTION_POOL_NON_JTA_DATA_SOURCE
+     * @see #CONNECTION_POOL_SHARED
+     * @see org.eclipse.persistence.sessions.server.ConnectionPool
+     */
+    public static final String CONNECTION_POOL = "eclipselink.connection-pool.";
+
+    /**
+     * Allow configuring the <code>"eclipselink.connection-pool.read."</code> properties.
+     * The read connection pool is used for non-transaction read queries.
+     * By default a separate read connection pool is not used,
+     * and the default pool is used for read queries.
+     * <p>
+     * One of the following connection pool properties must be appended.
+     * @see #CONNECTION_POOL_INITIAL
+     * @see #CONNECTION_POOL_MIN
+     * @see #CONNECTION_POOL_MAX
+     * @see #CONNECTION_POOL_WAIT
+     * @see #CONNECTION_POOL_USER
+     * @see #CONNECTION_POOL_PASSWORD
+     * @see #CONNECTION_POOL_URL
+     * @see #CONNECTION_POOL_JTA_DATA_SOURCE
+     * @see #CONNECTION_POOL_NON_JTA_DATA_SOURCE
+     * @see org.eclipse.persistence.sessions.server.ReadConnectionPool
+     */
+    public static final String CONNECTION_POOL_READ = "eclipselink.connection-pool.read.";
+
+    /**
+     * Allow configuring the <code>"eclipselink.connection-pool.sequence."</code> properties.
+     * The sequence connection pool is used to allocate generated Ids.
+     * This is only required for TABLE sequencing.
+     * By default a separate sequence connection pool is not used,
+     * and the default pool is used for sequencing.
+     * <p>
+     * One of the following connection pool properties must be appended.
+     * @see #CONNECTION_POOL_INITIAL
+     * @see #CONNECTION_POOL_MIN
+     * @see #CONNECTION_POOL_MAX
+     * @see #CONNECTION_POOL_WAIT
+     * @see #CONNECTION_POOL_USER
+     * @see #CONNECTION_POOL_PASSWORD
+     * @see #CONNECTION_POOL_URL
+     * @see #CONNECTION_POOL_JTA_DATA_SOURCE
+     * @see #CONNECTION_POOL_NON_JTA_DATA_SOURCE
+     * @see org.eclipse.persistence.sessions.server.ReadConnectionPool
+     */
+    public static final String CONNECTION_POOL_SEQUENCE = "eclipselink.connection-pool.sequence.";
+    
+    /**
      * The <code>"eclipselink.jdbc.connections.wait-timeout"</code> property
      * which specifies the timeout time in milliseconds (ms) that will be waited
      * for an available connection before an exception is thrown. Ignored in
@@ -189,7 +416,10 @@ public class PersistenceUnitProperties {
      * <p>
      * The value specified should be a string containing a positive integer
      * value. A value of 0 means wait forever.
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_WAIT
+     * @see #CONNECTION_POOL_WAIT
      */
+    @Deprecated
     public static final String JDBC_CONNECTIONS_WAIT = "eclipselink.jdbc.connections.wait-timeout";
 
     /**
@@ -202,7 +432,10 @@ public class PersistenceUnitProperties {
      * <p>
      * The value specified should be a string containing a positive integer
      * value.
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_MAX
+     * @see #CONNECTION_POOL_MAX
      */
+    @Deprecated
     public static final String JDBC_CONNECTIONS_MAX = "eclipselink.jdbc.connections.max";
 
     /**
@@ -217,7 +450,10 @@ public class PersistenceUnitProperties {
      * <p>
      * The value specified should be a string containing a positive integer
      * value.
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_MIN
+     * @see #CONNECTION_POOL_MIN
      */
+    @Deprecated
     public static final String JDBC_CONNECTIONS_MIN = "eclipselink.jdbc.connections.min";
 
     /**
@@ -225,12 +461,15 @@ public class PersistenceUnitProperties {
      * EclipseLink JDBC (internal) connection pools properties. Initial number
      * of connections in EclipseLink connection pool. This is the number of
      * connections connected at startup. By default a single shared (exclusive)
-     * read/write pool is used with min/max 32 connections and 1 initial.Ignored
+     * read/write pool is used with min/max 32 connections and 1 initial. Ignored
      * in case external connection pools are used.
      * <p>
      * The value specified should be a string containing a positive integer
      * value.
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_INITIAL
+     * @see #CONNECTION_POOL_INITIAL
      */
+    @Deprecated
     public static final String JDBC_CONNECTIONS_INITIAL = "eclipselink.jdbc.connections.initial";
 
     /**
@@ -240,12 +479,15 @@ public class PersistenceUnitProperties {
      * connection pool. If the maximum size is reached, threads requiring a
      * connection will wait until one is released back to the pool. By default a
      * single shared (exclusive) read/write pool is used with min/max 32
-     * connections and 1 initial.Ignored in case external connection pools are
+     * connections and 1 initial. Ignored in case external connection pools are
      * used.
      * <p>
      * The value specified should be a string containing a positive integer
      * value.
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_MAX
+     * @see #CONNECTION_POOL_MAX
      */
+    @Deprecated
     public static final String JDBC_WRITE_CONNECTIONS_MAX = "eclipselink.jdbc.write-connections.max";
 
     /**
@@ -259,7 +501,10 @@ public class PersistenceUnitProperties {
      * <p>
      * The value specified should be a string containing a positive integer
      * value.
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_MIN
+     * @see #CONNECTION_POOL_MIN
      */
+    @Deprecated
     public static final String JDBC_WRITE_CONNECTIONS_MIN = "eclipselink.jdbc.write-connections.min";
 
     /**
@@ -269,10 +514,12 @@ public class PersistenceUnitProperties {
      * read/write pool is used with min/max 32 connections and 1 initial.
      * <p>
      * This property is ignored in case external connection pools are used.
-     * Initial number of connections in EclipseLink write connection pool.
      * <p>
      * The value must be a string containing a zero or greater integer value.
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_INITIAL
+     * @see #CONNECTION_POOL_INITIAL
      */
+    @Deprecated
     public static final String JDBC_WRITE_CONNECTIONS_INITIAL = "eclipselink.jdbc.write-connections.initial";
 
     /**
@@ -285,14 +532,16 @@ public class PersistenceUnitProperties {
      * initial.
      * <p>
      * This property is ignored in case external connection pools are used.
-     * Initial number of connections in EclipseLink write connection pool.
      * <p>
      * The value specified should be a string containing a zero or greater
      * integer value.
      * 
      * @see #JDBC_CONNECTIONS_WAIT to configure the timeout waiting on a
      *      connection.
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_MAX
+     * @see #CONNECTION_POOL_MAX
      */
+    @Deprecated
     public static final String JDBC_READ_CONNECTIONS_MAX = "eclipselink.jdbc.read-connections.max";
 
     /**
@@ -305,11 +554,13 @@ public class PersistenceUnitProperties {
      * used with min/max 32 connections and 1 initial.
      * <p>
      * This property is ignored in case external connection pools are used.
-     * Initial number of connections in EclipseLink write connection pool.
      * <p>
      * The value specified should be a string containing a zero or greater
      * integer value.
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_MIN
+     * @see #CONNECTION_POOL_MIN
      */
+    @Deprecated
     public static final String JDBC_READ_CONNECTIONS_MIN = "eclipselink.jdbc.read-connections.min";
 
     /**
@@ -319,10 +570,12 @@ public class PersistenceUnitProperties {
      * read/write pool is used with min/max 32 connections and 1 initial.
      * <p>
      * This property is ignored in case external connection pools are used.
-     * Initial number of connections in EclipseLink write connection pool.
      * <p>
      * The value must be a string containing a zero or greater integer value.
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_INITIAL
+     * @see #CONNECTION_POOL_INITIAL
      */
+    @Deprecated
     public static final String JDBC_READ_CONNECTIONS_INITIAL = "eclipselink.jdbc.read-connections.initial";
 
     /**
@@ -332,15 +585,16 @@ public class PersistenceUnitProperties {
      * connection will be used concurrently for multiple reading threads.
      * <p>
      * This property is ignored in case external connection pools are used.
-     * Initial number of connections in EclipseLink write connection pool.
      * <p>
      * Values (case insensitive):
      * <ul>
-     * "false" (DEFAULT): indicates read connections will not be shared
+     * <li>"false" (DEFAULT): indicates read connections will not be shared
      * <li>"true": indicates read connections can be shared
-     * <li>
      * </ul>
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_SHARED
+     * @see #CONNECTION_POOL_SHARED
      */
+    @Deprecated
     public static final String JDBC_READ_CONNECTIONS_SHARED = "eclipselink.jdbc.read-connections.shared";
 
     /**
@@ -353,7 +607,6 @@ public class PersistenceUnitProperties {
      * is allocated on the write connection).
      * <p>
      * This property is ignored in case external connection pools are used.
-     * Initial number of connections in EclipseLink write connection pool.
      * <p>
      * The value must be a string containing a zero or greater integer value.
      * The default value is two (2).
@@ -361,7 +614,10 @@ public class PersistenceUnitProperties {
      * @see #JDBC_SEQUENCE_CONNECTION_POOL Required to configure the use of a
      *      sequence pool/data-source
      * @see #JDBC_CONNECTIONS_WAIT to configure the timeout
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_MAX
+     * @see #CONNECTION_POOL_MAX
      */
+    @Deprecated
     public static final String JDBC_SEQUENCE_CONNECTION_POOL_MAX = "eclipselink.jdbc.sequence-connection-pool.max";
 
     /**
@@ -375,14 +631,16 @@ public class PersistenceUnitProperties {
      * is allocated on the write connection).
      * <p>
      * This property is ignored in case external connection pools are used.
-     * Initial number of connections in EclipseLink write connection pool.
      * <p>
      * The value must be a string containing a zero or greater integer value.
      * The default value is two (2).
      * 
      * @see #JDBC_SEQUENCE_CONNECTION_POOL Required to configure the use of a
      *      sequence pool/data-source
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_MIN
+     * @see #CONNECTION_POOL_MIN
      */
+    @Deprecated
     public static final String JDBC_SEQUENCE_CONNECTION_POOL_MIN = "eclipselink.jdbc.sequence-connection-pool.min";
 
     /**
@@ -394,14 +652,16 @@ public class PersistenceUnitProperties {
      * is allocated on the write connection).
      * <p>
      * This property is ignored in case external connection pools are used.
-     * Initial number of connections in EclipseLink write connection pool.
      * <p>
      * The value must be a string containing a zero or greater integer value.
      * The default value is two (2).
      * 
      * @see #JDBC_SEQUENCE_CONNECTION_POOL Required to configure the use of a
      *      sequence pool/data-source
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_INITIAL
+     * @see #CONNECTION_POOL_INITIAL
      */
+    @Deprecated
     public static final String JDBC_SEQUENCE_CONNECTION_POOL_INITIAL = "eclipselink.jdbc.sequence-connection-pool.initial";
 
     /**
@@ -429,7 +689,10 @@ public class PersistenceUnitProperties {
      *      connections size for internal connection pooling
      * @see #JDBC_SEQUENCE_CONNECTION_POOL_MAX to configure the maximum
      *      connections size for internal connection pooling
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_SEQUENCE
+     * @see #CONNECTION_POOL_SEQUENCE
      */
+    @Deprecated
     public static final String JDBC_SEQUENCE_CONNECTION_POOL = "eclipselink.jdbc.sequence-connection-pool";
 
     /**
@@ -437,9 +700,12 @@ public class PersistenceUnitProperties {
      * will be used for sequencing calls.
      * 
      * @see #JDBC_SEQUENCE_CONNECTION_POOL
+     * @deprecated as of EclipseLink 2.2 replaced by CONNECTION_POOL_NON_JTA_DATA_SOURCE
+     * @see #CONNECTION_POOL_NON_JTA_DATA_SOURCE
      */
+    @Deprecated
     public static final String JDBC_SEQUENCE_CONNECTION_POOL_DATASOURCE = "eclipselink.jdbc.sequence-connection-pool.non-jta-data-source";
-
+    
     /**
      * Property <code>"eclipselink.jdbc.bind-parameters</code> configures whether parameter binding will be used in the
      * creation of JDBC prepared statements. Usage of parameter binding is

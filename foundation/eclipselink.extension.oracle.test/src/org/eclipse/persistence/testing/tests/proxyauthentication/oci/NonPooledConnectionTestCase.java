@@ -70,7 +70,7 @@ public class NonPooledConnectionTestCase extends ProxyAuthenticationConnectionTe
             // The custom connection policy is used to create ClientSession:
             // cs = serverSession.acquireClientSession(connectionPolicy);
             // Need clone because login will be altered (proxy properties will be added)
-            Login login = (Login)getServerSession().getLogin().clone();
+            Login login = getServerSession().getLogin().clone();
             addProxyPropertiesToLogin(login);
             connectionPolicy = new ConnectionPolicy(login);
         }

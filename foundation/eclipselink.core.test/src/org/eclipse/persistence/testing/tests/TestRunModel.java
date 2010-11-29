@@ -86,6 +86,8 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedClientSessionTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedAlwaysTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkSynchNewObjectsClientSessionTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkPartitionedTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkPartitionedIsolatedAlwaysTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.transactionisolation.UnitOfWorkTransactionIsolationTestModel");
             tests.add("org.eclipse.persistence.testing.tests.transparentindirection.TransparentIndirectionModel");
             tests.add("org.eclipse.persistence.testing.tests.collections.CollectionsTestModel");
@@ -382,7 +384,7 @@ public class TestRunModel extends TestModel {
             oldLogin = getSession().getLogin();
             DatabaseLogin newLogin = (DatabaseLogin)login.clone();
             getDatabaseSession().logout();
-            getDatabaseSession().login((DatabaseLogin)newLogin.clone());
+            getDatabaseSession().login(newLogin.clone());
         }
 
         // Change to native mode if specified.

@@ -709,7 +709,9 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         setAccessorMethods(mapping);
 
         // Process the cascade types.
-        processCascadeTypes(mapping);        
+        processCascadeTypes(mapping);
+        
+        processPartitioning();
     }
     
     /**

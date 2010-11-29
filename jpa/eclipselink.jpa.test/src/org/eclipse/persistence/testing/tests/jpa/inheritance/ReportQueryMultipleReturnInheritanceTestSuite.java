@@ -89,17 +89,8 @@ public class ReportQueryMultipleReturnInheritanceTestSuite extends JUnitTestCase
         assertTrue("Did not populate all fields.  Missing 'speedrating'", ((PerformanceTireInfo)resultItem).getSpeedRating() != null);
     }
     
-    
     public static Test suite() {
-        return new TestSuite(ReportQueryMultipleReturnInheritanceTestSuite.class) {
-        
-            protected void setUp(){               
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
+        return new TestSuite(ReportQueryMultipleReturnInheritanceTestSuite.class);
     }
     
 

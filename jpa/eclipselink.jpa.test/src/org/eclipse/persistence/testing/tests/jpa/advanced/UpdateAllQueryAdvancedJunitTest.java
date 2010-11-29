@@ -69,7 +69,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         return getDbSession().acquireUnitOfWork();   
     }
     
-    protected static void clear() {
+    protected void clear() {
         UnitOfWork uow = acquireUnitOfWork();
 
         UpdateAllQuery updateEmployees = new UpdateAllQuery(Employee.class);
@@ -90,7 +90,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         clearCache();
     }
     
-    protected static void populate() {
+    protected void populate() {
         populator.buildExamples();
         populator.persistExample(getDbSession());
         clearCache();
@@ -109,7 +109,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
             }
 
             protected void tearDown() {
-                clearCache();
+                new UpdateAllQueryAdvancedJunitTest().clearCache();
             }
         };
     }

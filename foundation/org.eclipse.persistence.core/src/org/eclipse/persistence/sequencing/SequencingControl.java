@@ -120,6 +120,12 @@ public interface SequencingControl {
      * @see org.eclipse.persistence.sessions.DatabaseLogin
      */
     void setLogin(Login login);
+
+    /**
+     * ADVANCED:
+     * Return the connection pool to use for sequencing.
+     */
+    ConnectionPool getConnectionPool();
     
     /**
      * ADVANCED:

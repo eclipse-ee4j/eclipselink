@@ -30,6 +30,7 @@ import java.io.*;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
@@ -71,7 +72,7 @@ public class Project implements Serializable, Cloneable {
     protected boolean hasProxyIndirection;
     
     /** This a collection of 'maps' that allow users to map custom SQL to query results */
-    protected Map sqlResultSetMappings;
+    protected Map<String, SQLResultSetMapping> sqlResultSetMappings;
 
     /** PERF: Provide an JPQL parse cache to optimize dynamic JPQL. */
     protected transient ConcurrentFixedCache jpqlParseCache;
@@ -117,6 +118,9 @@ public class Project implements Serializable, Cloneable {
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
      */
     protected Map<String, List<String>> metamodelIdClassMap;
+    
+    /** Map of named partitioning policies, keyed by their name. */
+    protected Map<String, PartitioningPolicy> partitioningPolicies;
 
     /**
      * PUBLIC:
@@ -126,7 +130,7 @@ public class Project implements Serializable, Cloneable {
         this.name = "";
         this.descriptors = new HashMap();
         this.defaultReadOnlyClasses = NonSynchronizedVector.newInstance();
-        this.orderedDescriptors = NonSynchronizedVector.newInstance();
+        this.orderedDescriptors = new ArrayList<ClassDescriptor>();
         this.hasIsolatedClasses = false;
         this.hasGenericHistorySupport = false;
         this.hasProxyIndirection = false;
@@ -364,9 +368,8 @@ public class Project implements Serializable, Cloneable {
         // Clear old descriptors to allow rehash on new classes.
         this.descriptors = new HashMap();
         // convert class names to classes for each SQLResultSetMapping
-        if (sqlResultSetMappings != null) {
-            for (Iterator mappingIt = sqlResultSetMappings.keySet().iterator(); mappingIt.hasNext();) {
-                SQLResultSetMapping mapping = (SQLResultSetMapping) sqlResultSetMappings.get(mappingIt.next());
+        if (this.sqlResultSetMappings != null) {
+            for (SQLResultSetMapping mapping : this.sqlResultSetMappings.values()) {
                 mapping.convertClassNamesToClasses(classLoader);
             }
         }
@@ -618,7 +621,7 @@ public class Project implements Serializable, Cloneable {
         if (sqlResultSetMapping == null || this.sqlResultSetMappings == null){
             return null;
         }
-        return (SQLResultSetMapping)this.sqlResultSetMappings.get(sqlResultSetMapping);
+        return this.sqlResultSetMappings.get(sqlResultSetMapping);
     }
 
     /**
@@ -1061,7 +1064,6 @@ public class Project implements Serializable, Cloneable {
      * Use the Metadata key parameter to lookup the 
      * Descriptor from the Map of mappedSuperclass descriptors
      * @param key - theMetadata class
-     * @return
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
      */
     public RelationalDescriptor getMappedSuperclass(Object key) {
@@ -1081,7 +1083,6 @@ public class Project implements Serializable, Cloneable {
      * Return the Map of RelationalDescriptor objects representing mapped superclass parents
      * keyed by className of the metadata class.
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
-     * @return Map
      */
     public Map<Object, RelationalDescriptor> getMappedSuperclassDescriptors() {        
         // Lazy initialization of the mappedSuperclassDescriptors field.
@@ -1096,9 +1097,6 @@ public class Project implements Serializable, Cloneable {
      * Add an IdClass entry to the map of ids for a particular owner
      * This function is used exclusively by the Metamodel API. 
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
-     * @param idMap
-     * @param ownerName
-     * @param name
      */
     public void addMetamodelIdClassMapEntry(String ownerName, String name) {        
         // Add a possible composite key to the owner - this function will handle duplicates by overwriting the entry
@@ -1116,10 +1114,47 @@ public class Project implements Serializable, Cloneable {
      * INTERNAL: 
      * Return the Map of IdClass attribute lists keyed on owner class name.
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
-     * @return
      */
     public Map<String, List<String>> getMetamodelIdClassMap() {
         return metamodelIdClassMap;
+    }
+
+    /**
+     * PUBLIC:
+     * Return the map of partitioning policies, keyed by name.
+     */
+    public Map<String, PartitioningPolicy> getPartitioningPolicies() {
+        if (this.partitioningPolicies == null) {
+            this.partitioningPolicies = new HashMap<String, PartitioningPolicy>();
+        }
+        return partitioningPolicies;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the map of partitioning policies, keyed by name.
+     */
+    public void setPartitioningPolicies(Map<String, PartitioningPolicy> partitioningPolicies) {
+        this.partitioningPolicies = partitioningPolicies;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the map of partitioning policies, keyed by name.
+     */
+    public void addPartitioningPolicy(PartitioningPolicy partitioningPolicy) {
+        getPartitioningPolicies().put(partitioningPolicy.getName(), partitioningPolicy);
+    }
+
+    /**
+     * PUBLIC:
+     * Return the partitioning policies for the name.
+     */
+    public PartitioningPolicy getPartitioningPolicy(String name) {
+        if (this.partitioningPolicies == null) {
+            return null;
+        }
+        return this.partitioningPolicies.get(name);
     }
 }
 

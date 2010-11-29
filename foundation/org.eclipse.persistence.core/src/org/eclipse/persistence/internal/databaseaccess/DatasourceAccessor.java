@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.sessions.server.ConnectionPool;
 
 /**
  * INTERNAL:
@@ -138,6 +139,8 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     protected ConnectionCustomizer customizer;
 
+    protected ConnectionPool pool;
+    
     /**
      *    Default Constructor.
      */
@@ -878,5 +881,19 @@ public abstract class DatasourceAccessor implements Accessor {
                createCustomizer(customizerSession);
            }
        }
-   }  
+   }
+
+   /**
+    * Return the associated connection pool this connection was obtained from.
+    */
+   public ConnectionPool getPool() {
+       return pool;
+   }
+
+   /**
+    * Set the associated connection pool this connection was obtained from.
+    */
+   public void setPool(ConnectionPool pool) {
+       this.pool = pool;
+   }
 }

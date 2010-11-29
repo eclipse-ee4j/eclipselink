@@ -112,6 +112,7 @@ public class MetadataLogger {
     public static final String IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING = "metadata_warning_ignore_mapped_superclass_optimistic_locking";
     public static final String IGNORE_MAPPED_SUPERCLASS_READ_ONLY = "metadata_warning_ignore_mapped_superclass_read_only";
     public static final String IGNORE_MAPPED_SUPERCLASS_FETCH_GROUP = "metadata_warning_ignore_mapped_superclass_fetch_group";
+    public static final String IGNORE_MAPPED_SUPERCLASS_ANNOTATION = "metadata_warning_ignore_mapped_superclass_annotation";
     public static final String IGNORE_MAPPED_SUPERCLASS_PRIMARY_KEY = "metadata_warning_ignore_mapped_superclass_primary_key";
     
     public static final String IGNORE_FETCH_GROUP = "metadata_warning_ignore_fetch_group";
@@ -252,6 +253,7 @@ public class MetadataLogger {
         addContextString(IGNORE_MAPPED_SUPERCLASS_READ_ONLY);
         addContextString(IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING);
         addContextString(IGNORE_MAPPED_SUPERCLASS_FETCH_GROUP);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_ANNOTATION);
         addContextString(IGNORE_MAPPED_SUPERCLASS_PRIMARY_KEY);
         
         addContextString(IGNORE_FETCH_GROUP);

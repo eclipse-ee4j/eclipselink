@@ -66,4 +66,14 @@ public interface Call extends Cloneable, Serializable {
      * will answer false).
      */
     boolean isFinished();
+
+    /**
+     * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
+     */
+    boolean isNothingReturned();
+
+    /**
+     * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
+     */
+    boolean isOneRowReturned();
 }

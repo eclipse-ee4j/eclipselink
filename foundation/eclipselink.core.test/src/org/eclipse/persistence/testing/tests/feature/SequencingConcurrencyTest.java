@@ -171,7 +171,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
         dbSession = (DatabaseSession)getSession();
         if (useServerSession) {
             int numConnections = java.lang.Math.min(nThreads, 5);
-            serverSession = new Project((Login)getSession().getDatasourceLogin().clone()).createServerSession(numConnections, numConnections);
+            serverSession = new Project(getSession().getDatasourceLogin().clone()).createServerSession(numConnections, numConnections);
             serverSession.addDescriptors(new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject());
 //	    serverSession.getSequencingControl().setPreallocationSize(sequencePreallocationSize);
             serverSession.getSequencingControl().setShouldUseSeparateConnection(useSeparateConnection);

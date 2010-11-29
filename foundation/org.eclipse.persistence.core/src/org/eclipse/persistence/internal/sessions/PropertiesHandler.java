@@ -196,6 +196,7 @@ public class PropertiesHandler {
             addProp(new ExclusiveConnectionModeProp());
             addProp(new BooleanProp(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY, "true"));
             addProp(new IdValidationProp());
+            addProp(new ConnectionPoolProp());
         }
         
         Prop(String name) {
@@ -283,13 +284,8 @@ public class PropertiesHandler {
             return prop.getValueToApply(value, shouldUseDefault(value), session);
         }
                 
-        static Map getPrefixValuesToApply(String prefix, Map m, AbstractSession session, boolean useSystemAsDefault) {
-            Prop prop = (Prop)mainMap.get(prefix);
-            if(prop == null) {
-                // prefix doesn't correspond to a Prop object - it's not our property.
-                return new HashMap(0); 
-            }
-            
+        static Map<String, Object> getPrefixValuesToApply(String prefix, Map m, AbstractSession session, boolean useSystemAsDefault) {
+            Prop prop = (Prop)mainMap.get(prefix);            
             // maps suffixes to property values
             Map mapIn = getPrefixValuesFromMap(prefix, m, useSystemAsDefault);
             if(mapIn.isEmpty()) {
@@ -302,7 +298,10 @@ public class PropertiesHandler {
                 Map.Entry entry = (Map.Entry)it.next();
                 String suffix = (String)entry.getKey();
                 String value = (String)entry.getValue();
-                mapOut.put(suffix, prop.getValueToApply(value, shouldUseDefault(value), suffix, session));
+                if (prop != null) {
+                    value = prop.getValueToApply(value, shouldUseDefault(value), suffix, session);
+                }
+                mapOut.put(suffix, value);
             }
             // maps suffixes to valuesToApply
             return mapOut;
@@ -448,6 +447,12 @@ public class PropertiesHandler {
                 {LoggerType.DefaultLogger, pcg + "DefaultSessionLog"},
                 {LoggerType.JavaLogger, pcg + "JavaLog"}
             };
+        }
+    }
+
+    protected static class ConnectionPoolProp extends Prop {
+        ConnectionPoolProp() {
+            super(PersistenceUnitProperties.CONNECTION_POOL);
         }
     }
 

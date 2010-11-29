@@ -112,6 +112,7 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.AbstractPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 
@@ -171,80 +172,83 @@ public class MetadataProject {
     private XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
 
     // A linked map of all the entity mappings (XML file representation)
-    private HashMap<String, XMLEntityMappings> m_entityMappings;
+    private Map<String, XMLEntityMappings> m_entityMappings;
     
     // Map of mapped-superclasses found in XML for this project/persistence unit.
-    private HashMap<String, MappedSuperclassAccessor> m_mappedSuperclasseAccessors;
+    private Map<String, MappedSuperclassAccessor> m_mappedSuperclasseAccessors;
 
     // All the class accessors for this project (Entities and Embeddables).
     private HashMap<String, ClassAccessor> m_allAccessors;
     
     // The entity accessors for this project
-    private HashMap<String, EntityAccessor> m_entityAccessors;
+    private Map<String, EntityAccessor> m_entityAccessors;
     
     // The embeddable accessors for this project
-    private HashMap<String, EmbeddableAccessor> m_embeddableAccessors;
+    private Map<String, EmbeddableAccessor> m_embeddableAccessors;
     
     // The interface accessors for this project
-    private HashMap<String, InterfaceAccessor> m_interfaceAccessors;
+    private Map<String, InterfaceAccessor> m_interfaceAccessors;
     
     // Query metadata.
-    private HashMap<String, NamedQueryMetadata> m_queries;
+    private Map<String, NamedQueryMetadata> m_queries;
     
     // SQL result set mapping
-    private HashMap<String, SQLResultSetMappingMetadata> m_sqlResultSetMappings;
+    private Map<String, SQLResultSetMappingMetadata> m_sqlResultSetMappings;
     
     // Sequencing metadata.
-    private HashMap<MetadataClass, GeneratedValueMetadata> m_generatedValues;
-    private HashMap<String, TableGeneratorMetadata> m_tableGenerators;
-    private HashMap<String, SequenceGeneratorMetadata> m_sequenceGenerators;
+    private Map<MetadataClass, GeneratedValueMetadata> m_generatedValues;
+    private Map<String, TableGeneratorMetadata> m_tableGenerators;
+    private Map<String, SequenceGeneratorMetadata> m_sequenceGenerators;
     
     // Metadata converters, that is, EclipseLink converters.
-    private HashMap<String, AbstractConverterMetadata> m_converters;
+    private Map<String, AbstractConverterMetadata> m_converters;
+    
+    // Store partitioning policies by name, to allow reuse.
+    private Map<String, AbstractPartitioningMetadata> m_partitioningPolicies;
     
     // All id classes (IdClass and EmbeddedId classes) used through-out the 
     // persistence unit. We need this list to determine derived id accessors.
-    private HashSet<String> m_idClasses;
+    private Set<String> m_idClasses;
     
     // Default listeners that need to be applied to each entity in the
     // persistence unit (unless they exclude them).
-    private HashSet< EntityListenerMetadata> m_defaultListeners;
+    private Set< EntityListenerMetadata> m_defaultListeners;
     
     // Class accessors that have a customizer.
-    private HashSet<ClassAccessor> m_accessorsWithCustomizer;
+    private Set<ClassAccessor> m_accessorsWithCustomizer;
     
     // Class accessors that have their id derived from a relationship.
-    private HashSet<ClassAccessor> m_accessorsWithDerivedId;
+    private Set<ClassAccessor> m_accessorsWithDerivedId;
     
     // All direct collection accessors.
     private HashSet<DirectCollectionAccessor> m_directCollectionAccessors;
     
     // Accessors that map to an Embeddable class
-    private HashSet<MappingAccessor> m_embeddableMappingAccessors;
+    private Set<MappingAccessor> m_embeddableMappingAccessors;
     
     // All owning relationship accessors.
-    private HashSet<RelationshipAccessor> m_owningRelationshipAccessors;
+    private Set<RelationshipAccessor> m_owningRelationshipAccessors;
     // All non-owning (mappedBy) relationship accessors.
-    private HashSet<RelationshipAccessor> m_nonOwningRelationshipAccessors;
+    private Set<RelationshipAccessor> m_nonOwningRelationshipAccessors;
     
     // Root level embeddable accessors. When we pre-process embeddable
     // accessors we need to process them from the root down so as to set
     // the correct owning descriptor.
-    private HashSet<EmbeddableAccessor> m_rootEmbeddableAccessors;
+    private Set<EmbeddableAccessor> m_rootEmbeddableAccessors;
     
     // Cache the shared cache mode
     private SharedCacheMode m_sharedCacheMode;
     private boolean m_isSharedCacheModeInitialized;
     
     // All mappedSuperclass accessors, identity is handled by keying on className.
-    private HashMap<String, MappedSuperclassAccessor> m_metamodelMappedSuperclasses;
+    private Map<String, MappedSuperclassAccessor> m_metamodelMappedSuperclasses;
     
     // Boolean to specify if we should uppercase all field names.
     // @see PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES
     private boolean m_forceFieldNamesToUpperCase = false;
     
     // Contains those embeddables and entities that are VIRTUAL (do not exist)
-    private HashSet<ClassAccessor> m_virtualClasses;
+    private Set<ClassAccessor> m_virtualClasses;
     
     /**
      * INTERNAL:
@@ -290,6 +294,7 @@ public class MetadataProject {
         m_sequenceGenerators = new HashMap<String, SequenceGeneratorMetadata>();
         
         m_converters = new HashMap<String, AbstractConverterMetadata>();
+        m_partitioningPolicies = new HashMap<String, AbstractPartitioningMetadata>();
         m_accessorsWithDerivedId = new HashSet<ClassAccessor>();
         
         m_metamodelMappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
@@ -354,6 +359,16 @@ public class MetadataProject {
         // Check for another converter with the same name.
         if (converter.shouldOverride(m_converters.get(converter.getName()))) {
             m_converters.put(converter.getName(), converter);
+        }
+    }
+    
+    /**
+     * Add the partitioning policy by name.
+     */
+    public void addPartitioningPolicy(AbstractPartitioningMetadata policy) {
+        // Check for another converter with the same name.
+        if (policy.shouldOverride(m_partitioningPolicies.get(policy.getName()))) {
+            m_partitioningPolicies.put(policy.getName(), policy);
         }
     }
     
@@ -801,6 +816,13 @@ public class MetadataProject {
      */
     public AbstractConverterMetadata getConverter(String name) {
         return m_converters.get(name);
+    }
+
+    /**
+     * Return the named partitioning policy.
+     */
+    public AbstractPartitioningMetadata getPartitioningPolicy(String name) {
+        return m_partitioningPolicies.get(name);
     }
     
     /**
@@ -1402,6 +1424,15 @@ public class MetadataProject {
     }
     
     /**
+     * Process the partitioning metedata and add the PartitioningPolicys to the project.
+     */
+    protected void processPartitioning() {
+        for (AbstractPartitioningMetadata metadata : m_partitioningPolicies.values()) {
+            m_session.getProject().addPartitioningPolicy(metadata.buildPolicy());
+        }
+    }
+    
+    /**
      * INTERNAL:
      * Stage 1 processing is a pre-processing stage that will perform the 
      * following tasks:
@@ -1510,6 +1541,8 @@ public class MetadataProject {
         // one to one mapping that was either defined (incompletely) or 
         // defaulted.
         processInterfaceAccessors();
+        
+        processPartitioning();
     }
     
     /**

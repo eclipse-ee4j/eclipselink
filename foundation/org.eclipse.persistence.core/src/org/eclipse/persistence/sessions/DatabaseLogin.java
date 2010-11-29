@@ -699,6 +699,18 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
+     * PUBLIC:
+     * Set the JDBC connection string.
+     * This is the full JDBC connect URL. Normally EclipseLink breaks this into two parts to
+     * allow for the driver header to be automatically set, however sometimes it is easier just to set the
+     * entire URL at once.
+     */
+    public void setURL(String url) throws ValidationException {
+        setDriverURLHeader("");
+        setDatabaseURL(url);
+    }
+
+    /**
      * ADVANCED:
      * Set the code for preparing cursored output
      * parameters in a stored procedure

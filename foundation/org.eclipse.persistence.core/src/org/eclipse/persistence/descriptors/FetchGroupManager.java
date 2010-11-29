@@ -221,6 +221,9 @@ public class FetchGroupManager implements Cloneable {
      * Add primary key and version attributes to the passed fetch group.
      */
     public void addMinimalFetchGroup(FetchGroup fetchGroup) {
+        if (this.minimalFetchGroup == null) {
+            return;
+        }
         Iterator<String> it = this.minimalFetchGroup.getAttributeNames().iterator();
         while(it.hasNext()) {
             String name = it.next();

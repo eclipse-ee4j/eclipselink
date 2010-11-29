@@ -982,15 +982,11 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         } else if (platform.equals("Local Oracle DB (thin)")) {
             system.useOracleThin("localhost:1521:orcl", "scott", "tiger");
         } else if (platform.equals("Oracle 11gR2 (thin)")) {
-            system.useOracleThin("qaott11.ca.oracle.com:1521:toplink", "", "password");
+            system.useOracleThin("ottvm030.ca.oracle.com:1521:TOPLINK", "", "password");
         } else if (platform.equals("Oracle 11gR1 (thin)")) {
-            system.useOracleThin("tlsvrdb7.ca.oracle.com:1521:toplink", "", "password");
-        } else if (platform.equals("Oracle 10gR2 (thin)")) {
-            system.useOracleThin("tlsvrdb3.ca.oracle.com:1521:toplink", "", "password");
-        } else if (platform.equals("Oracle 10g (thin)")) {
-            system.useOracleThin("tlsvrdb5.ca.oracle.com:1521:toplink", "", "password");
-        } else if (platform.equals("Oracle 9.2 (thin)")) {
-            system.useOracleThin("tlsvrdb1.ca.oracle.com:1521:toplink", "", "password");
+            system.useOracleThin("ottvm028.ca.oracle.com:1521:TOPLINK", "", "password");
+        } else if (platform.equals("Oracle 11gR1 - Austin (thin)")) {
+            system.useOracleThin("adc6160375.us.oracle.com:1521:TOPLINK", "", "password");
         } else if (platform.equals("Oracle (OCI)")) {
             system.useOracleOCI();
         } else if (platform.equals("TimesTen - coredev1")) {
@@ -1150,9 +1146,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         getLoginChoice().addItem("Local Oracle DB (thin)");
         getLoginChoice().addItem("Oracle 11gR2 (thin)");
         getLoginChoice().addItem("Oracle 11gR1 (thin)");
-        getLoginChoice().addItem("Oracle 10gR2 (thin)");
-        getLoginChoice().addItem("Oracle 10g (thin)");
-        getLoginChoice().addItem("Oracle 9.2 (thin)");
+        getLoginChoice().addItem("Oracle 11gR1 - Austin (thin)");
         getLoginChoice().addItem("Oracle (OCI)");
         getLoginChoice().addItem("TimesTen - coredev1");
         getLoginChoice().addItem("TimesTen - coredev2");

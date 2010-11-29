@@ -65,7 +65,7 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
         return getDbSession().acquireUnitOfWork();   
     }
     
-    protected static void clear() {
+    protected void clear() {
         UnitOfWork uow = acquireUnitOfWork();
 
         // use alternate way for Symfoware as it doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193)
@@ -99,7 +99,7 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
         clearCache();
     }
     
-    protected static void populate() {
+    protected void populate() {
         populator.buildExamples();
         populator.persistExample(getDbSession());
         clearCache();

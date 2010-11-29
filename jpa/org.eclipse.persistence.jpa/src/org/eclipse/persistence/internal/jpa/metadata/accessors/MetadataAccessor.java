@@ -53,17 +53,28 @@ import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.Converters;
+import org.eclipse.persistence.annotations.HashPartitioning;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.ObjectTypeConverters;
+import org.eclipse.persistence.annotations.Partitioned;
+import org.eclipse.persistence.annotations.Partitioning;
+import org.eclipse.persistence.annotations.PinnedPartitioning;
+import org.eclipse.persistence.annotations.RangePartitioning;
+import org.eclipse.persistence.annotations.ReplicationPartitioning;
 import org.eclipse.persistence.annotations.StructConverter;
 import org.eclipse.persistence.annotations.StructConverters;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.TypeConverters;
+import org.eclipse.persistence.annotations.UnionPartitioning;
+import org.eclipse.persistence.annotations.ValuePartitioning;
+import org.eclipse.persistence.annotations.RoundRobinPartitioning;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -78,6 +89,14 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterM
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.PartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.HashPartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.PinnedPartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.RangePartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.ReplicationPartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.RoundRobinPartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.UnionPartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.ValuePartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -86,6 +105,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
  * INTERNAL:
@@ -107,6 +127,16 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     private MetadataDescriptor m_descriptor;
     private MetadataProject m_project;
+
+    protected PartitioningMetadata partitioning;
+    protected ReplicationPartitioningMetadata replicationPartitioning;
+    protected RoundRobinPartitioningMetadata roundRobinPartitioning;
+    protected PinnedPartitioningMetadata pinnedPartitioning;
+    protected RangePartitioningMetadata rangePartitioning;
+    protected ValuePartitioningMetadata valuePartitioning;
+    protected UnionPartitioningMetadata unionPartitioning;
+    protected HashPartitioningMetadata hashPartitioning;
+    protected String partitioned;
     
     private String m_access;
     private String m_name;
@@ -509,6 +539,15 @@ public abstract class MetadataAccessor extends ORMetadata {
         // Initialize single objects.
         initXMLObject(m_accessMethods, accessibleObject);
         
+        initXMLObject(this.partitioning, accessibleObject);
+        initXMLObject(this.replicationPartitioning, accessibleObject);
+        initXMLObject(this.roundRobinPartitioning, accessibleObject);
+        initXMLObject(this.pinnedPartitioning, accessibleObject);
+        initXMLObject(this.rangePartitioning, accessibleObject);
+        initXMLObject(this.valuePartitioning, accessibleObject);
+        initXMLObject(this.hashPartitioning, accessibleObject);
+        initXMLObject(this.unionPartitioning, accessibleObject);
+        
         // Initialize lists of objects.
         initXMLObjects(m_converters, accessibleObject);
         initXMLObjects(m_objectTypeConverters, accessibleObject);
@@ -553,6 +592,16 @@ public abstract class MetadataAccessor extends ORMetadata {
         m_structConverters = mergeORObjectLists(m_structConverters, accessor.getStructConverters());
         m_typeConverters = mergeORObjectLists(m_typeConverters, accessor.getTypeConverters());
         m_properties = mergeORObjectLists(m_properties, accessor.getProperties());
+        
+        this.partitioned = (String) mergeSimpleObjects(this.partitioned, accessor.getPartitioned(), accessor, "<partitioned>");
+        this.partitioning = (PartitioningMetadata) mergeORObjects(this.partitioning, accessor.getPartitioning());
+        this.replicationPartitioning = (ReplicationPartitioningMetadata) mergeORObjects(this.replicationPartitioning, accessor.getReplicationPartitioning());
+        this.roundRobinPartitioning = (RoundRobinPartitioningMetadata) mergeORObjects(this.roundRobinPartitioning, accessor.getRoundRobinPartitioning());
+        this.pinnedPartitioning = (PinnedPartitioningMetadata) mergeORObjects(this.pinnedPartitioning, accessor.getPinnedPartitioning());
+        this.rangePartitioning = (RangePartitioningMetadata) mergeORObjects(this.rangePartitioning, accessor.getRangePartitioning());
+        this.valuePartitioning = (ValuePartitioningMetadata) mergeORObjects(this.valuePartitioning, accessor.getValuePartitioning());
+        this.hashPartitioning = (HashPartitioningMetadata) mergeORObjects(this.hashPartitioning, accessor.getHashPartitioning());
+        this.unionPartitioning = (UnionPartitioningMetadata) mergeORObjects(this.unionPartitioning, accessor.getUnionPartitioning());
     }
     
     /**
@@ -610,7 +659,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Process the XML defined object type converters and check for an 
      * ObjectTypeConverter annotation. 
      */
-    protected void processObjectTypeConverters() {        
+    protected void processObjectTypeConverters() {
         // Check for XML defined object type converters.
         for (ObjectTypeConverterMetadata objectTypeConverter : m_objectTypeConverters) {
             m_project.addConverter(objectTypeConverter);
@@ -818,5 +867,194 @@ public abstract class MetadataAccessor extends ORMetadata {
     public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
         m_typeConverters = typeConverters;
     }
+    
+    /**
+     * Process the partitioning policies defined on this element.
+     */
+    protected void processPartitioning() {
+        boolean found = false;
+        // Check for XML defined partitioning.
+        if (this.replicationPartitioning != null) {
+            found = true;
+            m_project.addPartitioningPolicy(this.replicationPartitioning);
+        }
+        if (this.roundRobinPartitioning != null) {
+            found = true;
+            m_project.addPartitioningPolicy(this.roundRobinPartitioning);
+        }
+        if (this.partitioning != null) {
+            found = true;
+            m_project.addPartitioningPolicy(this.partitioning);
+        }
+        if (this.rangePartitioning != null) {
+            found = true;
+            m_project.addPartitioningPolicy(this.rangePartitioning);
+        }
+        if (this.valuePartitioning != null) {
+            found = true;
+            m_project.addPartitioningPolicy(this.valuePartitioning);
+        }
+        if (this.hashPartitioning != null) {
+            found = true;
+            m_project.addPartitioningPolicy(this.hashPartitioning);
+        }
+        if (this.unionPartitioning != null) {
+            found = true;
+            m_project.addPartitioningPolicy(this.unionPartitioning);
+        }
+        if (this.pinnedPartitioning != null) {
+            found = true;
+            m_project.addPartitioningPolicy(this.pinnedPartitioning);
+        }
+        
+        // Check for partitioning annotations.
+        MetadataAnnotation annotation = getAnnotation(Partitioning.class);
+        if (annotation != null) {
+            found = true;
+            m_project.addPartitioningPolicy(new PartitioningMetadata(annotation, getAccessibleObject()));
+        }
+        annotation = getAnnotation(ReplicationPartitioning.class);
+        if (annotation != null) {
+            found = true;
+            m_project.addPartitioningPolicy(new ReplicationPartitioningMetadata(annotation, getAccessibleObject()));
+        }
+        annotation = getAnnotation(RoundRobinPartitioning.class);
+        if (annotation != null) {
+            found = true;
+            m_project.addPartitioningPolicy(new RoundRobinPartitioningMetadata(annotation, getAccessibleObject()));
+        }
+        annotation = getAnnotation(UnionPartitioning.class);
+        if (annotation != null) {
+            found = true;
+            m_project.addPartitioningPolicy(new UnionPartitioningMetadata(annotation, getAccessibleObject()));
+        }
+        annotation = getAnnotation(RangePartitioning.class);
+        if (annotation != null) {
+            found = true;
+            m_project.addPartitioningPolicy(new RangePartitioningMetadata(annotation, getAccessibleObject()));
+        }
+        annotation = getAnnotation(ValuePartitioning.class);
+        if (annotation != null) {
+            found = true;
+            m_project.addPartitioningPolicy(new ValuePartitioningMetadata(annotation, getAccessibleObject()));
+        }
+        annotation = getAnnotation(ValuePartitioning.class);
+        if (annotation != null) {
+            found = true;
+            m_project.addPartitioningPolicy(new ValuePartitioningMetadata(annotation, getAccessibleObject()));
+        }
+        annotation = getAnnotation(PinnedPartitioning.class);
+        if (annotation != null) {
+            found = true;
+            m_project.addPartitioningPolicy(new PinnedPartitioningMetadata(annotation, getAccessibleObject()));
+        }
+        annotation = getAnnotation(HashPartitioning.class);
+        if (annotation != null) {
+            found = true;
+            m_project.addPartitioningPolicy(new HashPartitioningMetadata(annotation, getAccessibleObject()));
+        }
+        boolean processed = false;
+        if (this.partitioned != null) {
+            processed = true;
+            processPartitioned(this.partitioned);
+        }
+        annotation = getAnnotation(Partitioned.class);
+        if (annotation != null) {
+            processed = true;
+            processPartitioned((String)annotation.getAttribute("value"));
+        }
+        if (found && !processed) {
+            // TODO logWarning("@Partitioned must be used to enable partitioning.");
+        }
+    }
+    
+    /**
+     * Set the policy on the descriptor or mapping.
+     */
+    public void processPartitioned(String name) {
+        if (this instanceof ClassAccessor) {
+            if (getDescriptor().getClassDescriptor().getPartitioningPolicy() != null) {
+                // We must be processing a mapped superclass setting for an
+                // entity that has its own setting. Ignore it and log a warning.
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_ANNOTATION, Partitioned.class, getJavaClass(), getDescriptor().getJavaClass());
+            }
+            getDescriptor().getClassDescriptor().setPartitioningPolicyName(name);
+        } else if (this instanceof MappingAccessor) {
+            ((ForeignReferenceMapping)((MappingAccessor)this).getMapping()).setPartitioningPolicyName(name);
+        }
+    }
+    
+    public PartitioningMetadata getPartitioning() {
+        return partitioning;
+    }
+
+    public void setPartitioning(PartitioningMetadata partitioning) {
+        this.partitioning = partitioning;
+    }
+
+    public RangePartitioningMetadata getRangePartitioning() {
+        return rangePartitioning;
+    }
+
+    public void setRangePartitioning(RangePartitioningMetadata rangePartitioning) {
+        this.rangePartitioning = rangePartitioning;
+    }
+
+    public ValuePartitioningMetadata getValuePartitioning() {
+        return valuePartitioning;
+    }
+
+    public void setValuePartitioning(ValuePartitioningMetadata valuePartitioning) {
+        this.valuePartitioning = valuePartitioning;
+    }
+
+    public UnionPartitioningMetadata getUnionPartitioning() {
+        return unionPartitioning;
+    }
+
+    public void setUnionPartitioning(UnionPartitioningMetadata unionPartitioning) {
+        this.unionPartitioning = unionPartitioning;
+    }
+
+    public ReplicationPartitioningMetadata getReplicationPartitioning() {
+        return replicationPartitioning;
+    }
+
+    public void setReplicationPartitioning(ReplicationPartitioningMetadata replicationPartitioning) {
+        this.replicationPartitioning = replicationPartitioning;
+    }
+
+    public RoundRobinPartitioningMetadata getRoundRobinPartitioning() {
+        return roundRobinPartitioning;
+    }
+
+    public void setRoundRobinPartitioning(RoundRobinPartitioningMetadata roundRobinPartitioning) {
+        this.roundRobinPartitioning = roundRobinPartitioning;
+    }
+
+    public HashPartitioningMetadata getHashPartitioning() {
+        return hashPartitioning;
+    }
+
+    public void setHashPartitioning(HashPartitioningMetadata hashPartitioning) {
+        this.hashPartitioning = hashPartitioning;
+    }
+
+    public PinnedPartitioningMetadata getPinnedPartitioning() {
+        return pinnedPartitioning;
+    }
+
+    public void setPinnedPartitioning(PinnedPartitioningMetadata pinnedPartitioning) {
+        this.pinnedPartitioning = pinnedPartitioning;
+    }
+    
+    public String getPartitioned() {
+        return partitioned;
+    }
+
+    public void setPartitioned(String partitioned) {
+        this.partitioned = partitioned;
+    }
+
 }
 

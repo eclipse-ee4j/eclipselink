@@ -253,21 +253,21 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) throws DatabaseException {
         Ref ref = (Ref)row.get(getField());
-
         if (ref == null) {
             return null;
         }
-
         Struct struct;
+        AbstractRecord targetRow = null;
         try {
             ((DatabaseAccessor)executionSession.getAccessor()).incrementCallCount(executionSession); 
             java.sql.Connection connection = ((DatabaseAccessor)executionSession.getAccessor()).getConnection();
             struct = (Struct)executionSession.getPlatform().getRefValue(ref,executionSession,connection);
+            targetRow = ((ObjectRelationalDataTypeDescriptor)getReferenceDescriptor()).buildRowFromStructure(struct);
         } catch (java.sql.SQLException exception) {
             throw DatabaseException.sqlException(exception, executionSession, false);
+        } finally {
+            ((DatabaseAccessor)executionSession.getAccessor()).decrementCallCount();
         }
-        AbstractRecord targetRow = ((ObjectRelationalDataTypeDescriptor)getReferenceDescriptor()).buildRowFromStructure(struct);
-        ((DatabaseAccessor)executionSession.getAccessor()).decrementCallCount();
 
         return getReferenceDescriptor().getObjectBuilder().buildObject(query, targetRow, joinManager);
     }

@@ -22,6 +22,7 @@ import java.util.*;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
@@ -121,6 +122,12 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /** Support delete cascading on the database relationship constraint. */
     protected boolean isCascadeOnDeleteSetOnDatabase;
+
+    /** Allow the mapping's queries to be targeted at specific connection pools. */
+    protected PartitioningPolicy partitioningPolicy;
+    
+    /** Allow the mapping's queries to be targeted at specific connection pools. */
+    protected String partitioningPolicyName;
     
     protected ForeignReferenceMapping() {
         this.isPrivateOwned = false;
@@ -133,6 +140,50 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         this.requiresTransientWeavedFields = true;
         this.forceInitializationOfSelectionCriteria = false;
         this.extendPessimisticLockScope = ExtendPessimisticLockScope.NONE;
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the mapping's partitioning policy.
+     */
+    public PartitioningPolicy getPartitioningPolicy() {
+        return partitioningPolicy;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the mapping's partitioning policy.
+     * A PartitioningPolicy is used to partition, load-balance or replicate data across multiple difference databases
+     * or across a database cluster such as Oracle RAC.
+     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+     * Setting a policy on a mapping will set the policy on all of its mappings.
+     */
+    public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy) {
+        this.partitioningPolicy = partitioningPolicy;
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the name of the mapping's partitioning policy.
+     * A PartitioningPolicy with the same name must be defined on the Project.
+     * A PartitioningPolicy is used to partition the data for a class across multiple difference databases
+     * or across a database cluster such as Oracle RAC.
+     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+     */
+    public String getPartitioningPolicyName() {
+        return partitioningPolicyName;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the name of the mapping's partitioning policy.
+     * A PartitioningPolicy with the same name must be defined on the Project.
+     * A PartitioningPolicy is used to partition the data for a class across multiple difference databases
+     * or across a database cluster such as Oracle RAC.
+     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+     */
+    public void setPartitioningPolicyName(String partitioningPolicyName) {
+        this.partitioningPolicyName = partitioningPolicyName;
     }
 
     /**
@@ -1039,6 +1090,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 super.preInitialize(session);
             }
         }
+
+        if (getPartitioningPolicyName() != null) {
+            PartitioningPolicy policy = session.getProject().getPartitioningPolicy(getPartitioningPolicyName());
+            if (policy == null) {
+                //TODO session.getIntegrityChecker().handleError(DescriptorException.missingPartitioningPolicy(getPartitioningPolicyName(, this));
+            }
+            setPartitioningPolicy(policy);
+        }
     }
     
     /**
@@ -1048,7 +1107,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        if (isPrivateOwned){
+        if (this.isPrivateOwned){
             getDescriptor().addMappingsPostCalculateChanges(this);
             if (getDescriptor().hasInheritance()){
                 for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
@@ -1098,6 +1157,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         getSelectionQuery().setName(getAttributeName());
         getSelectionQuery().setDescriptor(getReferenceDescriptor());
         getSelectionQuery().setSourceMapping(this);
+        if (getSelectionQuery().getPartitioningPolicy() == null) {
+            getSelectionQuery().setPartitioningPolicy(getPartitioningPolicy());
+        }
     }
 
     /**

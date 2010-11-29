@@ -23,11 +23,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 
 public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
@@ -43,54 +43,24 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
     public ExclusiveIsolatedClientSession(ServerSession parent, ConnectionPolicy connectionPolicy, Map properties) {
         super(parent, connectionPolicy, properties);
         //the parents constructor sets an accessor, but it will be never used.
-        this.accessor = null;
+        this.accessors = null;
         this.shouldAlwaysUseExclusiveConnection = connectionPolicy.isExclusiveAlways();
-    }
-
-    /**
-     * INTERNAL:
-     * Override to acquire the connection from the pool at the last minute
-     */
-    public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
-        boolean shouldReleaseConnection = false;
-        if (query.getAccessor() == null) {
-            //if the connection has not yet been acquired then do it here.
-            if (getAccessor() == null) {
-                this.parent.acquireClientConnection(this);
-                // the session has been already released and this query is likely instantiates a ValueHolder - 
-                // release exclusive connection immediately after the query is executed, otherwise it may never be released.
-                shouldReleaseConnection = !isActive();
-            }
-            query.setAccessor(getAccessor());
-        }
-        try {
-            return query.getAccessor().executeCall(call, translationRow, this);
-        } finally {
-            if (call.isFinished()) {
-                query.setAccessor(null);
-            }
-            // Note that connection could be release only if it has been acquired by the same query,
-            // that allows to execute other queries from postAcquireConnection / preReleaseConnection events
-            // without wiping out connection set by the original query or causing stack overflow, see
-            // bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception 
-            if(shouldReleaseConnection && getAccessor() != null) {
-                this.parent.releaseClientSession(this);
-            }
-        }
     }
 
     /**
      * INTERNAL:
      * Always use writeConnection.
      */
-    public Accessor getAccessor() {
-        return this.writeConnection;
+    @Override
+    public Collection<Accessor> getAccessors() {
+        return getWriteConnections().values();
     }
 
     /**
      * INTERNAL:
      * Provided for consistency.
      */
+    @Override
     public void setAccessor(Accessor accessor) {
         setWriteConnection(accessor);
     }
@@ -112,6 +82,7 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * right after the accessor is connected. 
      * Used by the session to rise an appropriate event.
      */
+    @Override
     public void postConnectExternalConnection(Accessor accessor) {
         super.postConnectExternalConnection(accessor);
         if (this.parent.hasEventManager()) {
@@ -125,6 +96,7 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * right before the accessor is disconnected. 
      * Used by the session to rise an appropriate event.
      */
+    @Override
     public void preDisconnectExternalConnection(Accessor accessor) {
         super.preDisconnectExternalConnection(accessor);
         if (this.parent.hasEventManager()) {
@@ -138,14 +110,16 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * If returns true, accessor used by the session keeps its
      * connection open until released by the session. 
      */
+    @Override
     public boolean isExclusiveConnectionRequired() {
-        return isActive();
+        return this.isActive;
     }
 
     /**
      * PUBLIC:
      * Return if this session is an exclusive isolated client session.
      */
+    @Override
     public boolean isExclusiveIsolatedClientSession() {
         return true;
     }
@@ -155,11 +129,12 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * Helper method to calculate whether to execute this query locally or send
      * it to the server session.
      */
-     protected boolean shouldExecuteLocally(DatabaseQuery query) {
-         if (shouldAlwaysUseExclusiveConnection) {
-             return true;
-         } else {
-             return super.shouldExecuteLocally(query);
-         }
-     }
+    @Override
+    protected boolean shouldExecuteLocally(DatabaseQuery query) {
+        if (this.shouldAlwaysUseExclusiveConnection) {
+            return true;
+        } else {
+            return super.shouldExecuteLocally(query);
+        }
+    }
 }

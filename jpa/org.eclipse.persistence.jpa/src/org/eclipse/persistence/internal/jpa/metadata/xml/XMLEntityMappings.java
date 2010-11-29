@@ -56,6 +56,14 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMet
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.HashPartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.PartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.PinnedPartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.RangePartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.ReplicationPartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.RoundRobinPartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.UnionPartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.partitioning.ValuePartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
@@ -92,6 +100,15 @@ public class XMLEntityMappings extends ORMetadata {
     private List<TableGeneratorMetadata> m_tableGenerators;
     private List<TypeConverterMetadata> m_typeConverters;
     
+    protected List<PartitioningMetadata> partitioning;
+    protected List<RangePartitioningMetadata> rangePartitioning;
+    protected List<ValuePartitioningMetadata> valuePartitioning;
+    protected List<UnionPartitioningMetadata> unionPartitioning;
+    protected List<ReplicationPartitioningMetadata> replicationPartitioning;
+    protected List<RoundRobinPartitioningMetadata> roundRobinPartitioning;
+    protected List<HashPartitioningMetadata> hashPartitioning;
+    protected List<PinnedPartitioningMetadata> pinnedPartitioning;
+
     private MetadataFactory m_factory;
     private MetadataFile m_file;
     private MetadataProject m_project;
@@ -525,6 +542,36 @@ public class XMLEntityMappings extends ORMetadata {
             sequenceGenerator.initXMLObject(m_file, this);
             m_project.addSequenceGenerator(sequenceGenerator, getDefaultCatalog(), getDefaultSchema());
         }
+        
+        // Add the partitioning to the project.
+        for (PartitioningMetadata partitioning : this.partitioning) {
+            partitioning.initXMLObject(m_file, this);
+            m_project.addPartitioningPolicy(partitioning);
+        }
+        for (ReplicationPartitioningMetadata partitioning : this.replicationPartitioning) {
+            partitioning.initXMLObject(m_file, this);
+            m_project.addPartitioningPolicy(partitioning);
+        }
+        for (RoundRobinPartitioningMetadata partitioning : this.roundRobinPartitioning) {
+            partitioning.initXMLObject(m_file, this);
+            m_project.addPartitioningPolicy(partitioning);
+        }
+        for (PinnedPartitioningMetadata partitioning : this.pinnedPartitioning) {
+            partitioning.initXMLObject(m_file, this);
+            m_project.addPartitioningPolicy(partitioning);
+        }
+        for (RangePartitioningMetadata partitioning : this.rangePartitioning) {
+            partitioning.initXMLObject(m_file, this);
+            m_project.addPartitioningPolicy(partitioning);
+        }
+        for (ValuePartitioningMetadata partitioning : this.valuePartitioning) {
+            partitioning.initXMLObject(m_file, this);
+            m_project.addPartitioningPolicy(partitioning);
+        }
+        for (HashPartitioningMetadata partitioning : this.hashPartitioning) {
+            partitioning.initXMLObject(m_file, this);
+            m_project.addPartitioningPolicy(partitioning);
+        }
             
         // Add the XML named queries to the project.
         for (NamedQueryMetadata namedQuery : m_namedQueries) {
@@ -667,14 +714,12 @@ public class XMLEntityMappings extends ORMetadata {
         ByteArrayOutputStream outputStream = null;
         StringReader reader1 = null;
         StringReader reader2 = null;
-        StringReader reader3 = null;
         try {
             outputStream = new ByteArrayOutputStream();
             XMLEntityMappingsWriter.write(xmlEntityMappings, outputStream);
             reader1 = new StringReader(outputStream.toString());
             reader2 = new StringReader(outputStream.toString());
-            reader3 = new StringReader(outputStream.toString());
-            XMLEntityMappings newXMLEntityMappings = XMLEntityMappingsReader.read("tempStream", reader1, reader2, reader3, m_loader, null);
+            XMLEntityMappings newXMLEntityMappings = XMLEntityMappingsReader.read("tempStream", reader1, reader2, m_loader, null);
             return newXMLEntityMappings;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -690,9 +735,6 @@ public class XMLEntityMappings extends ORMetadata {
             }
             if (reader2 != null) {
                 reader2.close();
-            }
-            if (reader3 != null) {
-                reader3.close();
             }
         }
     }
@@ -906,5 +948,69 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setVersion(String version) {
         m_version = version;
+    }
+    
+    public List<PartitioningMetadata> getPartitioning() {
+        return partitioning;
+    }
+
+    public void setPartitioning(List<PartitioningMetadata> partitioning) {
+        this.partitioning = partitioning;
+    }
+
+    public List<RangePartitioningMetadata> getRangePartitioning() {
+        return rangePartitioning;
+    }
+
+    public void setRangePartitioning(List<RangePartitioningMetadata> rangePartitioning) {
+        this.rangePartitioning = rangePartitioning;
+    }
+
+    public List<ValuePartitioningMetadata> getValuePartitioning() {
+        return valuePartitioning;
+    }
+
+    public void setValuePartitioning(List<ValuePartitioningMetadata> valuePartitioning) {
+        this.valuePartitioning = valuePartitioning;
+    }
+
+    public List<UnionPartitioningMetadata> getUnionPartitioning() {
+        return unionPartitioning;
+    }
+
+    public void setUnionPartitioning(List<UnionPartitioningMetadata> unionPartitioning) {
+        this.unionPartitioning = unionPartitioning;
+    }
+
+    public List<ReplicationPartitioningMetadata> getReplicationPartitioning() {
+        return replicationPartitioning;
+    }
+
+    public void setReplicationPartitioning(List<ReplicationPartitioningMetadata> replicationPartitioning) {
+        this.replicationPartitioning = replicationPartitioning;
+    }
+
+    public List<RoundRobinPartitioningMetadata> getRoundRobinPartitioning() {
+        return roundRobinPartitioning;
+    }
+
+    public void setRoundRobinPartitioning(List<RoundRobinPartitioningMetadata> roundRobinPartitioning) {
+        this.roundRobinPartitioning = roundRobinPartitioning;
+    }
+
+    public List<PinnedPartitioningMetadata> getPinnedPartitioning() {
+        return pinnedPartitioning;
+    }
+
+    public void setPinnedPartitioning(List<PinnedPartitioningMetadata> pinnedPartitioning) {
+        this.pinnedPartitioning = pinnedPartitioning;
+    }
+
+    public List<HashPartitioningMetadata> getHashPartitioning() {
+        return hashPartitioning;
+    }
+
+    public void setHashPartitioning(List<HashPartitioningMetadata> hashPartitioning) {
+        this.hashPartitioning = hashPartitioning;
     }
 }

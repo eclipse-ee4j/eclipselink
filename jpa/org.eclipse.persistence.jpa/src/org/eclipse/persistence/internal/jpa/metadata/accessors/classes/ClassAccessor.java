@@ -166,7 +166,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
     private Boolean m_metadataComplete;
     
     private ChangeTrackingMetadata m_changeTracking;
-    
+
     // Various copy policies. Represented individually to facilitate XML writing.
     private CloneCopyPolicyMetadata m_cloneCopyPolicy;
     private CustomCopyPolicyMetadata m_customCopyPolicy;
@@ -1116,6 +1116,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
         
         // Process the copy policy metadata.
         processCopyPolicy();
+        
+        processPartitioning();
         
         // Process the property metadata.
         processProperties();

@@ -129,7 +129,7 @@ public interface Login {
      * INTERNAL:
      * Clone the login.
      */
-    Object clone();
+    Login clone();
 
     /**
      * PUBLIC:

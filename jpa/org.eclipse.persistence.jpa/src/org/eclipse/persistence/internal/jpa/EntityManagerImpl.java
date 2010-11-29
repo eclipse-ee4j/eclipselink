@@ -1965,7 +1965,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 // sometimes ConnectionPolicy.clone clones the login , too -
                 // sometimes it doesn't.
                 if (newPolicy.getLogin() == null || newPolicy.getLogin() == policy.getLogin()) {
-                    newLogin = (DatasourceLogin) login.clone();
+                    newLogin = login.clone();
                     newPolicy.setLogin(newLogin);
                 }
                 // because it uses a new login the connection policy should not

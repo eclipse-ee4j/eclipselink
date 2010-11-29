@@ -1228,6 +1228,11 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             if (!isValidActualParameter(value, type)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { name, value.getClass(), query.getArgumentTypes().get(index), query.getEJBQLString() }));
             }
+        } else {
+            // native queries start a 1 not 0.
+            if (isIndex && name.equals("0")) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", new Object[] { name, query.getSQLString() }));
+            }
         }
         this.parameterValues.put(name, value);
     }

@@ -543,7 +543,9 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             getDeleteAllQuery().setSessionName(session.getName());
         }
         getDeleteAllQuery().setName(getAttributeName());
-
+        if (getDeleteAllQuery().getPartitioningPolicy() == null) {
+            getDeleteAllQuery().setPartitioningPolicy(getPartitioningPolicy());
+        }
         if (hasCustomDeleteAllQuery()) {
             return;
         }

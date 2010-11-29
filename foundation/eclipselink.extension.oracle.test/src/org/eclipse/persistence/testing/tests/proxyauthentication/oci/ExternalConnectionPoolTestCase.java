@@ -79,7 +79,7 @@ public class ExternalConnectionPoolTestCase extends ProxyAuthenticationConnectio
         ConnectionPool pool = ss.getConnectionPool(proxyUser);
         if (pool == null) {
             // Clone serverSession's login – the clone will be used by the new connection pool
-            Login login = (Login)ss.getLogin().clone();
+            Login login = ss.getLogin().clone();
             // set proxy properties in the login
             addProxyPropertiesToLogin(login);
             // create the new pool    

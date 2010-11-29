@@ -343,6 +343,7 @@
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.advanced.field.access.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.advanced.properties}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.pu.with.spaces}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/eclipselink-partitioned-model"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.cascade.deletes}"/>
         <!--mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.pu.with.multibyte}"/-->
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${jpa.performance}"/>
@@ -476,7 +477,7 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-jpa-performance, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation" description="build EclipseLink jar">
+    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-jpa-performance, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
@@ -541,7 +542,8 @@
                                org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
                                org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/**
                                org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
-                               org/eclipse/persistence/testing/models/jpa/metamodel/**            	
+                               org/eclipse/persistence/testing/models/jpa/metamodel/**
+                               org/eclipse/persistence/testing/models/jpa/partitioned/**
                                org/eclipse/persistence/testing/models/jpa/beanvalidation/**
                                org/eclipse/persistence/testing/models/weaving/**"/>
         </copy>
@@ -698,6 +700,20 @@
         </jar>
     </target>
 
+    <target name="package-partitioned" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/eclipselink-partitioned-model/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-partitioned-model" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/eclipselink-partitioned-model">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/partitioned/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/eclipselink-partitioned-model.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/eclipselink-partitioned-model">
+            </fileset>
+        </jar>
+    </target>
+
     <target name="package-jpa-pu_with_multibyte" depends="">
         <!--copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.pu.with.multibyte}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.pu.with.multibyte}" includes="*.xml"/>
@@ -778,6 +794,7 @@
             <fileset file="${eclipselink.jpa.test}/${eclipselink.advanced.field.access.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.advanced.properties}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.pu.with.spaces}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/eclipselink-partitioned-model.jar"/>
             <!--fileset file="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
             <fileset file="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"/>
@@ -808,6 +825,7 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.advanced.field.access.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.advanced.properties}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.spaces}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/eclipselink-partitioned-model.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.cascade.deletes}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"/>
@@ -979,6 +997,7 @@
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.advanced.field.access.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.advanced.properties}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.pu.with.spaces}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/woven-eclipselink-partitioned-model.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.cascade.deletes}.jar"/>
             <!--pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${eclipselink.jpa.test}/woven-${jpa.performance}.jar"/>
@@ -1399,6 +1418,13 @@
         </weave>
         <weave source="${eclipselink.jpa.test}/${eclipselink.pu.with.spaces}.jar"
                target="${eclipselink.jpa.test}/woven-${eclipselink.pu.with.spaces}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source="${eclipselink.jpa.test}/eclipselink-partitioned-model.jar"
+               target="${eclipselink.jpa.test}/woven-eclipselink-partitioned-model.jar"
                loglevel="${logging.level}">
                <classpath>
                     <path refid="run.classpath"/>

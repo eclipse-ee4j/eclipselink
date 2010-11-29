@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.config.ParameterDelimiterType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
@@ -140,8 +141,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * Connection to use for database access, required for server session
      * connection pooling.
+     * There can be multiple connections with partitioning and replication.
      */
-    protected transient Accessor accessor;
+    protected transient Collection<Accessor> accessors;
 
     /**
      * Mappings and the descriptor use parameterized mechanisms that will be
@@ -277,6 +279,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /** Allow additional validation to be performed before using the update call cache */
     protected boolean shouldValidateUpdateCallCacheUse;
 
+    /** Allow queries to be targeted at specific connection pools. */
+    protected PartitioningPolicy partitioningPolicy;
+    
+
     /** Allow the reserved pound char used to delimit bind parameters to be overridden */
     protected String parameterDelimiter;
 
@@ -299,6 +305,26 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.isExecutionClone = false;
         this.shouldValidateUpdateCallCacheUse = false;
         this.parameterDelimiter = ParameterDelimiterType.DEFAULT;
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the query's partitioning policy.
+     */
+    public PartitioningPolicy getPartitioningPolicy() {
+        return partitioningPolicy;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the query's partitioning policy.
+     * A PartitioningPolicy is used to partition, load-balance or replicate data across multiple difference databases
+     * or across a database cluster such as Oracle RAC.
+     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+     * Setting a policy on a query will override the descriptor and session defaults.
+     */
+    public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy) {
+        this.partitioningPolicy = partitioningPolicy;
     }
 
     /**
@@ -798,17 +824,30 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL: Return the accessor.
      */
     public Accessor getAccessor() {
-        return accessor;
+        if ((this.accessors == null) || (this.accessors.size() == 0)) {
+            return null;
+        }
+        if (this.accessors instanceof List) {
+            return ((List<Accessor>)this.accessors).get(0);
+        }
+        return this.accessors.iterator().next();
+    }
+
+    /**
+     * INTERNAL: Return the accessors.
+     */
+    public Collection<Accessor> getAccessors() {
+        return this.accessors;
     }
 
     /**
      * INTERNAL: Return the arguments for use with the pre-defined query option
      */
     public List<String> getArguments() {
-        if (arguments == null) {
-            arguments = new ArrayList<String>();
+        if (this.arguments == null) {
+            this.arguments = new ArrayList<String>();
         }
-        return arguments;
+        return this.arguments;
     }
 
     /**
@@ -1296,7 +1335,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * getAccessor() will attempt to lazily initialize it.
      */
     public boolean hasAccessor() {
-        return accessor != null;
+        return this.accessors != null;
     }
 
     /**
@@ -1795,11 +1834,25 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Set the list of connection accessors to execute the query on.
+     */
+    public void setAccessors(Collection<Accessor> accessors) {
+        this.accessors = accessors;
+    }
+
+    /**
      * INTERNAL: Set the accessor, the query must always use the same accessor
      * for database access. This is required to support connection pooling.
      */
     public void setAccessor(Accessor accessor) {
-        this.accessor = accessor;
+        if (accessor == null) {
+            this.accessors = null;
+            return;
+        }
+        List<Accessor> accessors = new ArrayList(1);
+        accessors.add(accessor);
+        this.accessors = accessors;
     }
 
     /**

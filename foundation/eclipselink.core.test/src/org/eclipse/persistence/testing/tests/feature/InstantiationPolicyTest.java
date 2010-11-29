@@ -106,7 +106,7 @@ public class InstantiationPolicyTest extends AutoVerifyTestCase {
 
     protected DatabaseSession createTestSession() {
         DatabaseSession aSession = new EmployeeProject().createDatabaseSession();
-        aSession.setLogin((DatabaseLogin)getSession().getLogin().clone());
+        aSession.setLogin(getSession().getLogin().clone());
         aSession.setSessionLog(getSession().getSessionLog());
         aSession.logout();
         return aSession;

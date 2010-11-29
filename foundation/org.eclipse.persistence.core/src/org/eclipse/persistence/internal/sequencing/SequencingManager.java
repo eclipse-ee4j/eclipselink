@@ -133,7 +133,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             } else {
                 login = getOwnerSession().getDatasourceLogin();
             }
-            setLogin((Login)login.clone());
+            setLogin(login.clone());
         }
 
         if (getLogin() != null) {

@@ -538,8 +538,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 // query key name and not a column name so bypass any of this
                 // code.
                 if (referencedColumnName != null && !isVariableOneToOne()) {
-                    DatabaseField referencedField = new DatabaseField();
-                    setFieldName(referencedField, referencedColumnName, MetadataLogger.PK_COLUMN);
+                    DatabaseField referencedField = new DatabaseField(referencedColumnName);
                     joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(referencedField).getName());
                 }
             }

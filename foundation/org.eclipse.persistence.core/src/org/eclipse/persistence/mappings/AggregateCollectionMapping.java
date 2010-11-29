@@ -1299,6 +1299,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         // Aggregate 1:m never maintains cache as target objects are aggregates.
         getSelectionQuery().setShouldMaintainCache(false);
+        // Add foreign key fields to select, as field values may be required for relationships.
+        for (DatabaseField relationField : getTargetForeignKeyFields()) {
+            ((ReadAllQuery)getSelectionQuery()).getAdditionalFields().add(relationField);
+        }
 
         initializeDeleteAllQuery(session);
         if (this.listOrderField != null) {
@@ -1655,6 +1659,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         query.setDescriptor(getReferenceDescriptor());
         query.setShouldMaintainCache(false);
         query.setIsInMemoryOnly(isCascadeOnDeleteSetOnDatabase());
+        if (query.getPartitioningPolicy() == null) {
+            query.setPartitioningPolicy(getPartitioningPolicy());
+        }
         if (!hasCustomDeleteAllQuery()) {
             if (getSelectionCriteria() == null) {
                 query.setSelectionCriteria(getDeleteAllCriteria(session));
@@ -2373,44 +2380,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         } else {
             collectionChangeRecord.getChangedValues().remove(changeSetToRemove);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Retrieves a value from the row for a particular query key
-     */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
-        // For CR#2587: a fix to allow the reading of nested aggregate collections that
-        // use foreign keys as primary keys.
-        // Even though foreign keys are not read in a read query insert them into the row that 
-        // is returned from the database to allow cascading of primary keys.
-        // This row will eventually become the translation row which is used to read the aggregate collection.
-        // The fix works by passing foreign key information between source and target queries via the translation row.
-        // Must clone the row first, for due to prior optimizations the vector of fields is now part of
-        // a prepared query!
-        row = row.clone();
-        int i = 0;
-        for (Enumeration sourceKeys = getSourceKeyFields().elements();
-                 sourceKeys.hasMoreElements(); i++) {
-            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
-            Object value = null;
-
-            // First insure that the source foreign key field is in the row.
-            // N.B. If get() is used and returns null it may just mean that the field exists but the value is null.
-            int index = row.getFields().indexOf(sourceKey);
-            if (index == -1) {
-                //Line x: Retrieve the value from the source query's translation row.
-                value = sourceQuery.getTranslationRow().get(sourceKey);
-                row.add(sourceKey, value);
-            } else {
-                value = row.getValues().elementAt(index);
-            }
-
-            //Now duplicate the source key field values with target key fields, so children aggregate collections can later access them.
-            //This will enable the later execution of the above line x.
-            row.add(getTargetForeignKeyFields().elementAt(i), value);
-        }
-        return super.valueFromRow(row, joinManager, sourceQuery, executionSession);
     }
 
     /**

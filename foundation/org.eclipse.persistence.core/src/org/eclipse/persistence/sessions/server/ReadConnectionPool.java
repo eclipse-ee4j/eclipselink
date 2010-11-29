@@ -13,6 +13,7 @@
 package org.eclipse.persistence.sessions.server;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.exceptions.*;
 
@@ -82,8 +83,8 @@ public class ReadConnectionPool extends ConnectionPool {
                 }
             }
             if (connection.getCallCount() == 0) {
-                connection.incrementCallCount(getOwner());
-                return connection;
+                leastBusyConnection = connection;
+                break;
             }
             if ((leastBusyConnection == null) || (leastBusyConnection.getCallCount() > connection.getCallCount())) {
                 leastBusyConnection = connection;
@@ -91,15 +92,20 @@ public class ReadConnectionPool extends ConnectionPool {
         }
 
         // If still not at max, add a new connection.
-        if ((this.connectionsAvailable.size() + this.connectionsUsed.size()) < this.maxNumberOfConnections) {
+        if ((leastBusyConnection.getCallCount() == 0) && (this.connectionsAvailable.size() + this.connectionsUsed.size()) < this.maxNumberOfConnections) {
             Accessor connection = buildConnection();
             this.connectionsAvailable.add(connection);
             connection.incrementCallCount(getOwner());
-            return connection;
+            leastBusyConnection = connection;
         }
 
         // Use the least busy connection.
         leastBusyConnection.incrementCallCount(getOwner());
+        if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+            Object[] args = new Object[1];
+            args[0] = this.name;
+            this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "acquire_connection", args, leastBusyConnection);
+        }
         return leastBusyConnection;
     }
 
@@ -116,6 +122,11 @@ public class ReadConnectionPool extends ConnectionPool {
      * Because connections are not exclusive nothing is required.
      */
     public synchronized void releaseConnection(Accessor connection) throws DatabaseException {
+        if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+            Object[] args = new Object[1];
+            args[0] = this.name;
+            this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "release_connection", args, connection);
+        }
         connection.decrementCallCount();
         if (!connection.isValid()){
             getOwner().setCheckConnections();

@@ -35,7 +35,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     /** Define the type of batch fetching to use. */
     protected BatchFetchType type;
     /** Define the batch size for IN style batch fetching. */
-    protected int size = 100000;
+    protected int size = 500;
     /** Define the attributes to be batch fetched. */
     protected List<Expression> attributeExpressions;
     /** Define the mapping to be batch fetched. */

@@ -489,7 +489,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         call = this.queryMechanism.cursorSelectAllRows();
         Statement statement = call.getStatement();
         ResultSet resultSet = call.getResult();
-        DatabaseAccessor accessor = (DatabaseAccessor)this.accessor;
+        DatabaseAccessor accessor = (DatabaseAccessor)((List<Accessor>)this.accessors).get(0);
         boolean exceptionOccured = false;
         try {
             if (!resultSet.next()) {

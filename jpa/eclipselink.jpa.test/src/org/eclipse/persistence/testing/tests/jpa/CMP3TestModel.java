@@ -92,7 +92,7 @@ public class CMP3TestModel extends TestModel {
     }
 
     public static EntityManager createEntityManager() {
-        entityManager = JUnitTestCase.createEntityManager();
+        entityManager = JUnitTestCase.createEntityManager("default");
         return entityManager;
     }
 

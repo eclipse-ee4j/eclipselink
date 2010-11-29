@@ -38,7 +38,7 @@ public class ExceptionOnIsolatedReference extends TestCase {
     }
 
     public void test() {
-        this.server = new ServerSession((DatabaseLogin)getSession().getLogin().clone(), 2, 5);
+        this.server = new ServerSession(getSession().getLogin().clone(), 2, 5);
         copyDescriptors(getSession());
         this.server.addDescriptor(buildNonIsolatedDescriptor());
         // the exception we are expecting gets logged as a severe exception - make sure it does not get logged so the srg will not get diffs.

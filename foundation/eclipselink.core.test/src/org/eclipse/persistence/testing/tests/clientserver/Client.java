@@ -39,7 +39,7 @@ public class Client extends Thread {
         } else if (getName().equals("Way")) {
             this.clientSession = server.serverSession.acquireClientSession("default");
         } else {
-            this.clientSession = server.serverSession.acquireClientSession((DatabaseLogin)session.getLogin().clone());
+            this.clientSession = server.serverSession.acquireClientSession(session.getLogin().clone());
         }
         this.expression = new ExpressionBuilder().get("lastName").equal(employeeLastName);
     }

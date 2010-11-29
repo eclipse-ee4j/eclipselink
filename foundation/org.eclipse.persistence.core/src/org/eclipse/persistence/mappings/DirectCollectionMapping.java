@@ -1367,22 +1367,24 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 getReferenceTable().setName(beginQuote + getReferenceTable().getName() + endQuote);
             }
         }
-        if(this.listOrderField != null) {
+        if (this.listOrderField != null) {
             this.initializeListOrderField(session);
         }
-        getContainerPolicy().initialize(session, referenceTable);
+        getContainerPolicy().initialize(session, this.referenceTable);
         if (!hasCustomSelectionQuery()){
             initOrRebuildSelectQuery();
-            selectionQuery.setName(getAttributeName());
+            getSelectionQuery().setName(getAttributeName());
             
             if (shouldInitializeSelectionCriteria()) {
                 initializeSelectionCriteria(session);
                 initializeSelectionStatement(session);
             }
-            
-            if (!getSelectionQuery().hasSessionName()) {
-                getSelectionQuery().setSessionName(session.getName());
-            }
+        }        
+        if (!getSelectionQuery().hasSessionName()) {
+            getSelectionQuery().setSessionName(session.getName());
+        }
+        if (getSelectionQuery().getPartitioningPolicy() == null) {
+            getSelectionQuery().setPartitioningPolicy(getPartitioningPolicy());
         }
         if ((getValueConverter() != null) && (getSelectionQuery() instanceof DirectReadQuery)) {
             ((DirectReadQuery)getSelectionQuery()).setValueConverter(getValueConverter());
@@ -1423,6 +1425,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (!getDeleteAllQuery().hasSessionName()) {
             getDeleteAllQuery().setSessionName(session.getName());
         }
+        if (getDeleteAllQuery().getPartitioningPolicy() == null) {
+            getDeleteAllQuery().setPartitioningPolicy(getPartitioningPolicy());
+        }
 
         if (hasCustomDeleteAllQuery()) {
             return;
@@ -1460,6 +1465,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (!getDeleteQuery().hasSessionName()) {
             getDeleteQuery().setSessionName(session.getName());
         }
+        if (getDeleteQuery().getPartitioningPolicy() == null) {
+            getDeleteQuery().setPartitioningPolicy(getPartitioningPolicy());
+        }
 
         if (hasCustomDeleteQuery()) {
             return;
@@ -1478,6 +1486,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (!getDeleteNullQuery().hasSessionName()) {
             getDeleteNullQuery().setSessionName(session.getName());
         }
+        if (getDeleteNullQuery().getPartitioningPolicy() == null) {
+            getDeleteNullQuery().setPartitioningPolicy(getPartitioningPolicy());
+        }
 
         SQLDeleteStatement statement = new SQLDeleteStatement();
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -1490,6 +1501,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     protected void initializeDeleteAtIndexQuery(AbstractSession session) {
         if (!getDeleteAtIndexQuery().hasSessionName()) {
             getDeleteAtIndexQuery().setSessionName(session.getName());
+        }
+        if (getDeleteAtIndexQuery().getPartitioningPolicy() == null) {
+            getDeleteAtIndexQuery().setPartitioningPolicy(getPartitioningPolicy());
         }
 
         if (hasCustomDeleteAtIndexQuery()) {
@@ -1509,7 +1523,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (!getUpdateAtIndexQuery().hasSessionName()) {
             getUpdateAtIndexQuery().setSessionName(session.getName());
         }
-
+        if (getUpdateAtIndexQuery().getPartitioningPolicy() == null) {
+            getUpdateAtIndexQuery().setPartitioningPolicy(getPartitioningPolicy());
+        }
         if (hasCustomUpdateAtIndexQuery()) {
             return;
         }
@@ -1521,7 +1537,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         statement.setWhereClause(expression);
         statement.setTable(getReferenceTable());
         AbstractRecord modifyRow = new DatabaseRecord();
-        modifyRow.add(listOrderField, null);
+        modifyRow.add(this.listOrderField, null);
         statement.setModifyRow(modifyRow);
         getUpdateAtIndexQuery().setSQLStatement(statement);
     }
@@ -1593,6 +1609,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     protected void initializeInsertQuery(AbstractSession session) {
         if (!getInsertQuery().hasSessionName()) {
             getInsertQuery().setSessionName(session.getName());
+        }
+        if (getInsertQuery().getPartitioningPolicy() == null) {
+            getInsertQuery().setPartitioningPolicy(getPartitioningPolicy());
         }
 
         if (hasCustomInsertQuery()) {

@@ -23,12 +23,14 @@ import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
 
 import javax.persistence.*;
+
 import junit.framework.*;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -42,7 +44,7 @@ import org.eclipse.persistence.testing.framework.server.TestRunner4;
 import org.eclipse.persistence.testing.framework.server.TestRunner5;
 
 /**
- * This is the superclass for all TopLink JUnit tests
+ * This is the superclass for all EclipseLink JUnit tests
  * Provides convenience methods for transactional access as well as to access
  * login information and to create any sessions required for setup.
  *
@@ -236,9 +238,9 @@ public abstract class JUnitTestCase extends TestCase {
         serverPlatform = value;
     }
     
-    public static void clearCache() {
+    public void clearCache() {
          try {
-            getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            getServerSession(getPersistenceUnitName()).getIdentityMapAccessor().initializeAllIdentityMaps();
          } catch (Exception ex) {
             throw new  RuntimeException("An exception occurred trying clear the cache.", ex);
         }   
@@ -326,9 +328,9 @@ public abstract class JUnitTestCase extends TestCase {
      * Create a new entity manager for the "default" persistence unit.
      * If in JEE this will create or return the active managed entity manager.
      */
-    public static EntityManager createEntityManager() {
+    public EntityManager createEntityManager() {
         if (isOnServer() && isJTA()) {
-            return getServerPlatform().getEntityManager("default");
+            return getServerPlatform().getEntityManager(getPersistenceUnitName());
         } else {
             return getEntityManagerFactory().createEntityManager();
         }
@@ -380,11 +382,15 @@ public abstract class JUnitTestCase extends TestCase {
             return getServerPlatform().getEntityManager(persistenceUnitName);
         } else {
             return getEntityManagerFactory(persistenceUnitName, properties, descriptors).createEntityManager();
-        }      
+        }
+    }
+
+    public DatabaseSessionImpl getDatabaseSession() {
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getServerSession();               
     }
 
     public static ServerSession getServerSession() {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getServerSession();               
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory("default").createEntityManager()).getServerSession();               
     }
     
     public static ServerSession getServerSession(String persistenceUnitName) {
@@ -395,13 +401,6 @@ public abstract class JUnitTestCase extends TestCase {
         return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName, properties).createEntityManager()).getServerSession();        
     }
     
-    public static EntityManagerFactory getEntityManagerFactory() {
-        return getEntityManagerFactory("default");
-    }
-    
-    public static EntityManagerFactory getEntityManagerFactory(Map properties) {
-        return getEntityManagerFactory("default", properties, null);
-    }
     
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName) {
         return getEntityManagerFactory(persistenceUnitName,  JUnitTestCaseHelper.getDatabaseProperties(), null);
@@ -440,6 +439,14 @@ public abstract class JUnitTestCase extends TestCase {
             
             return emfNamedPersistenceUnit;
         }
+    }
+    
+    public EntityManagerFactory getEntityManagerFactory() {
+        return getEntityManagerFactory(getPersistenceUnitName());
+    }
+    
+    public static EntityManagerFactory getEntityManagerFactory(Map properties) {
+        return getEntityManagerFactory("default", properties);
     }
     
     public static boolean doesEntityManagerFactoryExist() {
@@ -572,7 +579,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Verifies that the object was merged to the cache, and written to the database correctly.
      */
     public void verifyObject(Object writtenObject) {
-        verifyObject(writtenObject, "default");
+        verifyObject(writtenObject, getPersistenceUnitName());
     }
 
     /**
@@ -589,7 +596,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Verifies the object in a new EntityManager.
      */
     public void verifyObjectInEntityManager(Object writtenObject) {
-        verifyObjectInEntityManager(writtenObject, "default");
+        verifyObjectInEntityManager(writtenObject, getPersistenceUnitName());
     }
     
     /**
@@ -611,7 +618,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Verifies that the object was merged to the cache, and written to the database correctly.
      */
     public void verifyObjectInCacheAndDatabase(Object writtenObject) {
-        verifyObjectInCacheAndDatabase(writtenObject, "default");
+        verifyObjectInCacheAndDatabase(writtenObject, getPersistenceUnitName());
     }
     
     /**
@@ -628,12 +635,61 @@ public abstract class JUnitTestCase extends TestCase {
             fail("Object from database: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
         }
     }
+
+    /**
+     * Generic persist test.
+     */
+    public void verifyPersist(Object object) {
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            em.persist(object);
+            commitTransaction(em);
+            beginTransaction(em);
+            verifyObjectInCacheAndDatabase(object);
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        } catch (RuntimeException exception) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }            
+            closeEntityManager(em);
+            throw exception;
+        }
+    }
+    
+    /**
+     * Generic remove test.
+     */
+    public void verifyPersistAndRemove(Object object) {
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            em.persist(object);
+            commitTransaction(em);
+            closeEntityManager(em);
+
+            em = createEntityManager();
+            beginTransaction(em);
+            object = em.find(object.getClass(), getServerSession(getPersistenceUnitName()).getId(object));
+            em.remove(object);
+            commitTransaction(em);
+            verifyDelete(object);
+            closeEntityManager(em);
+        }  catch (RuntimeException exception) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }            
+            closeEntityManager(em);
+            throw exception;
+        }
+    }
     
     /**
      * Verifies that the object was deleted from the database correctly.
      */
     public void verifyDelete(Object writtenObject) {
-        verifyDelete(writtenObject, "default");
+        verifyDelete(writtenObject, getPersistenceUnitName());
     }
     
     /**

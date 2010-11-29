@@ -18,6 +18,7 @@ import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p>
@@ -147,6 +148,11 @@ public class ConnectionPool {
         if (this.owner.isInProfile()) {
             this.owner.updateProfile(MONITOR_HEADER + this.name, Integer.valueOf(this.connectionsUsed.size()));
         }
+        if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+            Object[] args = new Object[1];
+            args[0] = this.name;
+            this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "acquire_connection", args, connection);
+        }
         return connection;
     }
 
@@ -155,9 +161,10 @@ public class ConnectionPool {
      * Create a new connection, accessors are used as connections.
      */
     protected Accessor buildConnection() {
-        Login localLogin = (Login)getLogin().clone();
+        Login localLogin = this.login.clone();
         Accessor connection = localLogin.buildAccessor();
-        connection.connect(localLogin, getOwner());
+        connection.setPool(this);
+        connection.connect(localLogin, this.owner);
 
         return connection;
     }
@@ -265,6 +272,11 @@ public class ConnectionPool {
      * Add the connection as single that a new connection is available.
      */
     public synchronized void releaseConnection(Accessor connection) throws DatabaseException {
+        if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+            Object[] args = new Object[1];
+            args[0] = this.name;
+            this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "release_connection", args, connection);
+        }
         connection.reset();
 
         this.connectionsUsed.remove(connection);

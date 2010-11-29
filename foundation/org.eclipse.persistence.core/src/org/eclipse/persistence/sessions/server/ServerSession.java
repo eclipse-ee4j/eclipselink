@@ -50,11 +50,14 @@ import org.eclipse.persistence.internal.sessions.*;
  */
 public class ServerSession extends DatabaseSessionImpl implements Server {
     protected ConnectionPool readConnectionPool;
-    protected Map connectionPools;
+    protected Map<String, ConnectionPool> connectionPools;
     protected ConnectionPolicy defaultConnectionPolicy;
-    protected int maxNumberOfNonPooledConnections;
-    public static final int NO_MAX = -1;
     protected int numberOfNonPooledConnectionsUsed;
+    protected int maxNumberOfNonPooledConnections;
+    
+    public static final int NO_MAX = -1;
+    public static final String DEFAULT_POOL = "default";
+    public static final String NOT_POOLED = "not-pooled";
     
     /**
      * INTERNAL:
@@ -63,7 +66,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      */
     public ServerSession() {
         super();
-        this.connectionPools = new HashMap(10);
+        this.connectionPools = new HashMap<String, ConnectionPool>(10);
     }
 
     /**
@@ -119,7 +122,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * @see Project#createServerSession(int, int, int)
      */
     public ServerSession(Project project, int initialNumberOfPooledConnection, int minNumberOfPooledConnection, int maxNumberOfPooledConnection) {
-        this(project, new ConnectionPolicy("default"), ConnectionPool.INITIAL_CONNECTIONS, minNumberOfPooledConnection, maxNumberOfPooledConnection, null, null);
+        this(project, new ConnectionPolicy(DEFAULT_POOL), ConnectionPool.INITIAL_CONNECTIONS, minNumberOfPooledConnection, maxNumberOfPooledConnection, null, null);
     }
 
     /**
@@ -142,7 +145,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * @see Project#createServerSession(int, int)
      */
     public ServerSession(Project project, int minNumberOfPooledConnection, int maxNumberOfPooledConnection, Login readLogin, Login sequenceLogin) {
-        this(project, new ConnectionPolicy("default"), ConnectionPool.INITIAL_CONNECTIONS, minNumberOfPooledConnection, maxNumberOfPooledConnection, readLogin, sequenceLogin);
+        this(project, new ConnectionPolicy(DEFAULT_POOL), ConnectionPool.INITIAL_CONNECTIONS, minNumberOfPooledConnection, maxNumberOfPooledConnection, readLogin, sequenceLogin);
     }
 
     /**
@@ -182,11 +185,11 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         // Configure the default write connection pool.
         ConnectionPool pool = null;
         if (project.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
-            pool = new ExternalConnectionPool("default", project.getDatasourceLogin(), this);
+            pool = new ExternalConnectionPool(DEFAULT_POOL, project.getDatasourceLogin(), this);
         } else {
-            pool = new ConnectionPool("default", project.getDatasourceLogin(), initialNumberOfPooledConnections, minNumberOfPooledConnections, maxNumberOfPooledConnections, this);
+            pool = new ConnectionPool(DEFAULT_POOL, project.getDatasourceLogin(), initialNumberOfPooledConnections, minNumberOfPooledConnections, maxNumberOfPooledConnections, this);
         }
-        this.connectionPools.put("default", pool);
+        this.connectionPools.put(DEFAULT_POOL, pool);
         
         // If a read login was not used, then share the same connection pool for reading and writing.
         if (readLogin != null) {
@@ -237,17 +240,17 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      */
     public void acquireClientConnection(ClientSession clientSession) throws DatabaseException, ConcurrencyException {
         if (clientSession.getConnectionPolicy().isPooled()) {
-            ConnectionPool pool = (ConnectionPool)getConnectionPools().get(clientSession.getConnectionPolicy().getPoolName());
-            Accessor connection = pool.acquireConnection();
-            clientSession.setWriteConnection(connection);
+            ConnectionPool pool = this.connectionPools.get(clientSession.getConnectionPolicy().getPoolName());
+            Accessor accessor = pool.acquireConnection();
+            clientSession.addWriteConnection(pool.getName(), accessor);
             //if connection is using external connection pooling then the event will be risen right after it connects.
-            if (!connection.usesExternalConnectionPooling()) {
+            if (!accessor.usesExternalConnectionPooling()) {
                 if (clientSession.hasEventManager()) {
-                    clientSession.getEventManager().postAcquireConnection(connection);
+                    clientSession.getEventManager().postAcquireConnection(accessor);
                 }                
                 if (clientSession.isExclusiveIsolatedClientSession()) {
                     if (this.eventManager != null) {
-                        this.eventManager.postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
+                        this.eventManager.postAcquireExclusiveConnection(clientSession, accessor);
                     }
                 }
             }
@@ -264,13 +267,14 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
                     this.numberOfNonPooledConnectionsUsed++;
                 }
             }
-            clientSession.setWriteConnection(clientSession.getLogin().buildAccessor());
+            Accessor accessor = clientSession.getLogin().buildAccessor();
+            clientSession.addWriteConnection(NOT_POOLED, accessor);
             //if connection is using external connection pooling then it will be connected later and the event will be risen right after that.
-            if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
-                clientSession.connect();
-                clientSession.getEventManager().postAcquireConnection(clientSession.getWriteConnection());
+            if(!accessor.usesExternalConnectionPooling()) {
+                clientSession.connect(accessor);
+                clientSession.getEventManager().postAcquireConnection(accessor);
                 if (clientSession.isExclusiveIsolatedClientSession()) {
-                    getEventManager().postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
+                    getEventManager().postAcquireExclusiveConnection(clientSession, accessor);
                 }
             }
         }
@@ -381,7 +385,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             connectionPolicy.setLogin(getDefaultConnectionPolicy().getLogin());
         }
         if (connectionPolicy.isPooled()) {
-            ConnectionPool pool = (ConnectionPool)getConnectionPools().get(connectionPolicy.getPoolName());
+            ConnectionPool pool = this.connectionPools.get(connectionPolicy.getPoolName());
             if (pool == null) {
                 throw ValidationException.poolNameDoesNotExist(connectionPolicy.getPoolName());
             }
@@ -475,7 +479,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Each query execution is assigned a read connection.
      */
     public Accessor allocateReadConnection() {
-        Accessor connection = getReadConnectionPool().acquireConnection();
+        Accessor connection = this.readConnectionPool.acquireConnection();
         //if connection is using external connection pooling then the event will be risen right after it connects.
         if (!connection.usesExternalConnectionPooling()) {
             if (this.eventManager != null) {
@@ -489,16 +493,17 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * INTERNAL:
      * Startup the server session, also startup all of the connection pools.
      */
+    @Override
     public void connect() {
         // make sure pools correspond to their logins
         updateStandardConnectionPools();
         // Configure the read pool
-        getReadConnectionPool().startUp();
+        this.readConnectionPool.startUp();
         setAccessor(allocateReadConnection());
         releaseReadConnection(getAccessor());
 
-        for (Iterator poolsEnum = getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
-            ((ConnectionPool)poolsEnum.next()).startUp();
+        for (ConnectionPool pool : getConnectionPools().values()) {
+            pool.startUp();
         }
     }
 
@@ -506,6 +511,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * INTERNAL:
      * Disconnect the accessor only.
      */
+    @Override
     public void disconnect() throws DatabaseException {
         try {
             super.disconnect();
@@ -513,32 +519,87 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             // the exception caused by attempt to disconnect session's accessor - ignore it.
         }
     }
-
+    
     /**
      * INTERNAL:
-     * Override to acquire the connection from the pool at the last minute
+     * Return the connections to use for the query execution.
      */
+    @Override
+    public List<Accessor> getAccessors(Call call, AbstractRecord translationRow, DatabaseQuery query) {
+        // Check for partitioning.
+        List<Accessor> accessors = null;
+        if (query.getPartitioningPolicy() != null) {
+            accessors = query.getPartitioningPolicy().getConnectionsForQuery(this, query, translationRow);
+            if (accessors != null) {
+                return accessors;
+            }
+        }
+        if ((query.getDescriptor() != null) && (query.getDescriptor().getPartitioningPolicy() != null)) {
+            accessors = query.getDescriptor().getPartitioningPolicy().getConnectionsForQuery(this, query, translationRow);  
+            if (accessors != null) {
+                return accessors;
+            }              
+        }
+        if (this.partitioningPolicy != null) {
+            accessors = this.partitioningPolicy.getConnectionsForQuery(this, query, translationRow);
+            if (accessors != null) {
+                return accessors;
+            }
+        }
+        if (accessors == null) {
+            accessors = new ArrayList(1);
+            accessors.add(this.readConnectionPool.acquireConnection());
+        }
+        return accessors;
+    }
+    
+    /**
+     * INTERNAL:
+     * Execute the call on the correct connection accessor.
+     * By default the server session executes calls using is read connection pool.
+     * A connection is allocated for the execution of the query, then released back to the pool.
+     * If partitioning is used the partition policy can use a different connection pool, or even
+     * execute the call on multiple connections.
+     */
+    @Override
     public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
         RuntimeException exception = null;
-        Object object = null;
+        Object result = null;
         boolean accessorAllocated = false;
-        if (query.getAccessor() == null) {
-            query.setAccessor(this.allocateReadConnection());
+        if (query.getAccessors() == null) {
+            List<Accessor> accessors = getAccessors(call, translationRow, query);
+            query.setAccessors(accessors);
+            if (this.eventManager != null) {
+                for (Accessor accessor : accessors) {
+                    //if connection is using external connection pooling then the event will be risen right after it connects.
+                    if (!accessor.usesExternalConnectionPooling()) {
+                        this.eventManager.postAcquireConnection(accessor);
+                    }
+                }
+            }
             accessorAllocated = true;
         }
         try {
-            object = query.getAccessor().executeCall(call, translationRow, this);
+            result = basicExecuteCall(call, translationRow, query);
         } catch (RuntimeException caughtException) {
             exception = caughtException;
         } finally {
-			// EL Bug 244241 - connection not released on query timeout when cursor used
-        	// Don't release the cursoredStream connection until Stream is closed 
-			// or unless an exception occurred executing the call.
-			if (call.isFinished() || exception != null) {
+            // EL Bug 244241 - connection not released on query timeout when cursor used
+            // Don't release the cursoredStream connection until Stream is closed 
+            // or unless an exception occurred executing the call.
+            if (call.isFinished() || exception != null) {
                 try {
                     if (accessorAllocated) {
-                        releaseReadConnection(query.getAccessor());
-                        query.setAccessor(null);
+                        for (Accessor accessor : query.getAccessors()) {
+                            //if connection is using external connection pooling then the event has been risen right before it disconnected.
+                            if (!accessor.usesExternalConnectionPooling()) {
+                                if (this.eventManager != null) {
+                                    this.eventManager.preReleaseConnection(accessor);
+                                }
+                            }
+                            accessor.getPool().releaseConnection(accessor);
+                        }
+                        query.setAccessors(null);
                     }
                 } catch (RuntimeException releaseException) {
                     if (exception == null) {
@@ -551,7 +612,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
                 throw exception;
             }
         }
-        return object;
+        return result;
     }
 
     /**
@@ -559,14 +620,14 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Return the pool by name.
      */
     public ConnectionPool getConnectionPool(String poolName) {
-        return (ConnectionPool)getConnectionPools().get(poolName);
+        return this.connectionPools.get(poolName);
     }
 
     /**
      * INTERNAL:
      * Connection are pooled to share and restrict the number of database connections.
      */
-    public Map getConnectionPools() {
+    public Map<String, ConnectionPool> getConnectionPools() {
         return connectionPools;
     }
 
@@ -576,10 +637,10 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * By default it is a connection pool with min 5 and max 10 lazy pooled connections.
      */
     public ConnectionPolicy getDefaultConnectionPolicy() {
-        if (defaultConnectionPolicy == null) {
-            this.defaultConnectionPolicy = new ConnectionPolicy("default");
+        if (this.defaultConnectionPolicy == null) {
+            this.defaultConnectionPolicy = new ConnectionPolicy(DEFAULT_POOL);
         }
-        return defaultConnectionPolicy;
+        return this.defaultConnectionPolicy;
     }
 
     /**
@@ -587,7 +648,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Return the default connection pool.
      */
     public ConnectionPool getDefaultConnectionPool() {
-        return getConnectionPool("default");
+        return getConnectionPool(DEFAULT_POOL);
     }
 
     /**
@@ -605,6 +666,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * @return a session with a live accessor
      * @param query may store session name or reference class for brokers case
      */
+    @Override
     public AbstractSession getExecutionSession(DatabaseQuery query) {
         if (query.isObjectLevelModifyQuery()) {
             throw QueryException.invalidQueryOnServerSession(query);
@@ -635,7 +697,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Return the login for the read connection.  Used by the platform autodetect feature
      */
     protected Login getReadLogin(){
-        return getReadConnectionPool().getLogin();
+        return this.readConnectionPool.getLogin();
     }
 
 
@@ -652,18 +714,20 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * PUBLIC:
      * Return if this session has been connected to the database.
      */
+    @Override
     public boolean isConnected() {
-        if (getReadConnectionPool() == null) {
+        if (this.readConnectionPool == null) {
             return false;
         }
 
-        return getReadConnectionPool().isConnected();
+        return this.readConnectionPool.isConnected();
     }
 
     /**
      * INTERNAL:
      * Return if this session is a server session.
      */
+    @Override
     public boolean isServerSession() {
         return true;
     }
@@ -672,11 +736,12 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * PUBLIC:
      * Shutdown the server session, also shutdown all of the connection pools.
      */
+    @Override
     public void logout() {
         try {
             super.logout();
         } finally {    
-            getReadConnectionPool().shutDown();
+            this.readConnectionPool.shutDown();
     
             for (Iterator poolsEnum = getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
                 ((ConnectionPool)poolsEnum.next()).shutDown();
@@ -690,6 +755,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * right after the accessor is connected. 
      * Used by the session to rise an appropriate event.
      */
+    @Override
     public void postConnectExternalConnection(Accessor accessor) {
         if (this.eventManager != null) {
             this.eventManager.postAcquireConnection(accessor);
@@ -702,6 +768,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * right before the accessor is disconnected. 
      * Used by the session to rise an appropriate event.
      */
+    @Override
     public void preDisconnectExternalConnection(Accessor accessor) {
         if (this.eventManager != null) {
             this.eventManager.preReleaseConnection(accessor);
@@ -714,33 +781,40 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      */
     public void releaseClientSession(ClientSession clientSession) throws DatabaseException {
         if (clientSession.getConnectionPolicy().isPooled()) {
-            ConnectionPool pool = (ConnectionPool)getConnectionPools().get(clientSession.getConnectionPolicy().getPoolName());
-            //if connection is using external connection pooling then the event has been risen right before it disconnected.
-            if (!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
-                if (clientSession.hasEventManager()) {
-                    clientSession.getEventManager().preReleaseConnection(clientSession.getWriteConnection());
-                }
-                if (clientSession.isExclusiveIsolatedClientSession()) {
-                    if (this.eventManager != null) {
-                        this.eventManager.preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
+            for (Accessor accessor : clientSession.getWriteConnections().values()) {
+                //if connection is using external connection pooling then the event has been risen right before it disconnected.
+                if (!accessor.usesExternalConnectionPooling()) {
+                    if (clientSession.hasEventManager()) {
+                        clientSession.getEventManager().preReleaseConnection(accessor);
+                    }
+                    if (clientSession.isExclusiveIsolatedClientSession()) {
+                        if (this.eventManager != null) {
+                            this.eventManager.preReleaseExclusiveConnection(clientSession, accessor);
+                        }
                     }
                 }
+                accessor.getPool().releaseConnection(accessor);
             }
-            pool.releaseConnection(clientSession.getWriteConnection());
-            clientSession.setWriteConnection(null);
+            clientSession.setWriteConnections(null);
         } else {
-            //if connection is using external connection pooling then the event has been risen right before it disconnected.
-            if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
-                clientSession.getEventManager().preReleaseConnection(clientSession.getWriteConnection());
-                if (clientSession.isExclusiveIsolatedClientSession()) {
-                    getEventManager().preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
+            for (Accessor accessor : clientSession.getWriteConnections().values()) {
+                //if connection is using external connection pooling then the event has been risen right before it disconnected.
+                if(!accessor.usesExternalConnectionPooling()) {
+                    if (clientSession.hasEventManager()) {
+                        clientSession.getEventManager().preReleaseConnection(accessor);
+                    }
+                    if (clientSession.isExclusiveIsolatedClientSession()) {
+                        if (this.eventManager != null) {
+                            this.eventManager.preReleaseExclusiveConnection(clientSession, accessor);
+                        }
+                    }
+                    clientSession.disconnect(accessor);
+                } else {
+                    // should be already closed - but just in case it's still connected (and the event will risen before connection is closed).
+                    accessor.closeConnection();
                 }
-                clientSession.disconnect();
-            } else {
-                // should be already closed - but just in case it's still connected (and the event will risen before connection is closed).
-                clientSession.getWriteConnection().closeConnection();
             }
-            clientSession.setWriteConnection(null);
+            clientSession.setWriteConnections(null);
             if (this.maxNumberOfNonPooledConnections != NO_MAX) {
                 synchronized (this) {
                     this.numberOfNonPooledConnectionsUsed--;
@@ -761,7 +835,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
                 this.eventManager.preReleaseConnection(connection);
             }
         }
-        getReadConnectionPool().releaseConnection(connection);
+        this.readConnectionPool.releaseConnection(connection);
     }
 
     /**
@@ -770,7 +844,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * No-op on external connection pools.
      */
     public void setCheckConnections() {
-        getReadConnectionPool().setCheckConnections();
+        this.readConnectionPool.setCheckConnections();
         for (Iterator poolsEnum = getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
             ((ConnectionPool)poolsEnum.next()).setCheckConnections();
         }
@@ -784,7 +858,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * INTERNAL:
      * Connection are pooled to share and restrict the number of database connections.
      */
-    public void setConnectionPools(Map connectionPools) {
+    public void setConnectionPools(Map<String, ConnectionPool> connectionPools) {
         this.connectionPools = connectionPools;
     }
 
@@ -802,7 +876,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Creates and adds "default" connection pool using default parameter values
      */
     public void setDefaultConnectionPool() {
-        addConnectionPool("default", getDatasourceLogin(), ConnectionPool.MIN_CONNECTIONS, ConnectionPool.MAX_CONNECTIONS);
+        addConnectionPool(DEFAULT_POOL, getDatasourceLogin(), ConnectionPool.MIN_CONNECTIONS, ConnectionPool.MAX_CONNECTIONS);
     }
 
     /**
@@ -863,6 +937,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Set isSynchronized flag to indicate that this session is synchronized.
      * The method is ignored on ServerSession and should never be called.
      */
+    @Override
     public void setSynchronized(boolean synched) {
     }
 
@@ -882,9 +957,9 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             }
         }
 
-        if (getReadConnectionPool() != null) {
-            if (getReadConnectionPool().isThereConflictBetweenLoginAndType()) {
-                setReadConnectionPool(getReadConnectionPool().getLogin());
+        if (this.readConnectionPool != null) {
+            if (this.readConnectionPool.isThereConflictBetweenLoginAndType()) {
+                setReadConnectionPool(this.readConnectionPool.getLogin());
             }
         }
     }
@@ -949,6 +1024,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * This method will be used to update the query with any settings required
      * For this session.  It can also be used to validate execution.
      */
+    @Override
     public void validateQuery(DatabaseQuery query) {
         if (query.isObjectLevelReadQuery() && (query.getDescriptor().isIsolated() || ((ObjectLevelReadQuery)query).shouldUseExclusiveConnection())) {
             throw QueryException.isolatedQueryExecutedOnServerSession();

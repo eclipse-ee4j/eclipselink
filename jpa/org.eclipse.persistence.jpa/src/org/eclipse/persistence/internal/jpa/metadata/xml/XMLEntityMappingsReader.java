@@ -28,6 +28,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Properties;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -39,7 +41,9 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * ORM.xml reader.
@@ -64,42 +68,56 @@ public class XMLEntityMappingsReader {
     private static Schema m_eclipseLinkOrmSchema;
 
     /**
+     * Check the orm.xml to determine which project and schema to use.
+     */
+    private static Object[] determineXMLContextAndSchema(String file, Reader input) throws Exception {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        
+        // create a SAX parser
+        SAXParser parser = factory.newSAXParser();
+            
+        // create an XMLReader
+        XMLReader xmlReader = parser.getXMLReader();
+
+        ORMContentHandler contentHandler = new ORMContentHandler();
+        xmlReader.setContentHandler(contentHandler);
+        InputSource inputSource = new InputSource(input);
+        xmlReader.parse(inputSource);
+        
+        Object[] context = new Object[2];
+        if (contentHandler.isEclipseLink()) {
+            context[0] = getEclipseLinkOrmProject();
+            context[1] = getEclipseLinkOrmSchema();
+        } else if ((contentHandler.getVersion() == null) || (contentHandler.getVersion().indexOf("2") == -1)) {
+            context[0] = getOrm1Project();
+            context[1] = getOrm1_0Schema();
+        } else {
+            context[0] = getOrm2Project();
+            context[1] = getOrm2_0Schema();
+        }
+        return context;
+    }
+    
+    /**
      * INTERNAL:
      */
-    protected static XMLEntityMappings read(String mappingFile, Reader reader1, Reader reader2, Reader reader3, ClassLoader classLoader, Properties properties) {
+    protected static XMLEntityMappings read(String mappingFile, Reader reader1, Reader reader2, ClassLoader classLoader, Properties properties) {
         // Get the schema validation flag if present in the persistence unit properties
         boolean validateORMSchema = isORMSchemaValidationPerformed(properties);
         
         // Unmarshall JPA format.
         XMLEntityMappings xmlEntityMappings;
-        
-        // This tries to unmarshal three times, once with each different XSD (orm 1.0, orm 2.0, eclipselink-orm)
-        // If the third attempt fails, it reports all three errors, as any may contain the real exception.
-        // TODO: Ideally we would have a better way to determine what xsd to use.
         try {
-            XMLUnmarshaller unmarshaller = getOrm2Project().createUnmarshaller();
+            // First need to determine which context/schema to use, JPA 1.0, 2.0 or EclipseLink orm (only latest supported)
+            Object[] context = determineXMLContextAndSchema(mappingFile, reader1);
+            XMLUnmarshaller unmarshaller = ((XMLContext)context[0]).createUnmarshaller();
             if (validateORMSchema) {
-                useLocalSchemaForUnmarshaller(unmarshaller, getOrm2_0Schema());
+                useLocalSchemaForUnmarshaller(unmarshaller, ((Schema)context[1]));
             }
-            xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader1);
-        } catch (Exception orm2Error) {
-            try {
-                XMLUnmarshaller unmarshaller = getOrm1Project().createUnmarshaller();
-                if (validateORMSchema) {
-                    useLocalSchemaForUnmarshaller(unmarshaller, getOrm1_0Schema());
-                }
-                xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader2);
-            } catch (Exception orm1Error) {
-                try {
-                    XMLUnmarshaller unmarshaller = getEclipseLinkOrmProject().createUnmarshaller();
-                    if (validateORMSchema) {
-                        useLocalSchemaForUnmarshaller(unmarshaller, getEclipseLinkOrmSchema());
-                    }
-                    xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader3);
-                } catch (Exception eclipselinkError) {
-                    throw ValidationException.errorParsingMappingFile(mappingFile, orm2Error, orm1Error, eclipselinkError);
-                }
-            }
+            xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader2);
+        } catch (Exception exception) {
+            throw ValidationException.errorParsingMappingFile(mappingFile, exception);
         }
         if (xmlEntityMappings != null){
             xmlEntityMappings.setMappingFile(mappingFile);
@@ -139,8 +157,7 @@ public class XMLEntityMappingsReader {
                 //Get separate readers as the read method below is coded to seek through both of them
                 reader1 = getInputStreamReader(url);
                 reader2 = getInputStreamReader(url);
-                reader3 = getInputStreamReader(url);
-                return read(url.toString(), reader1, reader2, reader3, classLoader, properties);
+                return read(url.toString(), reader1, reader2, classLoader, properties);
             } catch (UnsupportedEncodingException exception) {
                 throw ValidationException.fatalErrorOccurred(exception);
             }

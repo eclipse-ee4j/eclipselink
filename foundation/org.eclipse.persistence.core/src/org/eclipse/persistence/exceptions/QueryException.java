@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.mappings.*;
@@ -186,6 +187,8 @@ public class QueryException extends ValidationException {
     public final static int PREPARE_FAILED = 6168;
     public final static int ORIGINAL_QUERY_MUST_USE_IN = 6169;
     public final static int ADDITIONAL_CRITERIA_VALUE_MISSING = 6170;
+    public final static int PARTIONING_NOT_SUPPORTED = 6171;
+    public final static int MISSING_CONNECTION_POOL = 6172;
 
     /**
      * INTERNAL:
@@ -1546,6 +1549,22 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, ORIGINAL_QUERY_MUST_USE_IN, args), query);
         queryException.setErrorCode(ORIGINAL_QUERY_MUST_USE_IN);
+        return queryException;
+    }
+
+    public static QueryException partitioningNotSupported(AbstractSession session, DatabaseQuery query) {
+        Object[] args = { session };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, PARTIONING_NOT_SUPPORTED, args), query);
+        queryException.setErrorCode(PARTIONING_NOT_SUPPORTED);
+        return queryException;
+    }
+
+    public static QueryException missingConnectionPool(String poolName, DatabaseQuery query) {
+        Object[] args = { poolName };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, MISSING_CONNECTION_POOL, args), query);
+        queryException.setErrorCode(MISSING_CONNECTION_POOL);
         return queryException;
     }
     

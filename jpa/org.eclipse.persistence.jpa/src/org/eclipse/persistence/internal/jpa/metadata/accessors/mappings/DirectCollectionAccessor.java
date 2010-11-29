@@ -318,6 +318,8 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         mapping.setShouldExtendPessimisticLockScope(true);
         
         mapping.setIsCascadeOnDeleteSetOnDatabase(isCascadeOnDelete());
+
+        processPartitioning();
     }
     
     /**

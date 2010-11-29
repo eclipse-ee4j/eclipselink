@@ -72,7 +72,7 @@ public class TestSystemAdapted extends TestSystem {
                 }
             }
             // This trick stores all descriptors used by testSystem into project
-            DatabaseSession dummyDatabaseSession = new Project((Login)session.getLogin().clone()).createDatabaseSession();
+            DatabaseSession dummyDatabaseSession = new Project(session.getLogin().clone()).createDatabaseSession();
             getTestSystem().addDescriptors(dummyDatabaseSession);
             project = dummyDatabaseSession.getProject();
 

@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.queries;
 
 import java.util.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -362,7 +363,9 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // Bug 2804663 - LOBValueWriter is no longer a singleton, so we execute any deferred
         // select calls through the DatabaseAccessor which holds the writer instance
         AbstractSession executionSession = this.query.getExecutionSession();
-        executionSession.getAccessor().flushSelectCalls(executionSession);
+        for (Accessor accessor : executionSession.getAccessors()) {
+            accessor.flushSelectCalls(executionSession);
+        }
     }
 
     /**
@@ -768,7 +771,9 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // because DatabaseCall.isUpdateCall() can't recognize update in case StoredProcedureCall
         // is used.
         AbstractSession executionSession = this.query.getExecutionSession();
-        executionSession.getAccessor().flushSelectCalls(executionSession);
+        for (Accessor accessor : executionSession.getAccessors()) {
+            accessor.flushSelectCalls(executionSession);
+        }
         return returnedRowCount;
     }
 

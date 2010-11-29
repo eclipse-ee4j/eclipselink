@@ -270,7 +270,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     protected SessionBroker copySessionBroker() {
         SessionBroker broker = new SessionBroker(getSessionNamesByClass());
 
-        broker.accessor = getAccessor();
+        broker.accessors = getAccessors();
         broker.name = getName();
         broker.sessionLog = getSessionLog();
         broker.project = project;
@@ -284,31 +284,21 @@ public class SessionBroker extends DatabaseSessionImpl {
 
     /**
      * INTERNAL:
-     * Return the lowlevel database accessor.
+     * Return the low-level database accessors.
      * The database accessor is used for direct database access.
-     * The right accessor for this
-     * broker will be returned.
+     * The right accessor for this broker will be returned.
      */
-    public Accessor getAccessor(Class domainClass) {
-        if (domainClass == null) {
+    public Collection<Accessor> getAccessors(Call call, AbstractRecord translationRow, DatabaseQuery query) {
+        if (query.getSessionName() != null) {
+            return getSessionForName(query.getSessionName()).getAccessors(call, translationRow, query);
+        }
+        if (query.getReferenceClass() == null) {
             // CR#... this occurs if a data query is used without a session-name, needs to throw an error
             throw QueryException.unnamedQueryOnSessionBroker(null);
         }
 
-        //session may be a broker too.  Eventually a non session broker wil be found
-        return getSessionForClass(domainClass).getAccessor(domainClass);
-    }
-
-    /**
-     * INTERNAL:
-     * Return the lowlevel database accessor.
-     * The database accesor is used for direct database access.
-     * The right accessor for this
-     * broker will be returned.
-     */
-    public Accessor getAccessor(String sessionName) {
-        //session may be a broker too.  Eventually a non session broker wil be found
-        return getSessionForName(sessionName).getAccessor(sessionName);
+        //session may be a broker too.  Eventually a non session broker will be found
+        return getSessionForClass(query.getReferenceClass()).getAccessors(call, translationRow, query);
     }
 
     /**

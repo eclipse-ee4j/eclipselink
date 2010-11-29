@@ -35,7 +35,7 @@ public class ServerClientNamedQueryTest extends org.eclipse.persistence.testing.
     public void setup() {
         // Create a server session based on the current login
         org.eclipse.persistence.sessions.Project proj = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
-        proj.setDatasourceLogin((DatabaseLogin)getSession().getDatasourceLogin().clone());
+        proj.setDatasourceLogin(getSession().getDatasourceLogin().clone());
         serverSession = proj.createServerSession(1, 1);
         serverSession.useReadConnectionPool(1, 1);
         this.serverSession.setSessionLog(getSession().getSessionLog());

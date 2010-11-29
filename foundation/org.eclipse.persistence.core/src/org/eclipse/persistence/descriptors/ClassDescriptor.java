@@ -46,6 +46,7 @@ import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.copying.*;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.descriptors.invalidation.*;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
@@ -128,6 +129,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected ObjectChangePolicy changePolicy;
     protected ReturningPolicy returningPolicy;
     protected HistoryPolicy historyPolicy;
+    protected String partitioningPolicyName;
+    protected PartitioningPolicy partitioningPolicy;
     protected CMPPolicy cmpPolicy;
 
     //manage fetch group behaviors and operations
@@ -1795,10 +1798,53 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * PUBLIC:
-     * Return this descriptors HistoryPolicy.
+     * Return this descriptor's HistoryPolicy.
      */
     public HistoryPolicy getHistoryPolicy() {
         return historyPolicy;
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the descriptor's partitioning policy.
+     */
+    public PartitioningPolicy getPartitioningPolicy() {
+        return partitioningPolicy;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the descriptor's partitioning policy.
+     * A PartitioningPolicy is used to partition the data for a class across multiple difference databases
+     * or across a database cluster such as Oracle RAC.
+     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+     */
+    public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy) {
+        this.partitioningPolicy = partitioningPolicy;
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the name of the descriptor's partitioning policy.
+     * A PartitioningPolicy with the same name must be defined on the Project.
+     * A PartitioningPolicy is used to partition the data for a class across multiple difference databases
+     * or across a database cluster such as Oracle RAC.
+     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+     */
+    public String getPartitioningPolicyName() {
+        return partitioningPolicyName;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the name of the descriptor's partitioning policy.
+     * A PartitioningPolicy with the same name must be defined on the Project.
+     * A PartitioningPolicy is used to partition the data for a class across multiple difference databases
+     * or across a database cluster such as Oracle RAC.
+     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+     */
+    public void setPartitioningPolicyName(String partitioningPolicyName) {
+        this.partitioningPolicyName = partitioningPolicyName;
     }
 
     /**
@@ -2706,6 +2752,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
             queryKey.initialize(this);
         }
 
+        if (getPartitioningPolicyName() != null) {
+            PartitioningPolicy policy = session.getProject().getPartitioningPolicy(getPartitioningPolicyName());
+            if (policy == null) {
+                //TODO session.getIntegrityChecker().handleError(DescriptorException.missingPartitioningPolicy(getPartitioningPolicyName(, this));
+            }
+            setPartitioningPolicy(policy);
+        }
+        
         // If this descriptor has inheritance then it needs to be initialized before all fields is set.
         if (hasInheritance()) {
             getInheritancePolicy().initialize(session);

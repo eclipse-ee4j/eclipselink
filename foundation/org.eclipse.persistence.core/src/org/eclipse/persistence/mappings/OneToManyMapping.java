@@ -584,6 +584,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                 getDeleteAllQuery().setSelectionCriteria(getSelectionCriteria());
             }
         }
+        if (getDeleteAllQuery().getPartitioningPolicy() == null) {
+            getDeleteAllQuery().setPartitioningPolicy(getPartitioningPolicy());
+        }
     }
 
     /**

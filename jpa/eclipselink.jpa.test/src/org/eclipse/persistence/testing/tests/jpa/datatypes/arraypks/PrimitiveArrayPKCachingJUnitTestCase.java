@@ -63,7 +63,7 @@ public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
             }
 
             protected void tearDown() {
-                clearCache();
+                new PrimitiveArrayPKCachingJUnitTestCase().clearCache();
             }
         };
     }

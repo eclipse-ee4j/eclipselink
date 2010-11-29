@@ -587,6 +587,14 @@
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="table-generator" type="orm:table-generator" 
                      minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="partitioning" type="orm:partitioning" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="replication-partitioning" type="orm:replication-partitioning" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="round-robin-partitioning" type="orm:round-robin-partitioning" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="pinned-partitioning" type="orm:pinned-partitioning" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="range-partitioning" type="orm:range-partitioning" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="value-partitioning" type="orm:value-partitioning" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="hash-partitioning" type="orm:hash-partitioning" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="union-partitioning" type="orm:union-partitioning" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="named-query" type="orm:named-query" 
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="named-native-query" type="orm:named-native-query"
@@ -795,6 +803,7 @@
                    minOccurs="0"/>
       <xsd:element name="table-generator" type="orm:table-generator" 
                    minOccurs="0"/>
+      <xsd:group ref="orm:partitioning-group"/>
       <xsd:element name="named-query" type="orm:named-query" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-native-query" type="orm:named-native-query" 
@@ -839,6 +848,20 @@
 
 <!-- **************************************************** -->
 
+  <xsd:group name="partitioning-group">
+    <xsd:sequence>
+      <xsd:element name="partitioning" type="orm:partitioning" minOccurs="0"/>
+      <xsd:element name="replication-partitioning" type="orm:replication-partitioning" minOccurs="0"/>
+      <xsd:element name="round-robin-partitioning" type="orm:round-robin-partitioning" minOccurs="0"/>
+      <xsd:element name="pinned-partitioning" type="orm:pinned-partitioning" minOccurs="0"/>
+      <xsd:element name="range-partitioning" type="orm:range-partitioning" minOccurs="0"/>
+      <xsd:element name="value-partitioning" type="orm:value-partitioning" minOccurs="0"/>
+      <xsd:element name="hash-partitioning" type="orm:hash-partitioning" minOccurs="0"/>
+      <xsd:element name="union-partitioning" type="orm:union-partitioning" minOccurs="0"/>
+      <xsd:element name="partitioned" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:group>
+      
   <xsd:simpleType name="access-type">
     <xsd:annotation>
       <xsd:documentation>
@@ -1435,6 +1458,451 @@
 
   <!-- **************************************************** -->
 
+  <xsd:complexType name="partitioning">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+            /** 
+             * A Partitioning is used to partition the data for a class across multiple difference databases
+             * or across a database cluster such as Oracle RAC.
+             * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+             * This annotation configures a custom PartitioningPolicy.
+             * 
+             * If multiple partitions are used to process a single transaction, JTA should be used for proper XA transaction support.
+             * 
+             * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
+             * Partition policies are globally named to allow reuse,
+             * the partitioning policy must also be set using the @Partitioned annotation to be used.
+             * 
+             * @see Partitioned
+             * @see org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy
+             * @author James Sutherland
+             * @since EclipseLink 2.2
+             */
+            @Target({TYPE, METHOD, FIELD})
+            @Retention(RUNTIME)
+            public @interface Partitioning {
+                String name();
+                
+                /**
+                 * (Required) Full package.class name of a subclass of PartitioningPolicy.
+                 */
+                Class partitioningClass();
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="hash-partitioning">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+            /** 
+             * HashPartitioning partitions access to a database cluster by the hash of a field value from the object,
+             * such as the object's location, or tenant.
+             * The hash indexes into the list of connection pools.
+             * All write or read request for object's with that hash value are sent to the server.
+             * If a query does not include the field as a parameter, then it can either be sent
+             * to all server's and unioned, or left to the sesion's default behavior.
+             * 
+             * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
+             * 
+             * @see org.eclipse.persistence.descriptors.partitioning.HashPartitioningPolicy
+             * @author James Sutherland
+             * @since EclipseLink 2.2
+             */ 
+            @Target({TYPE, METHOD, FIELD})
+            @Retention(RUNTIME)
+            public @interface HashPartitioning {
+                String name();
+                
+                /**
+                 * The database column or query parameter to partition queries by.
+                 * This is the table column name, not the class attribute name.
+                 * The column value must be included in the query and should normally be part of the object's Id.
+                 * This can also be the name of a query parameter.
+                 * If a query does not contain the field the query will not be partitioned.
+                 */
+                Column partitionColumn();
+            
+                /**
+                 * List of connection pool names to partition across.
+                 */
+                String[] connectionPools();
+                        
+                /**
+                 * Defines if queries that do not contain the partition field should be sent
+                 * to every database and have the result unioned.
+                 */
+                boolean unionUnpartitionableQueries() default false;
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="partition-column" type="orm:column"/>
+        <xsd:element name="connection-pool" type="xsd:string" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="union-unpartitionable-queries" type="xsd:boolean"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="range-partitioning">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        /** 
+         * RangePartitioningPolicy partitions access to a database cluster by a field value from the object,
+         * such as the object's id, location, or tenant.
+         * Each server is assigned a range of values.
+         * All write or read request for object's with that value are sent to the server.
+         * If a query does not include the field as a parameter, then it can either be sent
+         * to all server's and unioned, or left to the sesion's default behavior.
+         * 
+         * If multiple partitions are used to process a single transaction, JTA should be used for proper XA transaction support.
+         * 
+         * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
+         * Partition policies are globally named to allow reuse,
+         * the partitioning policy must also be set using the @Partitioned annotation to be used.
+         * 
+         * @see Partitioned
+         * @see org.eclipse.persistence.descriptors.partitioning.RangePartitioningPolicy
+         * @author James Sutherland
+         * @since EclipseLink 2.2
+         */ 
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface RangePartitioning {
+            String name();
+            
+            /**
+             * The database column or query parameter to partition queries by.
+             * This is the table column name, not the class attribute name.
+             * The column value must be included in the query and should normally be part of the object's Id.
+             * This can also be the name of a query parameter.
+             * If a query does not contain the field the query will not be partitioned.
+             */
+            Column partitionColumn();
+            
+            /**
+             * (Required) List of connection pool names to load balance across.
+             */
+            RangePartition[] partitions();
+            
+            /**
+             * Defines if queries that do not contain the partition field should be sent
+             * to every database and have the result unioned.
+             */
+            boolean unionUnpartitionableQueries() default false;
+            
+            /** The type of the start and end values. */
+            Class partitionValueType() default String.class;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="partition-column" type="orm:column"/>
+        <xsd:element name="partition" type="orm:range-partition" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="partition-value-type" type="xsd:string"/>
+    <xsd:attribute name="union-unpartitionable-queries" type="xsd:boolean"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="range-partition">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        /** 
+         * Represent a specific range partition.
+         * Values = startValue and = endValue will be routed to the connection pool.
+         * 
+         * @see RangePartitioningPolicy
+         * @see org.eclipse.persistence.descriptors.partitioning.RangePartitioningPolicy
+         * @see org.eclipse.persistence.descriptors.partitioning.RangePartition
+         * @author James Sutherland
+         * @since EclipseLink 2.2
+         */ 
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface RangePartition {
+            /** The String representation of the range start value. */
+            String startValue() default "";
+            /** The String representation of the range start value. */
+            String endValue() default "";
+            /** The connection pool to route queries to for this range. */
+            String connectionPool();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="start-value" type="xsd:string"/>
+    <xsd:attribute name="end-value" type="xsd:string"/>
+    <xsd:attribute name="connection-pool" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="value-partitioning">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        /** 
+         * ValuePartitioning partitions access to a database cluster by a field value from the object,
+         * such as the object's location, or tenant.
+         * Each value is assigned a specific server.
+         * All write or read request for object's with that value are sent to the server.
+         * If a query does not include the field as a parameter, then it can either be sent
+         * to all server's and unioned, or left to the sesion's default behavior.
+         * 
+         * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
+         * 
+         * @see org.eclipse.persistence.descriptors.partitioning.ValuePartitioningPolicy
+         * @author James Sutherland
+         * @since EclipseLink 2.2
+         */ 
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface ValuePartitioning {
+            String name();
+            
+            /**
+             * The database column or query parameter to partition queries by.
+             * This is the table column name, not the class attribute name.
+             * The column value must be included in the query and should normally be part of the object's Id.
+             * This can also be the name of a query parameter.
+             * If a query does not contain the field the query will not be partitioned.
+             */
+            Column partitionColumn();
+            
+            /** Store the value partitions. Each partition maps a value to a connectionPool. */
+            ValuePartition[] partitions();
+    
+            /** The type of the start and end values. */
+            Class partitionValueType() default String.class;
+            
+            /** The default connection pool is used for any unmapped values. */
+            String defaultConnectionPool();
+                
+            /**
+             * Defines if queries that do not contain the partition field should be sent
+             * to every database and have the result unioned.
+             */
+            boolean unionUnpartitionableQueries() default false;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="partition-column" type="orm:column"/>
+        <xsd:element name="partition" type="orm:value-partition" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="default-connection-pool" type="xsd:string"/>
+    <xsd:attribute name="partition-value-type" type="xsd:string"/>
+    <xsd:attribute name="union-unpartitionable-queries" type="xsd:boolean"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="value-partition">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        /** 
+         * Represent a specific value partition.
+         * The value will be routed to the connection pool.
+         * 
+         * @see ValuePartitioningPolicy
+         * @see org.eclipse.persistence.descriptors.partitioning.ValuePartitioningPolicy
+         * @see org.eclipse.persistence.descriptors.partitioning.ValuePartition
+         * @author James Sutherland
+         * @since EclipseLink 2.2
+         */ 
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface ValuePartition {
+            /** The String representation of the range start value. */
+            String value() default "";
+            
+            /** The connection pool to route queries to for this value. */
+            String connectionPool();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="value" type="xsd:string" use="required"/>
+    <xsd:attribute name="connection-pool" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="round-robin-partitioning">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+            /** 
+             * RoundRobinPartitioning sends requests in a round robin fashion to the set of connection pools.
+             * It is for load-balancing read queries across a cluster of database machines.
+             * It requires that the full database be replicated on each machine, so does not support partitioning.
+             * The data should either be read-only, or writes should be replicated on the database.
+             * 
+             * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
+             * 
+             * @see org.eclipse.persistence.descriptors.partitioning.RoundRobinPolicy
+             * @author James Sutherland
+             * @since EclipseLink 2.2
+             */ 
+            @Target({TYPE, METHOD, FIELD})
+            @Retention(RUNTIME)
+            public @interface RoundRobinPartitioning {
+                String name();
+                
+                /**
+                 * (Required) List of connection pool names to load balance across.
+                 */
+                String[] connectionPools();
+                
+                /**
+                 * This allows for a set of database to be written to and kept in synch,
+                 * and have reads load-balanced across the databases.
+                 */
+                boolean replicateWrites() default false;
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="connection-pool" type="xsd:string" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="replicate-writes" type="xsd:boolean"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="replication-partitioning">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+            /** 
+             * ReplicationPartitioning sends requests to a set of connection pools.
+             * It is for replicating data across a cluster of database machines.
+             * Only modification queries are replicated.
+             * 
+             * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
+             * 
+             * @see org.eclipse.persistence.descriptors.partitioning.ReplicationPolicy
+             * @author James Sutherland
+             * @since EclipseLink 2.2
+             */ 
+            @Target({TYPE, METHOD, FIELD})
+            @Retention(RUNTIME)
+            public @interface ReplicationPartitioning {
+                String name();
+                
+                /**
+                 * (Required) List of connection pool names to load balance across.
+                 */
+                String[] connectionPools();
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="connection-pool" type="xsd:string" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="union-partitioning">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+            /** 
+             * UnionPartitioning sends queries to all connection pools and unions the results.
+             * This is for queries or relationships that span partitions when partitioning is used,
+             * such as on a ManyToMany cross partition relationship.
+             * 
+             * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
+             * 
+             * @see org.eclipse.persistence.descriptors.partitioning.UnionPartitioningPolicy
+             * @author James Sutherland
+             * @since EclipseLink 2.2
+             */ 
+            @Target({TYPE, METHOD, FIELD})
+            @Retention(RUNTIME)
+            public @interface UnionPartitioning {
+                String name();
+                
+                /**
+                 * (Required) List of connection pool names to load balance across.
+                 */
+                String[] connectionPools();
+                
+                /**
+                 * Defines if write queries should be replicated.
+                 * Writes are normally not replicated when unioning,
+                 * but can be for ManyToMany relationships, when the join table needs to be replicated.
+                 */
+                boolean replicateWrites() default false;
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="connection-pool" type="xsd:string" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="replicate-writes" type="xsd:boolean"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="pinned-partitioning">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        /** 
+         * PinnedPartitioning pins requests to a single connection pool.
+         * 
+         * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
+         * 
+         * @see org.eclipse.persistence.descriptors.partitioning.PinnedPartitioningPolicy
+         * @author James Sutherland
+         * @since EclipseLink 2.2
+         */ 
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface PinnedPartitioning {
+            String name();
+            
+            /**
+             * The connection pool name to pin queries to.
+             */
+            String connectionPool();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="connection-pool" type="xsd:string"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
   <xsd:complexType name="column-result">
     <xsd:annotation>
       <xsd:documentation>
@@ -1658,6 +2126,7 @@
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-class" type="xsd:string"/>
@@ -2416,6 +2885,7 @@
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-entity" type="xsd:string"/>
@@ -2454,6 +2924,7 @@
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-entity" type="xsd:string"/>
@@ -2602,6 +3073,7 @@
                    minOccurs="0"/>
       <xsd:element name="table-generator" type="orm:table-generator" 
                    minOccurs="0"/>
+      <xsd:group ref="orm:partitioning-group"/>
       <xsd:element name="named-query" type="orm:named-query" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-native-query" type="orm:named-native-query" 
@@ -2882,11 +3354,12 @@
       <xsd:element name="cascade" type="orm:cascade-type"
                    minOccurs="0"/>
       <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
-     <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
-     <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
-     <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
-     <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
-     <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
+      <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-entity" type="xsd:string"/>
@@ -2933,6 +3406,7 @@
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-entity" type="xsd:string"/>
@@ -4082,6 +4556,7 @@ public @interface QueryRedirectors {
       <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-interface" type="xsd:string"/>

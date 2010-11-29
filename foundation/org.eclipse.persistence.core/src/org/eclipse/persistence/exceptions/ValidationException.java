@@ -759,10 +759,10 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException errorParsingMappingFile(String mappingFileURL, Exception orm2Error, Exception orm1Error, Exception eclipselinkError) {
-        Object[] args = { mappingFileURL, orm1Error, eclipselinkError };
+    public static ValidationException errorParsingMappingFile(String mappingFileURL, Exception exception) {
+        Object[] args = { mappingFileURL };
 
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ERROR_PARSING_MAPPING_FILE, args), orm2Error);
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ERROR_PARSING_MAPPING_FILE, args), exception);
         validationException.setErrorCode(ERROR_PARSING_MAPPING_FILE);
         return validationException;
     }
@@ -2479,7 +2479,7 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
     
-    public static ValidationException invalidValueForProperty(String specifiedValue, String property, Exception error) {
+    public static ValidationException invalidValueForProperty(Object specifiedValue, String property, Exception error) {
         Object[] args = { specifiedValue, property, error.toString() };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_VALUE_FOR_PROPERTY, args), error);
         validationException.setErrorCode(INVALID_VALUE_FOR_PROPERTY);

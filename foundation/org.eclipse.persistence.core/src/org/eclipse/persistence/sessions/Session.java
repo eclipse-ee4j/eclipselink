@@ -15,6 +15,7 @@ package org.eclipse.persistence.sessions;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -990,4 +991,19 @@ public interface Session {
      * and that do not have a default timeout defined in their descriptor.
      */
     public void setQueryTimeoutDefault(int queryTimeoutDefault);
+    
+    /**
+     * PUBLIC:
+     * Return the session's partitioning policy.
+     */
+    public PartitioningPolicy getPartitioningPolicy();
+    
+    /**
+     * PUBLIC:
+     * Set the session's partitioning policy.
+     * A PartitioningPolicy is used to partition, load-balance or replicate data across multiple difference databases
+     * or across a database cluster such as Oracle RAC.
+     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+     */
+    public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy);
 }

@@ -175,7 +175,9 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6167", "A cast has been invoked on an expression that does not use inheritance: [{0}]."},
        { "6168", "Query failed to prepare, unexpected error occurred: [{0}]."},
        { "6169", "A mapping was configured to use IN batch fetching, but the original query was not configured to use IN batch fetching and must be: [{0}]."},
-       { "6170", "No value was provided for the additional criteria query parameter [{0}]. Additional criteria parameters must be set through Entity Manager, Entity Manager Factory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."}
+       { "6170", "No value was provided for the additional criteria query parameter [{0}]. Additional criteria parameters must be set through Entity Manager, Entity Manager Factory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."},
+       { "6171", "Partitioning not support for the session type [{0}]. Only ServerSession and ClientSession are supported."},
+       { "6172", "Missing connection pool for partitioning [{0}]."}
     };
 
     /**

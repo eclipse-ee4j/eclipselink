@@ -14,11 +14,9 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.Map;
 
-import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 /**
  * Provides isolation support by allowing a client session
@@ -40,6 +38,7 @@ public class IsolatedClientSession extends ClientSession {
     * Set up the IdentityMapManager.  This method allows subclasses of Session to override
     * the default IdentityMapManager functionality.
     */
+    @Override
     public void initializeIdentityMapAccessor() {
         this.identityMapAccessor = new IsolatedClientSessionIdentityMapAccessor(this);
     }
@@ -90,11 +89,12 @@ public class IsolatedClientSession extends ClientSession {
     * the next step towards it.
     * @return this if there is no next link in the chain
     */
+    @Override
     public AbstractSession getParentIdentityMapSession(DatabaseQuery query, boolean canReturnSelf, boolean terminalOnly) {
         if ((query != null) && isIsolatedQuery(query)) {
             return this;
         } else {
-            return getParent().getParentIdentityMapSession(query, canReturnSelf, terminalOnly);
+            return this.parent.getParentIdentityMapSession(query, canReturnSelf, terminalOnly);
         }
     }
 
@@ -113,30 +113,20 @@ public class IsolatedClientSession extends ClientSession {
     * @return a session with a live accessor
     * @param query may store session name or reference class for brokers case
     */
+    @Override
     public AbstractSession getExecutionSession(DatabaseQuery query) {
         if (shouldExecuteLocally(query)) {
             return this;
         } else {
-            return getParent().getExecutionSession(query);
+            return this.parent.getExecutionSession(query);
         }
-    }
-
-    /**
-    * INTERNAL:
-    * Isolated sessions must forward call execution to its parent, unless in a transaction.
-    * This is required as isolated sessions are always the execution session for isolated classes.
-    */
-    public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
-        if (isInTransaction()) {
-            return super.executeCall(call, translationRow, query);
-        }
-        return getParent().executeCall(call, translationRow, query);
     }
 
     /**
      * PUBLIC:
      * Return if this session is an isolated client session.
      */
+    @Override
     public boolean isIsolatedClientSession() {
         return true;
     }    

@@ -277,7 +277,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7302", "Conflicting XML elements [{0}] were found for the element [{1}]. The first was found in the mapping file [{2}] and the second in the mapping file [{3}]. Please correct this by removing the XML element which does not apply." },
                                            { "7303", "PersistenceUnitProperties.ORACLE_PROXY_TYPE property set to [{0}], required for this proxy type property [{1}] not found." },
                                            { "7304", "PersistenceUnitProperties.ORACLE_PROXY_TYPE property set to unknown type [{0}], known types are [{1}], [{2}], [{3}]." },
-                                           { "7305", "An exception was thrown while processing the mapping file from URL: [{0}],\nerror using JPA 1.0 orm.xsd was [{1}],\nerror using eclipselink-orm.xsd was [{2}],\nerror using JPA 2.0 orm.xsd is in cause." },
+                                           { "7305", "An exception was thrown while processing the mapping file from URL: [{0}]." },
                                            { "7306", "The annotated element [{0}] from the class [{1}] has an incorrect explicit access type specified. It should specify an access type of [{2}]." },
                                            { "7307", "Missing a logging context string for the context [{0}]. This is an internal exception that occurred retrieving a log message for JPA metadata processing, please report a bug." },
                                            { "7308", "The specified value [{0}] for for the persistence property [{1}] is invalid - [{2}]."},

@@ -19,6 +19,7 @@ import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.queries.Call;
 
 /**
@@ -239,4 +240,14 @@ public interface Accessor extends Cloneable {
      * Reset the accessor before being released.
      */
     void reset();
+    
+    /**
+     * Return the associated connection pool this connection was obtained from.
+     */
+    ConnectionPool getPool();
+    
+    /**
+     * Set the associated connection pool this connection was obtained from.
+     */
+    void setPool(ConnectionPool pool);
 }

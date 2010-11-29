@@ -410,43 +410,43 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         return readQuery.getExecutionFetchGroup();
     }
 
-    public static void assertFetchedAttribute(Object entity, String... attribute) {
+    public void assertFetchedAttribute(Object entity, String... attribute) {
         FetchGroupAssert.assertFetchedAttribute(getEntityManagerFactory(), entity, attribute);
     }
 
-    public static void assertNotFetchedAttribute(Object entity, String... attribute) {
+    public void assertNotFetchedAttribute(Object entity, String... attribute) {
         FetchGroupAssert.assertNotFetchedAttribute(getEntityManagerFactory(), entity, attribute);
     }
 
-    public static void assertFetched(Object entity, FetchGroup fetchGroup) {
+    public void assertFetched(Object entity, FetchGroup fetchGroup) {
         FetchGroupAssert.assertFetched(getEntityManagerFactory(), entity, fetchGroup);
     }
     
-    public static void assertDefaultFetched(Object entity) {
+    public void assertDefaultFetched(Object entity) {
         FetchGroupAssert.assertDefaultFetched(getEntityManagerFactory(), entity);
     }
     
-    public static void assertFetched(Object entity, String fetchGroupName) {
+    public void assertFetched(Object entity, String fetchGroupName) {
         FetchGroupAssert.assertFetched(getEntityManagerFactory(), entity, fetchGroupName);    
     }
     
-    public static void assertNoFetchGroup(Object entity) {
+    public void assertNoFetchGroup(Object entity) {
         FetchGroupAssert.assertNoFetchGroup(getEntityManagerFactory(), entity);
     }
     
-    public static void assertConfig(String entityName, FetchGroup defaultFetchGroup) {
+    public void assertConfig(String entityName, FetchGroup defaultFetchGroup) {
         FetchGroupAssert.assertConfig(getEntityManagerFactory(), entityName, defaultFetchGroup);
     }
     
-    public static void assertConfig(String entityName, FetchGroup defaultFetchGroup, int numNamedFetchGroups) {
+    public void assertConfig(String entityName, FetchGroup defaultFetchGroup, int numNamedFetchGroups) {
         FetchGroupAssert.assertConfig(getEntityManagerFactory(), entityName, defaultFetchGroup, numNamedFetchGroups);
     }
     
-    public static void assertConfig(ClassDescriptor descriptor, FetchGroup defaultFetchGroup) {
+    public void assertConfig(ClassDescriptor descriptor, FetchGroup defaultFetchGroup) {
         FetchGroupAssert.assertConfig(descriptor, defaultFetchGroup);
     }
     
-    public static void assertConfig(ClassDescriptor descriptor, FetchGroup defaultFetchGroup, int numNamedFetchGroups) {
+    public void assertConfig(ClassDescriptor descriptor, FetchGroup defaultFetchGroup, int numNamedFetchGroups) {
         FetchGroupAssert.assertConfig(descriptor, defaultFetchGroup, numNamedFetchGroups);
     }
     

@@ -16,7 +16,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**

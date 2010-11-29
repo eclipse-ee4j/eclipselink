@@ -56,7 +56,7 @@ public class NullPasswordLoginTest extends org.eclipse.persistence.testing.frame
      */
     public void test() {
         ((DatabaseSession)getSession()).logout();
-        Login new_login = (Login)getSession().getDatasourceLogin().clone();
+        Login new_login = getSession().getDatasourceLogin().clone();
         new_login.setPassword(null);
         ((DatabaseSession)getSession()).login(new_login);
     }

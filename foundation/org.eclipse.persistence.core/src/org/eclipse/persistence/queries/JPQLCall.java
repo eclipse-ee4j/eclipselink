@@ -219,4 +219,18 @@ public class JPQLCall implements Serializable, Call {
      */
     public void translate(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
     }
+
+    /**
+     * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
+     */
+    public boolean isNothingReturned() {
+        return false;
+    }
+
+    /**
+     * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
+     */
+    public boolean isOneRowReturned() {
+        return false;
+    }
 }

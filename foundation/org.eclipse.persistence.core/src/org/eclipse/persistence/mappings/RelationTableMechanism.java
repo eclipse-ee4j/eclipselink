@@ -543,6 +543,9 @@ public class RelationTableMechanism  implements Cloneable {
         if (!getDeleteQuery().hasSessionName()) {
             getDeleteQuery().setSessionName(session.getName());
         }
+        if (getDeleteQuery().getPartitioningPolicy() == null) {
+            getDeleteQuery().setPartitioningPolicy(mapping.getPartitioningPolicy());
+        }
         getInsertQuery().setName(mapping.getAttributeName());
         if (hasCustomDeleteQuery()) {
             return;
@@ -552,19 +555,13 @@ public class RelationTableMechanism  implements Cloneable {
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
 
-        Enumeration relationKeyEnum = getSourceRelationKeyFields().elements();
-        for (; relationKeyEnum.hasMoreElements();) {
-            DatabaseField relationKey = (DatabaseField)relationKeyEnum.nextElement();
-
+        for (DatabaseField relationKey : getSourceRelationKeyFields()) {
             Expression expression = builder.getField(relationKey).equal(builder.getParameter(relationKey));
             whereClause = expression.and(whereClause);
         }
 
-        if(mapping.isCollectionMapping()) {
-            relationKeyEnum = getTargetRelationKeyFields().elements();
-            for (; relationKeyEnum.hasMoreElements();) {
-                DatabaseField relationKey = (DatabaseField)relationKeyEnum.nextElement();
-    
+        if (mapping.isCollectionMapping()) {
+            for (DatabaseField relationKey : getTargetRelationKeyFields()) {    
                 Expression expression = builder.getField(relationKey).equal(builder.getParameter(relationKey));
                 whereClause = expression.and(whereClause);
             }
@@ -613,6 +610,9 @@ public class RelationTableMechanism  implements Cloneable {
         if (!getInsertQuery().hasSessionName()) {
             getInsertQuery().setSessionName(session.getName());
         }
+        if (getInsertQuery().getPartitioningPolicy() == null) {
+            getInsertQuery().setPartitioningPolicy(mapping.getPartitioningPolicy());
+        }
         getInsertQuery().setName(mapping.getAttributeName());
         if (hasCustomInsertQuery()) {
             return;
@@ -621,17 +621,15 @@ public class RelationTableMechanism  implements Cloneable {
         SQLInsertStatement statement = new SQLInsertStatement();
         statement.setTable(getRelationTable());
         AbstractRecord joinRow = new DatabaseRecord();
-        for (Enumeration targetEnum = getTargetRelationKeyFields().elements();
-                 targetEnum.hasMoreElements();) {
-            joinRow.put((DatabaseField)targetEnum.nextElement(), null);
+        for (DatabaseField field : getTargetRelationKeyFields()) {
+            joinRow.put(field, null);
         }
-        for (Enumeration sourceEnum = getSourceRelationKeyFields().elements();
-                 sourceEnum.hasMoreElements();) {
-            joinRow.put((DatabaseField)sourceEnum.nextElement(), null);
+        for (DatabaseField field : getSourceRelationKeyFields()) {
+            joinRow.put(field, null);
         }
-        if(mapping.isCollectionMapping()) {
+        if (mapping.isCollectionMapping()) {
             CollectionMapping collectionMapping = (CollectionMapping)mapping;
-            if(collectionMapping.getListOrderField() != null) {
+            if (collectionMapping.getListOrderField() != null) {
                 joinRow.put(collectionMapping.getListOrderField(), null);
             }
             collectionMapping.getContainerPolicy().addFieldsForMapKey(joinRow);

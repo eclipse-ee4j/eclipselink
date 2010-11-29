@@ -127,7 +127,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
         try {
             ConnectionPolicy clone = (ConnectionPolicy)super.clone();
             if (clone.hasLogin()) {
-                clone.setLogin((Login)clone.getLogin().clone());
+                clone.setLogin(clone.getLogin().clone());
             }
             return clone;
         } catch (CloneNotSupportedException e) {

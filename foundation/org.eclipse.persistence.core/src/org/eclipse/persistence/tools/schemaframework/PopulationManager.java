@@ -62,14 +62,13 @@ public class PopulationManager {
     /**
      * Add all of the objects of the class.
      */
-    public void addAllObjectsForClass(Class objectsClass, Vector allObjects) {
+    public void addAllObjectsForClass(Class objectsClass, List allObjects) {
         if (!getRegisteredObjects().containsKey(objectsClass)) {
             return;
         }
 
-        for (Enumeration enumeration = ((Hashtable)getRegisteredObjects().get(objectsClass)).elements();
-                 enumeration.hasMoreElements();) {
-            allObjects.addElement(enumeration.nextElement());
+        for (Object object : ((Map)getRegisteredObjects().get(objectsClass)).values()) {
+            allObjects.add(object);
         }
     }
 

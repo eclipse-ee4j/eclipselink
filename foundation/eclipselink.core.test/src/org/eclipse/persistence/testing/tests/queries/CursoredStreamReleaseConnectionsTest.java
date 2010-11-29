@@ -44,7 +44,7 @@ public class CursoredStreamReleaseConnectionsTest extends TestCase {
 
     public void setup() {
         org.eclipse.persistence.sessions.Project proj = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
-        proj.setDatasourceLogin((DatabaseLogin)getSession().getDatasourceLogin().clone());
+        proj.setDatasourceLogin(getSession().getDatasourceLogin().clone());
         serverSession = proj.createServerSession();
         serverSession.setSessionLog(getSession().getSessionLog());
         serverSession.login();

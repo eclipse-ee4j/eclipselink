@@ -556,7 +556,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The uow shares its parents transactions.
      */
     public void beginTransaction() throws DatabaseException {
-        getParent().beginTransaction();
+        this.parent.beginTransaction();
     }
 
     /**
@@ -798,7 +798,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (objectFromCache != null) {
                 // Ensure that the registered object is the one from the parent cache.
                 if (shouldPerformFullValidation()) {
-                    if ((objectFromCache != object) && (getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, object.getClass(), descriptor) != object)) {
+                    if ((objectFromCache != object) && (this.parent.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, object.getClass(), descriptor) != object)) {
                         throw ValidationException.wrongObjectRegistered(object, objectFromCache);
                     }
                 }
@@ -967,7 +967,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // otherwise lock the object and it related objects (not using indirection) as a unit.
         // If just a simple object (all indirection) a simple read-lock can be used.
         // PERF: Cache if check to write is required.
-        boolean identityMapLocked = this.shouldCheckWriteLock && getParent().getIdentityMapAccessorInstance().acquireWriteLock();
+        boolean identityMapLocked = this.shouldCheckWriteLock && this.parent.getIdentityMapAccessorInstance().acquireWriteLock();
         boolean rootOfCloneRecursion = false;
         if (identityMapLocked) {
             checkInvalidObject(original, parentCacheKey, descriptor);
@@ -976,7 +976,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (this.objectsLockedForClone == null) {
                 // PERF: If a simple object just acquire a simple read-lock.
                 if (concreteDescriptor.shouldAcquireCascadedLocks()) {
-                    this.objectsLockedForClone = getParent().getIdentityMapAccessorInstance().getWriteLockManager().acquireLocksForClone(original, concreteDescriptor, parentCacheKey, getParent(), this);
+                    this.objectsLockedForClone = this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireLocksForClone(original, concreteDescriptor, parentCacheKey, this.parent, this);
                 } else {
                     checkInvalidObject(original, parentCacheKey, descriptor);
                     parentCacheKey.acquireReadLock();
@@ -1016,7 +1016,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // otherwise either release the cache-key for a simple lock,
             // otherwise release the entire set of locks for related objects if this was the root.
             if (identityMapLocked) {
-                getParent().getIdentityMapAccessorInstance().releaseWriteLock();
+                this.parent.getIdentityMapAccessorInstance().releaseWriteLock();
             } else {
                 if (rootOfCloneRecursion) {
                     if (this.objectsLockedForClone == null) {
@@ -1072,7 +1072,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (!this.isNestedUnitOfWork) {
             if (isSynchronized()) {
                 // If we started the JTS transaction then we have to commit it as well.
-                if (getParent().wasJTSTransactionInternallyStarted()) {
+                if (this.parent.wasJTSTransactionInternallyStarted()) {
                     commitInternallyStartedExternalTransaction();
                 }
 
@@ -1145,7 +1145,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             this.eventManager.preCommitUnitOfWork();
         }
         setLifecycle(CommitPending);
-        if (getParent().isUnitOfWork()) {
+        if (this.parent.isUnitOfWork()) {
             commitNestedUnitOfWork();
         } else {
             commitRootUnitOfWork();
@@ -1171,7 +1171,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (!this.isNestedUnitOfWork) {
             if (isSynchronized()) {
                 // If we started the JTS transaction then we have to commit it as well.
-                if (getParent().wasJTSTransactionInternallyStarted()) {
+                if (this.parent.wasJTSTransactionInternallyStarted()) {
                     commitInternallyStartedExternalTransaction();
                 }
 
@@ -1184,7 +1184,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             this.eventManager.preCommitUnitOfWork();
         }
         setLifecycle(CommitPending);
-        if (getParent().isUnitOfWork()) {
+        if (this.parent.isUnitOfWork()) {
             commitNestedUnitOfWork();
         } else {
             commitRootUnitOfWorkWithPreBuiltChangeSet(uowChangeSet);
@@ -1274,8 +1274,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected boolean commitInternallyStartedExternalTransaction() {
         boolean committed = false;
-        if (!getParent().isInTransaction() || (wasTransactionBegunPrematurely() && (getParent().getTransactionMutex().getDepth() == 1))) {
-            committed = getParent().commitExternalTransaction();
+        if (!this.parent.isInTransaction() || (wasTransactionBegunPrematurely() && (this.parent.getTransactionMutex().getDepth() == 1))) {
+            committed = this.parent.commitExternalTransaction();
         }
         return committed;
     }
@@ -1285,7 +1285,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Commit the changes to any objects to the parent.
      */
     protected void commitNestedUnitOfWork() {
-        getParent().getIdentityMapAccessorInstance().acquireWriteLock();//Ensure concurrency
+        this.parent.getIdentityMapAccessorInstance().acquireWriteLock();//Ensure concurrency
 
         try {
             // Iterate over each clone and let the object build merge to clones into the originals.
@@ -1307,21 +1307,21 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     //then  unregister in the parent.
                     //else add it to the deleted object list to be removed from the parent's parent
                     //this prevents erroneous insert and delete sql
-                    if ((originalObject != null) && ((UnitOfWorkImpl)getParent()).getNewObjectsCloneToOriginal().containsKey(originalObject)) {
-                        ((UnitOfWorkImpl)getParent()).unregisterObject(originalObject);
+                    if ((originalObject != null) && ((UnitOfWorkImpl)this.parent).getNewObjectsCloneToOriginal().containsKey(originalObject)) {
+                        ((UnitOfWorkImpl)this.parent).unregisterObject(originalObject);
                     } else {
-                        ((UnitOfWorkImpl)getParent()).getDeletedObjects().put(originalObject, getId(originalObject));
+                        ((UnitOfWorkImpl)this.parent).getDeletedObjects().put(originalObject, getId(originalObject));
                     }
                 }
             }
             if (hasRemovedObjects()) {
                 for (Iterator removedObjects = getRemovedObjects().values().iterator();
                          removedObjects.hasNext();) {
-                    ((UnitOfWorkImpl)getParent()).getCloneMapping().remove(removedObjects.next());
+                    ((UnitOfWorkImpl)this.parent).getCloneMapping().remove(removedObjects.next());
                 }
             }
         } finally {
-            getParent().getIdentityMapAccessorInstance().releaseWriteLock();
+            this.parent.getIdentityMapAccessorInstance().releaseWriteLock();
         }
     }
 
@@ -1447,7 +1447,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase()) {
                             setMergeManager(new MergeManager(this));
                             //If we are merging into the shared cache acquire all required locks before merging.
-                            getParent().getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
+                            this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
                         }
                     }
                     commitTransaction();
@@ -1456,7 +1456,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         // 272022: If the current thread and the active thread on the mutex do not match - switch them
                         verifyMutexThreadIntegrityBeforeRelease();
                         // exception occurred during the commit.
-                        getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
+                        this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
                         this.setMergeManager(null);
                     }
                     throw throwable;
@@ -1465,7 +1465,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         // 272022: If the current thread and the active thread on the mutex do not match - switch them
                         verifyMutexThreadIntegrityBeforeRelease();
                         // exception occurred during the commit.
-                        getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
+                        this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
                         this.setMergeManager(null);
                     }
                     throw throwable;
@@ -1582,7 +1582,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The uow shares its parents transactions.
      */
     public void commitTransaction() throws DatabaseException {
-        getParent().commitTransaction();
+        this.parent.commitTransaction();
     }
 
     /**
@@ -1733,8 +1733,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // 2612538 - the default size of Map (32) is appropriate
             Map visitedNodes = new IdentityHashMap();
             Map newObjects = new IdentityHashMap();
-            UnitOfWorkImpl parent = (UnitOfWorkImpl)getParent();
-            parent.discoverUnregisteredNewObjects(((UnitOfWorkImpl)getParent()).getCloneMapping(), newObjects, new IdentityHashMap(), visitedNodes);
+            UnitOfWorkImpl parent = (UnitOfWorkImpl)this.parent;
+            parent.discoverUnregisteredNewObjects(((UnitOfWorkImpl)this.parent).getCloneMapping(), newObjects, new IdentityHashMap(), visitedNodes);
             setUnregisteredNewObjectsInParent(newObjects);
         }
     }
@@ -1819,16 +1819,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * this is here for session broker.
      */
     public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
-        Accessor accessor;
-        if (query.getSessionName() == null) {
-            accessor = query.getSession().getAccessor(query.getReferenceClass());
-        } else {
-            accessor = query.getSession().getAccessor(query.getSessionName());
-        }
-
-        query.setAccessor(accessor);
+        Collection<Accessor> accessors = query.getSession().getAccessors(call, translationRow, query);
+        query.setAccessors(accessors);
         try {
-            return query.getAccessor().executeCall(call, translationRow, this);
+            return basicExecuteCall(call, translationRow, query);
         } finally {
             if (call.isFinished()) {
                 query.setAccessor(null);
@@ -1881,8 +1875,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * The uow does not store a local accessor but shares its parents.
      */
-    public Accessor getAccessor() {
-        return getParent().getAccessor();
+    public Collection<Accessor> getAccessors() {
+        return this.parent.getAccessors();
     }
 
     /**
@@ -1892,28 +1886,20 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public CommitManager getCommitManager() {
         // PERF: lazy init, not always required for release/commit with no changes.
-        if (commitManager == null) {
-            commitManager = new CommitManager(this);
+        if (this.commitManager == null) {
+            this.commitManager = new CommitManager(this);
             // Initialize the commit manager
-            commitManager.setCommitOrder(getParent().getCommitManager().getCommitOrder());
+            this.commitManager.setCommitOrder(this.parent.getCommitManager().getCommitOrder());
         }
-        return commitManager;
+        return this.commitManager;
     }
-
+    
     /**
      * INTERNAL:
-     * The uow does not store a local accessor but shares its parents.
+     * Return the connections to use for the query execution.
      */
-    public Accessor getAccessor(Class domainClass) {
-        return getParent().getAccessor(domainClass);
-    }
-
-    /**
-     * INTERNAL:
-     * The uow does not store a local accessor but shares its parents.
-     */
-    public Accessor getAccessor(String sessionName) {
-        return getParent().getAccessor(sessionName);
+    public Collection<Accessor> getAccessors(Call call, AbstractRecord translationRow, DatabaseQuery query) {
+        return this.parent.getAccessors(call, translationRow, query);
     }
 
     /**
@@ -1927,7 +1913,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
            This fixed the problem of returning null when this method is called on a UOW.
            UOW does not copy the parent session's external transaction controller
            when it is acquired but session does  */
-        return getParent().getActiveUnitOfWork();
+        return this.parent.getActiveUnitOfWork();
     }
 
     /**
@@ -1992,7 +1978,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             Object primaryKey = keyFromObject(clone, descriptor);
 
             // This happens if clone was from the parent identity map.		
-            if (getParent().getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, clone.getClass(), descriptor)) {
+            if (this.parent.getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, clone.getClass(), descriptor)) {
                 //cr 3796
                 if ((getUnregisteredNewObjects().get(clone) != null) && isMergePending()) {
                     //Another thread has read the new object before it has had a chance to
@@ -2099,7 +2085,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (canReturnSelf && !terminalOnly) {
             return this;
         } else {
-            return getParent().getParentIdentityMapSession(query, true, terminalOnly);
+            return this.parent.getParentIdentityMapSession(query, true, terminalOnly);
         }
     }
 
@@ -2129,7 +2115,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // should never use the unit of work as it does not control the
         //accessors and with a session broker it will not have the correct
         //login info
-        return getParent().getExecutionSession(query);
+        return this.parent.getExecutionSession(query);
     }
 
     /**
@@ -2247,7 +2233,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public UnitOfWorkImpl getContainerUnitOfWork() {
         if (containerUnitOfWork == null) {
-            containerUnitOfWork = getParent().acquireNonSynchronizedUnitOfWork(ReferenceMode.WEAK);
+            containerUnitOfWork = this.parent.acquireNonSynchronizedUnitOfWork(ReferenceMode.WEAK);
         }
         return containerUnitOfWork;
     }
@@ -2258,7 +2244,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see org.eclipse.persistence.sessions.Project#setDefaultReadOnlyClasses(Vector)
      */
     public Vector getDefaultReadOnlyClasses() {
-        return getParent().getDefaultReadOnlyClasses();
+        return this.parent.getDefaultReadOnlyClasses();
     }
 
     /**
@@ -2386,7 +2372,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the Sequencing object used by the session.
      */
     public Sequencing getSequencing() {
-        return getParent().getSequencing();
+        return this.parent.getSequencing();
     }
 
     /**
@@ -2396,7 +2382,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * (i.e. not DatabaseSession)
      */
     public ServerPlatform getServerPlatform() {
-        return getParent().getServerPlatform();
+        return this.parent.getServerPlatform();
     }
 
     /**
@@ -2421,7 +2407,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void afterExternalTransactionRollback() {
         // In case jts transaction was internally started but rolled back
         // directly by TransactionManager this flag may still be true during afterCompletion
-        getParent().setWasJTSTransactionInternallyStarted(false);
+        this.parent.setWasJTSTransactionInternallyStarted(false);
         //bug#4699614 -- added a new life cycle status so we know if the external transaction was rolledback and we don't try to rollback again later            
         setLifecycle(AfterExternalTransactionRolledBack);
 
@@ -2429,7 +2415,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // 272022: If the current thread and the active thread on the mutex do not match - switch them            
             verifyMutexThreadIntegrityBeforeRelease();
             //may have unreleased cache locks because of a rollback...
-            getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
+            this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
             this.setMergeManager(null);
         }
     }
@@ -2440,7 +2426,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Close the managed sql connection corresponding to the external transaction.
      */
     public void releaseJTSConnection() {
-        getParent().releaseJTSConnection();
+        this.parent.releaseJTSConnection();
     }
 
     /**
@@ -2648,7 +2634,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         Object primaryKey = builder.extractPrimaryKeyFromObject(implementation, this);
         // there's no need to elaborately avoid the readlock like the other getOriginalVersionOfObjectOrNull
         // method as this one is not used during the commit cycle
-        Object original = getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
+        Object original = this.parent.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
 
         if (original == null) {
             // Check if it is a registered new object.
@@ -2688,7 +2674,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public Object getProperty(String name){
         Object propertyValue = super.getProperties().get(name);
         if (propertyValue == null) {
-           propertyValue = getParent().getProperty(name);
+           propertyValue = this.parent.getProperty(name);
         }
         return propertyValue;
     }
@@ -2698,7 +2684,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the platform for a particular class.
      */
     public Platform getPlatform(Class domainClass) {
-        return getParent().getPlatform(domainClass);
+        return this.parent.getPlatform(domainClass);
     }
     
     /**
@@ -2716,16 +2702,16 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (primaryKey == null) {
                 return null;
             }
-            return getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
+            return this.parent.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
         }
-        CacheKey cacheKey = getParent().getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
+        CacheKey cacheKey = this.parent.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
         if (cacheKey != null) {
             if (cacheKey.acquireReadLockNoWait()) {
                 original = cacheKey.getObject();
                 cacheKey.releaseReadLock();
             } else {
                 if (!getMergeManager().isTransitionedToDeferredLocks()) {
-                    getParent().getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(getMergeManager());
+                    this.parent.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(getMergeManager());
                 }
                 cacheKey.acquireDeferredLock();
                 original = cacheKey.getObject();
@@ -2763,7 +2749,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public DatabaseQuery getQuery(String name, Vector arguments) {
         DatabaseQuery query = super.getQuery(name, arguments);
         if (query == null) {
-            query = getParent().getQuery(name, arguments);
+            query = this.parent.getQuery(name, arguments);
         }
 
         return query;
@@ -2777,7 +2763,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public DatabaseQuery getQuery(String name) {
         DatabaseQuery query = super.getQuery(name);
         if (query == null) {
-            query = getParent().getQuery(name);
+            query = this.parent.getQuery(name);
         }
 
         return query;
@@ -2980,7 +2966,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // Nested units of work are special because the parent can be used to determine if the object exists
             // in most case and new object may be in the cache in the parent.
             if (this.isNestedUnitOfWork) {
-                UnitOfWorkImpl parentUnitOfWork = (UnitOfWorkImpl)getParent();
+                UnitOfWorkImpl parentUnitOfWork = (UnitOfWorkImpl)this.parent;
 
                 // If it is not registered in the parent we must go through the existence check.
                 if (parentUnitOfWork.isObjectRegistered(object) || isUnregisteredNewObjectInParent(object)) {
@@ -3037,14 +3023,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Check if the object is already registered in a parent Unit Of Work
      */
     public boolean isCloneNewObjectFromParent(Object clone) {
-        if (getParent().isUnitOfWork()) {
-            if (((UnitOfWorkImpl)getParent()).isCloneNewObject(clone)) {
+        if (this.parent.isUnitOfWork()) {
+            if (((UnitOfWorkImpl)this.parent).isCloneNewObject(clone)) {
                 return true;
             } else {
-                if (((UnitOfWorkImpl)getParent()).isObjectRegistered(clone)) {
-                    clone = ((UnitOfWorkImpl)getParent()).getCloneToOriginals().get(clone);
+                if (((UnitOfWorkImpl)this.parent).isObjectRegistered(clone)) {
+                    clone = ((UnitOfWorkImpl)this.parent).getCloneToOriginals().get(clone);
                 }
-                return ((UnitOfWorkImpl)getParent()).isCloneNewObjectFromParent(clone);
+                return ((UnitOfWorkImpl)this.parent).isCloneNewObjectFromParent(clone);
             }
         } else {
             return false;
@@ -3080,7 +3066,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return whether the session currently has a database transaction in progress.
      */
     public boolean isInTransaction() {
-        return getParent().isInTransaction();
+        return this.parent.isInTransaction();
     }
 
     /**
@@ -3128,7 +3114,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         if (original != null) {
             //bug 3115160 as a side this method was fixed to perform the correct lookup on the collection
-            return ((UnitOfWorkImpl)getParent()).getNewObjectsCloneToOriginal().containsKey(original);
+            return ((UnitOfWorkImpl)this.parent).getNewObjectsCloneToOriginal().containsKey(original);
         }
         return false;
     }
@@ -3141,7 +3127,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         boolean isDeleted = (this.deletedObjects != null) && this.deletedObjects.containsKey(object);
 
         if (this.parent.isUnitOfWork()) {
-            return isDeleted || ((UnitOfWorkImpl)getParent()).isObjectDeleted(object);
+            return isDeleted || ((UnitOfWorkImpl)this.parent).isObjectDeleted(object);
         } else {
             return isDeleted;
         }
@@ -3176,7 +3162,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // We do smart merge here 
         if (isSmartMerge()){
             ClassDescriptor descriptor = getDescriptor(clone);
-            if (getParent().getIdentityMapAccessorInstance().containsObjectInIdentityMap(keyFromObject(clone, descriptor), clone.getClass(), descriptor) ) {
+            if (this.parent.getIdentityMapAccessorInstance().containsObjectInIdentityMap(keyFromObject(clone, descriptor), clone.getClass(), descriptor) ) {
                 mergeCloneWithReferences(clone);
 
                 // don't put clone in  clone mapping since it would result in duplicate clone
@@ -3244,7 +3230,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 Object[] queries = this.deferredModifyAllQueries.get(index);
                 ModifyAllQuery query = (ModifyAllQuery)queries[0];
                 AbstractRecord translationRow = (AbstractRecord)queries[1];
-                getParent().executeQuery(query, translationRow);
+                this.parent.executeQuery(query, translationRow);
             }
         }
     }
@@ -3352,7 +3338,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 int size = this.modifyAllQueries.size();
                 for (int index = 0; index < size; index++) {
                     ModifyAllQuery query = this.modifyAllQueries.get(index);
-                    query.setSession(getParent());// ensure the query knows which cache to update
+                    query.setSession(this.parent);// ensure the query knows which cache to update
                     query.mergeChangesIntoSharedCache();
                 }
             }
@@ -3370,7 +3356,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (!isNestedUnitOfWork) {
                 //If we are merging into the shared cache release all of the locks that we acquired.
                 // We will not check If the current thread and the active thread on the mutex do not match
-                getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(manager);
+                this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(manager);
                 setMergeManager(null);
 
                 postMergeChanges();

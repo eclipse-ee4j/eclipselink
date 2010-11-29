@@ -1660,7 +1660,7 @@ public class QueryHintsHandler {
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
-                ((ObjectLevelReadQuery) query).setAsOfClause(new AsOfClause(Helper.timeFromString((String)valueToApply)));
+                ((ObjectLevelReadQuery) query).setAsOfClause(new AsOfClause(Helper.timestampFromString((String)valueToApply)));
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }

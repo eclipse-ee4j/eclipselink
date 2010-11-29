@@ -19,6 +19,7 @@ import java.io.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
@@ -100,7 +101,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     protected boolean wasJTSTransactionInternallyStarted;
 
     /** The connection to the data store. */
-    transient protected Accessor accessor;
+    transient protected Collection<Accessor> accessors;
 
     /** Allow the datasource platform to be cached. */
     transient protected Platform platform;
@@ -200,6 +201,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     protected Map<String, String> staticMetamodelClasses;
 
+    /** Allow queries to be targeted at specific connection pools. */
+    protected PartitioningPolicy partitioningPolicy;
+    
     /**
      * INTERNAL:
      * Create and return a new session.
@@ -413,7 +417,28 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Allows retry if the connection is dead.
      */
     protected void basicBeginTransaction() throws DatabaseException {
-        basicBeginTransaction(0);
+        Collection<Accessor> accessors = getAccessors();
+        if (accessors == null) {
+            return;
+        }
+        Accessor failedAccessor = null;
+        try {
+            for (Accessor accessor : accessors) {
+                failedAccessor = accessor;
+                basicBeginTransaction(0, accessor);
+            }
+        } catch (RuntimeException exception) {
+            // If begin failed, rollback ones already started.
+            for (Accessor accessor : accessors) {
+                if (accessor == failedAccessor) {
+                    break;
+                }
+                try {
+                    accessor.rollbackTransaction(this);
+                } catch (RuntimeException ignore) { }
+            }            
+            throw exception;
+        }
     }
 
     /**
@@ -422,12 +447,22 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * This starts a real database transaction.
      * Allows retry if the connection is dead.
      */
-    protected void basicBeginTransaction(int retryCount) throws DatabaseException {
+    protected void basicBeginTransaction(Accessor accessor) throws DatabaseException {
+        basicBeginTransaction(0, accessor);
+    }
+
+    /**
+     * INTERNAL:
+     * Called by beginTransaction() to start a transaction.
+     * This starts a real database transaction.
+     * Allows retry if the connection is dead.
+     */
+    protected void basicBeginTransaction(int retryCount, Accessor accessor) throws DatabaseException {
         try {
-            getAccessor().beginTransaction(this);
+            accessor.beginTransaction(this);
         } catch (DatabaseException databaseException) {
             // Retry if the failure was communication based?  (i.e. timeout, database down, can no longer ping)
-            if ((!getLogin().shouldUseExternalTransactionController()) && databaseException.isCommunicationFailure()) {
+            if ((!getDatasourceLogin().shouldUseExternalTransactionController()) && databaseException.isCommunicationFailure()) {
                 DatabaseException exceptionToThrow = databaseException;
                 log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
                 // Attempt to reconnect connection.
@@ -466,7 +501,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                                 //Give the failover time to recover.
                                 Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
                             }
-                            basicBeginTransaction(retryCount);
+                            basicBeginTransaction(retryCount, accessor);
                             return;
                         } catch (DatabaseException ex){
                             //replace original exception with last exception thrown
@@ -502,9 +537,24 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * This commits the active transaction.
      */
     protected void basicCommitTransaction() throws DatabaseException {
-        try {
-            getAccessor().commitTransaction(this);
-        } catch (RuntimeException exception) {
+        Collection<Accessor> accessors = getAccessors();
+        if (accessors == null) {
+            return;
+        }
+        RuntimeException exception = null;
+        for (Accessor accessor : accessors) {
+            try {
+                // 2 stage commit.
+                if (exception == null) {
+                    accessor.commitTransaction(this);                    
+                } else {
+                    accessor.rollbackTransaction(this);
+                }
+            } catch (RuntimeException failure) {
+                exception = failure;
+            }
+        }
+        if (exception != null) {
             handleException(exception);
         }
     }
@@ -515,9 +565,19 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * This rolls back the active transaction.
      */
     protected void basicRollbackTransaction() throws DatabaseException {
-        try {
-            getAccessor().rollbackTransaction(this);
-        } catch (RuntimeException exception) {
+        Collection<Accessor> accessors = getAccessors();
+        if (accessors == null) {
+            return;
+        }
+        RuntimeException exception = null;
+        for (Accessor accessor : accessors) {
+            try {
+                accessor.rollbackTransaction(this);
+            } catch (RuntimeException failure) {
+                exception = failure;
+            }
+        }
+        if (exception != null) {
             handleException(exception);
         }
     }
@@ -560,23 +620,23 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @see #isInTransaction()
      */
     public void beginTransaction() throws DatabaseException, ConcurrencyException {
+        ConcurrencyManager mutex = getTransactionMutex();
         // If there is no db transaction in progress
         // beginExternalTransaction() starts an external transaction -
         // provided externalTransactionController is used, and there is
         // no active external transaction - so we have to start one internally.
-        if (!isInTransaction()) {
+        if (!mutex.isAcquired()) {
             beginExternalTransaction();
         }
-
         // For unit of work and client session multi threading is allowed as they are a context,
         // this is required for JTS/RMI/CORBA/EJB stuff where the server thread can be different across calls.
         if (isClientSession()) {
-            getTransactionMutex().setActiveThread(Thread.currentThread());
+            mutex.setActiveThread(Thread.currentThread());
         }
 
         // Ensure mutual exclusion and call subclass specific begin.
-        getTransactionMutex().acquire();
-        if (!getTransactionMutex().isNested()) {
+        mutex.acquire();
+        if (!mutex.isNested()) {
             if (this.eventManager != null) {
                 this.eventManager.preBeginTransaction();
             }
@@ -680,8 +740,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @exception ConcurrencyException if this session is not within a transaction.
      */
     public void commitTransaction() throws DatabaseException, ConcurrencyException {
+        ConcurrencyManager mutex = getTransactionMutex();
         // Release mutex and call subclass specific commit.
-        if (!getTransactionMutex().isNested()) {
+        if (!mutex.isNested()) {
             if (this.eventManager != null) {
                 this.eventManager.preCommitTransaction();
             }
@@ -692,12 +753,12 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
 
         // This MUST not be in a try catch or finally as if the commit failed the transaction is still open.
-        getTransactionMutex().release();
+        mutex.release();
 
         // If there is no db transaction in progress
         // if there is an active external transaction
         // which was started internally - it should be committed internally, too.
-        if (!isInTransaction()) {
+        if (!mutex.isAcquired()) {
             commitExternalTransaction();
         }
     }
@@ -984,15 +1045,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * session it should have executed on.
      */
     public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
-        //** sequencing refactoring
-        if (query.getAccessor() == null) {
-            query.setAccessor(getAccessor());
+        if (query.getAccessors() == null) {
+            query.setAccessors(getAccessors());
         }
         try {
-            return query.getAccessor().executeCall(call, translationRow, this);
+            return basicExecuteCall(call, translationRow, query);
         } finally {
             if (call.isFinished()) {
-                query.setAccessor(null);
+                query.setAccessors(null);
             }
         }
     }
@@ -1414,8 +1474,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Execute the sql on the database and return the result.
      * It must return a value, if no value is return executeNonSelectingSQL must be used.
      * A vector of database rows is returned, database row implements Java 2 Map which should be used to access the data.
- 	 * Warning: Allowing an unverified SQL string to be passed into this
-	 * method makes your application vulnerable to SQL injection attacks.
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      * <p>Example:
      * <p>session.executeSelectingCall("Select * from Employee");
      *
@@ -1427,43 +1487,141 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * Return the lowlevel database accessor.
-     * The database accessor is used for direct database access.
+     * This should normally not be used, most sessions do not have a single accessor.
+     * ServerSession has a set of connection pools.
+     * ClientSession only has an accessor during a transaction.
+     * SessionBroker has multiple accessors.
+     * getAccessors() should be used to support partitioning.
+     * To maintain backward compatibility, and to support certain cases that required a default accessor,
+     * this returns the first accessor.
      */
     public Accessor getAccessor() {
-        if ((accessor == null) && (project != null) && (project.getDatasourceLogin() != null)) {
+        Collection<Accessor> accessors = getAccessors();
+        if ((accessors == null) || accessors.isEmpty()) {
+            return null;
+        }
+        if (accessors instanceof List) {
+            return ((List<Accessor>)accessors).get(0);
+        }
+        return accessors.iterator().next();
+    }
+
+    /**
+     * INTERNAL:
+     * This should normally not be used, most sessions do not have specific accessors.
+     * ServerSession has a set of connection pools.
+     * ClientSession only has an accessor during a transaction.
+     * SessionBroker has multiple accessors.
+     * getAccessors() is used to support partitioning.
+     * If the accessor is null, this lazy initializes one for backwardcompatibility with DatabaseSession.
+     */
+    public Collection<Accessor> getAccessors() {
+        if ((this.accessors == null) && (this.project != null) && (this.project.getDatasourceLogin() != null)) {
             synchronized (this) {
-                if ((accessor == null) && (project != null) && (project.getDatasourceLogin() != null)) {
+                if ((this.accessors == null) && (this.project != null) && (this.project.getDatasourceLogin() != null)) {
                     // PERF: lazy init, not always required.
-                    accessor = project.getDatasourceLogin().buildAccessor();
+                    List<Accessor> newAccessors = new ArrayList(1);
+                    newAccessors.add(this.project.getDatasourceLogin().buildAccessor());
+                    this.accessors = newAccessors;
                 }
             }
         }
-        return accessor;
+        return this.accessors;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the connections to use for the query execution.
+     */
+    public Collection<Accessor> getAccessors(Call call, AbstractRecord translationRow, DatabaseQuery query) {
+        // Check for partitioning.
+        Collection<Accessor> accessors = null;
+        if (query.getPartitioningPolicy() != null) {
+            accessors = query.getPartitioningPolicy().getConnectionsForQuery(this, query, translationRow);
+            if (accessors != null) {
+                return accessors;
+            }
+        }
+        ClassDescriptor descriptor = query.getDescriptor();
+        if ((descriptor != null) && (descriptor.getPartitioningPolicy() != null)) {
+            accessors = descriptor.getPartitioningPolicy().getConnectionsForQuery(this, query, translationRow);
+            if (accessors != null) {
+                return accessors;
+            }
+        }
+        if (this.partitioningPolicy != null) {
+            accessors = this.partitioningPolicy.getConnectionsForQuery(this, query, translationRow);
+            if (accessors != null) {
+                return accessors;
+            }
+        }
+        if (accessors == null) {
+            return getAccessors();
+        }
+        return accessors;
     }
 
     /**
      * INTERNAL:
-     * Return the lowlevel database accessor.
-     * The database accessor is used for direct database access.
-     * If sessionBroker is used, the right accessor for this
-     * broker will be returned.
+     * Execute the call on each accessors and merge the results.
      */
-    public Accessor getAccessor(Class domainClass) {
-        return getAccessor();
+    public Object basicExecuteCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
+        Object result = null;
+        if (query.getAccessors().size() == 1) {
+            result = query.getAccessor().executeCall(call, translationRow, this);
+        } else {
+            RuntimeException exception = null;
+            // Replication or partitioning may require execution on multiple connections.
+            for (Accessor accessor : query.getAccessors()) {
+                Object object = null;
+                try {
+                    object = accessor.executeCall(call, translationRow, this);
+                } catch (RuntimeException failed) {
+                    // Catch any exceptions to allow execution on each connections.
+                    // This is used to have DDL run on every database even if one db fails because table already exists.
+                    if (exception == null) {
+                        exception = failed;
+                    }
+                }
+                if (call.isOneRowReturned()) {
+                    // If one row is desired, then break on first hit.
+                    if (object != null) {
+                        result = object;
+                        break;
+                    }
+                } else if (call.isNothingReturned()) {
+                    // If no return ensure row count is consistent, 0 if any 0, otherwise first number.
+                    if (result == null) {
+                        result = object;
+                    } else {
+                        if (object instanceof Integer) {
+                            if (((Integer)result).intValue() != 0) {
+                                if (((Integer)object).intValue() != 0) {
+                                    result = object;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Either a set of rows (union), or cursor (return).
+                    if (result == null) {
+                        result = object;
+                    } else {
+                        if (object instanceof List) {
+                            ((List)result).addAll((List)object);
+                        } else {
+                            break; // Not sure what to do, so break (if a cursor, don't only want to open one cursor.
+                        }
+                    }                        
+                }
+            }
+            if (exception != null) {
+                throw exception;
+            }
+        }
+        return result;
     }
-
-    /**
-     * INTERNAL:
-     * Return the lowlevel database accessor.
-     * The database accessor is used for direct database access.
-     * If sessionBroker is used, the right accessor for this
-     * broker will be returned based on the session name.
-     */
-    public Accessor getAccessor(String sessionName) {
-        return getAccessor();
-    }
-
+    
     /**
      * INTERNAL:
      */
@@ -2563,7 +2721,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Because nested transactions are allowed check if the transaction mutex has been aquired.
      */
     public boolean isInTransaction() {
-        return transactionMutex != null && getTransactionMutex().isAcquired();
+        return this.transactionMutex != null && this.transactionMutex.isAcquired();
     }
 
     /**
@@ -2970,9 +3128,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @exception ConcurrencyException if this session is not within a transaction.
      */
     public void rollbackTransaction() throws DatabaseException, ConcurrencyException {
+        ConcurrencyManager mutex = getTransactionMutex();
         // Ensure release of mutex and call subclass specific release.
         try {
-            if (!getTransactionMutex().isNested()) {
+            if (!mutex.isNested()) {
                 if (this.eventManager != null) {
                     this.eventManager.preRollbackTransaction();
                 }
@@ -2982,12 +3141,12 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                 }
             }
         } finally {
-            getTransactionMutex().release();
+            mutex.release();
 
             // If there is no db transaction in progress
             // if there is an active external transaction
             // which was started internally - it should be rolled back internally, too.
-            if (!isInTransaction()) {
+            if (!mutex.isAcquired()) {
                 rollbackExternalTransaction();
             }
         }
@@ -2998,7 +3157,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Set the accessor.
      */
     public void setAccessor(Accessor accessor) {
-        this.accessor = accessor;
+        this.accessors = new ArrayList(1);
+        this.accessors.add(accessor);
     }
 
     /**
@@ -3390,9 +3550,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * batch mechanism
      */
     public void writesCompleted() {
-        if (getAccessor()!=null) {
-            //only execute if we have an accessor
-            getAccessor().writesCompleted(this);
+        if (getAccessors() == null) {
+            return;
+        }
+        for (Accessor accessor : getAccessors()) {
+            accessor.writesCompleted(this);
         }
     }
 
@@ -4119,5 +4281,24 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
        } else {
            iterator.startIterationOn(objectOrCollection, loadGroup);
        }
+   }
+   
+   /**
+    * PUBLIC:
+    * Return the session's partitioning policy.
+    */
+   public PartitioningPolicy getPartitioningPolicy() {
+       return partitioningPolicy;
+   }
+   
+   /**
+    * PUBLIC:
+    * Set the session's partitioning policy.
+    * A PartitioningPolicy is used to partition, load-balance or replicate data across multiple difference databases
+    * or across a database cluster such as Oracle RAC.
+    * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+    */
+   public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy) {
+       this.partitioningPolicy = partitioningPolicy;
    }
 }

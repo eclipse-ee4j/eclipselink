@@ -52,6 +52,8 @@ import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedModelJunitTe
 import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedCallbacksJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inherited.EmbeddableSuperclassJunitTest;
 
+import org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedXMLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.EMQueryJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.ExpressionJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.IsolatedCacheTestSuite;
@@ -277,6 +279,9 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(NestedNamedFetchGroupTests.suite());
         suite.addTest(FetchGroupMergeWithCacheTests.suite());
         fullSuite.addTest(suite);
+
+        fullSuite.addTest(PartitionedTestSuite.suite());
+        fullSuite.addTest(PartitionedXMLTestSuite.suite());
 
         return fullSuite;
     }

@@ -988,6 +988,10 @@ public class InheritancePolicy implements Serializable, Cloneable {
             if (getParentDescriptor().isNativeConnectionRequired()) {
                 getDescriptor().setIsNativeConnectionRequired(true);
             }
+            
+            if (getDescriptor().getPartitioningPolicy() == null) {
+                getDescriptor().setPartitioningPolicy(getParentDescriptor().getPartitioningPolicy());
+            }
         }
 
         initializeOnlyInstancesExpression();

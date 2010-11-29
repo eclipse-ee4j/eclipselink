@@ -13,6 +13,7 @@
 package org.eclipse.persistence.sessions.server;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.exceptions.*;
 
@@ -47,7 +48,13 @@ public class ExternalConnectionPool extends ConnectionPool {
      * a new connection (retrieve it from the external pool).
      */
     public Accessor acquireConnection() throws ConcurrencyException {
-        return (Accessor)getCachedConnection().clone();
+        Accessor connection = (Accessor)this.cachedConnection.clone();
+        if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+            Object[] args = new Object[1];
+            args[0] = this.name;
+            this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "acquire_connection", args, connection);
+        }
+        return connection;
     }
 
     /**
@@ -80,6 +87,11 @@ public class ExternalConnectionPool extends ConnectionPool {
      * When you release an external connection, you simply let it go.
      */
     public void releaseConnection(Accessor connection) throws DatabaseException {
+        if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+            Object[] args = new Object[1];
+            args[0] = this.name;
+            this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "release_connection", args, connection);
+        }
         connection.closeConnection();
         connection.releaseCustomizer();
     }
