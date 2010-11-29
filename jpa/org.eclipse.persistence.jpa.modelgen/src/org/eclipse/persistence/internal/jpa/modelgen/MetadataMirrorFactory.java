@@ -29,7 +29,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic.Kind;
 
@@ -116,7 +115,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
         
         if (metadataClass == null) {
             // As a performance gain, avoid visiting this class if it is not a 
-            // round element. We must re-visit round elements.
+            // round element.
             if (isRoundElement(element)) {
                 processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for round element: " + element);
                 metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
@@ -132,28 +131,13 @@ public class MetadataMirrorFactory extends MetadataFactory {
                 addMetadataClass(metadataClass);
             } else {
                 // So we are not a round element, the outcome is as follows:
-                //  - TypeParameterElement: they are stored by simple name, so 
-                //    if it exists in our map return it, otherwise visit it.
+                //  - Not a TypeElement (should not happen since we filter them 
+                //    out from the root elements ... but like everything
+                //    else, who knows for sure!), return null;
                 //  - TypeElement, and not in the existing class map, return 
                 //    simple MetadataClass with only a name.
                 //  - TypeElement, in existing class map, return it.
-                //  - Everything else ... look up the metadata class using the
-                //    toString value.
-                if (element instanceof TypeParameterElement) {
-                    // You could in theory just visit it since we don't do much with it.
-                    String simpleName = element.getSimpleName().toString();
-                    
-                    if (metadataClassExists(simpleName)) {
-                        metadataClass = getMetadataClass(simpleName);
-                    } else {
-                        metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
-                        element.accept(elementVisitor, metadataClass);
-                        addMetadataClass(metadataClass);
-                    }
-                } else {
-                    //processingEnv.getMessager().printMessage(Kind.NOTE, "Element: " + element.toString());
-                    metadataClass = getMetadataClass((element instanceof TypeElement) ? ((TypeElement) element).getQualifiedName().toString() : element.toString());    
-                }
+                metadataClass = getMetadataClass((element instanceof TypeElement) ? ((TypeElement) element).getQualifiedName().toString() : null);
             }
         }
         
