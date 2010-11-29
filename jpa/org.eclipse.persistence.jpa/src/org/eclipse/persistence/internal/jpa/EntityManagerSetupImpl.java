@@ -2032,7 +2032,7 @@ public class EntityManagerSetupImpl {
      */
     protected void updateTableCreationSettings(Map m) {
         String tableCreationSuffix = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TABLE_CREATION_SUFFIX, m, session);
-        if (tableCreationSuffix != null && !tableCreationSuffix.isEmpty()) {
+        if (tableCreationSuffix != null && tableCreationSuffix.length()>0) {
             session.getPlatform().setTableCreationSuffix(tableCreationSuffix);
         }
     }
