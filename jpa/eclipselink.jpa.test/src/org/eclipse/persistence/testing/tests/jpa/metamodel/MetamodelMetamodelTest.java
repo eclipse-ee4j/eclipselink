@@ -18,6 +18,7 @@
  *       when only getMethodName is available on accessor for attributes of Embeddable types.
  *       see testAttribute_getJavaMember_BasicType_on_Embeddable_Method()
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+ *     30/11/2010-2.2  mobrien - 300626: Nested Embeddable testing 
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
@@ -88,6 +89,8 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Root;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Memory;
 import org.eclipse.persistence.testing.models.jpa.metamodel.MultiCoreCPU;
+import org.eclipse.persistence.testing.models.jpa.metamodel.Observation;
+import org.eclipse.persistence.testing.models.jpa.metamodel.ObservationDetail;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Position;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
@@ -120,9 +123,9 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 137;//6;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 143;//6;
     // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must preceed any test that verifies all BasicType objects like "testIdentifiableType_getIdType_Method"
-    public static final int METAMODEL_ALL_TYPES = 50;
+    public static final int METAMODEL_ALL_TYPES = 51;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;
     // Get # of processor cores (hard cores + hyperthreaded cores)
     public static final int numberProcessingUnits = Runtime.getRuntime().availableProcessors();
@@ -180,6 +183,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             suite.addTest(new MetamodelMetamodelTest("testBindable_getBindableType_Method"));
             suite.addTest(new MetamodelMetamodelTest("testBindable_getBindableJavaType_Method"));
             suite.addTest(new MetamodelMetamodelTest("testEmbeddableType"));
+            suite.addTest(new MetamodelMetamodelTest("testNestedEmbeddableType"));  // 300626           
             suite.addTest(new MetamodelMetamodelTest("testEntityType"));
             suite.addTest(new MetamodelMetamodelTest("testEntityAttribute_getBindableJavaType_Method"));          
             // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must proceed any test that first gets the Position class BasicType object - see  like "testTransientNonEntityNonMappedSuperclass_SuperclassOfEntity_Exists_as_BasicType"
@@ -1551,6 +1555,49 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("Expected EmbeddedPK.isMappedSuperclass = false", embeddableType_.isMappedSuperclass());
             assertEquals(PersistenceType.EMBEDDABLE, embeddableType_.getPersistenceType());
             assertEquals(EmbeddedPK.class, embeddableType_.getJavaType());
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", exceptionThrown);
+        }
+    }
+
+    // 300626
+    public void testNestedEmbeddableType() {
+        EntityManager em = null;
+        boolean exceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+
+            // Get the containing Entity
+            Type<GalacticPosition> containingEntity_ = metamodel.managedType(GalacticPosition.class);
+            assertNotNull("The containing Entity GalacticPosition should not be null", containingEntity_);
+            // Get the Embeddable on the Entity
+            Type<Observation> rootEmbeddable_ = metamodel.embeddable(Observation.class);
+            assertNotNull("The contained embeddable Observation should not be null", rootEmbeddable_);
+            EmbeddableTypeImpl rootEmbeddableType_ = (EmbeddableTypeImpl) rootEmbeddable_;            
+            assertFalse("Expected Observation.isEntity = false", rootEmbeddableType_.isEntity());
+            assertFalse("Expected Observation.isMappedSuperclass = false", rootEmbeddableType_.isMappedSuperclass());
+            assertEquals(PersistenceType.EMBEDDABLE, rootEmbeddable_.getPersistenceType());
+            assertEquals(Observation.class, rootEmbeddable_.getJavaType());
+            
+            // Get the nested embeddable on the parent Embeddable
+            Type<ObservationDetail> nestedEmbeddable_ = metamodel.embeddable(ObservationDetail.class);
+            assertNotNull("The contained embeddable Observation should not be null", nestedEmbeddable_);
+            EmbeddableTypeImpl nestedEmbeddableType_ = (EmbeddableTypeImpl) nestedEmbeddable_;            
+            assertFalse("Expected ObservationData.isEntity = false", nestedEmbeddableType_.isEntity());
+            assertFalse("Expected Observation.isMappedSuperclass = false", nestedEmbeddableType_.isMappedSuperclass());
+            assertEquals(PersistenceType.EMBEDDABLE, nestedEmbeddable_.getPersistenceType());
+            assertEquals(ObservationDetail.class, nestedEmbeddable_.getJavaType());
+            // verify that the nested embeddable is a member of the root embeddable
+            SingularAttribute<Observation, ObservationDetail> nestedEmbeddableAttribute_ = rootEmbeddableType_.getSingularAttribute("detail", ObservationDetail.class);
+            assertNotNull("The nested embeddable ObservationDetail should be a member of the root embeddable Observation",
+                    nestedEmbeddableAttribute_);
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             exceptionThrown = true;

@@ -21,6 +21,7 @@ import static javax.persistence.InheritanceType.JOINED;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -83,6 +84,17 @@ public class GalacticPosition extends Position implements java.io.Serializable {
     // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_58:_20090807:_ManagedType_Attribute_Initialization_must_differentiate_between_Collection_and_List
     //private Collection<Observation> observations;
     
+    @Embedded
+    private Observation observation;
+    
+    public Observation getObservation() {
+        return observation;
+    }
+
+    public void setObservation(Observation observation) {
+        this.observation = observation;
+    }
+
     public GalacticPosition() {}
 
     public EmbeddedPK getPrimaryKey() {

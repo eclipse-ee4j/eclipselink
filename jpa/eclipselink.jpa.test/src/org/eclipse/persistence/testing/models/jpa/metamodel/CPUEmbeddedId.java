@@ -36,6 +36,7 @@ public class CPUEmbeddedId implements Serializable {
     private static final long serialVersionUID = 2162087921393149126L;
 
     private int pk_part1;
+//    private int pk_part2;
 
     // This class is embedded inside a CPU MappedSuperclass (MultiCoreCPU Entity)
     @GeneratedValue(strategy=TABLE, generator="CPUEMBEDID_MM_TABLE_GENERATOR")
@@ -55,6 +56,25 @@ public class CPUEmbeddedId implements Serializable {
         pk_part1 = pkPart1;
     }
 
+    /*
+    // This class is embedded inside a CPU MappedSuperclass (MultiCoreCPU Entity)
+    @GeneratedValue(strategy=TABLE, generator="CPUEMBEDID_MM_TABLE_GENERATOR")
+    @TableGenerator(
+        name="CPUEMBEDID_MM_TABLE_GENERATOR2", 
+        table="CMP3_MM_CPUEMBEDDID_SEQ", 
+        pkColumnName="SEQ_MM_NAME2", 
+        valueColumnName="SEQ_MM_COUNT2",
+        pkColumnValue="CUST_MM_SEQ2"
+    )
+    @Column(name = "CPU_ID", nullable = false)
+    public int getPk_part2() {
+        return pk_part2;
+    }
+
+    public void setPk_part2(int pkPart2) {
+        pk_part2 = pkPart2;
+    }
+    */
     public CPUEmbeddedId() {
     }
     
@@ -63,13 +83,14 @@ public class CPUEmbeddedId implements Serializable {
         if (anEmbeddedId.getClass() != CPUEmbeddedId.class) {
             return false;
         }        
-        CPUEmbeddedId embeddedId = (CPUEmbeddedId) anEmbeddedId;        
-        return ((CPUEmbeddedId)anEmbeddedId).pk_part1 == this.pk_part1;                
+        CPUEmbeddedId embeddedId = (CPUEmbeddedId) anEmbeddedId;
+        return ((CPUEmbeddedId)anEmbeddedId).pk_part1 == this.pk_part1;// &&                
+        //((CPUEmbeddedId)anEmbeddedId).pk_part2 == this.pk_part2;
     }
 
     @Override
     public int hashCode() {
-        return 9232 * pk_part1;
+        return 9232 * pk_part1;// + pk_part2;
     }
         
 }
