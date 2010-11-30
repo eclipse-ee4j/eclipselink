@@ -283,7 +283,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if ((unmarshaller != null) && (unmarshaller.getUnmarshalListener() != null)) {
             unmarshaller.getUnmarshalListener().beforeUnmarshal(domainObject, parent);
         }
-        concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
+        concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, null, databaseRow, query, joinManager, false, false);
         if (isXmlDescriptor() && ((XMLDescriptor)concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
             if ((pk == null) || (((CacheId)pk).getPrimaryKey().length == 0)) {
                 pk = new CacheId(new Object[]{ new WeakObjectWrapper(domainObject) });
@@ -371,9 +371,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Override method in superclass in order to set the session on the record.
      * Each mapping is recursed to assign values from the Record to the attributes in the domain object.
      */
-    public void buildAttributesIntoObject(Object domainObject, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, boolean forRefresh) throws DatabaseException {
+    @Override
+    public void buildAttributesIntoObject(Object domainObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, boolean forRefresh, boolean targetIsProtected) throws DatabaseException {
         ((XMLRecord)databaseRow).setSession(query.getSession().getExecutionSession(query));
-        super.buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, forRefresh);
+        super.buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, forRefresh, targetIsProtected);
     }
 
     /**

@@ -18,10 +18,15 @@ import java.util.*;
 import java.io.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
+import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
+import org.eclipse.persistence.internal.indirection.ProtectedValueHolder;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
@@ -45,7 +50,10 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
@@ -127,6 +135,12 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /** Keep track of active units of work. */
     transient protected int numberOfActiveUnitsOfWork;
 
+    /**
+     * This collection will be used to store those objects that are currently locked
+     * for the clone process. It should be populated with an EclipseLinkIdentityHashMap
+     */
+    protected Map objectsLockedForClone;
+    
     /** Destination for logged messages and SQL. */
     transient protected SessionLog sessionLog;
 
@@ -157,6 +171,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Used to connect this session to EclipseLink cluster for distributed command
      */
     transient protected CommandManager commandManager;
+
+    /**
+     * PERF: Cache the write-lock check to avoid cost of checking in every register/clone.
+     */
+    protected boolean shouldCheckWriteLock;
 
     /**
      * Determined whether changes should be propagated to an EclipseLink cluster
@@ -200,6 +219,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * This map will hold onto class to static metamodel class references from JPA.
      */
     protected Map<String, String> staticMetamodelClasses;
+    
+    /** temporarily holds a list of events that must be fired after the current operation completes. 
+     *  Initialy created for postClone events.
+     */
+    protected List<DescriptorEvent> deferredEvents;
+    
+    /** records that the UOW is executing deferred events.  Events could cause operations to occur that may attempt to restart the event execution.  This must be avoided*/
+    protected boolean isExecutingEvents = false;
 
     /** Allow queries to be targeted at specific connection pools. */
     protected PartitioningPolicy partitioningPolicy;
@@ -420,7 +447,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         Collection<Accessor> accessors = getAccessors();
         if (accessors == null) {
             return;
-        }
+    }
         Accessor failedAccessor = null;
         try {
             for (Accessor accessor : accessors) {
@@ -543,7 +570,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
         RuntimeException exception = null;
         for (Accessor accessor : accessors) {
-            try {
+        try {
                 // 2 stage commit.
                 if (exception == null) {
                     accessor.commitTransaction(this);                    
@@ -571,7 +598,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
         RuntimeException exception = null;
         for (Accessor accessor : accessors) {
-            try {
+        try {
                 accessor.rollbackTransaction(this);
             } catch (RuntimeException failure) {
                 exception = failure;
@@ -913,6 +940,103 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         return getDefaultReadOnlyClasses();
     }
 
+    public DatabaseValueHolder createCloneQueryValueHolder(ValueHolderInterface attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
+        return new ProtectedValueHolder(attributeValue, mapping, this);
+    }
+
+    public DatabaseValueHolder createCloneTransformationValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
+        return new ProtectedValueHolder(attributeValue, mapping, this);
+    }
+
+    /**
+     * INTERNAL:
+     * This method is similar to getAndCloneCacheKeyFromParent.  It purpose is to get protected cache data from the shared cache and
+     * build/return a protected instance.
+     */
+    public Object createProtectedInstanceFromCachedData(Object cached, ClassDescriptor descriptor){
+        CacheKey cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(cached);
+        boolean identityMapLocked = this.shouldCheckWriteLock && getParent().getIdentityMapAccessorInstance().acquireWriteLock();
+        boolean rootOfCloneRecursion = false;
+        try{
+            if (identityMapLocked) {
+                checkAndRefreshInvalidObject(cached, cacheKey, descriptor);
+            } else {
+                // Check if we have locked all required objects already.
+                if (this.objectsLockedForClone == null) {
+                    // PERF: If a simple object just acquire a simple read-lock.
+                    if (descriptor.shouldAcquireCascadedLocks()) {
+                        this.objectsLockedForClone = getParent().getIdentityMapAccessorInstance().getWriteLockManager().acquireLocksForClone(cached, descriptor, cacheKey, this);
+                    } else {
+                        checkAndRefreshInvalidObject(cached, cacheKey, descriptor);
+                        cacheKey.acquireReadLock();
+                    }
+                    rootOfCloneRecursion = true;
+                }
+            }
+            if (descriptor.hasInheritance()){
+                descriptor = this.getClassDescriptor(cached.getClass());
+            }
+            ObjectBuilder builder = descriptor.getObjectBuilder();
+            Object workingClone = builder.instantiateWorkingCopyClone(cached, this);
+            // PERF: Cache the primary key if implements PersistenceEntity.
+            builder.populateAttributesForClone(cached, cacheKey,  workingClone, this);
+            return workingClone;
+        }finally{
+            if (rootOfCloneRecursion){
+                if (this.objectsLockedForClone == null) {
+                    cacheKey.releaseReadLock();
+                } else {                        
+                    for (Iterator iterator = this.objectsLockedForClone.values().iterator(); iterator.hasNext();) {
+                        ((CacheKey)iterator.next()).releaseReadLock();
+                    }
+                    this.objectsLockedForClone = null;
+                }
+                executeDeferredEvents();
+            }
+        }
+    }
+
+        /**
+         * INTERNAL:
+         * Check if the object is invalid and refresh it.
+         * This is used to ensure that no invalid objects are registered.
+         */
+        public void checkAndRefreshInvalidObject(Object object, CacheKey cacheKey, ClassDescriptor descriptor) {
+            if (isConsideredInvalid(object, cacheKey, descriptor)) {
+                ReadObjectQuery query = new ReadObjectQuery();
+                query.setReferenceClass(object.getClass());
+                query.setSelectionId(cacheKey.getKey());
+                query.refreshIdentityMapResult();
+                query.setIsExecutionClone(true);
+                this.executeQuery(query);
+            }
+        }
+
+        /**
+         * INTERNAL:
+         * Check if the object is invalid and *should* be refreshed.
+         * This is used to ensure that no invalid objects are cloned.
+         */
+        public boolean isConsideredInvalid(Object object, CacheKey cacheKey, ClassDescriptor descriptor) {
+            if (cacheKey.getObject() != null) {
+                CacheInvalidationPolicy cachePolicy = descriptor.getCacheInvalidationPolicy();
+                // BUG#6671556 refresh invalid objects when accessed in the unit of work.
+                return (cachePolicy.shouldRefreshInvalidObjectsOnClone() && cachePolicy.isInvalidated(cacheKey));
+            }
+            return false;
+        }
+
+    /**
+     * INTERNAL:
+     * Add an event to the deferred list.  Events will be fired after the operation completes
+     */
+    public void deferEvent(DescriptorEvent event){
+        if (this.deferredEvents == null){
+            this.deferredEvents = new ArrayList<DescriptorEvent>();
+        }
+        this.deferredEvents.add(event);
+    }
+
     /**
      * PUBLIC:
      * delete all of the objects and all of their privately owned parts in the database.
@@ -1037,6 +1161,27 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             getProfiler().occurred(operationName, query);
         }
     }
+
+    /**
+     * INTERNAL:
+     * Causes any deferred events to be fired.  Called after operation completes
+     */
+    public void executeDeferredEvents(){
+        if (!this.isExecutingEvents && this.deferredEvents != null) {
+            this.isExecutingEvents = true;
+            try {
+                for (int i = 0; i < this.deferredEvents.size(); ++i) { 
+                    // the size is checked every time here because the list may grow
+                    DescriptorEvent event = this.deferredEvents.get(i);
+                    event.getDescriptor().getEventManager().executeEvent(event);
+                }
+                this.deferredEvents.clear();
+            } finally {
+                this.isExecutingEvents = false;
+            }
+        }
+    }
+    
 
     /**
      * INTERNAL:
@@ -1474,8 +1619,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Execute the sql on the database and return the result.
      * It must return a value, if no value is return executeNonSelectingSQL must be used.
      * A vector of database rows is returned, database row implements Java 2 Map which should be used to access the data.
-     * Warning: Allowing an unverified SQL string to be passed into this
-     * method makes your application vulnerable to SQL injection attacks.
+ 	 * Warning: Allowing an unverified SQL string to be passed into this
+	 * method makes your application vulnerable to SQL injection attacks.
      * <p>Example:
      * <p>session.executeSelectingCall("Select * from Employee");
      *
@@ -1540,7 +1685,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             accessors = query.getPartitioningPolicy().getConnectionsForQuery(this, query, translationRow);
             if (accessors != null) {
                 return accessors;
-            }
+    }
         }
         ClassDescriptor descriptor = query.getDescriptor();
         if ((descriptor != null) && (descriptor.getPartitioningPolicy() != null)) {
@@ -1581,7 +1726,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                     // This is used to have DDL run on every database even if one db fails because table already exists.
                     if (exception == null) {
                         exception = failed;
-                    }
+    }
                 }
                 if (call.isOneRowReturned()) {
                     // If one row is desired, then break on first hit.
@@ -1714,7 +1859,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </ul>
      */
     public AbstractSession getRootSession(DatabaseQuery query) {
-        return getParentIdentityMapSession(query, false, true);
+        ClassDescriptor descriptor = null;
+        if (query != null){
+            descriptor = query.getDescriptor();
+        }
+        return getParentIdentityMapSession(descriptor, false, true);
     }
 
     /**
@@ -1732,7 +1881,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * the root session.
      */
     public AbstractSession getParentIdentityMapSession(DatabaseQuery query) {
-        return getParentIdentityMapSession(query, false, false);
+        ClassDescriptor descriptor = null;
+        if (query != null){
+            descriptor = query.getDescriptor();
+        }
+        return getParentIdentityMapSession(descriptor, false, false);
     }
 
     /**
@@ -1752,6 +1905,30 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @return this if there is no next link in the chain
      */
     public AbstractSession getParentIdentityMapSession(DatabaseQuery query, boolean canReturnSelf, boolean terminalOnly) {
+        ClassDescriptor descriptor = null;
+        if (query != null){
+            descriptor = query.getDescriptor();
+        }
+        return getParentIdentityMapSession(descriptor, canReturnSelf, terminalOnly);
+    }
+
+    /**
+     * INTERNAL:
+     * Gets the next link in the chain of sessions followed by a query's check
+     * early return, the chain of sessions with identity maps all the way up to
+     * the root session.
+     * <p>
+     * Used for session broker which delegates to registered sessions, or UnitOfWork
+     * which checks parent identity map also.
+     * @param canReturnSelf true when method calls itself.  If the path
+     * starting at <code>this</code> is acceptable.  Sometimes true if want to
+     * move to the first valid session, i.e. executing on ClientSession when really
+     * should be on ServerSession.
+     * @param terminalOnly return the session we will execute the call on, not
+     * the next step towards it.
+     * @return this if there is no next link in the chain
+     */
+    public AbstractSession getParentIdentityMapSession(ClassDescriptor descriptor, boolean canReturnSelf, boolean terminalOnly) {
         return this;
     }
 
@@ -3555,7 +3732,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
         for (Accessor accessor : getAccessors()) {
             accessor.writesCompleted(this);
-        }
+    }
     }
 
     /**
@@ -4282,6 +4459,43 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
            iterator.startIterationOn(objectOrCollection, loadGroup);
        }
    }
+
+   public CacheKey retrieveCacheKey(Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager, boolean requiresDeferredLocks){
+       
+       CacheKey cacheKey;
+       //lock the object in the IM     
+       // PERF: Only use deferred locking if required.
+       // CR#3876308 If joining is used, deferred locks are still required.
+       if (requiresDeferredLocks) {
+           cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
+
+           int counter = 0;
+           while ((cacheKey.getObject() == null) && (counter < 1000)) {
+               if (cacheKey.getMutex().getActiveThread() == Thread.currentThread()) {
+                   break;
+               }
+               //must release lock here to prevent acquiring multiple deferred locks but only
+               //releasing one at the end of the build object call.
+               //bug 5156075
+               cacheKey.releaseDeferredLock();
+               //sleep and try again if we are not the owner of the lock for CR 2317
+               // prevents us from modifying a cache key that another thread has locked.
+               try {
+                   Thread.sleep(10);
+               } catch (InterruptedException exception) {
+               }
+               cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
+               counter++;
+           }
+           if (counter == 1000) {
+               throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(cacheKey.getMutex().getActiveThread(), Thread.currentThread());
+           }
+       } else {
+           cacheKey = this.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
+       }
+       return  cacheKey;
+   }
+
    
    /**
     * PUBLIC:

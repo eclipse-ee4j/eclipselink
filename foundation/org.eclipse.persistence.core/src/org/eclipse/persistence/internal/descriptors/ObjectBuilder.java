@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
@@ -209,7 +210,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Assign the fields in the row back into the object.
      * This is used by returning, as well as events and version locking.
      */
-    public void assignReturnRow(Object object, AbstractSession writeSession, AbstractRecord row) throws DatabaseException {
+    public void assignReturnRow(Object object, CacheKey cacheKey, AbstractSession writeSession, AbstractRecord row) throws DatabaseException {
         writeSession.log(SessionLog.FINEST, SessionLog.QUERY, "assign_return_row", row);
 
         // Require a query context to read into an object.
@@ -226,24 +227,24 @@ public class ObjectBuilder implements Cloneable, Serializable {
         List fields = row.getFields();
         for (int index = 0; index < size; index++) {
             DatabaseField field = (DatabaseField)fields.get(index);
-            assignReturnValueForField(object, query, row, field, handledMappings);
+            assignReturnValueForField(object, cacheKey, query, row, field, handledMappings);
         }
     }
 
     /**
      * Assign the field value from the row to the object for all the mappings using field (read or write).
      */
-    public void assignReturnValueForField(Object object, ReadObjectQuery query, AbstractRecord row, DatabaseField field, Collection handledMappings) {
+    public void assignReturnValueForField(Object object, CacheKey cacheKey, ReadObjectQuery query, AbstractRecord row, DatabaseField field, Collection handledMappings) {
         DatabaseMapping mapping = getMappingForField(field);
         if (mapping != null) {
-            assignReturnValueToMapping(object, query, row, field, mapping, handledMappings);
+            assignReturnValueToMapping(object, cacheKey, query, row, field, mapping, handledMappings);
         }
         List readOnlyMappings = getReadOnlyMappingsForField(field);
         if (readOnlyMappings != null) {
             int size = readOnlyMappings.size();
             for (int index = 0; index < size; index++) {
                 mapping = (DatabaseMapping)readOnlyMappings.get(index);
-                assignReturnValueToMapping(object, query, row, field, mapping, handledMappings);
+                assignReturnValueToMapping(object, cacheKey, query, row, field, mapping, handledMappings);
             }
         }
     }
@@ -252,16 +253,16 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * INTERNAL:
      * Assign values from objectRow to the object through the mapping.
      */
-    protected void assignReturnValueToMapping(Object object, ReadObjectQuery query, AbstractRecord row, DatabaseField field, DatabaseMapping mapping, Collection handledMappings) {
+    protected void assignReturnValueToMapping(Object object, CacheKey cacheKey, ReadObjectQuery query, AbstractRecord row, DatabaseField field, DatabaseMapping mapping, Collection handledMappings) {
         if ((handledMappings != null) && handledMappings.contains(mapping)) {
             return;
         }
         if (mapping.isDirectToFieldMapping()) {
-            mapping.readFromRowIntoObject(row, null, object, query, query.getSession());
+            mapping.readFromRowIntoObject(row, null, object, cacheKey, query, query.getSession(), true);
         } else if (mapping.isAggregateObjectMapping()) {
-            ((AggregateObjectMapping)mapping).readFromReturnRowIntoObject(row, object, query, handledMappings);
+            ((AggregateObjectMapping)mapping).readFromReturnRowIntoObject(row, object, cacheKey, query, handledMappings);
         } else if (mapping.isTransformationMapping()) {
-            ((AbstractTransformationMapping)mapping).readFromReturnRowIntoObject(row, object, query, handledMappings);
+            ((AbstractTransformationMapping)mapping).readFromReturnRowIntoObject(row, object, cacheKey, query, handledMappings);
         } else {
             query.getSession().log(SessionLog.FINEST, SessionLog.QUERY, "field_for_unsupported_mapping_returned", field, this.descriptor);
         }
@@ -315,7 +316,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             Object sequenceIntoObject = getParentObjectForField(sequenceNumberField, object);
     
             // The following method will return the converted value for the sequence.
-            convertedSequenceValue = mapping.readFromRowIntoObject(tempRow, null, sequenceIntoObject, query, writeSession);
+            convertedSequenceValue = mapping.readFromRowIntoObject(tempRow, null, sequenceIntoObject, null, query, writeSession, true);
         }
         
         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key has changed.
@@ -327,8 +328,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Each mapping is recursed to assign values from the Record to the attributes in the domain object.
      */
-    public void buildAttributesIntoObject(Object domainObject, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, boolean forRefresh) throws DatabaseException {
-        AbstractSession executionSession = query.getSession().getExecutionSession(query);
+    public void buildAttributesIntoObject(Object domainObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, boolean forRefresh, boolean targetIsProtected) throws DatabaseException {
+        AbstractSession executionSession = query.getSession(); // needs to be query session because caller decided isTargetProtected
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         List mappings = this.descriptor.getMappings();
@@ -339,7 +340,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             if (readAllMappings || query.shouldReadMapping(mapping)) {
-                mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, query, executionSession);
+                mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, executionSession, targetIsProtected);
             }
         }
 
@@ -650,64 +651,45 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * from the values stored in the database row.
      */
     protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
+        if (concreteDescriptor.isProtectedIsolation() && session.isIsolatedClientSession()){
+            return buildProtectedObject(returnCacheKey, query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
+        }
         Object domainObject = null;
+        
         // Cache key is used for object locking.
         CacheKey cacheKey = null;
         // Keep track if we actually built/refresh the object.
         boolean cacheHit = true;
         try {
             // Check if the objects exists in the identity map.
-            if (query.shouldMaintainCache()) {
-                //lock the object in the IM		
-                // PERF: Only use deferred locking if required.
-                // CR#3876308 If joining is used, deferred locks are still required.
-                if (query.requiresDeferredLocks()) {
-                    cacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
-                    domainObject = cacheKey.getObject();
-
-                    int counter = 0;
-                    while ((domainObject == null) && (counter < 1000)) {
-                        if (cacheKey.getMutex().getActiveThread() == Thread.currentThread()) {
-                            break;
-                        }
-                        //must release lock here to prevent acquiring multiple deferred locks but only
-                        //releasing one at the end of the build object call.
-                        //bug 5156075
-                        cacheKey.releaseDeferredLock();
-                        //sleep and try again if we are not the owner of the lock for CR 2317
-                        // prevents us from modifying a cache key that another thread has locked.												
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException exception) {
-                        }
-                        cacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
-                        domainObject = cacheKey.getObject();
-                        counter++;
-                    }
-                    if (counter == 1000) {
-                        throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(cacheKey.getMutex().getActiveThread(), Thread.currentThread());
-                    }
-                } else {
-                    cacheKey = session.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
-                    domainObject = cacheKey.getObject();
-                }
+            if (query.shouldMaintainCache() && (! query.shouldRetrieveBypassCache() || ! query.shouldStoreBypassCache())) {
+                cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query.requiresDeferredLocks());
+                domainObject = cacheKey.getObject();
             }
 
             if (domainObject == null || query.shouldRetrieveBypassCache()) {
                 cacheHit = false;
-                if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
-                    domainObject = ((ReadObjectQuery)query).getSelectionObject();
-                } else {
-                    domainObject = concreteDescriptor.getObjectBuilder().buildNewInstance();
+                boolean domainWasMissing = domainObject == null;
+                if (domainObject == null || query.shouldStoreBypassCache()){
+                    if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
+                        domainObject = ((ReadObjectQuery)query).getSelectionObject();
+                    } else {
+                        domainObject = concreteDescriptor.getObjectBuilder().buildNewInstance();
+                    }
                 }
 
                 // The object must be registered before building its attributes to resolve circular dependencies.
-                if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
-                    cacheKey.setObject(domainObject);
+                if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()){
+                    if (domainWasMissing) {  // may have build a new domain even though there is one in the cache
+                        cacheKey.setObject(domainObject);
+                    }
                     copyQueryInfoToCacheKey(cacheKey, query, databaseRow, session, concreteDescriptor);
+                }else if (returnCacheKey && (cacheKey == null || (domainWasMissing && query.shouldRetrieveBypassCache()))){
+                    cacheKey = new CacheKey(primaryKey);
+                    cacheKey.setObject(domainObject);
                 }
 
-                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
+                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, false, session.isIsolatedClientSession());
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
                     // Set the fetch group to the domain object, after built.
                     if ((query.getEntityFetchGroup() != null) && concreteDescriptor.hasFetchGroupManager()) {
@@ -731,90 +713,21 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 //if the concurrency manager is locked by the merge process then no refresh is required.
                 // bug # 3388383 If this thread does not have the active lock then someone is building the object so in order to maintain data integrity this thread will not
                 // fight to overwrite the object ( this also will avoid potential deadlock situations
-                if ((cacheKey.getMutex().getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated) && ((cacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !cacheKey.getMutex().isLockedByMergeManager()))) {
-                    //cached object might be partially fetched, only refresh the fetch group attributes of the query if
-                    //the cached partial object is not invalidated and does not contain all data for the fetch group.	
-                    if (concreteDescriptor.hasFetchGroupManager() && concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject)) {
-                        cacheHit = false;
-                        //only ObjectLevelReadQuery and above support partial objects
-                        revertFetchGroupData(domainObject, concreteDescriptor, cacheKey, (query), joinManager, databaseRow, session);
-                    } else {
-                        boolean refreshRequired = true;
-                        if (concreteDescriptor.usesOptimisticLocking()) {
-                            OptimisticLockingPolicy policy = concreteDescriptor.getOptimisticLockingPolicy();
-                            Object cacheValue = policy.getValueToPutInCache(databaseRow, session);
-                            if (concreteDescriptor.shouldOnlyRefreshCacheIfNewerVersion()) {
-                                refreshRequired = policy.isNewerVersion(databaseRow, domainObject, primaryKey, session);
-                                if (!refreshRequired) {
-                                    cacheKey.setReadTime(query.getExecutionTime());
-                                }
-                            }
-                            if (refreshRequired) {
-                                // Update the write lock value.
-                                cacheKey.setWriteLockValue(cacheValue);
-                            }
-                        }
-                        if (refreshRequired) {
-                            cacheHit = false;
-                            // CR #4365 - used to prevent infinite recursion on refresh object cascade all.
-                            cacheKey.setLastUpdatedQueryId(query.getQueryId());
-                            // Bug 276362 - set the CacheKey's read time (re-validating the CacheKey) before buildAttributesIntoObject is called
-                            cacheKey.setReadTime(query.getExecutionTime());
-                            concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, true);
-                        }
-                    }
+                if ((cacheKey.getMutex().getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated ) && ((cacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !cacheKey.getMutex().isLockedByMergeManager()))) {
+                    cacheHit = refreshObjectIfRequired(concreteDescriptor, cacheKey, cacheKey.getObject(), query, joinManager, databaseRow, session, false);
                 } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(domainObject, query.getEntityFetchGroup())))) {
                     cacheHit = false;
                     // The fetched object is not sufficient for the fetch group of the query 
                     // refresh attributes of the query's fetch group.
                     concreteDescriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(domainObject, query.getEntityFetchGroup(), session);
-                    concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
+                    concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, false, false);
                 }
                 // 3655915: a query with join/batch'ing that gets a cache hit
                 // may require some attributes' valueholders to be re-built.
                 else if (joinManager != null && joinManager.hasJoinedAttributeExpressions()) { //some queries like ObjRel do not support joining
-                    List joinExpressions = joinManager.getJoinedAttributeExpressions();
-                    int size = joinExpressions.size();
-                    for (int index = 0; index < size; index++) {
-                        QueryKeyExpression queryKeyExpression = (QueryKeyExpression)joinExpressions.get(index);
-                        QueryKeyExpression baseExpression = (QueryKeyExpression)joinManager.getJoinedAttributes().get(index);
-                        DatabaseMapping mapping = joinManager.getJoinedAttributeMappings().get(index);
-                        
-                        // Only worry about immediate (excluding aggregates) foreign reference mapping attributes.
-                        if (queryKeyExpression == baseExpression) {
-                            //get the intermediate objects between this expression node and the base builder
-                            Object intermediateValue = joinManager.getValueFromObjectForExpression(query.getExecutionSession(), domainObject, (ObjectExpression)baseExpression.getBaseExpression());
-                            if (mapping == null) {
-                                throw ValidationException.missingMappingForAttribute(concreteDescriptor, queryKeyExpression.getName(), toString());
-                            } else {
-                                // Bug 4230655 - do not replace instantiated valueholders.
-                                Object attributeValue = mapping.getAttributeValueFromObject(intermediateValue);
-                                if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
-                                    mapping.readFromRowIntoObject(databaseRow, joinManager, intermediateValue, query, query.getExecutionSession());
-                                }
-                            }
-                        }
-                    }
+                    loadJoinedAttributes(concreteDescriptor, domainObject, cacheKey, databaseRow, joinManager, query, false);
                 } else if (query.isReadAllQuery() && ((ReadAllQuery)query).hasBatchReadAttributes()) {
-                    List batchExpressions = ((ReadAllQuery)query).getBatchReadAttributeExpressions();
-                    int size = batchExpressions.size();
-                    for (int index = 0; index < size; index++) {
-                        QueryKeyExpression queryKeyExpression = (QueryKeyExpression)batchExpressions.get(index);
-                        // Only worry about immediate attributes.
-                        if (queryKeyExpression.getBaseExpression().isExpressionBuilder()) {
-                            DatabaseMapping mapping = getMappingForAttributeName(queryKeyExpression.getName());
-
-                            if (mapping == null) {
-                                throw ValidationException.missingMappingForAttribute(concreteDescriptor, queryKeyExpression.getName(), this.toString());
-                            } else {
-                                // Bug 4230655 - do not replace instantiated valueholders.
-                                Object attributeValue = mapping.getAttributeValueFromObject(domainObject);
-                                if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
-                                    mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, query, query.getExecutionSession());
-                                }
-                            }
-                        }
-                    }
+                    loadBatchReadAttributes(concreteDescriptor, domainObject, cacheKey, databaseRow, query, joinManager, false);
                 }
             }
         } finally {
@@ -846,9 +759,163 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
 
     /**
+     * Return an instance of the receivers javaClass. Set the attributes of an instance
+     * from the values stored in the database row.
+     */
+    protected Object buildProtectedObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
+        Object cachedObject = null;
+        Object protectedObject = null;
+        
+        // Cache key is used for object locking.
+        CacheKey cacheKey = null;
+        CacheKey sharedCacheKey = null;
+        
+        // Keep track if we actually built/refresh the object.
+        boolean cacheHit = true;
+        try {
+            // Check if the objects exists in the identity map.
+            if (query.shouldMaintainCache() &&  (!query.shouldRetrieveBypassCache() || !query.shouldStoreBypassCache())) {
+                cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query.requiresDeferredLocks());
+                protectedObject = cacheKey.getObject();
+            }
+            
+            if (protectedObject == null || query.shouldRetrieveBypassCache()) {
+                cacheHit = false;
+                boolean domainWasMissing = protectedObject == null;
+                if (protectedObject == null || query.shouldStoreBypassCache()){
+                    if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
+                        protectedObject = ((ReadObjectQuery)query).getSelectionObject();
+                    } else {
+                        protectedObject = concreteDescriptor.getObjectBuilder().buildNewInstance();
+                    }
+                }
+                // The object must be registered before building its attributes to resolve circular dependencies.
+                // The object must be registered before building its attributes to resolve circular dependencies.
+                if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()){
+                    if (domainWasMissing) {  // may have build a new domain even though there is one in the cache
+                        cacheKey.setObject(protectedObject);
+                    }
+                    copyQueryInfoToCacheKey(cacheKey, query, databaseRow, session, concreteDescriptor);
+                }else if (returnCacheKey && (cacheKey == null || (domainWasMissing && query.shouldRetrieveBypassCache()))){
+                    cacheKey = new CacheKey(primaryKey);
+                    cacheKey.setObject(protectedObject);
+                }
+
+                
+                // The object must be registered before building its attributes to resolve circular dependencies.
+                if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
+                    sharedCacheKey = session.getParent().retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query.requiresDeferredLocks());
+                    if (sharedCacheKey.getObject() == null){
+                        sharedCacheKey = (CacheKey) buildObject(true, query, databaseRow, session.getParent(), primaryKey, concreteDescriptor, joinManager);
+                        cachedObject = sharedCacheKey.getObject();
+                    }
+                }
+                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(protectedObject, sharedCacheKey, databaseRow, query, joinManager, false, true);
+                
+                //if !protected the returned object and the domain object are the same.
+                if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
+                    // Set the fetch group to the domain object, after built.
+                    if ((query.getEntityFetchGroup() != null) && concreteDescriptor.hasFetchGroupManager()) {
+                        query.getEntityFetchGroup().setOnEntity(protectedObject, session);
+                    }
+                }
+                // PERF: Cache the primary key and cache key if implements PersistenceEntity.
+                if (protectedObject instanceof PersistenceEntity) {
+                    ((PersistenceEntity)protectedObject)._persistence_setId(primaryKey);
+                }
+            } else {                
+                if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
+                    copyInto(protectedObject, ((ReadObjectQuery)query).getSelectionObject());
+                    protectedObject = ((ReadObjectQuery)query).getSelectionObject();
+                }
+                sharedCacheKey = session.getParent().retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query.requiresDeferredLocks());
+                cachedObject = sharedCacheKey.getObject();
+                if (cachedObject == null){
+                    sharedCacheKey = (CacheKey) buildObject(true, query, databaseRow, session.getParent(), primaryKey, concreteDescriptor, joinManager);
+                    cachedObject = sharedCacheKey.getObject();
+                }
+
+                //check if the cached object has been invalidated
+                boolean isInvalidated = concreteDescriptor.getCacheInvalidationPolicy().isInvalidated(sharedCacheKey, query.getExecutionTime());
+
+                //CR #4365 - Queryid comparison used to prevent infinite recursion on refresh object cascade all
+                //if the concurrency manager is locked by the merge process then no refresh is required.
+                // bug # 3388383 If this thread does not have the active lock then someone is building the object so in order to maintain data integrity this thread will not
+                // fight to overwrite the object ( this also will avoid potential deadlock situations
+                if ((sharedCacheKey.getMutex().getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated) && ((sharedCacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !sharedCacheKey.getMutex().isLockedByMergeManager()))) {
+                    
+                    //need to refresh. shared cache instance
+                    cacheHit = refreshObjectIfRequired(concreteDescriptor, sharedCacheKey, cachedObject, query, joinManager, databaseRow, session, true);
+                    if (!cacheHit) {
+                        //shared cache was refreshed and a refresh has been requested so lets refresh the protected object as well
+                        refreshObjectIfRequired(concreteDescriptor, cacheKey, protectedObject, query, joinManager, databaseRow, session, true);
+                    }
+                } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(protectedObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(protectedObject, query.getEntityFetchGroup())))) {
+                    cacheHit = false;
+                    // The fetched object is not sufficient for the fetch group of the query 
+                    // refresh attributes of the query's fetch group.
+                    concreteDescriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(protectedObject, query.getEntityFetchGroup(), session);
+                    concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(protectedObject, sharedCacheKey, databaseRow, query, joinManager, false, true);
+                }
+                // 3655915: a query with join/batch'ing that gets a cache hit
+                // may require some attributes' valueholders to be re-built.
+                else if (joinManager != null && joinManager.hasJoinedAttributeExpressions()) { //some queries like ObjRel do not support joining
+                    loadJoinedAttributes(concreteDescriptor, cachedObject, sharedCacheKey, databaseRow, joinManager, query, false);
+                    loadJoinedAttributes(concreteDescriptor, protectedObject, sharedCacheKey, databaseRow, joinManager, query, true);
+                } else if (query.isReadAllQuery() && ((ReadAllQuery)query).hasBatchReadAttributes()) {
+                    loadBatchReadAttributes(concreteDescriptor, cachedObject, sharedCacheKey, databaseRow, query, joinManager, false);
+                    loadBatchReadAttributes(concreteDescriptor, protectedObject, sharedCacheKey, databaseRow, query, joinManager, true);
+                }
+            }
+        } finally {
+            if (query.shouldMaintainCache()){
+                if (cacheKey != null) {
+                    // bug 2681401:
+                    // in case of exception (for instance, thrown by buildNewInstance())
+                    // cacheKey.getObject() may be null.
+                    if (cacheKey.getObject() != null) {
+                        cacheKey.updateAccess();
+                    }
+
+                    // PERF: Only use deferred locking if required.
+                    if (query.requiresDeferredLocks()) {
+                        cacheKey.releaseDeferredLock();
+                    } else {
+                        cacheKey.release();
+                    }
+                }
+                if (sharedCacheKey != null) {
+                    // bug 2681401:
+                    // in case of exception (for instance, thrown by buildNewInstance())
+                    // sharedCacheKey() may be null.
+                    if (sharedCacheKey.getObject() != null) {
+                        sharedCacheKey.updateAccess();
+                    }
+
+                    // PERF: Only use deferred locking if required.
+                    if (query.requiresDeferredLocks()) {
+                        sharedCacheKey.releaseDeferredLock();
+                    } else {
+                        sharedCacheKey.release();
+                    }
+                }
+            }
+        }
+        if (!cacheHit) {
+            concreteDescriptor.getObjectBuilder().instantiateEagerMappings(protectedObject, session);
+        }
+        
+        if (returnCacheKey) {
+            return cacheKey;
+        } else {
+            return protectedObject;
+        }
+    }
+
+    /**
      * Clean up the cached object data and only revert the fetch group data back to the cached object.
      */
-    private void revertFetchGroupData(Object domainObject, ClassDescriptor concreteDescriptor, CacheKey cacheKey, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, AbstractSession session) {
+    private void revertFetchGroupData(Object domainObject, ClassDescriptor concreteDescriptor, CacheKey cacheKey, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, AbstractSession session, boolean targetIsProtected) {
         //the cached object is either invalidated, or staled as the version is newer, or a refresh is explicitly set on the query.
         //clean all data of the cache object.
         concreteDescriptor.getFetchGroupManager().reset(domainObject);
@@ -857,7 +924,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // Bug 276362 - set the CacheKey's read time (to re-validate the CacheKey) before buildAttributesIntoObject is called
         cacheKey.setReadTime(query.getExecutionTime());
         //read in the fetch group data only
-        concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
+        concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, false, targetIsProtected);
         //set refresh on fetch group
         concreteDescriptor.getFetchGroupManager().setRefreshOnFetchGroupToObject(domainObject, (query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache()));
         //set query id to prevent infinite recursion on refresh object cascade all
@@ -894,14 +961,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         databaseRowsIn.add(databaseRow);
                     }
                 }
-                policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query);
+                policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query, (CacheKey)null, true);
             } else {
                 for (int index = 0; index < size; index++) {
                     AbstractRecord databaseRow = (AbstractRecord)databaseRows.get(index);
                     // PERF: 1-m joining nulls out duplicate rows.
                     if (databaseRow != null) {
                         Object domainObject = buildObject(query, databaseRow, joinManager);
-                        policy.addInto(domainObject, domainObjects, session, databaseRow, query);
+                        policy.addInto(domainObject, domainObjects, session, databaseRow, query, (CacheKey)null, true);
                     }
                 }
             }
@@ -1331,7 +1398,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * For reading through the write connection when in transaction,
      * populate the clone directly from the database row.
      */
-    public void buildAttributesIntoWorkingCopyClone(Object clone, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, boolean forRefresh) throws DatabaseException, QueryException {
+    public void buildAttributesIntoWorkingCopyClone(Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, boolean forRefresh) throws DatabaseException, QueryException {
         // PERF: Cache if all mappings should be read.
         boolean readAllMappings = query.shouldReadAllMappings();
         List mappings = this.descriptor.getMappings();
@@ -1339,7 +1406,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             if (readAllMappings || query.shouldReadMapping(mapping)) {
-                mapping.buildCloneFromRow(databaseRow, joinManager, clone, query, unitOfWork, unitOfWork);
+                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
             }
         }
 
@@ -1405,12 +1472,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
     
             boolean wasAnOriginal = false;
-            boolean isIsolated = descriptor.shouldIsolateObjectsInUnitOfWork() || (descriptor.shouldIsolateObjectsInUnitOfWorkEarlyTransaction() && unitOfWork.wasTransactionBegunPrematurely());
+            boolean isIsolated = (descriptor.shouldIsolateObjectsInUnitOfWork() && !descriptor.isProtectedIsolation()) || (descriptor.shouldIsolateObjectsInUnitOfWorkEarlyTransaction() && unitOfWork.wasTransactionBegunPrematurely());
+
             Object original = null;    
+            CacheKey originalCacheKey = null;
             // If not refreshing can get the object from the cache.
-            if ((!isARefresh) && (!isIsolated) && !unitOfWork.shouldReadFromDB() && (!unitOfWork.shouldForceReadFromDB(query, primaryKey))) {
+            if ((!isARefresh) && (!isIsolated) && !query.shouldRetrieveBypassCache() && !unitOfWork.shouldReadFromDB() && (!unitOfWork.shouldForceReadFromDB(query, primaryKey))) {
                 AbstractSession session = unitOfWork.getParentIdentityMapSession(query);            
-                CacheKey originalCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor);
+                originalCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor);
                 if (originalCacheKey != null) {
                     // PERF: Read-lock is not required on object as unit of work will acquire this on clone and object cannot gc and object identity is maintained.
                     original = originalCacheKey.getObject();
@@ -1418,9 +1487,17 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     // If the original is invalid or always refresh then need to refresh.
                     isARefresh = wasAnOriginal && (descriptor.shouldAlwaysRefreshCache() || descriptor.getCacheInvalidationPolicy().isInvalidated(originalCacheKey, query.getExecutionTime()));
                     // Otherwise can just register the cached original object and return it.
-                    if (wasAnOriginal && (!isARefresh) && ! query.shouldRetrieveBypassCache()) {
-                        return unitOfWork.cloneAndRegisterObject(original, originalCacheKey, unitOfWorkCacheKey, descriptor);
+                    if (wasAnOriginal && (!isARefresh)){
+                        if (!descriptor.shouldIsolateObjectsInUnitOfWork() || descriptor.isProtectedIsolation()) {
+                            return unitOfWork.cloneAndRegisterObject(original, originalCacheKey, unitOfWorkCacheKey, descriptor);
+                        }
+                    }else{
+                        refreshObjectIfRequired(descriptor, originalCacheKey, original, query, joinManager, databaseRow, session.getParentIdentityMapSession(query), false);
+                        isARefresh = false;
                     }
+                } else if (descriptor.shouldIsolateObjectsInUnitOfWork() && descriptor.isProtectedIsolation()){
+                    originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, session.getParentIdentityMapSession(query), primaryKey, descriptor, joinManager);
+                    wasAnOriginal = originalCacheKey.getObject() != null;
                 }
             }
     
@@ -1429,7 +1506,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 // that method we don't need to lock the shared cache, because
                 // are not building off of an original in the shared cache.
                 // The copy policy is easier to invoke if we have an original.
-                if (wasAnOriginal && query.shouldStoreBypassCache()) {
+                if (wasAnOriginal && !query.shouldRetrieveBypassCache()) {
                     workingClone = instantiateWorkingCopyClone(original, unitOfWork);
                     // intentionally put nothing in clones to originals, unless really was one.
                     unitOfWork.getCloneToOriginals().put(workingClone, original);
@@ -1467,7 +1544,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(), unitOfWork);
             }
             // Build/refresh the clone from the row.
-            buildAttributesIntoWorkingCopyClone(workingClone, query, joinManager, databaseRow, unitOfWork, wasAClone);
+            if (isARefresh){
+                //null out cacheKey if the data should be refreshed.  THis will prevent us from using invalidated
+                // cached protected data during the read
+                originalCacheKey = null;
+            }
+            buildAttributesIntoWorkingCopyClone(workingClone, originalCacheKey, query, joinManager, databaseRow, unitOfWork, wasAClone);
             // Set fetch group after building object if not a refresh to avoid checking fetch during building.           
             if ((!isARefresh) && fetchGroupManager != null) {
                 fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(), unitOfWork);
@@ -1507,7 +1589,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         UnitOfWorkImpl unitOfWork = null;
         AbstractSession session = executionSession;
-        boolean isolated = descriptor.isIsolated();
+        boolean isolated = !descriptor.isSharedIsolation();
         if (session.isUnitOfWork()) {
             unitOfWork = (UnitOfWorkImpl)executionSession;
         }
@@ -3060,7 +3142,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager, boolean isTargetCloneOfOriginal) {
         // PERF: Just merge the object for new objects, as the change set is not populated.
         if ((source != null) && changeSet.isNew() && (!this.descriptor.shouldUseFullChangeSetsForNewObjects())) {
-            mergeIntoObject(target, true, source, mergeManager, false, isTargetCloneOfOriginal);
+            mergeIntoObject(target, changeSet.getActiveCacheKey(), true, source, mergeManager, false, isTargetCloneOfOriginal);
         } else {
             List changes = changeSet.getChanges();
             int size = changes.size();
@@ -3069,7 +3151,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 //cr 4236, use ObjectBuilder getMappingForAttributeName not the Descriptor one because the
                 // ObjectBuilder method is much more efficient.
                 DatabaseMapping mapping = getMappingForAttributeName(record.getAttribute());
-                mapping.mergeChangesIntoObject(target, record, source, mergeManager);                
+                mapping.mergeChangesIntoObject(target, changeSet.getActiveCacheKey(), record, source, mergeManager);                
             }
         }
 
@@ -3089,8 +3171,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Merge the contents of one object into another, this merge algorithm is dependent on the merge manager.
      * This merge also prevents the extra step of calculating the changes when it is not required.
      */
-    public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager) {
-        mergeIntoObject(target, isUnInitialized, source, mergeManager, false, false);
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isUnInitialized, Object source, MergeManager mergeManager) {
+        mergeIntoObject(target, targetCacheKey, isUnInitialized, source, mergeManager, false, false);
     }
     
     /**
@@ -3100,7 +3182,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * If 'cascadeOnly' is true, only foreign reference mappings are merged.
      * If 'isTargetCloneOfOriginal' then the target was create through a shallow clone of the source, so merge basics is not required.
      */
-    public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, boolean cascadeOnly, boolean isTargetCloneOfOriginal) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isUnInitialized, Object source, MergeManager mergeManager, boolean cascadeOnly, boolean isTargetCloneOfOriginal) {
         // cascadeOnly is introduced to optimize merge 
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
         
@@ -3123,7 +3205,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     || (cascadeOnly && mapping.isForeignReferenceMapping())
                     || (isTargetCloneOfOriginal && mapping.isCloningRequired()))
                   && (sourceFetchGroup == null || sourceFetchGroup.containsAttribute(mapping.getAttributeName()))) {
-                mapping.mergeIntoObject(target, isUnInitialized, source, mergeManager);
+                mapping.mergeIntoObject(target, targetCacheKey, isUnInitialized, source, mergeManager);
             }
         }
 
@@ -3141,7 +3223,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Clones the attributes of the specified object. This is called only from unit of work.
      * The domainObject sent as parameter is always a copy from the parent of unit of work.
      */
-    public void populateAttributesForClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+    public void populateAttributesForClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
         List mappings = getCloningMappings();
         int size = mappings.size();
         if (this.descriptor.hasFetchGroupManager() && this.descriptor.getFetchGroupManager().isPartialObject(original)) {
@@ -3149,24 +3231,109 @@ public class ObjectBuilder implements Cloneable, Serializable {
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
                 if (fetchGroupManager.isAttributeFetched(original, mapping.getAttributeName())) {
-                    mapping.buildClone(original, clone, unitOfWork);
+                    mapping.buildClone(original, cacheKey, clone, cloningSession);
                 }
             }
         } else {
             for (int index = 0; index < size; index++) {
-                ((DatabaseMapping)mappings.get(index)).buildClone(original, clone, unitOfWork);
+                ((DatabaseMapping)mappings.get(index)).buildClone(original, cacheKey, clone, cloningSession);
             }
         }
 
         // PERF: Avoid events if no listeners.
         if (this.descriptor.getEventManager().hasAnyEventListeners()) {
             DescriptorEvent event = new DescriptorEvent(clone);
-            event.setSession(unitOfWork);
+            event.setSession((AbstractSession) cloningSession);
             event.setOriginalObject(original);
             event.setDescriptor(descriptor);
             event.setEventCode(DescriptorEventManager.PostCloneEvent);
-            unitOfWork.deferEvent(event);
+            cloningSession.deferEvent(event);
         }
+    }
+    
+    protected void loadBatchReadAttributes(ClassDescriptor concreteDescriptor, Object sourceObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, boolean isTargetProtected){
+        List batchExpressions = ((ReadAllQuery)query).getBatchReadAttributeExpressions();
+        int size = batchExpressions.size();
+        for (int index = 0; index < size; index++) {
+            QueryKeyExpression queryKeyExpression = (QueryKeyExpression)batchExpressions.get(index);
+            // Only worry about immediate attributes.
+            if (queryKeyExpression.getBaseExpression().isExpressionBuilder()) {
+                DatabaseMapping mapping = getMappingForAttributeName(queryKeyExpression.getName());
+
+                if (mapping == null) {
+                    throw ValidationException.missingMappingForAttribute(concreteDescriptor, queryKeyExpression.getName(), this.toString());
+                } else {
+                    // Bug 4230655 - do not replace instantiated valueholders.
+                    Object attributeValue = mapping.getAttributeValueFromObject(sourceObject);
+                    if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
+                        mapping.readFromRowIntoObject(databaseRow, joinManager, sourceObject, cacheKey, query, query.getExecutionSession(),isTargetProtected);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void loadJoinedAttributes(ClassDescriptor concreteDescriptor, Object sourceObject, CacheKey cacheKey, AbstractRecord databaseRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, boolean isTargetProtected){
+        List joinExpressions = joinManager.getJoinedAttributeExpressions();
+        int size = joinExpressions.size();
+        for (int index = 0; index < size; index++) {
+            QueryKeyExpression queryKeyExpression = (QueryKeyExpression)joinExpressions.get(index);
+            QueryKeyExpression baseExpression = (QueryKeyExpression)joinManager.getJoinedAttributes().get(index);
+            DatabaseMapping mapping = joinManager.getJoinedAttributeMappings().get(index);
+            
+            // Only worry about immediate (excluding aggregates) foreign reference mapping attributes.
+            if (queryKeyExpression == baseExpression) {
+                //get the intermediate objects between this expression node and the base builder
+                Object intermediateValue = joinManager.getValueFromObjectForExpression(query.getExecutionSession(), sourceObject, (ObjectExpression)baseExpression.getBaseExpression());
+                if (mapping == null) {
+                    throw ValidationException.missingMappingForAttribute(concreteDescriptor, queryKeyExpression.getName(), toString());
+                } else {
+                    // Bug 4230655 - do not replace instantiated valueholders.
+                    Object attributeValue = mapping.getAttributeValueFromObject(intermediateValue);
+                    if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
+                        mapping.readFromRowIntoObject(databaseRow, joinManager, intermediateValue, cacheKey, query, query.getExecutionSession(), isTargetProtected);
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * This method is called when a cached Entity needs to be refreshed
+     */
+    protected boolean refreshObjectIfRequired(ClassDescriptor concreteDescriptor, CacheKey cacheKey, Object domainObject, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, AbstractSession session, boolean targetIsProtected){
+        boolean cacheHit = true;
+        //cached object might be partially fetched, only refresh the fetch group attributes of the query if
+        //the cached partial object is not invalidated and does not contain all data for the fetch group.   
+        if (concreteDescriptor.hasFetchGroupManager() && concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject)) {
+            cacheHit = false;
+            //only ObjectLevelReadQuery and above support partial objects
+            revertFetchGroupData(domainObject, concreteDescriptor, cacheKey, (query), joinManager, databaseRow, session, targetIsProtected);
+        } else {
+            boolean refreshRequired = true;
+            if (concreteDescriptor.usesOptimisticLocking()) {
+                OptimisticLockingPolicy policy = concreteDescriptor.getOptimisticLockingPolicy();
+                Object cacheValue = policy.getValueToPutInCache(databaseRow, session);
+                if (concreteDescriptor.shouldOnlyRefreshCacheIfNewerVersion()) {
+                    refreshRequired = policy.isNewerVersion(databaseRow, domainObject, cacheKey.getKey(), session);
+                    if (!refreshRequired) {
+                        cacheKey.setReadTime(query.getExecutionTime());
+                    }
+                }
+                if (refreshRequired) {
+                    // Update the write lock value.
+                    cacheKey.setWriteLockValue(cacheValue);
+                }
+            }
+            if (refreshRequired) {
+                cacheHit = false;
+                // CR #4365 - used to prevent infinite recursion on refresh object cascade all.
+                cacheKey.setLastUpdatedQueryId(query.getQueryId());
+                // Bug 276362 - set the CacheKey's read time (re-validating the CacheKey) before buildAttributesIntoObject is called
+                cacheKey.setReadTime(query.getExecutionTime());
+                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, true, targetIsProtected);
+            }
+        }
+        return cacheHit;
     }
 
     /**

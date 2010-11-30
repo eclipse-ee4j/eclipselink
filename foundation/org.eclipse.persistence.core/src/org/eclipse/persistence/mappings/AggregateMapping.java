@@ -18,6 +18,7 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.internal.descriptors.changetracking.AggregateAttributeChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -25,6 +26,7 @@ import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.*;
@@ -123,9 +125,10 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
      */
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+    @Override
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
         Object attributeValue = getAttributeValueFromObject(original);
-        setAttributeValueInObject(clone, buildClonePart(original, attributeValue, unitOfWork));
+        setAttributeValueInObject(clone, buildClonePart(original, cacheKey, attributeValue, cloningSession));
     }
 
     /**
@@ -145,9 +148,9 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * In order to bypass the shared cache when in transaction a UnitOfWork must
      * be able to populate working copies directly from the row.
      */
-    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // automatically returns a uow result from scratch that doesn't need cloning
-        Object cloneAttributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, executionSession);
+        Object cloneAttributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true);
         setAttributeValueInObject(clone, cloneAttributeValue);
     }
 
@@ -155,31 +158,31 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * Build and return a clone of the attribute.
      */
-    protected Object buildClonePart(Object original, Object attributeValue, UnitOfWorkImpl unitOfWork) {
-        return buildClonePart(attributeValue, unitOfWork, unitOfWork.isOriginalNewObject(original));
+    protected Object buildClonePart(Object original, CacheKey cacheKey, Object attributeValue, AbstractSession cloningSession) {
+        return buildClonePart(attributeValue, cacheKey, cloningSession, cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original));
     }
     
     /**
      * INTERNAL:     * Build and return a clone of the attribute.
      */
-    protected Object buildClonePart(Object attributeValue, UnitOfWorkImpl unitOfWork, boolean isNewObject) {
+    protected Object buildClonePart(Object attributeValue, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isNewObject) {
         if (attributeValue == null) {
             return null;
         }
-        if (isNewObject) {
-            unitOfWork.addNewAggregate(attributeValue);
+        if (isNewObject) { // only true if cloningSession is UOW as this signature only exists in this mapping.
+            ((UnitOfWorkImpl)cloningSession).addNewAggregate(attributeValue);
         }
 
         // Do not clone for read-only.
-        if (unitOfWork.isClassReadOnly(attributeValue.getClass())) {
+        if (cloningSession.isUnitOfWork() && cloningSession.isClassReadOnly(attributeValue.getClass())){
             return attributeValue;
         }
 
-        ObjectBuilder aggregateObjectBuilder = getObjectBuilder(attributeValue, unitOfWork);
+        ObjectBuilder aggregateObjectBuilder = getObjectBuilder(attributeValue, cloningSession);
 
         // bug 2612602 as we are building the working copy make sure that we call to correct clone method.
-        Object clonedAttributeValue = aggregateObjectBuilder.instantiateWorkingCopyClone(attributeValue, unitOfWork);
-        aggregateObjectBuilder.populateAttributesForClone(attributeValue, clonedAttributeValue, unitOfWork);
+        Object clonedAttributeValue = aggregateObjectBuilder.instantiateWorkingCopyClone(attributeValue, cloningSession);
+        aggregateObjectBuilder.populateAttributesForClone(attributeValue, parentCacheKey, clonedAttributeValue, cloningSession);
 
         return clonedAttributeValue;
     }
@@ -531,7 +534,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
     /**
      * Merge the attribute values.
      */
-    protected void mergeAttributeValue(Object targetAttributeValue, boolean isTargetUnInitialized, Object sourceAttributeValue, MergeManager mergeManager) {
+    protected void mergeAttributeValue(Object targetAttributeValue, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object sourceAttributeValue, MergeManager mergeManager) {
         // don't merge read-only attributes
         if (mergeManager.getSession().isClassReadOnly(sourceAttributeValue.getClass())) {
             return;
@@ -544,7 +547,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         ClassDescriptor descriptor = getReferenceDescriptor(sourceAttributeValue, mergeManager.getSession());
         descriptor.getObjectChangePolicy().dissableEventProcessing(targetAttributeValue);
         try {
-            descriptor.getObjectBuilder().mergeIntoObject(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager);
+            descriptor.getObjectBuilder().mergeIntoObject(targetAttributeValue, targetCacheKey, isTargetUnInitialized, sourceAttributeValue, mergeManager);
         } finally {            
             descriptor.getObjectChangePolicy().enableEventProcessing(targetAttributeValue);
         }
@@ -558,7 +561,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * The actual aggregate object does not need to be replaced, because even if the clone references
      * another aggregate it appears the same to TopLink
      */
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         ObjectChangeSet aggregateChangeSet = (ObjectChangeSet)((AggregateChangeRecord)changeRecord).getChangedObject();
         if (aggregateChangeSet == null) {// the change was to set the value to null
             setAttributeValueInObject(target, null);
@@ -582,6 +585,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
                 targetAggregate = objectBuilder.buildNewInstance();
             }
         }
+        aggregateChangeSet.setActiveCacheKey(targetCacheKey);
         objectBuilder.mergeChangesIntoObject(targetAggregate, aggregateChangeSet, sourceAggregate, mergeManager);
         setAttributeValueInObject(target, targetAggregate);
     }
@@ -591,7 +595,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Merge changes from the source to the target object. This merge is only called when a changeSet for the target
      * does not exist or the target is uninitialized
      */
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         Object sourceAttributeValue = getAttributeValueFromObject(source);
         if (sourceAttributeValue == null) {
             setAttributeValueInObject(target, null);
@@ -603,7 +607,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             // avoid null-pointer/nothing to merge to - create a new instance
             // (a new clone cannot be used as all changes must be merged)
             targetAttributeValue = buildNewMergeInstanceOf(sourceAttributeValue, mergeManager.getSession());
-            mergeAttributeValue(targetAttributeValue, true, sourceAttributeValue, mergeManager);
+            mergeAttributeValue(targetAttributeValue, targetCacheKey, true, sourceAttributeValue, mergeManager);
             // setting new instance so fire event as if set was called by user.
             // this call will eventually get passed to updateChangeRecord which will 
             //ensure this new aggregates is fully initialized with listeners.
@@ -613,7 +617,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             }
             
         } else {
-            mergeAttributeValue(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager);
+            mergeAttributeValue(targetAttributeValue, targetCacheKey, isTargetUnInitialized, sourceAttributeValue, mergeManager);
         }
 
         // Must re-set variable to allow for set method to re-morph changes.

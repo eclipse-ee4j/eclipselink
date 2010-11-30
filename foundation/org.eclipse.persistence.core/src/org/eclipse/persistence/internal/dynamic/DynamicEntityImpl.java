@@ -31,10 +31,12 @@ import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -251,10 +253,11 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         }
         public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {            
         }
-        public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+        @Override
+        public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
         }
         public void buildCloneFromRow(AbstractRecord databaseRow,
-            JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery,
+            JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery,
             UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         }
         public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow,
@@ -276,10 +279,10 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         }
         public void iterate(DescriptorIterator iterator) {   
         }
-        public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source,
+        public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source,
             MergeManager mergeManager) {
         }
-        public void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source,
+        public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUninitialized, Object source,
             MergeManager mergeManager) {
         }
     }

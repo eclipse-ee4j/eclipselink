@@ -313,6 +313,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "weaver_processing_class", "Weaver processing class: {0}."},
         { "cannot_weave_changetracking", "Class {0} could not be weaved for change tracking as it is not supported by its mappings."},
 
+        { "overriding_cache_isolation", "Parent Entity {0} has an isolation level of: {1} which is more protective then the subclass {2} with isolation: {3} so the subclass has been set to the isolation level {1}."},
+
         { "field_type_set_to_java_lang_string", "The default table generator could not locate or convert a java type ({1}) into a database type for database field ({0}). The generator uses 'java.lang.String' as default java type for the field." },
         { "relational_descriptor_support_only", "The default table generator currently only supports generating default table schema from a relational project."},
         { "default_tables_already_existed", "The table ({0}) is already in the database, and won't be created."},

@@ -92,6 +92,7 @@ import java.util.Map;
 import javax.persistence.AccessType;
 
 import org.eclipse.persistence.annotations.ExistenceType;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
@@ -1777,7 +1778,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public void useNoCache() {
-        m_descriptor.setIsIsolated(true);
+        m_descriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
     }
 
     /**

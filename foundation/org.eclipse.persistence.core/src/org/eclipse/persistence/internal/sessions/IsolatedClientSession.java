@@ -14,8 +14,11 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.Map;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -27,11 +30,15 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class IsolatedClientSession extends ClientSession {
     public IsolatedClientSession(ServerSession parent, ConnectionPolicy connectionPolicy) {
         super(parent, connectionPolicy);
+        // PERF: Cache the write-lock check to avoid cost of checking in every register/clone.
+        this.shouldCheckWriteLock = getDatasourceLogin().shouldSynchronizedReadOnWrite() || getDatasourceLogin().shouldSynchronizeWrites();
     }
 
     public IsolatedClientSession(ServerSession parent, ConnectionPolicy connectionPolicy, Map properties) {
         super(parent, connectionPolicy, properties);
-    }
+        // PERF: Cache the write-lock check to avoid cost of checking in every register/clone.
+        this.shouldCheckWriteLock = getDatasourceLogin().shouldSynchronizedReadOnWrite() || getDatasourceLogin().shouldSynchronizeWrites();
+   }
 
     /**
     * INTERNAL:
@@ -61,7 +68,8 @@ public class IsolatedClientSession extends ClientSession {
     */
     protected boolean isIsolatedQuery(DatabaseQuery query) {
         query.checkDescriptor(this);
-        if (query.isDataModifyQuery() || query.isDataReadQuery() || ((query.getDescriptor() != null) && query.getDescriptor().isIsolated()) || (query.isObjectBuildingQuery() && ((ObjectBuildingQuery)query).shouldUseExclusiveConnection())) {
+        ClassDescriptor descriptor = query.getDescriptor();
+        if (query.isDataModifyQuery() || query.isDataReadQuery() || (descriptor != null && descriptor.isIsolated()) || (query.isObjectBuildingQuery() && ((ObjectBuildingQuery)query).shouldUseExclusiveConnection())) {
             // For CR#4334 if in transaction stay on client session.
             // That way client's write accessor will be used for all queries.
             // This is to preserve transaction isolation levels.
@@ -70,7 +78,6 @@ public class IsolatedClientSession extends ClientSession {
             return true;
         }
         return false;
-
     }
 
     /**
@@ -90,12 +97,12 @@ public class IsolatedClientSession extends ClientSession {
     * @return this if there is no next link in the chain
     */
     @Override
-    public AbstractSession getParentIdentityMapSession(DatabaseQuery query, boolean canReturnSelf, boolean terminalOnly) {
-        if ((query != null) && isIsolatedQuery(query)) {
+    public AbstractSession getParentIdentityMapSession(ClassDescriptor descriptor, boolean canReturnSelf, boolean terminalOnly) {
+        if (descriptor == null || (descriptor.isIsolated() || (!descriptor.shouldIsolateObjectsInUnitOfWork() &&descriptor.isProtectedIsolation()))){ 
+            
             return this;
-        } else {
-            return this.parent.getParentIdentityMapSession(query, canReturnSelf, terminalOnly);
         }
+        return getParent().getParentIdentityMapSession(descriptor, canReturnSelf, terminalOnly);
     }
 
     /**

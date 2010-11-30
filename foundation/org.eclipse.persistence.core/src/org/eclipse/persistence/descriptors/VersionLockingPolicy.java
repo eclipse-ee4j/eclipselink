@@ -641,7 +641,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             ObjectBuilder objectBuilder = this.descriptor.getObjectBuilder();
             AbstractRecord record = objectBuilder.createRecord(1, session);
             record.put(this.writeLockField, lockValue);
-            objectBuilder.assignReturnRow(object, session, record);            
+            objectBuilder.assignReturnRow(object, null, session, record);            
             if (objectChangeSet != null) {
                 objectChangeSet.setWriteLockValue(lockValue);
                 query.getQueryMechanism().updateChangeSet(this.descriptor, objectChangeSet, record, object);

@@ -16,10 +16,13 @@ import java.lang.reflect.Proxy;
 import java.security.AccessController;
 
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+
 import java.util.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -139,7 +142,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * This value is determined by the batch query.     *
      * NOTE: Currently not supported anyway.
      */
-    public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery) {
+    public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
         Object object;
 
         try {
@@ -158,7 +161,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             e.printStackTrace();
             return null;
         }
-        ValueHolderInterface valueHolder = new BatchValueHolder(batchQuery, row, this.getForeignReferenceMapping(), originalQuery);
+        ValueHolderInterface valueHolder = new BatchValueHolder(batchQuery, row, this.getForeignReferenceMapping(), originalQuery, parentCacheKey);
 
         return ProxyIndirectionHandler.newProxyInstance(object.getClass(), targetInterfaces, valueHolder);
     }
@@ -297,17 +300,17 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      *  directly from a row as opposed to building the original from the
      *  row, putting it in the shared cache, and then cloning the original.
      */
-    public Object cloneAttribute(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
+    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         if (!(attributeValue instanceof Proxy)) {
-            boolean isExisting = unitOfWork.isObjectRegistered(clone) && (!unitOfWork.isOriginalNewObject(original));
-            return this.getMapping().buildCloneForPartObject(attributeValue, original, clone, unitOfWork, isExisting);
+            boolean isExisting = !cloningSession.isUnitOfWork() || (((UnitOfWorkImpl)cloningSession).isObjectRegistered(clone) && (!((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)));
+            return this.getMapping().buildCloneForPartObject(attributeValue, original, null, clone, cloningSession, isExisting);
         }
 
         ValueHolderInterface newValueHolder;
         ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
         ValueHolderInterface oldValueHolder = handler.getValueHolder();
         
-        if (!buildDirectlyFromRow && unitOfWork.isOriginalNewObject(original)) {
+        if (!buildDirectlyFromRow && cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)) {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
             // This can occur if an existing serialized object is attempt to be registered as new.
             if ((oldValueHolder instanceof DatabaseValueHolder)
@@ -317,13 +320,13 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, getMapping());
             }
             newValueHolder = new ValueHolder();
-            newValueHolder.setValue(this.getMapping().buildCloneForPartObject(oldValueHolder.getValue(), original, clone, unitOfWork, false));
+            newValueHolder.setValue(this.getMapping().buildCloneForPartObject(oldValueHolder.getValue(), original, null, clone, cloningSession, false));
         } else {
         	AbstractRecord row = null;
             if (oldValueHolder instanceof DatabaseValueHolder) {
                 row = ((DatabaseValueHolder)oldValueHolder).getRow();
             }
-            newValueHolder = this.getMapping().createUnitOfWorkValueHolder(oldValueHolder, original, clone, row, unitOfWork, buildDirectlyFromRow);
+            newValueHolder = this.getMapping().createCloneValueHolder(oldValueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
         }
 
         return ProxyIndirectionHandler.newProxyInstance(attributeValue.getClass(), targetInterfaces, newValueHolder);

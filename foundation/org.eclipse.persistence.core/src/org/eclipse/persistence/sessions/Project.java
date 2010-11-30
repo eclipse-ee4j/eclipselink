@@ -28,6 +28,7 @@ import java.util.*;
 import java.io.*;
 
 import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
@@ -92,7 +93,7 @@ public class Project implements Serializable, Cloneable {
     protected int defaultIdentityMapSize = 100;
     
     /** Default value for ClassDescriptor.isIsolated. */
-    protected boolean defaultIsIsolated = false;
+    protected CacheIsolationType defaultCacheIsolation = null;
     
     /** Default value for ClassDescriptor.idValidation. */
     protected IdValidation defaultIdValidation = null;
@@ -511,9 +512,19 @@ public class Project implements Serializable, Cloneable {
     /** 
      * PUBLIC:
      * Return default value for whether descriptor should use isolated cache.
+     * @deprecated see getDefaultCacheIsolation()
      */
+    @Deprecated
     public boolean getDefaultIsIsolated() {
-        return this.defaultIsIsolated;
+        return this.defaultCacheIsolation.equals(CacheIsolationType.ISOLATED);
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the project level default for class cache isolation;
+     */
+    public CacheIsolationType getDefaultCacheIsolation(){
+        return this.defaultCacheIsolation;
     }
     
     /** 
@@ -659,11 +670,20 @@ public class Project implements Serializable, Cloneable {
     /** 
      * PUBLIC:
      * Set default value for whether descriptor should use isolated cache.
+     * @deprecated see setDefaultCacheIsolation(CacheIsolationType)
      */
+    @Deprecated
     public void setDefaultIsIsolated(boolean defaultIsIsolated) {
-        this.defaultIsIsolated = defaultIsIsolated;
+        this.defaultCacheIsolation = defaultIsIsolated ? CacheIsolationType.ISOLATED : CacheIsolationType.SHARED;
     }
     
+    /** 
+     * PUBLIC:
+     * Set project level default value for class cache isolation.
+     */
+    public void setDefaultCacheIsolation(CacheIsolationType isolationType) {
+        this.defaultCacheIsolation = isolationType;
+    }
     /** 
      * PUBLIC:
      * Set default value for descriptor primary key validation.

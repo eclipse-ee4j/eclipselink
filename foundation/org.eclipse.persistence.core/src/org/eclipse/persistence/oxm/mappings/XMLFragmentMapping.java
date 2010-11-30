@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.mappings;
 
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -44,7 +45,7 @@ public class XMLFragmentMapping extends XMLDirectMapping {
         writeSingleValue(attributeValue, object, (XMLRecord)row, session);
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) {
         DOMRecord domRecord = (DOMRecord) row;
         Object value = domRecord.getIndicatingNoEntry(this.getField(), true);
         if(value == domRecord) {

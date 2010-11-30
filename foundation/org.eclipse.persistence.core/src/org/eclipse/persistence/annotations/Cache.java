@@ -15,6 +15,9 @@ package org.eclipse.persistence.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.eclipse.persistence.config.CacheIsolationType;
+import static org.eclipse.persistence.config.CacheIsolationType.SHARED;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -63,8 +66,17 @@ public @interface Cache {
      * (Optional) Cached instances in the shared cache,
      * or only a per EntityManager isolated cache.
      * The default is shared.
+     * @deprecated  As of Eclipselink 2.2.  See the attribute 'isolation'
      */ 
+    @Deprecated
     boolean shared() default true;
+    
+    /**
+     * (Optional) Controls the level of caching this Entity will use.
+     * The default is CacheIsolationType.SHARED
+     * @see org.eclipse.persistence.config.CacheIsolationType
+     */
+    CacheIsolationType isolation() default SHARED;
 
     /**
      * (Optional) Expire cached instance after a fix period of time (ms). 

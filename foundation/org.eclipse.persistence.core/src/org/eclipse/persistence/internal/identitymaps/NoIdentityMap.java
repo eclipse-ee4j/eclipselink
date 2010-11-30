@@ -35,6 +35,11 @@ public class NoIdentityMap extends AbstractIdentityMap {
         super(size, descriptor);
     }
 
+    public NoIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
+        this(size, descriptor);
+        this.isIsolated = isolated;
+    }
+    
     /**
      * NoIdentityMap has no locks.
      */

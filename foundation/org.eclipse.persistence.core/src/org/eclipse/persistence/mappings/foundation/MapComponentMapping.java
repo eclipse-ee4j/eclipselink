@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.mappings.foundation;
 
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -38,7 +39,7 @@ public interface MapComponentMapping {
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
-    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session);
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected);
 
     
 }

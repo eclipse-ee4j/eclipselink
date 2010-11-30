@@ -12,6 +12,7 @@
  ******************************************************************************/
  package org.eclipse.persistence.mappings.structures;
 
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -37,7 +38,7 @@ public interface ArrayCollectionMapping extends ContainerMapping{
     /**
      * Build and return a new element based on the specified element.
      */
-    Object buildElementFromElement(Object element, MergeManager mergeManager);
+    Object buildElementFromElement(Object element, CacheKey elementCacheKey, MergeManager mergeManager);
 
     /**
      * Build and return a recently-removed element based on the change set.

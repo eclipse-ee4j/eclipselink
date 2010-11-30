@@ -215,8 +215,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * Build a clone of the given element in a unitOfWork.
      */
-    public Object buildElementClone(Object attributeValue, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting){
-        return buildCloneForPartObject(attributeValue, null, null, unitOfWork, isExisting);
+    public Object buildElementClone(Object attributeValue, Object parent, CacheKey cacheKey, AbstractSession cloningSession, boolean isExisting){
+        return buildCloneForPartObject(attributeValue, null, cacheKey, parent, cloningSession, isExisting);
     }
     
     /**
@@ -458,7 +458,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
-    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return session.executeQuery(getSelectionQuery(), dbRow);
     }
 
@@ -496,8 +496,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
-    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session){
-        return valueFromRowInternalWithJoin(dbRow, joinManager, query, session);
+    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
+        return valueFromRowInternalWithJoin(dbRow, joinManager, query, parentCacheKey, session, isTargetProtected);
     }
     
     /**
@@ -715,7 +715,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * mappings source keys of the source objects.
      */
     @Override
-    protected void executeBatchQuery(DatabaseQuery query, Map referenceObjectsByKey, AbstractSession session, AbstractRecord translationRow) {
+    protected void executeBatchQuery(DatabaseQuery query, CacheKey parentCacheKey, Map referenceObjectsByKey, AbstractSession session, AbstractRecord translationRow) {
         // Execute query and index resulting objects by key.
         List results;
         ObjectBuilder builder = query.getDescriptor().getObjectBuilder();
@@ -1568,7 +1568,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Check for batch + aggregation reading.
      */
     @Override
-    protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey parentCacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         // PERF: Direct variable access.
         Object referenceObject;
         // CR #... the field for many objects may be in the row,

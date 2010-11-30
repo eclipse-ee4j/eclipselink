@@ -53,7 +53,7 @@ public class UnitOfWorkTransformerValueHolder extends UnitOfWorkValueHolder {
      * Clone the original attribute value.
      */
     public Object buildCloneFor(Object originalAttributeValue) {
-        return getMapping().buildCloneForPartObject(originalAttributeValue, getObject(), getCloneOfObject(), getUnitOfWork(), true);
+        return getMapping().buildCloneForPartObject(originalAttributeValue, getObject(), null, getCloneOfObject(), getUnitOfWork(), true);
     }
 
     protected Object getCloneOfObject() {

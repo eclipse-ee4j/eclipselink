@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -32,6 +33,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -135,11 +137,12 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     * INTERNAL:
     * Clone the attribute from the original and assign it to the clone.
     */
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+    @Override
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildClone");
     }
 
-    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
     }
 
@@ -214,7 +217,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         throw DescriptorException.invalidMappingOperation(this, "mergeChangesIntoObject");
     }
 
@@ -222,14 +225,14 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     * INTERNAL:
     * Merge changes from the source to the target object.
     */
-    public void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUninitialized, Object source, MergeManager mergeManager) {
         throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         //try each of the fields and see if any of them has a value
         for(XMLMapping nextMapping:this.choiceElementMappings.values()) {
-            Object value = ((DatabaseMapping)nextMapping).valueFromRow(row, joinManager, sourceQuery, executionSession);
+            Object value = ((DatabaseMapping)nextMapping).valueFromRow(row, joinManager, sourceQuery, cacheKey, executionSession, isTargetProtected);
             if(value != null) {
                 return value;
             }
@@ -276,11 +279,11 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
 
     }
 
-    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
-        Object toReturn = super.readFromRowIntoObject(databaseRow, joinManager, targetObject, sourceQuery, executionSession);
+    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        Object toReturn = super.readFromRowIntoObject(databaseRow, joinManager, targetObject, parentCacheKey, sourceQuery, executionSession, isTargetProtected);
         for(XMLMapping next:choiceElementMappings.values()) {
             if(((DatabaseMapping)next).isObjectReferenceMapping()) {
-                ((DatabaseMapping)next).readFromRowIntoObject(databaseRow, joinManager, targetObject, sourceQuery, executionSession);
+                ((DatabaseMapping)next).readFromRowIntoObject(databaseRow, joinManager, targetObject, parentCacheKey, sourceQuery, executionSession, isTargetProtected);
             }
         }
         return toReturn;

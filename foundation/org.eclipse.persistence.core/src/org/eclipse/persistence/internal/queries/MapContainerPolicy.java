@@ -22,6 +22,7 @@ import java.lang.reflect.*;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -161,18 +162,18 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * into the toCollection.  Since this ContainerPolicy represents a Map, the key and the value are extracted and added.
      */
     @Override
-    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, CacheKey parentCacheKey, Object toCollection, CollectionMapping mapping, AbstractSession cloningSession, boolean isExisting) {
         Map.Entry entry = ((MapContainerPolicyIterator)valuesIterator).next();
-        Object clonedKey = buildCloneForKey(entry.getKey(), parent, unitOfWork, isExisting);
-        Object clonedValue = buildCloneForValue(entry.getValue(), parent, mapping, unitOfWork, isExisting);
+        Object clonedKey = buildCloneForKey(entry.getKey(), parent, parentCacheKey, cloningSession, isExisting);
+        Object clonedValue = buildCloneForValue(entry.getValue(), parent, parentCacheKey, mapping, cloningSession, isExisting);
         // add the object to the uow list of private owned objects if it is a candidate and the
         // uow should discover new objects
-        if (mapping.isCandidateForPrivateOwnedRemoval() && unitOfWork.shouldDiscoverNewObjects()) {
-            if (clonedValue != null && unitOfWork.isObjectNew(clonedValue)) { 
-                unitOfWork.addPrivateOwnedObject(mapping, clonedValue);
+        if (cloningSession.isUnitOfWork() && mapping.isCandidateForPrivateOwnedRemoval() && ((UnitOfWorkImpl) cloningSession).shouldDiscoverNewObjects()) {
+            if (clonedValue != null && ((UnitOfWorkImpl) cloningSession).isObjectNew(clonedValue)) { 
+                ((UnitOfWorkImpl) cloningSession).addPrivateOwnedObject(mapping, clonedValue);
             }
         }
-        addInto(clonedKey, clonedValue, toCollection, unitOfWork);
+        addInto(clonedKey, clonedValue, toCollection, cloningSession);
     }
 
     /**
@@ -234,8 +235,8 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     /**
      * Build a clone for the value in a mapping.
      */
-    protected Object buildCloneForValue(Object value, Object parent, CollectionMapping mapping, UnitOfWorkImpl uow, boolean isExisting){
-        return mapping.buildElementClone(value, parent, uow, isExisting);
+    protected Object buildCloneForValue(Object value, Object parent, CacheKey parentCacheKey, CollectionMapping mapping, AbstractSession cloningSession, boolean isExisting){
+        return mapping.buildElementClone(value, parent, parentCacheKey, cloningSession, isExisting);
         
     }
     

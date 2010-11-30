@@ -28,8 +28,8 @@ public class UnitOfWorkCacheKey extends CacheKey {
         super(primaryKey, object, lockValue);
     }
 
-    public UnitOfWorkCacheKey(Object primaryKey, Object object, Object lockValue, long readTime) {
-        super(primaryKey, object, lockValue, readTime);
+    public UnitOfWorkCacheKey(Object primaryKey, Object object, Object lockValue, long readTime, boolean isIsolated) {
+        super(primaryKey, object, lockValue, readTime, isIsolated);
     }
 
     /**

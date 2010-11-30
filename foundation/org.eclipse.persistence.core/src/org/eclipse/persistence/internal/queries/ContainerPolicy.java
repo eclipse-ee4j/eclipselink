@@ -24,6 +24,8 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -128,7 +130,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * The row may be required by subclasses, such as MappedKeyMap.
      * Return whether the container changed.
      */
-    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query) {
+    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, boolean isTargetProtected) {
         return addInto(null, element, container, session);
     }
 
@@ -139,10 +141,10 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * This is currently only used by OrderListContainerPolicy, so this is just a stub.
      * The passing of the query is to allow future compatibility with Maps (ordered Map).
      */
-    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ObjectBuildingQuery query) {
+    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ObjectBuildingQuery query, CacheKey parentCacheKey, boolean isTargetProtected) {
         boolean changed = false;
         for(int i=0; i < elements.size(); i++) {
-            changed |= addInto(elements.get(i), container, session, dbRows.get(i), query);
+            changed |= addInto(elements.get(i), container, session, dbRows.get(i), query, parentCacheKey, isTargetProtected);
         }
         return changed;
     }
@@ -153,7 +155,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * The row data may also be requires, as in the case of indexed ordered lists,
      * or direct maps.
      */
-    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord row, DataReadQuery query) {
+    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord row, DataReadQuery query, CacheKey parentCacheKey, boolean isTargetProtected) {
         return addInto(null, element, container, session);
     }
 
@@ -164,10 +166,10 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * This is currently only used by OrderListContainerPolicy, so this is just a stub.
      * The passing of the query is to allow future compatibility with Maps (ordered Map).
      */
-    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> rows, DataReadQuery query) {
+    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> rows, DataReadQuery query, CacheKey parentCacheKey, boolean isTargetProtected) {
         boolean changed = false;
         for(int i=0; i < elements.size(); i++) {
-            changed |= addInto(elements.get(i), container, session, rows.get(i), query);
+            changed |= addInto(elements.get(i), container, session, rows.get(i), query, parentCacheKey, isTargetProtected);
         }
         return changed;
     }
@@ -205,14 +207,14 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param unitOfWork
      * @param isExisting
      */
-    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting){
-        Object cloneValue = mapping.buildElementClone(next(valuesIterator, unitOfWork), parent, unitOfWork, isExisting);
+    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, CacheKey parentCacheKey, Object toCollection, CollectionMapping mapping, AbstractSession cloningSession, boolean isExisting){
+        Object cloneValue = mapping.buildElementClone(next(valuesIterator, cloningSession), parent, parentCacheKey, cloningSession, isExisting);
         // add the object to the uow list of private owned objects if it is a candidate and the
         // uow should discover new objects
-        if (!isExisting && mapping.isCandidateForPrivateOwnedRemoval() && unitOfWork.shouldDiscoverNewObjects() && cloneValue != null && unitOfWork.isObjectNew(cloneValue)) {
-            unitOfWork.addPrivateOwnedObject(mapping, cloneValue);
+        if (cloningSession.isUnitOfWork() && !isExisting && mapping.isCandidateForPrivateOwnedRemoval() && ((UnitOfWorkImpl) cloningSession).shouldDiscoverNewObjects() && cloneValue != null && ((UnitOfWorkImpl) cloningSession).isObjectNew(cloneValue)) {
+            ((UnitOfWorkImpl) cloningSession).addPrivateOwnedObject(mapping, cloneValue);
         }
-        addInto(cloneValue, toCollection, unitOfWork);
+        addInto(cloneValue, toCollection, cloningSession);
     }
     
     /**
@@ -220,11 +222,11 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * By default, the key is not cloned since in standard EclipseLink Mappings it will not be 
      * an Entity
      * @param key
-     * @param uow
+     * @param cloningSession
      * @param isExisting
      * @return
      */
-    public Object buildCloneForKey(Object key, Object parent, UnitOfWorkImpl uow, boolean isExisting){
+    public Object buildCloneForKey(Object key, Object parent , CacheKey parentCacheKey, AbstractSession cloningSession, boolean isExisting){
         return key;
         
     }
@@ -265,7 +267,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param session
      * @return
      */
-    public Object buildKey(AbstractRecord row, ObjectBuildingQuery query, AbstractSession session){
+    public Object buildKey(AbstractRecord row, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return null;
     }
     
@@ -305,7 +307,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param session
      * @return
      */
-    public Object buildKeyFromJoinedRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session){
+    public Object buildKeyFromJoinedRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return null;
     }
     

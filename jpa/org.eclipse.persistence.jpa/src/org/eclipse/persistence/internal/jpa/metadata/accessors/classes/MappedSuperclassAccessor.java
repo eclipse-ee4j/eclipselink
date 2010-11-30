@@ -836,8 +836,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // ENABLE_SELECTIVE and Cacheable(true)
         // DISABLE_SELECTIVE and Cacheable(true) 
         if (getProject().isSharedCacheModeAll() || 
-           (getProject().isSharedCacheModeEnableSelective() && getDescriptor().isCacheableTrue()) ||
-           (getProject().isSharedCacheModeDisableSelective() && ! getDescriptor().isCacheableFalse())) {
+            getProject().isSharedCacheModeEnableSelective()||
+            getProject().isSharedCacheModeDisableSelective()) {
             
             processCachingMetadata();
         } 

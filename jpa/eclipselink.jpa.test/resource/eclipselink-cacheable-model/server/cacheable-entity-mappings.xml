@@ -15,6 +15,20 @@
             <id name="id">
                 <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
             </id>
+            <one-to-one name="protectedEntity" fetch="LAXY">
+                <join-column name="PROTECTED_FK" referenced-column-name="ID"/>
+           </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XML_CACHEABLE_FORCE_PROTECTED" class="CacheableForceProtectedEntity" access="FIELD" cacheable="true">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
+            </id>
+            <one-to-one name="cacheableFalse" fetch="EAGER">
+                <join-column name="FALSE_FK" referenced-column-name="ID"/>
+           </one-to-one>
+            
         </attributes>
     </entity>
     <entity name="XML_CACHEABLE_TRUE" class="CacheableTrueEntity" access="FIELD" cacheable="true">
@@ -22,6 +36,49 @@
             <id name="id">
                 <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
             </id>
+        </attributes>
+    </entity>
+    <entity name="XML_CACHEABLE_PROTECTED" class="CacheableProtectedEntity" access="FIELD" cacheable="true">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
+            </id>
+        </attributes>
+    </entity>
+    <entity name="XML_ROTECTED_RELATIONSHIPS" class="ProtectedRelationshipsEntity" access="FIELD" cacheable="true">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
+            </id>
+            <one-to-one name="cacheableFalse" fetch="EAGER">
+                <join-column name="FALSE_FK" referenced-column-name="ID" />
+                <noncacheable/>
+            </one-to-one>
+            <many-to-one name="cacheableProtected" fetch="EAGER">
+                <join-column name="XML_MERGE_ADDR_ID" />
+                <noncacheable/>
+            </many-to-one>
+            <many-to-many name="cacheableProtecteds">
+                <noncacheable/>
+            </many-to-many>
+            <one-to-many name="cacheableProtecteds2">
+                <join-column name="XML_MERGE_PRODS_ID" />
+                <noncacheable/>
+            </one-to-many>
+
+            <element-collection name="elementCollection">
+                <column name="elemenColl" />
+                <collection-table name="ELEMENT_COLLECTION" creation-suffix="creationSuffixString2">
+                </collection-table>
+                <noncacheable/>
+            </element-collection>
+
+            <basic-collection name="basicCollection">
+                <value-column name="PRIVILEGE" />
+                <collection-table name="XML_BASIC_COLLECTION">
+                </collection-table>
+                <noncacheable/>
+            </basic-collection>
         </attributes>
     </entity>
     <entity name="XML_SUB_CACHEABLE_FALSE" class="SubCacheableFalseEntity" access="FIELD" cacheable="false"/>

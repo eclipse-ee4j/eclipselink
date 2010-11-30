@@ -392,7 +392,7 @@ public class QueryOperation extends Operation {
     protected void populateTargetObjectFromRecord(Vector<DatabaseMapping> mappings,
     	AbstractRecord record, Object targetObject, AbstractSession session) {
 		for (DatabaseMapping dm : mappings) {
-			dm.readFromRowIntoObject(record, null, targetObject, null, session);
+			dm.readFromRowIntoObject(record, null, targetObject, null, null, session, true);
 		}
     }
 

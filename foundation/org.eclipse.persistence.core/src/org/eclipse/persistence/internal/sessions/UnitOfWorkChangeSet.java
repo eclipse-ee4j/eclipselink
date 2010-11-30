@@ -376,17 +376,17 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * Returns the set of classes corresponding to updated objects in objectChanges.
      * @return HashSet<Class>
      */
-    public Set<Class> findUpdatedObjectsClasses() {
+    public Set<ClassDescriptor> findUpdatedObjectsClasses() {
         if (this.objectChanges == null || this.objectChanges.isEmpty()) {
             return null;
         }
-        HashSet<Class> updatedObjectsClasses = new HashSet<Class>(getObjectChanges().size());
+        HashSet<ClassDescriptor> updatedObjectsClasses = new HashSet<ClassDescriptor>(getObjectChanges().size());
         for (Map<ObjectChangeSet, ObjectChangeSet> objectChanges : getObjectChanges().values()) {
             for (ObjectChangeSet changeSet : objectChanges.values()) {
                 // any change set will do
                 if(!changeSet.isNew()) {
                     // found updated object - add its class to the set
-                    updatedObjectsClasses.add(changeSet.getClassType());
+                    updatedObjectsClasses.add(changeSet.getDescriptor());
                     // and go to the table corresponding to the next class
                     break;
                 }

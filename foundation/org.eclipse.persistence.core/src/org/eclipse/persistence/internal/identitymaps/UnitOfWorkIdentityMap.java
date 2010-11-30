@@ -32,9 +32,14 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
         this.descriptor = descriptor;
     }
 
+    public UnitOfWorkIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
+        this(size, descriptor);
+        this.isIsolated = isolated;
+    }
+    
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new UnitOfWorkCacheKey(primaryKey, object, writeLockValue, readTime);
+        return new UnitOfWorkCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated);
     }
 
     /**

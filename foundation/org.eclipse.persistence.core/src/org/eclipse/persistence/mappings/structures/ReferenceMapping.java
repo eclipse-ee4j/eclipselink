@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.*;
@@ -251,7 +252,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      * Check for batch + aggregation reading.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         Ref ref = (Ref)row.get(getField());
         if (ref == null) {
             return null;

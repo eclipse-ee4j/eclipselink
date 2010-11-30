@@ -48,7 +48,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
      * Clone the original attribute value.
      */
     public Object buildCloneFor(Object originalAttributeValue) {
-        return this.mapping.buildCloneForPartObject(originalAttributeValue, null, this.relationshipSourceObject, getUnitOfWork(), true);
+        return this.mapping.buildCloneForPartObject(originalAttributeValue, null, null, this.relationshipSourceObject, getUnitOfWork(), true);
     }
 
     /**

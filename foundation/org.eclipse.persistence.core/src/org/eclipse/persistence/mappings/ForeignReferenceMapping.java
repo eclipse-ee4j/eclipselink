@@ -21,6 +21,7 @@ import java.security.PrivilegedActionException;
 import java.util.*;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.*;
@@ -31,12 +32,14 @@ import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -192,7 +195,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * This executes a single query to read the target for all of the objects and stores the
      * result of the batch query in the original query to allow the other objects to share the results.
      */
-    protected Object batchedValueFromRow(AbstractRecord row, ObjectLevelReadQuery query) {
+    protected Object batchedValueFromRow(AbstractRecord row, ObjectLevelReadQuery query, CacheKey parentCacheKey) {
         ReadQuery batchQuery = (ReadQuery)query.getProperty(this);
         if (batchQuery == null) {
             if (query.hasBatchReadAttributes()) {
@@ -210,7 +213,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             query.setProperty(this, batchQuery);
         }
-        return this.indirectionPolicy.valueFromBatchQuery(batchQuery, row, query);
+        return this.indirectionPolicy.valueFromBatchQuery(batchQuery, row, query, parentCacheKey);
     }
 
     /**
@@ -237,11 +240,18 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Clone the attribute from the original and assign it to the clone.
      */
     @Override
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
-        Object attributeValue = getAttributeValueFromObject(original);
-        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, clone, unitOfWork, false); // building clone from an original not a row.
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+        Object attributeValue = null;
+        if (!this.isCacheable && (cacheKey != null && !cacheKey.isIsolated())){
+            ReadObjectQuery query = new ReadObjectQuery(descriptor.getJavaClass());
+            query.setSession(cloningSession);
+            attributeValue = valueFromRow(cacheKey.getProtectedFKs(), null, query, cacheKey, cloningSession, true);
+        }else{
+            attributeValue = getAttributeValueFromObject(original);
+            attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, cacheKey, clone, cloningSession, false); // building clone from an original not a row.
+        }
         //GFBug#404 - fix moved to ObjectBuildingQuery.registerIndividualResult 
-        setAttributeValueInObject(clone, clonedAttributeValue);
+        setAttributeValueInObject(clone, attributeValue);
     }
 
     /**
@@ -262,9 +272,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * be able to populate working copies directly from the row.
      */
     @Override
-    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
-        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, executionSession);
-        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null,// no original
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true);
+        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,// no original
                                                                             clone, unitOfWork, true);// building clone directly from row.
         setAttributeValueInObject(clone, clonedAttributeValue);
         if(isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) {
@@ -277,7 +287,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Require for cloning, the part must be cloned.
      */
-    public abstract Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting);
+    public abstract Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting);
 
     /**
      * INTERNAL:
@@ -365,8 +375,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
-    public UnitOfWorkValueHolder createUnitOfWorkValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
-        return new UnitOfWorkQueryValueHolder(attributeValue, clone, this, row, unitOfWork);
+    public DatabaseValueHolder createCloneValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+        return cloningSession.createCloneQueryValueHolder(attributeValue, clone, row, this);
     }
 
     /**
@@ -440,7 +450,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Extract the value from the batch optimized query, this should be supported by most query types.
      */
-    public Object extractResultFromBatchQuery(ReadQuery batchQuery, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
+    public Object extractResultFromBatchQuery(ReadQuery batchQuery, CacheKey parentCacheKey, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
         Map<Object, Object> batchedObjects = null;
         Object result = null;
         Object sourceKey = extractBatchKeyFromRow(sourceRow, session);
@@ -551,7 +561,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 } else if (batchQuery.isReadAllQuery() && ((ReadAllQuery)batchQuery).getBatchFetchPolicy().isIN()) {
                     throw QueryException.originalQueryMustUseBatchIN(this, originalQuery);
                 }
-                executeBatchQuery(batchQuery, batchedObjects, session, translationRow);
+                executeBatchQuery(batchQuery, parentCacheKey, batchedObjects, session, translationRow);
                 batchQuery.setSession(null);
             }
         }
@@ -574,6 +584,22 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     }
 
     /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    abstract protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery);
+    
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    abstract protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session);
+
+    /**
      * INTERNAL:
      * Check if the target object is in the cache if possible based on the source row.
      * If in the cache, add the object to the batch results.
@@ -589,7 +615,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * results for each source object in a map keyed by the
      * mappings source keys of the source objects.
      */
-    protected void executeBatchQuery(DatabaseQuery query, Map referenceObjectsByKey, AbstractSession session, AbstractRecord row) {
+    protected void executeBatchQuery(DatabaseQuery query, CacheKey parentCacheKey, Map referenceObjectsByKey, AbstractSession session, AbstractRecord row) {
         throw QueryException.batchReadingNotSupported(this, query);
     }
 
@@ -671,6 +697,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         return nestedQuery;
     }
 
+    /**
+     * INTERNAL:
+     * Ensure the container policy is post initialized
+     */
+    @Override
+    public void postInitialize(AbstractSession session) {
+        super.postInitialize(session);
+        if (this.referenceDescriptor != null && ! this.referenceDescriptor.isSharedIsolation()){
+            this.isCacheable = false;
+        }
+    }
     /**
      * INTERNAL:
      * Allow the mapping the do any further batch preparation.
@@ -1140,9 +1177,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
         // can not be isolated if it is null.  Seems that only aggregates do not set
         // the owning descriptor on the mapping.
-        if ((!((this.getDescriptor() != null) && this.getDescriptor().isIsolated())) && refDescriptor.isIsolated()) {
-            throw DescriptorException.isolateDescriptorReferencedBySharedDescriptor(refDescriptor.getJavaClassName(), this.getDescriptor().getJavaClassName(), this);
-        }
 
         setReferenceDescriptor(refDescriptor);
     }
@@ -1282,6 +1316,21 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public void privateOwnedRelationship() {
         setIsPrivateOwned(true);
     }
+
+    /**
+     * INTERNAL:
+     * Extract value from the row and set the attribute to this value in the object.
+     * return value as this value will have been converted to the appropriate type for
+     * the object.
+     */
+    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected);
+        if (descriptor.isProtectedIsolation() && isTargetProtected && this.isCacheable){
+            attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, executionSession, false);
+        }
+        setAttributeValueInObject(targetObject, attributeValue);
+        return attributeValue;
+    }    
 
     /**
      * INTERNAL:
@@ -1850,16 +1899,31 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * and joining.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        if (this.descriptor.isProtectedIsolation()){
+            if (this.isCacheable && isTargetProtected && cacheKey != null){
+	            //cachekey will be null when isolating to uow
+	            //used cached collection
+	            Object result = null;
+	            Object cached = cacheKey.getObject();
+	            if (cached != null){
+	                result = this.getAttributeValueFromObject(cached);
+	            }
+	            return result;
+	        }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
+	            cacheForeignKeyValues(row, cacheKey, sourceQuery);
+	            return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
+	        }
+        }
         // PERF: Direct variable access.
         // If the query uses batch reading, return a special value holder
         // or retrieve the object from the query property.
         if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
                 || (sourceQuery.isReadAllQuery() && shouldUseBatchReading()))) {
-            return batchedValueFromRow(row, (ObjectLevelReadQuery)sourceQuery);
+            return batchedValueFromRow(row, (ObjectLevelReadQuery)sourceQuery, cacheKey);
         }
         if (shouldUseValueFromRowWithJoin(joinManager, sourceQuery)) {
-            return valueFromRowInternalWithJoin(row, joinManager, sourceQuery, executionSession);
+            return valueFromRowInternalWithJoin(row, joinManager, sourceQuery, cacheKey, executionSession, isTargetProtected);
         } else {
             return valueFromRowInternal(row, joinManager, sourceQuery, executionSession);
         }
@@ -1879,7 +1943,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * If the query used joining or partial attributes, build the target object directly.
      * If isJoiningSupported()==true then this method must be overridden.
      */
-    protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey parentCacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         throw ValidationException.mappingDoesNotOverrideValueFromRowInternalWithJoin(Helper.getShortClassName(this.getClass()));
     }
     
@@ -1972,7 +2036,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
         targetQuery = prepareHistoricalQuery(targetQuery, sourceQuery, executionSession);
 
-        return this.indirectionPolicy.valueFromQuery(targetQuery, row, sourceQuery.getSession());
+        return this.indirectionPolicy.valueFromQuery(targetQuery, row, executionSession);
     }
     
     /**

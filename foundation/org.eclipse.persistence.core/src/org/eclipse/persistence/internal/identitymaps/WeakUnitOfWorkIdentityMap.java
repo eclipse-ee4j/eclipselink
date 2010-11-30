@@ -20,6 +20,11 @@ public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
         this.referenceQueue = new ReferenceQueue<QueueableWeakCacheKey.CacheKeyReference>();
     }
 
+    public WeakUnitOfWorkIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
+        this(size, descriptor);
+        this.isIsolated = isolated;
+    }
+    
     /**
      * Search for any cache keys that have been garbage collected and remove them.
      * This must be done because although the objects held by the cache keys will garbage collect,
@@ -38,7 +43,7 @@ public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
 
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new QueueableWeakCacheKey(primaryKey, object, writeLockValue, readTime, referenceQueue);
+        return new QueueableWeakCacheKey(primaryKey, object, writeLockValue, readTime, referenceQueue, isIsolated);
     }
 
     /**

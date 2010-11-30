@@ -21,11 +21,14 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -60,7 +63,34 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Ignore the objects, use the attribute value.
      */
     @Override
-    public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
+        if (this.referenceDescriptor.isIsolated()){
+            //referencing an isolated Entity.  Need to load as it will not be in the cache.
+        }
+        if (attributeValue == null) {
+            return null;
+        }
+        if (cloningSession.isUnitOfWork()){
+            return buildUnitofWorkCloneForPartObject(attributeValue, original, clone, (UnitOfWorkImpl)cloningSession, isExisting);
+        }
+        // Not a unit Of Work clone so must have been a PROTECTED object
+        if (this.referenceDescriptor.isProtectedIsolation()) {
+            ClassDescriptor descriptor = this.referenceDescriptor;
+            if (descriptor.hasInterfacePolicy()){
+                descriptor = cloningSession.getClassDescriptor(attributeValue.getClass());
+            }
+            return cloningSession.createProtectedInstanceFromCachedData(attributeValue, descriptor);
+        }
+        return attributeValue;
+        
+    }
+
+    /**
+     * INTERNAL:
+     * Require for cloning, the part must be cloned.
+     * Ignore the objects, use the attribute value.
+     */
+    public Object buildUnitofWorkCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         if (attributeValue == null) {
             return null;
         }
@@ -317,7 +347,11 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Merge changes from the source to the target object. Which is the original from the parent UnitOfWork
      */
     @Override
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+        if (this.descriptor.isProtectedIsolation() && !this.isCacheable && targetCacheKey != null && !targetCacheKey.isIsolated()){
+            cacheForeignKeyValues(source, targetCacheKey, descriptor, mergeManager.getSession());
+            return;
+        }
         Object targetValueOfSource = null;
 
         // The target object must be completely merged before setting it otherwise
@@ -381,7 +415,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Merge changes from the source to the target object.
      */
     @Override
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted,
             // or for new objects.
@@ -797,6 +831,52 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     }
     
     /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    @Override
+    protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery){
+        AbstractRecord rower = cacheKey.getProtectedFKs();
+        int i = 0;
+        for (Enumeration sourceKeys = foreignKeyFields.elements();
+                 sourceKeys.hasMoreElements(); i++) {
+            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
+            Object value = null;
+
+            // First insure that the source foreign key field is in the row.
+            // N.B. If get() is used and returns null it may just mean that the field exists but the value is null.
+            int index = record.getFields().indexOf(sourceKey);
+            if (index == -1) {
+                //Line x: Retrieve the value from the source query's translation row.
+                value = sourceQuery.getTranslationRow().get(sourceKey);
+            } else {
+                value = record.getValues().get(index);
+            }
+            rower.add(sourceKey, value);
+        }
+    }
+
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    @Override
+    protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
+        AbstractRecord rower = cacheKey.getProtectedFKs();
+        int i = 0;
+        for (Enumeration sourceKeys = foreignKeyFields.elements();
+                 sourceKeys.hasMoreElements(); i++) {
+            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
+            rower.remove(sourceKey);
+        }
+        writeFromObjectIntoRow(source, rower, session, WriteType.UNDEFINED);
+    }
+
+    /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
@@ -888,14 +968,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * the shared cache, and then cloning the original.
      */
     @Override
-    public UnitOfWorkValueHolder createUnitOfWorkValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
-        UnitOfWorkQueryValueHolder valueHolder = null;
+    public DatabaseValueHolder createCloneValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+        DatabaseValueHolder valueHolder = null;
         if ((row == null) && (isPrimaryKeyMapping())) {
             // The row must be built if a primary key mapping for remote case.
-            AbstractRecord rowFromTargetObject = extractPrimaryKeyRowForSourceObject(original, unitOfWork);
-            valueHolder = new UnitOfWorkQueryValueHolder(attributeValue, clone, this, rowFromTargetObject, unitOfWork);
+            AbstractRecord rowFromTargetObject = extractPrimaryKeyRowForSourceObject(original, cloningSession);
+            valueHolder = cloningSession.createCloneQueryValueHolder(attributeValue, clone, rowFromTargetObject, this);
         } else {
-            valueHolder = new UnitOfWorkQueryValueHolder(attributeValue, clone, this, row, unitOfWork);
+            valueHolder = cloningSession.createCloneQueryValueHolder(attributeValue, clone, row, this);
         }
 
         // In case of joined attributes it so happens that the attributeValue 

@@ -539,7 +539,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 query.setSession(session);
                 for (int x = 0, transformationMappingsSize = transformationMappings.size(); x < transformationMappingsSize; x++) {
                     AbstractTransformationMapping transformationMapping = (AbstractTransformationMapping)transformationMappings.get(x);
-                    transformationMapping.readFromRowIntoObject(transformationRecord, null, currentObject, query, session);
+                    transformationMapping.readFromRowIntoObject(transformationRecord, null, currentObject, null, query, session, true);
                 }
             }
 

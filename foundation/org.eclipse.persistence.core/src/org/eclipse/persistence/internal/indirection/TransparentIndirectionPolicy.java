@@ -23,7 +23,9 @@ import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -123,7 +125,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
-    public Object cloneAttribute(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
+    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         ValueHolderInterface valueHolder = null;
         Object container = null;
         IndirectList indirectList = null;
@@ -135,7 +137,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 indirectList = (IndirectList)indirectContainer;
             }
         }
-        if (!buildDirectlyFromRow && unitOfWork.isOriginalNewObject(original)) {
+        if (!buildDirectlyFromRow && cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)) {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
             // This can occur if an existing serialized object is attempt to be registered as new.
             if ((valueHolder instanceof DatabaseValueHolder)
@@ -145,7 +147,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, this.mapping);
             }
             if (this.mapping.getRelationshipPartner() == null) {
-                container = this.mapping.buildCloneForPartObject(attributeValue, original, clone, unitOfWork, false);
+                container = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, false);
             } else {
                 if (indirectContainer == null) {
                     valueHolder = new ValueHolder(attributeValue);
@@ -160,9 +162,9 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 // here the code instantiates the valueholder in a privledged manner because a
                 // UOWValueHolder will assume the objects in the collection are existing if the valueholder
                 //  Goes through it's own instantiation process.
-                UnitOfWorkValueHolder newValueHolder = this.mapping.createUnitOfWorkValueHolder(valueHolder, original, clone, row, unitOfWork, buildDirectlyFromRow);
+                DatabaseValueHolder newValueHolder = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
                 container = buildIndirectContainer(newValueHolder);
-                Object cloneCollection = this.mapping.buildCloneForPartObject(attributeValue, original, clone, unitOfWork, false);
+                Object cloneCollection = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, false);
                 newValueHolder.privilegedSetValue(cloneCollection);
                 newValueHolder.setInstantiated();
             }
@@ -174,7 +176,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
             if (valueHolder instanceof DatabaseValueHolder) {
                 row = ((DatabaseValueHolder)valueHolder).getRow();
             }
-            UnitOfWorkValueHolder uowValueHolder = this.mapping.createUnitOfWorkValueHolder(valueHolder, original, clone, row, unitOfWork, buildDirectlyFromRow);
+            DatabaseValueHolder uowValueHolder = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
             if ((indirectContainer == null) || !buildDirectlyFromRow) {
                 container = buildIndirectContainer(uowValueHolder);
             } else {
@@ -184,15 +186,17 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 container = indirectContainer;              
             }
         }
-        // Set the change listener.
-        if ((this.mapping.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy())
-                && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)
-                && (container instanceof CollectionChangeTracker) ) {
-            ((CollectionChangeTracker)container).setTrackedAttributeName(this.mapping.getAttributeName());
-            ((CollectionChangeTracker)container)._persistence_setPropertyChangeListener(((ChangeTracker)clone)._persistence_getPropertyChangeListener());
-        }
-        if (indirectList != null) {
-            ((IndirectList)container).setIsListOrderBrokenInDb(indirectList.isListOrderBrokenInDb());
+        if (cloningSession.isUnitOfWork()){
+            // Set the change listener.
+            if ((this.mapping.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy())
+                    && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)
+                    && (container instanceof CollectionChangeTracker) ) {
+                ((CollectionChangeTracker)container).setTrackedAttributeName(this.mapping.getAttributeName());
+                ((CollectionChangeTracker)container)._persistence_setPropertyChangeListener(((ChangeTracker)clone)._persistence_getPropertyChangeListener());
+            }
+            if (indirectList != null) {
+                ((IndirectList)container).setIsListOrderBrokenInDb(indirectList.isListOrderBrokenInDb());
+            }
         }
         return container;
     }
@@ -601,8 +605,8 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      *    This value is determined by the batchQuery.
      * In this case, wrap the query in an IndirectContainer for later invocation.
      */
-    public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery) {
-        return this.buildIndirectContainer(new BatchValueHolder(batchQuery, row, getForeignReferenceMapping(), originalQuery));
+    public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
+        return this.buildIndirectContainer(new BatchValueHolder(batchQuery, row, getForeignReferenceMapping(), originalQuery, parentCacheKey));
     }
 
     /**

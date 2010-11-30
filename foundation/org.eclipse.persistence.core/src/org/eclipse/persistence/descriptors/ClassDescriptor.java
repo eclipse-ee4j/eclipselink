@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -43,6 +44,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.copying.*;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.descriptors.invalidation.*;
@@ -81,6 +83,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected transient Vector<DatabaseField> fields;
     protected transient Vector<DatabaseField> allFields;
     protected Vector<DatabaseMapping> mappings;
+    
+    //Used to track which other classes reference this class in cases where
+    // the referencing classes need to be notified of something.
+    protected Set<ClassDescriptor> referencingClasses;
 
     //used by the lock on clone process.  This will contain the foreign reference
     //mapping without indirection
@@ -109,7 +115,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected boolean shouldAlwaysConformResultsInUnitOfWork;
 
     // this attribute is used to determine what classes should be isolated from the shared cache
-    protected Boolean isIsolated;
+    // and the severity of their isolation.
+    protected CacheIsolationType cacheIsolation;
 
     // for bug 2612601 allow ability not to register results in UOW.
     protected boolean shouldRegisterResultsInUnitOfWork = true;
@@ -182,7 +189,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected int unitOfWorkCacheIsolationLevel = UNDEFINED_ISOLATATION;
     public static final int UNDEFINED_ISOLATATION = -1;
     public static final int USE_SESSION_CACHE_AFTER_TRANSACTION = 0;
-    public static final int ISOLATE_NEW_DATA_AFTER_TRANSACTION = 1;
+    public static final int ISOLATE_NEW_DATA_AFTER_TRANSACTION = 1; // this is the default behaviour even when undefined.
     public static final int ISOLATE_CACHE_AFTER_TRANSACTION = 2;
     public static final int ISOLATE_CACHE_ALWAYS = 3;
 
@@ -280,6 +287,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
         this.derivesIdMappings = new HashMap(5);
+        
+        this.referencingClasses = new HashSet<ClassDescriptor>();
 
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
@@ -668,8 +677,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if(this.identityMapClass == null) {
             this.identityMapClass = session.getProject().getDefaultIdentityMapClass();
         }
-        if(this.isIsolated == null) {
-            this.isIsolated = Boolean.valueOf(session.getProject().getDefaultIsIsolated());
+        if(this.cacheIsolation == null) {
+            this.cacheIsolation = session.getProject().getDefaultCacheIsolation();
         }
         if(this.idValidation == null) {
             this.idValidation = session.getProject().getDefaultIdValidation();
@@ -1200,7 +1209,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             clonedDescriptor.setFetchGroupManager((FetchGroupManager)getFetchGroupManager().clone());
         }
 
-        clonedDescriptor.setIsIsolated(isIsolated());
+        clonedDescriptor.cacheIsolation = this.cacheIsolation;
 
         // Bug 3037701 - clone several more elements
         if (this.instantiationPolicy != null) {
@@ -2661,7 +2670,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
 
         // Record that there is an isolated class in the project.
-        if (isIsolated()) {
+        if (!this.isSharedIsolation()) {
             session.getProject().setHasIsolatedClasses(true);
         }
         if (!shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
@@ -2678,9 +2687,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
         // make sure that parent mappings are initialized?
         if (isChildDescriptor()) {
             getInheritancePolicy().getParentDescriptor().initialize(session);
-            if (getInheritancePolicy().getParentDescriptor().isIsolated()) {
-                //if the parent is isolated then the child must be isolated as well.
-                setIsIsolated(true);
+            if (!getInheritancePolicy().getParentDescriptor().isSharedIsolation()){
+                if (!this.isIsolated() && this.getCacheIsolation() != getInheritancePolicy().getParentDescriptor().getCacheIsolation()){
+                    ((AbstractSession)session).log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "overriding_cache_isolation", new Object[]{getInheritancePolicy().getParentDescriptor().getAlias(), getInheritancePolicy().getParentDescriptor().getCacheIsolation(), this.alias,  this.cacheIsolation});
+                    this.setCacheIsolation(getInheritancePolicy().getParentDescriptor().getCacheIsolation());
+                    
+                }
             }
             // Setup this early before useOptimisticLocking is called so that subclass
             // versioned by superclass are also covered
@@ -2710,9 +2722,22 @@ public class ClassDescriptor implements Cloneable, Serializable {
             if (mapping.isLockableMapping()){
                 getLockableMappings().add(mapping);
             }
+            
+            if (!mapping.isCacheable() && this.isSharedIsolation()){
+                this.cacheIsolation = CacheIsolationType.PROTECTED;
+            }
 
-            if ((mapping.isForeignReferenceMapping()) && (((ForeignReferenceMapping)mapping).getIndirectionPolicy() instanceof ProxyIndirectionPolicy)) {
-                session.getProject().setHasProxyIndirection(true);
+            if (mapping.isForeignReferenceMapping()){
+                if(((ForeignReferenceMapping)mapping).getIndirectionPolicy() instanceof ProxyIndirectionPolicy) {
+                    session.getProject().setHasProxyIndirection(true);
+                }
+                ClassDescriptor referencedDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
+                if ( referencedDescriptor!= null){
+                    referencedDescriptor.referencingClasses.add(this);
+                    if (this.isSharedIsolation() && !referencedDescriptor.isSharedIsolation()){
+                        this.cacheIsolation = CacheIsolationType.PROTECTED;
+                    }
+                }
             }
 
             // If this descriptor uses a cascaded version optimistic locking 
@@ -2869,10 +2894,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         
         // PERF: If using isolated cache, then default uow isolation to awalys (avoids merge/double build).
         if (getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) {
-            if (isIsolated()) {
+            if (!isSharedIsolation()) {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_ALWAYS);
-            } else {
-                setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
             }
         }
         // Setup default redirectors.  Any redirector that is not set will get assigned the
@@ -3176,12 +3199,25 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Returns true if the descriptor represents an isolated class
      */
     public boolean isIsolated() {
-        if(this.isIsolated == null) {
-            return false;
-        } else {
-            return this.isIsolated.booleanValue();
-        }
+        return CacheIsolationType.ISOLATED == this.cacheIsolation;
     }
+
+    /**
+     * PUBLIC:
+     * Returns true if the descriptor represents an isolated class
+     */
+    public boolean isProtectedIsolation() {
+        return CacheIsolationType.PROTECTED ==this.cacheIsolation;
+    }
+
+    /**
+     * PUBLIC:
+     * Returns true if the descriptor represents an isolated class
+     */
+    public boolean isSharedIsolation() {
+        return this.cacheIsolation == null || CacheIsolationType.SHARED == this.cacheIsolation;
+    }
+
     /**
      * INTERNAL:
      * Return if this descriptor has more than one table.
@@ -3259,6 +3295,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
             for (ClassDescriptor child : getInheritancePolicy().getChildDescriptors()) {
                 child.postInitialize(session);
             }
+        }
+        //Must do this before postInitialize on mappings as the mappings will be
+        //updated based on the cache isolation.
+        if (this.cacheIsolation != null && this.cacheIsolation != CacheIsolationType.SHARED){
+            notifyReferencingDescriptorsOfIsolation();
         }
 
         // Allow mapping to perform post initialization.
@@ -3344,6 +3385,17 @@ public class ClassDescriptor implements Cloneable, Serializable {
         validateAfterInitialization(session);
 
         checkDatabase(session);
+    }
+
+    protected void notifyReferencingDescriptorsOfIsolation() {
+        for (ClassDescriptor descriptor : this.referencingClasses){
+            if (descriptor.cacheIsolation == null || descriptor.cacheIsolation == CacheIsolationType.SHARED){
+                descriptor.cacheIsolation = CacheIsolationType.PROTECTED;
+                if (descriptor.unitOfWorkCacheIsolationLevel == UNDEFINED_ISOLATATION){
+                    descriptor.unitOfWorkCacheIsolationLevel = ISOLATE_CACHE_ALWAYS;
+                }
+            }
+        }
     }
 
     /**
@@ -3564,7 +3616,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
 
         // Record that there is an isolated class in the project.
-        if (isIsolated()) {
+        if (!this.isSharedIsolation()) {
             session.getProject().setHasIsolatedClasses(true);
         }
         if (!shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
@@ -4079,17 +4131,42 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Used to set if the class that this descriptor represents should be isolated from the shared cache.
      * Isolated objects will only be cached locally in the ClientSession, never in the ServerSession cache.
      * This is the best method for disabling caching.
-     * Isolated objects cannot be referenced by non-isolated (shared) objects.
      * Note: Calling this method with true will also set the cacheSynchronizationType to DO_NOT_SEND_CHANGES
      * since isolated objects cannot be sent by  cache synchronization.
+     * 
+     * @deprecated as of EclipseLink 2.2
+     * @see setCacheIsolation(CacheIsolationType)
      */
+    @Deprecated
     public void setIsIsolated(boolean isIsolated) {
-        this.isIsolated = Boolean.valueOf(isIsolated);
-        if (isIsolated) {
+        this.setCacheIsolation( isIsolated ? CacheIsolationType.ISOLATED : CacheIsolationType.SHARED);
+    }
+
+    /**
+     * PUBLIC:
+     * Controls how the Entity instances will be cached.  See the CacheIsolationType for details on the options.
+     * @return the isolationType
+     */
+    public CacheIsolationType getCacheIsolation() {
+        return cacheIsolation;
+    }
+
+    /**
+     * PUBLIC:
+     * Controls how the Entity instances will be cached.  See the CacheIsolationType for details on the options.
+     * To disable all second level caching simply set CacheIsolationType.ISOLATED.  Note that setting the isolation
+     * will automatically set the corresponding cacheSynchronizationType.   
+     * ISOLATED = DO_NOT_SEND_CHANGES, PROTECTED and SHARED = SEND_OBJECT_CHANGES
+     */
+    public void setCacheIsolation(CacheIsolationType isolationType) {
+        this.cacheIsolation = isolationType;
+        if (CacheIsolationType.ISOLATED == isolationType) {
             // bug 3587273 - set the cache synchronization type so isolated objects are not sent
             // do not call the setter method because it does not allow changing the cache synchronization
             // type of isolated objects
             cacheSynchronizationType = DO_NOT_SEND_CHANGES;
+        }else{
+            cacheSynchronizationType = SEND_OBJECT_CHANGES;
         }
     }
 

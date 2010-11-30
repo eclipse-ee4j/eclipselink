@@ -21,10 +21,12 @@ import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
 import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -88,11 +90,11 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      *  directly from a row as opposed to building the original from the
      *  row, putting it in the shared cache, and then cloning the original.
      */
-    public Object cloneAttribute(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
+    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         ValueHolderInterface valueHolder = (ValueHolderInterface) attributeValue;
         ValueHolderInterface result;
         
-        if (!buildDirectlyFromRow && unitOfWork.isOriginalNewObject(original)) {
+        if (!buildDirectlyFromRow && cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)) {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
             // This can occur if an existing serialized object is attempt to be registered as new.
             if ((valueHolder instanceof DatabaseValueHolder)
@@ -103,7 +105,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
             }
             if (this.mapping.getRelationshipPartner() == null) {
                 result = new ValueHolder();
-                result.setValue(this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, clone, unitOfWork, false));
+                result.setValue(this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, null, clone, cloningSession, false));
             } else {
                 //if I have a relationship partner trigger the indirection so that the value will be inserted
                 // because of this call the entire tree should be recursively cloned
@@ -111,9 +113,9 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
                 if (valueHolder instanceof DatabaseValueHolder) {
                     row = ((DatabaseValueHolder)valueHolder).getRow();
                 }
-                result = this.mapping.createUnitOfWorkValueHolder(valueHolder, original, clone, row, unitOfWork, buildDirectlyFromRow);
+                result = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
 
-                Object newObject = this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, clone, unitOfWork, false);
+                Object newObject = this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, cacheKey, clone, cloningSession, false);
                 ((UnitOfWorkValueHolder)result).privilegedSetValue(newObject);
                 ((UnitOfWorkValueHolder)result).setInstantiated();
             }
@@ -122,7 +124,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
             if (valueHolder instanceof DatabaseValueHolder) {
                 row = ((DatabaseValueHolder)valueHolder).getRow();
             }
-            result = this.mapping.createUnitOfWorkValueHolder(valueHolder, original, clone, row, unitOfWork, buildDirectlyFromRow);
+            result = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
         }
         return result;
     }
@@ -224,7 +226,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
                     AbstractRecord row = this.mapping.getDescriptor().getObjectBuilder().buildRow(object, session, WriteType.UNDEFINED);
                     ReadObjectQuery query = new ReadObjectQuery();
                     query.setSession(((RemoteUnitOfWork) session).getParent());
-                    valueHolder = (ValueHolderInterface) this.mapping.valueFromRow(row, null, query);
+                    valueHolder = (ValueHolderInterface) this.mapping.valueFromRow(row, null, query, true);
                 } else {
                     valueHolder = (ValueHolderInterface) controller.getRemoteValueHolders().get(id);
                 }
@@ -412,8 +414,8 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      *    This value is determined by the batchQuery.
      * In this case, wrap the query in a ValueHolder for later invocation.
      */
-    public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery) {
-        return new BatchValueHolder(batchQuery, row, this.getForeignReferenceMapping(), originalQuery);
+    public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
+        return new BatchValueHolder(batchQuery, row, this.getForeignReferenceMapping(), originalQuery, parentCacheKey);
     }
 
     /**

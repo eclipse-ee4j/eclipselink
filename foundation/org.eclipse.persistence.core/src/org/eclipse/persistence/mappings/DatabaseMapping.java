@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
@@ -133,6 +134,11 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Records if this mapping is being used as a MapKeyMapping.  This is important for recording main mappings
      */
     protected boolean isMapKeyMapping = false;
+    
+    //used by the object build/merge code to control building/merging into the 
+    //shared cache.
+    protected boolean isCacheable = true;
+
 
     /**
      * PUBLIC:
@@ -162,7 +168,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
      */
-    public abstract void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork);
+    public abstract void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession);
 
     /**
      * INTERNAL:
@@ -181,7 +187,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * In order to bypass the shared cache when in transaction a UnitOfWork must
      * be able to populate working copies directly from the row.
      */
-    public abstract void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession);
+    public abstract void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession);
 
     /**
      * INTERNAL:
@@ -198,10 +204,18 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Require for cloning, the part must be cloned.
      */
-    public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneForPartObject");
     }
 
+    /**
+     * INTERNAL:
+     * Performs a first level clone of the attribute.  This generally means on the container will be cloned.
+     */
+    public Object buildContainerClone(Object attributeValue, AbstractSession cloningSession){
+        return attributeValue;
+    }
+    
     /**
      * INTERNAL:
      * Copy of the attribute of the object.
@@ -347,7 +361,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
-    public UnitOfWorkValueHolder createUnitOfWorkValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
+    public DatabaseValueHolder createCloneValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         throw DescriptorException.invalidMappingOperation(this, "createUnitOfWorkValueHolder");
     }
 
@@ -1088,6 +1102,22 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     }
 
     /**
+     * Used to signal that this mapping references a protected/isolated entity and requires
+     * special merge/object building behaviour.
+     * 
+     */
+    public boolean isCacheable() {
+        return this.isCacheable;
+    }
+    /**
+     * Used to signal that this mapping references a protected/isolated entity and requires
+     * special merge/object building behaviour.
+     */
+    public void setIsCacheable(boolean cacheable) {
+        this.isCacheable = cacheable;
+    }
+
+    /**
      * INTERNAL:
      * Returns true if mapping is read only else false.
      */
@@ -1173,13 +1203,13 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public abstract void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager);
+    public abstract void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager);
 
     /**
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public abstract void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source, MergeManager mergeManager);
+    public abstract void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUninitialized, Object source, MergeManager mergeManager);
 
     /**
      * INTERNAL:
@@ -1282,8 +1312,8 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * return value as this value will have been converted to the appropriate type for
      * the object.
      */
-    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
-        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, executionSession);
+    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected);
         setAttributeValueInObject(targetObject, attributeValue);
         return attributeValue;
     }    
@@ -1589,8 +1619,8 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * A subclass should implement this method if it wants different behavior.
      * Returns the value for the mapping from the database row.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query) throws DatabaseException {
-        return valueFromRow(row, joinManager, query, query.getExecutionSession());
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, boolean isTargetProtected) throws DatabaseException {
+        return valueFromRow(row, joinManager, query, null, query.getExecutionSession(), isTargetProtected);
     }
 
     /**
@@ -1600,7 +1630,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * The execution session is the session the query was executed on,
      * and its platform should be used for data conversion.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected) throws DatabaseException {
         return null;
     }
     

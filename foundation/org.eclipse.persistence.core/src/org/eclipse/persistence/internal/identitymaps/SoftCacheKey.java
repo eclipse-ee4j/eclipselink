@@ -32,8 +32,8 @@ public class SoftCacheKey extends WeakCacheKey {
      * @param writeLockValue is the write lock value, null if optimistic locking not being used for this object.
      * @param readTime the time EclipseLInk read the cache key
      */
-    public SoftCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        super(primaryKey, object, writeLockValue, readTime);
+    public SoftCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime, boolean isIsolated) {
+        super(primaryKey, object, writeLockValue, readTime, isIsolated);
     }
 
     public void setObject(Object object) {

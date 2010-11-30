@@ -20,6 +20,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -86,7 +87,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * Build and return a clone of the attribute.
      */
-    protected Object buildClonePart(Object original, Object attributeValue, UnitOfWorkImpl unitOfWork) {
+    protected Object buildClonePart(Object original, CacheKey cacheKey, Object attributeValue, AbstractSession clonningSession) {
         ContainerPolicy cp = this.getContainerPolicy();
         if (attributeValue == null) {
             return cp.containerInstance();
@@ -94,8 +95,8 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
 
         Object clonedAttributeValue = cp.containerInstance(cp.sizeFor(attributeValue));
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
-            Object cloneElement = super.buildClonePart(original, cp.next(iter, unitOfWork), unitOfWork);
-            cp.addInto(cloneElement, clonedAttributeValue, unitOfWork);
+            Object cloneElement = super.buildClonePart(original, cacheKey, cp.next(iter, (AbstractSession) clonningSession), clonningSession);
+            cp.addInto(cloneElement, clonedAttributeValue, (AbstractSession) clonningSession);
         }
         return clonedAttributeValue;
     }
@@ -134,10 +135,10 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return a new element based on the specified element.
      */
-    public Object buildElementFromElement(Object element, MergeManager mergeManager) {
+    public Object buildElementFromElement(Object element, CacheKey elementCacheKey, MergeManager mergeManager) {
         ObjectBuilder objectBuilder = this.getObjectBuilder(element, mergeManager.getSession());
         Object result = objectBuilder.buildNewInstance();
-        objectBuilder.mergeIntoObject(result, true, element, mergeManager);
+        objectBuilder.mergeIntoObject(result, elementCacheKey, true, element, mergeManager);
 
         return result;
     }
@@ -553,7 +554,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         ContainerPolicy containerPolicy = getContainerPolicy();
         AbstractSession session = mergeManager.getSession();
         // Iterate over the changes and merge the collections
@@ -576,7 +577,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Merge changes from the source to the target object.
      * Simply replace the entire target collection.
      */
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (!mergeManager.shouldCascadeReferences()) {
             // This is only going to happen on mergeClone, and we should not attempt to merge the reference
             return;
@@ -591,7 +592,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
 
             //CR#2896 - TW
             Object originalValue = getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().buildNewInstance();
-            getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().mergeIntoObject(originalValue, true, sourceValue, mergeManager);
+            getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().mergeIntoObject(originalValue, targetCacheKey, true, sourceValue, mergeManager);
             containerPolicy.addInto(originalValue, valueOfTarget, mergeManager.getSession());
         }
 
@@ -796,7 +797,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return an aggregate collection from the specified row.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         ContainerPolicy cp = this.getContainerPolicy();
 
         Object fieldValue = row.getValues(this.getField());
@@ -821,7 +822,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
                 descriptor = this.getReferenceDescriptor(newElementClass, executionSession);
             }
 
-            Object element = buildCompositeObject(descriptor, nestedRow, sourceQuery, joinManager);
+            Object element = buildCompositeObject(descriptor, nestedRow, sourceQuery, cacheKey, joinManager, isTargetProtected);
             if (hasConverter()) {
                 element = getConverter().convertDataValueToObjectValue(element, executionSession);
             }
@@ -830,7 +831,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
         return result;
     }
 
-    protected abstract Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManger);
+    protected abstract Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManger, boolean isTargetProtected);
 
     /**
      * Return whether the specified object and all its components have been deleted.

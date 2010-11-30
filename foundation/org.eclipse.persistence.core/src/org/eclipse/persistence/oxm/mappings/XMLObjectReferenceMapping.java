@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceListener;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
@@ -379,7 +380,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * org.eclipse.persistence.internal.oxm.Reference instance and store it 
      * on the session's org.eclipse.persistence.internal.oxm.ReferenceResolver.
      */
-    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         // the order in which the primary keys are added to the vector is
         // relevant for cache lookup - it must match the ordering of the 
         // reference descriptor's primary key entries

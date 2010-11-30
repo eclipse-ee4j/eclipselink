@@ -13,6 +13,7 @@
 package org.eclipse.persistence.mappings.structures;
 
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -85,9 +86,9 @@ public class ObjectArrayMapping extends AbstractCompositeCollectionMapping  impl
         this.structureName = structureName;
     }
     
-    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager) {
+    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, boolean isTargetProtected) {
         Object element = descriptor.getObjectBuilder().buildNewInstance();
-        descriptor.getObjectBuilder().buildAttributesIntoObject(element, nestedRow, query, joinManager, false);
+        descriptor.getObjectBuilder().buildAttributesIntoObject(element, parentCacheKey, nestedRow, query, joinManager, false, isTargetProtected);
         return element;
     }
 
@@ -121,8 +122,8 @@ public class ObjectArrayMapping extends AbstractCompositeCollectionMapping  impl
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
-        (new ArrayCollectionMappingHelper(this)).mergeChangesIntoObject(target, changeRecord, source, mergeManager);
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+        (new ArrayCollectionMappingHelper(this)).mergeChangesIntoObject(target, targetCacheKey, changeRecord, source, mergeManager);
     }
 
     /**
@@ -130,13 +131,13 @@ public class ObjectArrayMapping extends AbstractCompositeCollectionMapping  impl
      * Merge changes from the source to the target object.
      * Simply replace the entire target collection.
      */
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         //Helper.toDo("bjv: need to figure out how to handle read-only elements...");
         if (mergeManager.getSession().isClassReadOnly(this.getReferenceClass())) {
             return;
         }
 
-        (new ArrayCollectionMappingHelper(this)).mergeIntoObject(target, isTargetUnInitialized, source, mergeManager);
+        (new ArrayCollectionMappingHelper(this)).mergeIntoObject(target, targetCacheKey, isTargetUnInitialized, source, mergeManager);
     }
 
     /**

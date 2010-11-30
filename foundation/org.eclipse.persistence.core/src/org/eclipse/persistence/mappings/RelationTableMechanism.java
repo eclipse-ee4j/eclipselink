@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -35,8 +36,10 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping.ExtendPessimisticLockScope;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -183,6 +186,50 @@ public class RelationTableMechanism  implements Cloneable {
         return criteria;
     }
     
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery){
+        AbstractRecord row = cacheKey.getProtectedFKs();
+        int i = 0;
+        for (Enumeration sourceKeys = getSourceKeyFields().elements();
+                 sourceKeys.hasMoreElements(); i++) {
+            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
+            Object value = null;
+            row.remove(sourceKey);
+            // First insure that the source foreign key field is in the row.
+            // N.B. If get() is used and returns null it may just mean that the field exists but the value is null.
+            int index = record.getFields().indexOf(sourceKey);
+            if (index == -1) {
+                //Line x: Retrieve the value from the source query's translation row.
+                value = sourceQuery.getTranslationRow().get(sourceKey);
+            } else {
+                value = record.getValues().get(index);
+            }
+            row.add(sourceKey, value);
+        }
+    }
+
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
+        AbstractRecord row = cacheKey.getProtectedFKs();
+        int i = 0;
+        for (Enumeration sourceKeys = getSourceKeyFields().elements();
+                 sourceKeys.hasMoreElements(); i++) {
+            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
+            row.remove(sourceKey);
+            descriptor.getObjectBuilder().getMappingForField(sourceKey).writeFromObjectIntoRow(source, row, session, WriteType.UNDEFINED);
+        }
+    }
+
     /**
      * INTERNAL:
      * The mapping clones itself to create deep copy.

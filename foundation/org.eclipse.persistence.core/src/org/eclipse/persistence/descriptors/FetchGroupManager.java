@@ -513,9 +513,9 @@ public class FetchGroupManager implements Cloneable {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             if ((!isObjectPartial) || ((fetchedAttributes != null) && fetchedAttributes.contains(mapping.getAttributeName()))) {
                 // Only refresh the fetched attributes into clones.
-                mapping.buildClone(cachedObject, workingClone, uow);
+                mapping.buildClone(cachedObject, null, workingClone, uow);
                 if (workingClone != backupClone) {
-                    mapping.buildClone(workingClone, backupClone, uow);
+                    mapping.buildClone(workingClone, null, backupClone, uow);
                 }
             }
         }
@@ -537,9 +537,9 @@ public class FetchGroupManager implements Cloneable {
             String attributeName = mapping.getAttributeName();
             // Only revert the attribute which is fetched by the cached object, but not fetched by the clone.
             if ((fetchedAttributesCached == null || fetchedAttributesCached.contains(attributeName)) && !fetchedAttributesClone.contains(attributeName)) {
-                mapping.buildClone(cachedObject, workingClone, uow);
+                mapping.buildClone(cachedObject, null, workingClone, uow);
                 if (workingClone != backupClone) {
-                    mapping.buildClone(workingClone, backupClone, uow);
+                    mapping.buildClone(workingClone, null, backupClone, uow);
                 }
             }
         }

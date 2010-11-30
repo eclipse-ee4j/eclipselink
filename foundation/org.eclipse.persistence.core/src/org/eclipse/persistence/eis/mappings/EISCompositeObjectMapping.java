@@ -16,6 +16,7 @@ import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -115,12 +116,12 @@ public class EISCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
     }
 
-    protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager) {
+    protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, boolean isTargetProtected) {
         if (((EISDescriptor)getDescriptor()).getDataFormat() == EISDescriptor.XML) {
             return objectBuilder.buildObject(query, nestedRow, joinManager);
         } else {
             Object aggregateObject = objectBuilder.buildNewInstance();
-            objectBuilder.buildAttributesIntoObject(aggregateObject, nestedRow, query, joinManager, false);
+            objectBuilder.buildAttributesIntoObject(aggregateObject, parentCacheKey, nestedRow, query, joinManager, false, isTargetProtected);
             return aggregateObject;
 
         }

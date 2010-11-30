@@ -21,8 +21,10 @@ import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
  * <h2>Purpose</h2>:
@@ -62,14 +64,17 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
-    public Object cloneAttribute(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
+    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         // Since valueFromRow was called with the UnitOfWork, attributeValue
         // is already a registered result.
         if (buildDirectlyFromRow) {
             return attributeValue;
         }
-        boolean isExisting = unitOfWork.isObjectRegistered(clone) && (!(unitOfWork.isOriginalNewObject(original)));
-        return this.mapping.buildCloneForPartObject(attributeValue, original, clone, unitOfWork, isExisting);
+        if (!cloningSession.isUnitOfWork()){
+            return mapping.buildContainerClone(attributeValue, cloningSession);
+        }
+        boolean isExisting = !cloningSession.isUnitOfWork() || (((UnitOfWorkImpl) cloningSession).isObjectRegistered(clone) && (!(((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original))));
+        return this.getMapping().buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, isExisting);
     }
 
     /**
@@ -284,8 +289,8 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * This value is determined by the batchQuery.
      * In this case, extract the result from the query.
      */
-    public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery) {
-        return getForeignReferenceMapping().extractResultFromBatchQuery(batchQuery, row, originalQuery.getSession(), originalQuery);
+    public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
+        return getForeignReferenceMapping().extractResultFromBatchQuery(batchQuery, parentCacheKey, row, originalQuery.getSession(), originalQuery);
     }
 
     /**

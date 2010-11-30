@@ -40,16 +40,20 @@ public class ExceptionOnIsolatedReference extends TestCase {
     public void test() {
         this.server = new ServerSession(getSession().getLogin().clone(), 2, 5);
         copyDescriptors(getSession());
-        this.server.addDescriptor(buildNonIsolatedDescriptor());
+        ClassDescriptor descriptor = buildNonIsolatedDescriptor();
+        this.server.addDescriptor(descriptor);
         // the exception we are expecting gets logged as a severe exception - make sure it does not get logged so the srg will not get diffs.
         this.server.dontLogMessages();
         try {
             this.server.login();
+            if (!this.server.getDescriptor(descriptor.getJavaClass()).isProtectedIsolation()){
+                throw new TestErrorException("Shared Cache Descriptor was not switched to Protected when referencing Isolated data");
+            }
         } catch (IntegrityException ex) {
             Vector exceptions = ex.getIntegrityChecker().getCaughtExceptions();
             for (int index = 0; index < exceptions.size(); ++index) {
                 if (((EclipseLinkException)exceptions.get(index)).getErrorCode() == DescriptorException.ISOLATED_DESCRIPTOR_REFERENCED_BY_SHARED_DESCRIPTOR) {
-                    return;
+                    throw new TestErrorException("Validation Exception error  thrown.  Non-isolated data was not allowed to reference isolated Data");
                 }
             }
         } finally {
@@ -58,7 +62,6 @@ public class ExceptionOnIsolatedReference extends TestCase {
             }
             this.server = null;
         }
-        throw new TestErrorException("Validation Exception error not thrown.  Non-isolated data was allowed to reference isolated Data");
     }
 
     public RelationalDescriptor buildNonIsolatedDescriptor() {

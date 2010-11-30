@@ -761,21 +761,19 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // Turn off the cache.
             getDescriptor().useNoCache();
         } else if (getProject().isSharedCacheModeEnableSelective()) {
-            if (getDescriptor().isCacheableTrue()) {
-                // ENABLE_SELECTIVE and Cacheable(true), process the cache metadata.
-                processCachingMetadata();
-            } else {
+            if (!getDescriptor().isCacheableTrue()) {
                 // ENABLE_SELECTIVE and Cacheable(false) or no setting, turn off the cache.
                 getDescriptor().useNoCache();
             }
+            // ENABLE_SELECTIVE and Cacheable(true), process the cache metadata.
+            processCachingMetadata();
         } else if (getProject().isSharedCacheModeDisableSelective() || getProject().isSharedCacheModeUnspecified()) {
             if (getDescriptor().isCacheableFalse()) {
                 // DISABLE_SELECTIVE and Cacheable(false), turn off cache.
                 getDescriptor().useNoCache();
-            } else {
-                // DISABLE_SELECTIVE and Cacheable(true) or no setting, process the cache metadata.
-                processCachingMetadata();
             }
+            // DISABLE_SELECTIVE and Cacheable(true) or no setting, process the cache metadata.
+            processCachingMetadata();
         }
     }
     

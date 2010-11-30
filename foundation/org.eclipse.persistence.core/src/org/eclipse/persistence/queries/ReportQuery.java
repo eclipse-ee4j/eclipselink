@@ -658,7 +658,7 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * The cache check is done before the prepare as a hit will not require the work to be done.
      */
-    protected Object checkEarlyReturnImpl(AbstractSession session, AbstractRecord translationRow) {
+    protected Object checkEarlyReturnLocal(AbstractSession session, AbstractRecord translationRow) {
         // Check for in-memory only query.
         if (shouldCheckCacheOnly()) {
             throw QueryException.cannotSetShouldCheckCacheOnlyOnReportQuery();

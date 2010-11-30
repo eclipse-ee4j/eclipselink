@@ -329,29 +329,6 @@ public class SessionBroker extends DatabaseSessionImpl {
 
     /**
      * INTERNAL:
-     * Gets the next link in the chain of sessions followed by a query's check
-     * early return, the chain of sessions with identity maps all the way up to
-     * the root session.
-     * <p>
-     * Used for session broker which delegates to registered sessions, or UnitOfWork
-     * which checks parent identity map also.
-     * @param canReturnSelf true when method calls itself.  If the path
-     * starting at <code>this</code> is acceptable.  Sometimes true if want to
-     * move to the first valid session, i.e. executing on ClientSession when really
-     * should be on ServerSession.
-     * @param terminalOnly return the session we will execute the call on, not
-     * the next step towards it.
-     * @return this if there is no next link in the chain
-     */
-    public AbstractSession getParentIdentityMapSession(DatabaseQuery query, boolean canReturnSelf, boolean terminalOnly) {
-        if (query == null) {
-            return this;
-        }
-        return getSessionForQuery(query).getParentIdentityMapSession(query, canReturnSelf, terminalOnly);
-    }
-
-    /**
-     * INTERNAL:
      * Gets the session which this query will be executed on.
      * Generally will be called immediately before the call is translated,
      * which is immediately before session.executeCall.

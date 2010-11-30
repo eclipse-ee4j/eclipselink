@@ -25,6 +25,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
@@ -431,11 +432,11 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
     }
 
-    protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager) {
+    protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, boolean isTargetProtected) {
         return objectBuilder.buildObject(query, nestedRow, joinManager);
     }
 
-    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
 
         Object fieldValue = databaseRow.getIndicatingNoEntry(getField());
         // 20071002: noEntry ineffective as a check for an absent node, empty nodes are DOMRecords, absent nodes are null)
@@ -461,7 +462,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             setAttributeValueInObject(targetObject, null);
             return null;
         }
-        Object attributeValue = valueFromRow(fieldValue, nestedRow, joinManager, sourceQuery, executionSession);
+        Object attributeValue = valueFromRow(fieldValue, nestedRow, joinManager, sourceQuery, executionSession, isTargetProtected);
         setAttributeValueInObject(targetObject, attributeValue);
         if(null != getContainerAccessor()) {
             if(this.inverseReferenceMapping.getContainerPolicy() == null) {
@@ -478,7 +479,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         return attributeValue;
     }
 
-    public Object valueFromRow(Object fieldValue, XMLRecord nestedRow, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(Object fieldValue, XMLRecord nestedRow, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         // pretty sure we can ignore inheritance here:
         Object toReturn = null;
         // Use local descriptor - not the instance variable on DatabaseMapping
@@ -542,7 +543,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 }
             }
             ObjectBuilder objectBuilder = aDescriptor.getObjectBuilder();
-            toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, joinManager);
+            toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, null, joinManager, isTargetProtected);
         }
 
         if (getConverter() != null) {
@@ -583,7 +584,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         return toReturn;
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         Object fieldValue = row.get(this.getField());
         // BUG#2667762 there could be whitespace in the row instead of null
         if ((fieldValue == null) || (fieldValue instanceof String)) {
@@ -595,7 +596,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         if (getNullPolicy().valueIsNull((Element) nestedRow.getDOM())) {
             return null;
         }
-        return valueFromRow(fieldValue, nestedRow, joinManager, sourceQuery, executionSession);
+        return valueFromRow(fieldValue, nestedRow, joinManager, sourceQuery, executionSession, isTargetProtected);
     }
 
     /**

@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.remote.*;
@@ -218,7 +219,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)query.getSession();
         query.setSession(unitOfWork.getParent());
         try {
-            readFromRowIntoObject(record, joinManager, original, query, executionSession);
+            readFromRowIntoObject(record, joinManager, original, null, query, executionSession, false);
         } finally {
             query.setSession(unitOfWork);
         }
@@ -231,11 +232,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      */
     @Override
     public Object buildBackupCloneForPartObject(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
-        if (isReadOnly() || !isMutable()) {
-            return attributeValue;
-        }
-        AbstractRecord row = buildPhantomRowFrom(clone, unitOfWork);
-        return invokeAttributeTransformer(row, backup, unitOfWork);
+        return buildCloneForPartObject(attributeValue, clone, null, backup, unitOfWork, true);
     }
  
     /**
@@ -243,13 +240,13 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Clone the attribute from the original and assign it to the clone.
      */
     @Override
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
         // If mapping is a no-attribute transformation mapping, do nothing
         if (isWriteOnly()) {
             return;
         }
         Object attributeValue = getAttributeValueFromObject(original);
-        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, clone, unitOfWork, false);// building clone from an original not a row.
+        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, cacheKey, clone, cloningSession, false);// building clone from an original not a row.
         setAttributeValueInObject(clone, clonedAttributeValue);
     }
  
@@ -261,17 +258,17 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * be able to populate working copies directly from the row.
      */
     @Override
-    public void buildCloneFromRow(AbstractRecord record, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+    public void buildCloneFromRow(AbstractRecord record, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // If mapping is a no-attribute transformation mapping, do nothing
         if (isWriteOnly()) {
             return;
         }
  
         // This will set the value in the clone automatically.
-        Object attributeValue = readFromRowIntoObject(record, joinManager, clone, sourceQuery, executionSession);
+        Object attributeValue = readFromRowIntoObject(record, joinManager, clone, null, sourceQuery, executionSession, true);
         if (usesIndirection()) {
             Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null,// no original
-                                                                             clone, unitOfWork, true);// build clone directly from row.
+                                                                             null, clone, unitOfWork, true);// build clone directly from row.
             setAttributeValueInObject(clone, clonedAttributeValue);
         }
     }
@@ -281,9 +278,12 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Require for cloning, the part must be cloned.
      * Ignore the attribute value, go right to the object itself.
      */
-    @Override
-    public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
-        return buildBackupCloneForPartObject(attributeValue, original, clone, unitOfWork);
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
+        if (isReadOnly() || !isMutable()) {
+            return attributeValue;
+        }
+        AbstractRecord row = buildPhantomRowFrom(original, cloningSession);
+        return invokeAttributeTransformer(row, clone, cloningSession);
     }
  
     /**
@@ -556,8 +556,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * the shared cache, and then cloning the original.
      */
     @Override
-    public UnitOfWorkValueHolder createUnitOfWorkValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
-        return new UnitOfWorkTransformerValueHolder(attributeValue, original, clone, this, unitOfWork);
+    public DatabaseValueHolder createCloneValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+        return cloningSession.createCloneTransformationValueHolder(attributeValue, original, clone, this);
     }
  
     /**
@@ -905,7 +905,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Merge changes from the source to the target object. Which is the original from the parent UnitOfWork
      */
     @Override
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         if (isWriteOnly()) {
             return;
         }
@@ -924,7 +924,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Merge changes from the source to the target object.
      */
     @Override
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (isWriteOnly()) {
             return;
         }
@@ -1018,7 +1018,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Return row is merged into object after execution of insert or update call
      * according to ReturningPolicy.
      */
-    public Object readFromReturnRowIntoObject(AbstractRecord row, Object object, ReadObjectQuery query, Collection handledMappings) throws DatabaseException {
+    public Object readFromReturnRowIntoObject(AbstractRecord row, Object object, CacheKey parentCacheKey, ReadObjectQuery query, Collection handledMappings) throws DatabaseException {
         int size = this.fields.size();
         AbstractRecord transformationRow = new DatabaseRecord(size);
         for (int i = 0; i < size; i++) {
@@ -1031,7 +1031,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             }
             transformationRow.add(field, value);
         }
-        Object attributeValue = readFromRowIntoObject(transformationRow, null, object, query, query.getSession());
+        Object attributeValue = readFromRowIntoObject(transformationRow, null, object, parentCacheKey, query, query.getSession(), true);
         if (handledMappings != null) {
             handledMappings.add(this);
         }
@@ -1044,7 +1044,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Extract value from the row and set the attribute to the value in the object.
      */
     @Override
-    public Object readFromRowIntoObject(AbstractRecord row, JoinedAttributeManager joinManager, Object object, ObjectBuildingQuery query, AbstractSession executionSession) throws DatabaseException {
+    public Object readFromRowIntoObject(AbstractRecord row, JoinedAttributeManager joinManager, Object object, CacheKey parentCacheKey, ObjectBuildingQuery query, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         if (isWriteOnly()) {
             return null;
         }

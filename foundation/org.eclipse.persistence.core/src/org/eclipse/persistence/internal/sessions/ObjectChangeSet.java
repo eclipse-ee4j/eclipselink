@@ -388,7 +388,11 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 }
             } else {
                 // It is not a unitOfWork so we must be merging into a distributed cache.
-                attributeValue = getObjectFromSharedCacheForMerge(mergeManager, session, getId(), descriptor);
+                CacheKey cacheKey = getObjectFromSharedCacheForMerge(mergeManager, session, getId(), descriptor);
+                this.activeCacheKey = cacheKey;
+                if (cacheKey != null){
+                    attributeValue = cacheKey.getObject();
+                }
             }
         
             if ((attributeValue == null) && (shouldRead)) {
@@ -411,7 +415,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * cache using a readlock.  If a readlock is unavailable then the merge manager will be 
      * transitioned to deferred locks and a deferred lock will be used.
      */
-    protected Object getObjectFromSharedCacheForMerge(MergeManager mergeManager, AbstractSession session, Object primaryKey, ClassDescriptor descriptor){
+    protected CacheKey getObjectFromSharedCacheForMerge(MergeManager mergeManager, AbstractSession session, Object primaryKey, ClassDescriptor descriptor){
         Object domainObject = null;
         if (primaryKey == null) {
             return null;
@@ -442,7 +446,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 cacheKey.releaseDeferredLock();
             }
         }
-        return domainObject;
+        return cacheKey;
     }
 
 

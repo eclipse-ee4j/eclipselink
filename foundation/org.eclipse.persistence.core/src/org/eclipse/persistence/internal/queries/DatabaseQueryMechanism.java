@@ -22,6 +22,7 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -779,8 +780,13 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         }
 
         Object object = writeQuery.getObject();
+        CacheKey cacheKey = null;
+        ObjectChangeSet changeSet = writeQuery.getObjectChangeSet();
+        if (changeSet != null){
+            cacheKey = changeSet.getActiveCacheKey();
+        }
 
-        getDescriptor().getObjectBuilder().assignReturnRow(object, getSession(), row);
+        getDescriptor().getObjectBuilder().assignReturnRow(object, cacheKey, writeQuery.getSession(), row);
 
         Object primaryKey = null;
         if (isFirstCallForInsert) {

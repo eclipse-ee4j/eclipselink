@@ -30,6 +30,7 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.*;
 import java.io.*;
 
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.*;
@@ -39,6 +40,9 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.identitymaps.*;
+import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
+import org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
+import org.eclipse.persistence.internal.indirection.UnitOfWorkTransformerValueHolder;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
@@ -49,6 +53,7 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -214,21 +219,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected int cloneDepth;
 
     /**
-     * This collection will be used to store those objects that are currently locked
-     * for the clone process. It should be populated with an EclipseLinkIdentityHashMap
-     */
-    protected Map objectsLockedForClone;
-    
-    /**
      * PERF: Stores the JTA transaction to optimize activeUnitOfWork lookup.
      */
     protected Object transaction;
     
-    /**
-     * PERF: Cache the write-lock check to avoid cost of checking in every register/clone.
-     */
-    protected boolean shouldCheckWriteLock;
-
     /**
      * True if UnitOfWork should be resumed on completion of transaction.
      * Used when UnitOfWork is Synchronized with external transaction control
@@ -283,15 +277,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /** temporarily holds a reference to a merge manager that is calling this UnitOfWork during merge **/
     protected MergeManager mergeManagerForActiveMerge = null;
-    
-    /** temporarily holds a list of events that must be fired after the current operation completes. 
-     *  Initialy created for postClone events.
-     */
-    protected List<DescriptorEvent> deferredEvents;
-    
-    /** records that the UOW is executing deferred events.  Events could cause operations to occur that may attempt to restart the event execution.  This must be avoided*/
-    protected boolean isExecutingEvents = false;
-    
+
     /** Set of objects that were deleted by database cascade delete constraints. */
     protected Set<Object> cascadeDeleteObjects;
 
@@ -326,7 +312,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // initialize lifecycle state variable
         this.lifecycle = Birth;
         // PERF: Cache the write-lock check to avoid cost of checking in every register/clone.
-        this.shouldCheckWriteLock = parent.getDatasourceLogin().shouldSynchronizedReadOnWrite() || parent.getDatasourceLogin().shouldSynchronizeWrites();
         this.isNestedUnitOfWork = parent.isUnitOfWork();
         
         if (this.eventManager != null) {
@@ -334,6 +319,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         this.descriptors = parent.getDescriptors();
         incrementProfile(SessionProfiler.UowCreated);
+        // PERF: Cache the write-lock check to avoid cost of checking in every register/clone.
+        this.shouldCheckWriteLock = getParent().getDatasourceLogin().shouldSynchronizedReadOnWrite() || getParent().getDatasourceLogin().shouldSynchronizeWrites();
     }
 
     /**
@@ -859,6 +846,19 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
+     * INTERNAL:
+     * Check if the object is invalid and *should* be refreshed.
+     * This is used to ensure that no invalid objects are cloned.
+     */
+    @Override
+    public boolean isConsideredInvalid(Object object, CacheKey cacheKey, ClassDescriptor descriptor) {
+        if (! isNestedUnitOfWork){
+            return getParent().isConsideredInvalid(object, cacheKey, descriptor);
+        }
+        return false;
+    }
+
+    /**
      * ADVANCED:
      * Register the new object with the unit of work.
      * This will register the new object with cloning.
@@ -885,7 +885,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Must put in clone mapping.
         getCloneMapping().put(clone, clone);
 
-        builder.populateAttributesForClone(original, clone, this);
+        builder.populateAttributesForClone(original, null, clone, this);
         // Must reregister in both new objects.
         registerNewObjectClone(clone, original, descriptor);
 
@@ -922,26 +922,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
     /**
      * INTERNAL:
-     * Check if the object is invalid and refresh it.
-     * This is used to ensure that no invalid objects are registered.
-     */
-    public void checkInvalidObject(Object object, CacheKey cacheKey, ClassDescriptor descriptor) {
-        if (!this.isNestedUnitOfWork && (cacheKey.getObject() != null)) {
-            CacheInvalidationPolicy cachePolicy = descriptor.getCacheInvalidationPolicy();
-            // BUG#6671556 refresh invalid objects when accessed in the unit of work.
-            if (cachePolicy.shouldRefreshInvalidObjectsInUnitOfWork() && cachePolicy.isInvalidated(cacheKey)) {
-                ReadObjectQuery query = new ReadObjectQuery();
-                query.setReferenceClass(object.getClass());
-                query.setSelectionId(cacheKey.getKey());
-                query.refreshIdentityMapResult();
-                query.setIsExecutionClone(true);
-                parent.executeQuery(query);
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Clone and register the object.
      * The cache key must the cache key from the session cache,
      * as it will be used for locking.
@@ -967,18 +947,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // otherwise lock the object and it related objects (not using indirection) as a unit.
         // If just a simple object (all indirection) a simple read-lock can be used.
         // PERF: Cache if check to write is required.
-        boolean identityMapLocked = this.shouldCheckWriteLock && this.parent.getIdentityMapAccessorInstance().acquireWriteLock();
+        boolean identityMapLocked = this.parent.shouldCheckWriteLock && this.parent.getIdentityMapAccessorInstance().acquireWriteLock();
         boolean rootOfCloneRecursion = false;
         if (identityMapLocked) {
-            checkInvalidObject(original, parentCacheKey, descriptor);
+            checkAndRefreshInvalidObject(original, parentCacheKey, descriptor);
         } else {
             // Check if we have locked all required objects already.
             if (this.objectsLockedForClone == null) {
                 // PERF: If a simple object just acquire a simple read-lock.
                 if (concreteDescriptor.shouldAcquireCascadedLocks()) {
-                    this.objectsLockedForClone = this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireLocksForClone(original, concreteDescriptor, parentCacheKey, this.parent, this);
+                    this.objectsLockedForClone = this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireLocksForClone(original, concreteDescriptor, parentCacheKey, this.parent);
                 } else {
-                    checkInvalidObject(original, parentCacheKey, descriptor);
+                    checkAndRefreshInvalidObject(original, parentCacheKey, descriptor);
                     parentCacheKey.acquireReadLock();
                 }
                 rootOfCloneRecursion = true;
@@ -1681,17 +1661,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
     
     /**
-     * INTERNAL:
-     * Add an event to the deferred list.  Events will be fired after the operation completes
-     */
-    public void deferEvent(DescriptorEvent event){
-        if (this.deferredEvents == null){
-            this.deferredEvents = new ArrayList<DescriptorEvent>();
-        }
-        this.deferredEvents.add(event);
-    }
-
-    /**
      * PUBLIC:
      * Delete all of the objects and all of their privately owned parts in the database.
      * Delete operations are delayed in a unit of work until commit.
@@ -1826,26 +1795,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         } finally {
             if (call.isFinished()) {
                 query.setAccessor(null);
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Causes any deferred events to be fired.  Called after operation completes
-     */
-    public void executeDeferredEvents(){
-        if (!this.isExecutingEvents && this.deferredEvents != null) {
-            this.isExecutingEvents = true;
-            try {
-                for (int i = 0; i < this.deferredEvents.size(); ++i) { 
-                    // the size is checked every time here because the list may grow
-                    DescriptorEvent event = this.deferredEvents.get(i);
-                    event.getDescriptor().getEventManager().executeEvent(event);
-                }
-                this.deferredEvents.clear();
-            } finally {
-                this.isExecutingEvents = false;
             }
         }
     }
@@ -2081,11 +2030,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * the next step towards it.
      * @return this if there is no next link in the chain
      */
-    public AbstractSession getParentIdentityMapSession(DatabaseQuery query, boolean canReturnSelf, boolean terminalOnly) {
+    public AbstractSession getParentIdentityMapSession(ClassDescriptor descriptor, boolean canReturnSelf, boolean terminalOnly) {
         if (canReturnSelf && !terminalOnly) {
             return this;
         } else {
-            return this.parent.getParentIdentityMapSession(query, true, terminalOnly);
+            return this.parent.getParentIdentityMapSession(descriptor, true, terminalOnly);
         }
     }
 
@@ -3324,7 +3273,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                                 // so this could be done once.  We should key on class, and only convert to keying on name when broadcasting changes.
                                 ClassDescriptor descriptor = getDescriptor(objectToWrite);
                                 // PERF: Do not merge into the session cache if set to unit of work isolated.
-                                if ((!isNestedUnitOfWork) && descriptor.shouldIsolateObjectsInUnitOfWork()) {
+                                if ((!isNestedUnitOfWork) && (descriptor.shouldIsolateObjectsInUnitOfWork() && !descriptor.isProtectedIsolation())) {
                                     break;
                                 }
                                 manager.mergeChanges(objectToWrite, changeSetToWrite);
@@ -3723,7 +3672,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         changePolicy.dissableEventProcessing(workingClone);
 
         ObjectBuilder builder = descriptor.getObjectBuilder();
-        builder.populateAttributesForClone(original, workingClone, this);
+        builder.populateAttributesForClone(original, parentCacheKey, workingClone, this);
         Object backupClone = changePolicy.buildBackupClone(workingClone, builder, this);
         // PERF: Avoid put if no backup clone.
         if (workingClone != backupClone) {
@@ -3977,6 +3926,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     // It read time must be set to avoid it being invalidated.
                     CacheKey cacheKey = new CacheKey(primaryKey);
                     cacheKey.setReadTime(System.currentTimeMillis());
+                    cacheKey.setIsolated(true); // if the cache does not have a version then this must be built from the supplied version
                     registeredObject = cloneAndRegisterObject(objectToRegister, cacheKey, descriptor);
                 }
             }
@@ -5952,4 +5902,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
         this.shouldOrderUpdates = shouldOrderUpdates;
     }
+
+    @Override
+    public DatabaseValueHolder createCloneQueryValueHolder(ValueHolderInterface attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
+        return new UnitOfWorkQueryValueHolder(attributeValue, clone, mapping, row, this);
+    }
+
+    @Override
+    public DatabaseValueHolder createCloneTransformationValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
+        return new UnitOfWorkTransformerValueHolder(attributeValue, original, clone, mapping, this);
+    }
+
 }

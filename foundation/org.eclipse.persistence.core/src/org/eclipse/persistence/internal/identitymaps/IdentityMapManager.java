@@ -341,9 +341,11 @@ public class IdentityMapManager implements Serializable, Cloneable {
 
         // Remote session has its own setting.
         if (this.session.isRemoteSession()) {
-            return buildNewIdentityMap(descriptor.getRemoteIdentityMapClass(), descriptor.getRemoteIdentityMapSize(), descriptor);
-        } else {
-            return buildNewIdentityMap(descriptor.getIdentityMapClass(), descriptor.getIdentityMapSize(), descriptor);
+            return buildNewIdentityMap(descriptor.getRemoteIdentityMapClass(), descriptor.getRemoteIdentityMapSize(), descriptor, true);
+        } else if (this.session.isServerSession()){
+            return buildNewIdentityMap(descriptor.getIdentityMapClass(), descriptor.getIdentityMapSize(), descriptor, false);
+        }else{
+            return buildNewIdentityMap(descriptor.getIdentityMapClass(), descriptor.getIdentityMapSize(), descriptor, true);
         }
     }
     
@@ -351,13 +353,22 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * INTERNAL:
      * Return a new empty identity map of the class type.
      */
-    protected IdentityMap buildNewIdentityMap(Class identityMapClass, int size, ClassDescriptor descriptor) throws DescriptorException {
+    protected IdentityMap buildNewIdentityMap(Class identityMapClass, int size, ClassDescriptor descriptor, boolean isIsolated) throws DescriptorException {
         try {
             Constructor constructor = null;
+            Class[] parameters = null;
+            Object[] values = null;
+            if (isIsolated){
+                parameters = new Class[]{ClassConstants.PINT, ClassDescriptor.class, boolean.class};
+                values = new Object[]{Integer.valueOf(size), descriptor, true};
+            }else{
+                parameters = new Class[]{ClassConstants.PINT, ClassDescriptor.class};
+                values = new Object[]{Integer.valueOf(size), descriptor};
+            }
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, new Class[] { ClassConstants.PINT, ClassDescriptor.class }, false));
-                    IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { Integer.valueOf(size), descriptor }));
+                    constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, parameters, false));
+                    IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, values));
                     if ((descriptor != null) && (descriptor.getCacheInterceptorClass() != null)) {
                         constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
                         Object params[] = new Object[]{map, this.session};
@@ -368,8 +379,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     throw DescriptorException.invalidIdentityMap(descriptor, exception.getException());
                 }
             } else {
-                constructor = PrivilegedAccessHelper.getConstructorFor(identityMapClass, new Class[] { ClassConstants.PINT, ClassDescriptor.class }, false);
-                IdentityMap map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { Integer.valueOf(size), descriptor });
+                constructor = PrivilegedAccessHelper.getConstructorFor(identityMapClass, parameters, false);
+                IdentityMap map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, values);
                 if ((descriptor != null) && (descriptor.getCacheInterceptorClass() != null)) {
                     constructor = PrivilegedAccessHelper.getConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false);
                     Object params[] = new Object[]{map, this.session};
@@ -1279,7 +1290,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             synchronized (this.queryResults) {
                 map = this.queryResults.get(queryKey);
                 if (map == null) {
-                    map = buildNewIdentityMap(query.getQueryResultsCachePolicy().getCacheType(), query.getQueryResultsCachePolicy().getMaximumCachedResults(), null);
+                    map = buildNewIdentityMap(query.getQueryResultsCachePolicy().getCacheType(), query.getQueryResultsCachePolicy().getMaximumCachedResults(), null, false);
                     this.queryResults.put(queryKey, map);
                 }
             }

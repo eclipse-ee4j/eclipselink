@@ -61,6 +61,7 @@ import org.eclipse.persistence.mappings.RelationTableMechanism;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.annotations.NonCacheable;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
@@ -108,6 +109,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
   
     private String m_targetEntityName;
+    private boolean m_nonCacheable;
     
     /**
      * INTERNAL:
@@ -165,6 +167,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         if (isAnnotationPresent(JoinTable.class)) {
             m_joinTable = new JoinTableMetadata(getAnnotation(JoinTable.class), accessibleObject);
         }
+        
+        m_nonCacheable = isAnnotationPresent(NonCacheable.class);
     }
     
     /**
@@ -536,6 +540,10 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         return fetchType.equals(FetchType.LAZY.name());
     }
   
+    public boolean isNonCacheable(){
+        return m_nonCacheable;
+    }
+    
     /**
      * INTERNAL:
      * Return true is this relationship employs orphanRemoval.
@@ -712,6 +720,11 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         processCascadeTypes(mapping);
         
         processPartitioning();
+        
+        if (m_nonCacheable){
+            mapping.setIsCacheable(false);
+        }
+
     }
     
     /**
@@ -823,6 +836,10 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         m_mappedBy = mappedBy;
     }
     
+    public void setIsNonCacheable(boolean noncacheable){
+        m_nonCacheable = noncacheable;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

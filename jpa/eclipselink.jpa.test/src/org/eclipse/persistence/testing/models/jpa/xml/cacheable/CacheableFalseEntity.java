@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.jpa.xml.cacheable;
 
 public class CacheableFalseEntity {
     private int id;
+    protected CacheableProtectedEntity protectedEntity;
     
     public CacheableFalseEntity() {}
 
@@ -24,5 +25,19 @@ public class CacheableFalseEntity {
     
     public void setId(int id) {
         this.id = id;
+    }
+
+    /**
+     * @return the protectedEntity
+     */
+    public CacheableProtectedEntity getProtectedEntity() {
+        return protectedEntity;
+    }
+
+    /**
+     * @param protectedEntity the protectedEntity to set
+     */
+    public void setProtectedEntity(CacheableProtectedEntity protectedEntity) {
+        this.protectedEntity = protectedEntity;
     }
 }

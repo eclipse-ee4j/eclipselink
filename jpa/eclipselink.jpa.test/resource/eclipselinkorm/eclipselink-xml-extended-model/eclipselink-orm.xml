@@ -43,7 +43,7 @@
             <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
         </secondary-table>
         <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
-        <cache type="SOFT_WEAK" size="730" shared="true" disable-hits="true" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
+        <cache type="SOFT_WEAK" size="730" isolation="PROTECTED" disable-hits="true" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
             <!-- disable-hits is set to true. Do not change it, the employee customizer will set it to false and there is a test to verify that. -->
             <expiry>1000</expiry>
         </cache>
@@ -221,6 +221,7 @@
     </entity>
     <entity class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address">
         <change-tracking type="DEFERRED"/>
+        <cache shared="true"/>
         <cache-interceptor class="org.eclipse.persistence.testing.models.jpa.xml.advanced.CacheAuditor"/>
         <named-stored-procedure-query name="SProcXMLAddress" result-class="Address" procedure-name="SProc_Read_XMLAddress">
             <parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Integer"/>

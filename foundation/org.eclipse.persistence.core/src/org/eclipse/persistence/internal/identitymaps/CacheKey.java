@@ -16,6 +16,8 @@ import java.io.*;
 
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Record;
 
 /**
@@ -76,6 +78,16 @@ public class CacheKey implements Serializable, Cloneable {
     protected boolean isWrapper = false;
     
     /**
+     * Stores retrieved FK values for relationships that are not stored in the Entity
+     */
+    protected AbstractRecord protectedForeignKeys;
+    
+    /**
+     * Set to true if this CacheKey comes from an IsolatedClientSession
+     */
+    protected boolean isIsolated;
+    
+    /**
      * Internal:
      * Only used by subclasses that may want to wrap the cache key.  Could be replaced
      * by switching to an interface.
@@ -96,7 +108,7 @@ public class CacheKey implements Serializable, Cloneable {
         }
     }
 
-    public CacheKey(Object primaryKey, Object object, Object lockValue, long readTime) {
+    public CacheKey(Object primaryKey, Object object, Object lockValue, long readTime, boolean isIsolated) {
         this.key = primaryKey;
         this.writeLockValue = lockValue;
         //bug4649617  use setter instead of this.object = object to avoid hard reference on object in subclasses
@@ -104,6 +116,7 @@ public class CacheKey implements Serializable, Cloneable {
             setObject(object);
         }
         this.readTime = readTime;
+        this.isIsolated = isIsolated;
     }
 
     /**
@@ -316,11 +329,29 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     /**
+     * Returns true if this CacheKey is from an IsolatedClientSession
+     */
+    public boolean isIsolated() {
+        return isIsolated;
+    }
+
+    /**
      * Returns true if this Instance of CacheKey is a wrapper and should be unwrapped before passing
      * to IdentityMap APIs.  Wrapped CacheKeys may be used in the Cache Interceptors.
      */
     public boolean isWrapper(){
         return this.isWrapper;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the FK cache
+     */
+    public AbstractRecord getProtectedFKs(){
+        if (this.protectedForeignKeys == null){
+            this.protectedForeignKeys = new DatabaseRecord();
+        }
+        return this.protectedForeignKeys;
     }
     
     /**
@@ -446,6 +477,10 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public void updateAccess() {
         // Nothing required by default.
+    }
+
+    public void setIsolated(boolean isIsolated) {
+        this.isIsolated = isIsolated;
     }
 
     public void setIsWrapper(boolean isWrapper) {

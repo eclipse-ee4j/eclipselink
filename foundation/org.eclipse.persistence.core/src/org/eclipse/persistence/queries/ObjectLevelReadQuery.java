@@ -755,7 +755,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Contains the body of the check early return call, implemented by subclasses.
      */
-    protected abstract Object checkEarlyReturnImpl(AbstractSession session, AbstractRecord translationRow);
+    protected abstract Object checkEarlyReturnLocal(AbstractSession session, AbstractRecord translationRow);
 
     /**
      * INTERNAL:
@@ -769,7 +769,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         checkPrePrepare(session);
 
         if (!session.isUnitOfWork()) {
-            return checkEarlyReturnImpl(session, translationRow);
+            return checkEarlyReturnLocal(session, translationRow);
         }
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
 
@@ -779,7 +779,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         Object result = null;
         // PERF: Avoid uow check for read-only.
         if (!this.descriptor.shouldBeReadOnly()) {
-            result = checkEarlyReturnImpl(unitOfWork, translationRow);
+            result = checkEarlyReturnLocal(unitOfWork, translationRow);
         }
         if (result != null) {
             return result;
@@ -787,7 +787,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
         // PERF: If a locking query, or isolated always, then cache is ignored, so no point checking.
         // An error should be thrown on prepare is checkCacheOnly is used with these.
-        if ((!unitOfWork.isNestedUnitOfWork()) && (this.descriptor.shouldIsolateObjectsInUnitOfWork() || isLockQuery()) || unitOfWork.shouldForceReadFromDB(this, null)) {
+        if ((!unitOfWork.isNestedUnitOfWork()) && ((this.descriptor.shouldIsolateObjectsInUnitOfWork() && !this.descriptor.isProtectedIsolation())  || isLockQuery()) || unitOfWork.shouldForceReadFromDB(this, null)) {
             return null;
         }
 

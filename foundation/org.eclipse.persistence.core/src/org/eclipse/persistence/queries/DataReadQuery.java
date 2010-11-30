@@ -212,13 +212,13 @@ public class DataReadQuery extends ReadQuery {
                         Object value = buildObject(row);
                         values.add(value);
                     }
-                    containerPolicy.addAll(values, results, this.session, rows, this);
+                    containerPolicy.addAll(values, results, this.session, rows, this, null, true);
                 }
             } else {
                 for (int index = 0;  index < size; index++) {
                     AbstractRecord row = (AbstractRecord)rows.get(index);
                     Object value = buildObject(row);
-                    containerPolicy.addInto(value, results, this.session, row, this);
+                    containerPolicy.addInto(value, results, this.session, row, this, null, true);
                 }
             }
         }

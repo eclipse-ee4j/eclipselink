@@ -34,6 +34,11 @@ public class SoftCacheWeakIdentityMap extends HardCacheWeakIdentityMap {
         super(size, descriptor);
     }
 
+    public SoftCacheWeakIdentityMap(int size, ClassDescriptor descriptor, boolean isIsolated) {
+        this(size, descriptor);
+        this.isIsolated = isIsolated;
+    }
+    
     /**
      * Creates a Soft reference to the object.
      * @param object is the domain object to cache.

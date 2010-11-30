@@ -26,6 +26,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -341,7 +342,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         this.setField(new XMLField(xpathString));
     }
 
-    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManger) {
+    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManger, boolean isTargetProtected) {
         return descriptor.getObjectBuilder().buildObject(query, nestedRow, joinManger);
     }
 
@@ -418,7 +419,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         row.put(this.getField(), fieldValue);
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         ContainerPolicy cp = this.getContainerPolicy();
 
         Object fieldValue = row.getValues(this.getField());
@@ -460,7 +461,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             if (getNullPolicy().valueIsNull((Element) nestedRow.getDOM())) {
                 objectToAdd = null;
             } else {
-                objectToAdd = buildObjectFromNestedRow(nestedRow, joinManager, sourceQuery, executionSession);
+                objectToAdd = buildObjectFromNestedRow(nestedRow, joinManager, sourceQuery, executionSession, isTargetProtected);
             }
             cp.addInto(objectToAdd, result, sourceQuery.getSession());
             if(null != getContainerAccessor()) {
@@ -480,7 +481,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         return result;
     }
 
-    public Object buildObjectFromNestedRow(AbstractRecord nestedRow, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) {
+    public Object buildObjectFromNestedRow(AbstractRecord nestedRow, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) {
         Object objectToAdd = null;
         ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord) nestedRow);
         
@@ -541,7 +542,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             }
 
             //Object element 
-            objectToAdd = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, joinManager);
+            objectToAdd = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, null, joinManager, isTargetProtected);
             if (hasConverter()) {
                 if (getConverter() instanceof XMLConverter) {
                     objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());

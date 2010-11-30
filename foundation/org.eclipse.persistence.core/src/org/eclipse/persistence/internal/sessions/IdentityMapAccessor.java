@@ -1076,6 +1076,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     public Object removeFromIdentityMap(Object key, Class theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
+        if (descriptor == null){
+            return null;
+        }
         return removeFromIdentityMap(key, theClass, descriptor, null);
     }
     

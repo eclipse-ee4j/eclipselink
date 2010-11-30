@@ -16,6 +16,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
@@ -80,9 +81,9 @@ public class StructureMapping extends AbstractCompositeObjectMapping {
     }
     
     @Override
-    protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager) {
+    protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, boolean isTargetProtected) {
         Object aggregateObject = objectBuilder.buildNewInstance();
-        objectBuilder.buildAttributesIntoObject(aggregateObject, nestedRow, query, joinManager, false);
+        objectBuilder.buildAttributesIntoObject(aggregateObject, parentCacheKey, nestedRow, query, joinManager, false, isTargetProtected);
         return aggregateObject;
     }
 

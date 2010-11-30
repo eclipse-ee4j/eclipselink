@@ -15,6 +15,7 @@ package org.eclipse.persistence.oxm.mappings;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -347,7 +348,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * directly from a row, the session set in the query will not know which platform to use
      * for converting the value.  Allows the correct session to be passed in.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) {
         // PERF: Direct variable access.
         boolean shouldCheckForXsiNil = getNullPolicy().isNullRepresentedByXsiNil();
         return getAttributeValue(((DOMRecord)row).getIndicatingNoEntry(this.field, false, shouldCheckForXsiNil), executionSession, (XMLRecord)row);

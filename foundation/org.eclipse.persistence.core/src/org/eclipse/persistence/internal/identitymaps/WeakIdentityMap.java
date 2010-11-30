@@ -40,6 +40,11 @@ public class WeakIdentityMap extends FullIdentityMap {
         this.cleanupSize = size;
     }
 
+    public WeakIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
+        this(size, descriptor);
+        this.isIsolated = isolated;
+    }
+    
     /**
      * Search for any cache keys that have been garbage collected and remove them.
      * This must be done because although the objects held by the cache keys will garbage collect,
@@ -72,7 +77,7 @@ public class WeakIdentityMap extends FullIdentityMap {
 
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new WeakCacheKey(primaryKey, object, writeLockValue, readTime);
+        return new WeakCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated);
     }
 
     /**

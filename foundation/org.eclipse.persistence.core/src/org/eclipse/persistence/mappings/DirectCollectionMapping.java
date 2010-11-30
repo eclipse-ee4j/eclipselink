@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.converters.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
@@ -302,7 +303,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      */
     @Override
-    protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey parentCacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         ContainerPolicy policy = getContainerPolicy();
         Object value = policy.containerInstance();
         ObjectBuilder objectBuilder = this.descriptor.getObjectBuilder();
@@ -361,14 +362,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                         directValuesList.add(directValue);
                         targetRows.add(targetRow);
                     } else {
-                        policy.addInto(directValue, value, executionSession, targetRow, sourceQuery);
+                        policy.addInto(directValue, value, executionSession, targetRow, sourceQuery, parentCacheKey, isTargetProtected);
                     }
                 }
             }
             if (shouldAddAll) {
                 // if collection contains a single element which is null then return an empty collection
                 if (!(containsNull && targetRows.size() == 1)) {
-                    policy.addAll(directValuesList, value, executionSession, targetRows, sourceQuery);
+                    policy.addAll(directValuesList, value, executionSession, targetRows, sourceQuery, parentCacheKey, isTargetProtected);
                 }
             } else {
                 // if collection contains a single element which is null then return an empty collection
@@ -402,10 +403,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * are immutable.
      */
     @Override
-    public Object buildElementClone(Object element, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isExisting) {
         Object cloneValue = element;
         if ((getValueConverter() != null) && getValueConverter().isMutable()) {
-            cloneValue = getValueConverter().convertDataValueToObjectValue(getValueConverter().convertObjectValueToDataValue(cloneValue, unitOfWork), unitOfWork);
+            cloneValue = getValueConverter().convertDataValueToObjectValue(getValueConverter().convertObjectValueToDataValue(cloneValue, cloningSession), cloningSession);
         }
         return cloneValue;
     }
@@ -990,7 +991,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * mappings source keys of the source objects.
      */
     @Override
-    protected void executeBatchQuery(DatabaseQuery query, Map referenceDataByKey, AbstractSession session, AbstractRecord translationRow) {
+    protected void executeBatchQuery(DatabaseQuery query, CacheKey parentCacheKey, Map referenceDataByKey, AbstractSession session, AbstractRecord translationRow) {
         // Execute query and index resulting object sets by key.
         List<AbstractRecord> rows = (List<AbstractRecord>)session.executeQuery(query, translationRow);
         int size = rows.size();
@@ -1022,7 +1023,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     List referenceValues = entry.getValue()[0];
                     List<AbstractRecord> referenceRows = entry.getValue()[1];
                     Object container = this.containerPolicy.containerInstance(referenceValues.size());
-                    this.containerPolicy.addAll(referenceValues, container, query.getSession(), referenceRows, (DataReadQuery)query);
+                    this.containerPolicy.addAll(referenceValues, container, query.getSession(), referenceRows, (DataReadQuery)query, parentCacheKey, true);
                     referenceDataByKey.put(eachReferenceKey, container);
                 }
             }
@@ -1829,7 +1830,11 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * collection based on the changeset
      */
     @Override
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+        if (this.descriptor.isProtectedIsolation() && !this.isCacheable && targetCacheKey != null && !targetCacheKey.isIsolated()){
+            cacheForeignKeyValues(source, targetCacheKey, descriptor, mergeManager.getSession());
+            return;
+        }
         ContainerPolicy containerPolicy = getContainerPolicy();
         Object valueOfTarget = null;
         AbstractSession session = mergeManager.getSession();
@@ -1938,7 +1943,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Merge changes from the source to the target object.
      */
     @Override
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!isAttributeValueInstantiated(source))) {
@@ -2634,7 +2639,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         getDirectField().setType(fieldType);
     }
 
-    
     /**
      * ADVANCED:
      * Set the class type of the field value.
@@ -2818,6 +2822,53 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     }
 
     /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    @Override
+    protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery){
+        AbstractRecord row = cacheKey.getProtectedFKs();
+        int i = 0;
+        for (Enumeration sourceKeys = getSourceKeyFields().elements();
+                 sourceKeys.hasMoreElements(); i++) {
+            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
+            Object value = null;
+
+            // First insure that the source foreign key field is in the row.
+            // N.B. If get() is used and returns null it may just mean that the field exists but the value is null.
+            int index = record.getFields().indexOf(sourceKey);
+            if (index == -1) {
+                //Line x: Retrieve the value from the source query's translation row.
+                value = sourceQuery.getTranslationRow().get(sourceKey);
+            } else {
+                value = record.getValues().get(index);
+            }
+            row.add(sourceKey, value);
+        }
+
+    }
+
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    @Override
+    protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
+        AbstractRecord row = cacheKey.getProtectedFKs();
+        int i = 0;
+        for (Enumeration sourceKeys = getSourceKeyFields().elements();
+                 sourceKeys.hasMoreElements(); i++) {
+            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
+            row.remove(sourceKey);
+            descriptor.getObjectBuilder().getMappingForField(sourceKey).writeFromObjectIntoRow(source, row, session, WriteType.UNDEFINED);
+        }
+    }
+
+    /**
      * INTERNAL:
      * Used by AttributeLevelChangeTracking to update a changeRecord with calculated changes
      * as apposed to detected changes.  If an attribute can not be change tracked it's
@@ -2978,18 +3029,34 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Overridden to support flashback/historical queries.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession session) throws DatabaseException {
-        // if the query uses batch reading, return a special value holder
-        // or retrieve the object from the query property.
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected) throws DatabaseException {
+        if (this.descriptor.isProtectedIsolation()){
+            if (this.isCacheable && isTargetProtected && cacheKey != null){
+                //cachekey will be null when isolating to uow
+                //used cached collection
+                Object result = null;
+                Object cached = cacheKey.getObject();
+                if (cached != null){
+                    result = this.indirectionPolicy.cloneAttribute(this.getAttributeValueFromObject(cached), cached, cacheKey, null, session, false);
+                }
+                return result;
+                
+            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
+                cacheForeignKeyValues(row, cacheKey, sourceQuery);
+                return null;
+            }
+        }
         if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
                 || (sourceQuery.isReadAllQuery() && shouldUseBatchReading()))) {
-            return batchedValueFromRow(row, (ObjectLevelReadQuery)sourceQuery);
+            return batchedValueFromRow(row, (ObjectLevelReadQuery)sourceQuery, cacheKey);
         }
 
         if (shouldUseValueFromRowWithJoin(joinManager, sourceQuery)) {
-            return valueFromRowInternalWithJoin(row, joinManager, sourceQuery, session);
+            return valueFromRowInternalWithJoin(row, joinManager, sourceQuery, cacheKey, session, isTargetProtected);
         }
         
+        // if the query uses batch reading, return a special value holder
+        // or retrieve the object from the query property.
         ReadQuery targetQuery = getSelectionQuery();
 
         boolean extendingPessimisticLockScope = isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY; 

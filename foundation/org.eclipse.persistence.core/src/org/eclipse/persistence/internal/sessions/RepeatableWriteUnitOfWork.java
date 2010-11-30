@@ -21,6 +21,7 @@ import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -73,7 +74,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * Relevant only in case call to flush method followed by call to clear method.
      * Works together with flushClearCache.
      */
-    protected transient Set<Class> classesToBeInvalidated;
+    protected transient Set<ClassDescriptor> classesToBeInvalidated;
     
     /**
      * Alters the behaviour of the RWUOW commit to function like the UOW with respect to Entity lifecycle
@@ -116,7 +117,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
             } else if (this.flushClearCache == FlushClearCache.DropInvalidate) {
                 // classes of the updated objects should be invalidated in the shared cache on commit.
-                Set updatedObjectsClasses = this.cumulativeUOWChangeSet.findUpdatedObjectsClasses();
+                Set<ClassDescriptor> updatedObjectsClasses = this.cumulativeUOWChangeSet.findUpdatedObjectsClasses();
                 if (updatedObjectsClasses != null) {
                     if (this.classesToBeInvalidated == null) {
                         this.classesToBeInvalidated = updatedObjectsClasses;
@@ -126,12 +127,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 }
                 if ((this.unregisteredDeletedObjectsCloneToBackupAndOriginal != null) && !this.unregisteredDeletedObjectsCloneToBackupAndOriginal.isEmpty()) {
                     if (this.classesToBeInvalidated == null) {
-                        this.classesToBeInvalidated = new HashSet<Class>();
+                        this.classesToBeInvalidated = new HashSet<ClassDescriptor>();
                     }
                     Iterator enumDeleted = this.unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
                     // classes of the deleted objects should be invalidated in the shared cache
                     while (enumDeleted.hasNext()) {
-                        this.classesToBeInvalidated.add(enumDeleted.next().getClass());
+                        this.classesToBeInvalidated.add(getDescriptor(enumDeleted.next().getClass()));
                     }
                 }
                 this.cumulativeUOWChangeSet = null;
@@ -169,7 +170,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * Relevant only in case call to flush method followed by call to clear method.
      * Works together with flushClearCache.
      */
-     public Set<Class> getClassesToBeInvalidated(){
+     public Set<ClassDescriptor> getClassesToBeInvalidated(){
         return classesToBeInvalidated;
     }
    /** 
@@ -212,7 +213,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             // if the invalidation list for this UOW contains any changes to the class being queried for
             // we should build directly from the DB
             } else if (this.getFlushClearCache().equals(FlushClearCache.DropInvalidate) && this.getClassesToBeInvalidated() != null){
-                    if (this.getClassesToBeInvalidated().contains(query.getDescriptor().getJavaClass())){
+                    if (this.getClassesToBeInvalidated().contains(query.getDescriptor())){
                         return true;
                     }
             }
@@ -346,9 +347,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     protected void mergeChangesIntoParent() {
         if (this.classesToBeInvalidated != null) {
             // get identityMap of the parent ServerSession
-            IdentityMapAccessor accessor = this.getParentIdentityMapSession(null, false, true).getIdentityMapAccessor();
-            for(Class classToBeInvalidated : classesToBeInvalidated) {
-                accessor.invalidateClass(classToBeInvalidated, false); // 312503: invalidate subtree rooted at classToBeInvalidated
+            for(ClassDescriptor classToBeInvalidated : classesToBeInvalidated) {
+                IdentityMapAccessor accessor = this.getParentIdentityMapSession(classToBeInvalidated, false, true).getIdentityMapAccessor();
+                accessor.invalidateClass(classToBeInvalidated.getJavaClass(), false); // 312503: invalidate subtree rooted at classToBeInvalidated
             }            
             this.classesToBeInvalidated = null;
         }
@@ -568,7 +569,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         // Must put in clone mapping.
         getCloneMapping().put(clone, clone);
 
-        builder.populateAttributesForClone(original, clone, this);
+        builder.populateAttributesForClone(original, null, clone, this);
         if (!this.discoverUnregisteredNewObjectsWithoutPersist){
             assignSequenceNumber(clone);
         }

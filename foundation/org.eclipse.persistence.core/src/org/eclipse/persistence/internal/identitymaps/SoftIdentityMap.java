@@ -33,8 +33,13 @@ public class SoftIdentityMap extends WeakIdentityMap {
         this.cleanupSize = size;
     }
 
+    public SoftIdentityMap(int size, ClassDescriptor descriptor, boolean isIsolated) {
+        this(size, descriptor);
+        this.isIsolated = isIsolated;
+    }
+    
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new SoftCacheKey(primaryKey, object, writeLockValue, readTime);
+        return new SoftCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated);
     }
 }

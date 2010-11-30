@@ -17,6 +17,8 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sequencing.SequencingServer;
 import org.eclipse.persistence.logging.SessionLog;
@@ -617,6 +619,24 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
 
     /**
      * PUBLIC:
+     * Return the results from executing the database query.
+     * The query arguments are passed in as a List of argument values in the same order as the query arguments.
+     */
+    public Object executeQuery(DatabaseQuery query, List argumentValues) throws DatabaseException {
+        if (query == null) {
+            throw QueryException.queryNotDefined();
+        }
+        query.checkDescriptor(this);
+        ClassDescriptor descriptor = query.getDescriptor();
+        AbstractRecord row = query.rowFromArguments(argumentValues, this);
+        if (query.isObjectBuildingQuery() && descriptor != null && !descriptor.isSharedIsolation()){
+            return acquireClientSession().executeQuery(query, row);
+        }
+        return super.executeQuery( query,  row);
+    }
+
+    /**
+     * PUBLIC:
      * Return the pool by name.
      */
     public ConnectionPool getConnectionPool(String poolName) {
@@ -1026,7 +1046,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      */
     @Override
     public void validateQuery(DatabaseQuery query) {
-        if (query.isObjectLevelReadQuery() && (query.getDescriptor().isIsolated() || ((ObjectLevelReadQuery)query).shouldUseExclusiveConnection())) {
+        if (query.isObjectLevelReadQuery() && ((query.getDescriptor().isIsolated()) || ((ObjectLevelReadQuery)query).shouldUseExclusiveConnection())) {
             throw QueryException.isolatedQueryExecutedOnServerSession();
         }
     }

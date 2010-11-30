@@ -19,6 +19,7 @@ import java.util.Vector;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -26,6 +27,7 @@ import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -157,12 +159,12 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
     }
 
     @Override
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
     }
 
     @Override
     public void buildCloneFromRow(AbstractRecord databaseRow,
-            JoinedAttributeManager joinManager, Object clone,
+            JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey,
             ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork,
             AbstractSession executionSession) {
     }
@@ -200,12 +202,12 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
     }
 
     @Override
-    public void mergeChangesIntoObject(Object target,
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey,
             ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
     }
 
     @Override
-    public void mergeIntoObject(Object target, boolean isTargetUninitialized,
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUninitialized,
             Object source, MergeManager mergeManager) {
     }
 

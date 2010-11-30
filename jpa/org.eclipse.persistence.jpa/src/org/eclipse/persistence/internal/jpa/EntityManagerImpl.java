@@ -611,7 +611,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { entityClass }));
             }
-            if (!descriptor.shouldBeReadOnly() || descriptor.isIsolated()) {
+            if (!descriptor.shouldBeReadOnly() || !descriptor.isSharedIsolation()) {
                 session = (AbstractSession) getActiveSession();
             }
             return (T) findInternal(descriptor, session, primaryKey, lockMode, properties);

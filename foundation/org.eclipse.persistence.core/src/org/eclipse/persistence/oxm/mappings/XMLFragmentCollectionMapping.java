@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -78,7 +79,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
      * INTERNAL:
      * Build the nested collection from the database row.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         ContainerPolicy cp = this.getContainerPolicy();
 
         Object fieldValue = ((DOMRecord)row).getValuesIndicatingNoEntry(this.getField(), true);

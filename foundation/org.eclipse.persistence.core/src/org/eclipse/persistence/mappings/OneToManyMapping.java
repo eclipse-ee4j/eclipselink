@@ -14,6 +14,7 @@ package org.eclipse.persistence.mappings;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
@@ -24,6 +25,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 
 /**
@@ -237,6 +239,52 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     }
 
     /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    @Override
+    protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery){
+        AbstractRecord row = cacheKey.getProtectedFKs();
+        int i = 0;
+        for (Enumeration sourceKeys = getSourceKeyFields().elements();
+                 sourceKeys.hasMoreElements(); i++) {
+            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
+            Object value = null;
+            row.remove(sourceKey);
+            // First insure that the source foreign key field is in the row.
+            // N.B. If get() is used and returns null it may just mean that the field exists but the value is null.
+            int index = record.getFields().indexOf(sourceKey);
+            if (index == -1) {
+                //Line x: Retrieve the value from the source query's translation row.
+                value = sourceQuery.getTranslationRow().get(sourceKey);
+            } else {
+                value = record.getValues().get(index);
+            }
+            row.add(sourceKey, value);
+        }
+    }
+
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    @Override
+    protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
+        AbstractRecord row = cacheKey.getProtectedFKs();
+        int i = 0;
+        for (Enumeration sourceKeys = getSourceKeyFields().elements();
+                 sourceKeys.hasMoreElements(); i++) {
+            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
+            row.remove(sourceKey);
+            descriptor.getObjectBuilder().getMappingForField(sourceKey).writeFromObjectIntoRow(source, row, session, WriteType.UNDEFINED);
+        }
+    }
+
+    /**
      * INTERNAL:
      * Clone the appropriate attributes.
      */
@@ -258,7 +306,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
-    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return session.executeQuery(getSelectionQuery(), dbRow);
     }
     

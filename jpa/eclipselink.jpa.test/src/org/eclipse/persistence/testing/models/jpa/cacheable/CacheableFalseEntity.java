@@ -27,11 +27,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
+import javax.persistence.OneToOne;
 
 @Entity(name="JPA_CACHEABLE_FALSE")
 @Cacheable(false)
 public class CacheableFalseEntity {
-    private int id;
+    protected int id;
+    protected CacheableProtectedEntity protectedEntity;
     List<CacheableFalseDetail> details = new ArrayList<CacheableFalseDetail>();
     
     public CacheableFalseEntity() {}
@@ -58,5 +60,21 @@ public class CacheableFalseEntity {
 
     public void setDetails(List<CacheableFalseDetail> details) {
         this.details = details;
+    }
+
+    /**
+     * @return the protectedEntity
+     */
+    @OneToOne
+    @JoinColumn(name="PROTECTED_FK")
+    public CacheableProtectedEntity getProtectedEntity() {
+        return protectedEntity;
+    }
+
+    /**
+     * @param protectedEntity the protectedEntity to set
+     */
+    public void setProtectedEntity(CacheableProtectedEntity protectedEntity) {
+        this.protectedEntity = protectedEntity;
     }
 }

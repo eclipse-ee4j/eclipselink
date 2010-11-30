@@ -27,6 +27,8 @@ public class CacheableTableCreator extends TableCreator {
         addTableDefinition(buildCACHEABLE_TRUE_ENTITYTable());
         addTableDefinition(buildSUB_CACHEABLE_FALSE_ENTITYTable());
         addTableDefinition(buildSUB_CACHEABLE_NONE_ENTITYTable());
+        addTableDefinition(buildCACHEABLE_PROTECTED_ENTITYTable());
+        addTableDefinition(buildCACHEABLE_FORCE_PROTECTED_ENTITYTable());
     }
     
     public static TableDefinition buildCACHEABLE_FALSE_ENTITYTable() {
@@ -42,6 +44,16 @@ public class CacheableTableCreator extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
+        
+        FieldDefinition protectedFK = new FieldDefinition();
+        protectedFK.setName("PROTECTED_FK");
+        protectedFK.setTypeName("NUMERIC");
+        protectedFK.setSize(15);
+        protectedFK.setShouldAllowNull(true);
+        protectedFK.setIsPrimaryKey(false);
+        protectedFK.setUnique(false);
+        protectedFK.setIsIdentity(false);
+        table.addField(protectedFK);
     
         return table;
     }
@@ -110,6 +122,43 @@ public class CacheableTableCreator extends TableCreator {
         return table;
     }
     
+    public static TableDefinition buildCACHEABLE_PROTECTED_ENTITYTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CACHEABLE_PROTECTED");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(75);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+
+        FieldDefinition forcedFK = new FieldDefinition();
+        forcedFK.setName("FORCEDPROTECTED_ID");
+        forcedFK.setTypeName("NUMERIC");
+        forcedFK.setSize(15);
+        forcedFK.setShouldAllowNull(true);
+        forcedFK.setIsPrimaryKey(false);
+        forcedFK.setUnique(false);
+        forcedFK.setIsIdentity(false);
+        table.addField(forcedFK);
+
+        return table;
+    }
+    
     public static TableDefinition buildCACHEABLE_TRUE_ENTITYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEABLE_TRUE");
@@ -145,6 +194,54 @@ public class CacheableTableCreator extends TableCreator {
         fieldDTYPE.setShouldAllowNull(true);
         table.addField(fieldDTYPE);
     
+        return table;
+    }
+    
+    public static TableDefinition buildCACHEABLE_FORCE_PROTECTED_ENTITYTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CACHEABLE_FORCE_PROTECTED");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(75);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldDTYPE = new FieldDefinition();
+        fieldDTYPE.setName("DTYPE");
+        fieldDTYPE.setTypeName("VARCHAR2");
+        fieldDTYPE.setSize(15);
+        fieldDTYPE.setSubSize(0);
+        fieldDTYPE.setIsPrimaryKey(false);
+        fieldDTYPE.setIsIdentity(false);
+        fieldDTYPE.setUnique(false);
+        fieldDTYPE.setShouldAllowNull(true);
+        table.addField(fieldDTYPE);
+    
+        FieldDefinition falseFK = new FieldDefinition();
+        falseFK.setName("FALSE_FK");
+        falseFK.setTypeName("NUMERIC");
+        falseFK.setSize(15);
+        falseFK.setShouldAllowNull(true);
+        falseFK.setIsPrimaryKey(false);
+        falseFK.setUnique(false);
+        falseFK.setIsIdentity(false);
+        table.addField(falseFK);
+
         return table;
     }
     

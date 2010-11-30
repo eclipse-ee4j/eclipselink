@@ -196,7 +196,7 @@ public class ReportQueryResult implements Serializable, Map {
                     subRow = new DatabaseRecord(trimedFields, trimedValues);
                 }
                 if (mapping != null && mapping.isAggregateObjectMapping()){
-                    value = ((AggregateObjectMapping)mapping).buildAggregateFromRow(subRow, null, joinManager, query, false, query.getSession());
+                    value = ((AggregateObjectMapping)mapping).buildAggregateFromRow(subRow, null, null, joinManager, query, false, query.getSession(), true);
                 } else {
                     value = descriptor.getObjectBuilder().buildObject(query, subRow, joinManager);
                 }
@@ -210,7 +210,7 @@ public class ReportQueryResult implements Serializable, Map {
                     if (mapping.getContainerPolicy().isMapPolicy() && !mapping.getContainerPolicy().isMappedKeyMapPolicy()){
                         rowKey = ((MapContainerPolicy)mapping.getContainerPolicy()).keyFrom(value, query.getSession());
                     } else {
-                        rowKey = mapping.getContainerPolicy().buildKey(subRow, query, query.getSession());
+                        rowKey = mapping.getContainerPolicy().buildKey(subRow, query, null, query.getSession(), true);
                     }
                     if (((MapEntryExpression)item.getAttributeExpression()).shouldReturnMapEntry()){
                         value = new Association(rowKey, value);

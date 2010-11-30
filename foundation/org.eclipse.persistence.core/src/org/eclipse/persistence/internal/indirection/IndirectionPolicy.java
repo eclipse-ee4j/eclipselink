@@ -17,8 +17,10 @@ import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -119,7 +121,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      *  directly from a row as opposed to building the original from the
      *  row, putting it in the shared cache, and then cloning the original.
      */
-    public abstract Object cloneAttribute(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow);
+    public abstract Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow);
 
     /**
      * INTERNAL:
@@ -432,7 +434,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Return the value to be stored in the object's attribute.
      * This value is determined by the batchQuery.
      */
-    public abstract Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery);
+    public abstract Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey);
 
     /**
      * INTERNAL:

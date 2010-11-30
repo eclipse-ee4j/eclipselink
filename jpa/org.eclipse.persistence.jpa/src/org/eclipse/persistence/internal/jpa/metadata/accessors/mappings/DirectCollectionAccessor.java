@@ -34,6 +34,7 @@ import javax.persistence.FetchType;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.annotations.NonCacheable;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -63,6 +64,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     private Integer m_batchFetchSize;
     private boolean m_cascadeOnDelete;
     private CollectionTableMetadata m_collectionTable;
+    private boolean m_nonCacheable;
    
     /**
      * INTERNAL:
@@ -102,6 +104,9 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // Since BasicCollection and ElementCollection look for different
         // collection tables, we will not initialize/look for one here. Those
         // accessors will be responsible for loading their collection table.
+        
+        m_nonCacheable = isAnnotationPresent(NonCacheable.class);
+
     }
     
     public boolean isCascadeOnDelete() {
@@ -110,6 +115,10 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
 
     public void setCascadeOnDelete(boolean cascadeOnDelete) {
         m_cascadeOnDelete = cascadeOnDelete;
+    }
+    
+    public boolean isNonCacheable(){
+        return m_nonCacheable;
     }
     
     /**
@@ -318,8 +327,12 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         mapping.setShouldExtendPessimisticLockScope(true);
         
         mapping.setIsCascadeOnDeleteSetOnDatabase(isCascadeOnDelete());
+        
+        if (m_nonCacheable){
+            mapping.setIsCacheable(false);
 
         processPartitioning();
+        }
     }
     
     /**
@@ -447,4 +460,10 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     public void setJoinFetch(String joinFetch) {
         m_joinFetch = joinFetch;
     }
+    
+    public void setIsNonCacheable(boolean noncacheable){
+        m_nonCacheable = noncacheable;
+    }
+    
+    
 }

@@ -36,6 +36,9 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     /** PERF: Store the descriptor to allow lastAccessed cache lookup optimization. */
     protected ClassDescriptor descriptor;
     
+    /** Is this identity map within an IsolatedClientSession */
+    protected boolean isIsolated;
+    
     public AbstractIdentityMap(){
     }
 
@@ -56,6 +59,16 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     public AbstractIdentityMap(int size, ClassDescriptor descriptor) {
         this(size);
         this.descriptor = descriptor;
+    }
+
+    /**
+     * Instantiate an new IdentityMap with it's maximum size.<p>
+     * <b>NOTE</b>: Subclasses may provide different behavior for maxSize.
+     * @param size is the maximum size to be allocated for the receiver.
+     */
+    public AbstractIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
+        this(size, descriptor);
+        this.isIsolated = isolated;
     }
 
     /**
@@ -244,7 +257,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Create the correct type of CacheKey for this map.
      */
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new CacheKey(primaryKey, object, writeLockValue, readTime);
+        return new CacheKey(primaryKey, object, writeLockValue, readTime, isIsolated);
     }
 
     /**

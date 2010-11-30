@@ -20,6 +20,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -142,7 +143,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * result of the batch query in the original query to allow the other objects to share the results.
      */
     @Override
-    protected Object batchedValueFromRow(AbstractRecord row, ObjectLevelReadQuery query) {
+    protected Object batchedValueFromRow(AbstractRecord row, ObjectLevelReadQuery query, CacheKey parentCacheKey) {
         throw QueryException.batchReadingNotSupported(this, query);
     }
 
@@ -721,7 +722,22 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * Check for batch + aggregation reading.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        if (this.descriptor.isProtectedIsolation()){
+            if (this.isCacheable && isTargetProtected && cacheKey != null){
+                //cachekey will be null when isolating to uow
+                //used cached collection
+                Object result = null;
+                Object cached = cacheKey.getObject();
+                if (cached != null){
+                    result = this.indirectionPolicy.cloneAttribute(this.getAttributeValueFromObject(cached), cached, cacheKey, null, executionSession, false);
+                }
+                return result;
+            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
+                cacheForeignKeyValues(row, cacheKey, sourceQuery);
+                return null;
+            }
+        }
         // If any field in the foreign key is null then it means there are no referenced objects
         for (DatabaseField field : getFields()) {
             if (row.get(field) == null) {
@@ -734,7 +750,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             // or retrieve the object from the query property.
             if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
                     || (sourceQuery.isReadAllQuery() && shouldUseBatchReading()))) {
-                return batchedValueFromRow(row, ((ObjectLevelReadQuery)sourceQuery));
+                return batchedValueFromRow(row, ((ObjectLevelReadQuery)sourceQuery), cacheKey);
             }
 
             //If the field is empty we cannot load the object because we do not know what class it will be
@@ -762,7 +778,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
 
             return getIndirectionPolicy().valueFromQuery(query, row, executionSession);
         } else {
-            return super.valueFromRow(row, joinManager, sourceQuery, executionSession);
+            return super.valueFromRow(row, joinManager, sourceQuery, cacheKey, executionSession, isTargetProtected);
         }
     }
 

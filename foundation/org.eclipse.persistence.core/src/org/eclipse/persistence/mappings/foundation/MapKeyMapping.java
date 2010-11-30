@@ -21,10 +21,12 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -77,11 +79,11 @@ public interface MapKeyMapping extends MapComponentMapping {
     /**
      * Build a clone of the given element in a unitOfWork
      * @param element
-     * @param unitOfWork
+     * @param cloningSession
      * @param isExisting
      * @return
      */
-    public Object buildElementClone(Object element, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting);
+    public Object buildElementClone(Object element, Object parent, CacheKey cacheKey, AbstractSession cloningSession, boolean isExisting);
 
     /**
      * INTERNAL:
@@ -114,7 +116,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * Called when a DatabaseMapping is used to map the key in a collection and a join query is used.  
      * Returns the key.
      */
-    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session);
+    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected);
 
     /**
      * INTERNAL:

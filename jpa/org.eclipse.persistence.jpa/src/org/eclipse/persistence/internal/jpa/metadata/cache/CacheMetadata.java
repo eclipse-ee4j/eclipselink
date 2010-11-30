@@ -19,6 +19,7 @@ package org.eclipse.persistence.internal.jpa.metadata.cache;
 import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
@@ -42,6 +43,7 @@ public class CacheMetadata extends ORMetadata {
     protected Boolean m_alwaysRefresh;
     protected Boolean m_disableHits;
     protected Boolean m_shared;
+    protected String m_isolation;
     protected Boolean m_refreshOnlyIfNewer;
     
     protected String m_coordinationType;
@@ -77,6 +79,7 @@ public class CacheMetadata extends ORMetadata {
         }
         
         m_shared = (Boolean) cache.getAttribute("shared");
+        m_isolation = (String) cache.getAttribute("isolation");
         m_size = (Integer) cache.getAttribute("size");
         m_type = (String) cache.getAttribute("type");
         m_refreshOnlyIfNewer = (Boolean) cache.getAttribute("refreshOnlyIfNewer");
@@ -99,6 +102,10 @@ public class CacheMetadata extends ORMetadata {
             }
 
             if (! valuesMatch(m_shared, cache.getShared())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_isolation, cache.getIsolation())) {
                 return false;
             }
             
@@ -184,6 +191,10 @@ public class CacheMetadata extends ORMetadata {
        return m_shared; 
     }
     
+    public String getIsolation(){
+        return m_isolation;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -235,8 +246,12 @@ public class CacheMetadata extends ORMetadata {
         }
         
         // Process shared.
-        if (m_shared != null) {
-            classDescriptor.setIsIsolated(!m_shared);
+        if ( (m_shared !=null && !m_shared.booleanValue()) || (m_shared == null && descriptor.getProject().isSharedCacheModeEnableSelective())){
+            classDescriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
+        }
+        
+        if (m_isolation != null){
+            classDescriptor.setCacheIsolation(CacheIsolationType.valueOf(m_isolation));
         }
         
         // Process expiry or expiry time of day.
@@ -338,6 +353,10 @@ public class CacheMetadata extends ORMetadata {
      */
     public void setShared(Boolean shared) {
        m_shared = shared; 
+    }
+    
+    public void setIsolation(String isolation){
+        m_isolation = isolation;
     }
     
     /**

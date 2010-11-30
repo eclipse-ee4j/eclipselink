@@ -16,6 +16,7 @@ import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
@@ -285,16 +286,16 @@ public class ClientSession extends AbstractSession {
     public Accessor getAccessor() {
         Collection<Accessor> accessors = getAccessors();
         if ((accessors == null) || accessors.isEmpty()) {
-            if (isInTransaction()) {
+        if (isInTransaction()) {
                 this.parent.acquireClientConnection(this);
                 accessors = getAccessors();
-            } else {
+        } else {
                 return this.parent.getAccessor();
-            }
+        }
         }
         if (accessors instanceof List) {
             return ((List<Accessor>)accessors).get(0);
-        }
+    }
         return accessors.iterator().next();
     }
 
@@ -326,11 +327,11 @@ public class ClientSession extends AbstractSession {
      * @return this if there is no next link in the chain
      */
     @Override
-    public AbstractSession getParentIdentityMapSession(DatabaseQuery query, boolean canReturnSelf, boolean terminalOnly) {
+    public AbstractSession getParentIdentityMapSession(ClassDescriptor descriptor, boolean canReturnSelf, boolean terminalOnly) {
         // Note could return self as ClientSession shares the same identity map
         // as parent.  This reveals a deep problem, as queries will be cached in
         // the Server identity map but executed here using the write connection.
-        return this.parent.getParentIdentityMapSession(query, canReturnSelf, terminalOnly);
+        return this.parent.getParentIdentityMapSession(descriptor, canReturnSelf, terminalOnly);
     }
     
     /**
@@ -487,7 +488,7 @@ public class ClientSession extends AbstractSession {
     public Accessor getWriteConnection() {
         if ((this.writeConnections == null) || this.writeConnections.isEmpty()) {
             return null;
-        }
+    }
         return this.writeConnections.values().iterator().next();
     }
 
@@ -650,9 +651,9 @@ public class ClientSession extends AbstractSession {
             poolName = writeConnection.getPool().getName();
         } else {
             poolName = ServerSession.NOT_POOLED;
-        }
+            }
         addWriteConnection(poolName, writeConnection);
-    }
+        }
 
     /**
      * INTERNAL:

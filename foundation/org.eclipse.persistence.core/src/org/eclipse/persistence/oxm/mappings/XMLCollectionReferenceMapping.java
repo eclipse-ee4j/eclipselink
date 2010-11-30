@@ -28,6 +28,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -288,7 +289,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * org.eclipse.persistence.internal.oxm.Reference instance and stored it 
      * on the session's org.eclipse.persistence.internal.oxm.ReferenceResolver.
      */
-    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(getReferenceClass());
         ContainerPolicy cp = getContainerPolicy();
         // for each source xmlField, get the value from the row and store

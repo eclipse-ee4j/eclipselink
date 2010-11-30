@@ -16,6 +16,7 @@ import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.*;
@@ -100,7 +101,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * For these mappings, this is the same as building the first clone.
      */
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
-        this.buildClone(clone, backup, unitOfWork);
+        this.buildClone(clone, null, backup, unitOfWork);
     }
 
     /**
@@ -116,9 +117,10 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
      */
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+    @Override
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
         Object attributeValue = this.getAttributeValueFromObject(original);
-        this.setAttributeValueInObject(clone, this.buildClonePart(attributeValue, unitOfWork));
+        this.setAttributeValueInObject(clone, this.buildClonePart(attributeValue, cacheKey, cloningSession));
     }
 
     /**
@@ -128,16 +130,16 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * In order to bypass the shared cache when in transaction a UnitOfWork must
      * be able to populate working copies directly from the row.
      */
-    public void buildCloneFromRow(AbstractRecord row, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+    public void buildCloneFromRow(AbstractRecord row, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // for direct collection a cloned value is no different from an original value
-        Object cloneAttributeValue = valueFromRow(row, joinManager, sourceQuery, executionSession);
+        Object cloneAttributeValue = valueFromRow(row, joinManager, sourceQuery, sharedCacheKey, executionSession, true);
         setAttributeValueInObject(clone, cloneAttributeValue);
     }
 
     /**
      * Build and return a clone of the specified attribute value.
      */
-    protected Object buildClonePart(Object attributeValue, UnitOfWorkImpl unitOfWork) {
+    protected Object buildClonePart(Object attributeValue, CacheKey parentCacheKey, AbstractSession cloningSession) {
         if (attributeValue == null) {
             return this.getContainerPolicy().containerInstance();
         } else {
@@ -149,11 +151,11 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
             Object cloneContainer = this.getContainerPolicy().containerInstance();
             Object iterator = this.getContainerPolicy().iteratorFor(attributeValue);
             while (this.getContainerPolicy().hasNext(iterator)) {
-                Object originalValue = this.getContainerPolicy().next(iterator, unitOfWork);
+                Object originalValue = this.getContainerPolicy().next(iterator, (AbstractSession) cloningSession);
 
                 // Bug 4182377 - there was a typo in the conversion logic
-                Object cloneValue = getValueConverter().convertDataValueToObjectValue(getValueConverter().convertObjectValueToDataValue(originalValue, unitOfWork), unitOfWork);
-                this.getContainerPolicy().addInto(cloneValue, cloneContainer, unitOfWork);
+                Object cloneValue = getValueConverter().convertDataValueToObjectValue(getValueConverter().convertObjectValueToDataValue(originalValue, cloningSession), cloningSession);
+                this.getContainerPolicy().addInto(cloneValue, cloneContainer, (AbstractSession) cloningSession);
             }
             return cloneContainer;
         }
@@ -188,7 +190,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Build and return a new element based on the specified element.
      * Direct collections simply return the element itself, since it is immutable.
      */
-    public Object buildElementFromElement(Object object, MergeManager mergeManager) {
+    public Object buildElementFromElement(Object object, CacheKey elementCacheKey, MergeManager mergeManager) {
         return object;
     }
 
@@ -498,7 +500,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Merge changes from the source to the target object. Treat the collection as a
     * simple direct value, since minimal update isn't possible.
      */
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         if (changeRecord == null) {// I have not calculated changes then simply merge value into target
             Object targetValue = getRealAttributeValueFromObject(source, mergeManager.getSession());
             ContainerPolicy cp = this.getContainerPolicy();
@@ -520,7 +522,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * does not exist or the target is uninitialized.
     * Treat the collection as a simple direct value.
      */
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         Object attributeValue = getAttributeValueFromObject(source);
         ContainerPolicy cp = this.getContainerPolicy();
         Object container = cp.containerInstance();
@@ -672,7 +674,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Build the nested collection from the database row.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         ContainerPolicy cp = this.getContainerPolicy();
 
         Object fieldValue = row.getValues(this.getField());

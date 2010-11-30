@@ -13,6 +13,7 @@
 package org.eclipse.persistence.mappings.structures;
 
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
@@ -125,8 +126,8 @@ public class ArrayMapping extends AbstractCompositeDirectCollectionMapping imple
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
-        (new ArrayCollectionMappingHelper(this)).mergeChangesIntoObject(target, changeRecord, source, mergeManager);
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+        (new ArrayCollectionMappingHelper(this)).mergeChangesIntoObject(target, targetCacheKey, changeRecord, source, mergeManager);
     }
 
     /**
@@ -134,8 +135,8 @@ public class ArrayMapping extends AbstractCompositeDirectCollectionMapping imple
      * Merge changes from the source to the target object.
      * Simply replace the entire target collection.
      */
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
-        (new ArrayCollectionMappingHelper(this)).mergeIntoObject(target, isTargetUnInitialized, source, mergeManager);
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+        (new ArrayCollectionMappingHelper(this)).mergeIntoObject(target, targetCacheKey, isTargetUnInitialized, source, mergeManager);
     }
 
     /**

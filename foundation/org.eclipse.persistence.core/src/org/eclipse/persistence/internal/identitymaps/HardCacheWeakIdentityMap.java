@@ -38,13 +38,18 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
         this.referenceCache = new ExposedNodeLinkedList();
     }
 
+    public HardCacheWeakIdentityMap(int size, ClassDescriptor descriptor, boolean isIsolated) {
+        this(size, descriptor);
+        this.isIsolated = isIsolated;
+    }
+
     /**
      * Use a ReferenceCacheKey that also stores the linked list node to manage
      * the LRU sub-cache of references.
      */
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new ReferenceCacheKey(primaryKey, object, writeLockValue, readTime);
+        return new ReferenceCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated);
     }
 
     /**
@@ -117,8 +122,8 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
     public class ReferenceCacheKey extends WeakCacheKey {
         protected LinkedNode referenceNode;
 
-        public ReferenceCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-            super(primaryKey, object, writeLockValue, readTime);
+        public ReferenceCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime, boolean isIsolated) {
+            super(primaryKey, object, writeLockValue, readTime, isIsolated);
         }
 
         public LinkedNode getReferenceCacheNode() {

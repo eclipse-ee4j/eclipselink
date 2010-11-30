@@ -17,6 +17,7 @@ import java.sql.*;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
@@ -159,7 +160,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * The cache check is done before the prepare as a hit will not require the work to be done.
      */
-    protected Object checkEarlyReturnImpl(AbstractSession session, AbstractRecord translationRow) {
+    protected Object checkEarlyReturnLocal(AbstractSession session, AbstractRecord translationRow) {
         // Check for in-memory only query.
         if (shouldCheckCacheOnly()) {
             // assert !isReportQuery();
@@ -732,7 +733,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                         rowsIn.add(row);
                     }
                 }
-                cp.addAll(clonesIn, clones, unitOfWork, rowsIn, this);
+                cp.addAll(clonesIn, clones, unitOfWork, rowsIn, this, null, true);
             } else {
                 for (int index = 0; index < size; index++) {
                     AbstractRecord row = rows.get(index);
@@ -740,7 +741,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     // null is placed in the row collection for 1-m joining to filter duplicate rows.
                     if (row != null) {
                         Object clone = buildObject(row);
-                        cp.addInto(clone, clones, unitOfWork, row, this);
+                        cp.addInto(clone, clones, unitOfWork, row, this, null, true);
                     }
                 }
             }

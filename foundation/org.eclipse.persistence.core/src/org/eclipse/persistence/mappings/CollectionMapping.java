@@ -23,6 +23,7 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 
 import org.eclipse.persistence.annotations.OrderCorrectionType;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.internal.descriptors.changetracking.*;
@@ -32,10 +33,12 @@ import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;
@@ -178,11 +181,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Ignore the objects, use the attribute value.
      */
     @Override
-    public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
         ContainerPolicy containerPolicy = this.containerPolicy;
         if (attributeValue == null) {
             Object container = containerPolicy.containerInstance(1);
-            if ((this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (container instanceof CollectionChangeTracker)) {
+            if (cloningSession.isUnitOfWork() && (this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (container instanceof CollectionChangeTracker)) {
                 ((CollectionChangeTracker)container).setTrackedAttributeName(this.getAttributeName());
                 ((CollectionChangeTracker)container)._persistence_setPropertyChangeListener(((ChangeTracker)clone)._persistence_getPropertyChangeListener());
             }
@@ -199,9 +202,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             temporaryCollection = containerPolicy.cloneFor(attributeValue);
         }
         for (Object valuesIterator = containerPolicy.iteratorFor(temporaryCollection);containerPolicy.hasNext(valuesIterator);){
-            containerPolicy.addNextValueFromIteratorInto(valuesIterator, clone, clonedAttributeValue, this, unitOfWork, isExisting);
+            containerPolicy.addNextValueFromIteratorInto(valuesIterator, clone, cacheKey, clonedAttributeValue, this, cloningSession, isExisting);
         }
-        if ((this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (clonedAttributeValue instanceof CollectionChangeTracker)) {
+        if (cloningSession.isUnitOfWork() && (this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (clonedAttributeValue instanceof CollectionChangeTracker)) {
             ((CollectionChangeTracker)clonedAttributeValue).setTrackedAttributeName(this.getAttributeName());
             ((CollectionChangeTracker)clonedAttributeValue)._persistence_setPropertyChangeListener(((ChangeTracker)clone)._persistence_getPropertyChangeListener());
         }
@@ -212,6 +215,20 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     }
 
     /**
+     * INTERNAL:
+     * Performs a first level clone of the attribute.  This generally means on the container will be cloned.
+     */
+    public Object buildContainerClone(Object attributeValue, AbstractSession cloningSession){
+        Object newContainer = this.containerPolicy.containerInstance(this.containerPolicy.sizeFor(attributeValue));
+        Object valuesIterator = this.containerPolicy.iteratorFor(attributeValue);
+        while (this.containerPolicy.hasNext(valuesIterator)) {
+            Object originalValue = this.containerPolicy.next(valuesIterator, cloningSession);
+            this.containerPolicy.addInto(originalValue, newContainer, cloningSession);
+        }
+        return newContainer;
+    }
+    
+   /**
      * INTERNAL:
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
@@ -244,13 +261,27 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Clone the element, if necessary.
      */
-    public Object buildElementClone(Object element, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildElementUnitOfWorkClone(Object element, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         // optimize registration to knowledge of existence
         if (isExisting) {
             return unitOfWork.registerExistingObject(element);
         } else {// not known whether existing or not
             return unitOfWork.registerObject(element);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Clone the element, if necessary.
+     */
+    public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isExisting) {
+        if (cloningSession.isUnitOfWork()){
+            return buildElementUnitOfWorkClone(element, parent, (UnitOfWorkImpl)cloningSession, isExisting);
+        }
+        if (referenceDescriptor.isProtectedIsolation()){
+            cloningSession.createProtectedInstanceFromCachedData(element, referenceDescriptor);
+        }
+        return element;
     }
 
     /**
@@ -396,6 +427,27 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             uow.registerNewObjectForPersist(nextObject, visitedObjects);
             cp.cascadeRegisterNewIfRequired(wrappedObject, uow, visitedObjects);
         }
+    }
+
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    @Override
+    protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery){
+        //no-op for mappings that do not support PROTECTED cache isolation
+    }
+
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    @Override
+    protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
     }
 
     /**
@@ -819,8 +871,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Extract the value from the batch optimized query, this should be supported by most query types.
      */
     @Override
-    public Object extractResultFromBatchQuery(ReadQuery batchQuery, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
-        Object result = super.extractResultFromBatchQuery(batchQuery, sourceRow, session, originalQuery);
+    public Object extractResultFromBatchQuery(ReadQuery batchQuery, CacheKey parentCacheKey, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
+        Object result = super.extractResultFromBatchQuery(batchQuery, parentCacheKey, sourceRow, session, originalQuery);
         // The source object might not have any target objects.
         if (result == null) {
             return this.containerPolicy.containerInstance();
@@ -836,7 +888,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * mappings source keys of the source objects.
      */
     @Override
-    protected void executeBatchQuery(DatabaseQuery query, Map referenceObjectsByKey, AbstractSession session, AbstractRecord translationRow) {
+    protected void executeBatchQuery(DatabaseQuery query, CacheKey parentCacheKey, Map referenceObjectsByKey, AbstractSession session, AbstractRecord translationRow) {
         // Execute query and index resulting object sets by key.
         ReadAllQuery batchQuery = (ReadAllQuery)query;
         ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(batchQuery, translationRow);
@@ -866,7 +918,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 List objects = entry.getValue()[0];
                 List<AbstractRecord> rows = entry.getValue()[1];
                 Object container = this.containerPolicy.containerInstance(objects.size());
-                this.containerPolicy.addAll(objects, container, query.getSession(), rows, batchQuery);
+                this.containerPolicy.addAll(objects, container, query.getSession(), rows, batchQuery, parentCacheKey, true);
                 referenceObjectsByKey.put(eachReferenceKey, container);
             }
         } else {
@@ -881,7 +933,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     container = this.containerPolicy.containerInstance();
                     referenceObjectsByKey.put(eachReferenceKey, container);
                 }
-                this.containerPolicy.addInto(eachReferenceObject, container, session, row, batchQuery);
+                this.containerPolicy.addInto(eachReferenceObject, container, session, row, batchQuery, parentCacheKey, true);
             }
         }
     }
@@ -1247,7 +1299,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * collection based on the changeset
      */
     @Override
-    public void mergeChangesIntoObject(Object target, ChangeRecord chgRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord chgRecord, Object source, MergeManager mergeManager) {
+        if (this.descriptor.isProtectedIsolation() && !this.isCacheable && targetCacheKey != null && !targetCacheKey.isIsolated()){
+            cacheForeignKeyValues(source, targetCacheKey, descriptor, mergeManager.getSession());
+            return;
+        }
         Object valueOfTarget = null;
         Object valueOfSource = null;
         AbstractSession parentSession = null;
@@ -1312,7 +1368,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * does not exist or the target is uninitialized
      */
     @Override
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!isAttributeValueInstantiated(source))) {
@@ -1332,7 +1388,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             if (!isAttributeValueInstantiated(target)) {
                 // We must clone and set the value holder from the source to the target.
                 Object attributeValue = getAttributeValueFromObject(source);
-                Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, target, (UnitOfWorkImpl) mergeManager.getSession(), false); // building clone from an original not a row. 
+                Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, targetCacheKey, target, (UnitOfWorkImpl) mergeManager.getSession(), false); // building clone from an original not a row. 
                 setAttributeValueInObject(target, clonedAttributeValue);
                 
                 // This will occur when the clone's value has not been instantiated yet and we do not need
@@ -1626,6 +1682,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     @Override
     public void postInitialize(AbstractSession session) {
+        super.postInitialize(session);
         this.containerPolicy.postInitialize(session);
         if (this.referenceDescriptor != null) {
             this.mustDeleteReferenceObjectsOneByOne = this.referenceDescriptor.hasDependencyOnParts()
@@ -2292,7 +2349,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * To get here the mapping's isJoiningSupported() should return true.
      */
     @Override
-    protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey parentCacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
 
         Object value = this.containerPolicy.containerInstance();
         // Extract the primary key of the source object, to filter only the joined rows for that object.
@@ -2343,7 +2400,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     nestedQuery.setTranslationRow(targetRow);
                     targetPrimaryKeys.add(targetKey);
                     Object targetObject = getReferenceDescriptor().getObjectBuilder().buildObject(nestedQuery, targetRow);
-                    Object targetMapKey = this.containerPolicy.buildKeyFromJoinedRow(targetRow, joinManager, nestedQuery, executionSession);
+                    Object targetMapKey = this.containerPolicy.buildKeyFromJoinedRow(targetRow, joinManager, nestedQuery, parentCacheKey, executionSession, isTargetProtected);
                     nestedQuery.setTranslationRow(null);
                     if (targetMapKey == null){
                         if (shouldAddAll) {
@@ -2358,7 +2415,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 }
             }
             if (shouldAddAll) {
-                this.containerPolicy.addAll(targetObjects, value, executionSession, targetRows, nestedQuery);
+                this.containerPolicy.addAll(targetObjects, value, executionSession, targetRows, nestedQuery, parentCacheKey, isTargetProtected);
             }
         }
         return this.indirectionPolicy.valueFromRow(value);

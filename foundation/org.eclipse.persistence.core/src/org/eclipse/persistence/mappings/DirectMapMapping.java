@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChan
 import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
@@ -131,7 +132,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Ignore the objects, use the attribute value.
      */
     @Override
-    public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
         if (attributeValue == null) {
             return containerPolicy.containerInstance(1);
         }
@@ -148,10 +149,10 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
 
         for (Object keysIterator = containerPolicy.iteratorFor(temporaryCollection);
                  containerPolicy.hasNext(keysIterator);) {
-            Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(keysIterator, unitOfWork);
-            Object cloneKey = containerPolicy.buildCloneForKey(entry.getKey(), clone, unitOfWork, isExisting);
-            Object cloneValue = buildElementClone(entry.getValue(), clone, unitOfWork, isExisting);
-            containerPolicy.addInto(cloneKey, cloneValue, clonedAttributeValue, unitOfWork);
+            Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(keysIterator, cloningSession);
+            Object cloneKey = containerPolicy.buildCloneForKey(entry.getKey(), clone, cacheKey, cloningSession, isExisting);
+            Object cloneValue = buildElementClone(entry.getValue(), clone, cacheKey, cloningSession, isExisting);
+            containerPolicy.addInto(cloneKey, cloneValue, clonedAttributeValue, cloningSession);
         }
         return clonedAttributeValue;
     }
@@ -295,7 +296,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
-    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         Object key = dbRow.get(getDirectField());
         if (getValueConverter() != null){
             key = getValueConverter().convertDataValueToObjectValue(key, session);
@@ -440,7 +441,11 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * collection based on the changeset.
      */
     @Override
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+        if (this.descriptor.isProtectedIsolation() && !this.isCacheable && targetCacheKey != null && !targetCacheKey.isIsolated()){
+            cacheForeignKeyValues(source, targetCacheKey, descriptor, mergeManager.getSession());
+            return;
+        }
         Map valueOfTarget = null;
         AbstractSession session = mergeManager.getSession();
 
@@ -503,7 +508,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Merge changes from the source to the target object.
      */
     @Override
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!isAttributeValueInstantiated(source))) {
@@ -986,16 +991,16 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * mappings source keys of the source objects.
      */
     @Override
-    protected void executeBatchQuery(DatabaseQuery query, Map referenceDataByKey, AbstractSession session, AbstractRecord translationRow) {
+    protected void executeBatchQuery(DatabaseQuery query, CacheKey parentCacheKey, Map referenceDataByKey, AbstractSession session, AbstractRecord translationRow) {
         // Execute query and index resulting object sets by key.                
         List<AbstractRecord> rows = (List)session.executeQuery(query, translationRow);
         MappedKeyMapContainerPolicy mapContainerPolicy = getMappedKeyMapContainerPolicy();
         for (AbstractRecord referenceRow : rows) {
             Object referenceKey = null;
             if (query.isObjectBuildingQuery()){
-                referenceKey = mapContainerPolicy.buildKey(referenceRow, (ObjectBuildingQuery)query, session);
+                referenceKey = mapContainerPolicy.buildKey(referenceRow, (ObjectBuildingQuery)query, parentCacheKey, session, true);
             } else {
-                referenceKey = mapContainerPolicy.buildKey(referenceRow, null, session);
+                referenceKey = mapContainerPolicy.buildKey(referenceRow, null, parentCacheKey, session, true);
             }
             Object referenceValue = referenceRow.get(this.directField);
             Object eachCacheKey = extractKeyFromTargetRow(referenceRow, session);
@@ -1020,7 +1025,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      */
     @Override
-    protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey parentCacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
 
         ContainerPolicy policy = getContainerPolicy();
         Object value = policy.containerInstance();
@@ -1049,7 +1054,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             targetRow = trimRowForJoin(targetRow, joinManager, executionSession);
             // Partial object queries must select the primary key of the source and related objects.
             // If the target joined rows in null (outerjoin) means an empty collection.
-            Object directKey = this.containerPolicy.buildKeyFromJoinedRow(targetRow, joinManager, sourceQuery, executionSession);
+            Object directKey = this.containerPolicy.buildKeyFromJoinedRow(targetRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected);
             if (directKey == null) {
                 // A null direct value means an empty collection returned as nulls from an outerjoin.
                 return getIndirectionPolicy().valueFromRow(value);

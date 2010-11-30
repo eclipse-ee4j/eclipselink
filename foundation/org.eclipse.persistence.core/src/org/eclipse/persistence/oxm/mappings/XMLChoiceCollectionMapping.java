@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -42,6 +43,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -141,11 +143,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     * INTERNAL:
     * Clone the attribute from the original and assign it to the clone.
     */
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+    @Override
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildClone");
     }
 
-    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
     }
 
@@ -205,7 +208,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         throw DescriptorException.invalidMappingOperation(this, "mergeChangesIntoObject");
     }
 
@@ -213,11 +216,11 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     * INTERNAL:
     * Merge changes from the source to the target object.
     */
-    public void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUninitialized, Object source, MergeManager mergeManager) {
         throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
        List<XMLEntry> values = ((DOMRecord)row).getValuesIndicatingNoEntry(this.getFields());
        Object container = getContainerPolicy().containerInstance(values.size());
        for(XMLEntry next:values) {
@@ -226,7 +229,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
            Converter converter = getConverter();
            if(nextMapping.isAbstractCompositeCollectionMapping()) {
                XMLCompositeCollectionMapping xmlMapping = (XMLCompositeCollectionMapping)nextMapping;
-               Object value = xmlMapping.buildObjectFromNestedRow((AbstractRecord)next.getValue(), joinManager, sourceQuery, executionSession);
+               Object value = xmlMapping.buildObjectFromNestedRow((AbstractRecord)next.getValue(), joinManager, sourceQuery, executionSession, isTargetProtected);
                if(converter != null) {
                    if (converter instanceof XMLConverter) {
                        value = ((XMLConverter) converter).convertDataValueToObjectValue(value, executionSession, ((XMLRecord) row).getUnmarshaller());
@@ -251,7 +254,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
        ArrayList<XMLMapping> processedMappings = new ArrayList<XMLMapping>();
        for(XMLMapping mapping:choiceElementMappings.values()) {
            if(((DatabaseMapping)mapping).isObjectReferenceMapping() && !(processedMappings.contains(mapping))) {
-               ((DatabaseMapping)mapping).readFromRowIntoObject(row, joinManager, ((XMLRecord)row).getCurrentObject(), sourceQuery, executionSession);
+               ((DatabaseMapping)mapping).readFromRowIntoObject(row, joinManager, ((XMLRecord)row).getCurrentObject(), cacheKey, sourceQuery, executionSession, isTargetProtected);
                processedMappings.add(mapping);
            }
        }

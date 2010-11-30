@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.IndexedObject;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -101,11 +102,11 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * Return whether the container changed
      */
     @Override
-    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ObjectBuildingQuery query) {
+    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ObjectBuildingQuery query, CacheKey parentCacheKey, boolean isTargetProtected) {
         if(this.listOrderField == null) {
-            return super.addAll(elements, container, session, dbRows, query);
+            return super.addAll(elements, container, session, dbRows, query, parentCacheKey, isTargetProtected);
         } else {
-            return addAll(elements, container, session, dbRows, (ReadQuery)query);
+            return addAll(elements, container, session, dbRows, (ReadQuery)query, parentCacheKey);
         }
     }
     
@@ -118,15 +119,15 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * Return whether the container changed
      */
     @Override
-    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, DataReadQuery query) {
+    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, DataReadQuery query, CacheKey parentCacheKey, boolean isTargetProtected) {
         if(this.listOrderField == null) {
-            return super.addAll(elements, container, session, dbRows, query);
+            return super.addAll(elements, container, session, dbRows, query, parentCacheKey, isTargetProtected);
         } else {
-            return addAll(elements, container, session, dbRows, (ReadQuery)query);
+            return addAll(elements, container, session, dbRows, (ReadQuery)query, parentCacheKey);
         }
     }
 
-    protected boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ReadQuery query) {
+    protected boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ReadQuery query, CacheKey parentCacheKey) {
         int size = dbRows.size();
 
         if(this.elementDescriptor != null && this.elementDescriptor.getObjectBuilder().hasWrapperPolicy()) {

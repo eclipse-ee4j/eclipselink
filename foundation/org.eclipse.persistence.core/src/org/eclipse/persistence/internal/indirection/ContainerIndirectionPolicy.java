@@ -22,10 +22,12 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
@@ -108,10 +110,10 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      *  from a row as opposed to building the original from the row, putting it in
      *  the shared cache, and then cloning the original.
      */
-    public Object cloneAttribute(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
+    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         IndirectContainer container = (IndirectContainer)attributeValue;
         ValueHolderInterface valueHolder = container.getValueHolder();
-        ValueHolderInterface newValueHolder = (ValueHolderInterface)super.cloneAttribute(valueHolder, original, clone, unitOfWork, buildDirectlyFromRow);
+        ValueHolderInterface newValueHolder = (ValueHolderInterface)super.cloneAttribute(valueHolder, original, cacheKey, clone, cloningSession, buildDirectlyFromRow);
 
         return buildContainer(newValueHolder);
     }
@@ -351,8 +353,8 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      *    This value is determined by the batchQuery.
      * In this case, wrap the query in a ValueHolder for later invocation.
      */
-    public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery) {
-        ValueHolderInterface valueHolder = (ValueHolderInterface)super.valueFromBatchQuery(batchQuery, row, originalQuery);
+    public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
+        ValueHolderInterface valueHolder = (ValueHolderInterface)super.valueFromBatchQuery(batchQuery, row, originalQuery, parentCacheKey);
         return buildContainer(valueHolder);
     }
 

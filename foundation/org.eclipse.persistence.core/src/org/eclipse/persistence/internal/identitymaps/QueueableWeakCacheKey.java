@@ -9,8 +9,8 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     // makes for easy cleanup
     protected ReferenceQueue referenceQueue;
 
-    public QueueableWeakCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime, ReferenceQueue refQueue) {
-        super(primaryKey, object, writeLockValue, readTime);
+    public QueueableWeakCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime, ReferenceQueue refQueue, boolean isIsolated) {
+        super(primaryKey, object, writeLockValue, readTime, isIsolated);
         this.referenceQueue = refQueue;
     }
 

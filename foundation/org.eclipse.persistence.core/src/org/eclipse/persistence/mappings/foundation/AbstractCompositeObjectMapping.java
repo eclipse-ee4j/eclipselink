@@ -20,6 +20,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -227,7 +228,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * Extract and return the aggregate object from
      * the specified row.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         Object fieldValue = row.get(this.getField());
 
         // BUG#2667762 there could be whitespace in the row instead of null
@@ -244,11 +245,11 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
             descriptor = this.getReferenceDescriptor(nestedElementClass, executionSession);
         }
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-        Object toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, joinManager);
+        Object toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, cacheKey, joinManager, isTargetProtected);
         if(getConverter() != null) {
             toReturn = getConverter().convertDataValueToObjectValue(toReturn, executionSession);
         }
-        return buildCompositeObject(objectBuilder, nestedRow, sourceQuery, joinManager);
+        return buildCompositeObject(objectBuilder, nestedRow, sourceQuery, cacheKey, joinManager, isTargetProtected);
     }
 
     /**
@@ -285,7 +286,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
         setAttributeValueInObject(original, element);
     }
 
-    protected abstract Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManger);
+    protected abstract Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManger, boolean isTargetProtected);
 
     /**
      * INTERNAL:

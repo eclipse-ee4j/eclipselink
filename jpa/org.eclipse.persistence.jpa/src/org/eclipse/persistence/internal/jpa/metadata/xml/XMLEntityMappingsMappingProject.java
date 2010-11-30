@@ -513,6 +513,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
+        descriptor.addMapping(getNonCacheableMapping());
         
         // Attribute Mappings
         descriptor.addMapping(getNameAttributeMapping());
@@ -620,6 +621,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
+        descriptor.addMapping(getNonCacheableMapping());
         
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
@@ -666,6 +668,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         sharedMapping.setXPath("@shared");
         descriptor.addMapping(sharedMapping);
         
+        XMLDirectMapping isolationMapping = new XMLDirectMapping();
+        isolationMapping.setAttributeName("m_isolation");
+        isolationMapping.setGetMethodName("getIsolation");
+        isolationMapping.setSetMethodName("setIsolation");
+        isolationMapping.setXPath("@isolation");
+        descriptor.addMapping(isolationMapping);
+
         XMLDirectMapping cacheTypeMapping = new XMLDirectMapping();
         cacheTypeMapping.setAttributeName("m_type");
         cacheTypeMapping.setGetMethodName("getType");
@@ -1199,7 +1208,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
-
+        descriptor.addMapping(getNonCacheableMapping());
         descriptor.addMapping(getPartitioningMapping());
         descriptor.addMapping(getReplicationPartitioningMapping());
         descriptor.addMapping(getRoundRobinPartitioningMapping());
@@ -1863,6 +1872,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
+        descriptor.addMapping(getNonCacheableMapping());
         
         descriptor.addMapping(getPartitioningMapping());
         descriptor.addMapping(getReplicationPartitioningMapping());
@@ -2001,6 +2011,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
+        descriptor.addMapping(getNonCacheableMapping());
         
         descriptor.addMapping(getPartitioningMapping());
         descriptor.addMapping(getReplicationPartitioningMapping());
@@ -2145,7 +2156,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
-
+        descriptor.addMapping(getNonCacheableMapping());
         descriptor.addMapping(getPartitioningMapping());
         descriptor.addMapping(getReplicationPartitioningMapping());
         descriptor.addMapping(getRoundRobinPartitioningMapping());
@@ -2299,7 +2310,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
-
+        descriptor.addMapping(getNonCacheableMapping());
         descriptor.addMapping(getPartitioningMapping());
         descriptor.addMapping(getReplicationPartitioningMapping());
         descriptor.addMapping(getRoundRobinPartitioningMapping());
@@ -2956,7 +2967,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
-
+        descriptor.addMapping(getNonCacheableMapping());
         descriptor.addMapping(getPartitioningMapping());
         descriptor.addMapping(getReplicationPartitioningMapping());
         descriptor.addMapping(getRoundRobinPartitioningMapping());
@@ -3995,6 +4006,23 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         namedStoredProcedureQueryMapping.setXPath("orm:named-stored-procedure-query");
         return namedStoredProcedureQueryMapping;
     }
+
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getNonCacheableMapping() {
+            XMLDirectMapping noncacheable = new XMLDirectMapping();
+            noncacheable.setAttributeName("m_nonCacheable");
+            noncacheable.setGetMethodName("isNonCacheable");
+            noncacheable.setSetMethodName("setIsNonCacheable");
+            noncacheable.setConverter(new EmptyElementConverter());
+            IsSetNullPolicy cacheablePolicy = new IsSetNullPolicy("isNonCacheable");
+            cacheablePolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+            noncacheable.setNullPolicy(cacheablePolicy);
+            noncacheable.setXPath("orm:noncacheable");
+            return noncacheable;
+    }
+
     /**
      * INTERNAL:
      */

@@ -35,7 +35,7 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable {
     protected boolean shouldUpdateReadTimeOnUpdate = false;
 
     /** Determines if expired object registered in the unit of work should be refreshed, default true. */
-    protected boolean shouldRefreshInvalidObjectsInUnitOfWork = true;
+    protected boolean shouldRefreshInvalidObjectsOnClone = true;
     
     /** Allows the timeToLive to be randomized to avoid bottlenecks. */
     protected boolean isInvalidationRandomized = false;
@@ -121,16 +121,37 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable {
     /** 
      * PUBLIC:
      * Set if expired object registered in the unit of work should be refreshed, default is true.
+     * @deprecated since EclipseLink 2.2
+     * @see setShouldRefreshInvalidObjectsOnClone(boolean)
      */
+    @Deprecated
     public void setShouldRefreshInvalidObjectsInUnitOfWork(boolean shouldRefreshInvalidObjectsInUnitOfWork) {
-        this.shouldRefreshInvalidObjectsInUnitOfWork = shouldRefreshInvalidObjectsInUnitOfWork;
+        this.shouldRefreshInvalidObjectsOnClone = shouldRefreshInvalidObjectsInUnitOfWork;
     }
     
     /** 
      * PUBLIC:
-     * Return if expired object registered in the unit of work should be refreshed.
+     * Set if expired object should be refreshed prior to cloning, default is true.  Applies to Protected Entities and UnitOfWork registration.
      */
+    public void setShouldRefreshInvalidObjectsOnClone(boolean shouldRefreshInvalidObjectsOnClone) {
+        this.shouldRefreshInvalidObjectsOnClone = shouldRefreshInvalidObjectsOnClone;
+    }
+    /** 
+     * PUBLIC:
+     * Return if expired object registered in the unit of work should be refreshed.
+     * @deprecated since EclipseLink 2.2
+     * @see shouldRefreshInvalidObjectsOnClone()
+     */
+    @Deprecated
     public boolean shouldRefreshInvalidObjectsInUnitOfWork() {
-        return shouldRefreshInvalidObjectsInUnitOfWork;
+        return shouldRefreshInvalidObjectsOnClone;
+    }
+    /** 
+     * PUBLIC:
+     * Return if expired object should be refreshed prior to cloning.  Applies to Protected Entities and UnitOfWork registration.
+     */ 
+    
+    public boolean shouldRefreshInvalidObjectsOnClone() {
+        return shouldRefreshInvalidObjectsOnClone;
     }
 }

@@ -27,7 +27,9 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
@@ -177,9 +179,9 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * The passing of the query is to allow future compatibility with Maps (ordered Map).
      */
     @Override
-    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord row, DataReadQuery query) {
-        Object key = this.keyMapping.createMapComponentFromRow(row, null, session);        
-        Object value = this.valueMapping.createMapComponentFromRow(row, null, session);
+    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord row, DataReadQuery query, CacheKey parentCacheKey, boolean isTargetProtected) {
+        Object key = this.keyMapping.createMapComponentFromRow(row, null, parentCacheKey, session, isTargetProtected);        
+        Object value = this.valueMapping.createMapComponentFromRow(row, null, parentCacheKey, session, isTargetProtected);
         return addInto(key, value, container, session);
     }
 
@@ -189,7 +191,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * use the row to compute the key
      */ 
     @Override
-    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query) {
+    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, boolean isTargetProtected) {
         Object key = null;
         Object value = null;
         
@@ -197,11 +199,11 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
         // from dbRow
         if ((valueMapping != null) && (((DatabaseMapping)valueMapping).isDirectCollectionMapping()) && (session.getDescriptor(element.getClass()) != null)) {
             key = element;
-            value = valueMapping.createMapComponentFromRow(dbRow, null, session);
+            value = valueMapping.createMapComponentFromRow(dbRow, null, parentCacheKey, session, isTargetProtected);
         } else if (keyMapping != null) {
             value = element;
             try{
-                key = keyMapping.createMapComponentFromRow(dbRow, query, session);
+                key = keyMapping.createMapComponentFromRow(dbRow, query, parentCacheKey, session, isTargetProtected);
             } catch (Exception e) {
                 throw QueryException.exceptionWhileReadingMapKey(element, e);
             }
@@ -225,8 +227,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * Build a clone for the key of a Map represented by this container policy.
      */
     @Override
-    public Object buildCloneForKey(Object key, Object parent, UnitOfWorkImpl uow, boolean isExisting){
-        return keyMapping.buildElementClone(key, parent, uow, isExisting);
+    public Object buildCloneForKey(Object key, Object parent, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isExisting){
+        return keyMapping.buildElementClone(key, parent, parentCacheKey, cloningSession, isExisting);
 
     }
     
@@ -245,16 +247,16 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * Extract the key for the map from the provided row.
      */
     @Override
-    public Object buildKey(AbstractRecord row, ObjectBuildingQuery query, AbstractSession session){
-        return keyMapping.createMapComponentFromRow(row, query, session);
+    public Object buildKey(AbstractRecord row, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
+        return keyMapping.createMapComponentFromRow(row, query, parentCacheKey, session, isTargetProtected);
     }
         
     /**
      * Extract the key for the map from the provided row.
      */
     @Override
-    public Object buildKeyFromJoinedRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session){
-        return keyMapping.createMapComponentFromJoinedRow(row, joinManager, query, session);
+    public Object buildKeyFromJoinedRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
+        return keyMapping.createMapComponentFromJoinedRow(row, joinManager, query, parentCacheKey, session, isTargetProtected);
     }
 
     /**

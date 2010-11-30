@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.indirection;
 
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -29,6 +30,7 @@ import org.eclipse.persistence.exceptions.*;
 public class BatchValueHolder extends QueryBasedValueHolder {
     protected transient ForeignReferenceMapping mapping;
     protected transient ObjectLevelReadQuery originalQuery;
+    protected transient CacheKey parentCacheKey;
 
     /**
      * Initialize the query-based value holder.
@@ -36,10 +38,11 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      * @param row The row representation of the object.
      * @param mapping The mapping that is uses batch reading.
      */
-    public BatchValueHolder(ReadQuery query, AbstractRecord row, ForeignReferenceMapping mapping, ObjectLevelReadQuery originalQuery) {
+    public BatchValueHolder(ReadQuery query, AbstractRecord row, ForeignReferenceMapping mapping, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
         super(query, row, originalQuery.getSession());
         this.mapping = mapping;
         this.originalQuery = originalQuery;
+        this.parentCacheKey = parentCacheKey;
     }
 
     protected ForeignReferenceMapping getMapping() {
@@ -52,7 +55,7 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      * since they all share the same query, the extractResultFromBatchQuery method must be synchronized.
      */
     protected Object instantiate(AbstractSession session) throws EclipseLinkException {
-        return this.mapping.extractResultFromBatchQuery(this.query, this.row, session, this.originalQuery);
+        return this.mapping.extractResultFromBatchQuery(this.query, this.parentCacheKey, this.row, session, this.originalQuery);
     }
 
     /**
@@ -75,7 +78,7 @@ public class BatchValueHolder extends QueryBasedValueHolder {
             localQuery = (ReadQuery)this.query.clone();
             unitOfWork.getBatchQueries().put(this.query, localQuery);
         }
-        return this.mapping.extractResultFromBatchQuery(localQuery, this.row, unitOfWorkValueHolder.getUnitOfWork(), this.originalQuery);
+        return this.mapping.extractResultFromBatchQuery(localQuery, this.parentCacheKey, this.row, unitOfWorkValueHolder.getUnitOfWork(), this.originalQuery);
     }
 
     /**

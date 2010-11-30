@@ -294,7 +294,7 @@ public class MergeManager {
         } else {
             // merge into the clientSideDomainObject from the serverSideDomainObject;
             // use clientSideDomainObject as the backup, as anything different should be merged
-            descriptor.getObjectBuilder().mergeIntoObject(clientSideDomainObject, false, serverSideDomainObject, this);
+            descriptor.getObjectBuilder().mergeIntoObject(clientSideDomainObject, null, false, serverSideDomainObject, this);
             ObjectDescriptor objectDescriptor = (ObjectDescriptor)getObjectDescriptors().get(serverSideDomainObject);
             if (objectDescriptor == null){
                 //the object must have been added concurently before serialize generate a new ObjectDescriptor on this side
@@ -484,7 +484,7 @@ public class MergeManager {
             
             // Merge into the clone from the original and use the clone as 
             // backup as anything different should be merged.
-            builder.mergeIntoObject(registeredObject, false, rmiClone, this, cascadeOnly, false);  
+            builder.mergeIntoObject(registeredObject, null, false, rmiClone, this, cascadeOnly, false);  
         } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(registeredObject);
         }
@@ -500,7 +500,17 @@ public class MergeManager {
         ClassDescriptor descriptor = this.session.getDescriptor(clone);
 
         // Find the original object, if it is not there then do nothing.
-        Object original = ((UnitOfWorkImpl)this.session).getOriginalVersionOfObjectOrNull(clone, descriptor);
+        Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, this.session, true);
+        CacheKey parentCacheKey = null;
+        if (primaryKey != null){
+            parentCacheKey = ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
+        }
+        Object original = null;
+        if (parentCacheKey != null){
+            original = parentCacheKey.getObject();
+        }else{
+            original = ((UnitOfWorkImpl)this.session).getOriginalVersionOfObjectOrNull(clone, descriptor);
+        }
 
         if (original == null) {
             return clone;
@@ -510,13 +520,12 @@ public class MergeManager {
         descriptor.getObjectChangePolicy().dissableEventProcessing(clone);
         try {
             // Merge into the clone from the original, use clone as backup as anything different should be merged.
-            descriptor.getObjectBuilder().mergeIntoObject(clone, false, original, this);
+            descriptor.getObjectBuilder().mergeIntoObject(clone, parentCacheKey, false, original, this);
         } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(clone);
         }
         //update the change policies with the refresh
         descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, (UnitOfWorkImpl)this.session, ((UnitOfWorkImpl)this.session).getCloneMapping());
-        Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, this.session, true);
         if (primaryKey == null) {
             return clone;
         }
@@ -524,7 +533,6 @@ public class MergeManager {
         if (descriptor.usesOptimisticLocking()) {
             descriptor.getOptimisticLockingPolicy().mergeIntoParentCache((UnitOfWorkImpl)this.session, primaryKey, clone);
         }
-        CacheKey parentCacheKey = ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
         CacheKey uowCacheKey = this.session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
 
         // Check for null because when there is NoIdentityMap, CacheKey will be null
@@ -572,18 +580,21 @@ public class MergeManager {
                 original = unitOfWork.buildOriginal(clone);
                 if (objectChangeSet == null) {
                     //no changeset so this would not have been locked as part of the 
-                    original = parent.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, parent), original, descriptor, this, parent);
-                    objectBuilder.mergeIntoObject(original, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                    CacheKey cacheKey = parent.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, parent), original, descriptor, this, parent);
+                    original = cacheKey.getObject();
+                    objectBuilder.mergeIntoObject(original, cacheKey, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
                 } else if (!objectChangeSet.isNew()) {
                     // Once the original is created we must put it in the cache and
                     // lock it to prevent a reading thread from creating it as well
                     // there will be no deadlock situation because no other threads
                     // will be able to reference this object.
+                    CacheKey cacheKey = objectChangeSet.getActiveCacheKey();
                     if (!objectChangeSet.hasChanges()){
                         //lets make sure we lock this.  If it has changes it will have already been locked.
-                        original = parent.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(objectChangeSet.getId(), original, descriptor, this, parent);
+                        cacheKey = parent.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(objectChangeSet.getId(), original, descriptor, this, parent);
+                        original = cacheKey.getObject();
                     }
-                    objectBuilder.mergeIntoObject(original, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                    objectBuilder.mergeIntoObject(original, cacheKey, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
                 } else {
                     objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, !descriptor.getCopyPolicy().buildsNewInstance());
                     // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
@@ -594,7 +605,8 @@ public class MergeManager {
                 // PERF: If we have no change set if it is existing, then no merging is required.
                 // If it is new, then merge the object (normally a new object would have a change set, so this is an odd case.
                 if (unitOfWork.isCloneNewObject(clone)) {
-                    objectBuilder.mergeIntoObject(original, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                    CacheKey cacheKey = parent.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, parent), original, descriptor, this, parent);
+                    objectBuilder.mergeIntoObject(original, cacheKey, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
                     updateCacheKeyProperties(unitOfWork, original, clone, objectChangeSet, descriptor);
                 }
             } else {
@@ -664,7 +676,7 @@ public class MergeManager {
         // The original is used as the backup to merge everything different from it.
         // This makes this type of merge quite different than the normal unit of work merge.
         ClassDescriptor descriptor = unitOfWork.getDescriptor(clone);
-        descriptor.getObjectBuilder().mergeIntoObject(original, false, clone, this);
+        descriptor.getObjectBuilder().mergeIntoObject(original, null, false, clone, this);
 
         if (((RemoteUnitOfWork)unitOfWork.getParent()).getUnregisteredNewObjectsCache().contains(original)) {
             // Can use a new instance as backup and original.

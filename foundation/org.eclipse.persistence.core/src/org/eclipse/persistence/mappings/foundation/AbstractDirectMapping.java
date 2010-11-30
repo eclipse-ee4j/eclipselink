@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
@@ -207,7 +208,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
-        buildClone(clone, backup, unitOfWork);
+        buildClone(clone, null, backup, unitOfWork);
     }
 
     /**
@@ -215,8 +216,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Clone the attribute from the original and assign it to the clone.
      */
     @Override
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
-        buildCloneValue(original, clone, unitOfWork);
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+        buildCloneValue(original, clone, cloningSession);
     }
 
     /**
@@ -249,7 +250,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
             } else if (attributeValue instanceof Calendar) {
                 newAttributeValue = ((Calendar)attributeValue).clone();
             } else {
-                newAttributeValue = getAttributeValue(getFieldValue(attributeValue, session), session);
+                newAttributeValue = getAttributeValue(getFieldValue(attributeValue, (AbstractSession) session), session);
             }
         }
         return newAttributeValue;
@@ -268,8 +269,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     /**
      * Build a clone of the given element in a unitOfWork.
      */
-    public Object buildElementClone(Object attributeValue, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting){
-        return buildCloneValue(attributeValue, unitOfWork);
+    public Object buildElementClone(Object attributeValue, Object parent, CacheKey cacheKey, AbstractSession cloningSession, boolean isExisting){
+        return buildCloneValue(attributeValue, cloningSession);
     }
     
     /**
@@ -586,7 +587,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
-    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session) {
+    @Override
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected) {
         Object key = dbRow.get(getField());
         key = getAttributeValue(key, session);
         return key;
@@ -596,8 +598,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection and a join query is executed.  Returns the key.
      */
-    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManger, ObjectBuildingQuery query, AbstractSession session) {
-        return createMapComponentFromRow(dbRow, query, session);
+    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManger, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected) {
+        return createMapComponentFromRow(dbRow, query, parentCacheKey, session, isTargetProtected);
     }
     
     /**
@@ -1053,7 +1055,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Merge changes from the source to the target object.
      */
     @Override
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         setAttributeValueInObject(target, buildCloneValue(((DirectToFieldChangeRecord)changeRecord).getNewValue(), mergeManager.getSession()));
     }
 
@@ -1063,7 +1065,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * does not exist or the target is uninitialized
      */
     @Override
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         // If merge into the unit of work, must only merge and raise the event is the value changed.
         if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
                 && this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
@@ -1233,12 +1235,12 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * be able to populate working copies directly from the row.
      */
     @Override
-    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // Even though the correct value may exist on the original, we can't
         // make that assumption.  It is easy to just build it again from the
         // row even if copy policy already copied it.
         // That optimization is lost.
-        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, executionSession);
+        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true);
 
         setAttributeValueInObject(clone, attributeValue);
     }
@@ -1253,7 +1255,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     @Override
     public void buildShallowOriginalFromRow(AbstractRecord databaseRow, Object original, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
-        readFromRowIntoObject(databaseRow, null, original, query, executionSession);
+        readFromRowIntoObject(databaseRow, null, original, null, query, executionSession, true);
     }
 
     /**
@@ -1264,13 +1266,23 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * for converting the value.  Allows the correct session to be passed in.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) {
+        if (this.descriptor.isProtectedIsolation()) {
+            if (this.isCacheable && isTargetProtected && cacheKey != null) {
+                Object cached = cacheKey.getObject();
+                if (cached != null) {
+                    Object attributeValue = getAttributeValueFromObject(cached);
+                    return buildCloneValue(attributeValue, executionSession);
+                }
+                return null;
+            }
+        }
         // PERF: Direct variable access.
         Object fieldValue = row.get(this.field);
         Object attributeValue = getAttributeValue(fieldValue, executionSession);
 
         return attributeValue;
-    }    
+    }
 
     /**
      * INTERNAL:

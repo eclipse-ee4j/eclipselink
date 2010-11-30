@@ -39,23 +39,28 @@ public class CacheIdentityMap extends FullIdentityMap {
      */
     public CacheIdentityMap(int size) {
         super(size);
-        this.first = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0);
-        this.last = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0);
+        this.first = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0, isIsolated);
+        this.last = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0, isIsolated);
         this.first.setNext(this.last);
         this.last.setPrevious(this.first);
     };
 
     public CacheIdentityMap(int size, ClassDescriptor descriptor) {
         super(size, descriptor);
-        this.first = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0);
-        this.last = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0);
+        this.first = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0, isIsolated);
+        this.last = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0, isIsolated);
         this.first.setNext(this.last);
         this.last.setPrevious(this.first);
     }
 
+    public CacheIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
+        this(size, descriptor);
+        this.isIsolated = isolated;
+    }
+    
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new LinkedCacheKey(primaryKey, object, writeLockValue, readTime);
+        return new LinkedCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated);
     }
 
     /**

@@ -64,13 +64,13 @@ public class WriteLockManager {
      * This method will return once the object is locked and all non-indirect
      * related objects are also locked.
      */
-    public Map acquireLocksForClone(Object objectForClone, ClassDescriptor descriptor, CacheKey cacheKey, AbstractSession session, UnitOfWorkImpl unitOfWork) {
+    public Map acquireLocksForClone(Object objectForClone, ClassDescriptor descriptor, CacheKey cacheKey, AbstractSession cloningSession) {
         boolean successful = false;
         IdentityHashMap lockedObjects = new IdentityHashMap();
         IdentityHashMap refreshedObjects = new IdentityHashMap();
         try {
             // if the descriptor has indirection for all mappings then wait as there will be no deadlock risks
-            CacheKey toWaitOn = acquireLockAndRelatedLocks(objectForClone, lockedObjects, refreshedObjects, cacheKey, descriptor, session, unitOfWork);
+            CacheKey toWaitOn = acquireLockAndRelatedLocks(objectForClone, lockedObjects, refreshedObjects, cacheKey, descriptor, cloningSession);
             int tries = 0;
             while (toWaitOn != null) {// loop until we've tried too many times.
                 for (Iterator lockedList = lockedObjects.values().iterator(); lockedList.hasNext();) {
@@ -89,10 +89,10 @@ public class WriteLockManager {
                 Object waitObject = toWaitOn.getObject();
                 // Object may be null for loss of identity.
                 if (waitObject != null) {
-                    unitOfWork.checkInvalidObject(waitObject, toWaitOn, session.getDescriptor(waitObject));
+                    cloningSession.checkAndRefreshInvalidObject(waitObject, toWaitOn, cloningSession.getDescriptor(waitObject));
                     refreshedObjects.put(waitObject, waitObject);
                 }
-                toWaitOn = acquireLockAndRelatedLocks(objectForClone, lockedObjects, refreshedObjects, cacheKey, descriptor, session, unitOfWork);
+                toWaitOn = acquireLockAndRelatedLocks(objectForClone, lockedObjects, refreshedObjects, cacheKey, descriptor, cloningSession);
                 if ((toWaitOn != null) && ((++tries) > MAXTRIES)) {
                     // If we've tried too many times abort.
                     throw ConcurrencyException.maxTriesLockOnCloneExceded(objectForClone);
@@ -119,8 +119,8 @@ public class WriteLockManager {
      * The caller must try for exceptions and release locked objects in the case
      * of an exception.
      */
-    public CacheKey acquireLockAndRelatedLocks(Object objectForClone, Map lockedObjects, Map refreshedObjects, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session, UnitOfWorkImpl unitOfWork) {
-        if (!refreshedObjects.containsKey(objectForClone) && this.checkInvalidObject(objectForClone, cacheKey, descriptor, unitOfWork)) {
+    public CacheKey acquireLockAndRelatedLocks(Object objectForClone, Map lockedObjects, Map refreshedObjects, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession cloningSession) {
+        if (!refreshedObjects.containsKey(objectForClone) && cloningSession.isConsideredInvalid(objectForClone, cacheKey, descriptor)) {
             return cacheKey;
         }
         // Attempt to get a read-lock, null is returned if cannot be read-locked.
@@ -139,27 +139,13 @@ public class WriteLockManager {
                 // Store locked cachekey for release later.
                 lockedObjects.put(objectForClone, cacheKey);
             }
-            return traverseRelatedLocks(objectForClone, lockedObjects, refreshedObjects, descriptor, session, unitOfWork);
+            return traverseRelatedLocks(objectForClone, lockedObjects, refreshedObjects, descriptor, cloningSession);
         } else {
             // Return the cache key that could not be locked.
             return cacheKey;
         }
     }
     
-    /**
-     * INTERNAL:
-     * Check if the object is invalid and should be refreshed, return true, otherwise return false.
-     * This is used to ensure that no invalid objects are registered.
-     */
-    public boolean checkInvalidObject(Object object, CacheKey cacheKey, ClassDescriptor descriptor, UnitOfWorkImpl unitOfWork) {
-        if (!unitOfWork.isNestedUnitOfWork() && (cacheKey.getObject() != null)) {
-            CacheInvalidationPolicy cachePolicy = descriptor.getCacheInvalidationPolicy();
-            // BUG#6671556 refresh invalid objects when accessed in the unit of work.
-            return (cachePolicy.shouldRefreshInvalidObjectsInUnitOfWork() && cachePolicy.isInvalidated(cacheKey));
-        }
-        return false;
-    }
-
     /**
      * INTERNAL: 
      * This method will transition the previously acquired active
@@ -190,7 +176,7 @@ public class WriteLockManager {
      * INTERNAL:
      * Traverse the object and acquire locks on all related objects.
      */
-    public CacheKey traverseRelatedLocks(Object objectForClone, Map lockedObjects, Map refreshedObjects, ClassDescriptor descriptor, AbstractSession session, UnitOfWorkImpl unitOfWork) {
+    public CacheKey traverseRelatedLocks(Object objectForClone, Map lockedObjects, Map refreshedObjects, ClassDescriptor descriptor, AbstractSession cloningSession) {
         // If all mappings have indirection short-circuit.
         if (descriptor.shouldAcquireCascadedLocks()) {
             FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
@@ -208,11 +194,11 @@ public class WriteLockManager {
                             ContainerPolicy cp = mapping.getContainerPolicy();
                             Object iterator = cp.iteratorFor(objectToLock);
                             while (cp.hasNext(iterator)) {
-                                Object object = cp.next(iterator, session);
+                                Object object = cp.next(iterator, cloningSession);
                                 if (mapping.getReferenceDescriptor().hasWrapperPolicy()) {
-                                    object = mapping.getReferenceDescriptor().getWrapperPolicy().unwrapObject(object, session);
+                                    object = mapping.getReferenceDescriptor().getWrapperPolicy().unwrapObject(object, cloningSession);
                                 }
-                            CacheKey toWaitOn = checkAndLockObject(object, lockedObjects, refreshedObjects, mapping, session, unitOfWork);
+                            CacheKey toWaitOn = checkAndLockObject(object, lockedObjects, refreshedObjects, mapping, cloningSession);
                                 if (toWaitOn != null) {
                                     return toWaitOn;
                                 }
@@ -220,9 +206,9 @@ public class WriteLockManager {
                         }
                     } else {
                         if (mapping.getReferenceDescriptor().hasWrapperPolicy()) {
-                            objectToLock = mapping.getReferenceDescriptor().getWrapperPolicy().unwrapObject(objectToLock, session);
+                            objectToLock = mapping.getReferenceDescriptor().getWrapperPolicy().unwrapObject(objectToLock, cloningSession);
                         }
-                    CacheKey toWaitOn = checkAndLockObject(objectToLock, lockedObjects, refreshedObjects, mapping, session, unitOfWork);
+                    CacheKey toWaitOn = checkAndLockObject(objectToLock, lockedObjects, refreshedObjects, mapping, cloningSession);
                         if (toWaitOn != null) {
                             return toWaitOn;
                         }
@@ -277,24 +263,25 @@ public class WriteLockManager {
                         objectChangeSet.setDescriptor(descriptor);
                     }
                     // PERF: Do not merge nor lock into the session cache if descriptor set to unit of work isolated.
-                    if (descriptor.shouldIsolateObjectsInUnitOfWork()) {
+                    if (descriptor.shouldIsolateObjectsInUnitOfWork() && !descriptor.isProtectedIsolation()) {
                         continue;
                     }
-                    CacheKey activeCacheKey = attemptToAcquireLock(descriptor, objectChangeSet.getId(), session);
+                    AbstractSession targetSession = session.getParentIdentityMapSession(descriptor, false, false);
+                    CacheKey activeCacheKey = attemptToAcquireLock(descriptor, objectChangeSet.getId(), targetSession);
                     if (activeCacheKey == null) {
                         // if cacheKey is null then the lock was not available no need to synchronize this block,because if the
                         // check fails then this thread will just return to the queue until it gets woken up.
                         if (this.prevailingQueue.getFirst() == mergeManager) {
                             // wait on this object until it is free,  or until wait time expires because
                             // this thread is the prevailing thread
-                            activeCacheKey = waitOnObjectLock(descriptor, objectChangeSet.getId(), session, (int)Math.round((Math.random()*500)));
+                            activeCacheKey = waitOnObjectLock(descriptor, objectChangeSet.getId(), targetSession, (int)Math.round((Math.random()*500)));
                         }
                         if (activeCacheKey == null) {
                             // failed to acquire lock, release all acquired
                             // locks and place thread on waiting list
                             releaseAllAcquiredLocks(mergeManager);
                             // get cacheKey
-                            activeCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(objectChangeSet.getId(), descriptor.getJavaClass(), descriptor);
+                            activeCacheKey = targetSession.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(objectChangeSet.getId(), descriptor.getJavaClass(), descriptor);
                             if (session.shouldLog(SessionLog.FINER, SessionLog.CACHE)) {
                                 Object[] params = new Object[3];
                                 params[0] = descriptor.getJavaClass();
@@ -370,7 +357,7 @@ public class WriteLockManager {
      * a new object that was not locked previously.  Unlike the other methods
      * within this class this method will lock only this object.
      */
-    public Object appendLock(Object primaryKey, Object objectToLock, ClassDescriptor descriptor, MergeManager mergeManager, AbstractSession session) {
+    public CacheKey appendLock(Object primaryKey, Object objectToLock, ClassDescriptor descriptor, MergeManager mergeManager, AbstractSession session) {
         CacheKey lockedCacheKey = session.getIdentityMapAccessorInstance().acquireLockNoWait(primaryKey, descriptor.getJavaClass(), true, descriptor);
         if (lockedCacheKey == null) {
             session.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
@@ -380,7 +367,7 @@ public class WriteLockManager {
                 cachedObject = lockedCacheKey.waitForObject();
             }
             lockedCacheKey.releaseDeferredLock();
-            return cachedObject;
+            return lockedCacheKey;
         } else {
             if (lockedCacheKey.getObject() == null) {
                 lockedCacheKey.setObject(objectToLock); // set the object in the
@@ -392,7 +379,7 @@ public class WriteLockManager {
             }else{
                  mergeManager.getAcquiredLocks().add(lockedCacheKey);
             }
-            return lockedCacheKey.getObject();
+            return lockedCacheKey;
         }
     }
 	
@@ -409,28 +396,28 @@ public class WriteLockManager {
      * INTERNAL:
      * Simply check that the object is not already locked then pass it on to the locking method
      */
-    protected CacheKey checkAndLockObject(Object objectToLock, Map lockedObjects, Map refreshedObjects, DatabaseMapping mapping, AbstractSession session, UnitOfWorkImpl unitOfWork) {
+    protected CacheKey checkAndLockObject(Object objectToLock, Map lockedObjects, Map refreshedObjects, DatabaseMapping mapping, AbstractSession cloningSession) {
         //the cachekey should always reference an object otherwise what would we be cloning.
         if ((objectToLock != null) && !lockedObjects.containsKey(objectToLock)) {
             Object primaryKeyToLock = null;
             ClassDescriptor referenceDescriptor = null;
             if (mapping.getReferenceDescriptor().hasInheritance() || mapping.getReferenceDescriptor().isDescriptorForInterface()) {
-                referenceDescriptor = session.getDescriptor(objectToLock);
+                referenceDescriptor = cloningSession.getDescriptor(objectToLock);
             } else {
                 referenceDescriptor = mapping.getReferenceDescriptor();
             }
             // Need to traverse aggregates, but not lock aggregates directly.
             if (referenceDescriptor.isDescriptorTypeAggregate()) {
-                traverseRelatedLocks(objectToLock, lockedObjects, refreshedObjects, referenceDescriptor, session, unitOfWork);
+                traverseRelatedLocks(objectToLock, lockedObjects, refreshedObjects, referenceDescriptor, cloningSession);
             } else {
-                primaryKeyToLock = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToLock, session);
-                CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKeyToLock, objectToLock.getClass(), referenceDescriptor);
+                primaryKeyToLock = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToLock, cloningSession);
+                CacheKey cacheKey = cloningSession.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKeyToLock, objectToLock.getClass(), referenceDescriptor);
                 if (cacheKey == null) {
                     // Cache key may be null for no-identity map, missing or deleted object, just create a new one to be locked.
                     cacheKey = new CacheKey(primaryKeyToLock);
                     cacheKey.setReadTime(System.currentTimeMillis());
                 }
-                CacheKey toWaitOn = acquireLockAndRelatedLocks(objectToLock, lockedObjects, refreshedObjects, cacheKey, referenceDescriptor, session, unitOfWork);
+                CacheKey toWaitOn = acquireLockAndRelatedLocks(objectToLock, lockedObjects, refreshedObjects, cacheKey, referenceDescriptor, cloningSession);
                 if (toWaitOn != null) {
                     return toWaitOn;
                 }

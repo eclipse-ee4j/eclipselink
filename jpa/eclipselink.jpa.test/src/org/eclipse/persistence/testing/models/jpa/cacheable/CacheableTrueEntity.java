@@ -86,7 +86,7 @@ public class CacheableTrueEntity {
         table="JPA_CACHEABLE_SEQ", 
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",
-        pkColumnValue="CACHEABLE_SEQ")
+        pkColumnValue="JPA_CACHEABLE_SEQ")
     public int getId() {
         return id;
     }

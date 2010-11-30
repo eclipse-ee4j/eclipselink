@@ -23,6 +23,7 @@ import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPo
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
@@ -285,7 +286,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * If an aggregate is referenced by the target object, return it (maintain identity) 
      * Otherwise, simply create a new aggregate object and return it.
      */
-    public Object buildAggregateFromRow(AbstractRecord databaseRow, Object targetObject, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, boolean buildShallowOriginal, AbstractSession executionSession) throws DatabaseException {
+    public Object buildAggregateFromRow(AbstractRecord databaseRow, Object targetObject, CacheKey cacheKey, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, boolean buildShallowOriginal, AbstractSession executionSession, boolean targetIsProtected) throws DatabaseException {
         // check for all NULLs
         if (isNullAllowed() && allAggregateFieldsAreNull(databaseRow)) {
             return null;
@@ -356,9 +357,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if (buildShallowOriginal) {
             descriptor.getObjectBuilder().buildAttributesIntoShallowObject(aggregate, databaseRow, nestedQuery);
         } else if (executionSession.isUnitOfWork()) {
-            descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
+            descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, cacheKey, nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
         } else {
-            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, databaseRow, nestedQuery, joinManager, refreshing);
+            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, cacheKey, databaseRow, nestedQuery, joinManager, refreshing, targetIsProtected);
         }
         return aggregate;
     }
@@ -512,13 +513,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
      */
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+    @Override
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
         Object attributeValue = getAttributeValueFromObject(original);
-        Object aggregateClone = buildClonePart(original, attributeValue, unitOfWork);
+        Object aggregateClone = buildClonePart(original, cacheKey, attributeValue, cloningSession);
 
-        if (aggregateClone != null) {
-            ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, unitOfWork);
-            descriptor.getObjectChangePolicy().setAggregateChangeListener(clone, aggregateClone, unitOfWork, descriptor, getAttributeName());
+        if (aggregateClone != null && cloningSession.isUnitOfWork()) {
+            ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, (AbstractSession)cloningSession);
+            descriptor.getObjectChangePolicy().setAggregateChangeListener(clone, aggregateClone, (UnitOfWorkImpl)cloningSession, descriptor, getAttributeName());
         }
 
         setAttributeValueInObject(clone, aggregateClone);
@@ -528,15 +530,15 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Build a clone of the given element in a unitOfWork
      * @param element
-     * @param unitOfWork
+     * @param cloningSession
      * @param isExisting
      * @return
      */
-    public Object buildElementClone(Object attributeValue, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting){
-        Object aggregateClone = buildClonePart(attributeValue, unitOfWork, isExisting);
-        if (aggregateClone != null) {
-            ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, unitOfWork);
-            descriptor.getObjectChangePolicy().setAggregateChangeListener(parent, aggregateClone, unitOfWork, descriptor, getAttributeName());
+    public Object buildElementClone(Object attributeValue, Object parent, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isExisting){
+        Object aggregateClone = buildClonePart(attributeValue, parentCacheKey, cloningSession, isExisting);
+        if (aggregateClone != null && cloningSession.isUnitOfWork()) {
+            ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, (AbstractSession)cloningSession);
+            descriptor.getObjectChangePolicy().setAggregateChangeListener(parent, aggregateClone, (UnitOfWorkImpl)cloningSession, descriptor, getAttributeName());
         }
         return aggregateClone;
     }
@@ -570,12 +572,12 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * In order to bypass the shared cache when in transaction a UnitOfWork must
      * be able to populate working copies directly from the row.
      */
-    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // This method is a combination of buildggregateFromRow and
         // buildClonePart on the super class.
         // none of buildClonePart used, as not an orignal new object, nor
         // do we worry about creating heavy clones for aggregate objects.
-        Object clonedAttributeValue = buildAggregateFromRow(databaseRow, clone, joinManager, sourceQuery, false, executionSession);
+        Object clonedAttributeValue = buildAggregateFromRow(databaseRow, clone, null, joinManager, sourceQuery, false, executionSession, true);
         ClassDescriptor descriptor = getReferenceDescriptor(clonedAttributeValue, unitOfWork);
         if (clonedAttributeValue != null) {
             descriptor.getObjectChangePolicy().setAggregateChangeListener(clone, clonedAttributeValue, unitOfWork, descriptor, getAttributeName());
@@ -592,7 +594,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * the shared cache (no concern over cycles).
      */
     public void buildShallowOriginalFromRow(AbstractRecord databaseRow, Object original, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) {
-        Object aggregate = buildAggregateFromRow(databaseRow, original, joinManager, sourceQuery, true, executionSession);// shallow only.
+        Object aggregate = buildAggregateFromRow(databaseRow, original, null, joinManager, sourceQuery, true, executionSession, true);// shallow only.
         setAttributeValueInObject(original, aggregate);
     }
 
@@ -749,8 +751,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
-    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
-        Object key = buildAggregateFromRow(dbRow, null, null, query, false, session);
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
+        Object key = buildAggregateFromRow(dbRow, null, parentCacheKey, null, query, false, session, isTargetProtected);
         return key;
     }
     
@@ -775,8 +777,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection and a join query is executed.  Returns the key.
      */
-    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManger, ObjectBuildingQuery query, AbstractSession session){
-        return createMapComponentFromRow(dbRow, query, session);
+    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManger, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
+        return createMapComponentFromRow(dbRow, query, parentCacheKey, session, isTargetProtected);
     }
     
     /**
@@ -1011,7 +1013,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager){
         if (mergeManager.getSession().isUnitOfWork()){
             UnitOfWorkImpl uow = (UnitOfWorkImpl)mergeManager.getSession();
-            Object aggregateObject = buildClonePart(object, uow, uow.isOriginalNewObject(parent));
+            Object aggregateObject = buildClonePart(object, null, uow, uow.isOriginalNewObject(parent));
             return aggregateObject;
         }
         return object;
@@ -1332,10 +1334,10 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Return row is merged into object after execution of insert or update call
      * according to ReturningPolicy.
      */
-    public Object readFromReturnRowIntoObject(AbstractRecord row, Object targetObject, ReadObjectQuery query, Collection handledMappings) throws DatabaseException {
+    public Object readFromReturnRowIntoObject(AbstractRecord row, Object targetObject, CacheKey parentCacheKey, ReadObjectQuery query, Collection handledMappings) throws DatabaseException {
         Object aggregate = getAttributeValueFromObject(targetObject);
         if (aggregate == null) {
-            aggregate = readFromRowIntoObject(row, null, targetObject, query, query.getSession());
+            aggregate = readFromRowIntoObject(row, null, targetObject, parentCacheKey, query, query.getSession(), true);
             if (handledMappings != null) {
                 handledMappings.add(this);
             }
@@ -1345,7 +1347,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         for (int i = 0; i < getReferenceFields().size(); i++) {
             DatabaseField field = getReferenceFields().elementAt(i);
             if (row.containsKey(field)) {
-                getObjectBuilder(aggregate, query.getSession()).assignReturnValueForField(aggregate, query, row, field, handledMappings);
+                getObjectBuilder(aggregate, query.getSession()).assignReturnValueForField(aggregate, parentCacheKey, query, row, field, handledMappings);
             }
         }
 
@@ -1394,8 +1396,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Build an aggregate object from the specified row and put it
      * in the specified target object.
      */
-    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
-        Object aggregate = buildAggregateFromRow(databaseRow, targetObject, joinManager, sourceQuery, false, executionSession);// don't just build a shallow original
+    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        Object aggregate = buildAggregateFromRow(databaseRow, targetObject, parentCacheKey, joinManager, sourceQuery, false, executionSession, isTargetProtected);// don't just build a shallow original
         setAttributeValueInObject(targetObject, aggregate);
         return aggregate;
     }

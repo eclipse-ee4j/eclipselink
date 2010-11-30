@@ -34,8 +34,8 @@ public class LinkedCacheKey extends CacheKey {
      * @param object is the domain object.
      * @param writeLockValue is the write lock value number.
      */
-    public LinkedCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        super(primaryKey, object, writeLockValue, readTime);
+    public LinkedCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime, boolean isIsolated) {
+        super(primaryKey, object, writeLockValue, readTime, isIsolated);
     }
 
     public LinkedCacheKey getNext() {

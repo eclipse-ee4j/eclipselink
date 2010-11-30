@@ -27,6 +27,7 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.EISOneToManyQueryBasedValueHolder;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
@@ -638,7 +639,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Build and return a new element based on the specified element.
      */
-    public Object buildElementFromElement(Object element, MergeManager mergeManager) {
+    public Object buildElementFromElement(Object element, CacheKey elementCacheKey, MergeManager mergeManager) {
         if (this.shouldMergeCascadeParts(mergeManager)) {
             ObjectChangeSet objectChangeSet = null;
             if (mergeManager.getSession().isUnitOfWork()) {
@@ -850,7 +851,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Check whether the mapping's attribute should be optimized through batch and joining.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         if (((EISDescriptor) this.getDescriptor()).getDataFormat() == EISDescriptor.XML) {
             ((XMLRecord) row).setSession(executionSession);
         }

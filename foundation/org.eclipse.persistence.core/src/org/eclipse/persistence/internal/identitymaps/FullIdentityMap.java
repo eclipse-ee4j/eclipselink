@@ -45,6 +45,11 @@ public class FullIdentityMap extends AbstractIdentityMap {
         cacheKeys = new ConcurrentHashMap(size);
     }
 
+    public FullIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
+        this(size, descriptor);
+        this.isIsolated = isolated;
+    }
+    
     /**
      * INTERNAL:
      * Clones itself.

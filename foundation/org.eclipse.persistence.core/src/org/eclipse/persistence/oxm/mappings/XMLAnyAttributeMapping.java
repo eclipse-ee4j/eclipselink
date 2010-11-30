@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -34,6 +35,7 @@ import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -94,11 +96,12 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     * INTERNAL:
     * Clone the attribute from the original and assign it to the clone.
     */
-    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+    @Override
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildClone");
     }
 
-    public void buildCloneFromRow(AbstractRecord Record, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+    public void buildCloneFromRow(AbstractRecord Record, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
     }
 
@@ -194,7 +197,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     * INTERNAL:
     * Merge changes from the source to the target object.
     */
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         throw DescriptorException.invalidMappingOperation(this, "mergeChangesIntoObject");
     }
 
@@ -202,7 +205,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     * INTERNAL:
     * Merge changes from the source to the target object.
     */
-    public void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUninitialized, Object source, MergeManager mergeManager) {
         throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
     }
 
@@ -220,7 +223,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         this.field = (XMLField) field;
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         XMLRecord record = (XMLRecord) row;
 
         if (getField() != null) {

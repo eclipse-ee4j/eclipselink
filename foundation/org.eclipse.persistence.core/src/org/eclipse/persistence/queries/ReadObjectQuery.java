@@ -230,7 +230,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * The cache check is done before the prepare as a hit will not require the work to be done.
      */
-    protected Object checkEarlyReturnImpl(AbstractSession session, AbstractRecord translationRow) {
+    protected Object checkEarlyReturnLocal(AbstractSession session, AbstractRecord translationRow) {
         if (shouldCheckCache() && shouldMaintainCache() && (!shouldRefreshIdentityMapResult() && (!shouldRetrieveBypassCache()))
                 && (!(session.isRemoteSession() && (shouldRefreshRemoteIdentityMapResult() || this.descriptor.shouldDisableCacheHitsOnRemote())))
                 && (!(shouldCheckDescriptorForCacheUsage() && this.descriptor.shouldDisableCacheHits())) && (!this.descriptor.isDescriptorForInterface())) {
@@ -459,9 +459,9 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if ((result == null) && this.shouldRefreshIdentityMapResult) {
             // bug5955326, should invalidate the shared cached if refreshed object no longer exists.
             if (this.selectionId != null) {
-                session.getParentIdentityMapSession(this, true, true).getIdentityMapAccessor().invalidateObject(this.selectionId, this.referenceClass);
+                session.getParentIdentityMapSession(this.descriptor, true, true).getIdentityMapAccessor().invalidateObject(this.selectionId, this.referenceClass);
             } else if (this.selectionObject != null) {
-                session.getParentIdentityMapSession(this, true, true).getIdentityMapAccessor().invalidateObject(this.selectionObject);
+                session.getParentIdentityMapSession(this.descriptor, true, true).getIdentityMapAccessor().invalidateObject(this.selectionObject);
             }
         }                
 

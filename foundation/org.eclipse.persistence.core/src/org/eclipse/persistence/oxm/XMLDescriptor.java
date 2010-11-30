@@ -87,7 +87,7 @@ public class XMLDescriptor extends ClassDescriptor {
         this.shouldAlwaysConformResultsInUnitOfWork = false;
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
-        this.isIsolated = false;
+        this.cacheIsolation = null;
 
         // Policies        
         this.objectBuilder = new TreeObjectBuilder(this);
