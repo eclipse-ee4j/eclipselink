@@ -37,7 +37,6 @@ import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.SAXFragmentBuilder;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
-import org.eclipse.persistence.internal.oxm.XMLChoiceCollectionMappingMarshalNodeValue;
 import org.eclipse.persistence.internal.oxm.XMLChoiceCollectionMappingUnmarshalNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
