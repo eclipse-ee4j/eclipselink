@@ -29,6 +29,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic.Kind;
 
@@ -115,7 +116,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
         
         if (metadataClass == null) {
             // As a performance gain, avoid visiting this class if it is not a 
-            // round element.
+            // round element. We must re-visit round elements.
             if (isRoundElement(element)) {
                 processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for round element: " + element);
                 metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
@@ -131,13 +132,36 @@ public class MetadataMirrorFactory extends MetadataFactory {
                 addMetadataClass(metadataClass);
             } else {
                 // So we are not a round element, the outcome is as follows:
-                //  - Not a TypeElement (should not happen since we filter them 
-                //    out from the root elements ... but like everything
-                //    else, who knows for sure!), return null;
+                //  - TypeElement or TypeParameterElement in existing class map, 
+                //    return it.
                 //  - TypeElement, and not in the existing class map, return 
-                //    simple MetadataClass with only a name.
-                //  - TypeElement, in existing class map, return it.
-                metadataClass = getMetadataClass((element instanceof TypeElement) ? ((TypeElement) element).getQualifiedName().toString() : null);
+                //    simple non-visited MetadataClass with only a name/type.
+                //  - TypeParameterElement, and not in the existing class map,
+                //    visit it to ensure we get the correct generic type set
+                //    and return it.
+                //  - Everything else, return simple non-visited MetadataClass 
+                //    with only a name/type from the toString value.
+                if (element instanceof TypeElement || element instanceof TypeParameterElement) {
+                    String name = element.toString();
+                
+                    if (metadataClassExists(name) || element instanceof TypeElement) {
+                        // If the metadata class exists return it otherwise if 
+                        // we're dealing with a type element getMetadataClass
+                        // will just return a simple, non visited MetadataClass.
+                        metadataClass = getMetadataClass(name);
+                    } else {
+                        // Only thing going to get through at this point are
+                        // TypeParameterElements (presumably generic ones). Look 
+                        // at those further since they 'should' be simple visits.
+                        processingEnv.getMessager().printMessage(Kind.NOTE, "Building type parameter element: " + name);
+                        metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
+                        element.accept(elementVisitor, metadataClass);
+                        addMetadataClass(metadataClass);
+                    }
+                } else {
+                    // Array types etc ...
+                    metadataClass = getMetadataClass(element.toString());
+                }
             }
         }
         
