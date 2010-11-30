@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.xml.bind.JAXBException;
 
@@ -213,7 +212,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         try {
             p = g.generateProject();
             // Clear out InstantiationPolicy because it refers to ObjectFactory, which we won't be using
-            Vector<ClassDescriptor> descriptors = (Vector<ClassDescriptor>) p.getOrderedDescriptors();
+            List<ClassDescriptor> descriptors = p.getOrderedDescriptors();
             for (ClassDescriptor classDescriptor : descriptors) {
                 classDescriptor.setInstantiationPolicy(new InstantiationPolicy());
             }
