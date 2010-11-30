@@ -61,6 +61,10 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
+        if (!getServerSession().getPlatform().isDerby()) {
+            warning("Partitioning tests only run on Derby.");
+            return;
+        }
         Map properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
         properties.put(
                 PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_MIN,
@@ -75,10 +79,6 @@ public class PartitionedTestSuite extends JUnitTestCase {
                 PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_MAX,
                 "8");
         getEntityManagerFactory(getPersistenceUnitName(), properties);
-        if (!getDatabaseSession().getPlatform().isDerby()) {
-            warning("Partitioning tests only run on Derby.");
-            return;
-        }
         new PartitionedTableCreator().replaceTables(getDatabaseSession());
         
         EntityManager em = createEntityManager();    
@@ -100,7 +100,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadEmployee() {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!getServerSession().getPlatform().isDerby()) {
             return;
         }
         EntityManager em = createEntityManager();    
@@ -140,7 +140,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadProject() {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!getServerSession().getPlatform().isDerby()) {
             return;
         }
         EntityManager em = createEntityManager();    
@@ -180,7 +180,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadAllEmployee() {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!getServerSession().getPlatform().isDerby()) {
             return;
         }
         EntityManager em = createEntityManager();    
@@ -207,7 +207,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadAllProject() {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!getServerSession().getPlatform().isDerby()) {
             return;
         }
         EntityManager em = createEntityManager();    
@@ -234,7 +234,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test remove.
      */
     public void testRemoveEmployee() {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!getServerSession().getPlatform().isDerby()) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -258,7 +258,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test persist.
      */
     public void testPersistEmployee() {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!getServerSession().getPlatform().isDerby()) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -270,7 +270,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test persist.
      */
     public void testPersistProject() {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!getServerSession().getPlatform().isDerby()) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -283,7 +283,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test update.
      */
     public void testUpdateEmployee() {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!getServerSession().getPlatform().isDerby()) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -321,7 +321,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test update.
      */
     public void testUpdateProject() {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!getServerSession().getPlatform().isDerby()) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -355,7 +355,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test that partitioning is being used.
      */
     public void testPartitioning() throws Exception {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!getServerSession().getPlatform().isDerby()) {
             return;
         }
         boolean found = false;
