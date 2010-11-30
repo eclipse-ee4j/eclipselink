@@ -587,7 +587,6 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
-    @Override
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected) {
         Object key = dbRow.get(getField());
         key = getAttributeValue(key, session);

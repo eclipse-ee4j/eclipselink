@@ -22,6 +22,7 @@ import org.eclipse.persistence.eis.EISObjectPersistenceXMLProject;
 import org.eclipse.persistence.internal.oxm.OXMObjectPersistenceRuntimeXMLProject;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 
 /**
@@ -42,7 +43,7 @@ public class MissingDescriptorListener extends SessionEventAdapter {
 
     public void missingDescriptor(SessionEvent event) {
         String name = ((Class)event.getResult()).getName();
-        DatabaseSession session = ((DatabaseSession)event.getSession());
+        DatabaseSession session = (DatabaseSession) ((AbstractSession) event.getSession()).getRootSession(null);
         Project project = session.getProject();
         String namespaceXPath = "";
         NamespaceResolverWithPrefixes namespaceResolverWithPrefixes;

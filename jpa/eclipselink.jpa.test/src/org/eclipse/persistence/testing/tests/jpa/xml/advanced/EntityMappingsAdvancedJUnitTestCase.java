@@ -831,7 +831,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
     public void testReadEmployee() {
         Employee employee = createEntityManager(m_persistenceUnit).find(Employee.class, employeeId);
-        assertTrue("Error reading Employee", employee.getId() == employeeId);
+        assertTrue("Error reading Employee", employee.getId() == employeeId.intValue());
     }
 
     public void testUpdateEmployee() {

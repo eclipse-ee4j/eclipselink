@@ -248,8 +248,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             attributeValue = valueFromRow(cacheKey.getProtectedFKs(), null, query, cacheKey, cloningSession, true);
         }else{
             attributeValue = getAttributeValueFromObject(original);
-            attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, cacheKey, clone, cloningSession, false); // building clone from an original not a row.
         }
+        attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, cacheKey, clone, cloningSession, false); // building clone from an original not a row.
         //GFBug#404 - fix moved to ObjectBuildingQuery.registerIndividualResult 
         setAttributeValueInObject(clone, attributeValue);
     }
