@@ -36,6 +36,8 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyA;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC;
 
 /**
  * <p>
@@ -93,6 +95,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     suite.addTest(new JUnitJPQLUnitTestSuite("testMaxAndFirstResultsOnDataQueryWithGroupBy"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testMaxAndFirstResultsOnObjectQueryOnInheritanceRoot"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testDistinctSelectForEmployeeWithNullAddress"));
+    suite.addTest(new JUnitJPQLUnitTestSuite("testObjectNullComparisonWithoutForeignKey"));
     
     return suite;
   }
@@ -458,4 +461,65 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         }
     }
     
+    /*
+     * Testcase For ELBug#331352
+     * To do Null Object Comparison with OneToOne relationship without Foreign Key.
+     */
+    public void testObjectNullComparisonWithoutForeignKey() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            EntyC c1 = new EntyC();
+            c1.setName("East");
+            em.persist(c1);
+            
+            EntyC c2 = new EntyC();
+            c2.setName("West");
+            em.persist(c2);
+            
+            EntyC c3 = new EntyC();
+            c3.setName("North");
+            em.persist(c3);
+            
+            EntyC c4 = new EntyC();
+            c4.setName("South");
+            em.persist(c4);
+            
+            EntyA a1 = new EntyA();
+            a1.setName("Left");
+            a1.setEntyC(c1);
+            em.persist(a1);
+            
+            EntyA a2 = new EntyA();
+            a2.setName("Center");
+            a2.setEntyC(c2);
+            em.persist(a2);
+            
+            EntyA a3 = new EntyA();
+            a3.setName("Right");
+            a3.setEntyC(c3);
+            em.persist(a3);
+            
+            em.flush();
+            
+            String values = c1.getId() + ", " + c2.getId() + ", " + c4.getId();
+            
+            // Testcase for "is not null"
+            String jpqlString = "SELECT c FROM EntyC c WHERE c.id IN (" + values + ") AND c.entyA IS NOT NULL";
+            List<EntyC> result = em.createQuery(jpqlString).getResultList();
+            assertEquals("Incorrect result found with \"is not null\" object comparison and source without foreign key dependency to its target in One To One Mapping",
+                    2, result.size());
+            
+            // Testcase for "is null". Need to use LEFT OUTER JOIN.
+            jpqlString = "SELECT c FROM EntyC c LEFT OUTER JOIN c.entyA a WHERE c.id IN (" + values + ") AND a IS NULL";
+            result = em.createQuery(jpqlString).getResultList();
+            assertEquals("Incorrect result found with \"is null\" object comparison and source without foreign key dependency to its target in One To One Mapping",
+                    1, result.size());
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }   
 }

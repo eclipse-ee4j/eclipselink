@@ -230,20 +230,27 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         if(this.mechanism == null) {
             // Allow for equal null.
             if (value == null) {
-                // Can only perform null comparison on foreign key relationships.
-                // It does not really make sense for target any way as it is the source key.
                 if (!isForeignKeyRelationship()) {
-                    throw QueryException.cannotCompareTargetForeignKeysToNull(base, value, this);
-                }
-                for (Iterator sourceFieldsEnum = getSourceToTargetKeyFields().keySet().iterator();
-                         sourceFieldsEnum.hasNext();) {
-                    DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
-                    Expression join = null;
-                    join = base.getField(field).equal(null);
-                    if (foreignKeyJoin == null) {
-                        foreignKeyJoin = join;
-                    } else {
-                        foreignKeyJoin = foreignKeyJoin.and(join);
+                    // ELBug#331352
+                    // Need to do a join and compare target foreign key to null.
+                    for (DatabaseField field : getSourceToTargetKeyFields().values()) {
+                        Expression join = null;
+                        join = expression.getField(field).equal(null);
+                        if (foreignKeyJoin == null) {
+                            foreignKeyJoin = join;
+                        } else {
+                            foreignKeyJoin = foreignKeyJoin.and(join);
+                        }
+                    }
+                } else {
+                    for (DatabaseField field : getSourceToTargetKeyFields().keySet()) {
+                        Expression join = null;
+                        join = base.getField(field).equal(null);
+                        if (foreignKeyJoin == null) {
+                            foreignKeyJoin = join;
+                        } else {
+                            foreignKeyJoin = foreignKeyJoin.and(join);
+                        }
                     }
                 }
             } else {
