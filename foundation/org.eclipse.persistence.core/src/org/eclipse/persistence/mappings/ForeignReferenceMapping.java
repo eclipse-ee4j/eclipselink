@@ -277,7 +277,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,// no original
                                                                             clone, unitOfWork, true);// building clone directly from row.
         setAttributeValueInObject(clone, clonedAttributeValue);
-        if(isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) {
+        if((joinManager != null && joinManager.isAttributeJoined(this.descriptor, this)) || (isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY)) {
             // need to instantiate to extended the lock beyond the source object table(s).
             this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
         }
