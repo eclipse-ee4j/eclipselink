@@ -23,8 +23,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
-        <class>org.eclipse.persistence.testing.modela.jpa.cacheable.CacheableForceProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.modela.jpa.cacheable.ProtectedRelationsipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ALL</shared-cache-mode>
         <properties>
@@ -47,8 +47,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
-        <class>org.eclipse.persistence.testing.modela.jpa.cacheable.CacheableForceProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.modela.jpa.cacheable.ProtectedRelationsipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationsipsEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
@@ -71,8 +71,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
-        <class>org.eclipse.persistence.testing.modela.jpa.cacheable.CacheableForceProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.modela.jpa.cacheable.ProtectedRelationsipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationsipsEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <properties>
@@ -95,8 +95,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
-        <class>org.eclipse.persistence.testing.modela.jpa.cacheable.CacheableForceProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.modela.jpa.cacheable.ProtectedRelationsipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationsipsEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
         <properties>
@@ -119,8 +119,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
-        <class>org.eclipse.persistence.testing.modela.jpa.cacheable.CacheableForceProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.modela.jpa.cacheable.ProtectedRelationsipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationsipsEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>UNSPECIFIED</shared-cache-mode>
         <properties>
