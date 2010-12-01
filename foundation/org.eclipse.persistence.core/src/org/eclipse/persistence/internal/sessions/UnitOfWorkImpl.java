@@ -59,7 +59,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
-import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.UnitOfWork
@@ -1824,6 +1823,16 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * The uow does not store a local accessor but shares its parents.
      */
+    @Override
+    public Accessor getAccessor() {
+        return this.parent.getAccessor();
+    }
+
+    /**
+     * INTERNAL:
+     * The uow does not store a local accessor but shares its parents.
+     */
+    @Override
     public Collection<Accessor> getAccessors() {
         return this.parent.getAccessors();
     }
