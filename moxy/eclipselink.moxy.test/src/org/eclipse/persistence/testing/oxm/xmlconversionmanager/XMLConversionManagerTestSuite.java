@@ -17,15 +17,18 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 public class XMLConversionManagerTestSuite extends TestCase {
+
     public static Test suite() {
-        TestSuite suite = new TestSuite("XML Conversion Manage Test Suite");
+        TestSuite suite = new TestSuite("XML Conversion Manager Test Suite");
         suite.addTestSuite(DateAndTimeTestCases.class);
         suite.addTestSuite(QNameTestCases.class);
         suite.addTestSuite(Base64TestCases.class);
         suite.addTestSuite(ListTestCases.class);
         suite.addTestSuite(DoubleToBigDecimalTestCases.class);
-        suite.addTestSuite(XMLGregorianCalendarTestCases.class);        
+        suite.addTestSuite(XMLGregorianCalendarTestCases.class);
         suite.addTestSuite(NumberTestCases.class);
+        suite.addTestSuite(BooleanTestCases.class);
         return suite;
     }
+
 }

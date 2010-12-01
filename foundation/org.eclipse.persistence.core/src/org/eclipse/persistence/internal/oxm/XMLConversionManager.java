@@ -639,7 +639,16 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
        return super.convertObjectToBigDecimal(sourceObject);
     }
 
-   /**
+   @Override
+   protected Boolean convertObjectToBoolean(Object sourceObject) {
+       if (sourceObject == null || sourceObject.equals(XMLConstants.EMPTY_STRING)) {
+           return false;
+       }
+
+       return super.convertObjectToBoolean(sourceObject);
+   }
+
+/**
     * Build a valid instance of Byte from the provided sourceObject
     * @param sourceObject    Valid instance of String or any Number
     * @caught exception        The Byte(String) constructor throws a
