@@ -56,6 +56,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     10/28/2010-2.2 Guy Pelletier 
  *       - 3223850: Primary key metadata issues
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -455,7 +457,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         Collection<MetadataField> fields = getJavaClass().getFields().values();
         
         for (MetadataField field : fields) {
-            if (field.hasDeclaredAnnotations(getDescriptor())) {
+            if (field.hasDeclaredAnnotations(this)) {
                 return true;
             }
         }
@@ -476,7 +478,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         Collection<MetadataMethod> methods = getJavaClass().getMethods().values();
         
         for (MetadataMethod method : methods) {
-            if (method.hasDeclaredAnnotations(getDescriptor()) && ! method.isALifeCycleCallbackMethod()) {
+            if (method.hasDeclaredAnnotations(this) && ! method.isALifeCycleCallbackMethod()) {
                 return true;
             }
         }
@@ -889,13 +891,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             if (entityListeners != null) {
                 for (Object entityListenerClass : (Object[]) entityListeners.getAttribute("value")) {
                     EntityListenerMetadata listener = new EntityListenerMetadata(entityListeners, getMetadataClass((String)entityListenerClass), getAccessibleObject());
-                    listener.process(getDescriptor(), loader, false);
+                    listener.process(this, loader, false);
                 }
             }
         } else {
             // Process the listeners defined in XML.
             for (EntityListenerMetadata listener : m_entityListeners) {
-                listener.process(getDescriptor(), loader, false);               
+                listener.process(this, loader, false);
             }
         }
     }
@@ -1029,14 +1031,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             if (getDescriptor().usesDefaultPropertyAccess()) {
                 for (MetadataMethod method : m_idClass.getMethods().values()) {
                     // The is valid check will throw an exception if needed.
-                    if (method.isValidPersistenceMethod(false, getDescriptor())) {
+                    if (method.isValidPersistenceMethod(false, this)) {
                         getDescriptor().addPKClassId(method.getAttributeName(), getBoxedType(method.getType()));
                     }
                 }
             } else {
                 for (MetadataField field : m_idClass.getFields().values()) {
                     // The is valid check will throw an exception if needed.
-                    if (field.isValidPersistenceField(false, getDescriptor())) {
+                    if (field.isValidPersistenceField(false, this)) {
                         getDescriptor().addPKClassId(field.getName(), getBoxedType(field.getType()));
                     }
                 }

@@ -15,13 +15,15 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 
 /**
  * INTERNAL:
@@ -56,9 +58,9 @@ public class MetadataField extends MetadataAnnotatedElement {
      * explicit access setting and the field must have an Access(FIELD) 
      * setting to be processed. Otherwise, it is ignored.
      */
-    public boolean isValidPersistenceField(boolean mustBeExplicit, MetadataDescriptor descriptor) {
-        if (isValidPersistenceElement(mustBeExplicit, MetadataConstants.FIELD, descriptor)) {
-            return isValidPersistenceField(descriptor, hasDeclaredAnnotations(descriptor)); 
+    public boolean isValidPersistenceField(boolean mustBeExplicit, ClassAccessor classAccessor) {
+        if (isValidPersistenceElement(mustBeExplicit, MetadataConstants.FIELD, classAccessor)) {
+            return isValidPersistenceField(classAccessor, hasDeclaredAnnotations(classAccessor)); 
         }
 
         return false;
@@ -70,10 +72,10 @@ public class MetadataField extends MetadataAnnotatedElement {
      * is used to indicate that the field either had persistence annotations
      * defined on it or that it was specified in XML.
      */
-    public boolean isValidPersistenceField(MetadataDescriptor descriptor, boolean userDecorated) {
+    public boolean isValidPersistenceField(ClassAccessor classAccessor, boolean userDecorated) {
         if (! isValidPersistenceElement(getModifiers())) {
             if (userDecorated) {
-                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, descriptor.getJavaClass());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, classAccessor.getDescriptorJavaClass());
             }
             
             return false;

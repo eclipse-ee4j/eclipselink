@@ -65,6 +65,8 @@
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1221,6 +1223,19 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Return true if an xml-mapping-metadata-complete setting has been set
+     * for this persistence unit.
+     */
+    public boolean isXMLMappingMetadataComplete() {
+        if (m_persistenceUnitMetadata != null) {
+            return m_persistenceUnitMetadata.isXMLMappingMetadataComplete();
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Process the embeddable mapping accessors.
      */
     protected void processEmbeddableMappingAccessors() {
@@ -1314,7 +1329,6 @@ public class MetadataProject {
     protected void processPersistenceUnitMetadata(MetadataDescriptor descriptor) {
         // Set the persistence unit meta data (if there is any) on the descriptor.
         if (m_persistenceUnitMetadata != null) {
-            descriptor.setIgnoreAnnotations(m_persistenceUnitMetadata.isXMLMappingMetadataComplete());
             descriptor.setIgnoreDefaultMappings(m_persistenceUnitMetadata.excludeDefaultMappings());
             
             // Set the persistence unit defaults (if there are any) on the descriptor.

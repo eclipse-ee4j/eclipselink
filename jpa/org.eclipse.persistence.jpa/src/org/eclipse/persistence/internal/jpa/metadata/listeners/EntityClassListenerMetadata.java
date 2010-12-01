@@ -17,6 +17,8 @@
  *       - 270853: testBeerLifeCycleMethodAnnotationIgnored within xml merge testing need to be relocated
  *     01/05/2010-2.1 Guy Pelletier 
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -66,14 +68,14 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         
         // Process the callback methods as defined in XML or annotations on the 
         // entity class first.
-        processCallbackMethods(getDeclaredMethods(accessorClass), m_descriptor);
+        processCallbackMethods(getDeclaredMethods(accessorClass), m_accessor);
         
         // Process the callback methods as defined in XML or annotations 
         // on the mapped superclasses if not excluded second. 
         if (! m_descriptor.excludeSuperclassListeners()) {
             for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
                 Class superClass = getClass(mappedSuperclass.getJavaClass(), loader);
-                processCallbackMethods(getDeclaredMethods(superClass), m_descriptor);
+                processCallbackMethods(getDeclaredMethods(superClass), mappedSuperclass);
             }
         }
         

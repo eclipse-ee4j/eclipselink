@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping file
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -149,8 +151,8 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
         XMLPersistenceUnitMetadata persistenceUnitMetadata = (XMLPersistenceUnitMetadata) metadata;
         
         // Primitive boolean merging.
-        mergePrimitiveBoolean(m_xmlMappingMetadataComplete, persistenceUnitMetadata.isXMLMappingMetadataComplete(), persistenceUnitMetadata, "<xml-mapping-metadata-complete>");
-        mergePrimitiveBoolean(m_excludeDefaultMappings, persistenceUnitMetadata.excludeDefaultMappings(), persistenceUnitMetadata, "<exclude-default-mappings>");
+        m_xmlMappingMetadataComplete = mergePrimitiveBoolean(m_xmlMappingMetadataComplete, persistenceUnitMetadata.isXMLMappingMetadataComplete(), persistenceUnitMetadata, "<xml-mapping-metadata-complete>");
+        m_excludeDefaultMappings = mergePrimitiveBoolean(m_excludeDefaultMappings, persistenceUnitMetadata.excludeDefaultMappings(), persistenceUnitMetadata, "<exclude-default-mappings>");
         
         // Merge the persistence unit defaults.
         m_persistenceUnitDefaults.merge(persistenceUnitMetadata.getPersistenceUnitDefaults());

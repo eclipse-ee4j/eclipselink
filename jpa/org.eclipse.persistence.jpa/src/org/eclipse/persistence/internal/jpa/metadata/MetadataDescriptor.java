@@ -80,6 +80,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     10/27/2010-2.2 Guy Pelletier 
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -139,7 +141,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  */
 public class MetadataDescriptor {
     private boolean m_isCascadePersist;
-    private boolean m_ignoreAnnotations; // XML metadata complete
     private boolean m_ignoreDefaultMappings; // XML exclude default mappings
     private boolean m_hasCache;
     private boolean m_hasCacheInterceptor;
@@ -227,7 +228,6 @@ public class MetadataDescriptor {
         m_hasCopyPolicy = false;
         m_hasPrimaryKey = false;
         m_isCascadePersist = false;
-        m_ignoreAnnotations = false;
         m_ignoreDefaultMappings = false;
         
         m_defaultAccessMethods = new AccessMethodsMetadata();
@@ -1268,17 +1268,6 @@ public class MetadataDescriptor {
     public boolean hasPrimaryKeyFields() {
         return m_descriptor.getPrimaryKeyFields().size() > 0;
     }
- 
-    /**
-     * INTERNAL:
-     * Indicates whether or not annotations should be ignored. However, default 
-     * mappings will still be processed unless an exclude-default-mappings 
-     * setting is specified.
-     * @see ignoreDefaultMappings()
-     */
-    public boolean ignoreAnnotations() {
-        return m_ignoreAnnotations;
-    }
     
     /**
      * INTERNAL:
@@ -1625,17 +1614,6 @@ public class MetadataDescriptor {
      */
     public void setHasCopyPolicy() {
         m_hasCopyPolicy = true;
-    }
-
-    /**
-     * INTERNAL:
-     * Indicates that all annotations should be ignored. However, default 
-     * mappings will still be processed unless an exclude-default-mappings 
-     * setting is specified.
-     * @see setIgnoreDefaultMappings()
-     */
-    public void setIgnoreAnnotations(boolean ignoreAnnotations) {
-        m_ignoreAnnotations = ignoreAnnotations;
     }
 
     /**

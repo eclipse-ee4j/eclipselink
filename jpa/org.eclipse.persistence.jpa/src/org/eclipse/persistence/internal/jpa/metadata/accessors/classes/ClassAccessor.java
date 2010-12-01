@@ -61,9 +61,12 @@
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  *     09/16/2010-2.2 Guy Pelletier 
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -205,6 +208,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
         
         // Set the class accessor reference on the descriptor.
         getDescriptor().setClassAccessor(this);
+        
+        // Look for an explicit access type specification.
+        initAccess();
     }
     
     /**
@@ -214,6 +220,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected ClassAccessor(MetadataAnnotation annotation, MetadataClass cls, MetadataDescriptor descriptor) {    
         super(annotation, cls, descriptor, descriptor.getProject());
+        
+        // Look for an explicit access type specification.
+        initAccess();
     }
     
     /**
@@ -358,13 +367,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected void addAccessorFields(boolean processingInverse) {
         for (MetadataField metadataField : getJavaClass().getFields().values()) {
-            if (metadataField.isAnnotationPresent(Transient.class, getDescriptor()) || metadataField.shouldBeIgnored()) {
-                if (!metadataField.areAnnotationsCompatibleWithTransient(getDescriptor())) {
+            if (metadataField.isAnnotationPresent(Transient.class, this) || metadataField.shouldBeIgnored()) {
+                if (! metadataField.areAnnotationsCompatibleWithTransient(this)) {
                     throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(metadataField);
                 }
             } else {
                 // The is valid check will throw an exception if needed.
-                if (metadataField.isValidPersistenceField(processingInverse, getDescriptor())) {
+                if (metadataField.isValidPersistenceField(processingInverse, this)) {
                     // If the accessor already exists, it may have come from XML 
                     // or because of an explicit access type setting. E.G. 
                     // Access type is property and we processed the access 
@@ -394,13 +403,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected void addAccessorMethods(boolean processingInverse) {
         for (MetadataMethod metadataMethod : getJavaClass().getMethods().values()) {
-            if ( metadataMethod.isAnnotationPresent(Transient.class, getDescriptor())) {    
-                if (!metadataMethod.areAnnotationsCompatibleWithTransient(getDescriptor())) {
+            if ( metadataMethod.isAnnotationPresent(Transient.class, this)) {    
+                if (!metadataMethod.areAnnotationsCompatibleWithTransient(this)) {
                     throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(metadataMethod);
                 }
             } else {
                 // The is valid check will throw an exception if needed.
-                if (metadataMethod.isValidPersistenceMethod(processingInverse, getDescriptor())) {
+                if (metadataMethod.isValidPersistenceMethod(processingInverse, this)) {
                     // If the accessor already exists, it may have come from XML 
                     // or because of an explicit access type setting. E.G. 
                     // Access type is field however the user indicated the we 
@@ -498,37 +507,37 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * is of type xyz.
      */
     protected MappingAccessor buildAccessor(MetadataAnnotatedElement accessibleObject) {
-        if (accessibleObject.isBasicCollection(getDescriptor())) {
+        if (accessibleObject.isBasicCollection(this)) {
             return new BasicCollectionAccessor(accessibleObject.getAnnotation(BasicCollection.class), accessibleObject, this);
-        } else if (accessibleObject.isBasicMap(getDescriptor())) {
+        } else if (accessibleObject.isBasicMap(this)) {
             return new BasicMapAccessor(accessibleObject.getAnnotation(BasicMap.class), accessibleObject, this);
-        } else if (accessibleObject.isElementCollection(getDescriptor())) {
+        } else if (accessibleObject.isElementCollection(this)) {
             return new ElementCollectionAccessor(accessibleObject.getAnnotation(ElementCollection.class), accessibleObject, this);
-        } else if (accessibleObject.isVersion(getDescriptor())) {
+        } else if (accessibleObject.isVersion(this)) {
             return new VersionAccessor(accessibleObject.getAnnotation(Version.class), accessibleObject, this);
-        } else if (accessibleObject.isId(getDescriptor()) && ! accessibleObject.isDerivedId(getDescriptor())) {
+        } else if (accessibleObject.isId(this) && ! accessibleObject.isDerivedId(this)) {
             return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
-        } else if (accessibleObject.isDerivedIdClass(getDescriptor())) {
+        } else if (accessibleObject.isDerivedIdClass(this)) {
             return new DerivedIdClassAccessor(accessibleObject, this);
-        } else if (accessibleObject.isBasic(getDescriptor())) {
+        } else if (accessibleObject.isBasic(this)) {
             return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
-        } else if (accessibleObject.isEmbedded(getDescriptor())) {
+        } else if (accessibleObject.isEmbedded(this)) {
             return new EmbeddedAccessor(accessibleObject.getAnnotation(Embedded.class), accessibleObject, this);
-        } else if (accessibleObject.isEmbeddedId(getDescriptor())) {
+        } else if (accessibleObject.isEmbeddedId(this)) {
             return new EmbeddedIdAccessor(accessibleObject.getAnnotation(EmbeddedId.class), accessibleObject, this);
-        } else if (accessibleObject.isTransformation(getDescriptor())) { 
+        } else if (accessibleObject.isTransformation(this)) { 
             return new TransformationAccessor(accessibleObject.getAnnotation(Transformation.class), accessibleObject, this);
-        } else if (accessibleObject.isManyToMany(getDescriptor())) {
+        } else if (accessibleObject.isManyToMany(this)) {
             return new ManyToManyAccessor(accessibleObject.getAnnotation(ManyToMany.class), accessibleObject, this);
-        } else if (accessibleObject.isManyToOne(getDescriptor())) {
+        } else if (accessibleObject.isManyToOne(this)) {
             return new ManyToOneAccessor(accessibleObject.getAnnotation(ManyToOne.class), accessibleObject, this);
-        } else if (accessibleObject.isOneToMany(getDescriptor())) {
+        } else if (accessibleObject.isOneToMany(this)) {
             // A OneToMany can default and doesn't require an annotation to be present.
             return new OneToManyAccessor(accessibleObject.getAnnotation(OneToMany.class), accessibleObject, this);
-        } else if (accessibleObject.isOneToOne(getDescriptor())) {
+        } else if (accessibleObject.isOneToOne(this)) {
             // A OneToOne can default and doesn't require an annotation to be present.
             return new OneToOneAccessor(accessibleObject.getAnnotation(OneToOne.class), accessibleObject, this);
-        } else if (accessibleObject.isVariableOneToOne(getDescriptor())) {
+        } else if (accessibleObject.isVariableOneToOne(this)) {
             // A VariableOneToOne can default and doesn't require an annotation to be present.
             return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
         } else if (getDescriptor().ignoreDefaultMappings()) {
@@ -599,7 +608,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
             // True will force an exception to be thrown if it is not a valid 
             // field. However, if it is a transient accessor, don't validate it 
             // and return.
-            if (accessor.isTransient() || field.isValidPersistenceField(getDescriptor(), true)) {
+            if (accessor.isTransient() || field.isValidPersistenceField(this, true)) {
                 return field;    
             }
             
@@ -628,7 +637,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // True will force an exception to be thrown if it is not a 
                 // valid method. However, if it is a transient accessor, don't 
                 // validate it and return.
-                if (accessor.isTransient() || method.isValidPersistenceMethod(getDescriptor(), true)) {
+                if (accessor.isTransient() || method.isValidPersistenceMethod(this, true)) {
                     return method;
                 }
                 
@@ -678,6 +687,15 @@ public abstract class ClassAccessor extends MetadataAccessor {
         } else {
             return getDescriptor().getDefaultAccess();
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the annotation if it exists.
+     */
+    @Override
+    protected MetadataAnnotation getAnnotation(String annotation) {
+        return getAccessibleObject().getAnnotation(annotation, this);
     }
     
     /**
@@ -928,6 +946,18 @@ public abstract class ClassAccessor extends MetadataAccessor {
     }
     
     /**
+     * INTERNAL:
+     * Return true if this class accessor has been set to metadata complete.
+     */
+    public boolean ignoreAnnotations() {
+        if (getProject().isXMLMappingMetadataComplete()) {
+            return true;
+        } else {
+            return isMetadataComplete();
+        }
+    }
+    
+    /**
      * INTERNAL: 
      * This method should be subclassed in those methods that need to do 
      * extra initialization.
@@ -963,6 +993,17 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Initialize simple class objects.
         m_customizerClass = initXMLClassName(m_customizerClassName);
         m_parentClass = initXMLClassName(m_parentClassName);
+    }
+    
+    /** 
+     * INTERNAL:
+     * Indicates whether the specified annotation is present on the annotated
+     * element for this accessor. Method checks against the metadata complete
+     * flag.
+     */
+    @Override
+    protected boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
+        return getAccessibleObject().isAnnotationPresent(annotation, this);
     }
     
     /** 
@@ -1033,10 +1074,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * processing. 
      */
     public void preProcess() {
-        // Process the metadata complete flag now before we start looking
-        // for annotations.
-        processMetadataComplete();
-        
         // Process the exclude default mappings flag now before we start
         // looking for annotations.
         processExcludeDefaultMappings();
@@ -1066,10 +1103,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
     public void preProcessForCanonicalModel() {
         // Process the correct access type before any other processing.
         processAccessType();
-        
-        // Process the metadata complete flag now before we start looking
-        // for annotations.
-        processMetadataComplete(); 
         
         // Process the exclude default mappings flag now before we start
         // looking for annotations.
@@ -1412,19 +1445,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
     public void processMappingAccessors() {
         // Now tell the descriptor to process its accessors.
         getDescriptor().processMappingAccessors();
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the metadata complete metadata. May be specified directly on this 
-     * class accessor or one of its mapped superclasses.
-     */
-    protected void processMetadataComplete() {
-        // Set a metadata complete flag if specified on the entity class or a 
-        // mapped superclass.
-        if (getMetadataComplete() != null) {
-            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
-        } 
     }
     
     /**

@@ -15,6 +15,8 @@
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  *     07/05/2010-2.1.1 Guy Pelletier 
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml;
 
@@ -34,6 +36,7 @@ import org.eclipse.persistence.testing.tests.jpa.xml.inherited.EntityMappingsInh
 import org.eclipse.persistence.testing.tests.jpa.xml.relationships.EntityMappingsRelationshipsJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.relationships.unidirectional.EntityMappingsUnidirectionalRelationshipsJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.merge.EntityMappingsMergeJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.xml.metadatacomplete.EntityMappingsMetadataCompleteJUnitTestCase;
  
 /**
  * JUnit test suite XML metadata configurations.
@@ -54,6 +57,7 @@ public class EntityMappingsJUnitTestSuite extends TestCase {
             suite.addTest(EntityMappingsUnidirectionalRelationshipsJUnitTestCase.suite());
             suite.addTest(EntityMappingsInheritedJUnitTestCase.suite());
             suite.addTest(EntityMappingsMergeJUnitTestSuite.suite());
+            suite.addTest(EntityMappingsMetadataCompleteJUnitTestCase.suite());
         } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) {
             suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());
             suite.addTest(EntityMappingsFetchGroupJunitTest.suite());

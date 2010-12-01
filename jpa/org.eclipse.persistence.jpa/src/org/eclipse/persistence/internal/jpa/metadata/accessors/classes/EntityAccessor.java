@@ -75,6 +75,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     09/16/2010-2.2 Guy Pelletier 
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -1021,7 +1023,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         for (EntityListenerMetadata defaultListener : getProject().getDefaultListeners()) {
             // We need to clone the default listeners. Can't re-use the 
             // same one for all the entities in the persistence unit.
-            ((EntityListenerMetadata) defaultListener.clone()).process(getDescriptor(), loader, true);
+            ((EntityListenerMetadata) defaultListener.clone()).process(this, loader, true);
         }
 
         // Step 2 - process the entity listeners that are defined on the entity 

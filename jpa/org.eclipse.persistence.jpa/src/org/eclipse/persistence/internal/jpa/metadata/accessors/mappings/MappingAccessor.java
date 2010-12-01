@@ -65,9 +65,12 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     10/27/2010-2.2 Guy Pelletier 
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -166,6 +169,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // We must keep a reference to the class accessors where this
         // mapping accessor is defined. We need it to determine access types.
         m_classAccessor = classAccessor;
+        
+        // Once the class accessor is initialized, we can look for an explicit 
+        // access type specification.
+        initAccess();
     }
     
     /**
@@ -225,6 +232,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // Set the field name translation on the mapping.
             embeddableMapping.addFieldTranslation(overrideField, aggregatesMappingField.getName());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the annotation if it exists.
+     */
+    @Override
+    protected MetadataAnnotation getAnnotation(String annotation) {
+        return getAccessibleObject().getAnnotation(annotation, getClassAccessor());
     }
     
     /**
@@ -887,6 +903,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
         m_classAccessor = classAccessor;
         setEntityMappings(classAccessor.getEntityMappings());
         initXMLAccessor(classAccessor.getDescriptor(), classAccessor.getProject());   
+    }
+    
+    /** 
+     * INTERNAL:
+     * Indicates whether the specified annotation is present on the annotated
+     * element for this accessor. Method checks against the metadata complete
+     * flag.
+     */
+    @Override
+    protected boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
+        return getAccessibleObject().isAnnotationPresent(annotation, getClassAccessor());
     }
     
     /**

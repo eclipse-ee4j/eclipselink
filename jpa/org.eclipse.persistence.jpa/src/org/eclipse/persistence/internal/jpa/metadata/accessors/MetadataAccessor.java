@@ -43,13 +43,14 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     09/16/2010-2.2 Guy Pelletier 
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.Converters;
@@ -157,9 +158,6 @@ public abstract class MetadataAccessor extends ORMetadata {
         
         m_project = project;
         setDescriptor(descriptor);
-        
-        // Look for an explicit access type specification.
-        initAccess();
     }
     
     /**
@@ -265,9 +263,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Return the annotation if it exists.
      */
-    protected MetadataAnnotation getAnnotation(String annotation) {
-        return getAccessibleObject().getAnnotation(annotation, m_descriptor);
-    }
+    protected abstract MetadataAnnotation getAnnotation(String annotation);
     
     /**
      * INTERNAL:
@@ -291,6 +287,14 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public MetadataDescriptor getDescriptor() {
         return m_descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the java class tied to this class accessor's descriptor.
+     */
+    public MetadataClass getDescriptorJavaClass() {
+        return m_descriptor.getJavaClass();
     }
     
     /**
@@ -556,15 +560,11 @@ public abstract class MetadataAccessor extends ORMetadata {
         initXMLObjects(m_properties, accessibleObject);
     }
     
-    /** 
+    /**
      * INTERNAL:
-     * Indicates whether the specified annotation is present on the annotated
-     * element for this accessor. Method checks against the metadata complete
-     * flag.
+     * Return the annotation if it exists.
      */
-    protected boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
-        return getAccessibleObject().isAnnotationPresent(annotation, m_descriptor);
-    }
+    protected abstract boolean isAnnotationPresent(Class<? extends Annotation> annotation);
     
     /**
      * Subclasses must handle this flag.

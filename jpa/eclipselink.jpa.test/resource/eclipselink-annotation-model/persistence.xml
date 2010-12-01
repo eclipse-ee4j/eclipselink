@@ -70,6 +70,7 @@
             <property name="NAME" value="Montreal%"/>
         </properties>
     </persistence-unit>
+    
     <persistence-unit name="default1">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -77,12 +78,14 @@
             <property name="eclipselink.logging.level" value="OFF"/>
         </properties>
     </persistence-unit>
+    
     <persistence-unit name="ignore" transaction-type="JTA">
         <description>This PU is for validation purpose only - it should not
                 break the rest of the tests</description>
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>jdbc/__default</jta-data-source>
     </persistence-unit>
+    
     <persistence-unit name="isolated1053">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.relationships.Item</class>
@@ -92,6 +95,7 @@
             <property name="eclipselink.cache.shared.default" value="false"/>
         </properties>
     </persistence-unit>
+    
     <persistence-unit name="ALL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -108,6 +112,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ALL</shared-cache-mode>
     </persistence-unit>
+    
     <persistence-unit name="NONE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -124,6 +129,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
     </persistence-unit>
+    
     <persistence-unit name="ENABLE_SELECTIVE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -140,6 +146,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
+    
     <persistence-unit name="DISABLE_SELECTIVE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -156,6 +163,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
+    
     <persistence-unit name="UNSPECIFIED">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -172,6 +180,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>UNSPECIFIED</shared-cache-mode>
     </persistence-unit>
+    
     <!-- following persistence unit is for CASE_SENSITIVITY testing-->
     <persistence-unit name="MulitPU-1">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -180,6 +189,18 @@
         <properties>
           <property name="eclipselink.jpa.uppercase-column-names" value="true"/>
         </properties>
+    </persistence-unit>
+    
+    <persistence-unit name="METADATA_COMPLETE">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/metadata-complete-mappings.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+    
+    <persistence-unit name="XML_MAPPING_METADATA_COMPLETE">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/xml-mapping-metadata-complete-mappings.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     
 </persistence>

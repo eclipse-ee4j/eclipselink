@@ -21,6 +21,8 @@
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *     06/22/2010-2.2 Guy Pelletier 
  *       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -39,8 +41,8 @@ import javax.persistence.PreUpdate;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 
 /**
  * INTERNAL:
@@ -219,9 +221,9 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * explicit access setting and the property must have an Access(PROPERTY) 
      * setting to be processed. Otherwise, it is ignored.
      */
-    public boolean isValidPersistenceMethod(boolean mustBeExplicit, MetadataDescriptor descriptor) {
-        if (isValidPersistenceElement(mustBeExplicit, MetadataConstants.PROPERTY, descriptor)) {
-            return ! isALifeCycleCallbackMethod() && isValidPersistenceMethod(descriptor, hasDeclaredAnnotations(descriptor));
+    public boolean isValidPersistenceMethod(boolean mustBeExplicit, ClassAccessor classAccessor) {
+        if (isValidPersistenceElement(mustBeExplicit, MetadataConstants.PROPERTY, classAccessor)) {
+            return ! isALifeCycleCallbackMethod() && isValidPersistenceMethod(classAccessor, hasDeclaredAnnotations(classAccessor));
         }
         
         return false;
@@ -233,19 +235,19 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * is used to indicate that the method either had persistence annotations
      * defined on it or that it was specified in XML.
      */
-    public boolean isValidPersistenceMethod(MetadataDescriptor descriptor, boolean userDecorated) {
+    public boolean isValidPersistenceMethod(ClassAccessor classAccessor, boolean userDecorated) {
         if (! isValidPersistenceElement(getModifiers()) || ! isValidPersistenceMethod()) {
             // So it's not a valid method, did the user decorate it with
             // annotations or specify it in XML?
             if (userDecorated) {
                 // Let's figure out which exception we should throw then ...
                 if (hasParameters()) {
-                    throw ValidationException.mappingMetadataAppliedToMethodWithArguments(this, descriptor.getJavaClass());
+                    throw ValidationException.mappingMetadataAppliedToMethodWithArguments(this, classAccessor.getDescriptorJavaClass());
                 } else if (!hasSetMethod()) {
-                    throw ValidationException.noCorrespondingSetterMethodDefined(descriptor.getJavaClass(), this);
+                    throw ValidationException.noCorrespondingSetterMethodDefined(classAccessor.getDescriptorJavaClass(), this);
                 } else {
                     // General, catch all remaining cases and log a warning message.
-                    getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, descriptor.getJavaClass());
+                    getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, classAccessor.getDescriptorJavaClass());
                 }
             }
             

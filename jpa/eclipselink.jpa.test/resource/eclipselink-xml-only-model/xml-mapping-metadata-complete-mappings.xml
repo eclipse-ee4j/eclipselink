@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
+    <description>XML metadata complete model instance document.</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.metadatacomplete</package>
+
+    <!-- This model is used to test the metadata complete features from the  -->
+    <!-- spec, namely the <xml-mapping-metadata-complete> element and the    -->
+    <!-- metadata-complete attribute from <entity>, <mapped-superclass> and  -->
+    <!-- <embeddable>. The persistence classes in the pu are not persisted   -->
+    <!-- to the database and this model serves to test the metadata          -->
+    <!-- processing of these flags only. Descriptors will have their         -->
+    <!-- have their mappings verified in the test suite:                     --> 
+    <!-- EntityMappingsMetadataCompleteJUnitTestCase                         -->
+    
+    <persistence-unit-metadata>
+        <xml-mapping-metadata-complete/>
+        <persistence-unit-defaults>
+            <access>FIELD</access>
+        </persistence-unit-defaults>
+    </persistence-unit-metadata>
+
+    <!-- The metadata-complete flag here should be ignored since the         -->
+    <!-- xml-mapping-metadata-complete is set.                               -->
+    <mapped-superclass class="Tool" metadata-complete="false">
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value/>
+            </id>
+            
+            <!-- Should ignore the @Column for 'brand' but should map it using defaults -->
+        </attributes>
+    </mapped-superclass>
+    
+    <!-- The metadata-complete flag here should be ignored since the         -->
+    <!-- xml-mapping-metadata-complete is set.                               -->
+    <mapped-superclass class="Material" metadata-complete="false">
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value/>
+            </id>
+            
+            <!-- Should not ignore the @Column for 'cost' -->
+        </attributes>
+    </mapped-superclass>
+    
+    <!-- The metadata-complete flag here should be ignored since the         -->
+    <!-- xml-mapping-metadata-complete is set.                               -->
+    <entity name="XMLHammer" class="Hammer" metadata-complete="false">
+        <!-- The table should default and we should not pick up the @Table -->
+        <attributes>
+            <basic name="weight">
+                <column name="WEIGHT"/>
+            </basic>
+            
+            <!-- Should ignore the @Column for 'color' but should map it using defaults -->
+        </attributes>
+    </entity>
+    
+    <!-- The metadata-complete flag here should be ignored since the         -->
+    <!-- xml-mapping-metadata-complete is set.                               -->
+    <entity name="XMLScrewdriver" class="Screwdriver">
+        <table name="XML_SCREWDRIVER"/>
+        <attributes>
+            <basic name="type">
+                <column name="S_TYPE"/>
+            </basic>
+            
+            <!--  Should ignore the @Basic 'style' on the class -->
+        </attributes>
+    </entity>
+    
+    <!-- The metadata-complete flag here should be ignored since the         -->
+    <!-- xml-mapping-metadata-complete is set.                               -->
+    <entity name="XMLDrywall" class="Drywall" metadata-complete="false">
+        <table name="XML_DRYWALL"/>
+        
+        <!-- Should ignore the @Column for 'length' and 'width' but should map them using defaults -->
+    </entity>
+    
+
+</entity-mappings>
+

@@ -19,6 +19,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     07/15/2010-2.2 Guy Pelletier 
  *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -41,9 +43,9 @@ import org.eclipse.persistence.descriptors.DescriptorEventListener;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -376,7 +378,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     /**
      * INTERNAL: 
      */
-    public void process(MetadataDescriptor descriptor, ClassLoader loader, boolean isDefaultListener) {
+    public void process(ClassAccessor classAccessor, ClassLoader loader, boolean isDefaultListener) {
         // Make sure the entityListenerClass is initialized (default listeners
         // are cloned and m_entityListenerClass may be null)
         if (m_entityListenerClass == null) {
@@ -390,19 +392,19 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             listener = (DescriptorEventListener) entityListenerClassInstance;
         } else {
             // Initialize the listener class before processing the callback methods.
-            m_listener = new EntityListener(entityListenerClassInstance, getClass(descriptor.getJavaClass(), loader));
+            m_listener = new EntityListener(entityListenerClassInstance, getClass(classAccessor.getDescriptorJavaClass(), loader));
             
             // Process the callback methods defined from XML and annotations.
-            processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), descriptor);
+            processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), classAccessor);
             
             listener = m_listener;
         }
         
         // Add the listener to the descriptor.
         if (isDefaultListener) {
-            descriptor.addDefaultEventListener(listener);
+            classAccessor.getDescriptor().addDefaultEventListener(listener);
         } else {
-            descriptor.addEntityListenerEventListener(listener);
+            classAccessor.getDescriptor().addEntityListenerEventListener(listener);
         }
     }
     
@@ -412,7 +414,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * always added first, followed by those defined by annotations (only if not
      * already defined in XML)
      */
-    protected void processCallbackMethods(Method[] methods, MetadataDescriptor descriptor) {    
+    protected void processCallbackMethods(Method[] methods, ClassAccessor classAccessor) {    
         // 1 - Set the XML specified methods first.
         if (m_postLoad != null) {
             setPostLoad(getCallbackMethod(m_postLoad, methods));
@@ -448,31 +450,31 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             MetadataMethod metadataMethod = getMetadataClass(method.getDeclaringClass()).getMethod(method.getName(), method.getParameterTypes());
             // Metadata method can be null when dealing with jdk methods: equals, notify, toString, wait etc.. 
             if (metadataMethod != null) {
-                if (metadataMethod.isAnnotationPresent(PostLoad.class, descriptor) && m_postLoad == null) {
+                if (metadataMethod.isAnnotationPresent(PostLoad.class, classAccessor) && m_postLoad == null) {
                     setPostLoad(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PostPersist.class, descriptor) && m_postPersist == null) {
+                if (metadataMethod.isAnnotationPresent(PostPersist.class, classAccessor) && m_postPersist == null) {
                     setPostPersist(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PostRemove.class, descriptor) && m_postRemove == null) {
+                if (metadataMethod.isAnnotationPresent(PostRemove.class, classAccessor) && m_postRemove == null) {
                     setPostRemove(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PostUpdate.class, descriptor) && m_postUpdate == null) {
+                if (metadataMethod.isAnnotationPresent(PostUpdate.class, classAccessor) && m_postUpdate == null) {
                     setPostUpdate(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PrePersist.class, descriptor) && m_prePersist == null) {
+                if (metadataMethod.isAnnotationPresent(PrePersist.class, classAccessor) && m_prePersist == null) {
                     setPrePersist(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PreRemove.class, descriptor) && m_preRemove == null) {
+                if (metadataMethod.isAnnotationPresent(PreRemove.class, classAccessor) && m_preRemove == null) {
                     setPreRemove(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PreUpdate.class, descriptor) && m_preUpdate == null) {
+                if (metadataMethod.isAnnotationPresent(PreUpdate.class, classAccessor) && m_preUpdate == null) {
                     setPreUpdate(method);
                 }
             }

@@ -31,6 +31,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     08/11/2010-2.2 Guy Pelletier 
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -68,6 +70,7 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 
 /**
  * INTERNAL:
@@ -122,7 +125,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public MetadataAnnotatedElement(MetadataFactory factory) {
         super(factory);
-        
+
         m_annotations = new HashMap<String, MetadataAnnotation>();
     }
 
@@ -175,18 +178,18 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Return the annotated element for this accessor.
      */
-    public MetadataAnnotation getAnnotation(String annotationClassName, MetadataDescriptor descriptor) {
-        if (m_annotations == null) {
-            return null;
-        }
-        MetadataAnnotation annotation = m_annotations.get(annotationClassName);
+    public MetadataAnnotation getAnnotation(String annotationClassName, ClassAccessor classAccessor) {
+        if (m_annotations != null) {
+            MetadataAnnotation annotation = m_annotations.get(annotationClassName);
         
-        if (annotation != null && descriptor.ignoreAnnotations()) {
-            getLogger().logConfigMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
-            return null;
-        } else {
-            return annotation;
+            if (annotation != null && classAccessor.ignoreAnnotations()) {
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
+            } else {
+                return annotation;
+            }
         }
+        
+        return null;
     }
     
     /**
@@ -207,10 +210,11 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
-    protected int getDeclaredAnnotationsCount(MetadataDescriptor descriptor) {
-        if (descriptor.ignoreAnnotations() || (m_annotations == null)) {
+    protected int getDeclaredAnnotationsCount(ClassAccessor classAccessor) {
+        if (classAccessor.ignoreAnnotations() || m_annotations == null) {
             return 0;
         }
+        
         return m_annotations.size(); 
     }
     
@@ -368,8 +372,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return true if this accessible object has 1 or more declared 
      * persistence annotations.
      */
-    public boolean hasDeclaredAnnotations(MetadataDescriptor descriptor) {
-        return getDeclaredAnnotationsCount(descriptor) > 0;
+    public boolean hasDeclaredAnnotations(ClassAccessor classAccessor) {
+        return getDeclaredAnnotationsCount(classAccessor) > 0;
     }
     
     /**
@@ -384,7 +388,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return true if this accessible object has 2 or more declared 
      * persistence annotations.
      */
-    public boolean areAnnotationsCompatibleWithTransient(MetadataDescriptor descriptor) {
+    public boolean areAnnotationsCompatibleWithTransient(ClassAccessor classAccessor) {
         int legalAnnotationCount = 1;
         Iterator annotations = TransientCompatibleAnnotations.getTransientCompatibleAnnotations().iterator();
         while (annotations.hasNext()){
@@ -392,7 +396,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                 legalAnnotationCount++;
             }
         }
-        return getDeclaredAnnotationsCount(descriptor) <= legalAnnotationCount;
+        return getDeclaredAnnotationsCount(classAccessor) <= legalAnnotationCount;
     }
     
     /** 
@@ -422,10 +426,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Indicates whether the specified annotation is present on java class
      * for the given descriptor metadata. 
      */
-    public boolean isAnnotationPresent(Class annotationClass, MetadataDescriptor descriptor) {
+    public boolean isAnnotationPresent(Class annotationClass, ClassAccessor accessor) {
         MetadataAnnotation annotation = getAnnotation(annotationClass);
         
-        if (annotation != null && descriptor.ignoreAnnotations()) {
+        if (annotation != null && accessor.ignoreAnnotations()) {
             getLogger().logConfigMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
             return false;
         } else {
@@ -437,43 +441,43 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Return true if this accessor represents a basic mapping.
      */
-    public boolean isBasic(MetadataDescriptor descriptor) {
-        return isAnnotationPresent(Basic.class, descriptor) ||
-               isAnnotationPresent(Lob.class, descriptor) ||
-               isAnnotationPresent(Temporal.class, descriptor) ||
-               isAnnotationPresent(Enumerated.class, descriptor);
+    public boolean isBasic(ClassAccessor classAccessor) {
+        return isAnnotationPresent(Basic.class, classAccessor) ||
+               isAnnotationPresent(Lob.class, classAccessor) ||
+               isAnnotationPresent(Temporal.class, classAccessor) ||
+               isAnnotationPresent(Enumerated.class, classAccessor);
     }
     
     /**
      * INTERNAL:
      * Return true if this accessor represents a basic collection mapping.
      */
-    public boolean isBasicCollection(MetadataDescriptor descriptor) {
-        return isAnnotationPresent(BasicCollection.class, descriptor);
+    public boolean isBasicCollection(ClassAccessor classAccessor) {
+        return isAnnotationPresent(BasicCollection.class, classAccessor);
     }
     
     /**
      * INTERNAL: 
      * Return true if this accessor represents a basic collection mapping.
      */
-    public boolean isBasicMap(MetadataDescriptor descriptor) {
-        return isAnnotationPresent(BasicMap.class, descriptor);
+    public boolean isBasicMap(ClassAccessor classAccessor) {
+        return isAnnotationPresent(BasicMap.class, classAccessor);
     }
     
     /**
      * INTERNAL:
      * Return true if this accessor represents an id mapping.
      */
-    public boolean isDerivedId(MetadataDescriptor descriptor) {
-        return isId(descriptor) && (isOneToOne(descriptor) || isManyToOne(descriptor));
+    public boolean isDerivedId(ClassAccessor classAccessor) {
+        return isId(classAccessor) && (isOneToOne(classAccessor) || isManyToOne(classAccessor));
     }
     
     /**
      * INTERNAL: 
      * Return true if this accessor represents an element collection mapping.
      */
-    public boolean isElementCollection(MetadataDescriptor descriptor) {
-        return isAnnotationPresent(ElementCollection.class, descriptor);
+    public boolean isElementCollection(ClassAccessor classAccessor) {
+        return isAnnotationPresent(ElementCollection.class, classAccessor);
     }
     
     /**
@@ -482,14 +486,14 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * returned if an Embedded annotation is found or if an Embeddable 
      * annotation is found on the raw/reference class.
      */
-    public boolean isEmbedded(MetadataDescriptor descriptor) {
+    public boolean isEmbedded(ClassAccessor classAccessor) {
         if (isAnnotationNotPresent(Embedded.class) && isAnnotationNotPresent(EmbeddedId.class)) {
-            MetadataClass rawClass = getRawClass(descriptor);
-            return (rawClass.isAnnotationPresent(Embeddable.class) || descriptor.getProject().hasEmbeddable(rawClass));
+            MetadataClass rawClass = getRawClass(classAccessor.getDescriptor());
+            return (rawClass.isAnnotationPresent(Embeddable.class) || classAccessor.getProject().hasEmbeddable(rawClass));
         } else {
             // Still need to make the call since we may need to ignore it
             // because of meta-data complete.
-            return isAnnotationPresent(Embedded.class, descriptor);
+            return isAnnotationPresent(Embedded.class, classAccessor);
         }
     }
     
@@ -497,8 +501,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Return true if this accessor represents an aggregate id mapping.
      */
-    public boolean isEmbeddedId(MetadataDescriptor descriptor) {
-        return isAnnotationPresent(EmbeddedId.class, descriptor);
+    public boolean isEmbeddedId(ClassAccessor classAccessor) {
+        return isAnnotationPresent(EmbeddedId.class, classAccessor);
     }
     
     /**
@@ -523,41 +527,41 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Return true if this accessor represents an id mapping.
      */
-    public boolean isId(MetadataDescriptor descriptor) {
-        return isAnnotationPresent(Id.class, descriptor);
+    public boolean isId(ClassAccessor classAccessor) {
+        return isAnnotationPresent(Id.class, classAccessor);
     }
     
     /**
      * INTERNAL:
      * Return true if this accessor represents an id mapping.
      */
-    public boolean isDerivedIdClass(MetadataDescriptor descriptor) {
-        return descriptor.isEmbeddable() && descriptor.getProject().isIdClass(getRawClass(descriptor));
+    public boolean isDerivedIdClass(ClassAccessor classAccessor) {
+        return classAccessor.getDescriptor().isEmbeddable() && classAccessor.getProject().isIdClass(getRawClass(classAccessor.getDescriptor()));
     }
     
     /**
      * INTERNAL:
      * Return true if this field accessor represents a m-m relationship.
      */
-    public boolean isManyToMany(MetadataDescriptor descriptor) {
-        return isAnnotationPresent(ManyToMany.class, descriptor);
+    public boolean isManyToMany(ClassAccessor classAccessor) {
+        return isAnnotationPresent(ManyToMany.class, classAccessor);
     }
     
     /**
      * INTERNAL:
      * Return true if this accessor represents a m-1 relationship.
      */
-    public boolean isManyToOne(MetadataDescriptor descriptor) {
-        return isAnnotationPresent(ManyToOne.class, descriptor);
+    public boolean isManyToOne(ClassAccessor classAccessor) {
+        return isAnnotationPresent(ManyToOne.class, classAccessor);
     }
     
     /**
      * INTERNAL:
      * Return true if this accessor represents a 1-m relationship.
      */
-    public boolean isOneToMany(MetadataDescriptor descriptor) {
-        if (isAnnotationNotPresent(OneToMany.class) && ! descriptor.ignoreDefaultMappings()) {
-            if (isGenericCollectionType() && isSupportedToManyCollectionClass(getRawClass(descriptor)) && descriptor.getProject().hasEntity(getReferenceClassFromGeneric(descriptor))) {
+    public boolean isOneToMany(ClassAccessor classAccessor) {
+        if (isAnnotationNotPresent(OneToMany.class) && ! classAccessor.getDescriptor().ignoreDefaultMappings()) {
+            if (isGenericCollectionType() && isSupportedToManyCollectionClass(getRawClass(classAccessor.getDescriptor())) && classAccessor.getProject().hasEntity(getReferenceClassFromGeneric(classAccessor.getDescriptor()))) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, this);
                 return true;
             }
@@ -566,7 +570,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         } else {
             // Still need to make the call since we may need to ignore it
             // because of meta-data complete.
-            return isAnnotationPresent(OneToMany.class, descriptor);
+            return isAnnotationPresent(OneToMany.class, classAccessor);
         }
     }
     
@@ -574,9 +578,9 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL: 
      * Return true if this accessor represents a 1-1 relationship.
      */
-    public boolean isOneToOne(MetadataDescriptor descriptor) {        
-        if (isAnnotationNotPresent(OneToOne.class) && ! descriptor.ignoreDefaultMappings()) {    
-            if (descriptor.getProject().hasEntity(getRawClass(descriptor)) && ! isEmbedded(descriptor)) {
+    public boolean isOneToOne(ClassAccessor classAccessor) {
+        if (isAnnotationNotPresent(OneToOne.class) && ! classAccessor.getDescriptor().ignoreDefaultMappings()) {    
+            if (classAccessor.getProject().hasEntity(getRawClass(classAccessor.getDescriptor())) && ! isEmbedded(classAccessor)) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_ONE_MAPPING, this);
                 return true;
             } else {
@@ -585,7 +589,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         } else {
             // Still need to make the call since we may need to ignore it
             // because of meta-data complete.
-            return isAnnotationPresent(OneToOne.class, descriptor);
+            return isAnnotationPresent(OneToOne.class, classAccessor);
         }
     }
     
@@ -618,10 +622,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Return true if this accessor represents an transformation mapping.
      */
-    public boolean isTransformation(MetadataDescriptor descriptor) {
-        return isAnnotationPresent(ReadTransformer.class, descriptor) ||
-               isAnnotationPresent(WriteTransformers.class, descriptor) ||
-               isAnnotationPresent(WriteTransformer.class, descriptor);
+    public boolean isTransformation(ClassAccessor classAccessor) {
+        return isAnnotationPresent(ReadTransformer.class, classAccessor) ||
+               isAnnotationPresent(WriteTransformers.class, classAccessor) ||
+               isAnnotationPresent(WriteTransformer.class, classAccessor);
     }
     
     /**
@@ -630,9 +634,9 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * their must be an Access(FIELD) or Access(PROPERTY) present for the
      * element to be processed. Otherwise, it is ignored.
      */
-    protected boolean isValidPersistenceElement(boolean mustBeExplicit, String explicitType, MetadataDescriptor descriptor) {
+    protected boolean isValidPersistenceElement(boolean mustBeExplicit, String explicitType, ClassAccessor classAccessor) {
         if (mustBeExplicit) {
-            MetadataAnnotation annotation = getAnnotation(MetadataConstants.ACCESS_ANNOTATION, descriptor);
+            MetadataAnnotation annotation = getAnnotation(MetadataConstants.ACCESS_ANNOTATION, classAccessor);
             
             if (annotation == null) {
                 return false;
@@ -640,7 +644,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                 String access = (String)annotation.getAttribute("value");
                 
                 if (! access.equals(explicitType)) {
-                    throw ValidationException.invalidExplicitAccessTypeSpecified(this, descriptor.getJavaClass(), explicitType);
+                    throw ValidationException.invalidExplicitAccessTypeSpecified(this, classAccessor.getDescriptorJavaClass(), explicitType);
                 }
             }
         }
@@ -664,12 +668,12 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      *  - The raw class is an interface and not a collection or map, nor a 
      *    ValueHolderInterface (and an exclude default mappings flag is not set)
      */
-    public boolean isVariableOneToOne(MetadataDescriptor descriptor) {
-        if (isAnnotationNotPresent(VariableOneToOne.class) && ! descriptor.ignoreDefaultMappings()) {
-            if (getRawClass(descriptor).isInterface() && 
-                    ! getRawClass(descriptor).isMap() && 
-                    ! getRawClass(descriptor).isCollection() &&
-                    ! getRawClass(descriptor).extendsInterface(ValueHolderInterface.class)) {
+    public boolean isVariableOneToOne(ClassAccessor classAccessor) {
+        if (isAnnotationNotPresent(VariableOneToOne.class) && ! classAccessor.getDescriptor().ignoreDefaultMappings()) {
+            if (getRawClass(classAccessor.getDescriptor()).isInterface() && 
+                    ! getRawClass(classAccessor.getDescriptor()).isMap() && 
+                    ! getRawClass(classAccessor.getDescriptor()).isCollection() &&
+                    ! getRawClass(classAccessor.getDescriptor()).extendsInterface(ValueHolderInterface.class)) {
                 getLogger().logConfigMessage(MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING, this);
                 return true;
             }
@@ -678,7 +682,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         } else {
             // Still need to make the call since we may need to ignore it
             // because of meta-data complete.
-            return isAnnotationPresent(VariableOneToOne.class, descriptor);
+            return isAnnotationPresent(VariableOneToOne.class, classAccessor);
         }
     }
     
@@ -686,8 +690,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL: 
      * Return true if this accessor represents a version mapping.
      */
-    public boolean isVersion(MetadataDescriptor descriptor) {
-        return isAnnotationPresent(Version.class, descriptor);
+    public boolean isVersion(ClassAccessor classAccessor) {
+        return isAnnotationPresent(Version.class, classAccessor);
     }
     
     /**

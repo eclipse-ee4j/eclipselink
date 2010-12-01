@@ -48,6 +48,8 @@
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  *     09/16/2010-2.2 Guy Pelletier 
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
+ *     12/01/2010-2.2 Guy Pelletier 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -287,7 +289,7 @@ public class EmbeddableAccessor extends ClassAccessor {
     @Override
     public void preProcessForCanonicalModel() {
         // Perform the parent discovery process before processing any further.  
-        discoverMappedSuperclassesAndInheritanceParents(true);
+        discoverMappedSuperclassesAndInheritanceParents(false);
         
         // Process our parents metadata after processing our own.
         super.preProcessForCanonicalModel();
@@ -300,10 +302,6 @@ public class EmbeddableAccessor extends ClassAccessor {
      */
     @Override
     protected void preProcessMappedSuperclassMetadata(MappedSuperclassAccessor mappedSuperclass) {
-        // Process the metadata complete flag now before we start looking
-        // for annotations.
-        mappedSuperclass.processMetadataComplete();
-        
         // Process the exclude default mappings flag now before we start
         // looking for annotations.
         mappedSuperclass.processExcludeDefaultMappings();
