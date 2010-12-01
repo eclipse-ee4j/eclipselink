@@ -355,7 +355,7 @@ public class MappingsGenerator {
     }
 
     /**
-     * Geterate a mapping for a given Property.
+     * Generate a mapping for a given Property.
      * 
      * @param property
      * @param descriptor
@@ -933,6 +933,9 @@ public class MappingsGenerator {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
         } else if (property.isNillable()){
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+            if(property.isRequired()) {
+                mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+            }
         }
 
         if (referenceClassName == null){
@@ -1022,7 +1025,10 @@ public class MappingsGenerator {
         } else {
             if (property.isNillable()){
                 mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
-            }
+                if(property.isRequired()) {
+                    mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+                }
+            } 
             mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
             if (!mapping.getXPath().equals("text()")) {
@@ -1857,7 +1863,8 @@ public class MappingsGenerator {
      * @param jClass
      */
     private void setupInheritance(JavaClass jClass) {
-        XMLDescriptor descriptor = typeInfo.get(jClass.getName()).getDescriptor();
+        TypeInfo tInfo = typeInfo.get(jClass.getName());
+        XMLDescriptor descriptor = tInfo.getDescriptor();
         if (descriptor == null) {
             return;
         }
@@ -1896,18 +1903,20 @@ public class MappingsGenerator {
             	rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
             }
 
-            String sCtx;
-            TypeInfo tInfo = typeInfo.get(jClass.getName());
+            String sCtx = null;
+            //TypeInfo tInfo = typeInfo.get(jClass.getName());
             if (tInfo.isSetXmlDiscriminatorValue()) {
                 sCtx = tInfo.getXmlDiscriminatorValue();
-            } else {
+            } else if(!tInfo.isAnonymousComplexType()){
                 sCtx = sRef.getSchemaContext();
                 if (sCtx.length() > 1 && sCtx.startsWith("/")) {
                     sCtx = sCtx.substring(1);
                 }
             }
-            descriptor.getInheritancePolicy().setParentClassName(superClass.getName());
-            rootDescriptor.getInheritancePolicy().addClassNameIndicator(jClass.getName(), sCtx);
+            if(sCtx != null) {
+                descriptor.getInheritancePolicy().setParentClassName(superClass.getName());
+                rootDescriptor.getInheritancePolicy().addClassNameIndicator(jClass.getName(), sCtx);
+            }
             Object value = rootDescriptor.getInheritancePolicy().getClassNameIndicatorMapping().get(rootDescriptor.getJavaClassName());
             if (value == null){
                 if (rootTypeInfo.isSetXmlDiscriminatorValue()) {
@@ -1985,6 +1994,10 @@ public class MappingsGenerator {
      * @param namespaceInfo
      */
     public void generateMappings(TypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+        if(info.isAnonymousComplexType()) {
+            //may need to generate inherited mappings
+            generateInheritedMappingsForAnonymousType(info, descriptor, namespaceInfo);
+        }
     	List<Property> propertiesInOrder = info.getNonTransientPropertiesInPropOrder();
     	for (int i = 0; i < propertiesInOrder.size(); i++) {
     		Property next = propertiesInOrder.get(i);
@@ -1997,6 +2010,31 @@ public class MappingsGenerator {
             	}
             }
     	}
+    }
+
+    private void generateInheritedMappingsForAnonymousType(TypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+        List<TypeInfo> mappedParents = new ArrayList<TypeInfo>();
+        JavaClass next = CompilerHelper.getNextMappedSuperClass(helper.getJavaClass(info.getJavaClassName()), typeInfo, helper);
+        while(next != null) {
+            TypeInfo nextInfo = this.typeInfo.get(next.getName());
+            mappedParents.add(0, nextInfo);
+            next = CompilerHelper.getNextMappedSuperClass(helper.getJavaClass(nextInfo.getJavaClassName()), typeInfo, helper);
+        }
+        for(TypeInfo nextInfo:mappedParents) {
+            List<Property> propertiesInOrder = nextInfo.getNonTransientPropertiesInPropOrder();
+            for (int i = 0; i < propertiesInOrder.size(); i++) {
+                Property nextProp = propertiesInOrder.get(i);
+                if (nextProp != null){
+                    DatabaseMapping mapping = generateMapping(nextProp, descriptor, namespaceInfo);
+                    descriptor.addMapping(mapping);
+                    // set user-defined properties if necessary
+                    if (nextProp.isSetUserProperties()) {
+                        mapping.setProperties(nextProp.getUserProperties());
+                    }
+                }
+            }            
+        }
+        
     }
 
     /**

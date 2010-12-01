@@ -212,6 +212,9 @@ public class ContentHandlerRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void attribute(String namespaceURI, String localName, String qName, String value) {
+        if(namespaceURI == XMLConstants.XMLNS_URL) {
+            this.startPrefixMapping(localName, value);
+        }        
         attributes.addAttribute(namespaceURI, localName, qName, XMLConstants.CDATA, value);
     }
 

@@ -347,6 +347,10 @@ public class TypeInfo {
     public JavaClass getPackageLevelAdapterClass(JavaClass boundType) {
         return getPackageLevelAdaptersByClass().get(boundType.getQualifiedName());
     }
+    
+    public boolean isAnonymousComplexType() {
+        return this.schemaTypeName == null || this.schemaTypeName.equals("");
+    }
 
     /**
      * Return the xmladapter class for a given bound type class name.
