@@ -4153,7 +4153,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * PUBLIC:
-     * Controls how the Entity instances will be cached.  See the CacheIsolationType for details on the options.
+     * Controls how the Entity instances and data will be cached.  See the CacheIsolationType for details on the options.
      * To disable all second level caching simply set CacheIsolationType.ISOLATED.  Note that setting the isolation
      * will automatically set the corresponding cacheSynchronizationType.   
      * ISOLATED = DO_NOT_SEND_CHANGES, PROTECTED and SHARED = SEND_OBJECT_CHANGES

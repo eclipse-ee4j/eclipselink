@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
  * desired or when using different EclipseLink IdentityMap types and having
  * cached references extends the cache lifetime of related Entities using a
  * different caching scheme. 
- * For instance Entity A reference Entity B, Entity A is FullIdentityMap and
- * Entity B is WeakIdentityMap. Without removing the caching of the entities
+ * For instance Entity A references Entity B, Entity A is FullIdentityMap and
+ * Entity B is WeakIdentityMap. Without removing the caching of the relationsip
  * the Entity B's cache effectively become a FullIdentityMap.
  * 
  * @author Gordon Yorke

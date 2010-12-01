@@ -73,7 +73,8 @@ public @interface Cache {
     
     /**
      * (Optional) Controls the level of caching this Entity will use.
-     * The default is CacheIsolationType.SHARED
+     * The default is CacheIsolationType.SHARED which has EclipseLink
+     * Caching all Entities in the Shared Cache.
      * @see org.eclipse.persistence.config.CacheIsolationType
      */
     CacheIsolationType isolation() default SHARED;

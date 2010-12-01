@@ -166,20 +166,21 @@
            */ 
           int size() default 100;
 
-          /**
-           * (Optional) Cached instances in the shared cache,
-           * or only a per EntityManager isolated cache.
-           * The default is shared.
-           * @deprecated  As of Eclipselink 2.2.  See the attribute 'isolation'
-           */ 
+         /**
+          * (Optional) Cached instances in the shared cache,
+          * or only a per EntityManager isolated cache.
+          * The default is shared.
+          * @deprecated  As of Eclipselink 2.2.  See the attribute 'isolation'
+          */ 
           @Deprecated
           boolean shared() default true;
     
-          /**
-           * (Optional) Controls the level of caching this Entity will use.
-           * The default is CacheIsolationType.SHARED
-           * @see org.eclipse.persistence.config.CacheIsolationType
-           */
+         /**
+          * (Optional) Controls the level of caching this Entity will use.
+          * The default is CacheIsolationType.SHARED which has EclipseLink
+          * Caching all Entities in the Shared Cache.
+          * @see org.eclipse.persistence.config.CacheIsolationType
+          */
           CacheIsolationType isolation() default SHARED;
 
           /**
@@ -351,40 +352,41 @@
          * @since EclipseLink 2.2
          */
         public enum CacheIsolationType {
-            /**
-             * The Entity and its data is not stored in the shared cache but is
-             * <i>isolated</i> to the Persistence Context/UnitOfWork or
-             * IsolatedClientSession. This setting effectively disables second level
-             * caching for this entity.
-             */
-            ISOLATED,
         
-            /**
-             * Entity instances will be shared within the second level cache. Any user
-             * access to shared cache instances (ie Read-Only) will return an Entity
-             * instance that may be shared by multiple clients. 
-             * 
-             * This setting effectively enables second level caching.
-             */
-            SHARED,
-        
-            /**
-             * Entity state information will be cached in the shared cache but Entity
-             * instances will not be shared. Any user access to shared cache instances
-             * (ie Read-Only) will return a new Entity instance with the cached state.
-             * This will ensure the instance is <i>protected</i> from any concurrent
-             * state change. To achieve this protection there will be a slight
-             * performance impact above what <i>SHARED</i> requires.
-             */
-            PROTECTED;
+         /**
+          * Entity instances will be cached within the EntityManagerFactory/ServerSession level.
+          * Any user queries for shared cache instances (ie Read-Only query hint) will return an Entity
+          * instance that may be shared by multiple clients. 
+          * 
+          * This setting is the default isolation level.
+          */
+         SHARED,
+    
+         /**
+          * Entity state information will be cached in the shared cache but Entity
+          * instances will not be shared. Any user queries for shared cache instances
+          * (ie Read-Only query hint) will return a new Entity instance with the cached state.
+          * This will ensure the instance is <i>protected</i> from any concurrent
+          * state change.
+          */
+         PROTECTED,
+    
+         /**
+          * The Entity and its data is not stored in the shared cache but is
+          * <i>isolated</i> to the Persistence Context/UnitOfWork or
+          * IsolatedClientSession. This setting effectively disables second level
+          * caching for this entity and should be used when users do not want caching for
+          * a particular Entity.
+          */
+         ISOLATED;
         
         }
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:token">
-      <xsd:enumeration value="ISOLATED"/>
       <xsd:enumeration value="SHARED"/>
       <xsd:enumeration value="PROTECTED"/>
+      <xsd:enumeration value="ISOLATED"/>
     </xsd:restriction>
   </xsd:simpleType>
 
