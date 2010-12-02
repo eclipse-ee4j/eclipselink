@@ -165,9 +165,9 @@ public class ServerBrokerTestModel extends TestModel {
         } catch (Exception e) {
         }
         login.useOracleThinJDBCDriver();
-        login.setDatabaseURL("gyorke-pc.ca.oracle.com:1521:eclipsel");
-        login.setUserName("scott");
-        login.setPassword("tiger");
+        login.setDatabaseURL("ottvm028.ca.oracle.com:1521:toplink");
+        login.setUserName("QA7");
+        login.setPassword("password");
         login.useNativeSequencing();
         login.getDefaultSequence().setPreallocationSize(1);
 
@@ -182,9 +182,9 @@ public class ServerBrokerTestModel extends TestModel {
         } catch (Exception e) {
         }
         login.useOracleThinJDBCDriver();
-        login.setDatabaseURL("gyorke-pc.ca.oracle.com:1521:eclipsel");
-        login.setUserName("scott");
-        login.setPassword("tiger");
+        login.setDatabaseURL("ottvm028.ca.oracle.com:1521:toplink");
+        login.setUserName("QA8");
+        login.setPassword("password");
         login.useNativeSequencing();
         login.getDefaultSequence().setPreallocationSize(1);
 
