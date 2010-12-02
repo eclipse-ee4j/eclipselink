@@ -82,6 +82,9 @@ public class UnitOfWorkResumeOnFailureTest extends WriteObjectTest {
     }
 
     protected void setup() {
+        if (getSession().isRemoteSession()) {
+            throwWarning("Test not supported on remote.");
+        }
         if (getSession().isClientSession()) {
             listener = checkTransactionIsolation();
         }
