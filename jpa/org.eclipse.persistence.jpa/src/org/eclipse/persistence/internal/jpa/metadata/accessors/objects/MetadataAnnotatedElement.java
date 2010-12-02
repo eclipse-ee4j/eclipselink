@@ -32,7 +32,9 @@
  *     08/11/2010-2.2 Guy Pelletier 
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  *     12/01/2010-2.2 Guy Pelletier 
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+ *     12/02/2010-2.2 Guy Pelletier 
+ *       - 251554: ExcludeDefaultMapping annotation needed
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -560,7 +562,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return true if this accessor represents a 1-m relationship.
      */
     public boolean isOneToMany(ClassAccessor classAccessor) {
-        if (isAnnotationNotPresent(OneToMany.class) && ! classAccessor.getDescriptor().ignoreDefaultMappings()) {
+        if (isAnnotationNotPresent(OneToMany.class) && ! classAccessor.excludeDefaultMappings()) {
             if (isGenericCollectionType() && isSupportedToManyCollectionClass(getRawClass(classAccessor.getDescriptor())) && classAccessor.getProject().hasEntity(getReferenceClassFromGeneric(classAccessor.getDescriptor()))) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, this);
                 return true;
@@ -579,7 +581,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return true if this accessor represents a 1-1 relationship.
      */
     public boolean isOneToOne(ClassAccessor classAccessor) {
-        if (isAnnotationNotPresent(OneToOne.class) && ! classAccessor.getDescriptor().ignoreDefaultMappings()) {    
+        if (isAnnotationNotPresent(OneToOne.class) && ! classAccessor.excludeDefaultMappings()) {    
             if (classAccessor.getProject().hasEntity(getRawClass(classAccessor.getDescriptor())) && ! isEmbedded(classAccessor)) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_ONE_MAPPING, this);
                 return true;
@@ -669,7 +671,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      *    ValueHolderInterface (and an exclude default mappings flag is not set)
      */
     public boolean isVariableOneToOne(ClassAccessor classAccessor) {
-        if (isAnnotationNotPresent(VariableOneToOne.class) && ! classAccessor.getDescriptor().ignoreDefaultMappings()) {
+        if (isAnnotationNotPresent(VariableOneToOne.class) && ! classAccessor.excludeDefaultMappings()) {
             if (getRawClass(classAccessor.getDescriptor()).isInterface() && 
                     ! getRawClass(classAccessor.getDescriptor()).isMap() && 
                     ! getRawClass(classAccessor.getDescriptor()).isCollection() &&

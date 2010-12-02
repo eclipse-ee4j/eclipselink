@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     03/26/2008-1.0M6 Guy Pelletier 
- *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema 
+ *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
+ *     12/02/2010-2.2 Guy Pelletier 
+ *       - 251554: ExcludeDefaultMapping annotation needed
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
@@ -27,6 +29,7 @@ import javax.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
@@ -87,6 +90,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new RelationshipModelJUnitTestSuite("testGetSingleResultTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testNamedQueryDoesNotExistTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testNamedQueryDoesNotExistTest"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testExcludeDefaultMappings"));
         
         return suite;
     }
@@ -97,6 +101,17 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     public void testSetup() {
         new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
+    }
+    
+    /**
+     * Verifies the exclude default mappings annotation.
+     */
+    public void testExcludeDefaultMappings() {
+        ClassDescriptor descriptor = getServerSession().getDescriptor(Mattel.class);
+        assertNull("The 'ignoredBasic' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredBasic"));
+        assertNull("The 'ignoredOneToOne' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredOneToOne"));
+        assertNull("The 'ignoredVariableOneToOne' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredVariableOneToOne"));
+        assertNull("The 'ignoredOneToMany' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredOneToMany"));
     }
     
     /**

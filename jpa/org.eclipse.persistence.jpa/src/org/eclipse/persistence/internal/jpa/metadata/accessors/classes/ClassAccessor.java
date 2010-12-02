@@ -62,7 +62,9 @@
  *     09/16/2010-2.2 Guy Pelletier 
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  *     12/01/2010-2.2 Guy Pelletier 
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+ *     12/02/2010-2.2 Guy Pelletier 
+ *       - 251554: ExcludeDefaultMapping annotation needed
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -94,6 +96,7 @@ import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.annotations.ChangeTracking;
 import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.CopyPolicy;
+import org.eclipse.persistence.annotations.ExcludeDefaultMappings;
 import org.eclipse.persistence.annotations.InstantiationCopyPolicy;
 import org.eclipse.persistence.annotations.CloneCopyPolicy;
 import org.eclipse.persistence.annotations.Properties;
@@ -540,7 +543,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         } else if (accessibleObject.isVariableOneToOne(this)) {
             // A VariableOneToOne can default and doesn't require an annotation to be present.
             return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
-        } else if (getDescriptor().ignoreDefaultMappings()) {
+        } else if (excludeDefaultMappings()) {
             return null;
         } else {
             // Default case (everything else falls into a Basic)
@@ -589,9 +592,18 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return true if this class accessor has been set to metadata complete.
      */
     public boolean excludeDefaultMappings() {
-        return m_excludeDefaultMappings != null && m_excludeDefaultMappings;
+        if (getProject().excludeDefaultMappings()) {
+            return true;
+        } else {
+            if (m_excludeDefaultMappings != null) {
+                return m_excludeDefaultMappings;
+            } else {
+                return isAnnotationPresent(ExcludeDefaultMappings.class);
+            }
+        }
     }
     
     /**
@@ -1074,10 +1086,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * processing. 
      */
     public void preProcess() {
-        // Process the exclude default mappings flag now before we start
-        // looking for annotations.
-        processExcludeDefaultMappings();
-        
         // Process the global converters.
         processConverters();
         
@@ -1103,10 +1111,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
     public void preProcessForCanonicalModel() {
         // Process the correct access type before any other processing.
         processAccessType();
-        
-        // Process the exclude default mappings flag now before we start
-        // looking for annotations.
-        processExcludeDefaultMappings();
         
         // Add the accessors and converters on this embeddable.
         addAccessors();
@@ -1411,19 +1415,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
             processing.remove(this);
             processed.add(this);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Process the exclude default mappings metadata. May be specified directly
-     * on this class accessor or one of its mapped superclasses.
-     */
-    protected void processExcludeDefaultMappings() {
-        // Set an exclude default mappings flag if specified on the entity class
-        // or a mapped superclass.
-        if (getExcludeDefaultMappings() != null) {
-            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
-        } 
     }
     
     /**

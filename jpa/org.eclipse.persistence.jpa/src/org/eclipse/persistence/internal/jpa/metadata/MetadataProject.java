@@ -66,7 +66,9 @@
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     12/01/2010-2.2 Guy Pelletier 
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+ *     12/02/2010-2.2 Guy Pelletier 
+ *       - 251554: ExcludeDefaultMapping annotation needed
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -792,6 +794,19 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Return true if an exclude-default-mappings setting have been set for this 
+     * persistence unit.
+     */
+    public boolean excludeDefaultMappings() {
+        if (m_persistenceUnitMetadata != null) {
+            return m_persistenceUnitMetadata.excludeDefaultMappings();
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Return the accessor for the given class. Could be an entity or an
      * embeddable. Note: It may return null.
      */
@@ -1329,7 +1344,8 @@ public class MetadataProject {
     protected void processPersistenceUnitMetadata(MetadataDescriptor descriptor) {
         // Set the persistence unit meta data (if there is any) on the descriptor.
         if (m_persistenceUnitMetadata != null) {
-            descriptor.setIgnoreDefaultMappings(m_persistenceUnitMetadata.excludeDefaultMappings());
+            // Persistence unit metadata level annotations are not defaults
+            // and therefore should not be set on the descriptor.
             
             // Set the persistence unit defaults (if there are any) on the descriptor.
             XMLPersistenceUnitDefaults persistenceUnitDefaults = m_persistenceUnitMetadata.getPersistenceUnitDefaults();

@@ -81,7 +81,9 @@
  *     10/27/2010-2.2 Guy Pelletier 
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
  *     12/01/2010-2.2 Guy Pelletier 
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+ *     12/02/2010-2.2 Guy Pelletier 
+ *       - 251554: ExcludeDefaultMapping annotation needed
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -141,7 +143,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  */
 public class MetadataDescriptor {
     private boolean m_isCascadePersist;
-    private boolean m_ignoreDefaultMappings; // XML exclude default mappings
     private boolean m_hasCache;
     private boolean m_hasCacheInterceptor;
     private boolean m_hasDefaultRedirectors;
@@ -228,7 +229,6 @@ public class MetadataDescriptor {
         m_hasCopyPolicy = false;
         m_hasPrimaryKey = false;
         m_isCascadePersist = false;
-        m_ignoreDefaultMappings = false;
         
         m_defaultAccessMethods = new AccessMethodsMetadata();
         
@@ -1271,14 +1271,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Indicates whether or not default mappings should be ignored.
-     */
-    public boolean ignoreDefaultMappings() {
-        return m_ignoreDefaultMappings;
-    }
-    
-    /**
-     * INTERNAL:
      * Indicates that an explicit cacheable value of true has been set for 
      * this descriptor.
      */
@@ -1614,14 +1606,6 @@ public class MetadataDescriptor {
      */
     public void setHasCopyPolicy() {
         m_hasCopyPolicy = true;
-    }
-
-    /**
-     * INTERNAL:
-     * Indicates that default mappings should be ignored.
-     */
-    public void setIgnoreDefaultMappings(boolean ignoreDefaultMappings) {
-        m_ignoreDefaultMappings = ignoreDefaultMappings;
     }
 
     /**

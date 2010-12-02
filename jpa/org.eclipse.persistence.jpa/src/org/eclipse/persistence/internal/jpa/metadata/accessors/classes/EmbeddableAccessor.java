@@ -49,7 +49,9 @@
  *     09/16/2010-2.2 Guy Pelletier 
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  *     12/01/2010-2.2 Guy Pelletier 
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+ *     12/02/2010-2.2 Guy Pelletier 
+ *       - 251554: ExcludeDefaultMapping annotation needed 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -302,10 +304,6 @@ public class EmbeddableAccessor extends ClassAccessor {
      */
     @Override
     protected void preProcessMappedSuperclassMetadata(MappedSuperclassAccessor mappedSuperclass) {
-        // Process the exclude default mappings flag now before we start
-        // looking for annotations.
-        mappedSuperclass.processExcludeDefaultMappings();
-        
         // Process the global converters.
         mappedSuperclass.processConverters();
         
