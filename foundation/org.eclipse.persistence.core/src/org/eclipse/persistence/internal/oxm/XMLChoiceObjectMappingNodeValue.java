@@ -141,4 +141,11 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         this.choiceElementNodeValue.setXPathNode(xPathNode);
     }    
 
+    /**
+     * The underlying choice element node value will handle attributes.
+     * 
+     */
+    public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
+        this.choiceElementNodeValue.attribute(unmarshalRecord, URI, localName, value);
+    }
 }

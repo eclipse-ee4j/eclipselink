@@ -106,7 +106,6 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         classToFieldMappings = new HashMap<Class, XMLField>();
         choiceElementMappings = new LinkedHashMap<XMLField, XMLMapping>();
         fieldsToConverters = new HashMap<XMLField, Converter>();
-
     }
 
     /**
@@ -269,14 +268,19 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             valueClass = root.getObject().getClass();
         }
         XMLField valueField = this.classToFieldMappings.get(valueClass);
+        if (valueField == null) {
+            List<XMLField> xflds = getClassToSourceFieldsMappings().get(valueClass);
+            if (xflds != null) { 
+                valueField = xflds.get(0);
+            }
+        }
         XMLMapping mapping = this.choiceElementMappings.get(valueField);
-        if(mapping != null) {
+        if (mapping != null) {
             mapping.writeSingleValue(value, object, (XMLRecord)row, session);
         }
     }
 
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
-
     }
 
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
@@ -460,11 +464,14 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             }
 
             XMLMapping mapping = this.choiceElementMappings.get(entry.getKey());
-            if(!((mapping instanceof XMLObjectReferenceMapping) && ((XMLObjectReferenceMapping)mapping).getSourceToTargetKeyFieldAssociations().size() > 1)) {
+            if (!((mapping instanceof XMLObjectReferenceMapping) && ((XMLObjectReferenceMapping)mapping).getSourceToTargetKeyFieldAssociations().size() > 1)) {
                 if (classToFieldMappings.get(elementType) == null) {
                     classToFieldMappings.put(elementType, entry.getKey());
                 }
             }
+            if (fieldToClassMappings.get(entry.getKey()) == null) {
+                fieldToClassMappings.put(entry.getKey(), elementType);
+            }    
         }
         if(classNameToSourceFieldsMappings != null) {
             Iterator<Entry<String, List<XMLField>>> sourceFieldEntries = classNameToSourceFieldsMappings.entrySet().iterator();

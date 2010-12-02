@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.oxm.mappings.choice;
 
 import org.eclipse.persistence.testing.oxm.mappings.choice.converter.ConverterTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.choice.ref.XMLChoiceWithReferenceTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -25,6 +26,7 @@ public class XMLChoiceMappingTestSuite extends TestCase {
         suite.addTestSuite(XMLChoiceMappingSimpleValueTestCases.class);
         suite.addTestSuite(XMLChoiceMappingNonStringValueTestCases.class);
         suite.addTestSuite(ConverterTestCases.class);
+        suite.addTestSuite(XMLChoiceWithReferenceTestCases.class);
         return suite;
     }
 

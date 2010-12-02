@@ -522,6 +522,7 @@
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/SAXMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/choice/XMLChoiceMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
                         <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/converter/ConverterTestCases.java"/>
                         <!--
