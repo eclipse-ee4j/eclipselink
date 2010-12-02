@@ -95,7 +95,7 @@ public class SessionBroker extends DatabaseSessionImpl {
             sessionName = (String)names.next();
             serverSession = getSessionForName(sessionName);
             if (serverSession instanceof org.eclipse.persistence.sessions.server.ServerSession) {
-                if (serverSession.getProject().hasIsolatedClasses()) {
+                if (serverSession.getProject().hasIsolatedClasses() && serverSession.getProject().hasNonIsolatedUOWClasses()) {
                     throw ValidationException.isolatedDataNotSupportedInSessionBroker(sessionName);
                 }
                 clientBroker.internalRegisterSession(sessionName, ((org.eclipse.persistence.sessions.server.ServerSession)serverSession).acquireClientSession());

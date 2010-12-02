@@ -1815,7 +1815,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setIsPrepared(boolean isPrepared) {
         this.isPrepared = isPrepared;
-        this.isCustomQueryUsed = null;
+        if (!isPrepared){
+            this.isCustomQueryUsed = null;
+        }
     }
 
     /**
