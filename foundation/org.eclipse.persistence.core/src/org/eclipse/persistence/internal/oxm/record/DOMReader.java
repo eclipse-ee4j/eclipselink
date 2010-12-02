@@ -181,7 +181,7 @@ public class DOMReader extends XMLReaderAdapter {
                 if(name == null) {
                     name = next.getNodeName();
                 }
-                if(name != null) {
+                if(XMLConstants.XMLNS.equals(name)) {
                     contentHandler.endPrefixMapping(XMLConstants.EMPTY_STRING);
                 }
             }
