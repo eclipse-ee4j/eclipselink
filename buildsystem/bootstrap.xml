@@ -46,6 +46,9 @@
                 <equals arg1="${os.name}" arg2="Windows NT"/>
             </or>
         </condition>
+        <condition property="_Unix" value="true">
+            <os family="unix"/>
+        </condition>
 
         <property name="build.compiler" value="javac1.5"/>
         <tstamp>
@@ -55,7 +58,9 @@
         <property environment="env"/>
         <!-- This needs to be here because if not set we need to check OS     -->
         <!-- and define appropriate default locations for svn                 -->
-        <property name="svn.exec"        value="${env.SVN_EXEC}"/>
+        <condition property="svn.exec"   value="${env.SVN_EXEC}">
+            <isset property="env.SVN_EXEC"/>
+        </condition>
 
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
@@ -73,6 +78,9 @@
         <echo message="ant.home        = '${ant.home}'"/>
         <echo message=" "/>
         <echo message="basedir         = '${basedir}'"/>
+        <echo message=" "/>
+        <echo message="_Win            = '${_Win}'"/>
+        <echo message="_Unix           = '${_Unix}'"/>
     </target>
 
     <!-- Set svn.exec to os appropriate value                                 -->
@@ -81,7 +89,13 @@
         <property name="svn.exec" value="/usr/local/bin/svn"/>
     </target>
     <target name="init-win" if="_Win" depends="init-linux">
+        <property file="${user.home}/build.properties"/>
         <property name="svn.exec" value="svn"/>
+        <property name="build.root.dir"  value="."/>
+        <property name="build.deps.dir"  value="${extensions.depend.dir}"/>
+        <property name="log.dir"         value="./logs"/>
+        <property name="junit.dir"       value="${build.deps.dir}/junit"/>
+        <property name="current.svnrev.file" value="${log.dir}/.current_svnrev_this_current"/>
     </target>
 
     <!-- Setup properties needed if testing using a local repos on RedHat     -->
@@ -98,7 +112,7 @@
     </target>
 
     <target name="properties-init" depends="init-win,init-test2">
-        <echo message="svn.exec        ='${svn.exec}'"/>
+        <echo message="svn.exec        = '${svn.exec}'"/>
 
         <!-- # Build environment definitions                                  -->
         <!-- #  build.root.dir is the directory the branch's build            -->
@@ -137,7 +151,6 @@
         <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
         <echo message="env.PATH        = '${env.PATH}'"/>
         <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
-        <echo message="env.SVN_EXEC    = '${env.SVN_EXEC}'"/>
         <echo message="env.TARGET      = '${env.TARGET}'"/>
         <echo message=""/>
         <echo message="branch.name     = '${branch.name}'"/>
@@ -215,11 +228,18 @@
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-milestone"/>
     </target>
 
-    <target name="nightly" if="_DoBuild" depends="query-svn-changed, get-src, build-aborted" description="Trigger the nightly automated build and lrg tests">
+    <target name="nightly" if="_DoBuild" depends="query-svn-changed, get-src, build-aborted" description="Trigger the nightly automated build">
         <!-- Don't move current to latest until source sucessfully retrieved -->
         <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
         <echo message="'nightly' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
+    </target>
+
+    <target name="nightly-test" depends="properties-init" description="Trigger the nightly automated lrg tests">
+        <!-- Don't move current to latest until source sucessfully retrieved -->
+        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
+        <echo message="'nightly-test' target: Calling 'test-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="test-nightly"/>
     </target>
 
     <target name="oracle" depends="properties-init" description="Trigger the oracle automated build">
@@ -283,13 +303,26 @@
     </target>
 
     <target name="publish-all" depends="properties-init" description="Manually trigger all publish targets">
-        <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <echo message="'publish-all' target: Calling 'publish-all' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-all"/>
     </target>
 
-    <target name="publish-build" depends="properties-init" description="Manually trigger Build publish target">
-        <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+    <target name="cannot-handoff" unless="handoff.file">
+        <fail message="'handoff.file' is not set. Cannot initiate publish phase!"/>
+    </target>
+    <target name="load-handoff" if="handoff.file" depends="cannot-handoff">
+        <!-- pull in the properties stored in the handoff file -->
+        <property file="${handoff.file}"/>
+    </target>
+    <target name="publish-build" depends="load-handoff, properties-init" description="Trigger the nightly publish for a build">
+        <echo message="'publish-build' target: Calling 'publish-build' target in '${build.root.dir}/${autobld.file}'"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-build"/>
+        <delete file="${handoff.file}" failonerror="false"/>
+    </target>
+    <target name="publish-test" depends="load-handoff, properties-init" description="Trigger the nightly publish for a build">
+        <echo message="'publish-test' target: Calling 'publish-tests' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-tests"/>
+        <delete file="${handoff.file}" failonerror="false"/>
     </target>
 
     <target name="publish-maven" depends="properties-init" description="Manually trigger just Maven publish">
@@ -309,7 +342,7 @@
     </target>
 
     <target name="custom" if="custom.target" depends="get-src" description="Trigger custom target in build.xml">
-        <echo message="'custome' target: Calling 'custom' target in '${build.root.dir}/${autobld.file}' with end-target set to ${custom.target}"/>
+        <echo message="'custom' target: Calling 'custom' target in '${build.root.dir}/${autobld.file}' with end-target set to ${custom.target}"/>
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="custom"/>
     </target>
 

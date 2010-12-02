@@ -3,7 +3,8 @@
 05 1    * * 0-6     nice -n 10 /shared/rt/eclipselink/bootstrap.sh nightly 2.1 > /shared/rt/eclipselink/logs/nightly211.log 2>&1
 05 3    * * 0,2,4,6 nice -n 10 /shared/rt/eclipselink/bootstrap.sh nightly 2.0 > /shared/rt/eclipselink/logs/nightly203.log 2>&1
 05 3    * * 1,3,5   nice -n 10 /shared/rt/eclipselink/bootstrap.sh nightly 1.2 > /shared/rt/eclipselink/logs/nightly120.log 2>&1
-00 6-20 * * *       nice -n 10 /shared/rt/eclipselink/bootstrap.sh cb > /shared/rt/eclipselink/logs/cb220.log 2>&1
-20 6-20 * * *       nice -n 10 /shared/rt/eclipselink/bootstrap.sh cb 2.1 > /shared/rt/eclipselink/logs/cb211.log 2>&1
-40 6-20 * * *       nice -n 10 /shared/rt/eclipselink/bootstrap.sh cb 2.0 > /shared/rt/eclipselink/logs/cb203.log 2>&1
+0,20,40 * * * *     chmod 774 /shared/rt/eclipselink/trunk/buildsystem/*.sh 
+1,21,41 * * * *     /shared/rt/eclipselink/trunk/buildsystem/buildNightlyList-cron.sh > /shared/rt/eclipselink/logs/genNightlyResults.log 2>&1
+5,25,45 1-9 * * *   /shared/rt/eclipselink/trunk/buildsystem/publish.sh > /shared/rt/eclipselink/logs/processHandoff.log 2>&1
+10,30,50 6-20 * * * /shared/rt/eclipselink/trunk/buildsystem/buildFailureList.sh > /shared/rt/eclipselink/logs/genFailRes.log 2>&1
 

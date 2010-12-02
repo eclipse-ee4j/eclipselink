@@ -88,7 +88,7 @@ then
 fi
 if [ "${TARGET}" = "release" ]
 then
-    echo "Error: 'release' is not a valid initial target. Use 'milestone release'. Exiting..."
+    echo "Error: 'release' is not a valid initial target. Use 'milestone release' instead. Exiting..."
     exit 2
 fi
 if [ "${TARGET}" = "uploadDeps" ]
@@ -127,28 +127,21 @@ then
     then
         echo "Error: Unable to find SVN client install!"
         exit 1
+    else
+        echo "Found: ${SVN_EXEC}"
     fi
 fi
-
-# safe temp directory
-tmp=${TMPDIR-/tmp}
-tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
-(umask 077 && mkdir $tmp) || {
-  echo "Could not create temporary directory! Exiting." 1>&2
-  exit 1
-}
-echo "results stored in: '${tmp}'"
 
 #Define common variables
 START_DATE=`date '+%y%m%d-%H%M'`
 #Directories
-HOME_DIR=/shared/rt/eclipselink
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
 if [ "${ORACLEBLD}" = "true" ]
 then
     JAVA_HOME=/shared/common/jdk1.6.0_21
     ANT_HOME=/usr/share/ant
+    HOME_DIR=/shared/el_continuous
 else
     # Conditional to allow single branch testing of jdk and ant env
     if [ ! "${BRANCH}" = "" ]
@@ -157,7 +150,8 @@ else
     else
         JAVA_HOME=/shared/common/jdk-1.6.x86_64
     fi
-    ANT_HOME=/shared/common/apache-ant-1.7.0
+    ANT_HOME=/shared/common/apache-ant-1.7.1
+    HOME_DIR=/shared/rt/eclipselink
 fi
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
@@ -216,6 +210,43 @@ getPrevRevision() {
             break
         fi
     done
+}
+
+unset setDbLogin
+setDbLogin() {
+    if [ ! -f $JDBC_LOGIN_INFO_FILE ]
+    then
+        echo "No db Login info available!"
+        exit
+    else
+        DB_USER=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f1`
+        DB_PWD=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f2`
+        DB_URL=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f3`
+        DB_NAME=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f4`
+    fi
+}
+
+unset cleanDB
+cleanDB() {
+    echo "Cleaning the db for build..."
+    echo "Cleaning the db for build..." >> ${DATED_LOG}
+    echo "drop schema ${DB_NAME};" > sql.sql
+    echo "create schema ${DB_NAME};" >> sql.sql
+    mysql -u${DB_USER} -p${DB_PWD} < sql.sql
+    rm sql.sql
+    echo "done."
+    echo "done." >> ${DATED_LOG}
+}
+
+unset genSafeTmpDir
+genSafeTmpDir() {
+    tmp=${TMPDIR-/tmp}
+    tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
+    (umask 077 && mkdir $tmp) || {
+      echo "Could not create temporary directory! Exiting." 1>&2
+      exit 1
+    }
+    echo "results stored in: '${tmp}'"
 }
 
 unset genTestSummary
@@ -393,22 +424,6 @@ then
     ANT_BASEARG="${ANT_BASEARG} -D_LocalRepos=1"
 fi
 
-#Depends upon a valid putty install and config for "eclipse-dev"
-if [ "${ORACLEBLD}" = "true" ]
-then
-    #Only needed for dev behind firewall
-    ANT_OPTS="${ANT_OPTS}"
-    ANT_BASEARG="${ANT_BASEARG} -Dsvn.server.name=eclipse-dev"
-fi
-
-## Save for future reference
-#if [ "${RHB}" = "true" ]
-#then
-#    #Only needed for dev behind firewall
-#    ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com ${ANT_OPTS}"
-#    ANT_ARGS="-autoproxy"
-#    ANT_BASEARG="${ANT_BASEARG} -D_RHB=1"
-#fi
 
 if [ "${TEST}" = "true" ]
 then
@@ -458,22 +473,25 @@ fi
 echo "Post-build Processing Starting..."
 ## Post-build Processing
 ##
-MAIL_EXEC=/bin/mail
+
+genSafeTmpDir
+
 MAILFROM=eric.gwin@oracle.com
 if [ "${ORACLEBLD}" = "true" ]
 then
     MAIL_EXEC=/usr/bin/mail
     MAILLIST="ejgwin@gmail.com"
+#    SUCC_MAILLIST="eric.gwin@oracle.com"
+#    FAIL_MAILLIST="eric.gwin@oracle.com"
     SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
-    FAIL_MAILLIST="peter.krogh@oracle.com david.twelves@oracle.com blaise.doughan@oracle.com tom.ware@oracle.com ejgwin@gmail.com"
-    FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
+    FAIL_MAILLIST="pkrogh_directs_ww@oracle.com dtwelves_directs_ww@oracle.com toplinkqa_ca@oracle.com ejgwin@gmail.com"
 else
     MAIL_EXEC=/bin/mail
     MAILLIST="ejgwin@gmail.com"
     SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
     FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
-    FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
 fi
+FailedNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink/recent-failure-logs"
 PARSE_RESULT_FILE=${tmp}/raw-summary.txt
 COMPILE_RESULT_FILE=${tmp}/compile-error-summary.txt
 SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
@@ -509,7 +527,7 @@ then
         ## Prepend the ":" for the "to" syntax of the "svn log" command
         PREV_REV=:${PREV_REV}
     fi
-    echo "  changes included are from current revision to earliest not previously built (${CUR_REV}:${PREV_REV}) inclusive."
+    echo "  changes included are from current revision to earliest not previously built (${CUR_REV}${PREV_REV}) inclusive."
 
     ## Generate transaction log for this revision
     ##
@@ -567,10 +585,18 @@ then
         LOGPREFIX=TestFail
         if [ "${TARG_NM}" = "cb" ]
         then
+            TEST_RESULT_ARCHIVE=TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip
             # Zip up test results and copy them to appropriate location
-            ant ${ANT_BASEARG} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results
-            echo "Command to zip and copy test results"
-            echo "   ant ${ANT_BASEARG} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip" save-tst-results"
+            ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="${TEST_RESULT_ARCHIVE}" save-tst-results
+            echo "Command to zip test results"
+            echo "   ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="${TEST_RESULT_ARCHIVE}" save-tst-results"
+            if [ "${ORACLEBLD}" = "true" ]
+            then
+                scp ${BRANCH_PATH}/${TEST_RESULT_ARCHIVE} build.eclipse.org:${FailedNFSDir}/${TEST_RESULT_ARCHIVE}
+            else
+                cp ${BRANCH_PATH}/${TEST_RESULT_ARCHIVE} ${FailedNFSDir}/.
+            fi
+            rm ${BRANCH_PATH}/${TEST_RESULT_ARCHIVE}
        fi
     fi
 
@@ -582,7 +608,12 @@ then
 
     if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
-        cp ${DATED_LOG} ${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
+        if [ "${ORACLEBLD}" = "true" ]
+        then
+            scp ${DATED_LOG} build.eclipse.org:${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
+        else
+            cp ${DATED_LOG} ${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
+        fi
         MAILLIST=${FAIL_MAILLIST}
         echo "Updating 'failed build' site..."
         chmod 755 ${BRANCH_PATH}/buildsystem/buildFailureList.sh

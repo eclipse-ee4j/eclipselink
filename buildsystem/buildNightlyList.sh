@@ -1,13 +1,14 @@
 # !/bin/sh
 #set -x
 
-export JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
+export JAVA_HOME=/shared/common/jdk-1.6.x86_64
 export PATH=${JAVA_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 
 GeneratedDownloadPage=downloads.xml
 BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly"
 BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/nightly"
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
+
 buildir=/shared/rt/eclipselink
 cd ${buildir}
 
@@ -56,8 +57,8 @@ for version in `ls -dr [0-9]*` ; do
         echo "            <td align=\"center\"> ${contentdir} </td>" >> $tmp/index.xml
         echo "            <td align=\"center\">" >> $tmp/index.xml
 
-        # list all files in dir, reverse sort to put newer on top
-        # and look for the first matching filename to generate html link
+        #    List all files in dir, reverse sort to put newer on top
+        #    and look for the first matching filename to generate html link
         file=`ls | sort -r | grep -m1 eclipselink-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\"> Install Archive </a> <br/>" >> $tmp/index.xml
