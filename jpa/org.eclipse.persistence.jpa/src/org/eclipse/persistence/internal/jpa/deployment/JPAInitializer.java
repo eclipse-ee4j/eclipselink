@@ -44,14 +44,7 @@ import org.eclipse.persistence.logging.SessionLog;
  *
  */
 public abstract class JPAInitializer {
-
-    /**
-     * This is used by OSGi related bundles.  In some OSGi implementations (like Eclipse PDE), the
-     * resources in a bundle will potentially be stored somewhere other than ".".  This stores the prefix
-     * under which the resources are stored.
-     */
-    public static String BUNDLE_RESOURCE_PREFIX = "";
-    
+   
     // The internal loader is used by applications that do weaving to pre load classes
     // When this flag is set to false, we will not be able to weave.
     protected boolean shouldCreateInternalLoader = true;
