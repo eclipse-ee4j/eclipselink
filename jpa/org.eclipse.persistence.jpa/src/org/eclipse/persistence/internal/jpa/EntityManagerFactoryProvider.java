@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.jpa;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
@@ -35,9 +36,9 @@ public class EntityManagerFactoryProvider {
     public static final HashMap<String, EntityManagerSetupImpl> emSetupImpls = new HashMap<String, EntityManagerSetupImpl>();
     
     //Cache the initial emSetupImpls - those created and predeployed by JavaSECMPInitializer.initialize method. 
-    public static HashMap<String, EntityManagerSetupImpl> initialEmSetupImpls = null;
+    public static Map<String, EntityManagerSetupImpl> initialEmSetupImpls = new Hashtable<String, EntityManagerSetupImpl>();
     //Cache the initial puInfos - those used by  initialEmSetupImpls
-    public static HashMap<String, SEPersistenceUnitInfo> initialPuInfos = null;
+    public static Map<String, SEPersistenceUnitInfo> initialPuInfos = new Hashtable<String, SEPersistenceUnitInfo>();
     
     // TEMPORARY - WILL BE REMOVED.
     // Used to warn users about deprecated property name and suggest the valid name.

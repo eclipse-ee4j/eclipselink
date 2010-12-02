@@ -206,10 +206,6 @@ public class JavaSECMPInitializer extends JPAInitializer {
                 if(this.initializationClassloader == null) {
                     this.initializationClassloader = Thread.currentThread().getContextClassLoader();
                 }
-                EntityManagerFactoryProvider.initialEmSetupImpls = new HashMap<String, EntityManagerSetupImpl>();
-                if(keepInitialPuInfos) {
-                    EntityManagerFactoryProvider.initialPuInfos = new HashMap<String, SEPersistenceUnitInfo>();
-                }
                 final Set<Archive> pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader);
                 try {
                     PersistenceInitializationHelper initializationHelper = new PersistenceInitializationHelper();

@@ -111,16 +111,14 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                 emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
                 if(emSetupImpl == null) {
-                    if(EntityManagerFactoryProvider.initialEmSetupImpls != null) {
-                        // there may be initial emSetupImpl (possible only in SE that uses agent) remove it and use.
-                        emSetupImpl = EntityManagerFactoryProvider.initialEmSetupImpls.remove(uniqueName);
-                        if(emSetupImpl != null) {
-                            // change the name
-                            emSetupImpl.changeSessionName(sessionName);
-                            //  make sure we grab the classloader that may have 
-                            // been provided by the user. I.E. a DynamicClassLoader
-                            puInfo.setClassLoader(classLoader);
-                        }
+                    // there may be initial emSetupImpl (possible only in SE that uses agent) remove it and use.
+                    emSetupImpl = EntityManagerFactoryProvider.initialEmSetupImpls.remove(uniqueName);
+                    if(emSetupImpl != null) {
+                        // change the name
+                        emSetupImpl.changeSessionName(sessionName);
+                        //  make sure we grab the classloader that may have 
+                        // been provided by the user. I.E. a DynamicClassLoader
+                        puInfo.setClassLoader(classLoader);
                     }
                     if(emSetupImpl == null) {
                         // create and predeploy a new emSetupImpl

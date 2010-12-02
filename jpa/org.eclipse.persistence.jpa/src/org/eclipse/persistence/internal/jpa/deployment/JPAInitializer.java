@@ -123,11 +123,9 @@ public abstract class JPAInitializer {
      */
     public SEPersistenceUnitInfo findPersistenceUnitInfo(String puName, Map m, PersistenceInitializationHelper persistenceHelper) {
         SEPersistenceUnitInfo persistenceUnitInfo = null;
-        if(EntityManagerFactoryProvider.initialPuInfos != null) {
-            persistenceUnitInfo = EntityManagerFactoryProvider.initialPuInfos.get(puName);
-            if(persistenceUnitInfo != null) {
-                return persistenceUnitInfo;
-            }
+        persistenceUnitInfo = EntityManagerFactoryProvider.initialPuInfos.get(puName);
+        if(persistenceUnitInfo != null) {
+            return persistenceUnitInfo;
         }
         return findPersistenceUnitInfoInArchives(puName, m, persistenceHelper);
     }
