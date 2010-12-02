@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/02/2010-2.2 Guy Pelletier 
+ *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
@@ -38,9 +40,13 @@ public class Item implements java.io.Serializable {
     private String description;
     private Manufacturer manufacturer;
     private Distributor distributor;
+    
+    // No entity implements this interface therefore it should not be mapped
+    // as a variable one to one.
+    private Facade facade;
 
     public Item() {}
-
+    
     @Id
     @GeneratedValue(strategy=TABLE, generator="ITEM_TABLE_GENERATOR")
     @TableGenerator(
@@ -111,5 +117,15 @@ public class Item implements java.io.Serializable {
 
     public void setDistributor(Distributor distributor) {
         this.distributor = distributor;
+    }
+    
+    // No entity implements this interface therefore it should not be mapped
+    // as a variable one to one.
+    public Facade getFacade() {
+        return facade;
+    }
+    
+    public void setFacade(Facade facade) {
+        this.facade = facade;
     }
 }

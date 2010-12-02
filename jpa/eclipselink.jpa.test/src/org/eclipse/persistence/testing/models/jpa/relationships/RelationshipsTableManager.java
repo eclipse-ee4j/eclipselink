@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/02/2010-2.2 Guy Pelletier 
+ *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
@@ -405,6 +407,12 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldDISTRIBUTOR_ID.setUnique(false);
         fieldDISTRIBUTOR_ID.setShouldAllowNull(true);
         table.addField(fieldDISTRIBUTOR_ID);
+        
+        FieldDefinition fieldFACADE = new FieldDefinition();
+        fieldFACADE.setName("FACADE");
+        fieldFACADE.setTypeName("BLOB");
+        table.addField(fieldFACADE);
+        
         return table;
     }
 

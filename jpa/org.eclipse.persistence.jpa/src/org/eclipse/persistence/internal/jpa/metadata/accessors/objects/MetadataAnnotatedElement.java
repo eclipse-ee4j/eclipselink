@@ -35,6 +35,8 @@
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
  *     12/02/2010-2.2 Guy Pelletier 
  *       - 251554: ExcludeDefaultMapping annotation needed
+ *     12/02/2010-2.2 Guy Pelletier 
+ *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -672,10 +674,13 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isVariableOneToOne(ClassAccessor classAccessor) {
         if (isAnnotationNotPresent(VariableOneToOne.class) && ! classAccessor.excludeDefaultMappings()) {
-            if (getRawClass(classAccessor.getDescriptor()).isInterface() && 
-                    ! getRawClass(classAccessor.getDescriptor()).isMap() && 
-                    ! getRawClass(classAccessor.getDescriptor()).isCollection() &&
-                    ! getRawClass(classAccessor.getDescriptor()).extendsInterface(ValueHolderInterface.class)) {
+            MetadataClass rawClass = getRawClass(classAccessor.getDescriptor())
+            
+            if (rawClass.isInterface() && 
+                    ! rawClass.isMap() && 
+                    ! rawClass.isCollection() &&
+                    ! rawClass.extendsInterface(ValueHolderInterface.class) &&
+                    classAccessor.getProject().hasEntityThatImplementsInterface(rawClass.getName())) {
                 getLogger().logConfigMessage(MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING, this);
                 return true;
             }

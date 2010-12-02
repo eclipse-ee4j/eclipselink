@@ -69,6 +69,8 @@
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
  *     12/02/2010-2.2 Guy Pelletier 
  *       - 251554: ExcludeDefaultMapping annotation needed
+ *     12/02/2010-2.2 Guy Pelletier 
+ *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -254,6 +256,10 @@ public class MetadataProject {
     // Contains those embeddables and entities that are VIRTUAL (do not exist)
     private Set<ClassAccessor> m_virtualClasses;
     
+    // Contains a list of all interfaces that are implemented by entities in
+    // this project/pu.
+    private Set<String> m_interfacesImplementedByEntities;
+    
     /**
      * INTERNAL:
      * Create and return a new MetadataProject with puInfo as its PersistenceUnitInfo, 
@@ -300,6 +306,7 @@ public class MetadataProject {
         m_converters = new HashMap<String, AbstractConverterMetadata>();
         m_partitioningPolicies = new HashMap<String, AbstractPartitioningMetadata>();
         m_accessorsWithDerivedId = new HashSet<ClassAccessor>();
+        m_interfacesImplementedByEntities = new HashSet<String>();
         
         m_metamodelMappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
     }
@@ -420,6 +427,8 @@ public class MetadataProject {
     public void addEntityAccessor(EntityAccessor accessor) {
         // Add accessor will apply persistence unit defaults.
         addAccessor(accessor);
+        // Grab the implemented interfaces (used when defaulting v1-1 mappings)
+        m_interfacesImplementedByEntities.addAll(accessor.getJavaClass().getInterfaces());
         m_entityAccessors.put(accessor.getJavaClassName(), accessor);       
     }
     
@@ -1144,6 +1153,13 @@ public class MetadataProject {
      */
     public boolean hasEntity(String className) {
         return m_entityAccessors.containsKey(className);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasEntityThatImplementsInterface(String interfaceName) {
+       return m_interfacesImplementedByEntities.contains(interfaceName);
     }
     
     /**
