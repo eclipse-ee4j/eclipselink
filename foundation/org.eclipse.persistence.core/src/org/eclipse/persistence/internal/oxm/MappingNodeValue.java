@@ -87,7 +87,7 @@ public abstract class MappingNodeValue extends NodeValue {
             return null;
         }
         String namespaceURI = qName.getNamespaceURI();
-        if(null == namespaceURI) {
+        if(null == namespaceURI || 0 == namespaceURI.length()) {
             return qName.getLocalPart();
         } else {
             NamespaceResolver namespaceResolver = marshalRecord.getNamespaceResolver();
