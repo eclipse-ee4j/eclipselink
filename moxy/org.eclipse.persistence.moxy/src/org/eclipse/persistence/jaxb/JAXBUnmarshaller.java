@@ -747,6 +747,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
         return new JAXBElement(qname, theClass, value);
     }
 
+    public JAXBContext getJaxbContext() {
+        return jaxbContext;
+    }
+
     public void setJaxbContext(JAXBContext jaxbContext) {
         this.jaxbContext = jaxbContext;
     }

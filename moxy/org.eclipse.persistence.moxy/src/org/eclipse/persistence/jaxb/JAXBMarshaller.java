@@ -537,6 +537,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         return jaxbContext.getClassToGeneratedClasses();
     }
 
+    public JAXBContext getJaxbContext() {
+        return jaxbContext;
+    }
+
     public void setJaxbContext(JAXBContext jaxbContext) {
         this.jaxbContext = jaxbContext;
     }
