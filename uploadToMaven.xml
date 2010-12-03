@@ -331,18 +331,15 @@
         <property name="activation.prefix" value="javax.activation"/>
         <property name="activation.criteria" value="[1.1.0,1.2.0)"/>
         <property name="activation.name" value="Javax Activation"/>
+        <!-- property name="jms.prefix" value="javax.jms"/>
+        <property name="jms.criteria" value="[1.1.0,1.2.0)"/>
+        <property name="jms.name" value="Javax JMS"/ -->
         <property name="mail.prefix" value="javax.mail"/>
         <property name="mail.criteria" value="[1.4.0,1.5.0)"/>
         <property name="mail.name" value="Javax Mail"/>
         <property name="servlet.prefix" value="javax.servlet"/>
         <property name="servlet.criteria" value="[2.4.0,2.5.0)"/>
         <property name="servlet.name" value="Javax Servlet"/>
-        <property name="xjc.prefix" value="com.sun.tools.xjc"/>
-        <property name="xjc.criteria" value="[2.2.0,2.3.0)"/>
-        <property name="xjc.name" value="Sun XJC"/>
-        <property name="xml.bind.impl.prefix" value="com.sun.xml.bind"/>
-        <property name="xml.bind.impl.criteria" value="[2.2.0,2.3.0)"/>
-        <property name="xml.bind.impl.name" value="Sun XML Bind Impl"/>
         <property name="xml.bind.prefix" value="javax.xml.bind"/>
         <property name="xml.bind.criteria" value="[2.2.0,2.3.0)"/>
         <property name="xml.bind.name" value="Javax XML Bind"/>
@@ -375,6 +372,9 @@
         <echo message="servlet.version    = ${servlet.version}"/>
         <echo message="xml.bind.version   = ${xml.bind.version}"/>
         <echo message="xml.stream.version = ${xml.stream.version}"/>
+        <!-- selectbundle basename="${jms.prefix}" directory="${maven.2.common.plugins.dir}"
+                     criterion="${jms.criteria}" property="jms.version" versiononly="true"
+        />
         <selectbundle basename="${xjc.prefix}" directory="${maven.2.common.plugins.dir}"
                      criterion="${xjc.criteria}" property="xjc.version" versiononly="true"
         />
@@ -389,8 +389,6 @@
         />
         <echo message="====================================="/>
         <echo message="jms.version           = ${jms.version}"/>
-        <echo message="resource.version      = ${resource.version}"/>
-        <echo message="transaction.version   = ${transaction.version}"/>
         <echo message="xjc.version           = ${xjc.version}"/>
         <echo message="xml.bind.impl.version = ${xml.bind.impl.version}"/>
         <echo message="xml.rcp.version       = ${xml.rcp.version}"/>
