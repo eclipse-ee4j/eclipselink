@@ -933,9 +933,7 @@ public class MappingsGenerator {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
         } else if (property.isNillable()){
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
-            if(property.isRequired()) {
-                mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
-            }
+            mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
         }
 
         if (referenceClassName == null){
@@ -1025,9 +1023,7 @@ public class MappingsGenerator {
         } else {
             if (property.isNillable()){
                 mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
-                if(property.isRequired()) {
-                    mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
-                }
+                mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
             } 
             mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
@@ -1619,6 +1615,7 @@ public class MappingsGenerator {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
         } else if (property.isNillable()){
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+            mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
         }
         
         JavaClass collectionType = property.getType();
