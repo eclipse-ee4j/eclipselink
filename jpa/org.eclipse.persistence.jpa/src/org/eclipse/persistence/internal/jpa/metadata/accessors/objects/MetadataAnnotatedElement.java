@@ -674,7 +674,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isVariableOneToOne(ClassAccessor classAccessor) {
         if (isAnnotationNotPresent(VariableOneToOne.class) && ! classAccessor.excludeDefaultMappings()) {
-            MetadataClass rawClass = getRawClass(classAccessor.getDescriptor())
+            MetadataClass rawClass = getRawClass(classAccessor.getDescriptor());
             
             if (rawClass.isInterface() && 
                     ! rawClass.isMap() && 
