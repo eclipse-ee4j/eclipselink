@@ -387,7 +387,7 @@ public class DOMReader extends XMLReaderAdapter {
                 if (item.getLocalName() != null) {
                     return item.getLocalName();
                 }
-                return XMLConstants.EMPTY_STRING;
+                return item.getName();
             } catch (IndexOutOfBoundsException iobe) {
                 return null;
             }

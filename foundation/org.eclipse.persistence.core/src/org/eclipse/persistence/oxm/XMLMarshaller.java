@@ -923,20 +923,20 @@ public class XMLMarshaller implements Cloneable {
 
             marshalRecord.namespaceDeclarations(nr);
             
-            if (descriptor != null) {            	   	        
+            if (descriptor != null && !isNil) {            	   	        
             	treeObjectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, null, null, root, object, isXMLRoot, true);
                 treeObjectBuilder.marshalAttributes(marshalRecord, object, session);
             }
             
             marshalRecord.closeStartElement();
         }
-        if (treeObjectBuilder != null) {
+        if (treeObjectBuilder != null && !isNil) {
             treeObjectBuilder.buildRow(marshalRecord, object, session, this, rootFragment, WriteType.UNDEFINED);
         } else if (isXMLRoot) {
             //if(null == object) {
                 //marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
                 //marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
-            if(object != null) {
+            if(object != null && !isNil) {
             	 if(root.getDeclaredType() != null && root.getObject() != null && root.getDeclaredType() != root.getObject().getClass()) {
         	        	
             		  QName type = (QName)XMLConversionManager.getDefaultJavaTypes().get(object.getClass());
