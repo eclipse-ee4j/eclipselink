@@ -2130,7 +2130,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         defaultObjectMapping.setAttributeName("m_defaultObjectValue");
         defaultObjectMapping.setGetMethodName("getDefaultObjectValue");
         defaultObjectMapping.setSetMethodName("setDefaultObjectValue");
-        defaultObjectMapping.setXPath("@default-object-value");
+        defaultObjectMapping.setXPath("orm:default-object-value");
         descriptor.addMapping(defaultObjectMapping);
         
         return descriptor;

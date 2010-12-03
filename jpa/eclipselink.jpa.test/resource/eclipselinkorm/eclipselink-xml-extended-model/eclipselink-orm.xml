@@ -50,6 +50,7 @@
         <object-type-converter name="sex" data-type="String" object-type="Employee$Gender">
             <conversion-value data-value="F" object-value="Female"/>
             <conversion-value data-value="M" object-value="Male"/>
+            <default-object-value>Male</default-object-value>
         </object-type-converter>
         <property name="entityName" value="XMLEmployee"/>
         <property name="entityIntegerProperty" value="1" value-type="Integer"/>

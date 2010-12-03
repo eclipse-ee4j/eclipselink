@@ -38,6 +38,7 @@ import javax.persistence.EntityNotFoundException;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy; 
@@ -48,7 +49,9 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -136,7 +139,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalTargetLocking_AddRemoveTarget", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalTargetLocking_DeleteSource", persistenceUnit));
         
-        if (persistenceUnit.equals("extended-advanced")) {            
+        if (persistenceUnit.equals("extended-advanced")) {
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testSexObjectTypeConverterDefaultValue", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExistenceCheckingSetting", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testReadOnlyClassSetting", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeChangeTrackingPolicy", persistenceUnit));
@@ -462,6 +466,19 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+    }
+    
+    /**
+     * Verifies a default object type value is set from metadata processing.
+     */
+    public void testSexObjectTypeConverterDefaultValue() {
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        
+        ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
+        DirectToFieldMapping mapping = (DirectToFieldMapping) employeeDescriptor.getMappingForAttributeName("gender");
+        assertNotNull("Gender mapping from Employee not found.", mapping);
+        assertTrue("No object type converter found on the gender mapping.", ObjectTypeConverter.class.isAssignableFrom(mapping.getConverter().getClass()));
+        assertTrue("Default object value on the object type converter for gender was not set to Male.", ((ObjectTypeConverter) mapping.getConverter()).getDefaultAttributeValue().equals(Employee.Gender.Male.name()));
     }
     
     /**
