@@ -168,6 +168,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.UnmarshallerNullTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.NoSchemaRefTestCases.class);
         suite.addTestSuite(XMLStreamWriterDefaultNamespaceTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.qname.QNameTestCases.class);
         return suite;
     }
 

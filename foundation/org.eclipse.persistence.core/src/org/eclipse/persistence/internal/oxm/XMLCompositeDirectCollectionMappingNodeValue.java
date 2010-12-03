@@ -88,7 +88,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                     }
                 }
                 schemaType = getSchemaType((XMLField) xmlCompositeDirectCollectionMapping.getField(), objectValue, session);
-                newValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
+                newValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
                 if (null != newValue) {
                     stringValueStringBuilder.append(newValue);
                     if (cp.hasNext(iterator)) {
@@ -262,10 +262,10 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             }
         }
         XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
-        QName schemaType = getSchemaType(xmlField, value, session);
-        String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
-        if (null != stringValue) {
+        if (null != value) {
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);
+            QName schemaType = getSchemaType(xmlField, value, session);
+            String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             XPathFragment nextFragment = xPathFragment.getNextFragment();
             if (nextFragment.isAttribute()) {
                 marshalRecord.attribute(nextFragment, namespaceResolver, stringValue);

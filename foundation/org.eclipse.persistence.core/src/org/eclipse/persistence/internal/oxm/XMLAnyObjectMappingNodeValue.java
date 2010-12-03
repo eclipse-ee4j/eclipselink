@@ -270,7 +270,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlRootFragment != null) {
             QName qname = ((XMLRoot) originalValue).getSchemaType();
-            value = getValueToWrite(qname, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
+            value = getValueToWrite(qname, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             Namespace generatedNamespace = setupFragment(((XMLRoot) originalValue), xmlRootFragment, marshalRecord);
             getXPathNode().startElement(marshalRecord, xmlRootFragment, object, session, namespaceResolver, null, null);
             if (generatedNamespace != null) {

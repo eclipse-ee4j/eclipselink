@@ -64,9 +64,9 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             // Perform marshal operations based on the null policy
             return xmlDirectMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         } else {
-            QName schemaType = getSchemaType((XMLField) xmlDirectMapping.getField(), fieldValue, session);
-            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+            QName schemaType = getSchemaType((XMLField) xmlDirectMapping.getField(), fieldValue, session);
+            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             if (xPathFragment.isAttribute()) {
                 marshalRecord.attribute(xPathFragment, namespaceResolver, stringValue);
                 marshalRecord.closeStartGroupingElements(groupingFragment);

@@ -164,7 +164,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
                 }
             }
             QName schemaType = getSchemaType(xmlField, fieldValue, session);
-            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
+            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             if (stringValue != null) {
                 if (xPathFragment.isAttribute()) {
                     marshalRecord.attribute(xPathFragment, namespaceResolver, stringValue);

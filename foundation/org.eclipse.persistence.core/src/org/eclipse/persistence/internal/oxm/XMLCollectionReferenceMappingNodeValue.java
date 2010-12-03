@@ -194,7 +194,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                     }
                 }
                 schemaType = getSchemaType(xmlField, fieldValue, session);
-                newValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
+                newValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
                 if (newValue != null) {
                     stringValueStringBuilder.append(newValue);
                     if (cp.hasNext(iterator)) {
@@ -252,7 +252,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                 return false;
             }
             schemaType = getSchemaType(xmlField, fieldValue, session);
-            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
+            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             if (stringValue != null) {
                 marshalRecord.openStartElement(xPathFragment, namespaceResolver);
                 XPathFragment nextFragment = xPathFragment.getNextFragment();

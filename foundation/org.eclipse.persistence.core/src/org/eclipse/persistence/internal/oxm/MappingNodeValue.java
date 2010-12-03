@@ -40,9 +40,9 @@ public abstract class MappingNodeValue extends NodeValue {
     public boolean isMappingNodeValue() {
         return true;
     }
-    protected String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager, NamespaceResolver namespaceResolver) {
+    protected String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager, MarshalRecord marshalRecord) {
         if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
-            return getStringForQName((QName)value, namespaceResolver);
+            return getStringForQName((QName)value, marshalRecord);
         }
         return (String) xmlConversionManager.convertObject(value, ClassConstants.STRING, schemaType);
     }
@@ -81,28 +81,31 @@ public abstract class MappingNodeValue extends NodeValue {
         }
         return schemaType;
     }
-    protected String getStringForQName(QName qName, NamespaceResolver namespaceResolver){
+
+    protected String getStringForQName(QName qName, MarshalRecord marshalRecord){
         if(null == qName) {
             return null;
         }
-            
-        if(null == qName.getNamespaceURI()) {
+        String namespaceURI = qName.getNamespaceURI();
+        if(null == namespaceURI) {
             return qName.getLocalPart();
-        } else {        
-            String namespaceURI = qName.getNamespaceURI();
+        } else {
+            NamespaceResolver namespaceResolver = marshalRecord.getNamespaceResolver();
             if(namespaceResolver == null){
                 throw XMLMarshalException.namespaceResolverNotSpecified(namespaceURI);
             }
+            if(namespaceURI.equals(namespaceResolver.getDefaultNamespaceURI())) {
+                return qName.getLocalPart();
+            }
             String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
             if(null == prefix) {
-                return qName.getLocalPart();
-            } else {
-                return prefix + XMLConstants.COLON + qName.getLocalPart();
+                prefix = namespaceResolver.generatePrefix();
+                marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, namespaceURI);
             }
+            return prefix + XMLConstants.COLON + qName.getLocalPart();
         }
-
     }
-    
+
     protected void updateNamespaces(QName qname, MarshalRecord marshalRecord, XMLField xmlField){
         if (qname != null){        
             if(xmlField != null){

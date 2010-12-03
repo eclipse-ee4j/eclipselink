@@ -12,6 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
@@ -48,8 +53,12 @@ public class ContentHandlerRecord extends MarshalRecord {
     private LexicalHandler lexicalHandler;
     private XPathFragment xPathFragment;
     private AttributesImpl attributes;
+    private int level;
+    private Map<Integer, List<String>> prefixMappings;
 
     public ContentHandlerRecord() {
+        level = 0;
+        prefixMappings = new HashMap<Integer, List<String>>();
         attributes = new AttributesImpl();
     }
 
@@ -107,12 +116,22 @@ public class ContentHandlerRecord extends MarshalRecord {
         }
     }
 
+    @Override
+    public void startPrefixMappings(NamespaceResolver namespaceResolver) {
+    }
+
     /**
      * INTERNAL:
      */
     public void startPrefixMapping(String prefix, String namespaceURI) {
         try {
             contentHandler.startPrefixMapping(prefix, namespaceURI);
+            List<String> currentLevelPrefixMappings = prefixMappings.get(level);
+            if(null == currentLevelPrefixMappings) {
+                currentLevelPrefixMappings = new ArrayList<String>();
+                prefixMappings.put(level, currentLevelPrefixMappings);
+            }
+            currentLevelPrefixMappings.add(prefix);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -139,6 +158,10 @@ public class ContentHandlerRecord extends MarshalRecord {
         }
     }
 
+    @Override
+    public void endPrefixMappings(NamespaceResolver namespaceResolver) {
+    }
+
     /**
      * INTERNAL:
      */
@@ -160,6 +183,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     private void openAndCloseStartElement() {
         try {
+            level ++;
             contentHandler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
@@ -205,7 +229,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
         String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
-        attributes.addAttribute(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), XMLConstants.CDATA, value);
+        attribute(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), value);
     }
 
     /**
@@ -236,6 +260,14 @@ public class ContentHandlerRecord extends MarshalRecord {
         }
         try {
             contentHandler.endElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName());
+            level--;
+            List<String> currentLevelPrefixMappings = prefixMappings.get(level);
+            if(null != currentLevelPrefixMappings) {
+                for(String prefix : currentLevelPrefixMappings) {
+                    contentHandler.endPrefixMapping(prefix);
+                }
+                currentLevelPrefixMappings.clear();
+            }
             isStartElementOpen = false;
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
