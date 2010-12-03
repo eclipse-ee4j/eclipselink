@@ -740,6 +740,27 @@ public class Project implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
+     * Return whether this project has a descriptor that is both Isolated and
+     * has a cache isolation level other than ISOLATE_CACHE_ALWAYS
+     * @return
+     */
+    public boolean hasIsolatedCacheClassWithoutUOWIsolation(){
+        // checked cached boolean to avoid iteration
+        if (!hasIsolatedClasses){
+            return false;
+        }
+        Iterator<ClassDescriptor> i = orderedDescriptors.iterator();
+        while (i.hasNext()){
+            ClassDescriptor descriptor = i.next();
+            if (descriptor.isIsolated() && !descriptor.shouldIsolateObjectsInUnitOfWork()){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Return if any descriptors are isolated.
      * Set to true during descriptor initialize if any descriptor is isolated.
      * Determines if an isolated client session is required.
@@ -766,6 +787,8 @@ public class Project implements Serializable, Cloneable {
     public boolean hasNonIsolatedUOWClasses() {
         return hasNonIsolatedUOWClasses;
     }
+    
+    
     
     /**
      * INTERNAL:
