@@ -100,16 +100,19 @@ public class DynamicTypeBuilder {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(dynamicClass);
         this.entityType = new DynamicTypeImpl(descriptor, parentType);
-        try {
-            Field dpmField = dynamicClass.getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
-            DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
-            dpm.setType(entityType);
-            entityType.setDynamicPropertiesManager(dpm);
-        }
-        catch (Exception e) {
-            // this is bad! Without the dpmField, not much to do but die :-( ...
-            e.printStackTrace();
-            return;
+        // JAXB generates some classes that do not conform to DynamicEntity interface - ignore
+        if (DynamicEntity.class.isAssignableFrom(dynamicClass)) {
+            try {
+                Field dpmField = dynamicClass.getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
+                DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
+                dpm.setType(entityType);
+                entityType.setDynamicPropertiesManager(dpm);
+            }
+            catch (Exception e) {
+                // this is bad! Without the dpmField, not much to do but die :-( ...
+                e.printStackTrace();
+                return;
+            }
         }
         configure(descriptor, tableNames);
     }
@@ -125,21 +128,25 @@ public class DynamicTypeBuilder {
      */
     public DynamicTypeBuilder(DynamicClassLoader dcl, ClassDescriptor descriptor, DynamicType parentType) {
         this.entityType = new DynamicTypeImpl(descriptor, parentType);
-        if (descriptor.getJavaClass() == null) {
+        Class<?> dynamicClass = descriptor.getJavaClass();
+        if (dynamicClass == null) {
             addDynamicClasses(dcl, descriptor.getJavaClassName(), parentType);
         }
         else {
-            try {
-                Field dpmField = 
-                    descriptor.getJavaClass().getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
-                DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
-                dpm.setType(entityType);
-                entityType.setDynamicPropertiesManager(dpm);
-            }
-            catch (Exception e) {
-                // this is bad! Without the dpmField, not much to do but die :-( ...
-                e.printStackTrace();
-                return;
+            // JAXB generates some classes that do not conform to DynamicEntity interface - ignore
+            if (DynamicEntity.class.isAssignableFrom(dynamicClass)) {
+                try {
+                    Field dpmField = 
+                        descriptor.getJavaClass().getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
+                    DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
+                    dpm.setType(entityType);
+                    entityType.setDynamicPropertiesManager(dpm);
+                }
+                catch (Exception e) {
+                    // this is bad! Without the dpmField, not much to do but die :-( ...
+                    e.printStackTrace();
+                    return;
+                }
             }
         }
         configure(descriptor);
@@ -596,7 +603,9 @@ public class DynamicTypeBuilder {
             project.convertClassNamesToClasses(dynamicClassLoader);
             for (Iterator<?> i = project.getAliasDescriptors().values().iterator(); i.hasNext();) {
                 ClassDescriptor descriptor = (ClassDescriptor) i.next();
-                if (descriptor.getJavaClass() != null) {
+                Class<?> dynamicClass = descriptor.getJavaClass();
+                // JAXB generates some classes that do not conform to DynamicEntity interface - ignore
+                if (dynamicClass != null && DynamicEntity.class.isAssignableFrom(dynamicClass)) {
                     DynamicType type = DynamicHelper.getType(descriptor);
                     try {
                         Field dpmField = 
@@ -606,7 +615,9 @@ public class DynamicTypeBuilder {
                         ((DynamicTypeImpl)type).setDynamicPropertiesManager(dpm);
                     }
                     catch (Exception e) {
-                        // JAXB generates some classes that do not conform sub-class DynamicEntityImpl - ignore
+                        // this is bad! Without the dpmField, not much to do but die :-( ...
+                        e.printStackTrace();
+                        return null;
                     }
                 }
             }
@@ -657,8 +668,8 @@ public class DynamicTypeBuilder {
             type = new DynamicTypeBuilder(dcl, descriptor, parent).getType();
         }
 
-
-        if (javaClass != null) {
+        // JAXB generates some classes that do not conform to DynamicEntity interface - ignore
+        if (javaClass != null && DynamicEntity.class.isAssignableFrom(javaClass)) {
             try {
                 Field dpmField = javaClass.getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
                 DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
