@@ -56,6 +56,7 @@ import org.eclipse.persistence.testing.jaxb.dynamic.util.Computer;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.ComputerAdapter;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -101,18 +102,18 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
 
         // Make sure "targetNamespace" was interpreted properly.
-        Node node = marshalDoc.getChildNodes().item(0);
-        assertEquals("Target Namespace was not set as expected.", "mynamespace", node.getNamespaceURI());
+        Element element = marshalDoc.getDocumentElement();
+        assertEquals("Target Namespace was not set as expected.", "mynamespace", element.getNamespaceURI());
 
         // Make sure "elementFormDefault" was interpreted properly.
         // elementFormDefault=qualified, so the root node, the
         // root node's attribute, and the child node should all have a prefix.
-        assertNotNull("Root node did not have namespace prefix as expected.", node.getPrefix());
+        assertNotNull("Root node did not have namespace prefix as expected.", element.getPrefix());
 
-        Node attr = node.getAttributes().item(0);
+        Node attr = element.getAttributeNodeNS("mynamespace", "id");
         assertNotNull("Attribute did not have namespace prefix as expected.", attr.getPrefix());
 
-        Node childNode = node.getChildNodes().item(0);
+        Node childNode = element.getElementsByTagNameNS("mynamespace", "salary").item(0);
         assertNotNull("Child node did not have namespace prefix as expected.", childNode.getPrefix());
     }
 
@@ -139,24 +140,18 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
 
         // Make sure "targetNamespace" was interpreted properly.
-        Node node = marshalDoc.getChildNodes().item(0);
-        assertEquals("Target Namespace was not set as expected.", "mynamespace", node.getNamespaceURI());
+        Element element = marshalDoc.getDocumentElement();
+        assertEquals("Target Namespace was not set as expected.", "mynamespace", element.getNamespaceURI());
 
         // Make sure "elementFormDefault" was interpreted properly.
         // elementFormDefault=unqualified, so the root node should have a prefix
         // but the root node's attribute and child node should not.
-        assertNotNull("Root node did not have namespace prefix as expected.", node.getPrefix());
+        assertNotNull("Root node did not have namespace prefix as expected.", element.getPrefix());
 
-        // Do not test attribute prefix with the Oracle xmlparserv2, it qualifies attributes by default.
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-        if (builderFactory.getClass().getPackage().getName().contains("oracle")) {
-            return;
-        } else {
-            Node attr = node.getAttributes().item(0);
-            assertNull("Attribute should not have namespace prefix (" + attr.getPrefix() + ").", attr.getPrefix());
-        }
+        Node attr = element.getAttributeNode("id");
+        assertNull("Attribute should not have namespace prefix (" + attr.getPrefix() + ").", attr.getPrefix());
 
-        Node childNode = node.getChildNodes().item(0);
+        Node childNode = element.getElementsByTagName("salary").item(0);
         assertNull("Child node should not have namespace prefix.", childNode.getPrefix());
     }
 
@@ -186,17 +181,17 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
 
         // "targetNamespace" should be null by default
-        Node node = marshalDoc.getChildNodes().item(0);
-        assertNull("Target Namespace was not null as expected.", node.getNamespaceURI());
+        Element element = marshalDoc.getDocumentElement();
+        assertNull("Target Namespace was not null as expected.", element.getNamespaceURI());
 
         // Make sure "elementFormDefault" was interpreted properly.
         // When unset, no namespace qualification is done.
-        assertNull("Root node should not have namespace prefix.", node.getPrefix());
+        assertNull("Root node should not have namespace prefix.", element.getPrefix());
 
-        Node attr = node.getAttributes().item(0);
+        Node attr = element.getAttributeNode("id");
         assertNull("Attribute should not have namespace prefix.", attr.getPrefix());
 
-        Node childNode = node.getChildNodes().item(0);
+        Node childNode = element.getElementsByTagName("salary").item(0);
         assertNull("Child node should not have namespace prefix.", childNode.getPrefix());
     }
 
@@ -234,7 +229,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
-        
+
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
         DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
@@ -707,7 +702,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
         JAXBElement<DynamicEntity> individuoElement = new JAXBElement<DynamicEntity>(individuoQName, DynamicEntity.class, individuo);
         individuoElement.setValue(individuo);
-        
+
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         jaxbContext.createMarshaller().marshal(individuoElement, marshalDoc);
 

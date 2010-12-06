@@ -45,6 +45,8 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
 
     private JAXBUnmarshaller unmarshaller;
 
+    private Schema schema;
+
     public UnmarshalSchemaValidationTestCases(String name) {
         super(name);
     }
@@ -59,15 +61,20 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         InputStream stream = ClassLoader.getSystemResourceAsStream(SCHEMA);
         Schema schema = sf.newSchema(new StreamSource(stream));
         stream.close();
-        unmarshaller.setSchema(schema);
+        this.schema = schema;
     }
 
     public void testFailOnSecondErrorFile() throws Exception {
         unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         File file = new File(DOUBLE_ERROR_XML);
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(file);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -79,8 +86,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         InputSource inputSource = new InputSource(stream);
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(inputSource);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -95,8 +107,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         xmlParser.setNamespaceAware(true);
         Node node = xmlParser.parse(stream);
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(node);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -111,8 +128,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         xmlParser.setNamespaceAware(true);
         Node node = xmlParser.parse(stream);
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(node, Employee.class);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -124,8 +146,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         InputStreamReader reader = new InputStreamReader(stream);
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(reader);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -137,8 +164,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         Source source = new StreamSource(stream);
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(source);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -149,8 +181,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         URL url = ClassLoader.getSystemResource(DOUBLE_ERROR_XML);
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(url);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -162,8 +199,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         Source source = new StreamSource(stream);
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(source, Employee.class);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -175,8 +217,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         Source source = new StreamSource(stream);
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(source, (Type) Employee.class);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -190,9 +237,14 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             return;
         }
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlEventReader);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -206,9 +258,14 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             return;
         }
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlEventReader, Employee.class);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -222,9 +279,14 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             return;
         }
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlEventReader, (Type) Employee.class);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -238,9 +300,14 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             return;
         }
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlStreamReader);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -254,9 +321,14 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             return;
         }
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlStreamReader, Employee.class);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -270,9 +342,14 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             return;
         }
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlStreamReader, (Type) Employee.class);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }
@@ -283,8 +360,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         try {
+            unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(stream);
         } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
             assertTrue(true);
             return;
         }

@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
 import java.util.ArrayList;
@@ -23,12 +23,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class XmlAnyElementLaxTestCases extends JAXBTestCases {
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.xml";
-	private final static String XML_CHILD_ELEMENTS = "org/eclipse/persistence/testing/jaxb/xmlanyelement/child_elements_unknown.xml";
-    
-	public XmlAnyElementLaxTestCases(String name) throws Exception {
+
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.xml";
+    private final static String XML_CHILD_ELEMENTS = "org/eclipse/persistence/testing/jaxb/xmlanyelement/child_elements_unknown.xml";
+
+    public XmlAnyElementLaxTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeLax.class;
         classes[1] = Address.class;
@@ -63,8 +64,19 @@ public class XmlAnyElementLaxTestCases extends JAXBTestCases {
         addr.city = "Toronto";
         addr.country = "Canada";
         employee.elements.add(addr);
-        
+
         return employee;
     }
-}
 
+    @Override
+    public void testRoundTrip() throws Exception {
+        // Disable this test if running on XDK
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        Document doc = factory.newDocumentBuilder().newDocument();
+        if (doc.getClass().getPackage().getName().contains("oracle.xml.parser")) {
+            return;
+        }
+        super.testRoundTrip();
+    }
+
+}
