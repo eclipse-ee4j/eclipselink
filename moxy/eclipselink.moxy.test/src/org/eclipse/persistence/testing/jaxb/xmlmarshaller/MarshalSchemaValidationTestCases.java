@@ -13,20 +13,15 @@
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.StringWriter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
-import javax.xml.bind.UnmarshalException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamResult;
@@ -34,19 +29,22 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class MarshalSchemaValidationTestCases extends TestCase {
+public class MarshalSchemaValidationTestCases extends OXTestCase {
 
     static String SCHEMA = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd";
 
     private JAXBMarshaller marshaller;
     private Employee employee;
+
+    public MarshalSchemaValidationTestCases(String name) {
+        super(name);
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -141,8 +139,10 @@ public class MarshalSchemaValidationTestCases extends TestCase {
         CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
         marshaller.setEventHandler(eventHandler);
         try {
-            XMLOutputFactory xof = XMLOutputFactory.newInstance();
-            XMLEventWriter xmlEventWriter = xof.createXMLEventWriter(new ByteArrayOutputStream());
+            if(null == XML_OUTPUT_FACTORY) {
+                return;
+            }
+            XMLEventWriter xmlEventWriter = XML_OUTPUT_FACTORY.createXMLEventWriter(new ByteArrayOutputStream());
             marshaller.marshal(employee, xmlEventWriter);
         } catch (MarshalException ex) {
             assertEquals(2, eventHandler.getErrorCount());
@@ -159,8 +159,10 @@ public class MarshalSchemaValidationTestCases extends TestCase {
         CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
         marshaller.setEventHandler(eventHandler);
         try {
-            XMLOutputFactory xof = XMLOutputFactory.newInstance();
-            XMLStreamWriter xmlStreamWriter = xof.createXMLStreamWriter(new ByteArrayOutputStream());
+            if(null == XML_OUTPUT_FACTORY) {
+                return;
+            }
+            XMLStreamWriter xmlStreamWriter = XML_OUTPUT_FACTORY.createXMLStreamWriter(new ByteArrayOutputStream());
             marshaller.marshal(employee, xmlStreamWriter);
         } catch (MarshalException ex) {
             assertEquals(2, eventHandler.getErrorCount());

@@ -22,7 +22,6 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
@@ -30,22 +29,25 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-public class UnmarshalSchemaValidationTestCases extends TestCase {
+public class UnmarshalSchemaValidationTestCases extends OXTestCase {
 
     static String SCHEMA = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd";
     static String DOUBLE_ERROR_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_TwoError.xml";
 
     private JAXBUnmarshaller unmarshaller;
+
+    public UnmarshalSchemaValidationTestCases(String name) {
+        super(name);
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -291,8 +293,10 @@ public class UnmarshalSchemaValidationTestCases extends TestCase {
 
     private XMLEventReader createXMLEventReader(InputStream stream) {
         try {
-            XMLInputFactory xif = XMLInputFactory.newInstance();
-            XMLEventReader xmlEventReader = xif.createXMLEventReader(stream);
+            if(null == XML_INPUT_FACTORY) {
+                return null;
+            }
+            XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(stream);
             return xmlEventReader;
         } catch(XMLStreamException e) {
             return null;
@@ -301,8 +305,10 @@ public class UnmarshalSchemaValidationTestCases extends TestCase {
 
     private XMLStreamReader createXMLStreamReader(InputStream stream) {
         try {
-            XMLInputFactory xif = XMLInputFactory.newInstance();
-            XMLStreamReader xmlStreamReader = xif.createXMLStreamReader(stream);
+            if(null == XML_INPUT_FACTORY) {
+                return null;
+            }
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(stream);
             return xmlStreamReader;
         } catch(XMLStreamException e) {
             return null;

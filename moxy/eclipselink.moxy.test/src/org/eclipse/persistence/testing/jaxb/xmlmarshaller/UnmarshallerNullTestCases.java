@@ -20,26 +20,28 @@ import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-
-import junit.framework.TestCase;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-public class UnmarshallerNullTestCases extends TestCase {
+public class UnmarshallerNullTestCases extends OXTestCase {
 
     static String DOUBLE_ERROR_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_TwoError.xml";
 
     private JAXBUnmarshaller unmarshaller;
+
+    public UnmarshallerNullTestCases(String name) {
+        super(name);
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -185,9 +187,11 @@ public class UnmarshallerNullTestCases extends TestCase {
 
     public void testFailXMLEventReaderWithNullClass() throws Exception {
         try {
+            if(null == XML_INPUT_FACTORY) {
+                return;
+            }
             InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
-            XMLInputFactory xif = XMLInputFactory.newInstance();
-            XMLEventReader xmlEventReader = xif.createXMLEventReader(stream);
+            XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(stream);
             unmarshaller.unmarshal(xmlEventReader, (Class) null);
         } catch(IllegalArgumentException e) {
             return;
@@ -206,9 +210,11 @@ public class UnmarshallerNullTestCases extends TestCase {
 
     public void testFailXMLEventReaderWithNullType() throws Exception {
         try {
+            if(null == XML_INPUT_FACTORY) {
+                return;
+            }
             InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
-            XMLInputFactory xif = XMLInputFactory.newInstance();
-            XMLEventReader xmlEventReader = xif.createXMLEventReader(stream);
+            XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(stream);
             unmarshaller.unmarshal(xmlEventReader, (Type) null);
         } catch(IllegalArgumentException e) {
             return;
@@ -236,9 +242,11 @@ public class UnmarshallerNullTestCases extends TestCase {
 
     public void testFailXMLStreamReaderWithNullClass() throws Exception {
         try {
+            if(null == XML_INPUT_FACTORY) {
+                return;
+            }
             InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
-            XMLInputFactory xif = XMLInputFactory.newInstance();
-            XMLStreamReader xmlStreamReader = xif.createXMLStreamReader(stream);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(stream);
             unmarshaller.unmarshal(xmlStreamReader, (Class) null);
         } catch(IllegalArgumentException e) {
             return;
@@ -257,9 +265,11 @@ public class UnmarshallerNullTestCases extends TestCase {
 
     public void testFailXMLStreamReaderWithNullType() throws Exception {
         try {
+            if(null == XML_INPUT_FACTORY) {
+                return;
+            }
             InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
-            XMLInputFactory xif = XMLInputFactory.newInstance();
-            XMLStreamReader xmlStreamReader = xif.createXMLStreamReader(stream);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(stream);
             unmarshaller.unmarshal(xmlStreamReader, (Type) null);
         } catch(IllegalArgumentException e) {
             return;
