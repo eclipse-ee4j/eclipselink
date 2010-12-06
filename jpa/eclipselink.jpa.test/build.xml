@@ -277,7 +277,7 @@
         <path id="compile.server.path">
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
         </path>
     </target>
 
@@ -783,14 +783,15 @@
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.extension.oracle.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.extension.oracle.dir}/eclipselink-extension-oracle.jar"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.struct.converter.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.timestamptz.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.proxyauthentication.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.jpa.oracle}-tests.jar"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
         </path>
     </target>
 

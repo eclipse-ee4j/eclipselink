@@ -129,25 +129,29 @@
 
         <!-- Determine appropriate settings for Oracle lib variables (overrides of .lib variables won't get reset) -->
         <!-- Check first in oracle extensions dir   -->
-        <condition property="xdb.lib" value="${oracle.extensions.depend.dir}/${xdb.jar}"
-                                       else="${extensions.depend.dir}/${xdb.jar}">
-            <available file="${oracle.extensions.depend.dir}/${xdb.jar}"/>
+        <condition property="oracle.xdb.lib" value="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"
+                                       else="${extensions.depend.dir}/${oracle.xdb.jar}">
+            <available file="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
         </condition>
-        <condition property="ojdbc.lib" value="${oracle.extensions.depend.dir}/${ojdbc.jar}"
-                                         else="${extensions.depend.dir}/${ojdbc.jar}">
-            <available file="${oracle.extensions.depend.dir}/${ojdbc.jar}"/>
+        <condition property="oracle.ojdbc.lib" value="${oracle.extensions.depend.dir}/${oracle.ojdbc.jar}"
+                                         else="${extensions.depend.dir}/${oracle.ojdbc.jar}">
+            <available file="${oracle.extensions.depend.dir}/${oracle.ojdbc.jar}"/>
         </condition>
-        <condition property="aqapi.lib" value="${oracle.extensions.depend.dir}/${aqapi.jar}"
-                                         else="${extensions.depend.dir}/${aqapi.jar}">
-            <available file="${oracle.extensions.depend.dir}/${aqapi.jar}"/>
+        <condition property="oracle.aqapi.lib" value="${oracle.extensions.depend.dir}/${oracle.aqapi.jar}"
+                                         else="${extensions.depend.dir}/${oracle.aqapi.jar}">
+            <available file="${oracle.extensions.depend.dir}/${oracle.aqapi.jar}"/>
         </condition>
-        <condition property="sdoapi.lib" value="${oracle.extensions.depend.dir}/${sdoapi.jar}"
-                                          else="${extensions.depend.dir}/${sdoapi.jar}">
-            <available file="${oracle.extensions.depend.dir}/${sdoapi.jar}"/>
+        <condition property="oracle.sdoapi.lib" value="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"
+                                          else="${extensions.depend.dir}/${oracle.sdoapi.jar}">
+            <available file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
         </condition>
-        <condition property="xmlparser.lib" value="${oracle.extensions.depend.dir}/${xmlparser.jar}"
-                                             else="${extensions.depend.dir}/${xmlparser.jar}">
-            <available file="${oracle.extensions.depend.dir}/${xmlparser.jar}"/>
+        <condition property="oracle.xmlparser.lib" value="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"
+                                             else="${extensions.depend.dir}/${oracle.xmlparser.jar}">
+            <available file="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
+        </condition>
+        <condition property="oracle.orai18n-mapping.lib" value="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"
+                                             else="${extensions.depend.dir}/${oracle.orai18n-mapping.jar}">
+            <available file="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
         </condition>
 
         <!-- Create needed directories
@@ -178,11 +182,11 @@
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
         <available file="${extensions.depend.dir}"        type="dir" property="ext.depend.dir.exist"/>
             <!-- Now retest using the regular extensions dir, if already found variables will not be reset   -->
-        <available file="${xdb.lib}"       property="xdb.lib.exist"/>
-        <available file="${ojdbc.lib}"     property="ojdbc.lib.exist"/>
-        <available file="${aqapi.lib}"     property="aqapi.lib.exist"/>
-        <available file="${sdoapi.lib}"    property="sdoapi.lib.exist"/>
-        <available file="${xmlparser.lib}" property="xmlparser.lib.exist"/>
+        <available file="${oracle.xdb.lib}"       property="oracle.xdb.lib.exist"/>
+        <available file="${oracle.ojdbc.lib}"     property="oracle.ojdbc.lib.exist"/>
+        <available file="${oracle.aqapi.lib}"     property="oracle.aqapi.lib.exist"/>
+        <available file="${oracle.sdoapi.lib}"    property="oracle.sdoapi.lib.exist"/>
+        <available file="${oracle.xmlparser.lib}" property="oracle.xmlparser.lib.exist"/>
 
         <!-- Determine where to get product classes, based upon availability  -->
         <condition property="use.eclipselink">
@@ -223,11 +227,11 @@
                 <isset property="test.framework.exist"/>
                 <isset property="jpatest.framework.exist"/>
                 <isset property="junit.lib.exist"/>
-                <isset property="xdb.lib.exist"/>
-                <isset property="ojdbc.lib.exist"/>
-                <isset property="aqapi.lib.exist"/>
-                <isset property="sdoapi.lib.exist"/>
-                <isset property="xmlparser.lib.exist"/>
+                <isset property="oracle.xdb.lib.exist"/>
+                <isset property="oracle.ojdbc.lib.exist"/>
+                <isset property="oracle.aqapi.lib.exist"/>
+                <isset property="oracle.sdoapi.lib.exist"/>
+                <isset property="oracle.xmlparser.lib.exist"/>
             </and>
         </condition>
         <condition property="run.ok">
@@ -267,11 +271,12 @@
     </target>
     <target name="init_dependency" if="dependency.ok" depends="announce_missing_dependencies">
         <path id="oracle_test.oracle.dependency.path">
-            <pathelement path="${xdb.lib}"/>
-            <pathelement path="${ojdbc.lib}"/>
-            <pathelement path="${aqapi.lib}"/>
-            <pathelement path="${sdoapi.lib}"/>
-            <pathelement path="${xmlparser.lib}"/>
+            <pathelement path="${oracle.xdb.lib}"/>
+            <pathelement path="${oracle.ojdbc.lib}"/>
+            <pathelement path="${oracle.aqapi.lib}"/>
+            <pathelement path="${oracle.sdoapi.lib}"/>
+            <pathelement path="${oracle.xmlparser.lib}"/>
+            <pathelement path="${oracle.orai18n-mapping.lib}"/>
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.test.infrastructure.path">
@@ -315,11 +320,11 @@
         <echo message="The test framework is currently part of the core.test and jpa.test projects. Be sure they are built."/>
         <echo message="    oracle dependency location: '${oracle.extensions.depend.dir}' :: found='${oracle.depend.dir.exist}'"/>
         <echo message="    dependency location:        '${extensions.depend.dir}' :: found='${ext.depend.dir.exist}'"/>
-        <echo message="        '${xdb.lib}'         :: found='${xdb.lib.exist}'"/>
-        <echo message="        '${ojdbc.lib}'      :: found='${ojdbc.lib.exist}'"/>
-        <echo message="        '${aqapi.lib}'       :: found='${aqapi.lib.exist}'"/>
-        <echo message="        '${sdoapi.lib}'      :: found='${sdoapi.lib.exist}'"/>
-        <echo message="        '${xmlparser.lib}' :: found='${xmlparser.lib.exist}'"/>
+        <echo message="        '${oracle.xdb.lib}'         :: found='${oracle.xdb.lib.exist}'"/>
+        <echo message="        '${oracle.ojdbc.lib}'      :: found='${oracle.ojdbc.lib.exist}'"/>
+        <echo message="        '${oracle.aqapi.lib}'       :: found='${oracle.aqapi.lib.exist}'"/>
+        <echo message="        '${oracle.sdoapi.lib}'      :: found='${oracle.sdoapi.lib.exist}'"/>
+        <echo message="        '${oracle.xmlparser.lib}' :: found='${oracle.xmlparser.lib.exist}'"/>
         <echo message="Please put your Oracle dependencies in one of the two 'dependency' locations (default or custom defined)."/>
         <fail message="Missing dependencies!" unless="compile.ok"/>
     </target>
@@ -327,11 +332,12 @@
     <!-- Compiles all tests. -->
     <target name="compile" depends="init_paths" description="compile EclipseLink Oracle tests">
         <echo message="Using the following oracle dependencies:"/>
-        <echo message="    '${xdb.lib}'"/>
-        <echo message="    '${ojdbc.lib}'"/>
-        <echo message="    '${aqapi.lib}'"/>
-        <echo message="    '${sdoapi.lib}'"/>
-        <echo message="    '${xmlparser.lib}'"/>
+        <echo message="    '${oracle.xdb.lib}'"/>
+        <echo message="    '${oracle.ojdbc.lib}'"/>
+        <echo message="    '${oracle.aqapi.lib}'"/>
+        <echo message="    '${oracle.sdoapi.lib}'"/>
+        <echo message="    '${oracle.xmlparser.lib}'"/>
+        <echo message="    '${oracle.orai18n-mapping.lib}'"/>
         <mkdir dir="${oracle_test.classes.dir}"/>
         <javac srcdir="${oracle_test.src.dir}"
                destdir="${oracle_test.classes.dir}"
