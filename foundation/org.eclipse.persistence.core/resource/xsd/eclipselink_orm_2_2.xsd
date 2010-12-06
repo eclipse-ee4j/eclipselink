@@ -4461,7 +4461,6 @@ public @interface QueryRedirectors {
     <xsd:sequence>
       <xsd:element name="read-transformer" type="orm:read-transformer"/>
       <xsd:element name="write-transformer" type="orm:write-transformer" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="access" type="orm:access-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
     </xsd:sequence>
