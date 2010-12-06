@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-join-nodes" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="xml-idref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-list" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -52,7 +53,8 @@ import javax.xml.bind.annotation.XmlType;
     "xmlAccessMethods",
     "xmlElement",
     "xmlElementWrapper",
-    "xmlProperties"
+    "xmlProperties",
+    "xmlJoinNodes"
 })
 public class XmlElements
     extends JavaAttribute
@@ -66,6 +68,8 @@ public class XmlElements
     protected XmlElementWrapper xmlElementWrapper;
     @javax.xml.bind.annotation.XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-join-nodes")
+    protected List<XmlJoinNodes> xmlJoinNodes;
     @XmlAttribute(name = "xml-idref")
     protected Boolean xmlIdref;
     @XmlAttribute(name = "xml-list")
@@ -178,6 +182,45 @@ public class XmlElements
         this.xmlProperties = value;
     }
 
+    /**
+     * Gets the value of the xmlJoinNodes property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the xmlJoinNodes property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getXmlJoinNodes().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link XmlJoinNodes }
+     * 
+     * 
+     */
+    public List<XmlJoinNodes> getXmlJoinNodes() {
+        if (xmlJoinNodes == null) {
+            xmlJoinNodes = new ArrayList<XmlJoinNodes>();
+        }
+        return this.xmlJoinNodes;
+    }
+
+    /**
+     * Indicates if xmlJoinNodes has been set, i.e. has non-zero size.
+     * 
+     * @return true if xmlJoinNodes has been set, i.e. there are one or 
+     * more entries, false otherwise
+     */
+    public boolean hasXmlJoinNodes() {
+        return getXmlJoinNodes().size() > 0;
+    }
+    
     /**
      * Gets the value of the xmlIdref property.
      * 

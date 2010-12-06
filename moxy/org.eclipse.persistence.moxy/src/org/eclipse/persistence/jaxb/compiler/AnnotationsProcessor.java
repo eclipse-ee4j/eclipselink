@@ -109,6 +109,7 @@ import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
+import org.eclipse.persistence.oxm.annotations.XmlElementsJoinNodes;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
@@ -163,6 +164,7 @@ public class AnnotationsProcessor {
     private static final String ELEMENT_DECL_DEFAULT = "\u0000";
     private static final String EMPTY_STRING = "";
     private static final String JAVA_UTIL_LIST = "java.util.List";
+    private static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
     private ArrayList<JavaClass> typeInfoClasses;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
@@ -641,8 +643,7 @@ public class AnnotationsProcessor {
                 if (targetInfo != null && targetInfo.isTransient()) {
                     throw JAXBException.invalidReferenceToTransientClass(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
                 }
-                // only one XmlValue is allowed per class, and if there is one
-                // only XmlAttributes are allowed
+                // only one XmlValue is allowed per class, and if there is one only XmlAttributes are allowed
                 if (tInfo.isSetXmlValueProperty()) {
                     if (property.isXmlValue() && !(tInfo.getXmlValueProperty().getPropertyName().equals(property.getPropertyName()))) {
                         throw JAXBException.xmlValueAlreadySet(property.getPropertyName(), tInfo.getXmlValueProperty().getPropertyName(), jClass.getName());
@@ -653,13 +654,11 @@ public class AnnotationsProcessor {
                 }
                 // validate XmlIDREF
                 if (property.isXmlIdRef()) {
-                    // the target class must have an associated TypeInfo unless
-                    // it is Object
-                    if (targetInfo == null && !typeClass.getQualifiedName().equals("java.lang.Object")) {
+                    // the target class must have an associated TypeInfo unless it is Object
+                    if (targetInfo == null && !typeClass.getQualifiedName().equals(JAVA_LANG_OBJECT)) {
                         throw JAXBException.invalidIDREFClass(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
                     }
-                    // if the property is an XmlIDREF, the target must have an
-                    // XmlID set
+                    // if the property is an XmlIDREF, the target must have an XmlID set
                     if (targetInfo != null && targetInfo.getIDProperty() == null) {
                         throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
                     }
@@ -687,8 +686,7 @@ public class AnnotationsProcessor {
                     }
                 }
 
-                // handle XmlElementRef(s) - validate and build the required
-                // ElementDeclaration object
+                // handle XmlElementRef(s) - validate and build the required ElementDeclaration object
                 if (property.isReference()) {
                     processReferenceProperty(property, tInfo, jClass);
                 }
@@ -1548,7 +1546,7 @@ public class AnnotationsProcessor {
         } else {
             JavaClass parent = ptype.getSuperclass();
             while (parent != null) {
-                if (parent.getName().equals("java.lang.Object")) {
+                if (parent.getName().equals(JAVA_LANG_OBJECT)) {
                     property.setType(parent);
                     break;
                 }
@@ -1636,6 +1634,30 @@ public class AnnotationsProcessor {
             xmlElements.getXmlElement().add(xmlElement);
         }
         choiceProperty.setXmlElements(xmlElements);
+
+        // handle XmlElementsJoinNodes
+        if (helper.isAnnotationPresent(javaHasAnnotations, XmlElementsJoinNodes.class)) {
+            org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes xmlJoinNodes;
+            org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode xmlJoinNode;
+            List<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes> xmlJoinNodesList = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes>();
+            List<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode> xmlJoinNodeList = null; 
+            
+            for (XmlJoinNodes xmlJNs : ((XmlElementsJoinNodes) helper.getAnnotation(javaHasAnnotations, XmlElementsJoinNodes.class)).value()) {
+                xmlJoinNodeList = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode>();
+                for (XmlJoinNode xmlJN : xmlJNs.value()) {
+                    xmlJoinNode = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode();
+                    xmlJoinNode.setXmlPath(xmlJN.xmlPath());
+                    xmlJoinNode.setReferencedXmlPath(xmlJN.referencedXmlPath());
+                    xmlJoinNodeList.add(xmlJoinNode);
+                }
+                if (xmlJoinNodeList.size() > 0) {
+                    xmlJoinNodes = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes();
+                    xmlJoinNodes.setXmlJoinNode(xmlJoinNodeList);
+                    xmlJoinNodesList.add(xmlJoinNodes);
+                }
+            }
+            choiceProperty.setXmlJoinNodesList(xmlJoinNodesList);
+        }
         return choiceProperty;
     }
 
@@ -1701,6 +1723,14 @@ public class AnnotationsProcessor {
         String propertyName = choiceProperty.getPropertyName();
         validateElementIsInPropOrder(info, propertyName);
 
+        // validate XmlElementsXmlJoinNodes (if set)
+        if (choiceProperty.isSetXmlJoinNodesList()) {
+            // there must be one XmlJoinNodes entry per XmlElement
+            if (choiceProperty.getXmlElements().getXmlElement().size() !=  choiceProperty.getXmlJoinNodesList().size()) {
+                throw JAXBException.incorrectNumberOfXmlJoinNodesOnXmlElements(propertyName, cls.getQualifiedName());
+            }
+        }
+        
         XmlPath[] paths = null;
         if (helper.isAnnotationPresent(choiceProperty.getElement(), XmlPaths.class)) {
             XmlPaths pathAnnotation = (XmlPaths) helper.getAnnotation(choiceProperty.getElement(), XmlPaths.class);
@@ -1714,11 +1744,9 @@ public class AnnotationsProcessor {
             String name;
             String namespace;
 
-            // handle XmlPath
-            // if xml-path is set, we ignore name/namespace
+            // handle XmlPath - if xml-path is set, we ignore name/namespace
             if (paths != null && next.getXmlPath() == null) {
-                // Only set the path, if the path hasn't already been set from
-                // xml
+                // Only set the path, if the path hasn't already been set from xml
                 XmlPath nextPath = paths[i];
                 next.setXmlPath(nextPath.value());
             }
@@ -1762,17 +1790,30 @@ public class AnnotationsProcessor {
             }
 
             choiceProp.setPropertyName(name);
-
-            // figure out the property's type - note that for DEFAULT, if from
-            // XML the value will be
-            // "XmlElement.DEFAULT", and from annotations the value will be
-            // "XmlElement$DEFAULT"
+            // figure out the property's type - note that for DEFAULT, if from  XML the value will 
+            // be "XmlElement.DEFAULT", and from annotations the value will be "XmlElement$DEFAULT"
             if (next.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT") || next.getType().equals("javax.xml.bind.annotation.XmlElement$DEFAULT")) {
                 choiceProp.setType(propertyType);
             } else {
                 choiceProp.setType(helper.getJavaClass(next.getType()));
             }
-
+            // handle case of XmlJoinNodes w/XmlElements
+            if (choiceProperty.isSetXmlJoinNodesList()) {
+                // assumes one corresponding xml-join-nodes entry per xml-element
+                org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes xmlJoinNodes = choiceProperty.getXmlJoinNodesList().get(i);
+                if (xmlJoinNodes != null) {
+                    choiceProp.setXmlJoinNodes(xmlJoinNodes);
+                    // set type
+                    if (!xmlJoinNodes.getType().equals(XMLProcessor.DEFAULT)) {
+                        JavaClass pType = helper.getJavaClass(xmlJoinNodes.getType());
+                        if (isCollectionType(choiceProp.getType())) {
+                            choiceProp.setGenericType(pType);
+                        } else {
+                            choiceProp.setType(pType);
+                        }
+                    }
+                }
+            }
             choiceProp.setSchemaName(qName);
             choiceProp.setSchemaType(getSchemaTypeFor(choiceProp.getType()));
             choiceProp.setIsXmlIdRef(choiceProperty.isXmlIdRef());
@@ -1874,7 +1915,7 @@ public class AnnotationsProcessor {
                 QName qname = new QName(namespace, name);
                 JavaClass scopeClass = cls;
                 ElementDeclaration referencedElement = null;
-                while (!(scopeClass.getName().equals("java.lang.Object"))) {
+                while (!(scopeClass.getName().equals(JAVA_LANG_OBJECT))) {
                     HashMap<QName, ElementDeclaration> elements = getElementDeclarationsForScope(scopeClass.getName());
                     if (elements != null) {
                         referencedElement = elements.get(qname);
@@ -3080,7 +3121,7 @@ public class AnnotationsProcessor {
         JavaClass ptype = property.getActualType();
         String propName = property.getPropertyName();
         JavaClass parent = cls.getSuperclass();
-        while (parent != null && !(parent.getQualifiedName().equals("java.lang.Object"))) {
+        while (parent != null && !(parent.getQualifiedName().equals(JAVA_LANG_OBJECT))) {
             TypeInfo parentTypeInfo = typeInfo.get(parent.getQualifiedName());
             if (parentTypeInfo != null || shouldGenerateTypeInfo(parent)) {
                 throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);

@@ -129,6 +129,7 @@ public class Property implements Cloneable {
     
     // XmlJoinNodes specific attributes
     private XmlJoinNodes xmlJoinNodes;
+    private List<XmlJoinNodes> xmlJoinNodesList;
     
     public Property() {}
 
@@ -1127,6 +1128,10 @@ public class Property implements Cloneable {
         return this.xmlJoinNodes != null;
     }
     
+    /**
+     * Return a shallow copy of this Property.  
+     * Simply calls super.clone(). 
+     */
     public Object clone() {
         try {
             return super.clone();
@@ -1134,5 +1139,34 @@ public class Property implements Cloneable {
             // will never get here
         }
         return null;
+    }
+
+    /**
+     * Return the list of XmlJoinNodes for this Property, if any.
+     * This will typically be set when processing an XmlElements 
+     * declaration containing XmlJoinNodes.
+     * 
+     */
+    public List<XmlJoinNodes> getXmlJoinNodesList() {
+        return xmlJoinNodesList;
+    }
+
+    /**
+     * Set the list of XmlJoinNodes for this Property. This method 
+     * will typically be called when processing an XmlElements 
+     * declaration containing XmlJoinNodes.
+     * 
+     */
+    public void setXmlJoinNodesList(List<XmlJoinNodes> xmlJoinNodesList) {
+        this.xmlJoinNodesList = xmlJoinNodesList;
+    }
+    
+    /**
+     * Indicates if xmlJoinNodesList has been set, i.e. is non-null
+     * 
+     * @return true if xmlJoinNodesList is non-null, false otherwise
+     */
+    public boolean isSetXmlJoinNodesList() {
+        return this.xmlJoinNodesList != null;
     }
 }

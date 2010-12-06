@@ -99,6 +99,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_PROPERTY_ADAPTER_CLASS = 50067;
     public static final int NULL_METADATA_FILE = 50068;
     public static final int BINDINGS_PKG_NOT_SET = 50069;
+    public static final int INCORRECT_NUMBER_OF_XMLJOINNODES_ON_XMLELEMENTS = 50070;
 
     protected JAXBException(String message) {
         super(message);
@@ -896,6 +897,13 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { adapterClassName, propName, typeName };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_PROPERTY_ADAPTER_CLASS, args));
         validationException.setErrorCode(INVALID_PROPERTY_ADAPTER_CLASS);
+        return validationException;
+    }
+
+    public static JAXBException incorrectNumberOfXmlJoinNodesOnXmlElements(String propertyName, String className) {
+        Object[] args = { propertyName, className };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INCORRECT_NUMBER_OF_XMLJOINNODES_ON_XMLELEMENTS, args));
+        validationException.setErrorCode(INCORRECT_NUMBER_OF_XMLJOINNODES_ON_XMLELEMENTS);
         return validationException;
     }
 }

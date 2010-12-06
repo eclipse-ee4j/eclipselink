@@ -377,6 +377,7 @@
                         <xs:element ref="xml-element" minOccurs="0" maxOccurs="unbounded" />
                         <xs:element ref="xml-element-wrapper" minOccurs="0"/>
                         <xs:element ref="xml-properties" minOccurs="0" />
+                        <xs:element ref="xml-join-nodes" minOccurs="0" maxOccurs="unbounded" />
                     </xs:sequence>
                     <xs:attribute name="xml-idref" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-list" type="xs:boolean" default="false" />

@@ -1016,6 +1016,12 @@ public class XMLProcessor {
         if (!xmlElements.getContainerType().equals(DEFAULT)) {
             setContainerType(oldProperty, xmlElements.getContainerType());
         }
+        // check for xml-join-nodes
+        if (xmlElements.hasXmlJoinNodes()) {
+            // store the List of XmlJoinNodes so we can access them when
+            // we process the choice elements in AnnotationsProcessor
+            oldProperty.setXmlJoinNodesList(xmlElements.getXmlJoinNodes());
+        }
         return oldProperty;
     }
 

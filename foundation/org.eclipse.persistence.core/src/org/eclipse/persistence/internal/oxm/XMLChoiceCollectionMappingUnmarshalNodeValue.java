@@ -161,5 +161,11 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
         return this.fieldToNodeValues.values();
     }
     
-
+    /**
+     * The underlying choice element node value will handle attributes.
+     * 
+     */
+    public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
+        this.choiceElementNodeValue.attribute(unmarshalRecord, URI, localName, value);
+    }
 }

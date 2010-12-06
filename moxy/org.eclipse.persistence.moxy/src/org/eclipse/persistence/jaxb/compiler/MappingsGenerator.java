@@ -590,13 +590,22 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
         boolean isIdRef = property.isXmlIdRef();
-        while(choiceProperties.hasNext()) {
+        Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
+        while (choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
-            // if the XPath is set (via xml-path) use it; otherwise figure it out
-            if(isIdRef) {
+            if (next.getXmlJoinNodes() != null) {
+                // handle XmlJoinNodes
+                List<XMLField> srcFlds = new ArrayList<XMLField>();
+                List<XMLField> tgtFlds = new ArrayList<XMLField>();
+                for (XmlJoinNode xmlJoinNode: next.getXmlJoinNodes().getXmlJoinNode()) {
+                    srcFlds.add(new XMLField(xmlJoinNode.getXmlPath()));
+                    tgtFlds.add(new XMLField(xmlJoinNode.getReferencedXmlPath()));
+                }
+                mapping.addChoiceElement(srcFlds, type.getQualifiedName(), tgtFlds);
+            } else if (isIdRef) {
+                // handle IDREF
                 String tgtXPath = null;
                 TypeInfo referenceType = typeInfo.get(type.getQualifiedName());
                 if (null != referenceType && referenceType.isIDSet()) {
@@ -659,13 +668,22 @@ public class MappingsGenerator {
         }
         mapping.useCollectionClassName(collectionType.getRawName());
 
-        Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
         boolean isIdRef = property.isXmlIdRef();
-        while(choiceProperties.hasNext()) {
+        Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
+        while (choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
-            // if the XPath is set (via xml-path) use it; otherwise figure it out
-            if(isIdRef) {
+            if (next.getXmlJoinNodes() != null) {
+                // handle XmlJoinNodes
+                List<XMLField> srcFlds = new ArrayList<XMLField>();
+                List<XMLField> tgtFlds = new ArrayList<XMLField>();
+                for (XmlJoinNode xmlJoinNode: next.getXmlJoinNodes().getXmlJoinNode()) {
+                    srcFlds.add(new XMLField(xmlJoinNode.getXmlPath()));
+                    tgtFlds.add(new XMLField(xmlJoinNode.getReferencedXmlPath()));
+                }
+                mapping.addChoiceElement(srcFlds, type.getQualifiedName(), tgtFlds);
+            } else if (isIdRef) {
+                // handle IDREF
                 String tgtXPath = null;
                 TypeInfo referenceType = typeInfo.get(type.getQualifiedName());
                 if (null != referenceType && referenceType.isIDSet()) {

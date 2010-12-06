@@ -310,7 +310,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     
     public void testBindingFormatInputSource() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputSource(new FileInputStream(new File(INPUT_SRC_OXM_XML))));
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputSource(new FileInputStream(INPUT_SRC_OXM_XML)));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestInputSrc(jCtx);
@@ -318,7 +318,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
     public void testBindingFormatInputStream() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new FileInputStream(new File(INPUT_STRM_OXM_XML)));
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new FileInputStream(INPUT_STRM_OXM_XML));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputstream.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestInputStrm(jCtx);
@@ -326,7 +326,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
     public void testBindingFormatReader() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(new FileInputStream(new File(READER_OXM_XML))));
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(new FileInputStream(READER_OXM_XML)));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestReader(jCtx);
@@ -334,7 +334,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
     public void testBindingFormatSource() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new StreamSource(new File(SOURCE_OXM_XML)));
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new StreamSource(SOURCE_OXM_XML));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestSource(jCtx);
@@ -343,10 +343,10 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     public void testBindingFormatList() throws Exception {
         List<Object> inputFiles = new ArrayList<Object>();
         inputFiles.add(new File(FILE_OXM_XML));
-        inputFiles.add(new InputSource(new FileInputStream(new File(INPUT_SRC_OXM_XML))));
-        inputFiles.add(new FileInputStream(new File(INPUT_STRM_OXM_XML)));
-        inputFiles.add(new InputStreamReader(new FileInputStream(new File(READER_OXM_XML))));
-        inputFiles.add(new StreamSource(new File(SOURCE_OXM_XML)));
+        inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_XML)));
+        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_XML));
+        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_XML)));
+        inputFiles.add(new StreamSource(SOURCE_OXM_XML));
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] { 
