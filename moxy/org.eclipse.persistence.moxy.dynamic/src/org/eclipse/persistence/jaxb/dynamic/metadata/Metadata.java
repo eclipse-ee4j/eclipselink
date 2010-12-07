@@ -26,7 +26,7 @@ public abstract class Metadata {
     protected Map<String, XmlBindings> bindings;
     protected DynamicClassLoader dynamicClassLoader;
 
-    public Metadata(DynamicClassLoader dynamicClassLoader, Map<String, ?> properties) {
+    public Metadata(DynamicClassLoader dynamicClassLoader, Map<String, Object> properties) {
         this.dynamicClassLoader = dynamicClassLoader;
         this.bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, dynamicClassLoader);
     }
