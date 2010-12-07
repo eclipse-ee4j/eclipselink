@@ -165,7 +165,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         // Testing defaults, so don't specify a package name (default package)
         metadataSourceMap.put("", new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
@@ -820,7 +820,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         // Testing defaults, so don't specify a package name (default package)
         metadataSourceMap.put("", new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
