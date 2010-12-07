@@ -190,6 +190,7 @@ public class MetadataLogger {
     /*************************************************************************/
     public static final String WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION = "non_jpa_allowed_type_used_for_collection_using_lazy_access";
     public static final String WARNING_INCORRECT_DISCRIMINATOR_FORMAT = "metadata_warning_integer_discriminator_could_not_be_built";
+    public static final String WARNING_PARTIONED_NOT_SET = "metadata_warning_partitioned_not_set";
 
     /*************************************************************************/
     

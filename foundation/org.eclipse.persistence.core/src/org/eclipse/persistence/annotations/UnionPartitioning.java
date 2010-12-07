@@ -38,14 +38,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface UnionPartitioning {
     /**
-     * The name of the partition policy, names must be unqiue for the persistence unit.
+     * The name of the partition policy, names must be unique for the persistence unit.
      */
     String name();
     
     /**
-     * (Required) List of connection pool names to load balance across.
+     * List of connection pool names to load balance across.
+     * Defaults to all defined pools in the ServerSession.
      */
-    String[] connectionPools();
+    String[] connectionPools() default {};
     
     /**
      * Defines if write queries should be replicated.

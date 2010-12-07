@@ -33,8 +33,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({TYPE, METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface ValuePartition {
-    /** The String representation of the range start value. */
-    String value() default "";
+    /** The String representation of the value. */
+    String value();
     
     /** The connection pool to route queries to for this value. */
     String connectionPool();

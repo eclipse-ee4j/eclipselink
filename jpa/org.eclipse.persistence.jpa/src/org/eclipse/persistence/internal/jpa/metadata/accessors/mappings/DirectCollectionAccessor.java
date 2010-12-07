@@ -330,9 +330,9 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         
         if (m_nonCacheable){
             mapping.setIsCacheable(false);
+        }
 
         processPartitioning();
-        }
     }
     
     /**

@@ -32,6 +32,7 @@ import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
 
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
 
 
@@ -45,6 +46,7 @@ import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.history.AsOfClause;
 import org.eclipse.persistence.history.AsOfSCNClause;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -245,6 +247,7 @@ public class QueryHintsHandler {
             addHint(new JDBCFirstResultHint());
             addHint(new ResultCollectionTypeHint());
             addHint(new RedirectorHint());
+            addHint(new PartitioningHint());
             addHint(new QueryCacheHint());
             addHint(new QueryCacheSizeHint());
             addHint(new QueryCacheExpiryHint());
@@ -1755,6 +1758,27 @@ public class QueryHintsHandler {
             } catch (ClassCastException exception){
                 throw QueryException.unableToSetRedirectorOnQueryFromHint(query,QueryHints.QUERY_REDIRECTOR, valueToApply.getClass().getName(), exception);
             }
+            return query;
+        }
+    }
+    
+    protected static class PartitioningHint extends Hint {
+        PartitioningHint() {
+            super(QueryHints.PARTITIONING, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            // Can be an instance, class, or name.
+            Object policy = valueToApply;
+            if (valueToApply instanceof Class) {
+                policy = newInstance((Class)valueToApply, query, QueryHints.PARTITIONING);
+            } else if (valueToApply instanceof String) {
+                policy = activeSession.getProject().getPartitioningPolicy((String)valueToApply);
+                if (policy == null) {
+                    throw DescriptorException.missingPartitioningPolicy((String)valueToApply, null, null);
+                }
+            }
+            query.setPartitioningPolicy((PartitioningPolicy)policy);
             return query;
         }
     }

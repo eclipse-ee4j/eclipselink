@@ -38,7 +38,21 @@ public abstract class PartitioningPolicy implements java.io.Serializable {
     protected String name;
 
     public abstract List<Accessor> getConnectionsForQuery(AbstractSession session, DatabaseQuery query, AbstractRecord arguments);
-
+    
+    /**
+     * INTERNAL:
+     * Initialize the policy.
+     */
+    public void initialize(AbstractSession session) { }
+    
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings to actual class-based
+     * settings. This method is used when converting a project that has been built
+     * with class names to a project with classes.
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader) { }
+    
     /**
      * INTERNAL:
      * Return an accessor from the pool.
@@ -46,8 +60,7 @@ public abstract class PartitioningPolicy implements java.io.Serializable {
     public Accessor acquireAccessor(String poolName, ServerSession session, DatabaseQuery query) {
         ConnectionPool pool = session.getConnectionPool(poolName);
         if (pool == null) {
-            //TODO ex
-            throw new RuntimeException("Missing connection pool '" + poolName + "' in ServerSession.");
+            throw QueryException.missingConnectionPool(poolName, query);
         }
         return pool.acquireConnection();
     }

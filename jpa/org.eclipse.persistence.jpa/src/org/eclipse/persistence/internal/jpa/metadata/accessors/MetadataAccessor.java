@@ -959,12 +959,12 @@ public abstract class MetadataAccessor extends ORMetadata {
             processPartitioned(this.partitioned);
         }
         annotation = getAnnotation(Partitioned.class);
-        if (annotation != null) {
+        if (!processed && annotation != null) {
             processed = true;
             processPartitioned((String)annotation.getAttribute("value"));
         }
         if (found && !processed) {
-            // TODO logWarning("@Partitioned must be used to enable partitioning.");
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_ANNOTATION, getJavaClass(), getAccessibleObject());
         }
     }
     

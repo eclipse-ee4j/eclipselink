@@ -92,6 +92,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.exceptions.*;
@@ -1613,11 +1614,22 @@ public class EntityManagerSetupImpl {
         updatePessimisticLockTimeout(m);
         updateQueryTimeout(m);
         updateCacheCoordination(m, loader);
+
+        // Partitioning
+        String partitioning = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PARTITIONING, m, this.session);
+        if (partitioning != null) {
+            PartitioningPolicy partitioningPolicy = this.session.getProject().getPartitioningPolicy(partitioning);
+            if (partitioningPolicy == null) {
+                throw DescriptorException.missingPartitioningPolicy(partitioning, null, null);
+            }
+            this.session.setPartitioningPolicy(partitioningPolicy);
+        }
+        
         // Customizers should be processed last
         processDescriptorCustomizers(m, loader);
         processSessionCustomizer(m, loader);
         
-        setDescriptorNamedQueries(m);        
+        setDescriptorNamedQueries(m);
     }
 
     /** 

@@ -7,7 +7,7 @@
             <property name="javax.persistence.jdbc.url" value="TEST_DATABASE_URL"/>
             <property name="javax.persistence.jdbc.user" value="TEST_DATABASE_USER"/>
             <property name="javax.persistence.jdbc.password" value="TEST_DATABASE_PASSWORD"/>
-            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.partitioned.PartitionedCustomizer"/>
+            <property name="eclipselink.partitioning" value="default"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
@@ -20,7 +20,7 @@
             <property name="javax.persistence.jdbc.url" value="TEST_DATABASE_URL"/>
             <property name="javax.persistence.jdbc.user" value="TEST_DATABASE_USER"/>
             <property name="javax.persistence.jdbc.password" value="TEST_DATABASE_PASSWORD"/>
-            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.partitioned.PartitionedCustomizer"/>
+            <property name="eclipselink.partitioning" value="default"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>

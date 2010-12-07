@@ -50,5 +50,5 @@ public @interface Partitioning {
     /**
      * (Required) Full package.class name of a subclass of PartitioningPolicy.
      */
-    Class<PartitioningPolicy> partitioningClass();
+    Class<? extends PartitioningPolicy> partitioningClass();
 }

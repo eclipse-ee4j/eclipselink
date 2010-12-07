@@ -12,8 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.partitioning;
 
+import org.eclipse.persistence.descriptors.partitioning.CustomPartitioningPolicy;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -46,7 +46,7 @@ public class PartitioningMetadata extends AbstractPartitioningMetadata {
     public PartitioningMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject) {
         super(annotation, accessibleObject);
 
-        className = (String)annotation.getAttribute("value");        
+        this.className = (String)annotation.getAttribute("partitioningClass");        
     }
     
     /**
@@ -68,7 +68,7 @@ public class PartitioningMetadata extends AbstractPartitioningMetadata {
      * Used for OX mapping.
      */
     public String getClassName() {
-        return className;
+        return this.className;
     }
     
     /**
@@ -90,18 +90,13 @@ public class PartitioningMetadata extends AbstractPartitioningMetadata {
     }
     
     /**
-     * Set class name of the policy, to allow correct class loader usage.
-     */
-    public void process(MetadataDescriptor descriptor) {
-        // TODO
-        //descriptor.getClassDescriptor().setPartitioningPolicyName(getClassName());
-    }
-    
-    /**
      * Cannot instantiate policy until the correct class loader is available.
      */
     @Override
     public PartitioningPolicy buildPolicy() {
-        return null;
+        CustomPartitioningPolicy policy = new CustomPartitioningPolicy();
+        super.buildPolicy(policy);
+        policy.setPartitioningClasName(this.className);
+        return policy;
     }
 }

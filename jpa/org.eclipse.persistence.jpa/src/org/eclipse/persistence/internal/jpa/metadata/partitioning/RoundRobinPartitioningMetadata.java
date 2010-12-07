@@ -64,11 +64,11 @@ public class RoundRobinPartitioningMetadata extends ReplicationPartitioningMetad
         return policy;
     }
     
-    public boolean getReplicateWrites() {
+    public Boolean getReplicateWrites() {
         return replicateWrites;
     }
 
-    public void setReplicateWrites(boolean replicateWrites) {
+    public void setReplicateWrites(Boolean replicateWrites) {
         this.replicateWrites = replicateWrites;
     }
 }

@@ -17,6 +17,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.Partitioned;
+import org.eclipse.persistence.annotations.RoundRobinPartitioning;
 import org.eclipse.persistence.annotations.ValuePartitioning;
 import org.eclipse.persistence.annotations.ValuePartition;
 
@@ -30,6 +31,7 @@ import static javax.persistence.GenerationType.*;
 @Entity
 @Table(name = "PART_EMPLOYEE")
 @IdClass(EmployeePK.class)
+@RoundRobinPartitioning(name="default", replicateWrites=true, connectionPools={"default", "node2", "node3"})
 @ValuePartitioning(
         name="ValuePartitioningByLOCATION",
         partitionColumn=@Column(name="LOCATION"),

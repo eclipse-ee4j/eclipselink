@@ -240,6 +240,7 @@ public class DescriptorException extends ValidationException {
     public final static int INVALID_XPATH_FOR_DIRECT_MAPPING = 217;
     public final static int NULL_POINTER_WHILE_GETTING_VALUE_THRU_METHOD_ACCESSOR_IN_MODULE_ORDER_BREAKS_WEAVING = 218;
     public final static int ADDITIONAL_CRITERIA_NOT_SUPPORTED_WITH_INHERITANCE_VIEWS = 219;
+    public final static int MISSING_PARTITION_POLICY = 220;
 
     /**
      * INTERNAL:
@@ -2041,6 +2042,17 @@ public class DescriptorException extends ValidationException {
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INVALID_XPATH_FOR_DIRECT_MAPPING, args), mapping);
         descriptorException.setErrorCode(INVALID_XPATH_FOR_DIRECT_MAPPING);
+        return descriptorException;
+    }
+    
+    public static DescriptorException missingPartitioningPolicy(String name, ClassDescriptor descriptor, DatabaseMapping mapping) {
+        Object[] args = { name };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, MISSING_PARTITION_POLICY, args), descriptor);
+        if (mapping != null) {
+            descriptorException.setMapping(mapping);
+        }
+        descriptorException.setErrorCode(MISSING_PARTITION_POLICY);
         return descriptorException;
     }
 

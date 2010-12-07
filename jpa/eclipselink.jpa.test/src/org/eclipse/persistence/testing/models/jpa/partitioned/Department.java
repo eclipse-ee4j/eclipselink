@@ -53,9 +53,8 @@ import static javax.persistence.GenerationType.TABLE;
     connectionPools={"node2", "node3"})
 @UnionPartitioning(
         name="UnionPartitioningAllNodes",
-        connectionPools={"default", "node2", "node3"},
         replicateWrites=true)
-@Partitioned("HashPartitionByID")
+@Partitioned("HashPartitioningByID")
 public class Department implements Serializable {
     private Integer id;
     private String name;

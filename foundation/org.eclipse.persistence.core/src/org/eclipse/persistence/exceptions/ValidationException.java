@@ -408,6 +408,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_REFERENCE_COLUMN_NAME = 7333;
     public static final int PRIMARY_KEY_COLUMN_NAME_NOT_SPECIFIED = 7334;
     
+    public static final int DUPLICATE_PARTITION_VALUE = 7335;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -2796,6 +2798,17 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FETCH_GROUP_HAS_WRONG_REFERENCE_CLASS, args));
         validationException.setErrorCode(FETCH_GROUP_HAS_WRONG_REFERENCE_CLASS);
+        return validationException;
+    }
+
+    /**
+     * ValuePartitioning using the same value twice.
+     */
+    public static ValidationException duplicatePartitionValue(String policyName, Object value) {
+        Object[] args = { policyName,  value };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, DUPLICATE_PARTITION_VALUE, args));
+        validationException.setErrorCode(DUPLICATE_PARTITION_VALUE);
         return validationException;
     }
 }

@@ -43,7 +43,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface HashPartitioning {
     /**
-     * The name of the partition policy, names must be unqiue for the persistence unit.
+     * The name of the partition policy, names must be unique for the persistence unit.
      */
     String name();
     
@@ -58,8 +58,9 @@ public @interface HashPartitioning {
 
     /**
      * List of connection pool names to partition across.
+     * Defaults to all defined pools in the ServerSession.
      */
-    String[] connectionPools();
+    String[] connectionPools() default {};
             
     /**
      * Defines if queries that do not contain the partition field should be sent

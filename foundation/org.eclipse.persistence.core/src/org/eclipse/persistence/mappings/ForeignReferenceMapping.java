@@ -21,7 +21,6 @@ import java.security.PrivilegedActionException;
 import java.util.*;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
-import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.*;
@@ -39,7 +38,6 @@ import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -1131,7 +1129,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (getPartitioningPolicyName() != null) {
             PartitioningPolicy policy = session.getProject().getPartitioningPolicy(getPartitioningPolicyName());
             if (policy == null) {
-                //TODO session.getIntegrityChecker().handleError(DescriptorException.missingPartitioningPolicy(getPartitioningPolicyName(, this));
+                session.getIntegrityChecker().handleError(DescriptorException.missingPartitioningPolicy(getPartitioningPolicyName(), null, this));
             }
             setPartitioningPolicy(policy);
         }

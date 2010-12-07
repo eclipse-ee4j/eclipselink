@@ -705,6 +705,22 @@ public class PersistenceUnitProperties {
      */
     @Deprecated
     public static final String JDBC_SEQUENCE_CONNECTION_POOL_DATASOURCE = "eclipselink.jdbc.sequence-connection-pool.non-jta-data-source";
+
+    /**
+     * "eclipselink.partitioning"
+     * <p>Used to set the default PartitioningPolicy for a persistence unit.
+     * A PartitioningPolicy is used to partition the data for a class across multiple difference databases
+     * or across a database cluster such as Oracle RAC.
+     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
+     * <p>
+     * If multiple partitions are used to process a single transaction, JTA should be used for proper XA transaction support.
+     * <p>
+     * The value must be set to the name of an existing defined PartitioningPolicy.
+     * 
+     * @see org.eclipse.persistence.annotations.Partitioning
+     * @see org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy
+     */
+    public static final String PARTITIONING = "eclipselink.partitioning";
     
     /**
      * Property <code>"eclipselink.jdbc.bind-parameters</code> configures whether parameter binding will be used in the

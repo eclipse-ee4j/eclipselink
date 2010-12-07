@@ -15,6 +15,9 @@ package org.eclipse.persistence.testing.models.jpa.partitioned;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.Partitioned;
+import org.eclipse.persistence.annotations.Partitioning;
+
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee
  * <p><b>Description</b>: Held in a private 1:1 relationship from Employee
@@ -22,6 +25,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="PART_ADDRESS")
+@Partitioning(name="custom", partitioningClass=EmployeePartitioningPolicy.class)
+@Partitioned("custom")
 public class Address implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE)

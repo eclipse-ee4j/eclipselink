@@ -179,6 +179,15 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.DatabaseQuery#setRedirector(org.eclipse.persistence.queries.QueryRedirector)
      */
     public static final String QUERY_REDIRECTOR = "eclipselink.query.redirector";
+    
+    /**
+     * "eclipselink.partitioning"
+     * <p>Used to provide a PartitioningPolicy instance or name to the query.
+     * This allows the query to execute on a specific, or on multiple connection pools.
+     * @see org.eclipse.persistence.annotations.Partitioning
+     * @see org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy
+     */
+    public static final String PARTITIONING = "eclipselink.partitioning";
 
     /**
      * "eclipselink.query-type"

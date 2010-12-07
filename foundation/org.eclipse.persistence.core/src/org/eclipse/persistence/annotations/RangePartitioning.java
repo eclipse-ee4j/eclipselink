@@ -45,7 +45,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface RangePartitioning {
     /**
-     * The name of the partition policy, names must be unqiue for the persistence unit.
+     * The name of the partition policy, names must be unique for the persistence unit.
      */
     String name();
     

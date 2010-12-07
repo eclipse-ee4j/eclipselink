@@ -2689,7 +2689,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             getInheritancePolicy().getParentDescriptor().initialize(session);
             if (!getInheritancePolicy().getParentDescriptor().isSharedIsolation()){
                 if (!this.isIsolated() && this.getCacheIsolation() != getInheritancePolicy().getParentDescriptor().getCacheIsolation()){
-                    ((AbstractSession)session).log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "overriding_cache_isolation", new Object[]{getInheritancePolicy().getParentDescriptor().getAlias(), getInheritancePolicy().getParentDescriptor().getCacheIsolation(), this.alias,  this.cacheIsolation});
+                    session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "overriding_cache_isolation", new Object[]{getInheritancePolicy().getParentDescriptor().getAlias(), getInheritancePolicy().getParentDescriptor().getCacheIsolation(), this.alias,  this.cacheIsolation});
                     this.setCacheIsolation(getInheritancePolicy().getParentDescriptor().getCacheIsolation());
                     
                 }
@@ -2780,7 +2780,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (getPartitioningPolicyName() != null) {
             PartitioningPolicy policy = session.getProject().getPartitioningPolicy(getPartitioningPolicyName());
             if (policy == null) {
-                //TODO session.getIntegrityChecker().handleError(DescriptorException.missingPartitioningPolicy(getPartitioningPolicyName(, this));
+                session.getIntegrityChecker().handleError(DescriptorException.missingPartitioningPolicy(getPartitioningPolicyName(), this, null));
             }
             setPartitioningPolicy(policy);
         }

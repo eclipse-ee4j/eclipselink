@@ -374,6 +374,11 @@ public class Project implements Serializable, Cloneable {
                 mapping.convertClassNamesToClasses(classLoader);
             }
         }
+        if (this.partitioningPolicies != null) {
+            for (PartitioningPolicy policy : this.partitioningPolicies.values()) {
+                policy.convertClassNamesToClasses(classLoader);
+            }
+        }
     }
 
     /**

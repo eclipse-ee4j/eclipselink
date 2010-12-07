@@ -1609,7 +1609,7 @@
     </xsd:annotation>
     <xsd:sequence>
         <xsd:element name="partition-column" type="orm:column"/>
-        <xsd:element name="connection-pool" type="xsd:string" maxOccurs="unbounded"/>
+        <xsd:element name="connection-pool" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="union-unpartitionable-queries" type="xsd:boolean"/>
@@ -1673,11 +1673,11 @@
     </xsd:annotation>
     <xsd:sequence>
         <xsd:element name="partition-column" type="orm:column"/>
-        <xsd:element name="partition" type="orm:range-partition" maxOccurs="unbounded"/>
+        <xsd:element name="partition" type="orm:range-partition" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
-    <xsd:attribute name="partition-value-type" type="xsd:string"/>
-    <xsd:attribute name="union-unpartitionable-queries" type="xsd:boolean"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="union-unpartitionable-queries" type="xsd:boolean"/>
+    <xsd:attribute name="partition-value-type" type="xsd:string"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->
@@ -1770,10 +1770,10 @@
         <xsd:element name="partition-column" type="orm:column"/>
         <xsd:element name="partition" type="orm:value-partition" maxOccurs="unbounded"/>
     </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="union-unpartitionable-queries" type="xsd:boolean"/>
     <xsd:attribute name="default-connection-pool" type="xsd:string"/>
     <xsd:attribute name="partition-value-type" type="xsd:string"/>
-    <xsd:attribute name="union-unpartitionable-queries" type="xsd:boolean"/>
-    <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->
@@ -1846,10 +1846,10 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-        <xsd:element name="connection-pool" type="xsd:string" maxOccurs="unbounded"/>
+        <xsd:element name="connection-pool" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
-    <xsd:attribute name="replicate-writes" type="xsd:boolean"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="replicate-writes" type="xsd:boolean"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->
@@ -1883,7 +1883,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-        <xsd:element name="connection-pool" type="xsd:string" maxOccurs="unbounded"/>
+        <xsd:element name="connection-pool" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
@@ -1926,10 +1926,10 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-        <xsd:element name="connection-pool" type="xsd:string" maxOccurs="unbounded"/>
+        <xsd:element name="connection-pool" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
-    <xsd:attribute name="replicate-writes" type="xsd:boolean"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="replicate-writes" type="xsd:boolean"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->
@@ -1960,8 +1960,8 @@
 
       </xsd:documentation>
     </xsd:annotation>
-    <xsd:attribute name="connection-pool" type="xsd:string"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="connection-pool" type="xsd:string" use="required"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->

@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.DBPlatformHelper;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
@@ -404,6 +405,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     public void initializeDescriptors() {
         // Must clone to avoid modification of the map while enumerating.
         initializeDescriptors((Map)((HashMap)getDescriptors()).clone());
+        // Initialize partitioning policies.
+        for (PartitioningPolicy policy : getProject().getPartitioningPolicies().values()) {
+            policy.initialize(this);
+        }
         // Process JPA named queries and add as session queries,
         // this must be done after descriptor init as requires to parse the JPQL.
         processJPAQueries();

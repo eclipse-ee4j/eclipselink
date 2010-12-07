@@ -12,20 +12,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.partitioning;
 
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.descriptors.partitioning.ValuePartitioningPolicy;
+import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
  * INTERNAL:
@@ -65,26 +61,11 @@ public class ValuePartitioningMetadata extends FieldPartitioningMetadata {
     }
     
     /**
-     * TODO: this needs to be done at runtime.
+     * Convert the string value to the class type.
+     * This will handle numbers, string, dates, and most other classes.
      */    
     private Object initObject(Class type, String value) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
-                return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
-            } catch (PrivilegedActionException exception) {
-                //throwInitObjectException(exception, type, value, isData);
-            }
-        } else {
-            try {
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
-                return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
-            } catch (Exception exception) {
-                //throwInitObjectException(exception, type, value, isData);
-            }
-        }
-        
-        return value;
+        return ConversionManager.getDefaultManager().convertObject(value, type);
     }
 
     @Override
@@ -98,6 +79,9 @@ public class ValuePartitioningMetadata extends FieldPartitioningMetadata {
         policy.setDefaultConnectionPool(this.defaultConnectionPool);
         for (ValuePartitionMetadata partition : getPartitions()) {
             Object value = initObject(type, partition.getValue());
+            if (policy.getPartitions().containsKey(value)) {
+                throw ValidationException.duplicatePartitionValue(getName(), value);
+            }
             policy.addPartition(value, partition.getConnectionPool());
         }
         return policy;

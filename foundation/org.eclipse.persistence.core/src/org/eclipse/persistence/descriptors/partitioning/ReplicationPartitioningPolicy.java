@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * PUBLIC:
@@ -44,6 +45,17 @@ public class ReplicationPartitioningPolicy extends PartitioningPolicy {
 
     public ReplicationPartitioningPolicy(List<String> pools) {
         this.connectionPools = pools;
+    }
+    
+    /**
+     * INTERNAL:
+     * Default the connection pools to all pools if unset.
+     */
+    public void initialize(AbstractSession session) {
+        super.initialize(session);
+        if (getConnectionPools().isEmpty() && session.isServerSession()) {
+            getConnectionPools().addAll(((ServerSession)session).getConnectionPools().keySet());
+        }
     }
     
     /**
