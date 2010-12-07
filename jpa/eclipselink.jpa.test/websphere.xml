@@ -51,7 +51,7 @@
     <target name="websphere-install">
         <copy file="${junit.lib}" todir="${was.home}/lib/ext"/>
         <copy file="${eclipselink.jar.dir}/eclipselink.jar" todir="${was.home}/lib/ext"/>
-        <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${was.home}/lib/ext"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}" todir="${was.home}/lib/ext"/>
         <copy file="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}" todir="${was.home}/lib/ext" overwrite="true"/>
     </target>
 
