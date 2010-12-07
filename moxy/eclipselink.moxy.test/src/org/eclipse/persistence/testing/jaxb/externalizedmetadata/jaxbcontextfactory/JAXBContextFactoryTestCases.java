@@ -347,7 +347,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_XML)));
         inputFiles.add(new FileInputStream(INPUT_STRM_OXM_XML));
         inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_XML)));
-        inputFiles.add(new StreamSource(SOURCE_OXM_XML));
+        inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_XML)));
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] { 
