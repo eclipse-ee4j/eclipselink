@@ -131,9 +131,9 @@
                 <pathelement location="${jboss.home}/client/jboss-javaee.jar"/>
                 <pathelement location="${jboss.home}/common/lib/jboss-bindingservice.jar"/>
                 <pathelement location="${jdbc.driver.jar}"/>
-                <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
-                <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
-                <pathelement location="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             </classpath>           
         </java>
     </target>

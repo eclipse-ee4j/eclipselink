@@ -75,9 +75,9 @@
         <copy file="${junit.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${eclipselink.jar.name}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${glassfish.home}/domains/domain1/lib/ext"/>
-        <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
-        <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
-        <!--copy file="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}" todir="${glassfish.home}/domains/domain1/lib"/-->
+        <copy file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.jar}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <!--copy file="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}" todir="${glassfish.home}/domains/domain1/lib"/-->
         <antcall target="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" inheritRefs="true"/>
     </target>
 
