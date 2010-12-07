@@ -345,7 +345,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         InputStream iStream = ClassLoader.getSystemResourceAsStream(metadataFile);
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> props = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> props = new HashMap<String, Object>();
         props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLELEMENT);
