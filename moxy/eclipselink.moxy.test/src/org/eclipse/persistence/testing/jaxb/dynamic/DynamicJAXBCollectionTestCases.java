@@ -44,9 +44,9 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
     }
 
     public String getName() {
-    	return "Dynamic JAXB: Collections: " + super.getName();
+        return "Dynamic JAXB: Collections: " + super.getName();
     }
-    
+
     public void testXSDSingleListUnmarshal() throws Exception {
         InputStream schemaStream = classLoader.getSystemResourceAsStream(XSD_SINGLE);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(schemaStream, null, null, null);
@@ -97,7 +97,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
@@ -134,7 +134,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
@@ -169,7 +169,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
@@ -206,7 +206,7 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(PACKAGE, new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
