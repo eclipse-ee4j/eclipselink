@@ -295,7 +295,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.dynamic", new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
@@ -323,7 +323,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         assertEquals("Incorrect exception thrown.", 50055, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
 
         try {
-            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+            Map<String, Object> properties = new HashMap<String, Object>();
             DynamicJAXBContextFactory.createContextFromOXM(null, properties);
         } catch (JAXBException e) {
             caughtException = e;
