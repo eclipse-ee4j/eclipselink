@@ -334,7 +334,8 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
     public void testBindingFormatSource() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new StreamSource(SOURCE_OXM_XML));
+        InputStream is = ClassLoader.getSystemResourceAsStream(SOURCE_OXM_XML);
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new StreamSource(is));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestSource(jCtx);

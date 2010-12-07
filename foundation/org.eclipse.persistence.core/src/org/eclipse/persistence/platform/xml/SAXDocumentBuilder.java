@@ -166,7 +166,7 @@ public class SAXDocumentBuilder implements ContentHandler {
     }
 
     protected void addNamespaceDeclaration(Element parentElement, String prefix, String uri) {
-        if (prefix.length() == 0) {
+        if (prefix.length() == 0 || XMLConstants.XMLNS.equals(prefix)) {
             //handle default/target namespaces
             parentElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, uri);
         } else {
