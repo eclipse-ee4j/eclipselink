@@ -52,7 +52,7 @@ public class SchemaMetadata extends Metadata {
     private SchemaCompiler schemaCompiler;
     private Field JDEFINEDCLASS_ENUMCONSTANTS = null;
 
-    public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, ?> properties) throws JAXBException {
+    public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, Object> properties) throws JAXBException {
         super(dynamicClassLoader, properties);
         try {
             JDEFINEDCLASS_ENUMCONSTANTS = PrivilegedAccessHelper.getDeclaredField(JDefinedClass.class, "enumConstantsByName", true);
@@ -61,7 +61,7 @@ public class SchemaMetadata extends Metadata {
         }
     }
 
-    public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, ?> properties, InputSource metadataSource, EntityResolver resolver) throws JAXBException {
+    public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, Object> properties, InputSource metadataSource, EntityResolver resolver) throws JAXBException {
         this(dynamicClassLoader, properties);
         try {
             if (metadataSource.getSystemId() == null) {
@@ -78,7 +78,7 @@ public class SchemaMetadata extends Metadata {
         }
     }
 
-    public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, ?> properties, Node node, EntityResolver resolver) throws JAXBException {
+    public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, Object> properties, Node node, EntityResolver resolver) throws JAXBException {
         this(dynamicClassLoader, properties);
 
         Element element;

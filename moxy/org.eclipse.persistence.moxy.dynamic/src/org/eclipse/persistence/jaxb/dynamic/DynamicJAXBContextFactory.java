@@ -171,7 +171,7 @@ public class DynamicJAXBContextFactory {
      * @throws JAXBException
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
-    public static DynamicJAXBContext createContext(String contextPath, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+    public static DynamicJAXBContext createContext(String contextPath, ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         Object schema = null;
         EntityResolver resolver = null;
         Object bindings = null;
@@ -216,7 +216,7 @@ public class DynamicJAXBContextFactory {
      *
      * @see org.eclipse.persistence.jaxb.JAXBContext
      */
-    public static DynamicJAXBContext createContext(Class<?>[] classes, Map<String, ?> properties) throws JAXBException {
+    public static DynamicJAXBContext createContext(Class<?>[] classes, Map<String, Object> properties) throws JAXBException {
         throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.cannotCreateDynamicContextFromClasses());
     }
 
@@ -240,7 +240,7 @@ public class DynamicJAXBContextFactory {
      * @throws JAXBException
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
-    public static DynamicJAXBContext createContextFromXSD(Node schemaDOM, EntityResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+    public static DynamicJAXBContext createContextFromXSD(Node schemaDOM, EntityResolver resolver, ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         if (schemaDOM == null) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullNode());
         }
@@ -288,7 +288,7 @@ public class DynamicJAXBContextFactory {
      * @throws JAXBException
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
-    public static DynamicJAXBContext createContextFromXSD(InputStream schemaStream, EntityResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+    public static DynamicJAXBContext createContextFromXSD(InputStream schemaStream, EntityResolver resolver, ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         if (schemaStream == null) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullInputStream());
         }
@@ -336,7 +336,7 @@ public class DynamicJAXBContextFactory {
      * @throws JAXBException
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
-    public static DynamicJAXBContext createContextFromXSD(Source schemaSource, EntityResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+    public static DynamicJAXBContext createContextFromXSD(Source schemaSource, EntityResolver resolver, ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         if (schemaSource == null) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullSource());
         }
@@ -400,7 +400,7 @@ public class DynamicJAXBContextFactory {
      * @throws JAXBException
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
-    public static DynamicJAXBContext createContextFromOXM(ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+    public static DynamicJAXBContext createContextFromOXM(ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         if (properties == null || properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY) == null) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.oxmKeyNotFound());
         }
