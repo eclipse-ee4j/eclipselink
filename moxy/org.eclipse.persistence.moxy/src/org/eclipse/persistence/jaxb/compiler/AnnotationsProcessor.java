@@ -274,6 +274,8 @@ public class AnnotationsProcessor {
                                 }
                             } else if (nextClassName.equals(ClassConstants.OBJECT.getName())) {
                                 qname = XMLConstants.ANY_TYPE_QNAME;
+                            } else if (nextClassName.equals(ClassConstants.XML_GREGORIAN_CALENDAR.getName())) {
+                                qname = XMLConstants.ANY_SIMPLE_TYPE_QNAME;
                             } else {
                                 Class theClass = helper.getClassForJavaClass(nextClass);
                                 qname = (QName) XMLConversionManager.getDefaultJavaTypes().get(theClass);

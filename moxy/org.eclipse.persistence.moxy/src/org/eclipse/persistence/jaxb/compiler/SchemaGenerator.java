@@ -30,6 +30,7 @@ import javax.xml.transform.Source;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.schema.model.All;
@@ -706,7 +707,11 @@ public class SchemaGenerator {
                             }
                             String prefix = getOrGeneratePrefixForNamespace(schemaType.getNamespaceURI(), targetSchema);
                             element.setType(prefix + COLON + schemaType.getLocalPart());
+                        } else if (areEquals(javaClass, ClassConstants.XML_GREGORIAN_CALENDAR)) {
+                            schemaType = XMLConstants.ANY_SIMPLE_TYPE_QNAME;
+                            element.setType(XMLConstants.SCHEMA_PREFIX + COLON + schemaType.getLocalPart());
                         } else {
+
                             TypeInfo type = (TypeInfo) this.typeInfo.get(javaClass.getQualifiedName());
                             if (type != null) {
                                 String typeName = null;

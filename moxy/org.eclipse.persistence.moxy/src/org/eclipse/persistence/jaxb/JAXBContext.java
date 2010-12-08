@@ -410,6 +410,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                     name = XMLConstants.BASE_64_BINARY_QNAME;
                 } else if(type == ClassConstants.OBJECT){
                 	name = XMLConstants.ANY_TYPE_QNAME;
+                } else if(type == ClassConstants.XML_GREGORIAN_CALENDAR) {
+                    name = XMLConstants.ANY_SIMPLE_TYPE_QNAME;
                 } else {
                     name = (QName)XMLConversionManager.getDefaultJavaTypes().get(type);
                 }

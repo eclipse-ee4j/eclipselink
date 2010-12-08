@@ -37,6 +37,7 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
         this.isCollection = isCollection;
         this.mapping = mapping;
         this.parent = parent;
+        this.converter = converter;
         this.setUnmarshaller(parent.getUnmarshaller());
     }
     
@@ -81,15 +82,15 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
            }
        } else {
            value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(value);
-           if (converter != null) {
-               if (converter instanceof XMLConverter) {
-                   value = ((XMLConverter)converter).convertDataValueToObjectValue(value, parent.getSession(), parent.getUnmarshaller());
-               } else {
-                   value = converter.convertDataValueToObjectValue(value, parent.getSession());
-               }
-           }
        }
        value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
+       if (converter != null) {
+           if (converter instanceof XMLConverter) {
+               value = ((XMLConverter)converter).convertDataValueToObjectValue(value, parent.getSession(), parent.getUnmarshaller());
+           } else {
+               value = converter.convertDataValueToObjectValue(value, parent.getSession());
+           }
+       }       
        if(isCollection) {
            if(value != null) {
                parent.addAttributeValue((ContainerValue)nodeValue, value);
