@@ -287,9 +287,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             if (!wasXMLRoot && (defaultRootElementString == null)) {
                 AbstractSessionLog.getLog().log(SessionLog.WARNING, "marshal_warning_null_document_root_element", new Object[] { Helper.getShortClassName(this.getClass()), descriptor });
             } else {
-                if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
-                    marshaller.getMarshalListener().beforeMarshal(value);
-                }
+                marshalRecord.beforeContainmentMarshal(value);
 
                 if (xmlRootFragment != null) {
                     rootFragment = xmlRootFragment;
@@ -312,12 +310,10 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
                 objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, descriptor, (XMLField)xmlAnyCollectionMapping.getField(), originalValue, value, wasXMLRoot, false);               
                 objectBuilder.buildRow(marshalRecord, value, session, marshaller, null, WriteType.UNDEFINED);
+                marshalRecord.afterContainmentMarshal(object, value);
                 objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
 
                 marshalRecord.endElement(rootFragment, namespaceResolver);
-                if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
-                    marshaller.getMarshalListener().afterMarshal(value);
-                }
             }
         }
         return true;

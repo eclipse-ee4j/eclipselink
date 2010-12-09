@@ -30,7 +30,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
@@ -253,11 +252,6 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             return xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
 
-        XMLMarshalListener marshalListener = null;
-        if (null != marshaller && null != (marshalListener = marshaller.getMarshalListener())) {
-            marshalListener.beforeMarshal(value);
-        }
-
         XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
         if(descriptor == null || descriptor.hasInheritance()){
         	descriptor = (XMLDescriptor)session.getDescriptor(value.getClass());
@@ -270,20 +264,22 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         }
         
         if(descriptor != null){                    
+            marshalRecord.beforeContainmentMarshal(value);
+
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
             getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);            
     
-            
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
 
             objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (XMLField)xmlCompositeCollectionMapping.getField(), false);
             
             objectBuilder.buildRow(marshalRecord, value, session, marshaller, xPathFragment, WriteType.UNDEFINED);
+            marshalRecord.afterContainmentMarshal(object, value);
             marshalRecord.endElement(xPathFragment, namespaceResolver);
             objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);    
            
-        }else{
+        } else {
             getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, value);
             
             QName schemaType = getSchemaType((XMLField) xmlCompositeCollectionMapping.getField(), value, session);
@@ -292,9 +288,6 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
             marshalRecord.characters(stringValue);
             marshalRecord.endElement(xPathFragment, namespaceResolver);
-        }
-        if (null != marshalListener) {
-            marshalListener.afterMarshal(value);
         }
         return true;
     }

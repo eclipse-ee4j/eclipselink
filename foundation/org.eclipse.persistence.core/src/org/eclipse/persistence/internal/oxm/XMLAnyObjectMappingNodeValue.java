@@ -127,9 +127,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             if (!wasXMLRoot && (defaultRootElementString == null)) {
                 AbstractSessionLog.getLog().log(SessionLog.WARNING, "marshal_warning_null_document_root_element", new Object[] { Helper.getShortClassName(this.getClass()), descriptor });
             } else {
-                if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
-                    marshaller.getMarshalListener().beforeMarshal(objectValue);
-                }
+                marshalRecord.beforeContainmentMarshal(objectValue);
 
                 if (xmlRootFragment != null) {
                     rootFragment = xmlRootFragment;
@@ -150,12 +148,9 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
                 objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, descriptor, (XMLField)xmlAnyObjectMapping.getField(), originalValue, objectValue, wasXMLRoot, false);
                 objectBuilder.buildRow(marshalRecord, objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession) childSession, marshaller, null, WriteType.UNDEFINED);
-                
+                marshalRecord.afterContainmentMarshal(object, objectValue);
                 marshalRecord.endElement(rootFragment, namespaceResolver);
                 objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
-                if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
-                    marshaller.getMarshalListener().afterMarshal(objectValue);
-                }
             }
         }
 

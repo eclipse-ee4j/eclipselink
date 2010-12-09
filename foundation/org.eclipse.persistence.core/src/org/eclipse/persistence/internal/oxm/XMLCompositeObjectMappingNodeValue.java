@@ -31,7 +31,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -120,11 +119,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             return xmlCompositeObjectMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
 
-        XMLMarshalListener marshalListener = null;
-        if (null != marshaller && null != (marshalListener = marshaller.getMarshalListener())) {
-            marshalListener.beforeMarshal(objectValue);
-        }
-
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         boolean isSelfFragment = xPathFragment.isSelfFragment;
         marshalRecord.closeStartGroupingElements(groupingFragment);
@@ -151,6 +145,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
 
         if(descriptor != null){
+            marshalRecord.beforeContainmentMarshal(objectValue);
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
 
             if (!isSelfFragment) {
@@ -164,6 +159,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
 
             objectBuilder.buildRow(marshalRecord, objectValue, session, marshaller, xPathFragment, WriteType.UNDEFINED);
+            marshalRecord.afterContainmentMarshal(object, objectValue);
 
             if (!isSelfFragment) {
                 marshalRecord.endElement(xPathFragment, namespaceResolver);
@@ -182,9 +178,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if (!isSelfFragment) {
                 marshalRecord.endElement(xPathFragment, namespaceResolver);
             }
-        }
-        if (null != marshalListener) {
-            marshalListener.afterMarshal(objectValue);
         }
         return true;
     }

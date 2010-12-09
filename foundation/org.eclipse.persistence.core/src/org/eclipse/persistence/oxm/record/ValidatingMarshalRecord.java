@@ -36,6 +36,9 @@ import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPoli
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class ValidatingMarshalRecord extends MarshalRecord {
 
@@ -46,7 +49,7 @@ public class ValidatingMarshalRecord extends MarshalRecord {
         this.marshalRecord = marshalRecord;
         Schema schema = xmlMarshaller.getSchema();
         ValidatorHandler validatorHandler = schema.newValidatorHandler();
-        validatorHandler.setErrorHandler(xmlMarshaller.getErrorHandler());
+        validatorHandler.setErrorHandler(new ValidatingMarshalRecordErrorHandler(marshalRecord, xmlMarshaller.getErrorHandler()));
         validatingRecord = new ContentHandlerRecord();
         validatingRecord.setMarshaller(xmlMarshaller);
         validatingRecord.setContentHandler(validatorHandler);
@@ -253,6 +256,7 @@ public class ValidatingMarshalRecord extends MarshalRecord {
 
     @Override
     public void setMarshaller(XMLMarshaller marshaller) {
+        this.marshaller = marshaller;
         validatingRecord.setMarshaller(marshaller);
         marshalRecord.setMarshaller(marshaller);
     }
@@ -497,6 +501,66 @@ public class ValidatingMarshalRecord extends MarshalRecord {
     @Override
     public Collection values() {
         return marshalRecord.values();
+    }
+
+    @Override
+    public void beforeContainmentMarshal(Object child) {
+        marshalRecord.beforeContainmentMarshal(child);
+    }
+
+    @Override
+    public void afterContainmentMarshal(Object parent, Object child) {
+        marshalRecord.afterContainmentMarshal(parent, child);
+    }
+
+    private static class ValidatingMarshalRecordErrorHandler implements ErrorHandler {
+
+        private MarshalRecord marshalRecord;
+        private ErrorHandler errorHandler;
+
+        public ValidatingMarshalRecordErrorHandler(MarshalRecord marshalRecord, ErrorHandler errorHandler) {
+            this.marshalRecord = marshalRecord;
+            this.errorHandler = errorHandler;
+        }
+
+        public void warning(SAXParseException exception) throws SAXException {
+            if(null != errorHandler) {
+                errorHandler.warning(marshalSAXParseException(exception));
+            }
+        }
+
+        public void error(SAXParseException exception) throws SAXException {
+            if(null != errorHandler) {
+                errorHandler.error(marshalSAXParseException(exception));
+            }
+        }
+
+        public void fatalError(SAXParseException exception) throws SAXException {
+            if(null != errorHandler) {
+                errorHandler.fatalError(marshalSAXParseException(exception));
+            }
+        }
+
+        private MarshalSAXParseException marshalSAXParseException(SAXParseException exception) {
+            return new MarshalSAXParseException(exception.getLocalizedMessage(), exception.getPublicId(), exception.getSystemId(), exception.getLineNumber(), exception.getColumnNumber(), exception.getException(), marshalRecord.getOwningObject());
+        }
+
+    }
+
+    public static class MarshalSAXParseException extends SAXParseException {
+
+        private Object object;
+
+        public MarshalSAXParseException(String message, String publicId,
+                String systemId, int lineNumber, int columnNumber, Exception e, Object object) {
+            super(message, publicId, systemId, lineNumber, columnNumber, e);
+            this.object = object;
+        }
+
+        public Object getObject() {
+            return object;
+        }
+
     }
 
 }

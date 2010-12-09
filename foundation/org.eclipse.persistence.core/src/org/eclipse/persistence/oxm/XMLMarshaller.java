@@ -842,9 +842,7 @@ public class XMLMarshaller implements Cloneable {
         if(isXMLRoot) {
             root = (XMLRoot)object;
         }
-        if (getMarshalListener() != null) {
-            getMarshalListener().beforeMarshal(object);
-        }
+        marshalRecord.beforeContainmentMarshal(object);
         if (!isFragment()) {
             String encoding = getEncoding();
             String version = DEFAULT_XML_VERSION;
@@ -964,9 +962,7 @@ public class XMLMarshaller implements Cloneable {
         if (!isFragment()) {
             marshalRecord.endDocument();
         }
-        if (getMarshalListener() != null) {
-            getMarshalListener().afterMarshal(object);
-        }
+        marshalRecord.afterContainmentMarshal(null, object);
     }
 
     private XPathFragment buildRootFragment(Object object, XMLDescriptor descriptor, boolean isXMLRoot, MarshalRecord marshalRecord) {

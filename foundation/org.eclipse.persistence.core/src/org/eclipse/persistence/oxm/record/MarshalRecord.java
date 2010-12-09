@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -319,6 +320,26 @@ public abstract class MarshalRecord extends XMLRecord {
             }
             getPositionalNodes().put(shortName, xPathFragment.getIndexValue() + 1);
         }
+    }
+
+    public void beforeContainmentMarshal(Object child) {
+        if(null != marshaller) {
+            XMLMarshalListener marshalListener = marshaller.getMarshalListener();
+            if(null != marshalListener) {
+                marshalListener.beforeMarshal(child);
+            }
+        }
+        setOwningObject(child);
+    }
+
+    public void afterContainmentMarshal(Object parent, Object child) {
+        if(null != marshaller) {
+            XMLMarshalListener marshalListener = marshaller.getMarshalListener();
+            if(null != marshalListener) {
+                marshalListener.afterMarshal(child);
+            }
+        }
+        setOwningObject(parent);
     }
 
 }

@@ -14,14 +14,16 @@ package org.eclipse.persistence.jaxb;
 
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.ValidationEventLocator;
 import javax.xml.bind.helpers.ValidationEventImpl;
 import javax.xml.bind.helpers.ValidationEventLocatorImpl;
+
+import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXException;
 import org.xml.sax.ErrorHandler;
 
 public class JAXBErrorHandler implements ErrorHandler {
+
     private ValidationEventHandler eventHandler;
 
     public JAXBErrorHandler(ValidationEventHandler validationEventHandler) {
@@ -30,30 +32,30 @@ public class JAXBErrorHandler implements ErrorHandler {
     }
 
     public void warning(SAXParseException exception) throws SAXException {
-        ValidationEventLocator eventLocator = new ValidationEventLocatorImpl(exception);
-        ValidationEvent event = new ValidationEventImpl(ValidationEvent.WARNING, null, eventLocator, exception);
-        if (!eventHandler.handleEvent(event)) {
-            throw exception;
-        }
+        handleException(exception, ValidationEvent.WARNING);
     }
 
     public void error(SAXParseException exception) throws SAXException {
-        ValidationEventLocator eventLocator = new ValidationEventLocatorImpl(exception);
-        ValidationEvent event = new ValidationEventImpl(ValidationEvent.ERROR, null, eventLocator, exception);
+        handleException(exception, ValidationEvent.ERROR);
+    }
+
+    public void fatalError(SAXParseException exception) throws SAXException {
+        handleException(exception, ValidationEvent.FATAL_ERROR);
+    }
+
+    private void handleException(SAXParseException exception, int severity) throws SAXException {
+        ValidationEventLocatorImpl eventLocator = new ValidationEventLocatorImpl(exception);
+        if(exception instanceof MarshalSAXParseException) {
+            eventLocator.setObject(((MarshalSAXParseException) exception).getObject());
+        }
+        ValidationEvent event = new ValidationEventImpl(severity, exception.getLocalizedMessage(), eventLocator, exception);
         if (!eventHandler.handleEvent(event)) {
             throw exception;
         }
     }
 
-    public void fatalError(SAXParseException exception) throws SAXException {
-        ValidationEventLocator eventLocator = new ValidationEventLocatorImpl(exception);
-        ValidationEvent event = new ValidationEventImpl(ValidationEvent.FATAL_ERROR, null, eventLocator, exception);
-        if (!eventHandler.handleEvent(event)) {
-            throw exception;
-        }
-    }
-    
     public ValidationEventHandler getValidationEventHandler() {
-    	return eventHandler;
+        return eventHandler;
     }
+
 }

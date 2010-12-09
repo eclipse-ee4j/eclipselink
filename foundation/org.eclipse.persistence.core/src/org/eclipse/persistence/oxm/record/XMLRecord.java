@@ -33,7 +33,7 @@ import org.w3c.dom.Node;
  * Provides a Record/Map API on an XML DOM element.
  */
 public abstract class XMLRecord extends AbstractRecord {
-    private XMLMarshaller marshaller;
+    protected XMLMarshaller marshaller;
     protected XMLUnmarshaller unmarshaller;
     private DocumentPreservationPolicy docPresPolicy;
     private Object owningObject;
