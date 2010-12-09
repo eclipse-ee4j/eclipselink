@@ -23,10 +23,6 @@
    </url>
 
    <includes
-         id="org.eclipse.persistence.dbws"
-         version="@VERSION@.@QUALIFIER@"/>
-
-   <includes
          id="org.eclipse.persistence.jpa"
          version="@VERSION@.@QUALIFIER@"/>
 
@@ -36,10 +32,6 @@
 
    <includes
          id="org.eclipse.persistence.sdo"
-         version="@VERSION@.@QUALIFIER@"/>
-
-   <includes
-         id="org.eclipse.persistence.dbws.source"
          version="@VERSION@.@QUALIFIER@"/>
 
    <includes
