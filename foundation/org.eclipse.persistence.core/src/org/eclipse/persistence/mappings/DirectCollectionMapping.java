@@ -2162,6 +2162,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     
     /**
      * INTERNAL:
+     * Return source key fields for translation by an AggregateObjectMapping
+     */
+    @Override
+    public Vector getFieldsForTranslationInAggregate() {
+        return getSourceKeyFields();
+    }
+    
+    /**
+     * INTERNAL:
      * Update private owned part.
      */
     @Override

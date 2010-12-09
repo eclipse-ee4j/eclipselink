@@ -832,6 +832,15 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
         return fieldNames;
     }
+    
+    /**
+     * INTERNAL:
+     * Return source key fields for translation by an AggregateObjectMapping
+     */
+    @Override
+    public Collection getFieldsForTranslationInAggregate() {
+        return getSourceToTargetKeyFields().keySet();
+    }
 
     /**
      * Return the appropriate map that maps the "foreign keys"

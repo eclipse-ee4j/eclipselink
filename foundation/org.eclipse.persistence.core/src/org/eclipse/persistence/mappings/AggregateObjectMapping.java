@@ -1564,6 +1564,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             }
         }
         
+        // EL Bug 332080 - translate foreign reference mapping source key fields
+        if (!clonedDescriptor.getObjectBuilder().isSimple()) {
+            for (Iterator dcIterator = clonedDescriptor.getMappings().iterator(); dcIterator.hasNext();) {
+                DatabaseMapping mapping = (DatabaseMapping)dcIterator.next();
+                if (mapping.isForeignReferenceMapping()) {
+                    Collection fkFields = ((ForeignReferenceMapping)mapping).getFieldsForTranslationInAggregate();
+                    if (fkFields != null && !fkFields.isEmpty()) {
+                        fieldsToTranslate.addAll(fkFields);
+                    }
+                }
+            }
+        }
+        
         for (Iterator entry = fieldsToTranslate.iterator(); entry.hasNext();) {
             DatabaseField field = (DatabaseField)entry.next();
             //322233 - get the source DatabaseField from the translation map. 

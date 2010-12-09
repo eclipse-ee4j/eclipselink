@@ -64,6 +64,8 @@ public class AggregateTestModel extends TestModel {
         addTest(getEventTestSuite());
         addTest(getNestedAggregateTestSuite());
         addTest(getAggregateInheritanceTestSuite());
+        // EL bug 332080
+        addTest(getAggregateRelationshipsTestSuite());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
@@ -88,6 +90,20 @@ public class AggregateTestModel extends TestModel {
         suite.addTest(new AggregateInheritanceInitAggregateTestCase());
 
         // Add new tests here...
+        return suite;
+    }
+    
+    public static TestSuite getAggregateRelationshipsTestSuite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("AggregateRelationshipsTestSuite");
+        suite.setDescription("This suite tests that aggregate relationships are handled correctly");
+        
+        suite.addTest(new AggregateRelationshipsOneToOneTestCase());
+        suite.addTest(new AggregateRelationshipsTargetOneToOneTestCase());
+        suite.addTest(new AggregateRelationshipsOneToManyTestCase());
+        suite.addTest(new AggregateRelationshipsManyToManyTestCase());
+        suite.addTest(new AggregateRelationshipsDirectCollectionTestCase());
+        
         return suite;
     }
 

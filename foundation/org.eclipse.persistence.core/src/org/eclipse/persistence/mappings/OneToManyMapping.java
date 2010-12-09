@@ -392,6 +392,15 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }        
         return new CacheId(key);
     }
+    
+    /**
+     * INTERNAL:
+     * Return source key fields for translation by an AggregateObjectMapping
+     */
+    @Override
+    public Collection getFieldsForTranslationInAggregate() {
+        return getSourceKeyFields();
+    }
 
     /**
      * PUBLIC:

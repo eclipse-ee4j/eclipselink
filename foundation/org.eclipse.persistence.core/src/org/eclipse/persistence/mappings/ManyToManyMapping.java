@@ -286,6 +286,15 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         }
     }
     
+    /**
+     * INTERNAL:
+     * Return source key fields for translation by an AggregateObjectMapping
+     */
+    @Override
+    public Collection getFieldsForTranslationInAggregate() {
+        return getRelationTableMechanism().getSourceKeyFields();
+    }
+    
     protected DataModifyQuery getInsertQuery() {
         return this.mechanism.getInsertQuery();
     }

@@ -48,6 +48,9 @@ public class AggregateSystem extends TestSystem {
 
         project = new SwitchProject();
         session.addDescriptors(project);
+        
+        project = new AggregateRelationshipsProject();
+        session.addDescriptors(project);
     }
 
     public void createTables(DatabaseSession session) {
@@ -105,7 +108,8 @@ public class AggregateSystem extends TestSystem {
         schemaManager.replaceObject(table);
 
         (new SwitchTableCreator()).replaceTables(session);
-
+        
+        new AggregateRelationshipsTableCreator().replaceTables(session);
     }
 
     /**

@@ -918,6 +918,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
         return attributeValue;
     }
+    
+    /**
+     * INTERNAL:
+     * Return source key fields for translation by an AggregateObjectMapping
+     * By default, return an empty NonSynchronizedVector
+     */
+    public Collection getFieldsForTranslationInAggregate() {
+        return new NonSynchronizedVector(0);
+    }
 
     /**
      * INTERNAL:
