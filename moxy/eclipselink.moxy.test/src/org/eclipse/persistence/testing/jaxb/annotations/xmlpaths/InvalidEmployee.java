@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * Oracle = 2.2 - Initial implementation
+ * dmccann - 2.2 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpaths;
 
@@ -20,9 +20,9 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 import org.eclipse.persistence.oxm.annotations.XmlPaths;
 
 @XmlRootElement
-public class Employee {
+public class InvalidEmployee {
     @XmlElements({@XmlElement(type=Integer.class), @XmlElement(type=Float.class), @XmlElement(type=String.class)})
-    @XmlPaths({@XmlPath("integers/my-integer/@ival"), @XmlPath("floats/my-float/text()"), @XmlPath("integers/my-integer/sval/text()")})
+    @XmlPaths({@XmlPath("integers/my-integer/@ival"), @XmlPath("floats/my-float/text()"), @XmlPath("@sval")})
     public Object thing;
 
     public Object getThing() {
@@ -36,9 +36,9 @@ public class Employee {
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
 
-        Employee empObj;
+        InvalidEmployee empObj;
         try {
-            empObj = (Employee) obj;
+            empObj = (InvalidEmployee) obj;
         } catch (ClassCastException e) {
             return false;
         }

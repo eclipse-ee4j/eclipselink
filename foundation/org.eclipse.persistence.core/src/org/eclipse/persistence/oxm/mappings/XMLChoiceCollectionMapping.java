@@ -650,7 +650,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     }    
     
     private void addChoiceElementMapping(XMLField xmlField, String className){              
-         if (xmlField.getLastXPathFragment().nameIsText()) {
+         if (xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
              XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();             
              Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
              xmlMapping.setAttributeElementClass(theClass);             
@@ -680,7 +680,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     
     private void addChoiceElementMapping(XMLField xmlField, Class theClass){
     
-        if (xmlField.getLastXPathFragment().nameIsText()) {
+        if (xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
             XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();            
             xmlMapping.setAttributeElementClass(theClass);
             xmlMapping.setField(xmlField);

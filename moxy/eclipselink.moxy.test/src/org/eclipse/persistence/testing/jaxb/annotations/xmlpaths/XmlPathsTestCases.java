@@ -20,6 +20,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -32,7 +33,7 @@ public class XmlPathsTestCases extends ExternalizedMetadataTestCases {
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/";
     private static final String INT_VAL = "66";
     private static final String FLT_VAL = "66.66";
-    
+    private JAXBContext jCtx;
     private MySchemaOutputResolver resolver;
 
     /**
@@ -53,7 +54,9 @@ public class XmlPathsTestCases extends ExternalizedMetadataTestCases {
      */
     public void setUp() throws Exception {
         super.setUp();
-        resolver = generateSchemaWithFileName(new Class[] { }, CONTEXT_PATH, PATH + "employee-oxm.xml", 1);
+        jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
+        resolver = new MySchemaOutputResolver();
+        jCtx.generateSchema(resolver);
     }
 
 
@@ -97,7 +100,7 @@ public class XmlPathsTestCases extends ExternalizedMetadataTestCases {
         Employee ctrlEmp = getControlObject();
         // writeOnlyThing should not be read in
         try {
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            Unmarshaller unmarshaller = jCtx.createUnmarshaller();
             Employee empObj = (Employee) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", empObj);
             assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
@@ -129,7 +132,7 @@ public class XmlPathsTestCases extends ExternalizedMetadataTestCases {
 
         // test marshal
         try {
-            Marshaller marshaller = jaxbContext.createMarshaller();
+            Marshaller marshaller = jCtx.createMarshaller();
             Employee ctrlEmp = getControlObject();
             marshaller.marshal(ctrlEmp, testDoc);
             //marshaller.marshal(ctrlEmp, System.out);
@@ -138,5 +141,15 @@ public class XmlPathsTestCases extends ExternalizedMetadataTestCases {
             e.printStackTrace();
             fail("Marshal operation failed.");
         }
+    }
+    
+    public void testInvalidXmlPaths() {
+        try {
+            JAXBContext jaxbCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { InvalidEmployee.class }, null);
+        } catch (JAXBException e) {
+            //e.printStackTrace();
+            return;
+        }
+        fail("The expected exception was not thrown.");
     }
 }

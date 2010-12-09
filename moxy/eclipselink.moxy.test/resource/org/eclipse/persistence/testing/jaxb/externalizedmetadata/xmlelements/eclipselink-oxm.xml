@@ -5,8 +5,8 @@
             <xml-root-element name="foo"/>
             <java-attributes>
                 <xml-elements java-attribute="items" container-type="java.util.LinkedList">
-                    <xml-element java-attribute="A" type="java.lang.Integer" />
-                    <xml-element java-attribute="B" type="java.lang.Float" />
+                    <xml-element xml-path="A/@aval" type="java.lang.Integer" />
+                    <xml-element xml-path="B/text()" type="java.lang.Float" />
                 </xml-elements>
             </java-attributes>
 		</java-type>

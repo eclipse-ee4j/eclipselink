@@ -100,6 +100,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int NULL_METADATA_FILE = 50068;
     public static final int BINDINGS_PKG_NOT_SET = 50069;
     public static final int INCORRECT_NUMBER_OF_XMLJOINNODES_ON_XMLELEMENTS = 50070;
+    public static final int INVALID_XML_PATH_ATTRIBUTE = 50071;
 
     protected JAXBException(String message) {
         super(message);
@@ -900,10 +901,35 @@ public class JAXBException extends EclipseLinkException {
         return validationException;
     }
 
+    /**
+     * PUBLIC:
+     * Cause: There is a different number of XmlElements and XmlJoinNodes entries in a given
+     * XmlElementsJoinNodes.  There must be an equal number of each.
+     * 
+     * @param propertyName name of the Property containing the XmlElementsJoinNodes
+     * @param className name of the owning class
+     * @return
+     */
     public static JAXBException incorrectNumberOfXmlJoinNodesOnXmlElements(String propertyName, String className) {
         Object[] args = { propertyName, className };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INCORRECT_NUMBER_OF_XMLJOINNODES_ON_XMLELEMENTS, args));
         validationException.setErrorCode(INCORRECT_NUMBER_OF_XMLJOINNODES_ON_XMLELEMENTS);
+        return validationException;
+    }
+
+    /**
+     * When the target of an XmlPaths -> XmlPath is an attribute, it must be nested, and 
+     * not the root of the path.
+     * 
+     * @param propertyName name of the Property containing the XmlPaths
+     * @param className name of the owning class
+     * @param xpath the offending XmlPath
+     * @return
+     */
+    public static JAXBException invalidXmlPathWithAttribute(String propertyName, String className, String xpath) {
+        Object[] args = { propertyName, className, xpath };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XML_PATH_ATTRIBUTE, args));
+        validationException.setErrorCode(INVALID_XML_PATH_ATTRIBUTE);
         return validationException;
     }
 }

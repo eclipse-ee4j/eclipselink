@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <employee>
     <integers>
-        <my-integer>66</my-integer>
+        <my-integer ival="66" />
     </integers>
 </employee>

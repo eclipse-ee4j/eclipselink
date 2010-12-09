@@ -146,6 +146,7 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
      * 
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
+        unmarshalRecord.removeNullCapableValue(this.nullCapableNodeValue);
         this.choiceElementNodeValue.attribute(unmarshalRecord, URI, localName, value);
     }
 }

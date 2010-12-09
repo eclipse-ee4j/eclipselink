@@ -550,8 +550,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         }
     }
     private void addChoiceElementMapping(XMLField xmlField, String className){
-                
-         if (xmlField.getLastXPathFragment().nameIsText()) {
+         if (xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
              Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
              XMLDirectMapping xmlMapping = new XMLDirectMapping();
              xmlMapping.setAttributeAccessor(temporaryAccessor);
@@ -581,7 +580,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
        
     private void addChoiceElementMapping(XMLField xmlField, Class theClass){                 
         
-        if (xmlField.getLastXPathFragment().nameIsText()) {
+        if (xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
             XMLDirectMapping xmlMapping = new XMLDirectMapping();
             xmlMapping.setAttributeClassification(theClass);      
             xmlMapping.setAttributeAccessor(temporaryAccessor);

@@ -165,6 +165,8 @@ public class AnnotationsProcessor {
     private static final String EMPTY_STRING = "";
     private static final String JAVA_UTIL_LIST = "java.util.List";
     private static final String JAVA_LANG_OBJECT = "java.lang.Object";
+    private static final String SLASH = "/";
+    private static final String AT_SIGN = "@";
 
     private ArrayList<JavaClass> typeInfoClasses;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
@@ -1754,7 +1756,13 @@ public class AnnotationsProcessor {
             }
             if (next.getXmlPath() != null) {
                 choiceProp.setXmlPath(next.getXmlPath());
-                name = XMLProcessor.getNameFromXPath(next.getXmlPath(), propertyName, false);
+                boolean isAttribute = next.getXmlPath().contains(AT_SIGN);
+                // validate attribute - must be in nested path, not at root
+                if (isAttribute && !next.getXmlPath().contains(SLASH)) {
+                    throw JAXBException.invalidXmlPathWithAttribute(propertyName, cls.getQualifiedName(), next.getXmlPath());
+                }
+                choiceProp.setIsAttribute(isAttribute);
+                name = XMLProcessor.getNameFromXPath(next.getXmlPath(), propertyName, isAttribute);
                 namespace = XMLProcessor.DEFAULT;
             } else {
                 // no xml-path, so use name/namespace from xml-element

@@ -6,7 +6,14 @@
             <xsd:element name="integers" minOccurs="0">
                <xsd:complexType>
                   <xsd:choice>
-                     <xsd:element name="my-integer" type="xsd:int" minOccurs="0"/>
+                     <xsd:element name="my-integer" minOccurs="0">
+                        <xsd:complexType>
+                           <xsd:choice>
+                              <xsd:element name="sval" type="xsd:string" minOccurs="0"/>
+                           </xsd:choice>
+                           <xsd:attribute name="ival" type="xsd:int"/>
+                        </xsd:complexType>
+                     </xsd:element>
                   </xsd:choice>
                </xsd:complexType>
             </xsd:element>

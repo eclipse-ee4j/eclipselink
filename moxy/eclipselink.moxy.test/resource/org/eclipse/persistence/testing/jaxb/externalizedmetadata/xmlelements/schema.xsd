@@ -3,7 +3,12 @@
    <xsd:complexType name="foo">
       <xsd:sequence>
          <xsd:choice maxOccurs="unbounded">
-            <xsd:element name="A" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="A" minOccurs="0">
+               <xsd:complexType>
+                  <xsd:choice maxOccurs="unbounded"/>
+                  <xsd:attribute name="aval" type="xsd:int"/>
+               </xsd:complexType>
+            </xsd:element>
             <xsd:element name="B" type="xsd:float" minOccurs="0"/>
          </xsd:choice>
       </xsd:sequence>
