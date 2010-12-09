@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - .3 - Initial implementation
+ * dmccann - 2.2 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlelementsjoinnodes;
 
