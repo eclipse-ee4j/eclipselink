@@ -15,11 +15,16 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 import java.math.BigDecimal;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class ConcurrentProject {
     protected BigDecimal id;
     protected String name;
+    
+    public static int RUNNING_TEST;
+    public static final int NONE = Integer.MIN_VALUE;
+    public static int READ_WITH_UOW_LOCKS_TESTS = 1;
 
     public BigDecimal getId() {
         return id;
@@ -28,15 +33,20 @@ public class ConcurrentProject {
     public void setId(BigDecimal id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
+        if (ConcurrentProject.RUNNING_TEST == ConcurrentProject.READ_WITH_UOW_LOCKS_TESTS) {
+            try{
+                Thread.sleep(5000); // let the read go
+            } catch (InterruptedException ex) {}
+        }
         this.name = name;
     }
-    
+
     public static RelationalDescriptor descriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -49,8 +59,13 @@ public class ConcurrentProject {
 
         /* Next define the attribute mappings. */
         descriptor.addDirectMapping("id", "ID");
-        descriptor.addDirectMapping("name", "NAME");
-        
+        DirectToFieldMapping nameMapping = new DirectToFieldMapping();
+        nameMapping.setAttributeName("name");
+        nameMapping.setFieldName("NAME");
+        nameMapping.setGetMethodName("getName");
+        nameMapping.setSetMethodName("setName");
+        descriptor.addMapping(nameMapping);
+
         // Inheritance Properties.
         descriptor.getInheritancePolicy().setClassIndicatorFieldName("CONCURRENT_PROJECT.DISCRIM");
         descriptor.getInheritancePolicy().addClassIndicator(ConcurrentProject.class, "P");
@@ -70,6 +85,7 @@ public class ConcurrentProject {
         definition.addIdentityField("ID", java.math.BigDecimal.class, 15);
         definition.addField("NAME", java.lang.String.class, 30);
         definition.addField("DISCRIM", java.lang.String.class, 1);
+        definition.addField("LOCATION_ID", java.math.BigDecimal.class, 15);
 
         return definition;
     }

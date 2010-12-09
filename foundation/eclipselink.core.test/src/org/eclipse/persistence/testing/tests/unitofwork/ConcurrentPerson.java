@@ -19,11 +19,11 @@ import java.util.List;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
-
 
 public class ConcurrentPerson implements java.io.Serializable {
     public String name;
@@ -38,11 +38,11 @@ public class ConcurrentPerson implements java.io.Serializable {
     public static final int NONE = Integer.MIN_VALUE;
     public static int ONE_TO_ONE_INHERITANCE = 1;
     public static int READ_FETCH_JOIN = 1;
-    
+
     public ConcurrentPerson(){
         phoneNumbers = new ArrayList();
     }
-    
+
     public BigDecimal calculateLuckyNumber(Record row, Session session) {
         Number code = (Number)row.get("ID");
         return new BigDecimal(code.doubleValue() * 2.435);
@@ -60,7 +60,13 @@ public class ConcurrentPerson implements java.io.Serializable {
 
         /* Next define the attribute mappings. */
         descriptor.addDirectMapping("id", "ID");
-        descriptor.addDirectMapping("name", "NAME");
+
+        DirectToFieldMapping nameMapping = new DirectToFieldMapping();
+        nameMapping.setAttributeName("name");
+        nameMapping.setFieldName("NAME");
+        nameMapping.setGetMethodName("getName");
+        nameMapping.setSetMethodName("setName");
+        descriptor.addMapping(nameMapping);
 
         OneToOneMapping addressMapping = new OneToOneMapping();
         addressMapping.setAttributeName("address");
@@ -77,7 +83,7 @@ public class ConcurrentPerson implements java.io.Serializable {
         trans.setAttributeName("luckyNumber");
         trans.setAttributeTransformation("calculateLuckyNumber");
         descriptor.addMapping(trans);
-        
+
         OneToOneMapping hobbyMapping = new OneToOneMapping();
         hobbyMapping.setAttributeName("hobby");
         hobbyMapping.setReferenceClass(ConcurrentProject.class);
@@ -86,7 +92,7 @@ public class ConcurrentPerson implements java.io.Serializable {
         hobbyMapping.dontUseIndirection();
         hobbyMapping.addForeignKeyFieldName("CONCURRENT_EMP.PROJ_ID", "CONCURRENT_PROJECT.ID");
         descriptor.addMapping(hobbyMapping);
-        
+
         OneToManyMapping phoneNumbersMapping = new OneToManyMapping();
         phoneNumbersMapping.setAttributeName("phoneNumbers");
         phoneNumbersMapping.setReferenceClass(ConcurrentPhoneNumber.class);
@@ -161,7 +167,6 @@ public class ConcurrentPerson implements java.io.Serializable {
         }
         this.hobby = hobby;
     }
-    
 
     public List<ConcurrentPhoneNumber> getPhoneNumbers() {
         return phoneNumbers;
@@ -180,9 +185,17 @@ public class ConcurrentPerson implements java.io.Serializable {
         }
         this.phoneNumbers = phoneNumbers;
     }
-    
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     /**
-     * Return a platform independant definition of the database table.
+     * Return a platform independent definition of the database table.
      */
     public static TableDefinition tableDefinition() {
         TableDefinition definition = new TableDefinition();

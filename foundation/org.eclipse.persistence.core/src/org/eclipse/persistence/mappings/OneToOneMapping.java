@@ -1593,7 +1593,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         // these should be cached on the query during prepare.
         ObjectLevelReadQuery nestedQuery = prepareNestedJoinQueryClone(row, null, joinManager, sourceQuery, executionSession);
         nestedQuery.setTranslationRow(targetRow);
-        nestedQuery.setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks() && nestedQuery.getDescriptor().hasRelationships());
+        nestedQuery.setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
         referenceObject = this.referenceDescriptor.getObjectBuilder().buildObject(nestedQuery, targetRow);
 
         // For bug 3641713 buildObject doesn't wrap if called on a UnitOfWork for performance reasons,

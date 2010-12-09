@@ -57,6 +57,7 @@ public class SimultaneousTestsModel extends TestModel {
         addTest(new ConcurrentDecryptionTest());
         addTest(new ConcurrentReadOneToOneInheritanceTest());
         addTest(new ConcurrentReadFetchJoinTest());
+        addTest(new ConcurrentReadFetchJoinWithUOWLocksTest());
     }
 
     public static TestSuite getReadEmployeeTestSuite() {

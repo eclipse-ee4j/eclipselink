@@ -88,7 +88,7 @@ public class ConcurrentRefreshOnUpdateTest extends AutoVerifyTestCase {
             thread1.join();
             thread2.join();
         } catch (Exception ex) {
-            //just an inturrupt ignore
+            //just an interrupt ignore
         }
         if (ConcurrentRefreshOnUpdateTest.version != 
             ((Number)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(ConcurrentRefreshOnUpdateTest.lock, 

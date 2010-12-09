@@ -690,7 +690,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             nestedQuery.getJoinedAttributeManager().computeJoiningMappingQueries(session);
         }
         nestedQuery.setSession(null);
-        nestedQuery.setRequiresDeferredLocks(baseQuery.requiresDeferredLocks() && nestedQuery.getDescriptor().hasRelationships());
+        nestedQuery.setRequiresDeferredLocks(baseQuery.requiresDeferredLocks());
 
         return nestedQuery;
     }
@@ -1051,7 +1051,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * PUBLIC:
-     *  Use this method retreive the relationship partner attribute name of this bidirectional Mapping.
+     *  Use this method retrieve the relationship partner attribute name of this bidirectional Mapping.
      */
     public String getRelationshipPartnerAttributeName() {
         return this.relationshipPartnerAttributeName;
@@ -2030,7 +2030,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     executionSession.executeQuery(dedicatedQuery, row);
                 }
             }
-            ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks() && targetQuery.getDescriptor().hasRelationships());
+            ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
         }
         targetQuery = prepareHistoricalQuery(targetQuery, sourceQuery, executionSession);
 
@@ -2152,7 +2152,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             nestedQuery.getJoinedAttributeManager().setDataResults(nestedDataResults, executionSession);
         }
-        nestedQuery.setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks() && nestedQuery.getDescriptor().hasRelationships());
+        nestedQuery.setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
         return nestedQuery;
     }
     

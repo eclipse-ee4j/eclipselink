@@ -18,17 +18,26 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 public class ConcurrentLargeProject extends ConcurrentProject {
 
     protected ConcurrentPerson supervisor;
+    protected ConcurrentAddress location;
 
     public static boolean isForBackup = false;
     
+    public ConcurrentAddress getLocation() {
+        return location;
+    }
+
     public ConcurrentPerson getSupervisor() {
         return supervisor;
+    }
+
+    public void setLocation(ConcurrentAddress location) {
+        this.location = location;
     }
 
     public void setSupervisor(ConcurrentPerson supervisor) {
         this.supervisor = supervisor;
     }
-    
+
     public static RelationalDescriptor descriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -47,6 +56,15 @@ public class ConcurrentLargeProject extends ConcurrentProject {
         supervisorMapping.dontUseIndirection();
         supervisorMapping.addTargetForeignKeyFieldName("CONCURRENT_EMP.PROJ_ID", "CONCURRENT_PROJECT.ID");
         descriptor.addMapping(supervisorMapping);
+
+        OneToOneMapping locationMapping = new OneToOneMapping();
+        locationMapping.setAttributeName("location");
+        locationMapping.setReferenceClass(ConcurrentAddress.class);
+        locationMapping.setGetMethodName("getLocation");
+        locationMapping.setSetMethodName("setLocation");
+        locationMapping.dontUseIndirection();
+        locationMapping.addForeignKeyFieldName("CONCURRENT_PROJECT.LOCATION_ID", "CONCURRENT_ADDRESS.ADDRESS_ID");
+        descriptor.addMapping(locationMapping);
 
         return descriptor;
     }
