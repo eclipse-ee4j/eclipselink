@@ -1,0 +1,12 @@
+<jxb:bindings version="1.0" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <jxb:bindings schemaLocation="contextcreation.xsd" node="/xs:schema">
+
+        <!-- Rename the 'name' element to 'last-name-comma-first-name' -->
+        <jxb:bindings node="//xs:complexType[@name='person']">
+            <jxb:bindings node=".//xs:element[@name='name']">
+                <jxb:property name="last-name-comma-first-name"/>
+            </jxb:bindings>
+        </jxb:bindings>
+
+    </jxb:bindings>
+</jxb:bindings>

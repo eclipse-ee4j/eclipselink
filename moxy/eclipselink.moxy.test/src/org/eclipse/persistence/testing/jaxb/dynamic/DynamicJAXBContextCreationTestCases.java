@@ -13,19 +13,14 @@
 package org.eclipse.persistence.testing.jaxb.dynamic;
 
 import java.io.InputStream;
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
@@ -33,42 +28,22 @@ import javax.xml.transform.stream.StreamSource;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.testing.jaxb.dynamic.util.FirstFieldTransformer;
-import org.eclipse.persistence.testing.jaxb.dynamic.util.SecondFieldTransformer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class DynamicJAXBContextCreationTestCases extends TestCase {
 
-    private static final String SESSION_NAMES =
-        "org.eclipse.persistence.testing.jaxb.dynamic:org.eclipse.persistence.testing.jaxb.dynamic.secondproject";
-
-    private static final String EXAMPLE_XSD =
-        "org/eclipse/persistence/testing/jaxb/dynamic/contextcreation.xsd";
-    private static final String INVALID_XSD =
-        "org/eclipse/persistence/testing/jaxb/dynamic/invalid.xsd";
-    private static final String EXAMPLE_OXM =
-        "org/eclipse/persistence/testing/jaxb/dynamic/contextcreation-oxm.xml";
-
-    private static final String EMPLOYEE_CLASS_NAME =
-        "mynamespace.Employee";
-    private static final String PERSON_CLASS_NAME =
-        "org.eclipse.persistence.testing.jaxb.dynamic.Person";
-    private static final String DOCWRAPPER_CLASS_NAME =
-        "org.persistence.testing.jaxb.dynamic.xxx.DocWrapper";
-
     public DynamicJAXBContextCreationTestCases(String name) throws Exception {
         super(name);
     }
-    
+
     public String getName() {
-    	return "Dynamic JAXB: Context Creation: " + super.getName();
+        return "Dynamic JAXB: Context Creation: " + super.getName();
     }
 
     public void testNewInstanceString() throws JAXBException {
@@ -84,7 +59,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceStringLoaderProps() throws JAXBException {
-    	DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance(SESSION_NAMES, Thread.currentThread().getContextClassLoader(), new HashMap());
+        DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance(SESSION_NAMES, Thread.currentThread().getContextClassLoader(), new HashMap());
         DynamicEntity docWrapper = jaxbContext.newDynamicEntity(DOCWRAPPER_CLASS_NAME);
         assertNotNull(docWrapper);
     }
@@ -116,7 +91,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         assertNotNull("Did not catch exception as expected.", ex);
         assertEquals("Incorrect exception thrown.", 50038, ((org.eclipse.persistence.exceptions.JAXBException) ex.getLinkedException()).getErrorCode());
     }
-    
+
     public void testNewInstanceOXM() throws JAXBException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -151,6 +126,81 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
         DynamicEntity emp = jaxbContext.newDynamicEntity(EMPLOYEE_CLASS_NAME);
         assertNotNull(emp);
+    }
+
+    public void testNewInstanceXSDExternalBinding() throws Exception {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setNamespaceAware(true);
+
+        InputStream xsdStream = classLoader.getSystemResourceAsStream(EXAMPLE_XSD);
+        Source xsdSource = new StreamSource(xsdStream);
+        // Set SYSTEM_ID to the filename part of the fully qualified EXAMPLE_XSD
+        xsdSource.setSystemId(EXAMPLE_XSD.substring(EXAMPLE_XSD.lastIndexOf('/') + 1));
+
+        InputStream xjbStream = classLoader.getResourceAsStream(EXTERNAL_BINDINGS);
+        Source xjbSource = new StreamSource(xjbStream);
+        // Set SYSTEM_ID to be the same as the XSD
+        xjbSource.setSystemId(xsdSource.getSystemId());
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdSource);
+        properties.put(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY, xjbSource);
+
+        // Have to include a path to a jaxb.properties, so just reusing a context path that does contain one.
+        DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
+        DynamicEntity emp = jaxbContext.newDynamicEntity(ALT_EMPLOYEE_CLASS_NAME);
+        assertNotNull(emp);
+
+        try {
+            // These sets will fail if the external bindings file was not read properly
+            emp.set("empId", "747");
+        } catch (DynamicException e) {
+            fail("External bindings file not applied.");
+        }
+    }
+
+
+    public void testNewInstanceXSDExternalBindings() throws Exception {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setNamespaceAware(true);
+
+        InputStream xsdStream = classLoader.getSystemResourceAsStream(EXAMPLE_XSD);
+        Source xsdSource = new StreamSource(xsdStream);
+        // Set SYSTEM_ID to the filename part of the fully qualified EXAMPLE_XSD
+        xsdSource.setSystemId(EXAMPLE_XSD.substring(EXAMPLE_XSD.lastIndexOf('/') + 1));
+
+        InputStream xjbStream = classLoader.getResourceAsStream(EXTERNAL_BINDINGS);
+        Source xjbSource = new StreamSource(xjbStream);
+        // Set SYSTEM_ID to be the same as the XSD
+        xjbSource.setSystemId(xsdSource.getSystemId());
+
+        InputStream xjbStream2 = classLoader.getResourceAsStream(EXTERNAL_BINDINGS_2);
+        Source xjbSource2 = new StreamSource(xjbStream2);
+        // Set SYSTEM_ID to be the same as the XSD
+        xjbSource2.setSystemId(xsdSource.getSystemId());
+
+        ArrayList<Source> extBindings = new ArrayList<Source>(3);
+        extBindings.add(xjbSource);
+        extBindings.add(xjbSource2);
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdSource);
+        properties.put(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY, extBindings);
+
+        // Have to include a path to a jaxb.properties, so just reusing a context path that does contain one.
+        DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
+        DynamicEntity emp = jaxbContext.newDynamicEntity(ALT_EMPLOYEE_CLASS_NAME);
+        assertNotNull(emp);
+
+        try {
+            // These sets will fail if the external bindings file was not read properly
+            emp.set("empId", "747");
+            emp.set("lastNameCommaFirstName", "Neilson, Leslie");
+        } catch (DynamicException e) {
+            fail("External bindings file not applied.");
+        }
     }
 
     // ========================================================================
@@ -332,5 +382,30 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         assertNotNull("Did not catch exception as expected.", caughtException);
         assertEquals("Incorrect exception thrown.", 50055, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
+
+    private static final String SESSION_NAMES =
+        "org.eclipse.persistence.testing.jaxb.dynamic:org.eclipse.persistence.testing.jaxb.dynamic.secondproject";
+
+    private static final String EXAMPLE_XSD =
+        "org/eclipse/persistence/testing/jaxb/dynamic/contextcreation.xsd";
+    private static final String INVALID_XSD =
+        "org/eclipse/persistence/testing/jaxb/dynamic/invalid.xsd";
+    private static final String EXAMPLE_OXM =
+        "org/eclipse/persistence/testing/jaxb/dynamic/contextcreation-oxm.xml";
+    private static final String EXTERNAL_BINDINGS =
+        "org/eclipse/persistence/testing/jaxb/dynamic/bindings.xjb";
+    private static final String EXTERNAL_BINDINGS_2 =
+        "org/eclipse/persistence/testing/jaxb/dynamic/bindings2.xjb";
+
+    private static final String EMPLOYEE_CLASS_NAME =
+        "mynamespace.Employee";
+    private static final String ALT_EMPLOYEE_CLASS_NAME =
+        "ext.bindings.Employee";
+    private static final String ALT_PHONE_CLASS_NAME =
+        "ext.bindings.Phone";
+    private static final String PERSON_CLASS_NAME =
+        "org.eclipse.persistence.testing.jaxb.dynamic.Person";
+    private static final String DOCWRAPPER_CLASS_NAME =
+        "org.persistence.testing.jaxb.dynamic.xxx.DocWrapper";
 
 }

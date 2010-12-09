@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.dynamic;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -21,18 +19,15 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.dynamic.metadata.Metadata;
 import org.eclipse.persistence.jaxb.dynamic.metadata.OXMMetadata;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 
 /**
  * <p>
@@ -79,7 +74,6 @@ public class DynamicJAXBContextFactory {
     public static final String XML_SCHEMA_KEY = "xml-schema";
     public static final String ENTITY_RESOLVER_KEY = "entity-resolver";
     public static final String EXTERNAL_BINDINGS_KEY = "external-bindings";
-    public static final String SYSTEM_ID_KEY = "system-id";
     public static final String SCHEMAMETADATA_CLASS_NAME = "org.eclipse.persistence.jaxb.dynamic.metadata.SchemaMetadata";
 
     /**
@@ -293,12 +287,12 @@ public class DynamicJAXBContextFactory {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullInputStream());
         }
         try {
-            InputSource schemaInputSource = new InputSource(schemaStream);
+            Source schemaSource = new StreamSource(schemaStream);
             DynamicJAXBContext dContext = new DynamicJAXBContext(classLoader);
             Class<?> schemaMetadataClass = PrivilegedAccessHelper.getClassForName(SCHEMAMETADATA_CLASS_NAME);
-            Class<?>[] constructorClassArgs = {DynamicClassLoader.class, Map.class, InputSource.class, EntityResolver.class};
+            Class<?>[] constructorClassArgs = {DynamicClassLoader.class, Map.class, Source.class, EntityResolver.class};
             Constructor<?> constructor = PrivilegedAccessHelper.getConstructorFor(schemaMetadataClass, constructorClassArgs, true);
-            Object[] contructorObjectArgs = {dContext.getDynamicClassLoader(), properties, schemaInputSource, resolver};
+            Object[] contructorObjectArgs = {dContext.getDynamicClassLoader(), properties, schemaSource, resolver};
             Metadata schemaMetadata = (Metadata) PrivilegedAccessHelper.invokeConstructor(constructor, contructorObjectArgs);
             dContext.initializeFromMetadata(schemaMetadata, dContext.getDynamicClassLoader(), properties);
             return dContext;
@@ -342,19 +336,11 @@ public class DynamicJAXBContextFactory {
         }
 
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            StreamResult result = new StreamResult(baos);
-            XMLTransformer t = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
-            t.transform(schemaSource, result);
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            InputSource schemaInputSource = new InputSource(bais);
-            schemaInputSource.setSystemId(schemaSource.getSystemId());
-
             DynamicJAXBContext dContext = new DynamicJAXBContext(classLoader);
             Class<?> schemaMetadataClass = PrivilegedAccessHelper.getClassForName(SCHEMAMETADATA_CLASS_NAME);
-            Class<?>[] constructorClassArgs = {DynamicClassLoader.class, Map.class, InputSource.class, EntityResolver.class};
+            Class<?>[] constructorClassArgs = {DynamicClassLoader.class, Map.class, Source.class, EntityResolver.class};
             Constructor<?> constructor = PrivilegedAccessHelper.getConstructorFor(schemaMetadataClass, constructorClassArgs, true);
-            Object[] contructorObjectArgs = {dContext.getDynamicClassLoader(), properties, schemaInputSource, resolver};
+            Object[] contructorObjectArgs = {dContext.getDynamicClassLoader(), properties, schemaSource, resolver};
             Metadata schemaMetadata = (Metadata) PrivilegedAccessHelper.invokeConstructor(constructor, contructorObjectArgs);
             dContext.initializeFromMetadata(schemaMetadata, dContext.getDynamicClassLoader(), properties);
             return dContext;

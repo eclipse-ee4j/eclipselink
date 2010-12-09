@@ -12,21 +12,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.dynamic.metadata;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelInputImpl;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,11 +55,14 @@ import com.sun.tools.xjc.api.XJC;
 
 public class SchemaMetadata extends Metadata {
 
-    private static final String SYSTEM_ID = "";
+    private static final String DEFAULT_SYSTEM_ID = "sysid";
 
     private SchemaCompiler schemaCompiler;
     private Field JDEFINEDCLASS_ENUMCONSTANTS = null;
 
+    private List<InputSource> externalBindings;
+
+    @SuppressWarnings("unchecked")
     public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, Object> properties) throws JAXBException {
         super(dynamicClassLoader, properties);
         try {
@@ -59,20 +70,46 @@ public class SchemaMetadata extends Metadata {
         } catch (Exception e) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
+
+        if (properties != null) {
+            Object propValue = properties.get(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY);
+            if (propValue != null) {
+                externalBindings = new ArrayList<InputSource>();
+                if (propValue instanceof List<?>) {
+                    List<Source> xjbSources = (List<Source>) propValue;
+                    for (Source source : xjbSources) {
+                        externalBindings.add(createInputSourceFromSource(source));
+                    }
+                } else {
+                    Source xjbSource = (Source) propValue;
+                    InputSource xjbInputSource = createInputSourceFromSource(xjbSource);
+                    externalBindings.add(xjbInputSource);
+                }
+            }
+        }
     }
 
-    public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, Object> properties, InputSource metadataSource, EntityResolver resolver) throws JAXBException {
+    public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, Object> properties, Source metadataSource, EntityResolver resolver) throws JAXBException {
         this(dynamicClassLoader, properties);
         try {
-            if (metadataSource.getSystemId() == null) {
-                metadataSource.setSystemId(SYSTEM_ID);
+            InputSource schemaInputSource = createInputSourceFromSource(metadataSource);
+
+            if (schemaInputSource.getSystemId() == null) {
+                schemaInputSource.setSystemId(DEFAULT_SYSTEM_ID);
             }
 
             // Use XJC API to parse the schema and generate its JCodeModel
             schemaCompiler = XJC.createSchemaCompiler();
             schemaCompiler.setEntityResolver(resolver);
             schemaCompiler.setErrorListener(new XJCErrorListener());
-            schemaCompiler.parseSchema(metadataSource);
+
+            if (externalBindings != null) {
+                for (InputSource xjbSource : externalBindings) {
+                    schemaCompiler.parseSchema(xjbSource);
+                }
+            }
+
+            schemaCompiler.parseSchema(schemaInputSource);
         } catch (Exception e) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
@@ -94,7 +131,7 @@ public class SchemaMetadata extends Metadata {
         schemaCompiler = XJC.createSchemaCompiler();
         schemaCompiler.setEntityResolver(resolver);
         schemaCompiler.setErrorListener(new XJCErrorListener());
-        schemaCompiler.parseSchema(SYSTEM_ID, element);
+        schemaCompiler.parseSchema(DEFAULT_SYSTEM_ID, element);
     }
 
     public JavaModelInput getJavaModelInput() throws JAXBException {
@@ -178,6 +215,18 @@ public class SchemaMetadata extends Metadata {
         } catch (Exception e) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
+    }
+
+    private static InputSource createInputSourceFromSource(Source aSource) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        StreamResult result = new StreamResult(baos);
+        XMLTransformer t = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+        t.transform(aSource, result);
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        InputSource inputSource = new InputSource(bais);
+        inputSource.setSystemId(aSource.getSystemId());
+
+        return inputSource;
     }
 
     private class XJCErrorListener implements ErrorListener {
