@@ -164,6 +164,9 @@ public class DOMReader extends XMLReaderAdapter {
                     contentHandler.startPrefixMapping(XMLConstants.EMPTY_STRING, next.getValue());
                 }
             }
+            if(next.getNamespaceURI() != null && next.getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL) && next.getLocalName().equals("type")) {
+                handleXsiTypeAttribute(next);
+            }
             attributes.addAttribute(next);
         }
         return attributes;
@@ -212,6 +215,10 @@ public class DOMReader extends XMLReaderAdapter {
      */
     protected void handleXMLNSPrefixedAttribute(Element elem, Attr attr) {
         // DO NOTHING
+    }
+    
+    protected void handleXsiTypeAttribute(Attr attr) throws SAXException {
+        
     }
 
     /**

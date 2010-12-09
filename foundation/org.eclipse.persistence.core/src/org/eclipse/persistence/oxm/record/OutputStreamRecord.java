@@ -318,8 +318,8 @@ public class OutputStreamRecord extends MarshalRecord {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
             String resolverPfx = null;
-            if (namespaceResolver != null) {
-                resolverPfx = namespaceResolver.resolveNamespaceURI(attr.getNamespaceURI());
+            if (getNamespaceResolver() != null) {
+                resolverPfx = this.getNamespaceResolver().resolveNamespaceURI(attr.getNamespaceURI());
             }
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
@@ -330,6 +330,7 @@ public class OutputStreamRecord extends MarshalRecord {
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {
                     attribute(XMLConstants.XMLNS_URL, XMLConstants.EMPTY_STRING,XMLConstants.XMLNS + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
+                    this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
         } else if (node.getNodeType() == Node.TEXT_NODE) {

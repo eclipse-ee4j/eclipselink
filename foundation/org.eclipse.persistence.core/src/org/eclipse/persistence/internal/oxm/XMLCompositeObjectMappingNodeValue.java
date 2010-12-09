@@ -41,7 +41,9 @@ import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.Session;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
@@ -85,6 +87,19 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if(descriptor != null){
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
             return objectBuilder.marshalAttributes(marshalRecord, objectValue, session);
+        } else {
+            if(this.getMapping().getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT || this.getMapping().getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) {
+                if(objectValue instanceof Node) {
+                    Node rootNode = (Node)objectValue;
+                    NamedNodeMap attributes = rootNode.getAttributes();
+                    for(int i = 0; i < attributes.getLength(); i++) {
+                        Attr next = (Attr)attributes.item(i);
+                        if(!(XMLConstants.XMLNS_URL.equals(next.getNamespaceURI()))) {
+                            marshalRecord.node(next, namespaceResolver);
+                        }
+                    }
+                }
+            }
         }
         return false;
     }
@@ -127,7 +142,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && objectValue instanceof Node) {
             if(isSelfFragment){
                 NodeList children = ((org.w3c.dom.Element) objectValue).getChildNodes();
-                for(int i =0, size=children.getLength(); i<size ; i++){
+                for(int i =0, size=children.getLength(); i<size ; i++) {
                     Node next = children.item(i);
                     if(next.getNodeType() == Node.ELEMENT_NODE){
                         marshalRecord.node(next, marshalRecord.getNamespaceResolver());

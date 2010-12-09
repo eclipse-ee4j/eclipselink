@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -195,4 +196,20 @@ public class XMLFragmentReader extends DOMReader {
     protected void processParentNamespaces(Element element) throws SAXException {
         // DO NOTHING FOR FRAGMENTS
     }
+    
+    protected void handleXsiTypeAttribute(Attr attr) throws SAXException {
+        String value = attr.getValue();
+        int colon = value.indexOf(':');
+        if(colon != -1) {
+            String prefix = value.substring(0, colon);
+            String uri = this.resolveNamespacePrefix(prefix);
+            if(uri == null) {
+                uri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(attr.getOwnerElement(), prefix);
+                if(uri != null) {
+                    this.contentHandler.startPrefixMapping(prefix, uri);
+                }
+                
+            }
+        }
+    }    
 }
