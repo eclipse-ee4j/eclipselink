@@ -67,7 +67,7 @@
             </path>
         </pathconvert>
         <property file="${user.home}/build.properties"/>
-        <!-- feature.2.base.dir needs to be explicit (not relative) for antcall usage            -->   
+        <!-- feature.2.base.dir needs to be explicit (not relative) for antcall usage            -->
         <!-- (I think the selectbundle call reverts to calling dir - despite the antcall "dir=") -->
         <property name="feature.2.base.dir"           value="${feature.build.location}/.."/>
         <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
@@ -174,7 +174,7 @@
         <echo message="site.dir.url          ='${site.dir.url}'"/>
         <echo message="site.url              ='${site.url}'"/>
         <echo message=" ---"/>
-        
+
         <!-- Output definitions -->
         <property name="p2.repos.url"             value="file:/${p2.repos.dir}"/> <!-- DO NOT Override this one -->
         <property name="p2.mirror.url"            value="file:/${p2.mirror.dir}"/> <!-- DO NOT Override this one -->
@@ -250,7 +250,7 @@
             </fileset>
         </jar>
     </target>
-    
+
     <target name="resolve-feature-dependencies" depends="init">
         <selectbundle basename="${sdo.prefix}" directory="${feature.2.sdo.plugins.dir}"
                      criterion="${sdo.criteria}" property="sdo.version" versiononly="true"
@@ -274,21 +274,21 @@
                      criterion="${xml.stream.criteria}" property="xml.stream.version" versiononly="true"
         />
         <echo message="Searching ${feature.2.sdo.plugins.dir}..."/>
-        <say  message="   sdo.version         = '${sdo.version}'"         if="sdo.version"/>        
+        <say  message="   sdo.version         = '${sdo.version}'"         if="sdo.version"/>
         <say  message="   '${sdo.prefix}_${sdo.criteria}.jar' not found! Generated features will be invalid."                 unless="sdo.version"/>
         <echo message="Searching ${feature.2.jpa.plugins.dir}..."/>
         <say  message="   persistence.version = '${persistence.version}'" if="persistence.version"/>
         <say  message="   '${persistence.prefix}_${persistence.criteria}.jar' not found! Generated features will be invalid." unless="persistence.version"/>
         <echo message="Searching ${feature.2.common.plugins.dir}..."/>
-        <say  message="   activation.version  = '${activation.version}'"  if="activation.version"/> 
+        <say  message="   activation.version  = '${activation.version}'"  if="activation.version"/>
         <say  message="   '${activation.prefix}_${activation.criteria}.jar' not found! Generated features will be invalid."   unless="activation.version"/>
-        <say  message="   mail.version        = '${mail.version}'"        if="mail.version"/>       
+        <say  message="   mail.version        = '${mail.version}'"        if="mail.version"/>
         <say  message="   '${mail.prefix}_${mail.criteria}.jar' not found! Generated features will be invalid."               unless="mail.version"/>
-        <say  message="   servlet.version     = '${servlet.version}'"     if="servlet.version"/>    
+        <say  message="   servlet.version     = '${servlet.version}'"     if="servlet.version"/>
         <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."         unless="servlet.version"/>
-        <say  message="   xml.bind.version    = '${xml.bind.version}'"    if="xml.bind.version"/>   
+        <say  message="   xml.bind.version    = '${xml.bind.version}'"    if="xml.bind.version"/>
         <say  message="   '${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="xml.bind.version"/>
-        <say  message="   xml.stream.version  = '${xml.stream.version}'"  if="xml.stream.version"/> 
+        <say  message="   xml.stream.version  = '${xml.stream.version}'"  if="xml.stream.version"/>
         <say  message="   '${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="xml.stream.version"/>
     </target>
 
@@ -435,7 +435,7 @@
         <!-- Remove jars we are not including in features at this time (needs to be separate because exclude in unzip does not seem to work) -->
         <delete>
             <fileset
-                dir="${p2.bundle.dir}" 
+                dir="${p2.bundle.dir}"
                 includes="
                           *jms*.jar,
                           com.sun*.jar,
