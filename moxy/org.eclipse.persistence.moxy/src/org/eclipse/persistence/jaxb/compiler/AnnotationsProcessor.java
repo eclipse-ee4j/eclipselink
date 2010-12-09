@@ -1169,13 +1169,11 @@ public class AnnotationsProcessor {
 
         if (factoryClassName.equals("javax.xml.bind.annotation.XmlType.DEFAULT")) {
             if (factoryMethodName != null && !factoryMethodName.equals(EMPTY_STRING)) {
-                // factory method applies to the current class verify method
-                // exists
+                // factory method applies to the current class - verify method exists
                 JavaMethod method = javaClass.getDeclaredMethod(factoryMethodName, new JavaClass[] {});
                 if (method == null) {
                     throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodNotDeclared(factoryMethodName, javaClass.getName());
                 }
-                info.setObjectFactoryClassName(javaClass.getRawName());
                 info.setFactoryMethodName(factoryMethodName);
             }
         } else {
