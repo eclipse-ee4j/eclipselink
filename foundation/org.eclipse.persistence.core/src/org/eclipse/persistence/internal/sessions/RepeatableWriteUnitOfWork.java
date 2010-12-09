@@ -21,7 +21,6 @@ import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.exceptions.DatabaseException;

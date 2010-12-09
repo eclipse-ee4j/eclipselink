@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.identitymaps;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 

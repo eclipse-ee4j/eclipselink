@@ -23,7 +23,6 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 
 import org.eclipse.persistence.annotations.OrderCorrectionType;
-import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.internal.descriptors.changetracking.*;
@@ -38,7 +37,6 @@ import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;

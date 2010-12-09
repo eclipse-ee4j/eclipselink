@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**

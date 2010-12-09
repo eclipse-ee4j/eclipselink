@@ -38,7 +38,6 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;

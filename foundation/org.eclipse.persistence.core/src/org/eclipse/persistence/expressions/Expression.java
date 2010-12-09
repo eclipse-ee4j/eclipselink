@@ -19,7 +19,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.jpa.parsing.SubqueryNode;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;

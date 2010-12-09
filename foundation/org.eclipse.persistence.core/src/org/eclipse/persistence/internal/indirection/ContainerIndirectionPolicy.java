@@ -28,7 +28,6 @@ import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
 /**

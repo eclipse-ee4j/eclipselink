@@ -21,7 +21,6 @@ import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
-import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;

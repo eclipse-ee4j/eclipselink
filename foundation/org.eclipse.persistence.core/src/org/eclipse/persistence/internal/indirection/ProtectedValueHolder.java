@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.indirection;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;

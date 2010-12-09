@@ -7,16 +7,11 @@
 
     import static org.eclipse.persistence.internal.jpa.parsing.NodeFactory.*;
     import org.eclipse.persistence.internal.jpa.parsing.jpql.InvalidIdentifierException;
-    import org.eclipse.persistence.exceptions.JPQLException;
 
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
 
 import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 /*******************************************************************************
  * Copyright (c) 1998, 2008 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 

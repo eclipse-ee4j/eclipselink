@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;

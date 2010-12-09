@@ -18,7 +18,6 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.internal.descriptors.changetracking.AggregateAttributeChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
-import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;

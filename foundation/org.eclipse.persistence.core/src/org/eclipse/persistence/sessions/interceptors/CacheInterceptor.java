@@ -16,7 +16,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;

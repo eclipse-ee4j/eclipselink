@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;

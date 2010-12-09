@@ -23,7 +23,6 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;

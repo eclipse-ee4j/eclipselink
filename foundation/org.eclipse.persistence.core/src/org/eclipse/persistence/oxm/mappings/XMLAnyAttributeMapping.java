@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;

@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.config;
 
-import org.eclipse.persistence.annotations.CacheKeyType;
-import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**

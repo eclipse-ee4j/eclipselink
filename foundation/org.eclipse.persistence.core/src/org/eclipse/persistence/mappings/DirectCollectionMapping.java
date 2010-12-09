@@ -39,7 +39,6 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.converters.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;

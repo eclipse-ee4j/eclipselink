@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
-import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;

@@ -17,7 +17,6 @@ import java.sql.*;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.remote.*;

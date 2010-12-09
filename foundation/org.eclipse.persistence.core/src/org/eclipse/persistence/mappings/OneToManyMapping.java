@@ -25,7 +25,6 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 
 /**

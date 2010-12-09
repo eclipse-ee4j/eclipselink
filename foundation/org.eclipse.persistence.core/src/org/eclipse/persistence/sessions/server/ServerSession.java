@@ -17,7 +17,6 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sequencing.SequencingServer;
