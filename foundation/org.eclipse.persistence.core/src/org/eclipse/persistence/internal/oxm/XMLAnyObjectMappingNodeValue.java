@@ -134,9 +134,13 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 } else {
                     rootFragment = new XPathFragment(defaultRootElementString);
                     //resolve URI
-                    if ((rootFragment.getNamespaceURI() == null) && (rootFragment.getPrefix() != null)) {
-                        String uri = descriptor.getNonNullNamespaceResolver().resolveNamespacePrefix(rootFragment.getPrefix());
-                        rootFragment.setNamespaceURI(uri);
+                    if (rootFragment.getNamespaceURI() == null) {
+                        if(rootFragment.getPrefix() != null) {
+                            String uri = descriptor.getNonNullNamespaceResolver().resolveNamespacePrefix(rootFragment.getPrefix());
+                            rootFragment.setNamespaceURI(uri);
+                        } else {
+                            rootFragment.setNamespaceURI(descriptor.getNonNullNamespaceResolver().getDefaultNamespaceURI());
+                        }
                     }
                 }
 

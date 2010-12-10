@@ -531,14 +531,14 @@ public class ValidatingMarshalRecord extends MarshalRecord {
         }
 
         public void error(SAXParseException exception) throws SAXException {
-            if(null == exception) {
+            if(null == errorHandler) {
                 throw exception;
             }
             errorHandler.error(marshalSAXParseException(exception));
         }
 
         public void fatalError(SAXParseException exception) throws SAXException {
-            if(null == exception) {
+            if(null == errorHandler) {
                 throw exception;
             }
             errorHandler.fatalError(marshalSAXParseException(exception));
