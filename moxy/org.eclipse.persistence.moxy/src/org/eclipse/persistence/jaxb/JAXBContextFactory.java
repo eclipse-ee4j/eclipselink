@@ -57,10 +57,9 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 /**
- * INTERNAL:
  * <p>
  * <b>Purpose:</b>An EclipseLink specific JAXBContextFactory. This class can be specified in a
- * jaxb.properties file to make use of TopLink's JAXB 2.1 implementation.
+ * jaxb.properties file to make use of EclipseLink's JAXB 2.1 implementation.
  * <p>
  * <b>Responsibilities:</b>
  * <ul>
@@ -75,7 +74,6 @@ import org.xml.sax.InputSource;
  * (java-to-schema).
  *
  * @author mmacivor
- * @since Oracle TopLink 11.1.1.0.0
  * @see javax.xml.bind.JAXBContext
  * @see org.eclipse.persistence.jaxb.JAXBContext
  * @see org.eclipse.persistence.jaxb.compiler.Generator
