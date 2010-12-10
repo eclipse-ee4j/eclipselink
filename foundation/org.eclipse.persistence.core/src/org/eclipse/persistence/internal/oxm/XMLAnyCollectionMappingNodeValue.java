@@ -47,7 +47,6 @@ import org.xml.sax.SAXException;
  */
 public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNodeValue implements ContainerValue {
     private XMLAnyCollectionMapping xmlAnyCollectionMapping;
-    private XMLDescriptor workingDescriptor;
 
     public XMLAnyCollectionMappingNodeValue(XMLAnyCollectionMapping xmlAnyCollectionMapping) {
         super();
@@ -94,7 +93,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
 
             //used to only check xsitype when usesXMLRoot was true???
-            workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyCollectionMapping, xmlAnyCollectionMapping.getKeepAsElementPolicy());
+            XMLDescriptor workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyCollectionMapping, xmlAnyCollectionMapping.getKeepAsElementPolicy());
             if (workingDescriptor == null) {         
                 QName qname = new QName(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName());
                 workingDescriptor = xmlContext.getDescriptor(qname);
@@ -130,18 +129,18 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         Object collection = unmarshalRecord.getContainerInstance(this);
-        if (null != unmarshalRecord.getChildRecord()) {
+        UnmarshalRecord childRecord = unmarshalRecord.getChildRecord();
+        if (null != childRecord) {
             // OBJECT VALUE
             if (!xmlAnyCollectionMapping.usesXMLRoot()) {
-                Object objectValue = unmarshalRecord.getChildRecord().getCurrentObject();
+                Object objectValue = childRecord.getCurrentObject();
                 if(xmlAnyCollectionMapping.getConverter() != null) {
                     objectValue = xmlAnyCollectionMapping.getConverter().convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
                 }
                 unmarshalRecord.addAttributeValue(this, objectValue);
-            }
-            if (xmlAnyCollectionMapping.usesXMLRoot()) {
-                Object childObject = unmarshalRecord.getChildRecord().getCurrentObject();
-
+            } else {
+                Object childObject = childRecord.getCurrentObject();
+                XMLDescriptor workingDescriptor = childRecord.getDescriptor();
                 if (workingDescriptor != null) {
                     String prefix = xPathFragment.getPrefix();
                     if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
@@ -155,7 +154,6 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 }
             }
             unmarshalRecord.setChildRecord(null);
-            workingDescriptor = null;
         } else {
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
 
