@@ -243,6 +243,7 @@ public class FeatureTestModel extends TestModel {
         suite.addTest(new GermanUmlautsWriteTest());
         suite.addTest(new ReconnectFlushStatementCacheTest());
         suite.addTest(new TransactionIsolationTest());
+        suite.addTest(new SessionIsConnectedFlagTest());
 
         return suite;
 
