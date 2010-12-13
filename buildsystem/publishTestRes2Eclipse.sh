@@ -117,7 +117,10 @@ publishResults() {
         HOSTPATH=${PUBLISH_SERVER}:${PUBLISH_HOME}/${VERSION}/${BLDDATE}/${HOSTNAME}
         SCP_OPTIONS="-qpr"
 
-        scp ${SCP_OPTIONS} ${RESULTPATH} ${HOSTPATH}
+        echo "Using secure copy to publish files:"
+        echo "   From: ${RESULTPATH}"
+        echo "   To:   ${HOSTPATH}"
+        #scp ${SCP_OPTIONS} ${RESULTPATH} ${HOSTPATH}
 }
 
 unset postProcess
