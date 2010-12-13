@@ -289,7 +289,15 @@ for version in `ls -dr [0-9]*` ; do
 
             #   Add "Host" entry
             echo "            <td ${borderstyle} align=\"middle\">" >> $tmp/index.xml
-            echo "              <a href=\"http://wiki.eclipse.org/EclipseLink/Build/NightlyTestEnvAndResults#${hostdir}\"> ${hostdir} </a>" >> $tmp/index.xml
+            if [ -f "${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/TestConfiguration.html" ] ; then
+                echo "              <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${hostdir}/TestConfiguration.html\"> ${hostdir} </a>" >> $tmp/index.xml
+            else
+                if [ "${hostdir}" = "Eclipse" ] ; then
+                    echo "              <a href=\"${BaseDisplayURL}/${version}/TestConfiguration.html\"> ${hostdir} </a>" >> $tmp/index.xml
+                else
+                    echo "              ${hostdir}" >> $tmp/index.xml
+                fi
+            fi
             echo "            </td>" >> $tmp/index.xml
             #   Generate the image links
             genResultEntry eclipselink-core-[l,s]rg-[0-9]
