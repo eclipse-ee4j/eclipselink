@@ -125,17 +125,14 @@ validateParameters() {
 
 unset publishResults
 publishResults() {
-        RESULTPATH=${RESULTROOT}/${VERSION}/${BLDDATE}/${HOSTNAME}
-        HOSTPATH=${PUBLISH_SERVER}:${PUBLISH_HOME}/${VERSION}/${BLDDATE}/${HOSTNAME}
-        SCP_OPTIONS="-qpr"
-
-        echo "Creating Hostpath.."
-        echo "   'mkdir ${HOSTPATH}'"
+        SOURCEPATH=${RESULTROOT}/${VERSION}/${BLDDATE}/${HOSTNAME}
+        DESTPATH=${PUBLISH_SERVER}:${PUBLISH_HOME}/${VERSION}/${BLDDATE}/.
+        SCP_OPTIONS="-Bpqr"
 
         echo "Using secure copy to publish files:"
-        echo "   From: ${RESULTPATH}"
-        echo "   To:   ${HOSTPATH}"
-        #scp ${SCP_OPTIONS} ${RESULTPATH} ${HOSTPATH}
+        echo "   From: ${SOURCEPATH}"
+        echo "   To:   ${DESTPATH}"
+        scp ${SCP_OPTIONS} ${SOURCEPATH} ${DESTPATH}
 }
 
 unset postProcess
