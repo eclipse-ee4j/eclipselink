@@ -964,7 +964,7 @@ public abstract class MetadataAccessor extends ORMetadata {
             processPartitioned((String)annotation.getAttribute("value"));
         }
         if (found && !processed) {
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_ANNOTATION, getJavaClass(), getAccessibleObject());
+            getLogger().logWarningMessage(MetadataLogger.WARNING_PARTIONED_NOT_SET, getJavaClass(), getAccessibleObject());
         }
     }
     
