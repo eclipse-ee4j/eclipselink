@@ -69,6 +69,7 @@ Usage() {
     echo "                eclipselink-dbws-lrg-<release version>.html"
     echo "                eclipselink-dbws-util-lrg-<release version>.html"
     echo ""
+    exit
 }
 
 unset parseResultBuild
@@ -80,34 +81,45 @@ parseResultBuild() {
     VERSION=`echo ${build_version} | cut -d'.' -f1-3`
     QUALIFIER=`echo ${build_version} | cut -d'.' -f5,6 | cut -d'.' -f4`
     BLDDATE=`echo ${QUALIFIER} | cut -s -d'-' -f1 | cut -d'v' -f2`
+
     echo "VERSION='${VERSION}' QUALIFIER='${QUALIFIER}' BLDDATE='${BLDDATE}'"
 }
 
 unset validateParameters
 validateParameters() {
+    error=false
     if [ ! -d ${RESULTROOT} ] ; then
         echo "Error: Publish location not found!"
         echo "       RESULTROOT: '${RESULTROOT}' doesn't exist!"
+        exit
     fi
     if [ ! -d ${RESULTROOT}/${VERSION} ] ; then
         echo "Error: Publish location not found!"
         echo "       VERSION: '${RESULTROOT}/${VERSION}' doesn't exist!"
+        exit
     fi
     if [ ! -d ${RESULTROOT}/${VERSION}/${QUALIFIER} ] ; then
         echo "Error: Publish location not found!"
         echo "       QUALIFIER: '${RESULTROOT}/${VERSION}/${QUALIFIER}' doesn't exist!"
+        exit
     fi
     if [ ! -d ${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME} ] ; then
         echo "Error: Publish location not found!"
         echo "       HOSTNAME: '${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}' doesn't exist!"
+        exit
     fi
     if [ ! -f ${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}/TestConfiguration.html ] ; then
         echo "Error: Test Configuration description not found!"
         echo "       '${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}/TestConfiguration.html' doesn't exist!"
+        error=true
     fi
     if [ ! -f ${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}/ResultsSummary.dat ] ; then
         echo "Error: ResultSummary datafile not found!"
         echo "       '${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}/ResultsSummary.dat' doesn't exist!"
+        error=true
+    fi
+    if [ "$error" = "true" ] ; then
+        exit
     fi
 }
 
@@ -117,6 +129,9 @@ publishResults() {
         HOSTPATH=${PUBLISH_SERVER}:${PUBLISH_HOME}/${VERSION}/${BLDDATE}/${HOSTNAME}
         SCP_OPTIONS="-qpr"
 
+        echo "Creating Hostpath.."
+        echo "   'mkdir ${HOSTPATH}'"
+        
         echo "Using secure copy to publish files:"
         echo "   From: ${RESULTPATH}"
         echo "   To:   ${HOSTPATH}"
