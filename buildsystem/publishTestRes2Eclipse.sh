@@ -151,7 +151,7 @@ postProcess() {
 #   Main Begins
 #
 #==========================
-if [ "$#" -le 3 ] ; then
+if [ "$#" -lt 3 ] ; then
     echo "Error: Incorrect number of arguments!"
     Usage
 fi
