@@ -79,7 +79,7 @@ parseResultBuild() {
 
     ## Parse for VERSION, and QUALIFIER
     VERSION=`echo ${build_version} | cut -d'.' -f1-3`
-    QUALIFIER=`echo ${build_version} | cut -d'.' -f5,6 | cut -d'.' -f4`
+    QUALIFIER=`echo ${build_version} | cut -d'.' -f4`
     BLDDATE=`echo ${QUALIFIER} | cut -s -d'-' -f1 | cut -d'v' -f2`
 
     echo "VERSION='${VERSION}' QUALIFIER='${QUALIFIER}' BLDDATE='${BLDDATE}'"
