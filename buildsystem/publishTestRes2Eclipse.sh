@@ -82,7 +82,7 @@ parseResultBuild() {
     QUALIFIER=`echo ${build_version} | cut -d'.' -f4`
     BLDDATE=`echo ${QUALIFIER} | cut -s -d'-' -f1 | cut -d'v' -f2`
 
-    echo "VERSION='${VERSION}' QUALIFIER='${QUALIFIER}' BLDDATE='${BLDDATE}'"
+    #echo "VERSION='${VERSION}' QUALIFIER='${QUALIFIER}' BLDDATE='${BLDDATE}'"
 }
 
 unset validateParameters
@@ -129,6 +129,7 @@ publishResults() {
         DESTPATH=${PUBLISH_SERVER}:${PUBLISH_HOME}/${VERSION}/${BLDDATE}/.
         SCP_OPTIONS="-Bpqr"
 
+        echo ""
         echo "Using secure copy to publish files:"
         echo "   From: ${SOURCEPATH}"
         echo "   To:   ${DESTPATH}"
