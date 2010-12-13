@@ -103,19 +103,20 @@ validateParameters() {
         echo "       QUALIFIER: '${RESULTROOT}/${VERSION}/${QUALIFIER}' doesn't exist!"
         exit
     fi
-    if [ ! -d ${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME} ] ; then
+    SOURCEPATH=${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}
+    if [ ! -d ${SOURCEPATH} ] ; then
         echo "Error: Publish location not found!"
-        echo "       HOSTNAME: '${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}' doesn't exist!"
+        echo "       HOSTNAME: '${SOURCEPATH}' doesn't exist!"
         exit
     fi
-    if [ ! -f ${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}/TestConfiguration.html ] ; then
+    if [ ! -f ${SOURCEPATH}/TestConfiguration.html ] ; then
         echo "Error: Test Configuration description not found!"
-        echo "       '${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}/TestConfiguration.html' doesn't exist!"
+        echo "       '${SOURCEPATH}/TestConfiguration.html' doesn't exist!"
         error=true
     fi
-    if [ ! -f ${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}/ResultSummary.dat ] ; then
+    if [ ! -f ${SOURCEPATH}/ResultSummary.dat ] ; then
         echo "Error: ResultSummary datafile not found!"
-        echo "       '${RESULTROOT}/${VERSION}/${QUALIFIER}/${HOSTNAME}/ResultSummary.dat' doesn't exist!"
+        echo "       '${SOURCEPATH}/ResultSummary.dat' doesn't exist!"
         error=true
     fi
     if [ "$error" = "true" ] ; then
@@ -125,7 +126,6 @@ validateParameters() {
 
 unset publishResults
 publishResults() {
-        SOURCEPATH=${RESULTROOT}/${VERSION}/${BLDDATE}/${HOSTNAME}
         DESTPATH=${PUBLISH_SERVER}:${PUBLISH_HOME}/${VERSION}/${BLDDATE}/.
         SCP_OPTIONS="-Bpqr"
 
