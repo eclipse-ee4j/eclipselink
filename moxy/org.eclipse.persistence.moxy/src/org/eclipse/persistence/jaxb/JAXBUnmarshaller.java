@@ -672,11 +672,18 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     public AttachmentUnmarshaller getAttachmentUnmarshaller() {
+        if(xmlUnmarshaller.getAttachmentUnmarshaller() == null) {
+            return null;
+        }
         return ((AttachmentUnmarshallerAdapter)xmlUnmarshaller.getAttachmentUnmarshaller()).getAttachmentUnmarshaller();
     }
 
     public void setAttachmentUnmarshaller(AttachmentUnmarshaller unmarshaller) {
-        xmlUnmarshaller.setAttachmentUnmarshaller(new AttachmentUnmarshallerAdapter(unmarshaller));
+        if(unmarshaller == null) {
+            xmlUnmarshaller.setAttachmentUnmarshaller(null);
+        } else {
+            xmlUnmarshaller.setAttachmentUnmarshaller(new AttachmentUnmarshallerAdapter(unmarshaller));
+        }
     }
 
     public void setUnmarshalCallbacks(java.util.HashMap callbacks) {

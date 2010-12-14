@@ -184,6 +184,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     public AttachmentMarshaller getAttachmentMarshaller() {
+        if(xmlMarshaller.getAttachmentMarshaller() == null) {
+            return null;
+        }        
         return ((AttachmentMarshallerAdapter)xmlMarshaller.getAttachmentMarshaller()).getAttachmentMarshaller();
     }
 
@@ -481,7 +484,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     public void setAttachmentMarshaller(AttachmentMarshaller attachmentMarshaller) {
-        xmlMarshaller.setAttachmentMarshaller(new AttachmentMarshallerAdapter(attachmentMarshaller));
+        if(attachmentMarshaller == null) {
+            xmlMarshaller.setAttachmentMarshaller(null);
+        } else {
+            xmlMarshaller.setAttachmentMarshaller(new AttachmentMarshallerAdapter(attachmentMarshaller));
+        }
     }
 
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
