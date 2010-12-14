@@ -13,6 +13,20 @@
 #
 #    Author: Eric Gwin (Oracle)
 #
+#------------------------------------------------------------------------------------------------------
+#    Detailed information on setting up ssh using keygen can be found at many sites on the net, I
+#    looked at:
+#       http://sial.org/howto/openssh/publickey-auth/
+#
+#    Using ssh through a firewall will require the use of a proxy. Proxy settings differ with the shell 
+#    and linux distribution you are using, but generally either require the http_proxy or HTTP_PROXY
+#    env variables be setup:
+#        export http_proxy=<proxy server>:<proxy port> 
+#        export HTTP_PROXY=<proxy server>:<proxy port>
+#
+#------------------------------------------------------------------------------------------------------
+
+
 #==========================
 #   Basic Env Setup
 #
@@ -20,9 +34,10 @@
 #Define common variables
 CUR_DIR=`dirname .`
 START_DATE=`date '+%y%m%d-%H%M'`
+SSH_USER=
+SCP_OPTIONS="-Bpqr"
 
 #Directories
-#PUBLISH_HOME=/home/data/httpd/download.eclipse.org/rt/eclipselink/nightly/2.2.0/20101116/Eclipse/
 PUBLISH_HOME=/home/data/httpd/download.eclipse.org/rt/eclipselink/nightly
 PUBLISH_SERVER=build.eclipse.org
 
@@ -32,11 +47,11 @@ PUBLISH_SERVER=build.eclipse.org
 unset Usage
 Usage() {
     echo "ERROR: Invalid usage detected!"
-    echo "USAGE: ./`basename ${0}` RESULTROOT RESULTBUILD HOSTNAME [\> LOGFILE 2\>\&1]"
+    echo "USAGE: ./`basename ${0}` RESULTROOT RESULTBUILD HOSTNAME COMMIT_ID [\> LOGFILE 2\>\&1]"
     echo "Where:       RESULTROOT = Path to local results hierarchy"
     echo "             RESULTBUILD= OSGi-like version of build tested (2.2.0.v20101116-r8433)"
     echo "             HOSTNAME   = host conguration name"
-    echo "             UID        = optional uid of comitter publishing (assumes local user)"
+    echo "             COMMIT_ID  = optional uid of comitter publishing (assumes local user)"
     echo ""
     echo "    Assumptions:"
     echo "       - results will be stored locally in the following hierarchy:"
@@ -126,8 +141,7 @@ validateParameters() {
 
 unset publishResults
 publishResults() {
-        DESTPATH=${PUBLISH_SERVER}:${PUBLISH_HOME}/${VERSION}/${BLDDATE}/.
-        SCP_OPTIONS="-Bpqr"
+        DESTPATH=${SSH_USER}${PUBLISH_SERVER}:${PUBLISH_HOME}/${VERSION}/${BLDDATE}/.
 
         echo ""
         echo "Using secure copy to publish files:"
@@ -157,6 +171,11 @@ fi
 RESULTROOT=$1
 RESULTBUILD=$2
 HOSTNAME=$3
+COMMIT_ID=$4
+
+if [ ! "$COMMIT_ID" = "" ] ; then
+    SSH_USER=${COMMIT_ID}@
+fi
 
 parseResultBuild ${RESULTBUILD}
 validateParameters
