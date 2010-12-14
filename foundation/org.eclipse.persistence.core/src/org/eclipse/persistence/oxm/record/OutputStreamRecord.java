@@ -443,13 +443,16 @@ public class OutputStreamRecord extends MarshalRecord {
                         String prefix = keys.next();
                         outputStreamWrite(SPACE);
                         outputStreamWrite(XMLConstants.XMLNS.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
-                        if(prefix.length() > 0) {
+                        if(null != prefix && prefix.length() > 0) {
                             outputStreamWrite((byte)XMLConstants.COLON);
                             outputStreamWrite(prefix.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
                         }
                         outputStreamWrite((byte)'=');
                         outputStreamWrite((byte)'"');
-                        outputStreamWrite(prefixMappings.get(prefix).getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                        String uri = prefixMappings.get(prefix);
+                        if(null != uri) {
+                            outputStreamWrite(prefixMappings.get(prefix).getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                        }
                         outputStreamWrite(CLOSE_ATTRIBUTE_VALUE);
                     }
                     prefixMappings.clear();

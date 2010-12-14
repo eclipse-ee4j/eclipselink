@@ -408,13 +408,16 @@ public class WriterRecord extends MarshalRecord {
                         String prefix = keys.next();
                         writer.write(' ');
                         writer.write(XMLConstants.XMLNS);
-                        if(prefix.length() > 0) {
+                        if(null != prefix && prefix.length() > 0) {
                             writer.write(XMLConstants.COLON);
                             writer.write(prefix);
                         }
                         writer.write('=');
                         writer.write('"');
-                        writer.write(prefixMappings.get(prefix));
+                        String uri = prefixMappings.get(prefix);
+                        if(null != uri) {
+                            writer.write(prefixMappings.get(prefix));
+                        }
                         writer.write('"');
                     }
                     prefixMappings.clear();

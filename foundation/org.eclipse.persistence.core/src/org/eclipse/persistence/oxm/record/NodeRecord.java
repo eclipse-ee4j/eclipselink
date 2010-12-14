@@ -344,7 +344,17 @@ public class NodeRecord extends MarshalRecord {
             if (!prefixMappings.isEmpty()) {
                 for (Iterator<Map.Entry<String, String>> entries = prefixMappings.entrySet().iterator(); entries.hasNext();) {
                     Map.Entry<String, String> entry = entries.next();
-                    element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + entry.getKey(), entry.getValue());
+                    String namespaceDeclarationPrefix = entry.getKey();
+                    if(null == namespaceDeclarationPrefix || 0 == namespaceDeclarationPrefix.length()) {
+                        String namespaceDeclarationURI = entry.getValue();
+                        if(null == namespaceDeclarationURI) {
+                            element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS , XMLConstants.EMPTY_STRING);
+                        } else {
+                            element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS , namespaceDeclarationURI);
+                        }
+                    } else {
+                        element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + entry.getKey(), entry.getValue());
+                    }
                 }
                 prefixMappings.clear();
             }

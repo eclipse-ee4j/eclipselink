@@ -43,7 +43,9 @@ public class XMLFragmentReader extends DOMReader {
     
     public XMLFragmentReader(NamespaceResolver namespaceResolver) {
         nsresolverList = new ArrayList();
-        nsresolverList.add(namespaceResolver);
+        if(null != namespaceResolver) {
+            nsresolverList.add(namespaceResolver);
+        }
         tmpresolverMap = new HashMap<Element, NamespaceResolver>();
     }
     
@@ -107,6 +109,9 @@ public class XMLFragmentReader extends DOMReader {
         // than node's URI, write out the node's URI locally
         String prefix = elem.getPrefix();
         String uri = resolveNamespacePrefix(prefix);
+        if(prefix == null && uri == null) {
+            return;
+        }
         if (uri == null || !uri.equals(elem.getNamespaceURI())) {
             NamespaceResolver tmpresolver = getTempResolver(elem);
             tmpresolver.put(prefix, elem.getNamespaceURI());
@@ -173,7 +178,15 @@ public class XMLFragmentReader extends DOMReader {
      */
     protected String resolveNamespacePrefix(String prefix) {
         String uri = null;
-        if (prefix != null) {
+        if (null == prefix) {
+            for (int i = nsresolverList.size() - 1; i >= 0; i--) {
+                NamespaceResolver next = nsresolverList.get(i);
+                uri = next.getDefaultNamespaceURI();
+                if ((uri != null) && uri.length() > 0) {
+                    break;
+                }
+            }
+        } else {
             for (int i = nsresolverList.size() - 1; i >= 0; i--) {
                 NamespaceResolver next = nsresolverList.get(i);
                 uri = next.resolveNamespacePrefix(prefix);

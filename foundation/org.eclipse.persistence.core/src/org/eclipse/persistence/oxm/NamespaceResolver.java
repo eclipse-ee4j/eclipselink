@@ -157,7 +157,11 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @param  namespaceURI  The namespace URI associated with the specified prefix
     */
     public void put(String prefix, String namespaceURI) {
-        prefixesToNamespaces.put(prefix, namespaceURI.intern());
+        if(null == prefix || 0 == prefix.length()) {
+            defaultNamespaceURI = namespaceURI;
+        } else {
+            prefixesToNamespaces.put(prefix, namespaceURI.intern());
+        }
     }
 
     /**

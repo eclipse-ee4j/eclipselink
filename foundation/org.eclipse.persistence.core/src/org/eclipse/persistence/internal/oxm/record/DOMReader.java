@@ -196,10 +196,10 @@ public class DOMReader extends XMLReaderAdapter {
             return elem.getNodeName();
         }
 
+        handlePrefixedAttribute(elem);
         String prefix = elem.getPrefix();
         if (prefix != null && prefix.length() > 0) {
             String qname = prefix + XMLConstants.COLON + elem.getLocalName();
-            handlePrefixedAttribute(elem);
             return qname;
         } else {
             return elem.getLocalName();

@@ -77,8 +77,8 @@ public class DomToXMLEventWriter {
             String localName = elem.getLocalName();
             String name = elem.getNodeName();
             if(elem.getNamespaceURI() == null || elem.getNamespaceURI().length() == 0) {
-                xew.add(xmlEventFactory.createStartElement("", "", elem.getNodeName()));
                 String defaultNamespace = xew.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);
+                xew.add(xmlEventFactory.createStartElement("", "", elem.getNodeName()));
                 if(defaultNamespace != null &&  defaultNamespace.length() >0) {
                     //write default namespace declaration
                     xew.add(xmlEventFactory.createNamespace(XMLConstants.EMPTY_STRING));

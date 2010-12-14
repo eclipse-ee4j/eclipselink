@@ -12,6 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessmethods.XmlAccessMethodsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlclassextractor.XmlClassExtractorTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyTestCases;
@@ -21,15 +25,16 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlproperty.XmlPropertyT
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XmlTransformationMethodTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XmlTransformationTestCases;
 import org.eclipse.persistence.testing.jaxb.events.RootWithCompositeObjectTestCases;
-import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
-import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
-import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithAttributesTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.complex.JAXBElementComplexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nested.JAXBElementNestedTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nil.JAXBElementNilTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementBase64TestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementDataHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
+import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite;
+import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestSuite;
+import org.eclipse.persistence.testing.jaxb.xmladapter.XmlAdapterTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsIdRefTestCases;
@@ -37,15 +42,11 @@ import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsSing
 import org.eclipse.persistence.testing.jaxb.xmlidrefs.XmlIdRefsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidrefs.object.XmlIdRefsObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinlinebinary.XmlInlineBinaryDataTestCases;
-import org.eclipse.persistence.testing.jaxb.xmladapter.XmlAdapterTestSuite;
-import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite;
-import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBDOMTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithAttributesTestCases;
 
 public class JAXBTestSuite extends TestCase {
 
@@ -73,6 +74,8 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.XmlAnyElementTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.XmlAnyElementLaxTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.ns.DefaultNamespaceTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.ns.DefaultNamespaceCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.EmployeeCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.EmployeeSingleTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.XMLElementRefConverterTestCases.class);

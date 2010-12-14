@@ -81,11 +81,12 @@ public class SAXDocumentBuilder implements ContentHandler {
     }
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
-        // avoid adding an empty prefix and uri pair to the map
-        if (prefix.length() == 0 && uri.length() == 0) {
-            return;
+        if(null == prefix) {
+            prefix = XMLConstants.EMPTY_STRING;
         }
-        
+        if(null == uri) {
+            uri = XMLConstants.EMPTY_STRING;
+        }
         if (namespaceDeclarations == null) {
             namespaceDeclarations = new HashMap();
         }
