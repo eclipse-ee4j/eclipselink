@@ -2875,7 +2875,12 @@ public class AnnotationsProcessor {
             if (next.getName().startsWith(CREATE)) {
                 JavaClass type = next.getReturnType();
                 if (JAVAX_XML_BIND_JAXBELEMENT.equals(type.getName())) {
-                    type = (JavaClass) next.getReturnType().getActualTypeArguments().toArray()[0];
+                    Object[] actutalTypeArguments = next.getReturnType().getActualTypeArguments().toArray();
+                    if(actutalTypeArguments.length == 0) {
+                        type = helper.getJavaClass(Object.class);
+                    } else {
+                        type = (JavaClass) next.getReturnType().getActualTypeArguments().toArray()[0];
+                    }
                 } else {
                     this.factoryMethods.put(next.getReturnType().getRawName(), next);
                 }
