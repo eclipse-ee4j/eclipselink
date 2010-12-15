@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingelement.AnyObjectWithGroupingWithXMLRootSimpleTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectKeepAllAsElementTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectWithoutGroupingWithXMLRootSimpleTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectXMLRootSimpleNonStringTestCases;
 
@@ -40,7 +41,9 @@ public class XMLAnyObjectMappingTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectKeepUnknownAsElementTestCases.class);        
         suite.addTestSuite(AnyObjectWithoutGroupingWithXMLRootSimpleTestCases.class);
         suite.addTestSuite(AnyObjectXMLRootSimpleNonStringTestCases.class);
-
+        
+        suite.addTestSuite(AnyObjectKeepAllAsElementTestCases.class);
+        
         return suite;
     }
 

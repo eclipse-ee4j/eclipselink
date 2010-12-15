@@ -19,12 +19,14 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -32,6 +34,7 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
 public abstract class XMLAbstractAnyMapping extends DatabaseMapping {
 
@@ -88,35 +91,86 @@ public abstract class XMLAbstractAnyMapping extends DatabaseMapping {
         return objectValue;
     }
     
+    /**
+     * Uses a given reference descriptor to build an object based on a given DOMRecord.  
+     * If a converter is provided it is applied to the newly built object.  The 
+     * reference descriptor will wrap the object in an XMLRoot if required, and the 
+     * object will be added to the given Container Policy if it is non-null.   
+     */
     protected Object buildObjectAndWrapInXMLRoot(ClassDescriptor referenceDescriptor, XMLConverter converter, ObjectBuildingQuery query, DOMRecord record, DOMRecord nestedRecord, JoinedAttributeManager joinManager, AbstractSession session, Node next, Object container, ContainerPolicy containerPolicy) {
-        Object objectValue = null;
-        
         ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
-        objectValue = builder.buildObject(query, nestedRecord, joinManager);
-        Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
-
+        Object objectValue = builder.buildObject(query, nestedRecord, joinManager);
         if (converter != null) {
-            updated = converter.convertDataValueToObjectValue(updated, session, record.getUnmarshaller());
+            objectValue = converter.convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
         }
-        
+        Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
         if (containerPolicy != null) {
             containerPolicy.addInto(updated, container, session);
         }
-        
         return updated;
     }
  
-    protected Object buildObjectNoReferenceDescriptor(DOMRecord record, AbstractSession session, Node next, Object container, ContainerPolicy cp) {
-        XMLConverter converter = ((XMLAnyCollectionMapping) this).getConverter();
-        
+    /**
+     * Convenience method that takes a given Node and applies namespace 
+     * information, converts it if necessary, and adds the resulting 
+     * object to the given ContainerPolicy if non-null. 
+     */
+    protected Object buildObjectNoReferenceDescriptor(DOMRecord record, XMLConverter converter, AbstractSession session, Node next, Object container, ContainerPolicy cp) {
         XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) next);
         Object objectValue = next;
         if (converter != null) {
             objectValue = converter.convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-        }                       
-        cp.addInto(objectValue, container, session);
-        
+        }
+        if (cp != null) {
+            cp.addInto(objectValue, container, session);
+        }
         return objectValue;
+    }
+    
+    /**
+     * Convenience method that takes a given node and checks the first child for 
+     * TEXT_NODE.  If the first child is a text node containing a non-empty 
+     * String, the String value will be processed and wrapped in an XMLRoot.  
+     * If schemaTypeQName represents a default XML type (boolean, dateTime, etc)
+     * the String value will be converted to that type.  If a converter is 
+     * provided it will be applied before wrapping in an XMLRoot. 
+     */
+    protected XMLRoot buildXMLRootForText(Node node, QName schemaTypeQName, XMLConverter converter, AbstractSession session, DOMRecord record) {
+        XMLRoot rootValue = null;
+        Node textchild = ((Element) node).getFirstChild();
+        if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
+            String stringValue = ((Text) textchild).getNodeValue();
+            if ((stringValue != null) && stringValue.length() > 0) {
+                Object convertedValue = stringValue;
+                if (schemaTypeQName != null) {
+                    Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
+                    if (theClass != null) {
+                        convertedValue = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(convertedValue, theClass, schemaTypeQName);
+                    }
+                }
+                if (converter != null) {
+                    convertedValue = converter.convertDataValueToObjectValue(convertedValue, session, record.getUnmarshaller());
+                }
+                rootValue = new XMLRoot();
+                rootValue.setLocalName(node.getLocalName());
+                rootValue.setSchemaType(schemaTypeQName);
+                rootValue.setNamespaceURI(node.getNamespaceURI());
+                rootValue.setObject(convertedValue);
+            }
+        }
+        return rootValue;
+    }
+    
+    /**
+     * Convenience method that builds an XMLRoot wrapping a given object.
+     * The local name and uri are set using the given Node.
+     */
+    protected XMLRoot buildXMLRoot(Node node, Object object) {
+        XMLRoot xmlRoot = new XMLRoot();
+        xmlRoot.setLocalName(node.getLocalName());
+        xmlRoot.setNamespaceURI(node.getNamespaceURI());
+        xmlRoot.setObject(object);
+        return xmlRoot;
     }
     
     public boolean isWriteOnly() {
@@ -133,14 +187,10 @@ public abstract class XMLAbstractAnyMapping extends DatabaseMapping {
         }
         super.setAttributeValueInObject(object, value);
     }
-
     
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
-    
-        
-    
 }

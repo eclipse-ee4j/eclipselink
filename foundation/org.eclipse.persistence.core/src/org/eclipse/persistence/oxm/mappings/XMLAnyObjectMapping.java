@@ -321,69 +321,51 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                 DOMRecord nestedRecord = (DOMRecord) record.buildNestedRow((Element) next);
 
                 if (!useXMLRoot) {
-                    referenceDescriptor = getDescriptor(nestedRecord, session, null);
-                    
-                    return buildObjectForNonXMLRoot(referenceDescriptor, getConverter(), query, record, nestedRecord, joinManager, session, next, null, null);
-                } else {
-                    String schemaType = ((Element) next).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-                    QName schemaTypeQName = null;
-                    XPathFragment frag = new XPathFragment();
-                    if ((null != schemaType) && (schemaType.length() > 0)) {
-                        frag.setXPath(schemaType);
-
-                        if (frag.hasNamespace()) {
-                            String prefix = frag.getPrefix();
-                            XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-                            String url = xmlPlatform.resolveNamespacePrefix(next, prefix);
-                            frag.setNamespaceURI(url);
-                            schemaTypeQName = new QName(url, frag.getLocalName());
-                        }
-                        XMLContext xmlContext = nestedRecord.getUnmarshaller().getXMLContext();
-                        referenceDescriptor = xmlContext.getDescriptorByGlobalType(frag);
+                    return buildObjectForNonXMLRoot(getDescriptor(nestedRecord, session, null), getConverter(), query, record, nestedRecord, joinManager, session, next, null, null);
+                }
+                // need to wrap the object in an XMLRoot
+                String schemaType = ((Element) next).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                QName schemaTypeQName = null;
+                XPathFragment frag = new XPathFragment();
+                if ((null != schemaType) && (schemaType.length() > 0)) {
+                    frag.setXPath(schemaType);
+                    if (frag.hasNamespace()) {
+                        String prefix = frag.getPrefix();
+                        XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
+                        String url = xmlPlatform.resolveNamespacePrefix(next, prefix);
+                        frag.setNamespaceURI(url);
+                        schemaTypeQName = new QName(url, frag.getLocalName());
                     }
-                    if (referenceDescriptor == null) {
-                        try {
-                            QName qname = new QName(nestedRecord.getNamespaceURI(), nestedRecord.getLocalName());
-                            referenceDescriptor = getDescriptor(nestedRecord, session, qname);
-                        } catch (XMLMarshalException e) {
-                            referenceDescriptor = null;
-                        }
+                    XMLContext xmlContext = nestedRecord.getUnmarshaller().getXMLContext();
+                    referenceDescriptor = xmlContext.getDescriptorByGlobalType(frag);
+                }
+                if (referenceDescriptor == null) {
+                    try {
+                        referenceDescriptor = getDescriptor(nestedRecord, session, new QName(nestedRecord.getNamespaceURI(), nestedRecord.getLocalName()));
+                    } catch (XMLMarshalException e) {
+                        referenceDescriptor = null;
                     }
+                }
+                // if KEEP_ALL_AS_ELEMENT is set, or we don't have a descriptor and KEEP_UNKNOWN_AS_ELEMENT
+                // is set, then we want to return either an Element or an XMLRoot wrapping an Element
+                if (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT || (referenceDescriptor == null && getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) {
+                    Object objVal = buildObjectNoReferenceDescriptor(nestedRecord, getConverter(), session, next, null, null);
+                    // wrap the object in an XMLRoot
+                    // if we know the descriptor use it to wrap the Element in an XMLRoot (if necessary)
                     if (referenceDescriptor != null) {
-                        ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
-                        objectValue = builder.buildObject(query, nestedRecord, joinManager);
-                        Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
-                        if(getConverter() != null) {
-                            updated = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                        }
-                        return updated;
-                    } else if ((referenceDescriptor != null) && (getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
-                        return buildObjectAndWrapInXMLRoot(referenceDescriptor, getConverter(), query, record, nestedRecord, joinManager, session, next, null, null);
-                    } else {                        
-                        Node textchild = ((Element) next).getFirstChild();
-                        if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-                            String stringValue = ((Text) textchild).getNodeValue();
-                            if ((stringValue != null) && stringValue.length() > 0) {
-                            	Object convertedValue = stringValue;
-                                if (schemaTypeQName != null) {
-                                    Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
-                                    if (theClass != null) {
-                                        convertedValue = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(convertedValue, theClass, schemaTypeQName);
-                                    }
-                                }
-                                if(getConverter() != null) {
-                                	convertedValue = getConverter().convertDataValueToObjectValue(convertedValue, session, record.getUnmarshaller());
-                                }
-
-                                XMLRoot rootValue = new XMLRoot();
-                                rootValue.setLocalName(next.getLocalName());
-                                rootValue.setSchemaType(schemaTypeQName);
-                                rootValue.setNamespaceURI(next.getNamespaceURI());
-                                rootValue.setObject(convertedValue);
-                                return rootValue;
-                            }
-                        }                        
+                        return ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objVal, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
                     }
+                    // no descriptor, so manually build the XMLRoot
+                    return buildXMLRoot(next, objVal);
+                }
+                // if we have a descriptor use it to build the object and wrap it in an XMLRoot
+                if (referenceDescriptor != null) {
+                    return buildObjectAndWrapInXMLRoot(referenceDescriptor, getConverter(), query, record, nestedRecord, joinManager, session, next, null, null);
+                }
+                // no descriptor, but could be TEXT to wrap and return
+                XMLRoot rootValue;
+                if ((rootValue = buildXMLRootForText(next, schemaTypeQName, getConverter(), session, record)) != null) {
+                    return rootValue;
                 }
             }
             i++;

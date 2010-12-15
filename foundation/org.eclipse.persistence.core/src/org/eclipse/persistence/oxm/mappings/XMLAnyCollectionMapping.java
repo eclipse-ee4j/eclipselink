@@ -390,35 +390,28 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                                 referenceDescriptor = null;
                             }
                         }
-                        if ((referenceDescriptor != null) && (getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
+                        // if KEEP_ALL_AS_ELEMENT is set, or we don't have a descriptor and KEEP_UNKNOWN_AS_ELEMENT
+                        // is set, then we want to return either an Element or an XMLRoot wrapping an Element
+                        if (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT || (referenceDescriptor == null && getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) {
+                            Object objVal = buildObjectNoReferenceDescriptor(record, getConverter(), session, next, null, null);
+                            // wrap the object in an XMLRoot
+                            // if we know the descriptor use it to wrap the Element in an XMLRoot (if necessary)
+                            if (referenceDescriptor != null) {
+                                objVal = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objVal, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
+                                cp.addInto(objVal, container, session);
+                            } else {
+                                // no descriptor, so manually build the XMLRoot
+                                cp.addInto(buildXMLRoot(next, objVal), container, session);
+                            }
+                        }
+                        // if we have a descriptor use it to build the object and wrap it in an XMLRoot
+                        else if (referenceDescriptor != null) {
                             buildObjectAndWrapInXMLRoot(referenceDescriptor, getConverter(), query, record, nestedRecord, joinManager, session, next, container, cp);
-                        } else if ((referenceDescriptor == null) && (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) {
-                            buildObjectNoReferenceDescriptor(record, session, next, container, cp);
                         } else {
-                            Node textchild = ((Element) next).getFirstChild();
-                            if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-                                String stringValue = ((Text) textchild).getNodeValue();
-
-                                if ((stringValue != null) && stringValue.length() > 0) {
-                                    Object convertedValue = stringValue;
-                                    if (schemaTypeQName != null) {
-                                        Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
-                                        if (theClass != null) {
-                                            convertedValue = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(convertedValue, theClass, schemaTypeQName);
-                                        }
-                                    }
-                                    if (getConverter() != null) {
-                                        convertedValue = getConverter().convertDataValueToObjectValue(convertedValue, session, record.getUnmarshaller());
-                                    }
-
-                                    XMLRoot rootValue = new XMLRoot();
-                                    rootValue.setLocalName(next.getLocalName());
-                                    rootValue.setSchemaType(schemaTypeQName);
-                                    rootValue.setNamespaceURI(next.getNamespaceURI());
-                                    rootValue.setObject(convertedValue);
-                                    cp.addInto(rootValue, container, session);
-                                }
-
+                            // no descriptor, but could be TEXT to wrap and return
+                            XMLRoot rootValue;
+                            if ((rootValue = buildXMLRootForText(next, schemaTypeQName, getConverter(), session, record)) != null) {
+                                cp.addInto(rootValue, container, session);
                             }
                         }
                     }
