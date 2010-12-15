@@ -34,7 +34,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
 
 public class OXMMetadata extends Metadata {
 
-    public OXMMetadata(DynamicClassLoader classLoader, Map<String, Object> properties) {
+    public OXMMetadata(DynamicClassLoader classLoader, Map<String, ?> properties) {
         super(classLoader, properties);
     }
 
