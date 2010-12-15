@@ -69,7 +69,7 @@
         <copy file="${eclipselink.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${junit.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${jdbc.driver.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
-        <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
     </target>
 
     <!-- Start the server. -->
