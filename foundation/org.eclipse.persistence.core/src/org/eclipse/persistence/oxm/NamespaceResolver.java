@@ -86,7 +86,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @return The namespace URI associated with the specified prefix
      */
     public String resolveNamespacePrefix(String prefix) {
-        if (null == prefix) {
+        if (null == prefix || prefix.length() == 0) {
             return defaultNamespaceURI;
         }
         String uri = prefixesToNamespaces.get(prefix);
