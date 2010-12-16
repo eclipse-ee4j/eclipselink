@@ -229,6 +229,22 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * the specified row.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        if (this.descriptor.isProtectedIsolation()){
+            if (this.isCacheable && isTargetProtected && cacheKey != null){
+                //cachekey will be null when isolating to uow
+                //used cached collection
+                Object result = null;
+                Object cached = cacheKey.getObject();
+                if (cached != null){
+                    Object attributeValue = this.getAttributeValueFromObject(cached);
+                    return buildClonePart(cached, cacheKey, attributeValue, executionSession);
+                }
+                return result;
+                
+            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
+                return null;
+            }
+        }
         Object fieldValue = row.get(this.getField());
 
         // BUG#2667762 there could be whitespace in the row instead of null

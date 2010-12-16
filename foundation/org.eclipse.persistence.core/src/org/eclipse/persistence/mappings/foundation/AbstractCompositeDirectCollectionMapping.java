@@ -91,8 +91,8 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Build and return a new element based on the change set.
      */
-    public Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
-        return this.buildElementFromChangeSet(changeSet, mergeManager);
+    public Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
+        return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
 
     /**
@@ -181,7 +181,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Build and return a new element based on the change set.
      * Direct collections simply store the element itself, since it is immutable.
      */
-    protected Object buildElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
+    protected Object buildElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
         return changeSet;
     }
 
@@ -190,7 +190,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Build and return a new element based on the specified element.
      * Direct collections simply return the element itself, since it is immutable.
      */
-    public Object buildElementFromElement(Object object, CacheKey elementCacheKey, MergeManager mergeManager) {
+    public Object buildElementFromElement(Object object, MergeManager mergeManager, AbstractSession targetSession) {
         return object;
     }
 
@@ -198,8 +198,8 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Build and return a new element based on the change set.
      */
-    public Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
-        return this.buildElementFromChangeSet(changeSet, mergeManager);
+    public Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
+        return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
 
     /**
@@ -500,7 +500,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Merge changes from the source to the target object. Treat the collection as a
     * simple direct value, since minimal update isn't possible.
      */
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (changeRecord == null) {// I have not calculated changes then simply merge value into target
             Object targetValue = getRealAttributeValueFromObject(source, mergeManager.getSession());
             ContainerPolicy cp = this.getContainerPolicy();
@@ -522,7 +522,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * does not exist or the target is uninitialized.
     * Treat the collection as a simple direct value.
      */
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         Object attributeValue = getAttributeValueFromObject(source);
         ContainerPolicy cp = this.getContainerPolicy();
         Object container = cp.containerInstance();
@@ -675,6 +675,22 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      */
     @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        if (this.descriptor.isProtectedIsolation()){
+            if (this.isCacheable && isTargetProtected && cacheKey != null){
+                //cachekey will be null when isolating to uow
+                //used cached collection
+                Object result = null;
+                Object cached = cacheKey.getObject();
+                if (cached != null){
+                    Object attributeValue = this.getAttributeValueFromObject(cached);
+                    return buildClonePart(attributeValue, cacheKey, executionSession);
+                }
+                return result;
+                
+            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
+                return null;
+            }
+        }
         ContainerPolicy cp = this.getContainerPolicy();
 
         Object fieldValue = row.getValues(this.getField());

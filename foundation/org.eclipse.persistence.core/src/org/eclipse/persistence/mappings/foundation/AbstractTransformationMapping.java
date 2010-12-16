@@ -905,7 +905,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Merge changes from the source to the target object. Which is the original from the parent UnitOfWork
      */
     @Override
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (isWriteOnly()) {
             return;
         }
@@ -915,7 +915,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             return;
         }
         AbstractRecord record = (AbstractRecord)((TransformationMappingChangeRecord)changeRecord).getRecord();
-        Object attributeValue = invokeAttributeTransformer(record, target, mergeManager.getSession());
+        Object attributeValue = invokeAttributeTransformer(record, target, targetSession);
         setRealAttributeValueInObject(target, attributeValue);
     }
  
@@ -924,7 +924,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Merge changes from the source to the target object.
      */
     @Override
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (isWriteOnly()) {
             return;
         }
@@ -950,7 +950,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!areObjectsToBeProcessedInstantiated(source))) {
-                setAttributeValueInObject(target, this.indirectionPolicy.getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
+                setAttributeValueInObject(target, this.indirectionPolicy.getOriginalIndirectionObject(getAttributeValueFromObject(source), targetSession));
                 return;
             }
         }
@@ -1047,6 +1047,16 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     public Object readFromRowIntoObject(AbstractRecord row, JoinedAttributeManager joinManager, Object object, CacheKey parentCacheKey, ObjectBuildingQuery query, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         if (isWriteOnly()) {
             return null;
+        }
+        if (this.descriptor.isProtectedIsolation()) {
+            if (this.isCacheable && isTargetProtected && parentCacheKey != null) {
+                Object cached = parentCacheKey.getObject();
+                if (cached != null) {
+                    Object attributeValue =  getAttributeValueFromObject(cached);
+                    return this.indirectionPolicy.cloneAttribute(attributeValue, cached, parentCacheKey, object, executionSession, false);
+                }
+                return null;
+            }
         }
  
         Object attributeValue = this.indirectionPolicy.valueFromMethod(object, row, query.getSession());

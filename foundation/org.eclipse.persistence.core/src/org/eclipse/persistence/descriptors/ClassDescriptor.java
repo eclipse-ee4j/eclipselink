@@ -191,7 +191,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public static final int USE_SESSION_CACHE_AFTER_TRANSACTION = 0;
     public static final int ISOLATE_NEW_DATA_AFTER_TRANSACTION = 1; // this is the default behaviour even when undefined.
     public static final int ISOLATE_CACHE_AFTER_TRANSACTION = 2;
-    public static final int ISOLATE_CACHE_ALWAYS = 3;
+    public static final int ISOLATE_FROM_CLIENT_SESSION = 3;  // Entity Instances only exist in UOW and shared cache.
+    public static final int ISOLATE_CACHE_ALWAYS = 4;
 
     /** INTERNAL: Backdoor for using changes sets for new objects. */
     public static boolean shouldUseFullChangeSetsForNewObjects = false;
@@ -255,6 +256,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
     
     /** whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates */
     protected boolean hasRelationships = false;
+    
+    /** Stores a set of FK fields that will be cached to later retrieve noncacheable mappings */
+    protected Set<DatabaseField> foreignKeyValuesForCaching;
+    
+    /** caches if this descriptor has any non cacheable mappings */
+    protected boolean hasNoncacheableMappings = false;
 
     /**
      * PUBLIC:
@@ -295,6 +302,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.cascadeLockingPolicies = NonSynchronizedVector.newInstance();
         
         this.additionalWritableMapKeyFields = new ArrayList(2);
+        this.foreignKeyValuesForCaching = new HashSet<DatabaseField>();
     }
 
     /**
@@ -2026,6 +2034,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     */
+    public Set<DatabaseField> getForeignKeyValuesForCaching() {
+        return foreignKeyValuesForCaching;
+    }
+
+    /**
+     * INTERNAL:
      * Return the class of identity map to be used by this descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
      */
@@ -2603,6 +2618,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
         return (getTables().size() > 1);
     }
 
+    
+    /**
+     * @return the hasNoncacheableMappings
+     */
+    public boolean hasNoncacheableMappings() {
+        return hasNoncacheableMappings;
+    }
+
     /**
      * @return the preDeleteMappings
      */
@@ -2719,12 +2742,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
         for (DatabaseMapping mapping : getMappings()) {
             validateMappingType(mapping);
             mapping.initialize(session);
-            if (mapping.isLockableMapping()){
-                getLockableMappings().add(mapping);
-            }
-            
-            if (!mapping.isCacheable() && this.isSharedIsolation()){
-                this.cacheIsolation = CacheIsolationType.PROTECTED;
+            if (!mapping.isCacheable()){
+                this.hasNoncacheableMappings = true;
+                if (this.isSharedIsolation()){
+                    this.cacheIsolation = CacheIsolationType.PROTECTED;
+                }
             }
 
             if (mapping.isForeignReferenceMapping()){
@@ -2894,8 +2916,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
         
         // PERF: If using isolated cache, then default uow isolation to awalys (avoids merge/double build).
         if (getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) {
-            if (!isSharedIsolation()) {
+            if (isIsolated()) {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_ALWAYS);
+            }else if (isProtectedIsolation()) {
+                setUnitOfWorkCacheIsolationLevel(ISOLATE_FROM_CLIENT_SESSION);
+            }else{
+                setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_AFTER_TRANSACTION);
             }
         }
         // Setup default redirectors.  Any redirector that is not set will get assigned the
@@ -3323,6 +3349,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     }
                 }
             }
+            if ((mapping.isForeignReferenceMapping() && !mapping.isCacheable()) || (mapping.isAggregateObjectMapping() && mapping.getReferenceDescriptor().hasNoncacheableMappings())){
+                ((ForeignReferenceMapping) mapping).collectQueryParameters(this.foreignKeyValuesForCaching);
+            }
+            if (mapping.isLockableMapping()){
+                getLockableMappings().add(mapping);
+            }
+            
+
         }
 
         if (hasInheritance()) {
@@ -3392,7 +3426,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             if (descriptor.cacheIsolation == null || descriptor.cacheIsolation == CacheIsolationType.SHARED){
                 descriptor.cacheIsolation = CacheIsolationType.PROTECTED;
                 if (descriptor.unitOfWorkCacheIsolationLevel == UNDEFINED_ISOLATATION){
-                    descriptor.unitOfWorkCacheIsolationLevel = ISOLATE_CACHE_ALWAYS;
+                    descriptor.unitOfWorkCacheIsolationLevel = ISOLATE_FROM_CLIENT_SESSION;
                 }
             }
         }
@@ -4165,8 +4199,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
             // do not call the setter method because it does not allow changing the cache synchronization
             // type of isolated objects
             cacheSynchronizationType = DO_NOT_SEND_CHANGES;
-        }else{
-            cacheSynchronizationType = SEND_OBJECT_CHANGES;
         }
     }
 
@@ -4177,6 +4209,16 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean shouldIsolateObjectsInUnitOfWork() {
         return this.unitOfWorkCacheIsolationLevel == ISOLATE_CACHE_ALWAYS;
+    }
+          
+    /**
+     * INTERNAL:
+     * Return if the unit of work should by-pass the IsolatedSession cache.
+     * Objects will be built/merged into the unit of work and into the session cache.
+     * but not built/merge into the IsolatedClientSession cache.
+     */
+    public boolean shouldIsolateProtectedObjectsInUnitOfWork() {
+        return this.unitOfWorkCacheIsolationLevel == ISOLATE_FROM_CLIENT_SESSION;
     }
           
     /**

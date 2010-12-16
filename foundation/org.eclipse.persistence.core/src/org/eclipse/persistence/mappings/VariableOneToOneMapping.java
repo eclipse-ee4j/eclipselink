@@ -734,7 +734,6 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                 }
                 return result;
             }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
-                cacheForeignKeyValues(row, cacheKey, sourceQuery);
                 return null;
             }
         }

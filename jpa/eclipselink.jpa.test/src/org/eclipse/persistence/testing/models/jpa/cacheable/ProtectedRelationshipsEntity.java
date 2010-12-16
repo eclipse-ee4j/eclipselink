@@ -40,7 +40,7 @@ import javax.persistence.QueryHint;
 import javax.persistence.TableGenerator;
 
 import org.eclipse.persistence.annotations.BasicCollection;
-import org.eclipse.persistence.annotations.NonCacheable;
+import org.eclipse.persistence.annotations.Noncacheable;
 import org.eclipse.persistence.config.QueryHints;
 
 @Entity(name="JPA_ROTECTED_RELATIONSHIPS")
@@ -52,28 +52,28 @@ public class ProtectedRelationshipsEntity {
     protected String name;
     
     @OneToOne
-    @NonCacheable
+    @Noncacheable
     protected CacheableTrueEntity cacheableFalse;
     
     @ManyToOne
-    @NonCacheable
+    @Noncacheable
     protected CacheableTrueEntity cacheableProtected;
 
     @ManyToMany
-    @NonCacheable
+    @Noncacheable
     protected List<CacheableTrueEntity> cacheableProtecteds;
     
     @OneToMany
     @JoinColumn(name="FORCED_PROTECTED")
-    @NonCacheable
+    @Noncacheable
     protected List<CacheableTrueEntity> cacheableProtecteds2;
     
     @ElementCollection
-    @NonCacheable
+    @Noncacheable
     protected List<String> elementCollection;
     
     @BasicCollection
-    @NonCacheable
+    @Noncacheable
     protected List<String> basicCollection;
 
     public ProtectedRelationshipsEntity() {

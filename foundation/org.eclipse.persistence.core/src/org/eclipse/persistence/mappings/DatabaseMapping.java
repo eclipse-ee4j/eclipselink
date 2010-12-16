@@ -20,6 +20,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import javax.naming.OperationNotSupportedException;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -291,7 +293,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Cascade the merge to the component object, if appropriate.
      */
-    public void cascadeMerge(Object sourceElement, MergeManager mergeManager) {
+    public void cascadeMerge_(Object sourceElement, MergeManager mergeManager, AbstractSession targetSession) {
         throw DescriptorException.invalidMappingOperation(this, "cascadeMerge");
     }
 
@@ -330,6 +332,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      */
     protected Vector<DatabaseField> collectFields() {
         return NO_FIELDS;
+    }
+
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
+     * the FK field values will be used to re-issue the query when cloning the shared cache entity
+     */
+    public void collectQueryParameters(Set<DatabaseField> record){
+        //no-op for mappings that do not support PROTECTED cache isolation
     }
 
     /**
@@ -1114,7 +1125,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * special merge/object building behaviour.
      */
     public void setIsCacheable(boolean cacheable) {
-        this.isCacheable = cacheable;
+        throw ValidationException.operationNotSupported("setIsCacheable");
     }
 
     /**
@@ -1203,13 +1214,13 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public abstract void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager);
+    public abstract void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession);
 
     /**
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public abstract void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUninitialized, Object source, MergeManager mergeManager);
+    public abstract void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source, MergeManager mergeManager, AbstractSession targetSession);
 
     /**
      * INTERNAL:

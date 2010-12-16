@@ -55,5 +55,11 @@ public class ProtectedValueHolder extends DatabaseValueHolder {
     public boolean isPessimisticLockingValueHolder() {
         return false;
     }
+    
+    @Override
+    public ValueHolderInterface getWrappedValueHolder() {
+        return wrappedValueHolder;
+    }
+
 
 }

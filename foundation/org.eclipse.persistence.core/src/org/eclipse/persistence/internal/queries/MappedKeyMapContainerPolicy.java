@@ -378,11 +378,11 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * on what is required by the container policy.
      */
     @Override
-    public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, Object parent, ClassDescriptor referenceDescriptor, MergeManager mergeManager){
+    public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, Object parent, ClassDescriptor referenceDescriptor, MergeManager mergeManager, AbstractSession targetSession){
         Object key = ((Map.Entry)wrappedObject).getKey();
-        key = keyMapping.getTargetVersionOfSourceObject(key, parent, mergeManager);
+        key = keyMapping.getTargetVersionOfSourceObject(key, parent, mergeManager, targetSession);
         key = keyMapping.wrapKey(key, mergeManager.getSession());
-        Object value = referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject)), mergeManager.getSession());
+        Object value = referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject), referenceDescriptor, targetSession), mergeManager.getSession());
         return new Association(key, value);
     }
     

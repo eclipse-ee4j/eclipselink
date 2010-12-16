@@ -299,15 +299,11 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      *    Return the original indirection object for a unit of work indirection object.
      */
+    @Override
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
         IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
         if (container.getValueHolder() instanceof UnitOfWorkValueHolder) {
-            ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolder();
-            if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
-                RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
-                valueHolder = (ValueHolderInterface)controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolderRemoteID());
-            }
-            return buildIndirectContainer(valueHolder);
+            return buildIndirectContainer((ValueHolderInterface) getOriginalValueHolder(unitOfWorkIndirectionObject, session));
         } else {
             return container;
         }
@@ -317,6 +313,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      *    Return the original indirection object for a unit of work indirection object.
      */
+    @Override
     public Object getOriginalIndirectionObjectForMerge(Object unitOfWorkIndirectionObject, AbstractSession session) {
         IndirectContainer container = (IndirectContainer) getOriginalIndirectionObject(unitOfWorkIndirectionObject, session);
         DatabaseValueHolder holder = (DatabaseValueHolder)container.getValueHolder();
@@ -331,16 +328,22 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * underlying valueholder may be required when serializing the valueholder
      * or converting the valueHolder to another type.
      */
+    @Override
     public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session) {
         if (! (unitOfWorkIndirectionObject instanceof IndirectContainer)){
             return new ValueHolder();
         }
         IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
-        if (container.getValueHolder() instanceof UnitOfWorkValueHolder) {
-            ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolder();
+        if (container.getValueHolder() instanceof DatabaseValueHolder) {
+            ValueHolderInterface valueHolder = ((DatabaseValueHolder)container.getValueHolder()).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
                 RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
                 valueHolder = (ValueHolderInterface)controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolderRemoteID());
+            }
+            if (session.isDatabaseSession()){
+                while (valueHolder instanceof DatabaseValueHolder && ((DatabaseValueHolder)valueHolder).getWrappedValueHolder() != null){
+                    valueHolder = ((DatabaseValueHolder)valueHolder).getWrappedValueHolder();
+                }
             }
             return valueHolder;
         } else {

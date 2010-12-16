@@ -137,10 +137,11 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      * is merged into the shared cache, the session needs to be reset to the
      * root session, ie. the server session.
      */
-    public void releaseWrappedValueHolder() {
+    @Override
+    public void releaseWrappedValueHolder(AbstractSession targetSession) {
         AbstractSession session = getSession();
         if ((session != null) && session.isUnitOfWork()) {
-            setSession(session.getRootSession(query));
+            setSession(targetSession);
         }
     }
 

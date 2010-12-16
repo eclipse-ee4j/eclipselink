@@ -73,6 +73,10 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
         return session;
     }
 
+    public ValueHolderInterface getWrappedValueHolder() {
+        return null;
+    }
+
     /**
      * Return the object.
      */
@@ -206,10 +210,10 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * into the shared cache, the session needs to be reset to the root session, ie.
      * the server session.
      */
-    public void releaseWrappedValueHolder() {
+    public void releaseWrappedValueHolder(AbstractSession targetSession) {
         AbstractSession session = this.session;
         if ((session != null) && session.isUnitOfWork()) {
-            this.session = session.getRootSession(null);
+            this.session = targetSession;
         }
     }
 

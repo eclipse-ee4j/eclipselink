@@ -27,6 +27,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.*;
@@ -1829,9 +1830,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * collection based on the changeset
      */
     @Override
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
-        if (this.descriptor.isProtectedIsolation() && !this.isCacheable && targetCacheKey != null && !targetCacheKey.isIsolated()){
-            cacheForeignKeyValues(source, targetCacheKey, descriptor, mergeManager.getSession());
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && targetSession.isDatabaseSession()){
+            setRealAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
         ContainerPolicy containerPolicy = getContainerPolicy();
@@ -1942,11 +1943,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Merge changes from the source to the target object.
      */
     @Override
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && targetSession.isDatabaseSession()){
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            return;
+        }
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!isAttributeValueInstantiated(source))) {
-                setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
+                setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObject(getAttributeValueFromObject(source), targetSession));
                 return;
             }
         }
@@ -2831,49 +2836,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /**
      * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
+     * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
+     * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
     @Override
-    protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery){
-        AbstractRecord row = cacheKey.getProtectedFKs();
-        int i = 0;
-        for (Enumeration sourceKeys = getSourceKeyFields().elements();
-                 sourceKeys.hasMoreElements(); i++) {
-            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
-            Object value = null;
-
-            // First insure that the source foreign key field is in the row.
-            // N.B. If get() is used and returns null it may just mean that the field exists but the value is null.
-            int index = record.getFields().indexOf(sourceKey);
-            if (index == -1) {
-                //Line x: Retrieve the value from the source query's translation row.
-                value = sourceQuery.getTranslationRow().get(sourceKey);
-            } else {
-                value = record.getValues().get(index);
-            }
-            row.add(sourceKey, value);
+    public void collectQueryParameters(Set<DatabaseField> cacheFields){
+        for (DatabaseField field : getSourceKeyFields()) {
+            cacheFields.add(field);
         }
 
-    }
-
-    /**
-     * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
-     */
-    @Override
-    protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
-        AbstractRecord row = cacheKey.getProtectedFKs();
-        int i = 0;
-        for (Enumeration sourceKeys = getSourceKeyFields().elements();
-                 sourceKeys.hasMoreElements(); i++) {
-            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
-            row.remove(sourceKey);
-            descriptor.getObjectBuilder().getMappingForField(sourceKey).writeFromObjectIntoRow(source, row, session, WriteType.UNDEFINED);
-        }
     }
 
     /**
@@ -3050,7 +3021,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 return result;
                 
             }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
-                cacheForeignKeyValues(row, cacheKey, sourceQuery);
                 return null;
             }
         }

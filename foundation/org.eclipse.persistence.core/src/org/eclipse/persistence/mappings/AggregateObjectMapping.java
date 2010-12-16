@@ -748,6 +748,20 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     }
 
     /**
+     * INTERNAL: 
+     * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
+     * the FK field values will be used to re-issue the query when cloning the shared cache entity
+     */
+    @Override
+    public void collectQueryParameters(Set<DatabaseField> record){
+        for (DatabaseMapping mapping : getReferenceDescriptor().getMappings()){
+            if ((mapping.isForeignReferenceMapping() && !mapping.isCacheable()) || (mapping.isAggregateObjectMapping() && mapping.getReferenceDescriptor().hasNoncacheableMappings())){
+                ((ForeignReferenceMapping) mapping).collectQueryParameters(record);
+            }
+        }
+    }
+
+    /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
@@ -1010,10 +1024,10 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
      * @return
      */
-    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager){
+    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession){
         if (mergeManager.getSession().isUnitOfWork()){
             UnitOfWorkImpl uow = (UnitOfWorkImpl)mergeManager.getSession();
-            Object aggregateObject = buildClonePart(object, null, uow, uow.isOriginalNewObject(parent));
+            Object aggregateObject = buildClonePart(object, null, targetSession, uow.isOriginalNewObject(parent));
             return aggregateObject;
         }
         return object;
@@ -1292,6 +1306,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         super.postInitialize(session);
 
         if (getReferenceDescriptor() != null) {
+            referenceDescriptor.setCacheIsolation(descriptor.getCacheIsolation());
             // Changed as part of fix for bug#4410581 aggregate mapping can not be set to use change tracking if owning descriptor does not use it.
             // Basically the policies should be the same, but we also allow deferred with attribute for CMP2 (courser grained).
             if (getDescriptor().getObjectChangePolicy().getClass().equals(DeferredChangeDetectionPolicy.class)) {

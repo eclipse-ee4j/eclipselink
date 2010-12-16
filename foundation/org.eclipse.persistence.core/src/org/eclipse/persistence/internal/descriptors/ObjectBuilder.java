@@ -552,6 +552,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (((unitOfWork.hasCommitManager() && unitOfWork.getCommitManager().isActive())
                     || unitOfWork.wasTransactionBegunPrematurely()
                     || concreteDescriptor.shouldIsolateObjectsInUnitOfWork()
+                    || concreteDescriptor.shouldIsolateProtectedObjectsInUnitOfWork()
                     || query.shouldStoreBypassCache())
                         && (!unitOfWork.isClassReadOnly(concreteDescriptor.getJavaClass(), concreteDescriptor))) {
                 // It is easier to switch once to the correct builder here.
@@ -689,6 +690,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
 
                 concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, false, session.isIsolatedClientSession());
+                if (cacheKey != null){
+                    cacheForeignKeyValues(databaseRow, cacheKey, session);
+                }
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
                     // Set the fetch group to the domain object, after built.
                     if ((query.getEntityFetchGroup() != null) && concreteDescriptor.hasFetchGroupManager()) {
@@ -720,6 +724,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     // refresh attributes of the query's fetch group.
                     concreteDescriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(domainObject, query.getEntityFetchGroup(), session);
                     concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, false, false);
+                    if (cacheKey != null){
+                        cacheForeignKeyValues(databaseRow, cacheKey, session);
+                    }
                 }
                 // 3655915: a query with join/batch'ing that gets a cache hit
                 // may require some attributes' valueholders to be re-built.
@@ -1471,7 +1478,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
     
             boolean wasAnOriginal = false;
-            boolean isIsolated = (descriptor.shouldIsolateObjectsInUnitOfWork() && !descriptor.isProtectedIsolation()) || (descriptor.shouldIsolateObjectsInUnitOfWorkEarlyTransaction() && unitOfWork.wasTransactionBegunPrematurely());
+            boolean isIsolated = descriptor.shouldIsolateObjectsInUnitOfWork() || (descriptor.shouldIsolateObjectsInUnitOfWorkEarlyTransaction() && unitOfWork.wasTransactionBegunPrematurely());
 
             Object original = null;    
             CacheKey originalCacheKey = null;
@@ -1487,14 +1494,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     isARefresh = wasAnOriginal && (descriptor.shouldAlwaysRefreshCache() || descriptor.getCacheInvalidationPolicy().isInvalidated(originalCacheKey, query.getExecutionTime()));
                     // Otherwise can just register the cached original object and return it.
                     if (wasAnOriginal && (!isARefresh)){
-                        if (!descriptor.shouldIsolateObjectsInUnitOfWork() || descriptor.isProtectedIsolation()) {
+                        if (!descriptor.shouldIsolateProtectedObjectsInUnitOfWork()) {
                             return unitOfWork.cloneAndRegisterObject(original, originalCacheKey, unitOfWorkCacheKey, descriptor);
                         }
                     }else{
                         refreshObjectIfRequired(descriptor, originalCacheKey, original, query, joinManager, databaseRow, session.getParentIdentityMapSession(query), false);
                         isARefresh = false;
                     }
-                } else if (descriptor.shouldIsolateObjectsInUnitOfWork() && descriptor.isProtectedIsolation()){
+                } else if (descriptor.shouldIsolateProtectedObjectsInUnitOfWork()){
                     originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, session.getParentIdentityMapSession(query), primaryKey, descriptor, joinManager);
                     wasAnOriginal = originalCacheKey.getObject() != null;
                 }
@@ -1713,6 +1720,35 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    public void cacheForeignKeyValues(AbstractRecord databaseRecord, CacheKey cacheKey, AbstractSession session){
+        DatabaseRecord cacheRecord = new DatabaseRecord();
+        for (DatabaseField field : this.descriptor.getForeignKeyValuesForCaching()){
+            cacheRecord.put(field, databaseRecord.get(field));
+        }
+        cacheKey.setProtectedForeignKeys(cacheRecord);
+        
+    }
+
+    /**
+     * INTERNAL: 
+     * This method is used to store the FK values used for this mapping in the cachekey.
+     * This is used when the mapping is protected but we have retrieved the fk values and will cache
+     * them for use when the entity is cloned.
+     */
+    public void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
+        DatabaseRecord cacheRecord = new DatabaseRecord();
+        for (DatabaseField field : this.descriptor.getForeignKeyValuesForCaching()){
+            cacheRecord.put(field, extractValueFromObjectForField(source, field, session));
+        }
+        cacheKey.setProtectedForeignKeys(cacheRecord);
     }
 
     /**
@@ -3130,18 +3166,18 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * INTERNAL:
      * Merge changes between the objects, this merge algorithm is dependent on the merge manager.
      */
-    public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager) {
-        mergeChangesIntoObject(target, changeSet, source, mergeManager, false);
+    public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        mergeChangesIntoObject(target, changeSet, source, mergeManager, targetSession, false);
     }
     
     /**
      * INTERNAL:
      * Merge changes between the objects, this merge algorithm is dependent on the merge manager.
      */
-    public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager, boolean isTargetCloneOfOriginal) {
+    public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager, AbstractSession targetSession, boolean isTargetCloneOfOriginal) {
         // PERF: Just merge the object for new objects, as the change set is not populated.
         if ((source != null) && changeSet.isNew() && (!this.descriptor.shouldUseFullChangeSetsForNewObjects())) {
-            mergeIntoObject(target, changeSet.getActiveCacheKey(), true, source, mergeManager, false, isTargetCloneOfOriginal);
+            mergeIntoObject(target,  true, source, mergeManager, targetSession, false, isTargetCloneOfOriginal);
         } else {
             List changes = changeSet.getChanges();
             int size = changes.size();
@@ -3150,7 +3186,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 //cr 4236, use ObjectBuilder getMappingForAttributeName not the Descriptor one because the
                 // ObjectBuilder method is much more efficient.
                 DatabaseMapping mapping = getMappingForAttributeName(record.getAttribute());
-                mapping.mergeChangesIntoObject(target, changeSet.getActiveCacheKey(), record, source, mergeManager);                
+                mapping.mergeChangesIntoObject(target, record, source, mergeManager, targetSession);                
             }
         }
 
@@ -3170,8 +3206,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Merge the contents of one object into another, this merge algorithm is dependent on the merge manager.
      * This merge also prevents the extra step of calculating the changes when it is not required.
      */
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isUnInitialized, Object source, MergeManager mergeManager) {
-        mergeIntoObject(target, targetCacheKey, isUnInitialized, source, mergeManager, false, false);
+    public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        mergeIntoObject(target, isUnInitialized, source, mergeManager, targetSession, false, false);
     }
     
     /**
@@ -3181,7 +3217,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * If 'cascadeOnly' is true, only foreign reference mappings are merged.
      * If 'isTargetCloneOfOriginal' then the target was create through a shallow clone of the source, so merge basics is not required.
      */
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isUnInitialized, Object source, MergeManager mergeManager, boolean cascadeOnly, boolean isTargetCloneOfOriginal) {
+    public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession, boolean cascadeOnly, boolean isTargetCloneOfOriginal) {
         // cascadeOnly is introduced to optimize merge 
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
         
@@ -3204,7 +3240,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     || (cascadeOnly && mapping.isForeignReferenceMapping())
                     || (isTargetCloneOfOriginal && mapping.isCloningRequired()))
                   && (sourceFetchGroup == null || sourceFetchGroup.containsAttribute(mapping.getAttributeName()))) {
-                mapping.mergeIntoObject(target, targetCacheKey, isUnInitialized, source, mergeManager);
+                mapping.mergeIntoObject(target, isUnInitialized, source, mergeManager, targetSession);
             }
         }
 

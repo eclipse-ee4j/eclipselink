@@ -54,8 +54,8 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return a new element based on the change set.
      */
-    public Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
-        return this.buildElementFromChangeSet(changeSet, mergeManager);
+    public Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
+        return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
 
     /**
@@ -122,11 +122,11 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * Build and return a new element based on the change set.
      */
-    protected Object buildElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
+    protected Object buildElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectChangeSet objectChangeSet = (ObjectChangeSet)changeSet;
         ObjectBuilder objectBuilder = this.getObjectBuilderForClass(objectChangeSet.getClassType(mergeManager.getSession()), mergeManager.getSession());
         Object result = objectBuilder.buildNewInstance();
-        objectBuilder.mergeChangesIntoObject(result, objectChangeSet, null, mergeManager);
+        objectBuilder.mergeChangesIntoObject(result, objectChangeSet, null, mergeManager, targetSession);
 
         return result;
     }
@@ -135,10 +135,10 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return a new element based on the specified element.
      */
-    public Object buildElementFromElement(Object element, CacheKey elementCacheKey, MergeManager mergeManager) {
+    public Object buildElementFromElement(Object element, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectBuilder objectBuilder = this.getObjectBuilder(element, mergeManager.getSession());
         Object result = objectBuilder.buildNewInstance();
-        objectBuilder.mergeIntoObject(result, elementCacheKey, true, element, mergeManager);
+        objectBuilder.mergeIntoObject(result, true, element, mergeManager, targetSession);
 
         return result;
     }
@@ -147,8 +147,8 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return a new element based on the change set.
      */
-    public Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
-        return this.buildElementFromChangeSet(changeSet, mergeManager);
+    public Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
+        return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
 
     /**
@@ -554,7 +554,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         ContainerPolicy containerPolicy = getContainerPolicy();
         AbstractSession session = mergeManager.getSession();
         // Iterate over the changes and merge the collections
@@ -567,7 +567,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             objectChanges = (ObjectChangeSet)aggregateObjects.get(index);
             // Since the CompositeCollectionMapping only registers an all or none
             // change set, we can simply replace the entire collection;
-            containerPolicy.addInto(buildElementFromChangeSet(objectChanges, mergeManager), valueOfTarget, session);
+            containerPolicy.addInto(buildElementFromChangeSet(objectChanges, mergeManager, targetSession), valueOfTarget, session);
         }
         setRealAttributeValueInObject(target, valueOfTarget);
     }
@@ -577,7 +577,8 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Merge changes from the source to the target object.
      * Simply replace the entire target collection.
      */
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    @Override
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (!mergeManager.shouldCascadeReferences()) {
             // This is only going to happen on mergeClone, and we should not attempt to merge the reference
             return;
@@ -592,7 +593,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
 
             //CR#2896 - TW
             Object originalValue = getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().buildNewInstance();
-            getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().mergeIntoObject(originalValue, targetCacheKey, true, sourceValue, mergeManager);
+            getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().mergeIntoObject(originalValue, true, sourceValue, mergeManager, targetSession);
             containerPolicy.addInto(originalValue, valueOfTarget, mergeManager.getSession());
         }
 
@@ -798,6 +799,22 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Build and return an aggregate collection from the specified row.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        if (this.descriptor.isProtectedIsolation()){
+            if (this.isCacheable && isTargetProtected && cacheKey != null){
+                //cachekey will be null when isolating to uow
+                //used cached collection
+                Object result = null;
+                Object cached = cacheKey.getObject();
+                if (cached != null){
+                    Object attributeValue = this.getAttributeValueFromObject(cached);
+                    return buildClonePart(cached, cacheKey, attributeValue, executionSession);
+                }
+                return result;
+                
+            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
+                return null;
+            }
+        }
         ContainerPolicy cp = this.getContainerPolicy();
 
         Object fieldValue = row.getValues(this.getField());

@@ -243,7 +243,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (!this.isCacheable && (cacheKey != null && !cacheKey.isIsolated())){
             ReadObjectQuery query = new ReadObjectQuery(descriptor.getJavaClass());
             query.setSession(cloningSession);
-            attributeValue = valueFromRow(cacheKey.getProtectedFKs(), null, query, cacheKey, cloningSession, true);
+            attributeValue = valueFromRow(cacheKey.getProtectedForeignKeys(), null, query, cacheKey, cloningSession, true);
         }else{
             attributeValue = getAttributeValueFromObject(original);
         }
@@ -583,20 +583,11 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
+     * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
+     * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
-    abstract protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery);
+    public abstract void collectQueryParameters(Set<DatabaseField> cacheFields);
     
-    /**
-     * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
-     */
-    abstract protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session);
-
     /**
      * INTERNAL:
      * Check if the target object is in the cache if possible based on the source row.
@@ -998,7 +989,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     @Override
     public boolean isLockableMapping(){
-        return !(this.usesIndirection());
+        return !(this.usesIndirection()) && !referenceDescriptor.isIsolated();
     }
     
     /**
@@ -1875,6 +1866,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     }
     
     /**
+     * Used to signal that this mapping references a protected/isolated entity and requires
+     * special merge/object building behaviour.
+     */
+    public void setIsCacheable(boolean cacheable) {
+        this.isCacheable = cacheable;
+    }
+
+    /**
      * INTERNAL:
      * To validate mappings declaration
      */
@@ -1918,7 +1917,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 	            }
 	            return result;
 	        }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
-	            cacheForeignKeyValues(row, cacheKey, sourceQuery);
 	            return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
 	        }
         }

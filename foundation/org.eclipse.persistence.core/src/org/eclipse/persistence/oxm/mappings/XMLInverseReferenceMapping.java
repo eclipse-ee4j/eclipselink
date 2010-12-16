@@ -201,13 +201,13 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
     }
 
     @Override
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey,
-            ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target,
+            ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
     }
 
     @Override
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUninitialized,
-            Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, boolean isTargetUninitialized,
+            Object source, MergeManager mergeManager, AbstractSession targetSession) {
     }
 
     // == ContainerPolicy methods =============================================

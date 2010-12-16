@@ -262,7 +262,7 @@ public class WriteLockManager {
                         objectChangeSet.setDescriptor(descriptor);
                     }
                     // PERF: Do not merge nor lock into the session cache if descriptor set to unit of work isolated.
-                    if (descriptor.shouldIsolateObjectsInUnitOfWork() && !descriptor.isProtectedIsolation()) {
+                    if (descriptor.shouldIsolateObjectsInUnitOfWork()) {
                         continue;
                     }
                     AbstractSession targetSession = session.getParentIdentityMapSession(descriptor, false, false);

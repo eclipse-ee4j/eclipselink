@@ -19,6 +19,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -184,6 +185,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
         return ((this.wrappedValueHolder != null) && (this.wrappedValueHolder instanceof DatabaseValueHolder) && ((DatabaseValueHolder)this.wrappedValueHolder).isPessimisticLockingValueHolder());
     }
 
+    @Override
     public ValueHolderInterface getWrappedValueHolder() {
         return wrappedValueHolder;
     }
@@ -253,7 +255,8 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
      * into the shared cache, the session needs to be reset to the root session, ie.
      * the server session.
      */
-    public void releaseWrappedValueHolder() {
+    @Override
+    public void releaseWrappedValueHolder(AbstractSession targetSession) {
         // On UnitOfWork dont want to do anything.
         return;
     }

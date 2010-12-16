@@ -716,6 +716,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     
         ClassDescriptor trueEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_TRUE");
         assertFalse("CacheableTrueEntity (ALL) from annotations has caching turned off", usesNoCache(trueEntityDescriptor));
+        
+        ClassDescriptor protectedEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_PROTECTED");
+        assertFalse("CacheableProtectedEntity (ALL) from annotations has caching turned off", usesNoCache(protectedEntityDescriptor));
 
         ClassDescriptor childFalseEntityDescriptor = session.getDescriptorForAlias("JPA_CHILD_CACHEABLE_FALSE");
         assertFalse("ChildCacheableFalseEntity (ALL) from annotations has caching turned off", usesNoCache(childFalseEntityDescriptor));
@@ -751,6 +754,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     
         ClassDescriptor trueEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_TRUE");
         assertTrue("CacheableTrueEntity (NONE) from annotations has caching turned on", usesNoCache(trueEntityDescriptor));
+
+        ClassDescriptor protectedEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_PROTECTED");
+        assertTrue("CacheableProtectedEntity (ALL) from annotations has caching turned off", usesNoCache(protectedEntityDescriptor));
 
         ClassDescriptor childFalseEntityDescriptor = session.getDescriptorForAlias("JPA_CHILD_CACHEABLE_FALSE");
         assertTrue("ChildCacheableFalseEntity (NONE) from annotations has caching turned on", usesNoCache(childFalseEntityDescriptor));
@@ -1160,7 +1166,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             CacheableForceProtectedEntity cachedCPE = (CacheableForceProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cte);
             assertNull("A protected OneToOne relationship was merged into the shared cache", cachedCPE.getCacheableFalse());
             ObjectReferenceMapping orm = (ObjectReferenceMapping) session.getDescriptor(CacheableForceProtectedEntity.class).getMappingForAttributeName("cacheableFalse");
-            Object cacheableFalsefk = session.getIdentityMapAccessorInstance().getCacheKeyForObject(cte).getProtectedFKs().get(orm.getSelectFields().get(0));
+            Object cacheableFalsefk = session.getIdentityMapAccessorInstance().getCacheKeyForObject(cte).getProtectedForeignKeys().get(orm.getSelectFields().get(0));
             assertEquals("FK update not cached", cfe.getId(), cacheableFalsefk);
             beginTransaction(em);
             cte.setCacheableFalse(oldcfe);

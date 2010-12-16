@@ -207,7 +207,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    @Override
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         throw DescriptorException.invalidMappingOperation(this, "mergeChangesIntoObject");
     }
 
@@ -215,7 +216,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     * INTERNAL:
     * Merge changes from the source to the target object.
     */
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUninitialized, Object source, MergeManager mergeManager) {
+    @Override
+    public void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
     }
 

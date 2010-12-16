@@ -17,6 +17,7 @@ import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.*;
@@ -331,53 +332,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
+     * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
+     * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
     @Override
-    protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery){
-        AbstractRecord row = cacheKey.getProtectedFKs();
-        int i = 0;
-        for (Enumeration sourceKeys = getSourceKeyFields().elements();
-                 sourceKeys.hasMoreElements(); i++) {
-            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
-            Object value = null;
-            row.remove(sourceKey);
-
-            // First insure that the source foreign key field is in the row.
-            // N.B. If get() is used and returns null it may just mean that the field exists but the value is null.
-            int index = record.getFields().indexOf(sourceKey);
-            if (index == -1) {
-                //Line x: Retrieve the value from the source query's translation row.
-                value = sourceQuery.getTranslationRow().get(sourceKey);
-            } else {
-                value = record.getValues().get(index);
-            }
-            row.add(sourceKey, value);
-
-            //Now duplicate the source key field values with target key fields, so children aggregate collections can later access them.
-            //This will enable the later execution of the above line x.
-            row.add(getTargetForeignKeyFields().elementAt(i), value);
-        }
-
-    }
-
-    /**
-     * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
-     */
-    @Override
-    protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
-        AbstractRecord row = cacheKey.getProtectedFKs();
-        int i = 0;
-        for (Enumeration sourceKeys = getSourceKeyFields().elements();
-                 sourceKeys.hasMoreElements(); i++) {
-            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
-            row.remove(sourceKey);
-            descriptor.getObjectBuilder().getMappingForField(sourceKey).writeFromObjectIntoRow(source, row, session, WriteType.UNDEFINED);
+    public void collectQueryParameters(Set<DatabaseField> cacheFields){
+        for (DatabaseField field : getSourceKeyFields()) {
+            cacheFields.add(field);
         }
     }
 
@@ -1899,9 +1860,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Because this is a collection mapping, values are added to or removed from the
      * collection based on the changeset
      */
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
-        if (this.descriptor.isProtectedIsolation() && !this.isCacheable && targetCacheKey != null && !targetCacheKey.isIsolated()){
-            cacheForeignKeyValues(source, targetCacheKey, descriptor, mergeManager.getSession());
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        if (this.descriptor.isProtectedIsolation()){
+            if (!this.isCacheable && targetSession.isDatabaseSession()){
+                setRealAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            }
             return;
         }
         //Check to see if the target has an instantiated collection
@@ -1949,8 +1912,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             if (targetAggregate == null) {
                 targetAggregate = getReferenceDescriptor(localClassType, session).getObjectBuilder().buildNewInstance();
             }
-            objectChanges.setActiveCacheKey(targetCacheKey);
-            getReferenceDescriptor(localClassType, session).getObjectBuilder().mergeChangesIntoObject(targetAggregate, objectChanges, sourceAggregate, mergeManager);
+            getReferenceDescriptor(localClassType, session).getObjectBuilder().mergeChangesIntoObject(targetAggregate, objectChanges, sourceAggregate, mergeManager, targetSession);
             containerPolicy.addInto(objectChanges.getNewKey(), targetAggregate, valueOfTarget, session);
         }
         setRealAttributeValueInObject(target, valueOfTarget);
@@ -1960,11 +1922,17 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        if (this.descriptor.isProtectedIsolation()){
+            if (!this.isCacheable && targetSession.isDatabaseSession()){
+                setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            }
+            return;
+        }
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!isAttributeValueInstantiatedOrChanged(source))) {
-                setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
+                setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObject(getAttributeValueFromObject(source), targetSession));
                 return;
             }
         }
@@ -2001,7 +1969,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             if (sourceValue != null) {
                 //CR#2896 - TW
                 originalValue = getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().buildNewInstance();
-                getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().mergeIntoObject(originalValue, targetCacheKey, true, sourceValue, mergeManager);
+                getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().mergeIntoObject(originalValue, true, sourceValue, mergeManager, targetSession);
                 containerPolicy.addInto(containerPolicy.keyFromIterator(sourceValuesIterator), originalValue, valueOfTarget, mergeManager.getSession());
             }
         }

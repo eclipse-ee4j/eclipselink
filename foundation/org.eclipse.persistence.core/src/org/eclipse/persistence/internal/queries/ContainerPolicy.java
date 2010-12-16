@@ -692,8 +692,8 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param mergeManager
      * @return
      */
-    public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, Object parent, ClassDescriptor referenceDescriptor, MergeManager mergeManager){
-        return referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject)), mergeManager.getSession());
+    public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, Object parent, ClassDescriptor referenceDescriptor, MergeManager mergeManager, AbstractSession targetSession){
+        return referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject), referenceDescriptor, targetSession), mergeManager.getSession());
     }
     
     /**
@@ -1006,12 +1006,12 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * collection mapping, values are added to or removed from the collection 
      * based on the change set.
      */
-    public Object mergeCascadeParts(ObjectChangeSet objectChanges, MergeManager mergeManager, AbstractSession parentSession) {
+    public Object mergeCascadeParts(ObjectChangeSet objectChanges, MergeManager mergeManager, AbstractSession targetSession) {
         Object object = null;
                 
         if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
             // CR 2855 - Try to find the object first we may have merged it already.
-            object = objectChanges.getTargetVersionOfSourceObject(mergeManager, parentSession);
+            object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
                         
             if ((object == null) && (objectChanges.isNew() || objectChanges.isAggregate()) && objectChanges.containsChangesFromSynchronization()) {
                 if (!mergeManager.getObjectsAlreadyMerged().containsKey(objectChanges)) {
@@ -1031,7 +1031,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
                     object = mergeManager.getObjectsAlreadyMerged().get(objectChanges);
                 }
             } else {
-                object = objectChanges.getTargetVersionOfSourceObject(mergeManager, parentSession, true);
+                object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession, true);
             }
                         
             if (objectChanges.containsChangesFromSynchronization()) {
@@ -1050,7 +1050,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * collection mapping, values are added to or removed from the collection 
      * based on the change set.
      */
-    public void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession parentSession) {
+    public void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectChangeSet objectChanges;        
         // Step 1 - iterate over the removed changes and remove them from the container.
         Iterator removeObjects = changeRecord.getRemoveObjectList().keySet().iterator();
@@ -1064,7 +1064,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         synchronized (synchronizedValueOfTarget) {
             while (removeObjects.hasNext()) {
                 objectChanges = (ObjectChangeSet) removeObjects.next();                
-                removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession()), valueOfTarget, parentSession);
+                removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
                 if (!mergeManager.shouldMergeChangesIntoDistributedCache()) {
                     mergeManager.registerRemovedNewObjectIfRequired(objectChanges.getUnitOfWorkClone());
                 }
@@ -1076,11 +1076,11 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
                 objectChanges = (ObjectChangeSet) addObjects.next();
                 Object object = null;                    
                 if (shouldMergeCascadeParts) {
-                    object = mergeCascadeParts(objectChanges, mergeManager, parentSession);
+                    object = mergeCascadeParts(objectChanges, mergeManager, targetSession);
                 }                    
                 if (object == null) {
                     // Retrieve the object to be added to the collection.
-                    object = objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession(), false);
+                    object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession, false);
                 }
                 // I am assuming that at this point the above merge will have created a new object if required
                 if (mergeManager.shouldMergeChangesIntoDistributedCache()) {

@@ -2495,11 +2495,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (workingClone == null) {
             return null;
         }
+        Object original = null;
         ClassDescriptor descriptor = getDescriptor(workingClone);
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object implementation = builder.unwrapObject(workingClone, this);
-        Object original = getObjectFromSharedCacheForMerge(implementation, builder, descriptor);
-
+        CacheKey cacheKey = getParentIdentityMapSession(descriptor, false, false).getCacheKeyFromTargetSessionForMerge(implementation, builder, descriptor, lastUsedMergeManager);
+        if (cacheKey != null){
+            original = cacheKey.getObject();
+        }
         if (original == null) {
             // Check if it is a registered new object.
             original = getOriginalVersionOfNewObject(implementation);
@@ -2532,34 +2535,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the original version of the object(clone) from the parent's identity map.
      * PERF: Use the change set to avoid cache lookups.
      */
-    public Object getOriginalVersionOfObjectOrNull(Object workingClone, ObjectChangeSet changeSet, ClassDescriptor descriptor) {
+    public Object getOriginalVersionOfObjectOrNull(Object workingClone, ObjectChangeSet changeSet, ClassDescriptor descriptor, AbstractSession targetSession) {
         // Can be null when called from the mappings.
         if (workingClone == null) {
             return null;
         }
-        // First check the cache key.
-        Object original = null;
-        CacheKey cacheKey = null;
-        if (changeSet != null) {
-            cacheKey = changeSet.getActiveCacheKey();
-            if (cacheKey != null) {
-                original =  cacheKey.getObject();
-                if (original != null) {
-                    return original;
-                }
-            }
-        }
+
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object implementation = builder.unwrapObject(workingClone, this);
-        // If the cache key was missing check the cache.
-        if (cacheKey == null) {
-            original = getObjectFromSharedCacheForMerge(implementation, builder, descriptor);
-        }
-
-        if (original == null) {
-            // Check if it is a registered new object.
-            original = getOriginalVersionOfNewObject(implementation);
-        }
+        Object original = getOriginalVersionOfNewObject(implementation);
 
         if (original == null) {
             // For bug 3013948 looking in the cloneToOriginals mapping will not help
@@ -2645,52 +2629,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return this.parent.getPlatform(domainClass);
     }
     
-    /**
-     * INTERNAL:
-     * For use within the merge process this method will get an object from the shared 
-     * cache using a readlock.  If a readlock is unavailable then the merge manager will be 
-     * transitioned to deferred locks and a deferred lock will be used.
-     */
-    protected Object getObjectFromSharedCacheForMerge(Object implementation, ObjectBuilder builder, ClassDescriptor descriptor){
-        Object original = null;
-        Object primaryKey = builder.extractPrimaryKeyFromObject(implementation, this, true);
-        if (this.lastUsedMergeManager == null) {
-            // not merging into the shared cache so just return object from parent identity map
-            // If a nested unit of work, new objects may have null primary keys, and not be in the cache.
-            if (primaryKey == null) {
-                return null;
-            }
-            return this.parent.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, implementation.getClass(), descriptor);
-        }
-        CacheKey cacheKey = this.parent.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
-        if (cacheKey != null) {
-            if (cacheKey.acquireReadLockNoWait()) {
-                original = cacheKey.getObject();
-                cacheKey.releaseReadLock();
-            } else {
-                if (!getMergeManager().isTransitionedToDeferredLocks()) {
-                    this.parent.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(getMergeManager());
-                }
-                cacheKey.acquireDeferredLock();
-                original = cacheKey.getObject();
-                if (original == null) {
-                    synchronized (cacheKey.getMutex()) {
-                        if (cacheKey.isAcquired()) {
-                            try {
-                                cacheKey.getMutex().wait();
-                            } catch (InterruptedException e) {
-                                //ignore and return
-                            }
-                        }
-                        original = cacheKey.getObject();
-                    }
-                }
-                cacheKey.releaseDeferredLock();
-            }
-        }
-        return original;
-    }
-
     /**
      * INTERNAL:
      * Return whether to throw exceptions on conforming queries
@@ -3282,7 +3220,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                                 // so this could be done once.  We should key on class, and only convert to keying on name when broadcasting changes.
                                 ClassDescriptor descriptor = getDescriptor(objectToWrite);
                                 // PERF: Do not merge into the session cache if set to unit of work isolated.
-                                if ((!isNestedUnitOfWork) && (descriptor.shouldIsolateObjectsInUnitOfWork() && !descriptor.isProtectedIsolation())) {
+                                if ((!isNestedUnitOfWork) && descriptor.shouldIsolateObjectsInUnitOfWork() ) {
                                     break;
                                 }
                                 manager.mergeChanges(objectToWrite, changeSetToWrite);

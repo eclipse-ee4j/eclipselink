@@ -18,6 +18,7 @@ import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
@@ -63,6 +64,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     @Override
     public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
         if (getReferenceDescriptor().isIsolated()) {
+ //           TODO
             //referencing an isolated Entity.  Need to load as it will not be in the cache.
         }
         if (attributeValue == null) {
@@ -345,9 +347,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Merge changes from the source to the target object. Which is the original from the parent UnitOfWork
      */
     @Override
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
-        if (this.descriptor.isProtectedIsolation() && !this.isCacheable && targetCacheKey != null && !targetCacheKey.isIsolated()){
-            cacheForeignKeyValues(source, targetCacheKey, descriptor, mergeManager.getSession());
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && targetSession.isDatabaseSession()){
+            setRealAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
         Object targetValueOfSource = null;
@@ -360,7 +362,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                 if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
                     //Let's try and find it first.  We may have merged it already. In which case merge
                     //changes will  stop the recursion
-                    targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession(), false);
+                    targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager, targetSession, false);
                     if ((targetValueOfSource == null) && (set.isNew() || set.isAggregate()) && set.containsChangesFromSynchronization()) {
                         if (!mergeManager.getObjectsAlreadyMerged().containsKey(set)) {
                             // if we haven't merged this object already then build a new object
@@ -379,7 +381,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                         }
                     } else {
                         // If We have not found it anywhere else load it from the database
-                        targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession(), true);
+                        targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager, targetSession, true);
                     }
                     if (set.containsChangesFromSynchronization()) {
                         mergeManager.mergeChanges(targetValueOfSource, set);
@@ -395,7 +397,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }
         if ((targetValueOfSource == null) && (((ObjectReferenceChangeRecord)changeRecord).getNewValue() != null)) {
-            targetValueOfSource = ((ObjectChangeSet)((ObjectReferenceChangeRecord)changeRecord).getNewValue()).getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
+            targetValueOfSource = ((ObjectChangeSet)((ObjectReferenceChangeRecord)changeRecord).getNewValue()).getTargetVersionOfSourceObject(mergeManager, targetSession);
         }
 
         // Register new object in nested units of work must not be registered into the parent,
@@ -404,7 +406,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             mergeManager.registerRemovedNewObjectIfRequired(getRealAttributeValueFromObject(source, mergeManager.getSession()));
         }
 
-        targetValueOfSource = getReferenceDescriptor().getObjectBuilder().wrapObject(targetValueOfSource, mergeManager.getSession());
+        targetValueOfSource = getReferenceDescriptor().getObjectBuilder().wrapObject(targetValueOfSource, targetSession);
         setRealAttributeValueInObject(target, targetValueOfSource);
     }
 
@@ -413,13 +415,17 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Merge changes from the source to the target object.
      */
     @Override
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && targetSession.isDatabaseSession()){
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            return;
+        }
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted,
             // or for new objects.
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal()) {
                 if (!isAttributeValueInstantiated(source)) {
-                    setAttributeValueInObject(target, this.indirectionPolicy.getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
+                    setAttributeValueInObject(target, this.indirectionPolicy.getOriginalIndirectionObject(getAttributeValueFromObject(source), targetSession));
                     return;
                 } else {
                     // Must clear the old value holder to cause it to be reset.
@@ -456,15 +462,15 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (shouldMergeCascadeParts(mergeManager) && (valueOfSource != null)) {
             if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
                 // If it is a unit of work, we have to check if I have a change Set fot this object
-                mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource), (ObjectChangeSet)((UnitOfWorkChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet()).getObjectChangeSetForClone(valueOfSource));
+                mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet()).getObjectChangeSetForClone(valueOfSource));
             } else {
-                mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource), null);
+                mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), null);
             }
         }
 
         if (valueOfSource != null) {
             // Need to do this after merge so that an object exists in the database
-            targetValueOfSource = mergeManager.getTargetVersionOfSourceObject(valueOfSource);
+            targetValueOfSource = mergeManager.getTargetVersionOfSourceObject(valueOfSource, referenceDescriptor, targetSession);
         }
         
         // If merge into the unit of work, must only merge and raise the event is the value changed.
@@ -830,48 +836,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     
     /**
      * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
+     * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
+     * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
     @Override
-    protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery){
-        AbstractRecord rower = cacheKey.getProtectedFKs();
-        int i = 0;
-        for (Enumeration sourceKeys = foreignKeyFields.elements();
-                 sourceKeys.hasMoreElements(); i++) {
-            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
-            Object value = null;
-
-            // First insure that the source foreign key field is in the row.
-            // N.B. If get() is used and returns null it may just mean that the field exists but the value is null.
-            int index = record.getFields().indexOf(sourceKey);
-            if (index == -1) {
-                //Line x: Retrieve the value from the source query's translation row.
-                value = sourceQuery.getTranslationRow().get(sourceKey);
-            } else {
-                value = record.getValues().get(index);
-            }
-            rower.add(sourceKey, value);
+    public void collectQueryParameters(Set<DatabaseField> cacheFields){
+        for (DatabaseField field : foreignKeyFields) {
+            cacheFields.add(field);
         }
-    }
-
-    /**
-     * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
-     */
-    @Override
-    protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
-        AbstractRecord rower = cacheKey.getProtectedFKs();
-        int i = 0;
-        for (Enumeration sourceKeys = foreignKeyFields.elements();
-                 sourceKeys.hasMoreElements(); i++) {
-            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
-            rower.remove(sourceKey);
-        }
-        writeFromObjectIntoRow(source, rower, session, WriteType.UNDEFINED);
     }
 
     /**

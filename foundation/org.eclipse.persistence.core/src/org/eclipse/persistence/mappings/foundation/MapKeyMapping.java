@@ -203,7 +203,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * If required, get the targetVersion of the source object from the merge manager
      * @return
      */
-    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager);
+    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession);
     
     /**
      * INTERNAL:

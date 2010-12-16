@@ -17,6 +17,9 @@ import java.util.Map;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -96,11 +99,25 @@ public class IsolatedClientSession extends ClientSession {
     */
     @Override
     public AbstractSession getParentIdentityMapSession(ClassDescriptor descriptor, boolean canReturnSelf, boolean terminalOnly) {
-        if (descriptor == null || (descriptor.isIsolated() || (!descriptor.shouldIsolateObjectsInUnitOfWork() &&descriptor.isProtectedIsolation()))){ 
+        if (descriptor == null || (descriptor.isIsolated() || (descriptor.isProtectedIsolation() && !descriptor.shouldIsolateProtectedObjectsInUnitOfWork()))){ 
             
             return this;
         }
         return getParent().getParentIdentityMapSession(descriptor, canReturnSelf, terminalOnly);
+    }
+
+    /**
+     * INTERNAL:
+     * For use within the merge process this method will get an object from the shared 
+     * cache using a readlock.  If a readlock is unavailable then the merge manager will be 
+     * transitioned to deferred locks and a deferred lock will be used.
+     */
+    @Override
+    protected CacheKey getCacheKeyFromTargetSessionForMerge(Object implementation, ObjectBuilder builder, ClassDescriptor descriptor, MergeManager mergeManager){
+        Object original = null;
+        Object primaryKey = builder.extractPrimaryKeyFromObject(implementation, this, true);
+        CacheKey cacheKey = this.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
+        return cacheKey;
     }
 
     /**

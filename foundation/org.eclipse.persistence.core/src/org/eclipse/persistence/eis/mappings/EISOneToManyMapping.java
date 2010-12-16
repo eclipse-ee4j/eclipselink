@@ -603,7 +603,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Build and return a new element based on the change set.
      */
-    public Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
+    public Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectChangeSet objectChangeSet = (ObjectChangeSet)changeSet;
 
         if (this.shouldMergeCascadeParts(mergeManager)) {
@@ -616,7 +616,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             mergeManager.mergeChanges(targetElement, objectChangeSet);
         }
 
-        return this.buildElementFromChangeSet(changeSet, mergeManager);
+        return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
 
     /**
@@ -631,15 +631,15 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     /**
      * Build and return a new element based on the change set.
      */
-    protected Object buildElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
-        return ((ObjectChangeSet)changeSet).getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
+    protected Object buildElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
+        return ((ObjectChangeSet)changeSet).getTargetVersionOfSourceObject(mergeManager, targetSession);
     }
 
     /**
      * INTERNAL:
      * Build and return a new element based on the specified element.
      */
-    public Object buildElementFromElement(Object element, CacheKey elementCacheKey, MergeManager mergeManager) {
+    public Object buildElementFromElement(Object element, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.shouldMergeCascadeParts(mergeManager)) {
             ObjectChangeSet objectChangeSet = null;
             if (mergeManager.getSession().isUnitOfWork()) {
@@ -648,11 +648,11 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                     objectChangeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(element);
                 }
             }
-            Object mergeElement = mergeManager.getObjectToMerge(element);
+            Object mergeElement = mergeManager.getObjectToMerge(element, referenceDescriptor, targetSession);
             mergeManager.mergeChanges(mergeElement, objectChangeSet);
         }
 
-        return mergeManager.getTargetVersionOfSourceObject(element);
+        return mergeManager.getTargetVersionOfSourceObject(element, referenceDescriptor, targetSession);
 
     }
 
@@ -660,14 +660,14 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Build and return a new element based on the change set.
      */
-    public Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
+    public Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectChangeSet objectChangeSet = (ObjectChangeSet)changeSet;
 
         if (!mergeManager.shouldMergeChangesIntoDistributedCache()) {
             mergeManager.registerRemovedNewObjectIfRequired(objectChangeSet.getUnitOfWorkClone());
         }
 
-        return this.buildElementFromChangeSet(changeSet, mergeManager);
+        return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
 
     /**
@@ -852,6 +852,21 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      */
     @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        if (this.descriptor.isProtectedIsolation()){
+            if (this.isCacheable && isTargetProtected && cacheKey != null){
+                //cachekey will be null when isolating to uow
+                //used cached collection
+                Object result = null;
+                Object cached = cacheKey.getObject();
+                if (cached != null){
+                    result = this.indirectionPolicy.cloneAttribute(this.getAttributeValueFromObject(cached), cached, cacheKey, null, executionSession, false);
+                }
+                return result;
+                
+            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
+                return null;
+            }
+        }
         if (((EISDescriptor) this.getDescriptor()).getDataFormat() == EISDescriptor.XML) {
             ((XMLRecord) row).setSession(executionSession);
         }

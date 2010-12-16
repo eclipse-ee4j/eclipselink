@@ -2373,6 +2373,56 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
+     * For use within the merge process this method will get an object from the shared 
+     * cache using a readlock.  If a readlock is unavailable then the merge manager will be 
+     * transitioned to deferred locks and a deferred lock will be used.
+     */
+    protected CacheKey getCacheKeyFromTargetSessionForMerge(Object implementation, ObjectBuilder builder, ClassDescriptor descriptor, MergeManager mergeManager){
+      Object original = null;
+       Object primaryKey = builder.extractPrimaryKeyFromObject(implementation, this, true);
+       if (primaryKey == null) {
+           return null;
+       }
+       CacheKey cacheKey = null;
+       if (mergeManager == null){
+           cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
+           if (cacheKey != null){
+               cacheKey.checkReadLock();
+           }
+           return cacheKey;
+       }
+       
+       cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
+       if (cacheKey != null) {
+           if (cacheKey.acquireReadLockNoWait()) {
+               original = cacheKey.getObject();
+               cacheKey.releaseReadLock();
+           } else {
+               if (!mergeManager.isTransitionedToDeferredLocks()) {
+                   getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
+               }
+               cacheKey.acquireDeferredLock();
+               original = cacheKey.getObject();
+               if (original == null) {
+                   synchronized (cacheKey.getMutex()) {
+                       if (cacheKey.isAcquired()) {
+                           try {
+                               cacheKey.getMutex().wait();
+                           } catch (InterruptedException e) {
+                               //ignore and return
+                           }
+                       }
+                       original = cacheKey.getObject();
+                   }
+               }
+               cacheKey.releaseDeferredLock();
+           }
+       }
+       return cacheKey;
+    }
+
+    /**
+     * INTERNAL:
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      * NOTE: this must only be used for relational specific usage,

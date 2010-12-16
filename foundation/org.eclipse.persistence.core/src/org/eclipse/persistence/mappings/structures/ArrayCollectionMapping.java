@@ -28,7 +28,7 @@ public interface ArrayCollectionMapping extends ContainerMapping{
     /**
      * Build and return a newly-added element based on the change set.
      */
-    Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager);
+    Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession);
 
     /**
      * Build and return a change set for the specified element.
@@ -38,12 +38,12 @@ public interface ArrayCollectionMapping extends ContainerMapping{
     /**
      * Build and return a new element based on the specified element.
      */
-    Object buildElementFromElement(Object element, CacheKey elementCacheKey, MergeManager mergeManager);
+    Object buildElementFromElement(Object element, MergeManager mergeManager, AbstractSession targetSession);
 
     /**
      * Build and return a recently-removed element based on the change set.
      */
-    Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager);
+    Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession);
 
     /**
      * Compare the non-null elements and return true if they are alike.

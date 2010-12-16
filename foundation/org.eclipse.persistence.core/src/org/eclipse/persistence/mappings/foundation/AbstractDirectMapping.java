@@ -892,7 +892,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * If required, get the targetVersion of the source object from the merge manager.
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key.
      */
-    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager){
+    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession){
        return object;
     }
     
@@ -1054,7 +1054,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Merge changes from the source to the target object.
      */
     @Override
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         setAttributeValueInObject(target, buildCloneValue(((DirectToFieldChangeRecord)changeRecord).getNewValue(), mergeManager.getSession()));
     }
 
@@ -1064,7 +1064,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * does not exist or the target is uninitialized
      */
     @Override
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         // If merge into the unit of work, must only merge and raise the event is the value changed.
         if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
                 && this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
@@ -1273,7 +1273,6 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
                     Object attributeValue = getAttributeValueFromObject(cached);
                     return buildCloneValue(attributeValue, executionSession);
                 }
-                return null;
             }
         }
         // PERF: Direct variable access.

@@ -190,6 +190,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * Return the original indirection object for a unit of work indirection object.
      * This is used when building a new object from the unit of work when the original fell out of the cache.
      */
+    @Override
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
         return this.getOriginalValueHolder(unitOfWorkIndirectionObject, session);
     }
@@ -198,6 +199,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      *    Return the original indirection object for a unit of work indirection object.
      */
+    @Override
     public Object getOriginalIndirectionObjectForMerge(Object unitOfWorkIndirectionObject, AbstractSession session) {
         DatabaseValueHolder holder = (DatabaseValueHolder)getOriginalIndirectionObject(unitOfWorkIndirectionObject, session);
         if (holder != null && holder.getSession()!= null){
@@ -211,10 +213,11 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * underlying valueholder may be required when serializing the valueholder
      * or converting the valueHolder to another type.
      */
+    @Override
     public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session) {
-        if (unitOfWorkIndirectionObject instanceof UnitOfWorkValueHolder) {
+        if (session.isRemoteUnitOfWork() && unitOfWorkIndirectionObject instanceof UnitOfWorkValueHolder) {
             ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getWrappedValueHolder();
-            if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
+            if (valueHolder == null){
                 // For remote session the original value holder is transient,
                 // so the value must be found in the registry or created.
                 RemoteSessionController controller = ((RemoteUnitOfWork) session).getParentSessionController();
@@ -230,8 +233,20 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
                     valueHolder = (ValueHolderInterface) controller.getRemoteValueHolders().get(id);
                 }
             }
+        }
+        if (unitOfWorkIndirectionObject instanceof DatabaseValueHolder) {
+            ValueHolderInterface valueHolder = null;
+            if (session.isClientSession()){
+                valueHolder =  ((DatabaseValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
+            }
+            if (session.isDatabaseSession()){
+                valueHolder = ((DatabaseValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
+                while (valueHolder instanceof DatabaseValueHolder && ((DatabaseValueHolder)valueHolder).getWrappedValueHolder() != null){
+                    valueHolder = ((DatabaseValueHolder)valueHolder).getWrappedValueHolder();
+                }
+            }
             if ((valueHolder != null) && (valueHolder instanceof DatabaseValueHolder)) {
-                ((DatabaseValueHolder) valueHolder).releaseWrappedValueHolder();
+                ((DatabaseValueHolder) valueHolder).releaseWrappedValueHolder(session);
             }
             return valueHolder;
         } else {

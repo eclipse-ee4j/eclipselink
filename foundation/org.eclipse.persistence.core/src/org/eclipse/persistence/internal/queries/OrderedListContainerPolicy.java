@@ -442,7 +442,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * based on the change set.
      */
     @Override
-    public void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession parentSession) {
+    public void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectChangeSet objectChanges;
         // Ensure the collection is synchronized while changes are being made,
         // clone also synchronizes on collection (does not have cache key read-lock for indirection).
@@ -464,7 +464,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                     objectChanges = changeObject.getChangeSet();
                     if (changeObject.getChangeType() == CollectionChangeEvent.REMOVE){
                         boolean objectRemoved = changeRecord.getRemoveObjectList().containsKey(objectChanges);
-                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
+                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
                         
                         //if objectToRemove is null, we can't look it up in the collection. 
                         // This should not happen unless identity is lost.
@@ -477,11 +477,11 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                                     // Object is in the cache, but the collection doesn't have it at the location we expect
                                     // Collection is invalid with respect to these changes, so invalidate the parent and abort 
                                     Object key = changeRecord.getOwner().getId();
-                                    parentSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(parentSession));
+                                    targetSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(targetSession));
                                     return;
                                 }
                             } else {
-                                removeFrom(objectToRemove, valueOfTarget, parentSession);
+                                removeFrom(objectToRemove, valueOfTarget, targetSession);
                             }
                             
                             if ((! mergeManager.shouldMergeChangesIntoDistributedCache()) && changeRecord.getMapping().isPrivateOwned()) {
@@ -498,12 +498,12 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                         Object object = null;
                         // The object was actually added and not moved.
                         if (objectAdded && shouldMergeCascadeParts) {
-                            object = mergeCascadeParts(objectChanges, mergeManager, parentSession);
+                            object = mergeCascadeParts(objectChanges, mergeManager, targetSession);
                         }
                         
                         if (object == null) {
                             // Retrieve the object to be added to the collection.
-                            object = objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
+                            object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
                         }
                         
                         // Assume at this point the above merge will have created a new 
@@ -516,7 +516,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                                 addIntoAtIndex(changeObject.getIndex(), object, valueOfTarget, mergeManager.getSession());                                
                             }
                         } else {
-                            addIntoAtIndex(changeObject.getIndex(), object, valueOfTarget, mergeManager.getSession());
+                            addIntoAtIndex(changeObject.getIndex(), object, valueOfTarget, targetSession);
                         }
                     }
                 }
@@ -532,14 +532,14 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                 
                     while (removedObjects.hasNext()) {
                         objectChanges = (ObjectChangeSet) removedObjects.next();
-                        removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession()), valueOfTarget, parentSession);
+                        removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
                         registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
                     }
                 } else {
                     for (int i = removedIndices.size() - 1; i >= 0; i--) {
                         Integer index = ((Integer) removedIndices.elementAt(i)).intValue();
                         objectChanges = (ObjectChangeSet) changeRecord.getOrderedRemoveObject(index);
-                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
+                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
                         if ( (objectToRemove!=null) && 
                                     (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()) )) ) {
                             removeFromAtIndex(index, valueOfTarget);
@@ -552,7 +552,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                             //Object is either not in the cache, or not at the location we expect
                             // Collection is invalid with respect to these changes, so invalidate the parent and abort 
                             Object key = changeRecord.getOwner().getId();
-                            parentSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(parentSession));
+                            targetSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(targetSession));
                             return;
                         }
                     }
@@ -567,12 +567,12 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                     
                     // The object was actually added and not moved.
                     if (objectAdded && shouldMergeCascadeParts) {
-                        object = mergeCascadeParts(objectChanges, mergeManager, parentSession);
+                        object = mergeCascadeParts(objectChanges, mergeManager, targetSession);
                     }
                     
                     if (object == null) {
                         // Retrieve the object to be added to the collection.
-                        object = objectChanges.getTargetVersionOfSourceObject(mergeManager, mergeManager.getSession());
+                        object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
                     }
     
                     // Assume at this point the above merge will have created a new 
@@ -585,7 +585,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                             addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, mergeManager.getSession());                                
                         }
                     } else {
-                        addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, mergeManager.getSession());
+                        addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, targetSession);
                     }
                 }
             }

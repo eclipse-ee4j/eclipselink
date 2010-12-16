@@ -367,19 +367,25 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * The object's changed attributes will be merged and added to the identity map
      * @param shouldRead boolean if the object can not be found should it be read in from the database.
      */
-    public Object getTargetVersionOfSourceObject(MergeManager mergeManager, AbstractSession session, boolean shouldRead) {
+    public Object getTargetVersionOfSourceObject(MergeManager mergeManager, AbstractSession targetSession, boolean shouldRead) {
         Object attributeValue = null;
         ClassDescriptor descriptor = getDescriptor();
         if (descriptor == null) {
-            descriptor = session.getDescriptor(getClassType(session));
+            descriptor = targetSession.getDescriptor(getClassType(targetSession));
         }
 
         if (descriptor != null) {
-            if (session.isUnitOfWork()) {
+            if (mergeManager.getSession().isUnitOfWork()) {
                 // The unit of works will have a copy or a new instance must be made
-                if (((UnitOfWorkImpl)session).getLifecycle() == UnitOfWorkImpl.MergePending) {
+                if (((UnitOfWorkImpl)mergeManager.getSession()).getLifecycle() == UnitOfWorkImpl.MergePending) {
                     // We are merging the unit of work into the original.
-                    attributeValue = ((UnitOfWorkImpl)session).getOriginalVersionOfObjectOrNull(getUnitOfWorkClone(), this, descriptor);
+                    CacheKey cacheKey = getObjectFromSharedCacheForMerge(mergeManager, targetSession, getId(), descriptor);
+                    if (cacheKey != null){
+                        attributeValue = cacheKey.getObject();
+                    }
+                    if (attributeValue == null){
+                        attributeValue = ((UnitOfWorkImpl)mergeManager.getSession()).getOriginalVersionOfObjectOrNull(getUnitOfWorkClone(), this, descriptor, targetSession);
+                    }
                 } else {
                     // We are merging something else within the unit of work.
                     // this is most likely because we are updating a backup clone and can retrieve
@@ -388,7 +394,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 }
             } else {
                 // It is not a unitOfWork so we must be merging into a distributed cache.
-                CacheKey cacheKey = getObjectFromSharedCacheForMerge(mergeManager, session, getId(), descriptor);
+                CacheKey cacheKey = getObjectFromSharedCacheForMerge(mergeManager, targetSession, getId(), descriptor);
                 this.activeCacheKey = cacheKey;
                 if (cacheKey != null){
                     attributeValue = cacheKey.getObject();
@@ -400,9 +406,9 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 // Then load the object if possible
                 ReadObjectQuery query = new ReadObjectQuery();
                 query.setShouldUseWrapperPolicy(false);
-                query.setReferenceClass(getClassType(session));
+                query.setReferenceClass(getClassType(targetSession));
                 query.setSelectionId(getId());
-                attributeValue = session.executeQuery(query);
+                attributeValue = targetSession.executeQuery(query);
             }
         }
         

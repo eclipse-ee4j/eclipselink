@@ -246,7 +246,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
             } else {
                 MergeManager mergeManager = new MergeManager(uow);
                 mergeManager.setCascadePolicy(MergeManager.NO_CASCADE);
-                descriptor.getObjectBuilder().mergeChangesIntoObject(backupClone, objectChangeSet, clone, mergeManager);
+                descriptor.getObjectBuilder().mergeChangesIntoObject(backupClone, objectChangeSet, clone, mergeManager, mergeManager.getSession());
             }
         }
         clearChanges(clone, uow, descriptor);

@@ -111,6 +111,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Return the original indirection object for a unit of work indirection object.
      */
+    @Override
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
         // This code appears broken, but actually is unreachable because
         // only called when indirection is true.
@@ -122,6 +123,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * underlying valueholder may be required when serializing the valueholder
      * or converting the valueHolder to another type.
      */
+    @Override
     public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session){
         return unitOfWorkIndirectionObject;
     }

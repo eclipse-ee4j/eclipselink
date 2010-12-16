@@ -347,7 +347,7 @@ public class CacheKey implements Serializable, Cloneable {
      * INTERNAL:
      * Return the FK cache
      */
-    public AbstractRecord getProtectedFKs(){
+    public AbstractRecord getProtectedForeignKeys(){
         if (this.protectedForeignKeys == null){
             this.protectedForeignKeys = new DatabaseRecord();
         }
@@ -437,6 +437,10 @@ public class CacheKey implements Serializable, Cloneable {
         this.mapOwner = map;
     }
     
+    public void setProtectedForeignKeys(AbstractRecord protectedForeignKeys) {
+        this.protectedForeignKeys = protectedForeignKeys;
+    }
+
     /**
      * INTERNAL:
      * Set the read time of this cache key

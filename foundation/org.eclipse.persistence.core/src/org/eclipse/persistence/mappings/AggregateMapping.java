@@ -533,7 +533,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
     /**
      * Merge the attribute values.
      */
-    protected void mergeAttributeValue(Object targetAttributeValue, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object sourceAttributeValue, MergeManager mergeManager) {
+    protected void mergeAttributeValue(Object targetAttributeValue, boolean isTargetUnInitialized, Object sourceAttributeValue, MergeManager mergeManager, AbstractSession targetSession) {
         // don't merge read-only attributes
         if (mergeManager.getSession().isClassReadOnly(sourceAttributeValue.getClass())) {
             return;
@@ -546,7 +546,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         ClassDescriptor descriptor = getReferenceDescriptor(sourceAttributeValue, mergeManager.getSession());
         descriptor.getObjectChangePolicy().dissableEventProcessing(targetAttributeValue);
         try {
-            descriptor.getObjectBuilder().mergeIntoObject(targetAttributeValue, targetCacheKey, isTargetUnInitialized, sourceAttributeValue, mergeManager);
+            descriptor.getObjectBuilder().mergeIntoObject(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager, targetSession);
         } finally {            
             descriptor.getObjectChangePolicy().enableEventProcessing(targetAttributeValue);
         }
@@ -560,7 +560,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * The actual aggregate object does not need to be replaced, because even if the clone references
      * another aggregate it appears the same to TopLink
      */
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectChangeSet aggregateChangeSet = (ObjectChangeSet)((AggregateChangeRecord)changeRecord).getChangedObject();
         if (aggregateChangeSet == null) {// the change was to set the value to null
             setAttributeValueInObject(target, null);
@@ -584,8 +584,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
                 targetAggregate = objectBuilder.buildNewInstance();
             }
         }
-        aggregateChangeSet.setActiveCacheKey(targetCacheKey);
-        objectBuilder.mergeChangesIntoObject(targetAggregate, aggregateChangeSet, sourceAggregate, mergeManager);
+        objectBuilder.mergeChangesIntoObject(targetAggregate, aggregateChangeSet, sourceAggregate, mergeManager, targetSession);
         setAttributeValueInObject(target, targetAggregate);
     }
 
@@ -594,7 +593,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Merge changes from the source to the target object. This merge is only called when a changeSet for the target
      * does not exist or the target is uninitialized
      */
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         Object sourceAttributeValue = getAttributeValueFromObject(source);
         if (sourceAttributeValue == null) {
             setAttributeValueInObject(target, null);
@@ -606,7 +605,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             // avoid null-pointer/nothing to merge to - create a new instance
             // (a new clone cannot be used as all changes must be merged)
             targetAttributeValue = buildNewMergeInstanceOf(sourceAttributeValue, mergeManager.getSession());
-            mergeAttributeValue(targetAttributeValue, targetCacheKey, true, sourceAttributeValue, mergeManager);
+            mergeAttributeValue(targetAttributeValue, true, sourceAttributeValue, mergeManager, targetSession);
             // setting new instance so fire event as if set was called by user.
             // this call will eventually get passed to updateChangeRecord which will 
             //ensure this new aggregates is fully initialized with listeners.
@@ -616,7 +615,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             }
             
         } else {
-            mergeAttributeValue(targetAttributeValue, targetCacheKey, isTargetUnInitialized, sourceAttributeValue, mergeManager);
+            mergeAttributeValue(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager, targetSession);
         }
 
         // Must re-set variable to allow for set method to re-morph changes.

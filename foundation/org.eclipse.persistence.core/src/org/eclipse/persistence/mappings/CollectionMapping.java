@@ -429,23 +429,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
+     * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
+     * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
     @Override
-    protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery){
+    public void collectQueryParameters(Set<DatabaseField> record){
         //no-op for mappings that do not support PROTECTED cache isolation
-    }
-
-    /**
-     * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
-     */
-    @Override
-    protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
     }
 
     /**
@@ -470,9 +459,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Cascade the merge to the component object, if appropriate.
      */
     @Override
-    public void cascadeMerge(Object sourceElement, MergeManager mergeManager) {
+    public void cascadeMerge_(Object sourceElement, MergeManager mergeManager, AbstractSession targetSession) {
         if (shouldMergeCascadeParts(mergeManager)) {
-            mergeManager.mergeChanges(mergeManager.getObjectToMerge(sourceElement), null);
+            mergeManager.mergeChanges(mergeManager.getObjectToMerge(sourceElement, referenceDescriptor, targetSession), null);
         }
     }
 
@@ -1297,14 +1286,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * collection based on the changeset
      */
     @Override
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord chgRecord, Object source, MergeManager mergeManager) {
-        if (this.descriptor.isProtectedIsolation() && !this.isCacheable && targetCacheKey != null && !targetCacheKey.isIsolated()){
-            cacheForeignKeyValues(source, targetCacheKey, descriptor, mergeManager.getSession());
+    public void mergeChangesIntoObject(Object target, ChangeRecord chgRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && targetSession.isDatabaseSession()){
+            setRealAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
         Object valueOfTarget = null;
         Object valueOfSource = null;
-        AbstractSession parentSession = null;
         ContainerPolicy containerPolicy = this.containerPolicy;
         CollectionChangeRecord changeRecord = (CollectionChangeRecord) chgRecord;
         UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)changeRecord.getOwner().getUOWChangeSet();
@@ -1319,15 +1307,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 valueOfTarget = getRealCollectionAttributeValueFromObject(target, mergeManager.getSession());
             }
 
-            // Remove must happen before add to allow for changes in hash keys.
-            // This is required to return the appropriate object from the parent when unwrapping.
-            if (mergeManager.getSession().isUnitOfWork()) {
-                parentSession = ((UnitOfWorkImpl)mergeManager.getSession()).getParent();
-            } else {
-                parentSession = mergeManager.getSession();
-            }
-            
-            containerPolicy.mergeChanges(changeRecord, valueOfTarget, shouldMergeCascadeParts(mergeManager), mergeManager, parentSession);
+            containerPolicy.mergeChanges(changeRecord, valueOfTarget, shouldMergeCascadeParts(mergeManager), mergeManager, targetSession);
         } else { 
             // The valueholder has not been instantiated
             if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
@@ -1351,7 +1331,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
                 // Let the mergemanager get it because I don't have the change for the object.
                 // CR#2188 Problem with merging Collection mapping in unit of work and transparent indirection.
-                containerPolicy.addInto(mergeManager.getTargetVersionOfSourceObject(objectToMerge), valueOfTarget, mergeManager.getSession());
+                containerPolicy.addInto(mergeManager.getTargetVersionOfSourceObject(objectToMerge, referenceDescriptor, targetSession), valueOfTarget, mergeManager.getSession());
             }
         }
         if (valueOfTarget == null) {
@@ -1366,11 +1346,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * does not exist or the target is uninitialized
      */
     @Override
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && targetSession.isDatabaseSession()){
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            return;
+        }
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!isAttributeValueInstantiated(source))) {
-                setAttributeValueInObject(target, this.indirectionPolicy.getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
+                setAttributeValueInObject(target, this.indirectionPolicy.getOriginalIndirectionObject(getAttributeValueFromObject(source), targetSession));
                 return;
             }
         }
@@ -1386,7 +1370,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             if (!isAttributeValueInstantiated(target)) {
                 // We must clone and set the value holder from the source to the target.
                 Object attributeValue = getAttributeValueFromObject(source);
-                Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, targetCacheKey, target, (UnitOfWorkImpl) mergeManager.getSession(), false); // building clone from an original not a row. 
+                Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, null, target, (UnitOfWorkImpl) mergeManager.getSession(), false); // building clone from an original not a row. 
                 setAttributeValueInObject(target, clonedAttributeValue);
                 
                 // This will occur when the clone's value has not been instantiated yet and we do not need
@@ -1465,12 +1449,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 if (shouldMergeCascadeParts(mergeManager)) {
                     if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
                         // If it is a unit of work, we have to check if I have a change Set for this object
-                        mergeManager.mergeChanges(mergeManager.getObjectToMerge(object), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object));
+                        mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object));
                     } else {
-                        mergeManager.mergeChanges(mergeManager.getObjectToMerge(object), null);
+                        mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), null);
                     }
                 }
-                wrappedObject = containerPolicy.createWrappedObjectFromExistingWrappedObject(wrappedObject, source, referenceDescriptor, mergeManager);
+                wrappedObject = containerPolicy.createWrappedObjectFromExistingWrappedObject(wrappedObject, source, referenceDescriptor, mergeManager, targetSession);
                 synchronized (valueOfTarget) {
                     if (fireChangeEvents) {
                         //Collections may not be indirect list or may have been replaced with user collection.

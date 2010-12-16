@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -188,45 +189,12 @@ public class RelationTableMechanism  implements Cloneable {
     
     /**
      * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
+     * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
+     * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
-    protected void cacheForeignKeyValues(AbstractRecord record, CacheKey cacheKey, ObjectBuildingQuery sourceQuery){
-        AbstractRecord row = cacheKey.getProtectedFKs();
-        int i = 0;
-        for (Enumeration sourceKeys = getSourceKeyFields().elements();
-                 sourceKeys.hasMoreElements(); i++) {
-            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
-            Object value = null;
-            row.remove(sourceKey);
-            // First insure that the source foreign key field is in the row.
-            // N.B. If get() is used and returns null it may just mean that the field exists but the value is null.
-            int index = record.getFields().indexOf(sourceKey);
-            if (index == -1) {
-                //Line x: Retrieve the value from the source query's translation row.
-                value = sourceQuery.getTranslationRow().get(sourceKey);
-            } else {
-                value = record.getValues().get(index);
-            }
-            row.add(sourceKey, value);
-        }
-    }
-
-    /**
-     * INTERNAL: 
-     * This method is used to store the FK values used for this mapping in the cachekey.
-     * This is used when the mapping is protected but we have retrieved the fk values and will cache
-     * them for use when the entity is cloned.
-     */
-    protected void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
-        AbstractRecord row = cacheKey.getProtectedFKs();
-        int i = 0;
-        for (Enumeration sourceKeys = getSourceKeyFields().elements();
-                 sourceKeys.hasMoreElements(); i++) {
-            DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
-            row.remove(sourceKey);
-            descriptor.getObjectBuilder().getMappingForField(sourceKey).writeFromObjectIntoRow(source, row, session, WriteType.UNDEFINED);
+    protected void collectQueryParameters(Set<DatabaseField> cacheFields){
+        for (DatabaseField field : getSourceKeyFields()) {
+            cacheFields.add(field);
         }
     }
 

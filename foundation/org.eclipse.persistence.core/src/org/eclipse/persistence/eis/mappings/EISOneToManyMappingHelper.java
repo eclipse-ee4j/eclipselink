@@ -17,6 +17,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.config.TargetServer;
 import org.eclipse.persistence.eis.EISCollectionChangeRecord;
 import org.eclipse.persistence.eis.EISOrderedCollectionChangeRecord;
 
@@ -42,8 +43,8 @@ public class EISOneToManyMappingHelper {
     /**
      * Convenience method.
      */
-    private Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
-        return this.getMapping().buildAddedElementFromChangeSet(changeSet, mergeManager);
+    private Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
+        return this.getMapping().buildAddedElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
 
     /**
@@ -56,15 +57,15 @@ public class EISOneToManyMappingHelper {
     /**
      * Convenience method.
      */
-    private Object buildElementFromElement(Object element, CacheKey elementCacheKey, MergeManager mergeManager) {
-        return this.getMapping().buildElementFromElement(element, elementCacheKey, mergeManager);
+    private Object buildElementFromElement(Object element, MergeManager mergeManager, AbstractSession targetSession) {
+        return this.getMapping().buildElementFromElement(element, mergeManager, targetSession);
     }
 
     /**
      * Convenience method.
      */
-    private Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager) {
-        return this.getMapping().buildRemovedElementFromChangeSet(changeSet, mergeManager);
+    private Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
+        return this.getMapping().buildRemovedElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
 
     /**
@@ -349,11 +350,11 @@ public class EISOneToManyMappingHelper {
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
-    public void mergeChangesIntoObject(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.getContainerPolicy().hasOrder()) {
-            this.mergeChangesIntoObjectWithOrder(target, targetCacheKey, changeRecord, source, mergeManager);
+            this.mergeChangesIntoObjectWithOrder(target, changeRecord, source, mergeManager, targetSession);
         } else {
-            this.mergeChangesIntoObjectWithoutOrder(target, targetCacheKey, changeRecord, source, mergeManager);
+            this.mergeChangesIntoObjectWithoutOrder(target, changeRecord, source, mergeManager, targetSession);
         }
     }
 
@@ -361,7 +362,7 @@ public class EISOneToManyMappingHelper {
      * Merge changes from the source to the target object.
      * Simply replace the entire target collection.
      */
-    private void mergeChangesIntoObjectWithOrder(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    private void mergeChangesIntoObjectWithOrder(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         ContainerPolicy cp = this.getContainerPolicy();
         AbstractSession session = mergeManager.getSession();
 
@@ -369,7 +370,7 @@ public class EISOneToManyMappingHelper {
         Object targetCollection = cp.containerInstance(changes.size());
 
         for (Enumeration stream = changes.elements(); stream.hasMoreElements();) {
-            Object targetElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager);
+            Object targetElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
             cp.addInto(targetElement, targetCollection, session);
         }
 
@@ -381,7 +382,7 @@ public class EISOneToManyMappingHelper {
      * Merge changes from the source to the target object.
      * Make the necessary removals and adds and map key modifications.
      */
-    private void mergeChangesIntoObjectWithoutOrder(Object target, CacheKey targetCacheKey, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+    private void mergeChangesIntoObjectWithoutOrder(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         EISCollectionChangeRecord sdkChangeRecord = (EISCollectionChangeRecord)changeRecord;
         ContainerPolicy cp = this.getContainerPolicy();
         AbstractSession session = mergeManager.getSession();
@@ -399,7 +400,7 @@ public class EISOneToManyMappingHelper {
 
         synchronized (targetCollection) {
             for (Enumeration stream = removes.elements(); stream.hasMoreElements();) {
-                Object removeElement = this.buildRemovedElementFromChangeSet(stream.nextElement(), mergeManager);
+                Object removeElement = this.buildRemovedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
 
                 Object targetElement = null;
                 for (Object iter = cp.iteratorFor(targetCollection); cp.hasNext(iter);) {
@@ -415,12 +416,12 @@ public class EISOneToManyMappingHelper {
             }
 
             for (Enumeration stream = adds.elements(); stream.hasMoreElements();) {
-                Object addElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager);
+                Object addElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
                 cp.addInto(addElement, targetCollection, session);
             }
 
             for (Enumeration stream = changedMapKeys.elements(); stream.hasMoreElements();) {
-                Object changedMapKeyElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager);
+                Object changedMapKeyElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
                 Object originalElement = ((UnitOfWorkImpl)session).getOriginalVersionOfObject(changedMapKeyElement);
                 cp.removeFrom(originalElement, targetCollection, session);
                 cp.addInto(changedMapKeyElement, targetCollection, session);
@@ -436,7 +437,7 @@ public class EISOneToManyMappingHelper {
      * Merge changes from the source to the target object.
      * Simply replace the entire target collection.
      */
-    public void mergeIntoObject(Object target, CacheKey targetCacheKey, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         ContainerPolicy cp = this.getContainerPolicy();
         AbstractSession session = mergeManager.getSession();
 
@@ -444,7 +445,7 @@ public class EISOneToManyMappingHelper {
         Object targetCollection = cp.containerInstance(cp.sizeFor(sourceCollection));
 
         for (Object iter = cp.iteratorFor(sourceCollection); cp.hasNext(iter);) {
-            Object targetElement = this.buildElementFromElement(cp.next(iter, session), targetCacheKey, mergeManager);
+            Object targetElement = this.buildElementFromElement(cp.next(iter, session), mergeManager, targetSession);
             cp.addInto(targetElement, targetCollection, session);
         }
 

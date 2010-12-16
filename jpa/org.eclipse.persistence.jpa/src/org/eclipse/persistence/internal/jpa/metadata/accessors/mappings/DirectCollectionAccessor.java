@@ -34,7 +34,7 @@ import javax.persistence.FetchType;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.JoinFetch;
-import org.eclipse.persistence.annotations.NonCacheable;
+import org.eclipse.persistence.annotations.Noncacheable;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -105,7 +105,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // collection tables, we will not initialize/look for one here. Those
         // accessors will be responsible for loading their collection table.
         
-        m_nonCacheable = isAnnotationPresent(NonCacheable.class);
+        m_nonCacheable = isAnnotationPresent(Noncacheable.class);
 
     }
     

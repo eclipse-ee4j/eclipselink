@@ -989,8 +989,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
      * @return
      */
-    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager){
-       return  mergeManager.getTargetVersionOfSourceObject(object);
+    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession){
+       return  mergeManager.getTargetVersionOfSourceObject(object, referenceDescriptor, targetSession);
     }
     
     /**

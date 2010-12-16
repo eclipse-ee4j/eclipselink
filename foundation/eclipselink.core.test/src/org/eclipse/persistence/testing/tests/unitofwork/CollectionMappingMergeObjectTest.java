@@ -40,6 +40,7 @@ public class CollectionMappingMergeObjectTest extends org.eclipse.persistence.te
         //
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        e = null;
     }
 
     public void test() {
