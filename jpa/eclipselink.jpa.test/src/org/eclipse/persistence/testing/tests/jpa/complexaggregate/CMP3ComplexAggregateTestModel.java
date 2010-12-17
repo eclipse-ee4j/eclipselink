@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/17/2010-2.2 Guy Pelletier 
+ *       - 330755: Nested embeddables can't be used as embedded ids
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
@@ -32,6 +34,7 @@ public class CMP3ComplexAggregateTestModel extends CMP3TestModel {
         addTest(new AggregatePrimaryKeyTest());
         addTest(new AggregatePrimaryKeyOrderByTest());
         addTest(new NestedAggregateTest());
+        addTest(new NestedAggregatePrimaryKeyTest());
         addTest(new AggregateReadOnlyMapKeyTest());
         addTest(new ComplexAggregateJoin());
     }

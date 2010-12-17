@@ -9,15 +9,19 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/17/2010-2.2 Guy Pelletier 
+ *       - 330755: Nested embeddables can't be used as embedded ids
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
+import java.security.AccessController;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
@@ -26,6 +30,8 @@ import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -274,6 +280,41 @@ public class CMPPolicy implements java.io.Serializable {
     
     /**
      * INTERNAL:
+     * Recursive method to set a field value in the given key instance.
+     */
+    protected void setFieldValue(KeyElementAccessor accessor, Object keyInstance, DatabaseMapping mapping, AbstractSession session, int[] elementIndex, Object ... keyElements) {
+        if (mapping.isAggregateMapping()) {
+            Object nestedObject = mapping.getRealAttributeValueFromObject(keyInstance, session);
+            
+            if (nestedObject == null) {
+                nestedObject = getClassInstance(mapping.getReferenceDescriptor().getJavaClass());
+                mapping.setRealAttributeValueInObject(keyInstance, nestedObject);
+            }
+            
+            // keep drilling down the nested mappings ... 
+            setFieldValue(accessor, nestedObject, mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField()), session, elementIndex, keyElements);
+        } else {
+            Object fieldValue = null;
+            
+            if (mapping.isDirectToFieldMapping()) {
+                fieldValue = keyElements[elementIndex[0]];
+                Converter converter = ((DirectToFieldMapping) mapping).getConverter();
+                if (converter != null){
+                    fieldValue = converter.convertDataValueToObjectValue(fieldValue, session);
+                }
+                ++elementIndex[0];
+            } else if (mapping.isObjectReferenceMapping()) { 
+                // what if mapping comes from derived ID. need to get the derived mapping.
+                // get reference descriptor and extract pk from target cmp policy
+                fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, keyElements);
+            }
+            
+            accessor.setValue(keyInstance, fieldValue);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Return if this policy is for CMP3.
      */
     public boolean isCMP3Policy() {
@@ -321,32 +362,28 @@ public class CMPPolicy implements java.io.Serializable {
                 //get reference descriptor and extract pk from target cmp policy
                 keyInstance = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, keyElements);
             }
-            ++elementIndex[0]; // remove processed key incase keys are complex and derrived
+            ++elementIndex[0]; // remove processed key in case keys are complex and derived
         } else {
             keyInstance = getPKClassInstance();
             //get clone of Key so we can remove values.
             for (int index = 0; index < pkElementArray.length; index++) {
                 KeyElementAccessor accessor = pkElementArray[index];
                 DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
-                if (mapping == null){
+                if (mapping == null) {
                     mapping = getDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
                 }
-                while (mapping.isAggregateMapping()){
-                    mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
-                }
-                Object fieldValue = null;
-                if (mapping.isDirectToFieldMapping()) {
-                    fieldValue = keyElements[elementIndex[0]];
-                    Converter converter = ((DirectToFieldMapping) mapping).getConverter();
-                    if (converter != null){
-                        fieldValue = converter.convertDataValueToObjectValue(fieldValue, session);
+                
+                if (accessor.isNestedAccessor()) {
+                    // Need to recursively build all the nested objects.
+                    setFieldValue(accessor, keyInstance, mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField()), session, elementIndex, keyElements);
+                } else {
+                    // Not nested but may be a single layer aggregate so check.
+                    if (mapping.isAggregateMapping()) {
+                        mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
                     }
-                    ++elementIndex[0];
-                } else if (mapping.isObjectReferenceMapping()) { // what if mapping comes from derived ID.  need to get the derived mapping.
-                    //get reference descriptor and extract pk from target cmp policy
-                    fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, keyElements);
+                    
+                    setFieldValue(accessor, keyInstance, mapping, session, elementIndex, keyElements);
                 }
-                accessor.setValue(keyInstance, fieldValue);
             }
         }
 
@@ -393,6 +430,26 @@ public class CMPPolicy implements java.io.Serializable {
         }
         
         return keyInstance;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return a new instance of the class provided.
+     */
+    public Object getClassInstance(Class cls) {
+        if (cls != null){
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(cls));
+                } else {
+                    return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(cls);
+                }
+            } catch (Exception e) {
+                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(cls.getName(), e);
+            }
+        }
+        
+        return null;
     }
     
     /**
@@ -469,6 +526,7 @@ public class CMPPolicy implements java.io.Serializable {
         public DatabaseMapping getMapping();
         public Object getValue(Object object, AbstractSession session);
         public void setValue(Object object, Object value);
+        public boolean isNestedAccessor();
     }
     
     /**
@@ -500,6 +558,10 @@ public class CMPPolicy implements java.io.Serializable {
         
         public Object getValue(Object object, AbstractSession session) {
             return object;
+        }
+        
+        public boolean isNestedAccessor() {
+            return false;
         }
         
         public void setValue(Object object, Object value) {

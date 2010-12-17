@@ -16,7 +16,9 @@
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)    
  *     02/25/2009-2.0 Guy Pelletier 
- *       - 265359: JPA 2.0 Element Collections - Metadata processing portions  
+ *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     12/17/2010-2.2 Guy Pelletier 
+ *       - 330755: Nested embeddables can't be used as embedded ids
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
@@ -40,8 +42,39 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         addTableDefinition(buildROLETable());
         addTableDefinition(buildPLAYERROLESTable());
         addTableDefinition(buildHockeyCoach_NICKNAMESTable());
+        
+        addTableDefinition(buildBODYTable());
     }
 
+    public TableDefinition buildBODYTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_BODY");
+        
+        FieldDefinition fieldCOUNT = new FieldDefinition();
+        fieldCOUNT.setName("COUNT");
+        fieldCOUNT.setTypeName("NUMBER");
+        fieldCOUNT.setSize(15);
+        fieldCOUNT.setSubSize(0);
+        fieldCOUNT.setIsPrimaryKey(false);
+        fieldCOUNT.setIsIdentity(false);
+        fieldCOUNT.setUnique(false);
+        fieldCOUNT.setShouldAllowNull(false);
+        table.addField(fieldCOUNT);
+        
+        FieldDefinition fieldHEARTSIZE = new FieldDefinition();
+        fieldHEARTSIZE.setName("H_SIZE");
+        fieldHEARTSIZE.setTypeName("NUMBER");
+        fieldHEARTSIZE.setSize(15);
+        fieldHEARTSIZE.setSubSize(0);
+        fieldHEARTSIZE.setIsPrimaryKey(false);
+        fieldHEARTSIZE.setIsIdentity(false);
+        fieldHEARTSIZE.setUnique(false);
+        fieldHEARTSIZE.setShouldAllowNull(false);
+        table.addField(fieldHEARTSIZE);
+        
+        return table;
+    }
+    
     public TableDefinition buildCITYSLICKERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CITYSLICKER");

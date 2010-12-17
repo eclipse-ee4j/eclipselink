@@ -37,9 +37,12 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     12/17/2010-2.2 Guy Pelletier 
+ *       - 330755: Nested embeddables can't be used as embedded ids
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -118,6 +121,31 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     /**
      * INTERNAL:
      */
+    protected void addIdFieldsFromAccessors(Collection<MappingAccessor> accessors) {
+        // Go through all our mappings, the fields from those mappings will
+        // make up the composite primary key.
+        for (MappingAccessor accessor : accessors) {
+            if (accessor.isBasic()) {
+                addIdFieldFromAccessor(accessor);
+            } else if (accessor.isDerivedIdClass()) {
+                for (MappingAccessor embeddedAccessor : accessor.getReferenceAccessors()) {
+                    addIdFieldFromAccessor(embeddedAccessor);
+                }
+            } else if (accessor.isEmbedded()) {
+                // Recursively bury down on the embedded accessors.
+                addIdFieldsFromAccessors(accessor.getReferenceAccessors());
+            } else {
+                // EmbeddedId is solely a JPA feature, so we will not allow 
+                // the expansion of attributes for those types of Embeddable 
+                // classes beyond basics or derived ids as defined in the spec.
+                throw ValidationException.invalidMappingForEmbeddedId(getAttributeName(), getJavaClass(), accessor.getAttributeName(), getReferenceDescriptor().getJavaClass());
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         return super.equals(objectToCompare) && objectToCompare instanceof EmbeddedIdAccessor;
@@ -130,7 +158,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     public boolean isEmbeddedId() {
         return true;
     }
-    
+        
     /**
      * INTERNAL:
      * Process an EmbeddedId metadata.
@@ -141,33 +169,17 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         // done now and before the calls below.
         super.process();
         
-        // After processing the embeddable class, we need to gather our 
-        // primary keys fields that we will eventually set on the owning 
-        // descriptor metadata.
-        if (getReferenceDescriptor().getMappingAccessors().isEmpty()) {
+        // After processing the embeddable class, we need to gather our primary 
+        // keys fields that we will eventually set on the owning descriptor.
+        if (getReferenceAccessors().isEmpty()) {
             throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), getReferenceDescriptor().getJavaClass(), getReferenceDescriptor().getClassAccessor().getAccessType());
         } else {
             // Go through all our mappings, the fields from those mappings will
             // make up the composite primary key.
-            for (MappingAccessor accessor : getReferenceAccessors()) {
-                if (accessor.isBasic()) {
-                    addIdFieldFromAccessor(accessor);
-                } else if (accessor.isDerivedIdClass()) {
-                    for (MappingAccessor embeddedAccessor : accessor.getReferenceAccessors()) {
-                        addIdFieldFromAccessor(embeddedAccessor);
-                    }
-                } else {
-                    // EmbeddedId is solely a JPA feature, so we will not allow 
-                    // the expansion of attributes for those types of Embeddable 
-                    // classes beyond basics or derived ids as defined in the spec.
-                    throw ValidationException.invalidMappingForEmbeddedId(getAttributeName(), getJavaClass(), accessor.getAttributeName(), getReferenceDescriptor().getJavaClass());
-                }
-            }
+            addIdFieldsFromAccessors(getReferenceAccessors());
         
             // Set the embedded id metadata on all owning descriptors.
-            for (MetadataDescriptor owningDescriptor : this.getOwningDescriptors()) {
-                // 300051: validation check moved up to MetadataDescriptor.addAccessor() 
-
+            for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) { 
                 // Check if we already processed an Id or IdClass.
                 if (owningDescriptor.hasPrimaryKeyFields()) { 
                     throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getAttributeName(), owningDescriptor.getIdAttributeName());

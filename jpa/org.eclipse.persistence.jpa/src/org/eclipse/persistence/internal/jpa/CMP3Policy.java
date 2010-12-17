@@ -15,6 +15,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     12/17/2010-2.2 Guy Pelletier 
+ *       - 330755: Nested embeddables can't be used as embedded ids
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -161,7 +163,7 @@ public class CMP3Policy extends CMPPolicy {
     public void setPKClass(Class pkClass) {
         this.pkClass = pkClass;
     }
-
+ 
     /**
      * INTERNAL:
      */
@@ -202,7 +204,29 @@ public class CMP3Policy extends CMPPolicy {
             DatabaseMapping mapping = pkElementArray[index].getMapping();
             Object fieldValue = null;
             if (mapping.isDirectToFieldMapping()) {
-                fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(key, session), session);
+                if (pkElementArray[index].isNestedAccessor()) {
+                    // We have nested aggregate(s) in the embedded id pkclass.
+                    DatabaseField keyField = pkElementArray[index].getDatabaseField();
+                    Object keyToUse = key;
+                    DatabaseMapping keyMapping = getDescriptor().getObjectBuilder().getMappingForField(keyField);
+                    
+                    if (keyMapping.isAggregateMapping()) {
+                        keyMapping = keyMapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(keyField);
+                        
+                        // Keep driving down the nested aggregates ...
+                        while (keyMapping.isAggregateMapping()) {
+                            keyToUse = keyMapping.getRealAttributeValueFromObject(keyToUse, session);
+                            keyMapping = keyMapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(keyField);
+                        }
+                        
+                        fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(keyToUse, session), session);
+                    } else {
+                        // This should never hit but just in case ... better to get a proper exception rather than a NPE etc.
+                        fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(keyToUse, session), session);
+                    }
+                } else {
+                    fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(key, session), session);
+                }
             } else {
                 fieldValue = pkElementArray[index].getValue(key, session);
                 if ( (fieldValue !=null) && (pkClass != null) && (mapping.isOneToOneMapping()) ){
@@ -328,6 +352,9 @@ public class CMP3Policy extends CMPPolicy {
             // the mapping was found on the key class was found or not and throw an exception otherwise.
             Exception noSuchElementException = null;
             
+            // Set the current key class ...
+            Class currentKeyClass = keyClass;
+            
             // We always start by looking at the writable mappings first. Our preference is to use the 
             // writable mappings unless a derived id mapping is specified in which case we'll want to use 
             // that mapping instead when we find it.
@@ -367,11 +394,14 @@ public class CMP3Policy extends CMPPolicy {
                     allMappings.remove(mapping);
                     
                     // Update the index to parse the next mapping correctly.
-                    index = allMappings.size();                        
+                    index = allMappings.size();
+                    
+                    // Update the key class now ...
+                    currentKeyClass = mapping.getReferenceDescriptor().getJavaClass();
                 } else {
                     String fieldName = (mapping.hasMapsIdValue()) ? mapping.getMapsIdValue() : mapping.getAttributeName();
                 
-                    if (keyClass == null){                        
+                    if (currentKeyClass == null){
                         // must be a primitive since key class was not set
                         pkAttributes[i] = new KeyIsElementAccessor(fieldName, field, mapping);
                         if (mapping.isDirectToFieldMapping()){
@@ -391,7 +421,7 @@ public class CMP3Policy extends CMPPolicy {
                             // ensure the referenced descriptor was initialized
                             refDescriptor.initialize(session);
                             CMPPolicy refPolicy = refDescriptor.getCMPPolicy();
-                            if ((refPolicy!=null) && refPolicy.isCMP3Policy() && (refPolicy.getPKClass() == keyClass)){
+                            if ((refPolicy!=null) && refPolicy.isCMP3Policy() && (refPolicy.getPKClass() == currentKeyClass)){
                                 //Since the ref pk class is our pk class, get the accessor we need to pull the value out of the PK class for our field
                                 OneToOneMapping refmapping = (OneToOneMapping)mapping;
                                 DatabaseField targetKey = refmapping.getSourceToTargetKeyFields().get(field);
@@ -403,7 +433,7 @@ public class CMP3Policy extends CMPPolicy {
                             }
                         }
                         try {
-                            pkAttributes[i] = new FieldAccessor(getField(keyClass, fieldName), fieldName, field, mapping);
+                            pkAttributes[i] = new FieldAccessor(getField(currentKeyClass, fieldName), fieldName, field, mapping, currentKeyClass != keyClass);
                             fieldToAccessorMap.put(field, pkAttributes[i]);
                             noSuchElementException = null;
                         } catch (NoSuchFieldException ex) {
@@ -425,24 +455,24 @@ public class CMP3Policy extends CMPPolicy {
                                     Method getMethod = null;
                                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                                         try {
-                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, getMethodName, new Class[] {}, true));
+                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, getMethodName, new Class[] {}, true));
                                         } catch (PrivilegedActionException exception) {
                                             throw (NoSuchMethodException)exception.getException();
                                         }
                                     } else {
-                                        getMethod = PrivilegedAccessHelper.getMethod(keyClass, getMethodName, new Class[] {}, true);
+                                        getMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, getMethodName, new Class[] {}, true);
                                     }
                                     Method setMethod = null;
                                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                                         try {
-                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true));
+                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true));
                                         } catch (PrivilegedActionException exception) {
                                             throw (NoSuchMethodException)exception.getException();
                                         }
                                     } else {
-                                        setMethod = PrivilegedAccessHelper.getMethod(keyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
+                                        setMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
                                     }
-                                    pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping);
+                                    pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping, currentKeyClass != keyClass);
                                     this.fieldToAccessorMap.put(field, pkAttributes[i]);
                                     noSuchElementException = null;
                                 } catch (NoSuchMethodException exs) {
@@ -489,13 +519,15 @@ public class CMP3Policy extends CMPPolicy {
         protected String attributeName;
         protected DatabaseField databaseField;
         protected DatabaseMapping mapping;
+        protected boolean isNestedAccessor;
 
-        public PropertyAccessor(Method getMethod, Method setMethod, String attributeName, DatabaseField field, DatabaseMapping mapping) {
+        public PropertyAccessor(Method getMethod, Method setMethod, String attributeName, DatabaseField field, DatabaseMapping mapping, boolean isNestedAccessor) {
             this.getMethod = getMethod;
             this.setMethod = setMethod;
             this.attributeName = attributeName;
             this.databaseField = field;
             this.mapping = mapping;
+            this.isNestedAccessor = isNestedAccessor;
         }
 
         public String getAttributeName() {
@@ -531,6 +563,10 @@ public class CMP3Policy extends CMPPolicy {
             }
         }
         
+        public boolean isNestedAccessor() {
+            return isNestedAccessor;
+        }
+        
         public void setValue(Object object, Object value) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -562,12 +598,14 @@ public class CMP3Policy extends CMPPolicy {
         protected String attributeName;
         protected DatabaseField databaseField;
         protected DatabaseMapping mapping;
+        protected boolean isNestedAccessor;
 
-        public FieldAccessor(Field field, String attributeName, DatabaseField databaseField, DatabaseMapping mapping) {
+        public FieldAccessor(Field field, String attributeName, DatabaseField databaseField, DatabaseMapping mapping, boolean isNestedAccessor) {
             this.field = field;
             this.attributeName = attributeName;
             this.databaseField = databaseField;
             this.mapping = mapping;
+            this.isNestedAccessor = isNestedAccessor;
         }
 
         public String getAttributeName() {
@@ -595,6 +633,10 @@ public class CMP3Policy extends CMPPolicy {
             } catch (Exception ex) {
                 throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), ex);
             }
+        }
+        
+        public boolean isNestedAccessor() {
+            return isNestedAccessor;
         }
         
         public void setValue(Object object, Object value) {
