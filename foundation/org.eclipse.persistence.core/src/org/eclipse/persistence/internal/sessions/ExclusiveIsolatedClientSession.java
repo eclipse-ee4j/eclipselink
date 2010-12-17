@@ -78,13 +78,12 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
 
     /**
      * INTERNAL:
-     * This method is called in case externalConnectionPooling is used
-     * right after the accessor is connected. 
-     * Used by the session to rise an appropriate event.
+     * This method rises appropriate for the session event(s)
+     * right after connection is acquired.
      */
     @Override
-    public void postConnectExternalConnection(Accessor accessor) {
-        super.postConnectExternalConnection(accessor);
+    public void postAcquireConnection(Accessor accessor) {
+        super.postAcquireConnection(accessor);
         if (this.parent.hasEventManager()) {
             this.parent.getEventManager().postAcquireExclusiveConnection(this, accessor);
         }            
@@ -92,13 +91,12 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
 
     /**
      * INTERNAL:
-     * This method is called in case externalConnectionPooling is used
-     * right before the accessor is disconnected. 
-     * Used by the session to rise an appropriate event.
+     * This method rises appropriate for the session event(s)
+     * right before the connection is released.
      */
     @Override
-    public void preDisconnectExternalConnection(Accessor accessor) {
-        super.preDisconnectExternalConnection(accessor);
+    public void preReleaseConnection(Accessor accessor) {
+        super.preReleaseConnection(accessor);
         if (this.parent.hasEventManager()) {
             this.parent.getEventManager().preReleaseExclusiveConnection(this, accessor);
         }

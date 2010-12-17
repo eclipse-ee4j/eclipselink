@@ -210,22 +210,13 @@ public class ClientSession extends AbstractSession {
         if (query.getAccessors() == null) {
             // First check for a partitioning policy.
             // An exclusive session will always use a single connection once allocated.
-            if (!hasWriteConnection()  || !isExclusiveIsolatedClientSession()) {
+            if (!hasWriteConnection() || !isExclusiveIsolatedClientSession()) {
                 Collection<Accessor> accessors = getAccessors(call, translationRow, query);
                 if (accessors != null && !accessors.isEmpty()) {
                     query.setAccessors(accessors);
                     // the session has been already released and this query is likely instantiates a ValueHolder - 
                     // release exclusive connection immediately after the query is executed, otherwise it may never be released.
                     shouldReleaseConnection = !this.isActive;
-                    if (this.eventManager != null) {
-                        for (Accessor accessor : accessors) {
-                            // If connection is using external connection pooling then the event will be raised right after it connects.
-                            if (!accessor.usesExternalConnectionPooling()) {
-                                this.eventManager.postAcquireConnection(accessor);
-                                this.eventManager.postAcquireExclusiveConnection(this, accessor);
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -617,6 +608,10 @@ public class ClientSession extends AbstractSession {
     public void addWriteConnection(String poolName, Accessor writeConnection) {
         getWriteConnections().put(poolName, writeConnection);
         writeConnection.createCustomizer(this);
+        //if connection is using external connection pooling then the event will be risen right after it connects.
+        if (!writeConnection.usesExternalConnectionPooling()) {
+            postAcquireConnection(writeConnection);
+        }
         // Transactions are lazily started on connections.
         if (isInTransaction()) {
             basicBeginTransaction(writeConnection);
@@ -651,9 +646,9 @@ public class ClientSession extends AbstractSession {
             poolName = writeConnection.getPool().getName();
         } else {
             poolName = ServerSession.NOT_POOLED;
-            }
-        addWriteConnection(poolName, writeConnection);
         }
+        addWriteConnection(poolName, writeConnection);
+    }
 
     /**
      * INTERNAL:
@@ -702,32 +697,6 @@ public class ClientSession extends AbstractSession {
         }
         //bug 4668234 -- used to only release connections on server sessions but should always release
         this.parent.releaseReadConnection(connection);
-    }
-
-    /**
-     * INTERNAL:
-     * This method is called in case externalConnectionPooling is used
-     * right after the accessor is connected. 
-     * Used by the session to rise an appropriate event.
-     */
-    @Override
-    public void postConnectExternalConnection(Accessor accessor) {
-        if (this.eventManager != null) { 
-            this.eventManager.postAcquireConnection(accessor);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * This method is called in case externalConnectionPooling is used
-     * right before the accessor is disconnected. 
-     * Used by the session to rise an appropriate event.
-     */
-    @Override
-    public void preDisconnectExternalConnection(Accessor accessor) {
-        if (this.eventManager != null) { 
-            this.eventManager.preReleaseConnection(accessor);
-        }
     }
 
     /**

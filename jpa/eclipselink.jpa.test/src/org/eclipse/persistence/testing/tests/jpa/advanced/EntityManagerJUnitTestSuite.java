@@ -124,6 +124,8 @@ import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
@@ -131,6 +133,7 @@ import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
 
+import org.eclipse.persistence.testing.framework.ConnectionWrapper;
 import org.eclipse.persistence.testing.framework.DriverWrapper;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -319,7 +322,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testCollectionAddNewObjectUpdate"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMCloseAndOpen"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMFactoryCloseAndOpen"));
-         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommit"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPostAcquirePreReleaseEvents_InternalConnectionPool"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPostAcquirePreReleaseEvents_ExternalConnectionPool"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommit"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnCommitProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testForUOWInSharedCacheWithBatchQueryHint"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnFlushProperties"));
@@ -364,6 +369,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             suite.addTest(new EntityManagerJUnitTestSuite("testGetHints"));
             suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity"));
             suite.addTest(new EntityManagerJUnitTestSuite("testSelectEmbeddable"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testNonPooledConnection"));
         }
         return suite;
     }
@@ -8940,7 +8946,219 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    // Bug 332683 - Problems with ClientSession connections
+    // testPostAcquirePreReleaseEvents tests verifies that postAcquireConnection and preReleaseConnection events are risen correctly.
+    // The test is run in two configurations: with Internal and External connection pools.
+    // Each test loops through several modes, the mode is a cartesian product of the following 3 choices: 
+    //    pooled  vs  non-pooled modes;
+    //    ExclusiveConnectionModes: Transactional  vs  Isolated  vs  Always;
+    //    persist and commit  vs   read, begin transaction, persist, commit  vs  uow.beginEarlyTransaction, persist, commit.  
+    static class AcquireRepair_ReleaseBreak_Listener extends SessionEventAdapter {
+        HashSet<Accessor> acquiredConnections = new HashSet();
+        public void postAcquireConnection(SessionEvent event) {
+            Accessor accessor = (Accessor)event.getResult();
+            if(acquiredConnections.contains(accessor)) {
+                ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: risen two or more times in a row;", (Object[])null, accessor, false);
+                throw new RuntimeException("AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: risen two or more times in a row");
+            } else {
+                acquiredConnections.add(accessor);
+            }
+            ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: repairConnection;", (Object[])null, accessor, false);
+            ((ConnectionWrapper)accessor.getConnection()).repairConnection();
+        }
+        public void preReleaseConnection(SessionEvent event) {
+            Accessor accessor = (Accessor)event.getResult();
+            if(!acquiredConnections.contains(accessor)) {
+                ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: postAcquireConnection has not been risen;", (Object[])null, accessor, false);
+                throw new RuntimeException("AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: postAcquireConnection has not been risen");
+            } else {
+                acquiredConnections.remove(accessor);
+            }
+            ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: breakConnection;", (Object[])null, accessor, false);
+            ((ConnectionWrapper)accessor.getConnection()).breakConnection();
+        }
+        public boolean hasAcquiredConnections() {
+            return !acquiredConnections.isEmpty();
+        }
+    }
+    public void testPostAcquirePreReleaseEvents_InternalConnectionPool() {
+        internalTestPostAcquirePreReleaseEvents(false);
+    }
+    public void testPostAcquirePreReleaseEvents_ExternalConnectionPool() {
+        internalTestPostAcquirePreReleaseEvents(true);
+    }
+    public void internalTestPostAcquirePreReleaseEvents(boolean useExternalConnectionPool){
+        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
+        
+        Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testPostAcquirePreReleaseEvents can't run on this platform.",  ss.getPlatform().isSybase());
+        if (ss.getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testPostAcquirePreReleaseEvents skipped for this platform, "
+                            + "Symfoware platform doesn't support failover.");
+            return;
+        }
+        
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
+        // normally false; set to true for debug output for just this single test
+        boolean shouldForceFinest = false;
+        int originalLogLevel = -1; 
+        
+        // cache the original driver name and connection string.
+        String originalDriverName = ss.getLogin().getDriverClassName();
+        String originalConnectionString = ss.getLogin().getConnectionString();
+        // cache original connector for external connection pool case
+        Connector originalConnector = ss.getLogin().getConnector();
+        
+        // the new driver name and connection string to be used by the test
+        String newDriverName = DriverWrapper.class.getName();
+        String newConnectionString = DriverWrapper.codeUrl(originalConnectionString);
+        
+        // setup the wrapper driver
+        DriverWrapper.initialize(originalDriverName);
+        
+        // The test need to connect with the new driver and connection string.
+        // That could be done in JPA:
+        //    // close the existing emf
+        //    closeEntityManagerFactory();
+        //    HashMap properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
+        //    properties.put(PersistenceUnitProperties.JDBC_DRIVER, newDriverName);
+        //    properties.put(PersistenceUnitProperties.JDBC_URL, newConnectionString);
+        //    emf = getEntityManagerFactory(properties);
+        // However this only works in case closeEntityManagerFactory disconnects the original ServerSession,
+        // which requires the factory to be the only one using the persistence unit.
+        // Alternative - and faster - approach is to disconnect the original session directly
+        // and then reconnected it with the new driver and connection string.        
+        ss.logout();
+        if(useExternalConnectionPool) {
+            ss.getLogin().setConnector(new JNDIConnector(new DataSourceImpl(null, newConnectionString, null, null)));
+            ss.getLogin().useExternalConnectionPooling();
+        } else {
+            ss.getLogin().setDriverClassName(newDriverName);
+            ss.getLogin().setConnectionString(newConnectionString);
+        }
+        if(shouldForceFinest) {
+            if(ss.getLogLevel() != SessionLog.FINEST) {
+                originalLogLevel = ss.getLogLevel();
+                ss.setLogLevel(SessionLog.FINEST);
+            }
+        }
+        // switch off reconnection
+        boolean originalIsConnectionHealthValidatedOnError = ss.getLogin().isConnectionHealthValidatedOnError();
+        ss.getLogin().setConnectionHealthValidatedOnError(false);
+
+        // Using DriverWrapper the listener will repair connection on postAcquireConnection and break it on preReleaseConnection event.
+        // Also the listener will verify that neither postAcquireConnection nor preReleaseConnection events not called two in a row.
+        AcquireRepair_ReleaseBreak_Listener listener = new AcquireRepair_ReleaseBreak_Listener();  
+        ss.getEventManager().addListener(listener);
+        
+        // Driver's connect method will still work, however any method called on any acquired connection will throw SQLException.
+        // On postAcquireConnection connection will be repaired; on preReleaseConnection - broken again.
+        ss.log(SessionLog.FINEST, SessionLog.CONNECTION, "testPostAcquirePreReleaseEvents: DriverWrapper.breakOldConnections(); DriverWrapper.breakNewConnections();", (Object[])null, null, false);
+        DriverWrapper.breakOldConnections();
+        DriverWrapper.breakNewConnections();
+        
+        ss.login();
+        
+        // test several configurations:
+        // all exclusive connection modes
+        String[] exclusiveConnectionModeArray = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
+
+        // Normally the user wishing to use not pooled connection would specify user and password properties (and possibly db url, too).
+        // However if these properties have the same values that those in the logging then no non pooled connection is created and the pooled one used instead.
+        // In the test we must use the same user as already in the session login (don't know any others) that forces usage of ConnectionPolicy property.
+        ConnectionPolicy connectionPolicy = (ConnectionPolicy)ss.getDefaultConnectionPolicy().clone();
+        connectionPolicy.setLogin(ss.getLogin());
+        connectionPolicy.setPoolName(null);
+                
+        try {
+            HashMap emProperties = new HashMap();
+            String mode, pooled = "", exclusiveConnectionMode;
+            for(int k=0; k<2; k++) {
+                if(k==1) {
+                    //use non pooled connections
+                    pooled = "non pooled; ";
+                    emProperties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
+                }
+                for(int i=0; i<exclusiveConnectionModeArray.length; i++) {
+                    exclusiveConnectionMode = exclusiveConnectionModeArray[i];
+                    for(int j=0; j<3; j++) {
+                        // either beginning early transaction or not 
+                        boolean shouldBeginEarlyTransaction = (j==2);
+                        boolean shouldReadBeforeTransaction = (j==1);
+                        mode = pooled + exclusiveConnectionMode + (shouldBeginEarlyTransaction ? "; beginEarlyTransaction" : "") + (shouldReadBeforeTransaction ? "; readBeforeTransaction" : "");
+                        ss.log(SessionLog.FINEST, SessionLog.CONNECTION, "testPostAcquirePreReleaseEvents: " + mode, (Object[])null, null, false);
+                        emProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
+                        EntityManager em = createEntityManager(emProperties);
+                        
+                        if(shouldReadBeforeTransaction) {
+                            em.find(Employee.class, 1);
+                        }
+                        Employee emp = null;
+                        try{
+                            em.getTransaction().begin();
+                            
+                            if(shouldBeginEarlyTransaction) {
+                                em.unwrap(UnitOfWorkImpl.class).beginEarlyTransaction();
+                            }
+        
+                            emp = new Employee();
+                            emp.setFirstName("testPostAcquirePreReleaseEvents");
+                            em.persist(emp);
+                            em.getTransaction().commit();    
+                        } finally {
+                            // expected exception - connection is invalid and cannot be reconnected.
+                            if(em.getTransaction().isActive()) {
+                                em.getTransaction().rollback();
+                            }    
+                            closeEntityManager(em);
+                        }
+                        
+                        if(listener.hasAcquiredConnections()) {
+                            fail(mode + " connection was not passed to preReleaseConnection event");
+                        }                    
+                    }
+                }
+            }
+
+        } finally {
+            // clear the driver wrapper
+            DriverWrapper.clear();
     
+            // reconnect the session using the original driver and connection string
+            ss.getEventManager().removeListener(listener);
+            // clean-up
+            // remove the inserted object
+            EntityManager em = createEntityManager(); 
+            em.getTransaction().begin();
+            try {
+                em.createQuery("DELETE FROM Employee e WHERE e.firstName = 'testPostAcquirePreReleaseEvents'");
+                em.getTransaction().commit();
+            } finally {
+                if(em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }            
+                closeEntityManager(em);
+
+                ss.logout();
+                if(originalLogLevel >= 0) {
+                    ss.setLogLevel(originalLogLevel);
+                }
+                if(useExternalConnectionPool) {
+                    ss.getLogin().setConnector(originalConnector);
+                    ss.getLogin().dontUseExternalConnectionPooling();
+                } else {
+                    ss.getLogin().setDriverClassName(originalDriverName);
+                    ss.getLogin().setConnectionString(originalConnectionString);
+                }
+                ss.getLogin().setConnectionHealthValidatedOnError(originalIsConnectionHealthValidatedOnError);
+                ss.login();
+            }
+        }
+    }
+
     /**
      * This test ensures that the eclipselink.batch query hint works. It tests
      * two things.
@@ -9780,6 +9998,41 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         dept = (Department)results.get(0);
         dept.getDepartmentHead().getPhoneNumbers().hashCode();
         rollbackTransaction(em);
+    }
+    
+    // Bug 332683 - Problems with ClientSession connections
+    // This test verifies that non pooled connection case works.
+    public void testNonPooledConnection() {
+        ServerSession ss = getServerSession();
+        // Normally the user wishing to use not pooled connection would specify user and password properties (and possibly db url, too).
+        // However if these properties have the same values that those in the logging then no non pooled connection is created and the pooled one used instead.
+        // In the test we must use the same user as already in the session login (don't know any others) that forces usage of ConnectionPolicy property.
+        ConnectionPolicy connectionPolicy = (ConnectionPolicy)ss.getDefaultConnectionPolicy().clone();
+        connectionPolicy.setLogin(ss.getLogin());
+        connectionPolicy.setPoolName(null);
+        EntityManager em;
+        boolean isEmInjected = isOnServer() && ss.getLogin().shouldUseExternalTransactionController();
+        if (isEmInjected) {
+            em = createEntityManager();
+            // In server jta case need a transaction - otherwise the wrapped EntityManagerImpl is not kept.
+            beginTransaction(em);
+            em.setProperty(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
+        } else {
+            EntityManagerFactory emFactory = getEntityManagerFactory();
+            Map properties = new HashMap(1);
+            properties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
+            em = emFactory.createEntityManager(properties);
+            beginTransaction(em);
+        }
+        try {
+            // native query triggers early begin transaction
+            em.createNativeQuery("SELECT F_NAME FROM CMP3_EMPLOYEE").getResultList();
+            // verify that the connection is really not pooled.
+            assertTrue("Test problem: connection should be not pooled", em.unwrap(UnitOfWork.class).getParent().getAccessor().getPool() == null);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
 }
 

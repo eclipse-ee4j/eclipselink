@@ -303,7 +303,7 @@ public abstract class DatasourceAccessor implements Accessor {
                 // If ExternalConnectionPooling is used, the connection can be re-established.
                 if (this.usesExternalConnectionPooling) {
                     reconnect(session);
-                    session.postConnectExternalConnection(this);
+                    session.postAcquireConnection(this);
                     currentSession = session;
                 } else {
                     throw DatabaseException.databaseAccessorNotConnected();
@@ -496,7 +496,7 @@ public abstract class DatasourceAccessor implements Accessor {
             if (this.datasourceConnection != null) {
                 if (isDatasourceConnected()) {
                     if(currentSession != null) {
-                        currentSession.preDisconnectExternalConnection(this);
+                        currentSession.preReleaseConnection(this);
                     }
                     if(customizer != null && customizer.isActive()) {
                         customizer.clear();

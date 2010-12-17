@@ -4417,20 +4417,24 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * This method is called in case externalConnectionPooling is used
-     * right after the accessor is connected.
-     * Used by the session to rise an appropriate event.
+     * This method rises appropriate for the session event(s)
+     * right after connection is acquired.
      */
-    public void postConnectExternalConnection(Accessor accessor) {
+    public void postAcquireConnection(Accessor accessor) {
+        if (this.eventManager != null) { 
+            this.eventManager.postAcquireConnection(accessor);
+        }
     }
 
     /**
      * INTERNAL:
-     * This method is called in case externalConnectionPooling is used
-     * right before the accessor is disconnected.
-     * Used by the session to rise an appropriate event.
+     * This method rises appropriate for the session event(s)
+     * right before the connection is released.
      */
-    public void preDisconnectExternalConnection(Accessor accessor) {
+    public void preReleaseConnection(Accessor accessor) {
+        if (this.eventManager != null) { 
+            this.eventManager.preReleaseConnection(accessor);
+        }
     }
 
     /**
