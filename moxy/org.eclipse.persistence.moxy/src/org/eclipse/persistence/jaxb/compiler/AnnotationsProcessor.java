@@ -624,7 +624,7 @@ public class AnnotationsProcessor {
                 continue;
             }
             
-            if(!jClass.isInterface() && !tInfo.isEnumerationType()) {
+            if(!jClass.isInterface() && !tInfo.isEnumerationType() && !jClass.isAbstract()) {
                 if (tInfo.getFactoryMethodName() == null && tInfo.getObjectFactoryClassName() == null) {
                     JavaConstructor zeroArgConstructor = jClass.getDeclaredConstructor(new JavaClass[] {});
                     if (zeroArgConstructor == null) {

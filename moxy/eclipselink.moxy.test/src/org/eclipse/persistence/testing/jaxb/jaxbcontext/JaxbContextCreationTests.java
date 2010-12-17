@@ -107,4 +107,23 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         JAXBContextFactory.createContext(typeMappingInfos, null, null);
     }
 
+    public void testCreateAbstractClassWithMultiArgConstructor() throws JAXBException {
+        Class[] classes = new Class[1];
+        classes[0] = AbstractClassWithMultiArgConstructor.class;
+        JAXBContextFactory.createContext(classes, null);
+    }
+
+    public void testCreateConcreteClassWithMultiArgConstructor() throws JAXBException {
+        try {
+            Class[] classes = new Class[1];
+            classes[0] = ConcreteClassWithMultiArgConstructor.class;
+            JAXBContextFactory.createContext(classes, null);
+        } catch(JAXBException e) {
+            org.eclipse.persistence.exceptions.JAXBException je = (org.eclipse.persistence.exceptions.JAXBException) e.getLinkedException();
+            assertEquals(org.eclipse.persistence.exceptions.JAXBException.FACTORY_METHOD_OR_ZERO_ARG_CONST_REQ, je.getErrorCode());
+            return;
+        }
+        fail();
+    }
+
 }
