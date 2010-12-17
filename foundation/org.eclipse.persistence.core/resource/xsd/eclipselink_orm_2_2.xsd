@@ -1117,7 +1117,6 @@
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
       <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
-      <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
@@ -1190,7 +1189,6 @@
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>    
       <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
-      <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
