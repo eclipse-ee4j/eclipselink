@@ -1893,13 +1893,12 @@ public class AnnotationsProcessor {
             String typeName = type.getQualifiedName();
             if (isCollectionType(property)) {
                 if (type.hasActualTypeArguments()) {
-                    type = (JavaClass) type.getActualTypeArguments().toArray()[0];
+                    type = property.getGenericType();
                     typeName = type.getQualifiedName();
                 }
             }
 
-            // for DEFAULT, if from XML the type will be
-            // "XmlElementRef.DEFAULT",
+            // for DEFAULT, if from XML the type will be "XmlElementRef.DEFAULT",
             // and from annotations the value will be "XmlElementref$DEFAULT"
             if (!(nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef.DEFAULT") || nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef$DEFAULT"))) {
                 typeName = nextRef.getType();
@@ -1907,9 +1906,9 @@ public class AnnotationsProcessor {
             }
 
             boolean missingReference = true;
-            for(Entry<String, ElementDeclaration> entry : xmlRootElements.entrySet()) {
+            for (Entry<String, ElementDeclaration> entry : xmlRootElements.entrySet()) {
                 ElementDeclaration entryValue = entry.getValue();
-                if(type.isAssignableFrom(entryValue.getJavaType())) {
+                if (type.isAssignableFrom(entryValue.getJavaType())) {
                     addReferencedElement(property, entryValue);
                     missingReference = false;
                 }

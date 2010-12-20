@@ -397,6 +397,10 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             this.convertClassNamesToClasses(((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getLoader());
         }
 
+        if (this.converter != null) {
+            this.converter.initialize(this, session);
+        }
+        
         Iterator<XMLMapping> mappings = getChoiceElementMappings().values().iterator();
         while(mappings.hasNext()){
             DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();

@@ -91,7 +91,7 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        if(value instanceof XMLRoot) {
+        if (value instanceof XMLRoot) {
             XMLRoot root = (XMLRoot)value;
             XPathFragment fragment = this.xmlField.getXPathFragment();
             while(fragment != null && !fragment.nameIsText) {
@@ -106,14 +106,13 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
                 }
                 fragment = fragment.getNextFragment();
             }
-        } else {
-            if(value != null && xmlChoiceMapping.getClassToFieldMappings().get(value.getClass()) == this.xmlField) {
+        } else if (value != null) {
+            if (xmlChoiceMapping.getClassToFieldMappings().get(value.getClass()) == this.xmlField) {
                 return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
-            } else if(value != null) {
-                List<XMLField> sourceFields = xmlChoiceMapping.getClassToSourceFieldsMappings().get(value.getClass());
-                if(sourceFields != null && sourceFields.contains(this.xmlField)) {
-                    return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
-                }
+            }
+            List<XMLField> sourceFields = xmlChoiceMapping.getClassToSourceFieldsMappings().get(value.getClass());
+            if (sourceFields != null && sourceFields.contains(this.xmlField)) {
+                return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
             }
         }
         return false;

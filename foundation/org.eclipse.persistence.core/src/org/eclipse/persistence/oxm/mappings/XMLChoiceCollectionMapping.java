@@ -481,6 +481,10 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         if (this.fieldToClassMappings.size() == 0) {
             this.convertClassNamesToClasses(((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getLoader());
         }
+
+        if (this.converter != null) {
+            this.converter.initialize(this, session);
+        }
         
         Iterator<XMLMapping> mappings = getChoiceElementMappings().values().iterator();
         while(mappings.hasNext()){

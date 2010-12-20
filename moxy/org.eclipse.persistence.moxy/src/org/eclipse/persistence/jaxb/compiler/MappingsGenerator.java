@@ -364,17 +364,18 @@ public class MappingsGenerator {
      */
     public DatabaseMapping generateMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         if (property.isSetXmlJavaTypeAdapter()) {
-            // need to check the adapter to determine whether we require a
-            // direct mapping (anything we can create a descriptor for) or
-            // a composite mapping
-
+            // if we are dealing with a reference, generate mapping and return 
+            if (property.isReference()) {
+                return generateMappingForReferenceProperty(property, descriptor, namespaceInfo);
+            }
+            
             XmlJavaTypeAdapter xja = property.getXmlJavaTypeAdapter();
             JavaClass adapterClass = helper.getJavaClass(xja.getValue());
             JavaClass valueType = property.getActualType();
             DatabaseMapping mapping;
 
             // if the value type is something we have a descriptor for, create
-            // a composite object mapping, otherwise create a direct mapping
+            // a composite mapping
             if (typeInfo.containsKey(valueType.getQualifiedName())) {
                 if (isCollectionType(property)) {
                     mapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName());
@@ -384,6 +385,7 @@ public class MappingsGenerator {
                     ((XMLCompositeObjectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 }
             } else {
+                // no descriptor for value type
                 if (property.isAny()) {
                     if (isCollectionType(property)){
                         mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, property.isMixedContent());
@@ -728,13 +730,23 @@ public class MappingsGenerator {
                 collectionType = jotHashSet;
             }
             ((XMLChoiceCollectionMapping) mapping).useCollectionClassName(collectionType.getRawName());
-            ((XMLChoiceCollectionMapping) mapping).setConverter(new JAXBElementRootConverter(Object.class));
+            JAXBElementRootConverter jaxbERConverter = new JAXBElementRootConverter(Object.class);
+            if (property.isSetXmlJavaTypeAdapter()) {
+                JavaClass adapterClass = helper.getJavaClass(property.getXmlJavaTypeAdapter().getValue());
+                jaxbERConverter.setNestedConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+            }
+            ((XMLChoiceCollectionMapping) mapping).setConverter(jaxbERConverter);
             if (property.isSetWriteOnly()) {
                 ((XMLChoiceCollectionMapping) mapping).setIsWriteOnly(property.isWriteOnly());
             }
         } else {
             mapping = new XMLChoiceObjectMapping();
-            ((XMLChoiceObjectMapping) mapping).setConverter(new JAXBElementRootConverter(Object.class));
+            JAXBElementRootConverter jaxbERConverter = new JAXBElementRootConverter(Object.class);
+            if (property.isSetXmlJavaTypeAdapter()) {
+                JavaClass adapterClass = helper.getJavaClass(property.getXmlJavaTypeAdapter().getValue());
+                jaxbERConverter.setNestedConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+            }
+            ((XMLChoiceObjectMapping) mapping).setConverter(jaxbERConverter);
             if (property.isSetWriteOnly()) {
                 ((XMLChoiceObjectMapping) mapping).setIsWriteOnly(property.isWriteOnly());
             }
