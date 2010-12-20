@@ -1815,9 +1815,7 @@ public class SchemaGenerator {
     private Element buildElement(Property property, boolean isAll, Schema schema, TypeInfo typeInfo) {
         Element element = new Element();
         // Set minOccurs based on the 'required' flag
-        if (!(isAll)) {
-            element.setMinOccurs(property.isRequired() ? Occurs.ONE : Occurs.ZERO);
-        }
+        element.setMinOccurs(property.isRequired() ? Occurs.ONE : Occurs.ZERO);
         // handle nillable
         if (property.shouldSetNillable()) {
             element.setNillable(true);

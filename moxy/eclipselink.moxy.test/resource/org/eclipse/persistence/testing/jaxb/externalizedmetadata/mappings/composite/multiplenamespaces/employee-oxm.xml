@@ -13,6 +13,9 @@
         </java-type>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.multiplenamespaces.Address">
             <xml-type namespace="http://www.example.com/address"/>
+            <java-attributes>
+                <xml-element java-attribute="city" required="true"/>
+            </java-attributes>
         </java-type>
     </java-types>
 </xml-bindings>

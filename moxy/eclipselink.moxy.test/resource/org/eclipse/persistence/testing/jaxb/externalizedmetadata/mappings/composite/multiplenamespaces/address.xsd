@@ -3,9 +3,9 @@
    <xsd:complexType name="address">
       <xsd:all>
          <xsd:element name="city" type="xsd:string"/>
-         <xsd:element name="street" type="xsd:string"/>
-         <xsd:element name="province" type="xsd:string"/>
-         <xsd:element name="postalCode" type="xsd:string"/>
+         <xsd:element name="street" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="province" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="postalCode" type="xsd:string" minOccurs="0"/>
       </xsd:all>
    </xsd:complexType>
    <xsd:element name="home-address" type="ns0:address"/>
