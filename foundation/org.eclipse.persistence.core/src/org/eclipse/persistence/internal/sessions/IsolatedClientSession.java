@@ -19,7 +19,6 @@ import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**

@@ -13,7 +13,6 @@
 package org.eclipse.persistence.mappings.structures;
 
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;

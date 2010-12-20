@@ -15,9 +15,7 @@ package org.eclipse.persistence.eis.mappings;
 import java.util.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.config.TargetServer;
 import org.eclipse.persistence.eis.EISCollectionChangeRecord;
 import org.eclipse.persistence.eis.EISOrderedCollectionChangeRecord;
 

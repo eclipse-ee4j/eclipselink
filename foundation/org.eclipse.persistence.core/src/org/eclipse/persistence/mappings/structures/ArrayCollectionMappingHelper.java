@@ -17,7 +17,6 @@ import java.util.Vector;
 
 import org.eclipse.persistence.eis.EISCollectionChangeRecord;
 import org.eclipse.persistence.eis.EISOrderedCollectionChangeRecord;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
