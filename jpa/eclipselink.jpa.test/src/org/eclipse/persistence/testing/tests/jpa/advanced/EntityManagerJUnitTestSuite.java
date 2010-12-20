@@ -370,6 +370,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity"));
             suite.addTest(new EntityManagerJUnitTestSuite("testSelectEmbeddable"));
             suite.addTest(new EntityManagerJUnitTestSuite("testNonPooledConnection"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testExclusiveIsolatedLeaksConnectionOnClear"));
         }
         return suite;
     }
@@ -10034,5 +10035,52 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+    
+    //  Bug 332464 - EntityManager running out of connections in exclusive isolated client session mode 
+    public void testExclusiveIsolatedLeaksConnectionOnClear() {
+        ServerSession ss = getServerSession();
+        EntityManager em;
+        boolean isEmInjected = isOnServer() && ss.getLogin().shouldUseExternalTransactionController();
+        if (isEmInjected) {
+            em = createEntityManager();
+            // In server jta case need a transaction - otherwise the wrapped EntityManagerImpl is not kept.
+            beginTransaction(em);
+            em.setProperty(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, "Always");
+        } else {
+            EntityManagerFactory emFactory = getEntityManagerFactory();
+            Map properties = new HashMap(1);
+            properties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, "Always");
+            em = emFactory.createEntityManager(properties);
+            beginTransaction(em);
+        }
+
+        // any query on ExclusiveIsolated session triggers the exclusive connection to be acquired.
+        em.createQuery("SELECT e FROM Employee e").getResultList();
+        // the exclusive connection
+        Accessor accessor = em.unwrap(UnitOfWork.class).getParent().getAccessor(); 
+        // connection is still held because it's an ExclusiveIsolatedSession
+        commitTransaction(em);
+        // before the bug was fixed that used to simply nullify the uow without releasing it and its parent ExclusiveIsolatedSession.
+        em.clear();
+        // closing EntityManager should release the exclusive connection.
+        closeEntityManager(em);
+        
+        // verify that the connection has been released
+        boolean released;
+        ConnectionPool pool = ss.getDefaultConnectionPool();
+        if(ss.getLogin().shouldUseExternalConnectionPooling()) {
+            // external pool case
+            released = accessor.getConnection() == null;
+        } else {
+            // intrenal pool case
+            released = pool.getConnectionsAvailable().contains(accessor);
+        }
+        
+        if(!released) {
+            // release connection
+            pool.releaseConnection(accessor);
+            fail("Exclusive connection has not been released after the EntityManager has been closed.");
+        }
+    }        
 }
 

@@ -362,6 +362,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     } else {                    
                         // clear all change sets and cache
                         this.extendedPersistenceContext.clearForClose(true);
+                        this.extendedPersistenceContext.release();
+                        this.extendedPersistenceContext.getParent().release();
                     }
                     this.extendedPersistenceContext = null;
                 } else {
