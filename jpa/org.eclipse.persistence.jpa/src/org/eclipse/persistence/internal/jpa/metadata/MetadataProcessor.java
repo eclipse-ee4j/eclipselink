@@ -274,15 +274,17 @@ public class MetadataProcessor {
         // that have not yet been added. Be sure to check that the accessor
         // does not already exist since adding an accessor will merge its 
         // contents with an existing accessor and we only want that to happen 
-        // in the XML case.
+        // in the XML case. Also, don't add an entity accessor if an embeddable
+        // accessor to the same class exists (and vice versa). XML accessors
+        // are loaded first, so preserve what we find there.
         for (String className : classNames) {
             MetadataClass candidateClass = m_factory.getMetadataClass(className);
             // JBoss Bug 227630: Do not process a null class whether it was from a 
             // NPE or a CNF, a warning or exception is thrown in loadClass() 
             if (candidateClass != null) {
-                if (PersistenceUnitProcessor.isEntity(candidateClass) && ! m_project.hasEntity(candidateClass)) {
+                if (PersistenceUnitProcessor.isEntity(candidateClass) && ! m_project.hasEntity(candidateClass) && ! m_project.hasEmbeddable(candidateClass)) {
                     m_project.addEntityAccessor(new EntityAccessor(PersistenceUnitProcessor.getEntityAnnotation(candidateClass), candidateClass, m_project));
-                } else if (PersistenceUnitProcessor.isEmbeddable(candidateClass) && ! m_project.hasEmbeddable(candidateClass)) {
+                } else if (PersistenceUnitProcessor.isEmbeddable(candidateClass) && ! m_project.hasEmbeddable(candidateClass) && ! m_project.hasEntity(candidateClass)) {
                     m_project.addEmbeddableAccessor(new EmbeddableAccessor(PersistenceUnitProcessor.getEmbeddableAnnotation(candidateClass), candidateClass, m_project));
                 } else if (PersistenceUnitProcessor.isStaticMetamodelClass(candidateClass)) {
                     m_project.addStaticMetamodelClass(PersistenceUnitProcessor.getStaticMetamodelAnnotation(candidateClass), candidateClass);

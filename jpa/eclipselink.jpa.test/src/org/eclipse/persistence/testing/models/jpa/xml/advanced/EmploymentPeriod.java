@@ -15,6 +15,8 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 import java.util.Date;
 import java.io.*;
 
+import javax.persistence.Entity;
+
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
 
@@ -31,6 +33,9 @@ import org.eclipse.persistence.annotations.Property;
     // This property should be set - there's no property with the same name defined in xml.
     @Property(name="ToBeProcessed", value="true", valueType=Boolean.class)
 })
+// This annotation was added to test bug 257756 ... since this class is
+// marked as an embeddable in XML, this entity designation should be ignored.
+@Entity
 public class EmploymentPeriod implements Serializable {
     private Date startDate;
     private Date endDate;
