@@ -19,7 +19,6 @@ import java.util.Hashtable;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.eclipse.persistence.internal.jpa.deployment.osgi.OSGiPersistenceInitializationHelper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -117,12 +116,12 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
         if ((bundle.getState() & (Bundle.STARTING | Bundle.RESOLVED | Bundle.ACTIVE)) != 0) {
             AbstractSessionLog.getLog().finest("EclipseLink OSGi - examining bundle: " + 
                     bundle.getSymbolicName() + "_" + bundle.getBundleId());
-            if (!OSGiPersistenceInitializationHelper.includesBundle(bundle)) {
+            if (!PersistenceProvider.includesBundle(bundle)) {
                 try {
                     String[] persistenceUnitNames = getPersistenceUnitNames(bundle);
                     if (persistenceUnitNames != null) {
                         // Bundle contains persistence unit(s)
-                        OSGiPersistenceInitializationHelper.addBundle(bundle, persistenceUnitNames);
+                        PersistenceProvider.addBundle(bundle, persistenceUnitNames);
                         registerEMFServices(persistenceUnitNames);
                     }
                 } catch (Exception e) {
@@ -211,7 +210,7 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     
     
     private void deregisterBundle(Bundle bundle) {
-        OSGiPersistenceInitializationHelper.removeBundle(bundle);
+        PersistenceProvider.removeBundle(bundle);
     }
 
     public void stop(BundleContext context) throws Exception {

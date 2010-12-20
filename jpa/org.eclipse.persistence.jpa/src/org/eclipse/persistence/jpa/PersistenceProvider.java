@@ -22,11 +22,12 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.*;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
+import org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
@@ -38,13 +39,8 @@ import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
  * This provider should be used by JavaEE and JavaSE users.
  */
 public class PersistenceProvider implements javax.persistence.spi.PersistenceProvider, ProviderUtil {
-
-    // provides environment-specific initialization for Java EE or OSGI
-    protected PersistenceInitializationHelper initializationHelper = null;    
     
     public PersistenceProvider(){
-        // by default, we will work in Java EE (or SE)
-        initializationHelper = new PersistenceInitializationHelper();
     }
     
     /**
@@ -61,41 +57,20 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * or null if the provider is not the right provider
      */
     public EntityManagerFactory createEntityManagerFactory(String emName, Map properties){
-        ClassLoader classloader = initializationHelper.getClassLoader(emName, properties);
-        return createEntityManagerFactory(emName, properties, classloader);
-    }
-    
-    /**
-     * Called by Persistence class when an EntityManagerFactory
-     * is to be created.
-     *
-     * @param emName The name of the persistence unit
-     * @param map A Map of properties for use by the
-     * persistence provider. These properties may be used to
-     * override the values of the corresponding elements in
-     * the persistence.xml file or specify values for
-     * properties not specified in the persistence.xml.
-     * @param classLoader The classloader to search for persistence
-     * units on
-     * @return EntityManagerFactory for the persistence unit,
-     * or null if the provider is not the right provider
-     */
-    protected EntityManagerFactory createEntityManagerFactory(String emName, Map properties, ClassLoader classLoader){
         Map nonNullProperties = (properties == null) ? new HashMap() : properties;
         String name = emName;
         if (name == null){
             name = "";
         }
 
-        JPAInitializer initializer = initializationHelper.getInitializer(classLoader, nonNullProperties);
         EntityManagerSetupImpl emSetupImpl = null;
         boolean isNew = false;
         // the name that uniquely defines persistence unit
         String uniqueName;
         String sessionName;
-        try {            
-            SEPersistenceUnitInfo puInfo;
-            puInfo = initializer.findPersistenceUnitInfo(name, nonNullProperties, initializationHelper);
+        JPAInitializer initializer = getInitializer(emName, nonNullProperties);
+        try {
+            SEPersistenceUnitInfo puInfo = initializer.findPersistenceUnitInfo(name, nonNullProperties);
             // either persistence unit not found or provider not supported
             if(puInfo == null) {
                 return null;
@@ -111,18 +86,14 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                 emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
                 if(emSetupImpl == null) {
-                    // there may be initial emSetupImpl (possible only in SE that uses agent) remove it and use.
-                    emSetupImpl = EntityManagerFactoryProvider.initialEmSetupImpls.remove(uniqueName);
+                    // there may be initial emSetupImpl cached in Initializer - remove it and use.
+                    emSetupImpl = initializer.extractInitialEmSetupImpl(name);
                     if(emSetupImpl != null) {
                         // change the name
                         emSetupImpl.changeSessionName(sessionName);
-                        //  make sure we grab the classloader that may have 
-                        // been provided by the user. I.E. a DynamicClassLoader
-                        puInfo.setClassLoader(classLoader);
-                    }
-                    if(emSetupImpl == null) {
+                    } else {
                         // create and predeploy a new emSetupImpl
-                        emSetupImpl = initializer.callPredeploy(puInfo, nonNullProperties, initializationHelper, uniqueName, sessionName);
+                        emSetupImpl = initializer.callPredeploy(puInfo, nonNullProperties, uniqueName, sessionName);
                     }
                     // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
                     emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
@@ -131,7 +102,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
                 }
             }
         } catch (Exception e) {
-            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(classLoader, e);
+            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(initializer.getInitializationClassLoader(), e);
         }
 
         if(!isNew) {
@@ -152,7 +123,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             if(undeployed) {
                 // after the emSetupImpl has been obtained from emSetupImpls
                 // it has been undeployed by factory.close() in another thread - start all over again.
-                return createEntityManagerFactory(emName, properties, classLoader);
+                return createEntityManagerFactory(emName, properties);
             }
         }
             
@@ -174,7 +145,20 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             throw ex;
         }
     }
-
+    
+    /**
+     * Return JPAInitializer corresponding to the passed classLoader.
+     * Note: This is written as an instance method rather than a static to allow
+     * it to be overridden
+     * @param emName
+     * @param m
+     * @return
+     */
+    public JPAInitializer getInitializer(String emName, Map m){
+        ClassLoader classLoader = getClassLoader(emName, m);
+        return JavaSECMPInitializer.getJavaSECMPInitializer(classLoader);
+    }
+    
     /**
      * Called by the container when an EntityManagerFactory
      * is to be created.
@@ -249,7 +233,6 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
     public ProviderUtil getProviderUtil(){
         return this;
     }
-
 
     /**
      * If the provider determines that the entity has been provided
@@ -342,5 +325,24 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         }
         return LoadState.UNKNOWN;
      }
+    
+    /**
+     * Answer the classloader to use to create an EntityManager.
+     * If a classloader is not found in the properties map then 
+     * use the current thread classloader.
+     * 
+     * @param properties
+     * @return ClassLoader
+     */
+    public ClassLoader getClassLoader(String emName, Map properties) {
+        ClassLoader classloader = null;
+        if (properties != null) {
+            classloader = (ClassLoader)properties.get(PersistenceUnitProperties.CLASSLOADER);
+        }
+        if (classloader == null) {
+            classloader = Thread.currentThread().getContextClassLoader();
+        }
+        return classloader;
+    }
 }
 

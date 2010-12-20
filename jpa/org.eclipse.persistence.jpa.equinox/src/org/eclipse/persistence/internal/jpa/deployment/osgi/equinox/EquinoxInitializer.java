@@ -22,7 +22,6 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceInitializationHelper;
 import org.eclipse.persistence.jpa.equinox.weaving.IWeaver;
 import org.eclipse.persistence.jpa.osgi.Activator;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -43,7 +42,7 @@ public class EquinoxInitializer extends JPAInitializer {
      * @param m a map containing the set of properties to instantiate with.
      */
     @SuppressWarnings("unchecked")
-    public EquinoxInitializer(ClassLoader bundleClassloader, Map m, PersistenceInitializationHelper helper) {
+    public EquinoxInitializer(ClassLoader bundleClassloader, Map m) {
         this.initializationClassloader = bundleClassloader;
     }
 

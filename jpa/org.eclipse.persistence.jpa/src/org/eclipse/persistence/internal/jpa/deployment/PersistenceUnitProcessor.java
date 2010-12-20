@@ -87,9 +87,10 @@ public class PersistenceUnitProcessor {
      * Build a set that contains all the class names at a URL.
      * @return a Set of class name strings
      */
-    public static Set<String> buildClassSet(PersistenceUnitInfo persistenceUnitInfo, ClassLoader loader, Map properties){
+    public static Set<String> buildClassSet(PersistenceUnitInfo persistenceUnitInfo, Map properties){
         Set<String> set = new HashSet<String>();
         set.addAll(persistenceUnitInfo.getManagedClassNames());
+        ClassLoader loader = persistenceUnitInfo.getClassLoader();
         Iterator i = persistenceUnitInfo.getJarFileUrls().iterator();
         while (i.hasNext()) {
             set.addAll(getClassNamesFromURL((URL)i.next(), loader, properties));
@@ -517,7 +518,9 @@ public class PersistenceUnitProcessor {
         Iterator<SEPersistenceUnitInfo> persistenceInfos = myContentHandler.getPersistenceUnits().iterator();
         while (persistenceInfos.hasNext()){
             SEPersistenceUnitInfo info = persistenceInfos.next();
-            info.setPersistenceUnitRootUrl(baseURL);           
+            info.setPersistenceUnitRootUrl(baseURL);
+            info.setClassLoader(loader);
+            info.setNewTempClassLoader(loader);
         }
         return myContentHandler.getPersistenceUnits();
     }

@@ -17,7 +17,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 public class CompositeClassLoader extends ClassLoader {
     private List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
@@ -113,11 +116,17 @@ public class CompositeClassLoader extends ClassLoader {
      */
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
-        List<Enumeration<URL>> enumerations = new ArrayList(getClassLoaders().size());
+        Vector<URL> resourceList = new Vector<URL>();
         for (int i = 0; i < getClassLoaders().size(); i++) {
-            enumerations.add(i, getClassLoaders().get(i).getResources(name));
+            Enumeration<URL> localResources = getClassLoaders().get(i).getResources(name);
+            while(localResources.hasMoreElements()){
+                URL resource = localResources.nextElement();
+                if (!resourceList.contains(resource)){
+                    resourceList.add(resource);
+                }
+            }
         }
-        return new CompositeEnumeration<URL>(enumerations); 
+        return resourceList.elements();
     }
 
    /**

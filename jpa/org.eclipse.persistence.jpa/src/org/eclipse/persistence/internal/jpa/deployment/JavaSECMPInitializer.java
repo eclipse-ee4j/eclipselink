@@ -17,15 +17,11 @@ package org.eclipse.persistence.internal.jpa.deployment;
 import java.util.*;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLDecoder;
-import java.io.UnsupportedEncodingException;
 import java.lang.instrument.*;
 import java.security.ProtectionDomain;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
-import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
-import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.logging.SessionLog;
@@ -52,36 +48,50 @@ public class JavaSECMPInitializer extends JPAInitializer {
     protected static boolean usesAgent;
     // Indicates whether has been initialized - that could be done only once.
     protected static boolean isInitialized;
-    // Indicates whether puInfos of the initial emSetupImpls (EntityManagerFactoryProvider.initialEmSetupImpls)
-    // should be cached forever in EntityManagerFactoryProvider.initialPuInfos.
-    // The flag is only relevant in usesAgent case - puInfos never kept otherwise.
-    // In useAgent case both cases settings could work: 
-    //   true is obviously more efficient (puInfo is read only once);
-    //   false will work the same way as in non agent case (app. server case) - good for testing.
-    public static boolean keepInitialPuInfos = true;
+    // Singleton corresponding to the main class loader. Created only if agent is used.
+    protected static JavaSECMPInitializer initializer;
+    // Used as a lock in getJavaSECMPInitializer. Don't substitute for Boolean.TRUE.
+    protected static Boolean initializationLock = new Boolean(true);
 
     /**
      * Get the singleton entityContainer.
      */
-    public static synchronized JavaSECMPInitializer getJavaSECMPInitializer() {
-        if(!isInitialized) {
-            initializeTopLinkLoggingFile();  
-            JavaSECMPInitializer initializer = new JavaSECMPInitializer();
-            initializer.initialize(new HashMap());
-            return initializer;
-        }  else {
-            return new JavaSECMPInitializer();
-        }
+    public static JavaSECMPInitializer getJavaSECMPInitializer() {
+        return getJavaSECMPInitializer(Thread.currentThread().getContextClassLoader(), null, false);
     }
-
-    public static synchronized JavaSECMPInitializer getJavaSECMPInitializer(ClassLoader loader) {
+    public static JavaSECMPInitializer getJavaSECMPInitializer(ClassLoader classLoader) {
+        return getJavaSECMPInitializer(classLoader, null, false);
+    }
+    public static JavaSECMPInitializer getJavaSECMPInitializerFromAgent() {
+        return getJavaSECMPInitializer(Thread.currentThread().getContextClassLoader(), null, true);
+    }
+    public static JavaSECMPInitializer getJavaSECMPInitializerFromMain(Map m) {
+        return getJavaSECMPInitializer(Thread.currentThread().getContextClassLoader(), m, false);
+    }
+    public static JavaSECMPInitializer getJavaSECMPInitializer(ClassLoader classLoader, Map m, boolean fromAgent) {
         if(!isInitialized) {
-            initializeTopLinkLoggingFile();  
-            JavaSECMPInitializer initializer = new JavaSECMPInitializer(loader);
-            initializer.initialize(new HashMap());
+            if(globalInstrumentation != null) {
+                synchronized(initializationLock) {
+                    if(!isInitialized) {
+                        initializeTopLinkLoggingFile();
+                        if(fromAgent) {
+                            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize_from_agent", (Object[])null);
+                        }
+                        usesAgent = true;
+                        initializer = new JavaSECMPInitializer(classLoader);
+                        initializer.initialize(m != null ? m : new HashMap(0));
+                        // all the transformers have been added to instrumentation, don't need it any more.
+                        globalInstrumentation = null;
+                    }
+                }
+            }
+            isInitialized = true;
+        }
+        if(initializer != null && initializer.getInitializationClassLoader() == classLoader) {
             return initializer;
-        }  else {
-            return new JavaSECMPInitializer(loader);
+        } else {
+            // when agent is not used initializer does not need to be initialized.
+            return new JavaSECMPInitializer(classLoader);
         }
     }
 
@@ -153,11 +163,9 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * If succeeded return true, false otherwise.
      */
     protected static void initializeFromAgent(Instrumentation instrumentation) throws Exception {
-        initializeTopLinkLoggingFile();        
-        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize_from_agent", (Object[])null);
         // Squirrel away the instrumentation for later
         globalInstrumentation = instrumentation;
-        (new JavaSECMPInitializer()).initialize(new HashMap());
+        getJavaSECMPInitializerFromAgent();
     }
     
     /**
@@ -182,8 +190,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * @param m - a map containing the set of properties to instantiate with.
      */
     public static void initializeFromMain(Map m) {
-        initializeTopLinkLoggingFile();        
-        (new JavaSECMPInitializer()).initialize(m);
+        getJavaSECMPInitializerFromMain(m);
     }
 
     /**
@@ -191,77 +198,6 @@ public class JavaSECMPInitializer extends JPAInitializer {
      */
     public static void initializeFromMain() {
         initializeFromMain(new HashMap());
-    }
-
-    /**
-     * This method initializes the container.  Essentially, it will try to load the
-     * class that contains the list of entities and reflectively call the method that
-     * contains that list.  It will then initialize the container with that list.
-     * If succeeded return true, false otherwise.
-     */
-    public void initialize(Map m) {
-        if(!isInitialized) {
-            if(globalInstrumentation != null) {
-                usesAgent = true;
-                if(this.initializationClassloader == null) {
-                    this.initializationClassloader = Thread.currentThread().getContextClassLoader();
-                }
-                final Set<Archive> pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader);
-                try {
-                    PersistenceInitializationHelper initializationHelper = new PersistenceInitializationHelper();
-                    for (Archive archive: pars) {
-                        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize", archive);
-                        initPersistenceUnits(archive, m, initializationHelper);
-                    }
-                } finally {
-                    for (Archive archive: pars) {
-                        archive.close();
-                    }
-                }
-                // all the transformers have been added to instrumentation, don't need it any more.
-                globalInstrumentation = null;
-            }
-            isInitialized = true;
-        }
-    }
-
-    /**
-     * Initialize one persistence unit.
-     * Initialization is a two phase process.  First the predeploy process builds the metadata
-     * and creates any required transformers.
-     * Second the deploy process creates an EclipseLink session based on that metadata.
-     */
-    protected void initPersistenceUnits(Archive archive, Map m, PersistenceInitializationHelper persistenceActivator){
-        Iterator<SEPersistenceUnitInfo> persistenceUnits = PersistenceUnitProcessor.getPersistenceUnits(archive, initializationClassloader).iterator();
-        while (persistenceUnits.hasNext()) {
-            SEPersistenceUnitInfo persistenceUnitInfo = persistenceUnits.next();
-            // This code only called when usesAgent - no need for uniqueName, puName uniquely defines the pu.
-            String puName = persistenceUnitInfo.getPersistenceUnitName();
-            
-            // If puName is already in the map then there are two jars containing persistence units with the same name.
-            // Because both are loaded from the same classloader there is no way to distinguish between them - throw exception.
-            EntityManagerSetupImpl anotherEmSetupImpl = EntityManagerFactoryProvider.initialEmSetupImpls.get(puName);
-            if(anotherEmSetupImpl != null) {
-                String puUrl;
-                String anotherPuUrl;
-                try {
-                    puUrl = URLDecoder.decode(persistenceUnitInfo.getPersistenceUnitRootUrl().toString(), "UTF8");
-                    anotherPuUrl = URLDecoder.decode(anotherEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitRootUrl().toString(), "UTF8");
-                } catch (UnsupportedEncodingException e) {
-                    puUrl = persistenceUnitInfo.getPersistenceUnitRootUrl().toString();
-                    anotherPuUrl = anotherEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitRootUrl().toString();
-                }
-                throw PersistenceUnitLoadingException.persistenceUnitNameAlreadyInUse(puName, puUrl, anotherPuUrl);
-            }
-            
-            // Note that session name is extracted only from puInfo, the passed properties ignored.
-            String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(Collections.emptyMap(), persistenceUnitInfo, puName);
-            EntityManagerSetupImpl emSetupImpl = callPredeploy(persistenceUnitInfo, m, persistenceActivator, puName, sessionName);
-            EntityManagerFactoryProvider.initialEmSetupImpls.put(puName, emSetupImpl);
-            if(keepInitialPuInfos) {
-                EntityManagerFactoryProvider.initialPuInfos.put(puName, persistenceUnitInfo);
-            }
-        }
     }
 
     /**

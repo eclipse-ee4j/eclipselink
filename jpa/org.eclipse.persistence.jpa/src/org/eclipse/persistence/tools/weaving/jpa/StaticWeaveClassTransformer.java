@@ -120,7 +120,6 @@ public class StaticWeaveClassTransformer {
             Iterator<SEPersistenceUnitInfo> persistenceUnitsIterator = persistenceUnitsList.iterator();
             while (persistenceUnitsIterator.hasNext()) {
                 SEPersistenceUnitInfo unitInfo = persistenceUnitsIterator.next();
-                unitInfo.setNewTempClassLoader(aclassloader);
                 //build class transformer.
                 ClassTransformer transformer = buildTransformer(unitInfo,this.logWriter,this.logLevel);
                 classTransformers.add(transformer);
