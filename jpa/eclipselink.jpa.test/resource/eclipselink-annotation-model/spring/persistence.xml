@@ -1,0 +1,149 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
+
+        <!-- mapping files that are packaged in xml-only-model-tests.jar. -->
+        <mapping-file>META-INF/advanced-entity-mappings.xml</mapping-file>
+        <!-- inheritance-entity-mappings.xml is packaged as META-INF/orm.xml 
+             to test default listeners are added only once (GF #589) as well as
+             to test that we can read orm.xml from referenced jar(GF #1131)
+             See build.xml for more details.
+        <mapping-file>META-INF/inheritance-entity-mappings.xml</mapping-file-->
+        <mapping-file>META-INF/inherited-entity-mappings.xml</mapping-file>
+        <mapping-file>META-INF/relationships-entity-mappings.xml</mapping-file>
+        <mapping-file>META-INF/unidirectional-relationships-entity-mappings.xml</mapping-file>
+
+        <!-- mapping files that are packaged in xml-merge-model-tests.jar-->
+        <mapping-file>META-INF/orm-annotation-merge-advanced-entity-mappings.xml</mapping-file>
+        <mapping-file>META-INF/orm-annotation-merge-relationships-entity-mappings.xml</mapping-file>
+        <mapping-file>META-INF/incomplete-nonowning-entity-mappings.xml</mapping-file>
+        <mapping-file>META-INF/incomplete-owning-entity-mappings.xml</mapping-file>
+
+        <!-- this is here for testing purposes - ensures a persistence unit can load even with a file that does not exist.  Please do not add an xml file called: META-INF/non-existant-orm-file.xml -->
+        <mapping-file>META-INF/non-existant-orm-file.xml</mapping-file>
+
+        <jar-file>eclipselink-xml-only-model.jar</jar-file>
+        <jar-file>eclipselink-xml-merge-model.jar</jar-file>
+
+        <!-- this is here for testing purposes GF #588, do not remove. -->
+        <class>org.eclipse.persistence.testing.models.jpa.xml.inherited.Beer</class>
+        <!--exclude-unlisted-classes>false</exclude-unlisted-classes-->
+        
+        <properties>
+            <!-- JDBC properties will be given by test.properties file in runtime -->
+            <property name="eclipselink.session-name" value="default-session"/>
+            <property name="eclipselink.jdbc.read-connections.shared" value="true"/>
+            <property name="eclipselink.jdbc.write-connections.min" value="3"/>
+            <property name="eclipselink.jdbc.write-connections.max" value="8"/>
+            <property name="eclipselink.jdbc.read-connections.min" value="3"/>
+            <property name="eclipselink.jdbc.read-connections.max" value="3"/>
+            <property name="eclipselink.cache.size.default" value="500"/>
+            <property name="eclipselink.cache.size.Employee" value="550"/>
+            <property name="eclipselink.cache.size.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="555"/>
+            <property name="eclipselink.cache.type.default" value="Full"/>
+            <property name="eclipselink.cache.type.Employee" value="Weak"/>
+            <property name="eclipselink.cache.type.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="HardWeak"/>
+            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.relationships.IsolatedItem" value="false"/>
+            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem" value="false"/>
+            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
+            <property name="eclipselink.logging.timestamp" value="false"/>
+            <property name="eclipselink.orm.throw.exceptions" value="false"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="advanced-model-create.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="advanced-model-drop.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <!--Uncomment these to test weaving options >
+            <property name="eclipselink.weaving.eager" value="true"/>
+            <property name="eclipselink.weaving.internal" value="false"/-->
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+			<property name="NAME" value="Montreal%"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="default1">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <!--exclude-unlisted-classes>false</exclude-unlisted-classes-->
+        <properties>
+            <property name="eclipselink.logging.level" value="OFF"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="ignore" transaction-type="JTA">
+        <description>This PU is for validation purpose only - it should not
+                break the rest of the tests</description>
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <jta-data-source>jdbc/__default</jta-data-source>
+    </persistence-unit>
+    <persistence-unit name="isolated1053">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.relationships.Item</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.session-name" value="isolated-session1053"/>
+            <property name="eclipselink.cache.shared.default" value="false"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="ALL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>ALL</shared-cache-mode>
+    </persistence-unit>
+    <persistence-unit name="NONE">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>NONE</shared-cache-mode>
+    </persistence-unit>
+    <persistence-unit name="ENABLE_SELECTIVE">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+    </persistence-unit>
+    <persistence-unit name="DISABLE_SELECTIVE">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
+    </persistence-unit>
+    <!-- following persistence unit is for CASE_SENSITIVITY testing-->
+    <persistence-unit name="MulitPU-1">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/case-sensitive-advanced-entity-mappings.xml</mapping-file>
+        <!--exclude-unlisted-classes>false</exclude-unlisted-classes-->
+        <properties>
+          <property name="eclipselink.jpa.uppercase-column-names" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

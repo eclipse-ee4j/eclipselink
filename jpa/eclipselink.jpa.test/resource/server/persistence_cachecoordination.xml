@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+             version="1.0" xmlns="http://java.sun.com/xml/ns/persistence">
+    <persistence-unit name="%%default%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <jta-data-source>jdbc/EclipseLinkDS</jta-data-source>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address</class>
+        <properties>
+            <property name="eclipselink.target-server" value="WebLogic"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+
+            <property name="eclipselink.cache.coordination.protocol" value="%%cachecoordination-protocol%%" />
+            <property name="eclipselink.cache.coordination.jms.host" value="%%topic-host-url%%" />
+            <property name="eclipselink.cache.coordination.jms.topic" value="%%topic-name%%" />
+            <property name="eclipselink.cache.coordination.jms.factory" value="%%topic-connection-factory%%" />
+        </properties>
+    </persistence-unit>
+</persistence>

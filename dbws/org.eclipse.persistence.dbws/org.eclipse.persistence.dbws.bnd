@@ -1,0 +1,28 @@
+Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Bundle-ClassPath: .
+Implementation-Version: ${version.string}
+Specification-Vendor: ${specification.vendor}
+Bundle-Name: EclipseLink DBWS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
+Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";visibility:=reexport, \
+ org.eclipse.persistence.asm;bundle-version="${version.string}"
+Implementation-Vendor: ${implementation.vendor}
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: ${version.string}
+Include-Resource:                \
+ ${dbws.2.base.dir}/about.html,  \
+ ${dbws.2.base.dir}/readme.html, \
+ ${dbws.2.base.dir}/license.html
+Import-Package:                                                         \
+ javax.activation.*;resolution:=optional,                               \
+ javax.servlet.*,                                                       \
+ javax.xml.soap.*,                                                      \
+ javax.xml.ws.*,                                                        \
+ javax.*;resolution:=optional,                                          \
+ org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
+ org.eclipse.persistence.*;version="${version.string}",                 \
+ org.w3c.*;resolution:=optional,                                        \
+ org.xml.*;resolution:=optional, *
+Specification-Version: ${release.version}
+

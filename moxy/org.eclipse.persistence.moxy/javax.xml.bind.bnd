@@ -1,0 +1,14 @@
+Export-Package: javax.xml.bind.*;version="2.2.0.v${build.date}${build.time}";-noimport:=true,
+Implementation-Version: 2.2.0.v${build.date}${build.time}
+Specification-Title: Java Architecture for XML Binding
+Specification-Version: 2.2
+Specification-Vendor: Sun Microsystems, Inc.
+Extension-Name: javax.xml.bind
+Bundle-Name: javax.xml.bind
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Implementation-Vendor: Sun Microsystems Inc.
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.2.0.v${build.date}${build.time}
+Import-Package: *;resolution:=optional
+Bundle-ClassPath: .
+

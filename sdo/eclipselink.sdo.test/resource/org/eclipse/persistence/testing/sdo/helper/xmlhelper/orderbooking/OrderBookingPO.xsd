@@ -1,0 +1,83 @@
+<xsd:schema targetNamespace="http://www.globalcompany.com/ns/order"
+            elementFormDefault="qualified"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:po="http://www.globalcompany.com/ns/order">
+ <xsd:annotation>
+  <xsd:documentation xml:lang="en">
+   Order Booking schema for GlobalCompany.com. Copyright 2005 GlobalCompany.com.
+   All rights reserved.
+  </xsd:documentation>
+ </xsd:annotation>
+ <xsd:element name="PurchaseOrder" type="po:PurchaseOrderType"/>
+ <xsd:element name="OrderItems" type="po:OrderItemsType"/>
+ <xsd:element name="SupplierInfo" type="po:SupplierInfoType"/>
+ <xsd:complexType name="PurchaseOrderType">
+  <xsd:sequence>
+   <xsd:element name="CustID" type="xsd:string"/>
+   <xsd:element name="ID" type="xsd:string"/>
+   <xsd:element name="ShipTo" type="po:USAddress" minOccurs="0"/>
+   <xsd:element name="BillTo" type="po:USAddress" minOccurs="0"/>
+   <xsd:element name="UserContact" type="po:ContactType" minOccurs="0"/>
+   <xsd:element name="OrderItems" type="po:OrderItemsType" minOccurs="0"/>
+   <xsd:element name="SupplierInfo" type="po:SupplierInfoType" minOccurs="0"/>
+   <xsd:element name="OrderInfo" type="po:OrderInfoType" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="SupplierInfoType">
+  <xsd:sequence>
+   <xsd:element name="SupplierPrice" type="xsd:decimal" minOccurs="0"/>
+   <xsd:element name="SupplierName" type="xsd:string" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="OrderInfoType">
+  <xsd:sequence>
+   <xsd:element name="OrderDate" type="xsd:date" minOccurs="0"/>
+   <xsd:element name="OrderPrice" type="xsd:decimal" minOccurs="0"/>
+   <xsd:element name="OrderStatus" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="OrderComments" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="ApprovalRequired" type="xsd:boolean" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="ContactType">
+  <xsd:sequence>
+   <xsd:element name="PhoneNumber" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="EmailAddress" type="xsd:string" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="USAddress">
+  <xsd:sequence>
+   <xsd:element name="Name" type="po:Name" minOccurs="0"/>
+   <xsd:element name="Address" type="po:Address" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="Address">
+  <xsd:sequence>
+   <xsd:element name="Street" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="City" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="State" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="Zip" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="Country" type="xsd:string" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="Name">
+  <xsd:sequence>
+   <xsd:element name="First" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="Last" type="xsd:string" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="ItemType">
+  <xsd:sequence>
+   <xsd:element name="ProductName" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="itemType" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="partnum" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="price" type="xsd:decimal" minOccurs="0"/>
+   <xsd:element name="Quantity" type="xsd:decimal" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="OrderItemsType">
+  <xsd:sequence>
+   <xsd:element name="Item" type="po:ItemType" minOccurs="0" maxOccurs="unbounded"/>
+  </xsd:sequence>
+ </xsd:complexType>
+</xsd:schema>
+

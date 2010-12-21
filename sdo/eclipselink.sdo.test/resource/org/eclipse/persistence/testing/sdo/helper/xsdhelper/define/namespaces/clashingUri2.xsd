@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="uri2" xmlns="uri2" elementFormDefault="qualified" sdoJava:package="defaultPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="uri2">
+   <xsd:complexType name="AddressType">
+      <xsd:sequence>
+         <xsd:element name="street" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="adderssType" type="AddressType"/>
+</xsd:schema>

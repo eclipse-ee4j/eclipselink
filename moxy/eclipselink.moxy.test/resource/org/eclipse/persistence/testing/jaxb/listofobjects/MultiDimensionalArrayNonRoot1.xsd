@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://jaxb.dev.java.net/array" xmlns:x="listOfObjectsNamespace" targetNamespace="listOfObjectsNamespace">
+   <xsd:complexType name="multiDimensionalArrayRoot">
+      <xsd:sequence>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="char2dArray" type="ns0:charArray"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="employee2dArray" type="x:employeeArray"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="innerClass2dArray" type="x:myInnerArray"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="int2dArray" type="ns0:intArray"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="int3dArray" type="ns0:intArrayArray"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="integer3dArray" type="ns0:integerArrayArray"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="myInner">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="innerName" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="employeeArray">
+      <xsd:sequence>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="item" type="x:employee"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="firstName" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="lastName" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="birthday" type="xsd:dateTime"/>
+         <xsd:element minOccurs="0" name="responsibilities">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element maxOccurs="unbounded" minOccurs="0" name="responsibility" type="xsd:anyType"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="myInnerArray">
+      <xsd:sequence>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="item" type="x:myInner"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="employee-data" type="x:employee"/>
+</xsd:schema>

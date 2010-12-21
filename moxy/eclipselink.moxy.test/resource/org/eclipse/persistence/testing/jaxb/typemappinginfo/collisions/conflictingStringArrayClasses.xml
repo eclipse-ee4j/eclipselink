@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:testTagName xmlns:ns0="http://jaxb.dev.java.net/array" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:stringArray">
+   <item>theString</item>
+   <item>theString2</item>
+   <item>theString3</item>
+</ns0:testTagName>

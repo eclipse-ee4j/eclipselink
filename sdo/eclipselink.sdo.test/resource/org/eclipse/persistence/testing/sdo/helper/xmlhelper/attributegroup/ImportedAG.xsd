@@ -1,0 +1,12 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="importedUri" 
+	   elementFormDefault="qualified">
+  <xs:import namespace="importedUri2" schemaLocation="Imported2AG.xsd"/>
+
+  <xs:attributeGroup name="importedAG" >
+    <xs:attribute name="imported1" type="xs:string"/> 
+    <xs:attribute name="imported2" type="xs:string"/> 
+    <xs:attribute name="imported3" type="xs:string"/> 
+  </xs:attributeGroup>    
+
+</xs:schema>

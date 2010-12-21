@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns1:root xmlns:ns1="examplenamespace" xmlns:ns0="http://jaxb.dev.java.net/array" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:intArray">
+   <item>10</item>
+   <item>20</item>
+   <item>30</item>
+   <item>40</item>
+</ns1:root>

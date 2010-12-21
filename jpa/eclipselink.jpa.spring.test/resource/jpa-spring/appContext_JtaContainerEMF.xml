@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+    		http://www.springframework.org/schema/beans
+      		http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+      		http://www.springframework.org/schema/tx
+      		http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="appContext.properties" />
+    </bean>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="SpringJTAPu" />
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+                <property name="showSql" value="false" />
+                <property name="generateDdl" value="true" />
+                <property name="databasePlatform" value="${platform}" />
+            </bean>
+        </property>
+        <property name="persistenceUnitManager" ref="persistenceUnitManager" />
+    </bean>
+
+    <bean id="persistenceUnitManager" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
+        <property name="defaultDataSource" ref="dataSource" />
+        <property name="dataSources">
+            <map>
+                <entry>
+                    <key>
+                        <value>jdbc/__default</value>
+                    </key>
+                    <ref bean="dataSource" />
+                </entry>
+                <entry>
+                    <key>
+                        <value>jdbc/jta</value>
+                    </key>
+                    <ref bean="dataSource" />
+                </entry>
+            </map>
+        </property>
+        <property name="loadTimeWeaver">
+            <bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
+        </property>
+    </bean>
+
+    <bean id="jotm" class="org.springframework.transaction.jta.JotmFactoryBean" />
+
+    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+        <property name="userTransaction" ref="jotm" />
+    </bean>
+
+    <bean id="innerDataSource" class="org.enhydra.jdbc.standard.StandardXADataSource" destroy-method="shutdown">
+        <property name="transactionManager" ref="jotm" />
+        <property name="driverName" value="${jdbc.driverClassName}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="user" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+    </bean>
+
+    <bean id="dataSource" class="org.enhydra.jdbc.pool.StandardXAPoolDataSource" destroy-method="shutdown">
+        <property name="dataSource" ref="innerDataSource" />
+        <property name="user" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="maxSize" value="128" />
+    </bean>
+
+    <bean id="transactionalEM" class="org.eclipse.persistence.testing.tests.jpa.spring.EntityManagerTransactionalWrapper" />
+
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+
+    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+    <tx:annotation-driven />
+
+</beans>

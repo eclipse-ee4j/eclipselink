@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my4.uri" xmlns="my4.uri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <!-- purposely omit the name="attributeInt" below so that we generate an IAE instead of a
+   reference property not defined exception - for code coverage of SDOTypesGenerator -->
+   <!--xsd:attribute name="attributeInt"-->
+   <xsd:attribute>
+   <xsd:simpleType>
+	<xsd:restriction base="xsd:integer"/>
+   </xsd:simpleType>
+   </xsd:attribute>
+</xsd:schema>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="jpa2testmodel" transaction-type="RESOURCE_LOCAL">
+		<description>ATS Test Persistence Unit</description>
+	        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<jta-data-source>jdbc/EclipseLinkDS</jta-data-source>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.Address</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.ContactInfo</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.Department</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.DeviceId</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.Employee</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.FrequentFlyerPlan</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.Person</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.Phone</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.Product</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.ProductId</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.employee.Vendor</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.embedded.EmbeddedFieldAccess</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.embedded.EmbeddedPropertyAccess</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.embedded.EmbeddingFieldAccess</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.embedded.EmbeddingPropertyAccess</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+                   <!--<property name="eclipselink.target-server" value="org.eclipse.persistence.platform.server.sap.SAPNetWeaver_7_1_Platform"/>  -->
+                   <property name="eclipselink.target-database" value="%%database-platform%%"/>
+                   <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+                   <property name="eclipselink.cache.shared.default" value="false"/>
+                   <property name="eclipselink.temporal.mutable" value="true"/> 
+                   <property name="eclipselink.weaving" value="false"/>
+		</properties>
+	</persistence-unit>
+</persistence>
+

@@ -1,0 +1,1 @@
+DROP TABLE rootcause_table|

@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:root xmlns:ns0="examplenamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="linkedListOfInteger">
+   <item>10</item>
+   <item>20</item>
+   <item>30</item>
+   <item>40</item>
+</ns0:root>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <employee work-address-id="wa111">
+        <name>Joe Black</name>
+        <homeAddress>
+            <primary-key aid="ha123" />
+            <city>Woodlawn</city>
+        </homeAddress>
+    </employee>
+    <address>
+        <primary-key aid="wa111" />
+        <city>Ottawa</city>
+    </address>
+    <address>
+        <primary-key aid="wa112" />
+        <city>Kanata</city>
+    </address>
+    <address>
+        <primary-key aid="wa113" />
+        <city>Orleans</city>
+    </address>
+</root>

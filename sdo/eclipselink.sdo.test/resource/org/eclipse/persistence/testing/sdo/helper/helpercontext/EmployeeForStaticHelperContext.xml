@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:employee xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <id>1</id>
+   <name>Employee1</name>
+   <address>
+      <street>101 A Street</street>
+   </address>
+   <phones>
+      <number>1014455</number>
+      <phoneId>1</phoneId>
+   </phones>
+   <phones>
+      <number>1014466</number>
+      <phoneId>2</phoneId>
+   </phones>
+   <phones>
+      <number>1014477</number>
+      <phoneId>3</phoneId>
+   </phones>
+</ns0:employee>

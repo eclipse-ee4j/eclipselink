@@ -1,0 +1,11 @@
+<parking-lot xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <vehicles>
+        <vehicle>
+            <model>Grand Am</model>
+            <manufacturer>Pontiac</manufacturer>
+            <top-speed>220</top-speed>
+            <number-of-doors>2</number-of-doors>
+            <miles-per-gallon>30</miles-per-gallon>
+        </vehicle>
+    </vehicles>
+</parking-lot>

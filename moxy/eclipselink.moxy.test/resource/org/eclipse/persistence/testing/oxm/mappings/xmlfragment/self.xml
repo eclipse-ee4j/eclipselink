@@ -1,0 +1,1 @@
+<bar:employee xmlns:bar="urn:example" bar:id="123" id2="456"><bar:first-name>Jane</bar:first-name><bar:last-name>Doe</bar:last-name><bar>Hello World</bar></bar:employee>

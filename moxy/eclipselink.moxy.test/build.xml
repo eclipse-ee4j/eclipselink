@@ -1,0 +1,662 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names or explicit classpath fragments
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     bdoughan - initial API and implementation
+*     dtwelves - Sept 2008 add in MOXy SRG testing
+*     egwin      Nov 08 - remove compile of MOXY (add dep check instead)
+#******************************************************************************/-->
+
+<project name="eclipselink.moxy.test" default="test" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="moxytest.is.local"/>
+    <fail message="Not running from '${ant.project.name}' directory" unless="moxytest.is.local"/>
+
+    <dirname  property="moxytest.build.location_temp" file="${ant.file.eclipselink.moxy.test}"/>
+    <pathconvert targetos="unix" property="moxytest.build.location">
+        <path>
+            <pathelement location="${moxytest.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <echo message="moxytest.build.location = '${moxytest.build.location}'"/>
+    <condition property="moxytest.2.trunk.dir" value="../.." else="..">
+        <contains string="${moxytest.build.location}" substring="moxy/${ant.project.name}"/>
+    </condition>
+    <echo message="moxytest.2.trunk.dir = '${moxytest.2.trunk.dir}'"/>
+    <property name="moxytest.2.common.plugins.dir" value="${moxytest.2.trunk.dir}/plugins"/>
+    <property name="moxytest.2.moxy.dir" value="${moxytest.2.trunk.dir}/moxy/org.eclipse.persistence.moxy"/>
+    <property name="moxytest.2.core.dir" value="${moxytest.2.trunk.dir}/foundation/org.eclipse.persistence.core"/>
+    <property name="moxytest.plugins.dir" value="../plugins"/>
+    <!-- Temporary until eclipselink.jar property is globally renamed -->
+    <property name="eclipselink.jar" value="eclipselink.jar"/>
+
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/build.properties"/>
+    <property file="${moxytest.build.location}/build.properties"/>
+    <propertyset id="parser.properties">
+        <propertyref prefix="javax.xml"/>
+    </propertyset>
+
+    <property name="eclipselink.lib" value="${moxytest.2.trunk.dir}/${eclipselink.jar}"/>
+    <property name="jaxb-xjc.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
+    <property name="jaxb-api.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
+    <property name="jaxb-impl.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
+
+    <path id="xml.parser.path">
+        <fileset 
+            dir="${xml.parser.jar.dir}"
+            includes="${xml.parser.jar}"/>
+    </path>
+    <!-- Compile/run paths -->
+    <path id="jaxb.compile.path">
+        <path refid="xml.parser.path"/>
+        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${moxytest.2.common.plugins.dir}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${junit.lib}"/>
+        <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
+        <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
+        <pathelement path="${jaxb-xjc.lib}"/>
+        <pathelement path="${jaxb-impl.lib}"/>
+    </path>
+    <path id="jaxb.run.path">
+        <path refid="xml.parser.path"/>
+        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${moxytest.2.common.plugins.dir}"
+            includes="${activation.jar}, ${mail.jar}"/>
+        <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
+        <pathelement path="${classes.dir}"/>
+        <pathelement path="${resource.dir}"/>
+        <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
+        <pathelement path="${moxytest.2.core.dir}/${resource.dir}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/org.eclipse.persistence.asm"/>
+        <pathelement path="${jaxb-xjc.lib}"/>
+        <pathelement path="${jaxb-impl.lib}"/>
+    </path>
+    <path id="oxm.compile.path">
+        <path refid="xml.parser.path"/>
+        <fileset
+            dir="${moxytest.2.common.plugins.dir}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${junit.lib}"/>
+        <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
+        <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
+    </path>
+    <path id="oxm.run.path">
+        <path refid="xml.parser.path"/>
+        <fileset
+            dir="${moxytest.2.common.plugins.dir}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
+        <pathelement path="${classes.dir}"/>
+        <pathelement path="${resource.dir}"/>
+        <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
+        <pathelement path="${moxytest.2.core.dir}/${resource.dir}"/>
+    </path>
+
+    <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
+    <path id="jaxb.compile.against.jar.path">
+        <path refid="xml.parser.path"/>
+        <pathelement path="${junit.lib}"/>
+        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${moxytest.2.common.plugins.dir}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.lib}"/>
+        <pathelement path="${jaxb-xjc.lib}"/>
+        <pathelement path="${jaxb-impl.lib}"/>
+    </path>
+    <path id="jaxb.run.against.jar.path">
+        <path refid="xml.parser.path"/>
+        <pathelement path="${junit.lib}"/>
+        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${moxytest.2.common.plugins.dir}"
+            includes="${activation.jar}, ${mail.jar},${stax_api.jar}"/>
+        <pathelement path="${classes.dir}"/>
+        <pathelement path="${resource.dir}"/>
+        <pathelement path="${eclipselink.lib}"/>
+        <pathelement path="${jaxb-xjc.lib}"/>
+        <pathelement path="${jaxb-impl.lib}"/>
+    </path>
+    <path id="oxm.compile.against.jar.path">
+        <path refid="xml.parser.path"/>
+        <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${junit.lib}"/>
+        <fileset
+            dir="${moxytest.2.common.plugins.dir}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.lib}"/>
+    </path>
+    <path id="oxm.run.against.jar.path">
+        <path refid="xml.parser.path"/>
+        <pathelement path="${junit.lib}"/>
+        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${moxytest.2.common.plugins.dir}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${classes.dir}"/>
+        <pathelement path="${resource.dir}"/>
+        <pathelement path="${eclipselink.lib}"/>
+    </path>
+
+    <!-- Test targets -->
+    <target name="test" depends="clean-reports, compile-and-run-tests, update-package-names, moxy-junit-report" description="run moxy tests and generate junit report"/>
+    <target name="test-jaxb" depends="clean-jaxb-reports, compile-and-run-jaxb-tests, jaxb-junit-report" description="build and run moxy (jaxb) tests and generate junit report"/>
+    <target name="test-oxm" depends="clean-oxm-reports, compile-and-run-oxm-tests, update-package-names, oxm-junit-report" description="build and run moxy (oxm) tests and generate junit report"/>
+    <target name="test-tl-deploymentxml" depends="clean-oxm-reports, compile-and-run-oxm-deploymentxml-tl-tests, update-deploymentxml-tl-package, oxm-junit-report" description="build and run moxy (oxm) tl deployment xml tests and generate junit report"/>
+    <!-- The following tests build and run against eclipselink.jar -->
+    <target name="test-against-jar" depends="clean-reports, compile-and-run-tests-against-jar, update-package-names, moxy-junit-report" description="run moxy tests against eclipselink.jar and generate junit report"/>
+    <target name="test-srg-against-jar" depends="compile-and-run-srg-tests-against-jar, moxy-srg-junit-report" description="run moxy srg tests against eclipselink.jar and generate junit report"/>
+    <target name="test-jaxb-against-jar" depends="clean-jaxb-reports, compile-and-run-jaxb-tests-against-jar, jaxb-junit-report" description="build and run moxy (jaxb) tests against eclipselink.jar and generate junit report"/>
+    <target name="test-oxm-against-jar" depends="clean-oxm-reports, compile-and-run-oxm-tests-against-jar, update-package-names, oxm-junit-report" description="build and run moxy (oxm) tests against eclipselink.jar and generate junit report"/>
+
+    <!-- Build targets -->
+    <target name="compile-tests" depends="clean" description="build moxy test classes">
+        <available file="${moxytest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
+        <!-- fail message="Cannot find MOXY: '${moxytest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar'." unless="moxy.bundle.exist"/ -->
+        <compile_moxy_tests subcomponent="oxm" compilepathref="oxm.compile.path"/>
+        <compile_moxy_tests subcomponent="jaxb" compilepathref="jaxb.compile.path"/>
+    </target>
+    <target name="compile-tests-against-jar" depends="clean" description="build moxy test classes against eclipselink.jar">
+        <echo message="Compiling OXM tests..."/>
+        <compile_moxy_tests subcomponent="oxm" compilepathref="oxm.compile.against.jar.path"/>
+        <echo message=""/>
+        <echo message="Compiling JAXB tests..."/>
+        <compile_moxy_tests subcomponent="jaxb" compilepathref="jaxb.compile.against.jar.path"/>
+    </target>
+
+    <!-- Build & Run targets -->
+    <target name="compile-and-run-tests" depends="compile-tests" description="build and run moxy tests">
+        <run_jaxb_tests runpathref="jaxb.run.path"/>
+        <run_oxm_tests runpathref="oxm.run.path"/>
+        <run_oxm_dom_tests runpathref="oxm.run.path"/>
+        <run_oxm_deploymentxml_tests runpathref="oxm.run.path"/>
+        <run_oxm_docpres_tests runpathref="oxm.run.path"/>
+    </target>
+    <target name="compile-and-run-jaxb-tests" depends="compile-tests" description="build and run moxy (oxm) tests">
+        <run_jaxb_tests runpathref="jaxb.run.path"/>
+    </target>
+    <target name="compile-and-run-oxm-tests" depends="compile-tests" description="build and run moxy (oxm) tests">
+        <run_oxm_tests runpathref="oxm.run.path"/>
+        <run_oxm_dom_tests runpathref="oxm.run.path"/>
+        <run_oxm_deploymentxml_tests runpathref="oxm.run.path"/>
+        <run_oxm_docpres_tests runpathref="oxm.run.path"/>
+    </target>
+    <target name="compile-and-run-oxm-deploymentxml-tl-tests" depends="compile-tests" description="build and run moxy (oxm) tl deployment xml tests">
+        <run_oxm_deploymentxml_tl_tests runpathref="oxm.run.path"/>
+    </target>
+    <!-- The following targets build and run against eclipselink.jar -->
+    <target name="compile-and-run-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy tests against eclipselink.jar">
+        <run_jaxb_tests runpathref="jaxb.run.against.jar.path"/>
+        <run_oxm_tests runpathref="oxm.run.against.jar.path"/>
+        <run_oxm_dom_tests runpathref="oxm.run.against.jar.path"/>
+        <run_oxm_deploymentxml_tests runpathref="oxm.run.against.jar.path"/>
+        <run_oxm_docpres_tests runpathref="oxm.run.against.jar.path"/>
+    </target>
+    <target name="compile-and-run-srg-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy srg tests against eclipselink.jar">
+        <run_jaxb_srg_tests runpathref="jaxb.run.against.jar.path"/>
+        <run_oxm_srg_tests runpathref="oxm.run.against.jar.path"/>
+    </target>
+    <target name="compile-and-run-jaxb-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy (oxm) tests against eclipselink.jar">
+        <run_jaxb_tests runpathref="jaxb.run.against.jar.path"/>
+    </target>
+    <target name="compile-and-run-oxm-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy (oxm) tests against eclipselink.jar">
+        <run_oxm_tests runpathref="oxm.run.against.jar.path"/>
+        <run_oxm_dom_tests runpathref="oxm.run.against.jar.path"/>
+        <run_oxm_deploymentxml_tests runpathref="oxm.run.against.jar.path"/>
+        <run_oxm_docpres_tests runpathref="oxm.run.against.jar.path"/>
+    </target>
+
+    <!-- Package rename targets -->
+    <target name="update-package-names" depends="wait-if-unix, update-sax-package, update-deploymentxml-package, update-docpres-package" description="modify package names to avoid duplicates"/>
+    <target name="wait-if-unix" if="_Unix">
+        <echo message="Forcing sync to disk..."/>
+        <exec executable="sync"/>
+    </target>
+    <target name="update-sax-package">
+        <replace dir="${report.dir}/oxm/default" value='"org.eclipse.persistence.testing.oxm.sax'
+            token='"org.eclipse.persistence.testing.oxm'>
+                <include name="**/*.xml"/>
+        </replace>
+    </target>
+    <target name="update-deploymentxml-package">
+        <replace dir="${report.dir}/oxm/deploymentxml" value='"org.eclipse.persistence.testing.oxm.deploymentxml'
+            token='"org.eclipse.persistence.testing.oxm'>
+                <include name="**/*.xml"/>
+        </replace>
+    </target>
+    <target name="update-deploymentxml-tl-package">
+        <replace dir="${report.dir}/oxm/deploymentxml-tl" value='"org.eclipse.persistence.testing.oxm.deploymentxml.tl'
+            token='"org.eclipse.persistence.testing.oxm'>
+                <include name="**/*.xml"/>
+        </replace>
+    </target>
+    <target name="update-docpres-package">
+        <antcall target="wait-if-unix"/>
+        <replace dir="${report.dir}/oxm/docpres" value='"org.eclipse.persistence.testing.oxm.docpres'
+            token='"org.eclipse.persistence.testing.oxm'>
+                <include name="**/*.xml"/>
+        </replace>
+    </target>
+
+    <!-- JUnit report targets -->
+    <target name="moxy-junit-report" depends="jaxb-junit-report, oxm-junit-report" description="create moxy junit report"/>
+    <target name="jaxb-junit-report" description="create jaxb junit report">
+        <junitreport todir="${report.dir}/jaxb">
+            <fileset dir="${report.dir}/jaxb">
+                <include name="**/*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${report.dir}/jaxb"/>
+        </junitreport>
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${resource.dir}/${tmp.dir}"/>
+            <fileset dir="${resource.dir}">
+                <include name="File*.xml"/>
+            </fileset>
+        </delete>
+    </target>
+    <target name="oxm-junit-report" description="create oxm junit report">
+        <junitreport todir="${report.dir}/oxm">
+            <fileset dir="${report.dir}/oxm">
+                <include name="**/*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${report.dir}/oxm"/>
+        </junitreport>
+    </target>
+
+
+    <target name="moxy-srg-junit-report" description="create moxy srg junit report">
+        <junitreport todir="${report.dir}/srg">
+            <fileset dir="${report.dir}/srg">
+                <include name="**/*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${report.dir}/srg"/>
+        </junitreport>
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${resource.dir}/${tmp.dir}"/>
+            <fileset dir="${resource.dir}">
+                <include name="File*.xml"/>
+            </fileset>
+        </delete>
+    </target>
+
+
+    <!-- Clean targets -->
+    <target name="clean-reports" depends="clean-oxm-reports, clean-jaxb-reports" description="clean moxy junit report directory">
+        <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${report.dir}/oxm" includeEmptyDirs="true" failonerror="false"/>
+        <mkdir dir="${report.dir}/jaxb"/>
+        <mkdir dir="${report.dir}/oxm"/>
+    </target>
+    <target name="clean-oxm-reports" description="clean moxy (oxm) junit report directory">
+        <delete dir="${report.dir}/oxm" includeEmptyDirs="true" failonerror="false"/>
+        <mkdir dir="${report.dir}/oxm"/>
+    </target>
+    <target name="clean-jaxb-reports" description="clean moxy (jaxb) junit report directory">
+        <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
+        <mkdir dir="${report.dir}/jaxb"/>
+    </target>
+    <target name="clean" description="clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+        </delete>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+
+    <!-- Test run macros -->
+    <macrodef name="run_jaxb_tests">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}/jaxb"/>
+            <mkdir dir="${resource.dir}/${tmp.dir}"/>
+            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <env key="T_WORK" value="${tmp.dir}"/>
+                <sysproperty key="platformType" value="SAX"/>
+                <sysproperty key="metadataType" value="JAVA"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${report.dir}/jaxb">
+                    <fileset dir="${src.dir}">
+                        <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                    <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+        </sequential>
+    </macrodef>
+    <macrodef name="run_jaxb_srg_tests">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/srg/jaxb" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}/srg/jaxb"/>
+            <mkdir dir="${resource.dir}/${tmp.dir}"/>
+            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <env key="T_WORK" value="${tmp.dir}"/>
+                <sysproperty key="platformType" value="SAX"/>
+                <sysproperty key="metadataType" value="JAVA"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${report.dir}/srg/jaxb">
+                    <fileset dir="${src.dir}">
+                        <include name="org/eclipse/persistence/testing/jaxb/JAXBSRGTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                    <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+        </sequential>
+    </macrodef>
+    <macrodef name="run_oxm_srg_tests">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/srg/oxm" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}/srg/oxm/default"/>
+            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${report.dir}/srg/oxm/default">
+                    <fileset dir="${src.dir}">
+                        <include name="org/eclipse/persistence/testing/oxm/OXMSRGTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                  <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+        </sequential>
+    </macrodef>
+    <macrodef name="run_oxm_tests">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/oxm/default" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}/oxm/default"/>
+            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${report.dir}/oxm/default">
+                    <fileset dir="${src.dir}">
+                        <include name="**/ContainerAccessorTestSuite.java"/>
+                        <include name="**/*MappingTestSuite.java"/>
+                        <include name="**/InheritanceTestSuite.java"/>
+                        <include name="**/XMLMarshalTestCases.java"/>
+                        <include name="**/XMLMarshalFragmentTestCases.java"/>
+                        <include name="**/XMLUnmarshalTestCases.java"/>
+                        <include name="**/XMLMarshallerValidationModeTestCases.java"/>
+                        <include name="**/*amespaceTestSuite.java"/>
+                        <include name="**/ClassLoaderTestCases.java"/>
+                        <include name="**/MappingClassLoaderTestCases.java"/>
+                        <exclude name="**/MappingTestSuite.java"/>
+                        <exclude name="**/OneTo*TestSuite.java"/>
+                        <exclude name="**/DeploymentXMLMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
+                        <exclude name="**/SAXMappingTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionMappingNillableTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/oxm/mappings/keybased/multipletargets/compositekey/CompositeKeyTestCases.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                  <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+        </sequential>
+    </macrodef>
+    <macrodef name="run_oxm_dom_tests">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/oxm/dom" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}/oxm/dom"/>
+            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <sysproperty key="platformType" value="DOM"/>
+                <sysproperty key="metadataType" value="JAVA"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${report.dir}/oxm/dom">
+                    <fileset dir="${src.dir}">
+                        <include name="**/*TestSuite.java"/>
+                        <include name="**/ClassLoaderTestCases.java"/>
+                        <include name="**/MappingClassLoaderTestCases.java"/>
+                        <include name="**/advancedxpath/**/*TestCases.java"/>
+                        <exclude name="**/OXTestSuite.java"/>
+                        <exclude name="**/OXMSRGTestSuite.java"/>
+                        <exclude name="**/DeploymentXMLOXTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/MappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/DeploymentXMLMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/SAXMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
+                        <!--
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/choice/XMLChoiceMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
+                        -->
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                    <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+        </sequential>
+    </macrodef>
+    <macrodef name="run_oxm_deploymentxml_tests">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/oxm/deploymentxml" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}/oxm/deploymentxml"/>
+            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <sysproperty key="platformType" value="DOM"/>
+                <sysproperty key="metadataType" value="XML_ECLIPSELINK"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${report.dir}/oxm/deploymentxml">
+                    <fileset dir="${src.dir}">
+                        <include name="**/DocumentPreservationTestSuite.java"/>
+                        <include name="**/RootElementTestSuite.java"/>
+                        <include name="**/XMLRootTestSuite.java"/>
+                        <include name="**/XMLMarshalTestCases.java"/>
+                        <include name="**/XMLMarshalFragmentTestCases.java"/>
+                        <include name="**/XMLUnmarshalTestCases.java"/>
+                        <include name="**/ReadOnlyTestSuite.java"/>
+                        <include name="**/InheritanceTestSuite.java"/>
+                        <include name="**/ConverterTestSuite.java"/>
+                        <include name="**/*MappingTestSuite.java"/>
+                        <include name="**/ClassLoaderTestCases.java"/>
+                        <include name="**/MappingClassLoaderTestCases.java"/>
+                        <include name="**/*amespaceTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/MappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/DeploymentXMLMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/SAXMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/choice/XMLChoiceMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/converter/ConverterTestCases.java"/>
+                        <!--
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydata/XMLBinaryDataMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/XMLBinaryDataCollectionMappingTestSuite.java"/>
+                        -->
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/directtofield/converter/DirectToFieldConverterTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/converter/CompositeObjectSelfConverterTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/containeracessor/ContainerAccessorTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                    <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+        </sequential>
+    </macrodef>
+    <macrodef name="run_oxm_deploymentxml_tl_tests">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/oxm/deploymentxml-tl" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}/oxm/deploymentxml-tl"/>
+            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <sysproperty key="platformType" value="DOM"/>
+                <sysproperty key="metadataType" value="XML_TOPLINK"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${report.dir}/oxm/deploymentxml-tl">
+                    <fileset dir="${src.dir}">
+                        <include name="**/DocumentPreservationTestSuite.java"/>
+                        <include name="**/RootElementTestSuite.java"/>
+                        <include name="**/XMLRootTestSuite.java"/>
+                        <include name="**/XMLMarshalTestCases.java"/>
+                        <include name="**/XMLMarshalFragmentTestCases.java"/>
+                        <include name="**/XMLUnmarshalTestCases.java"/>
+                        <include name="**/ReadOnlyTestSuite.java"/>
+                        <include name="**/InheritanceTestSuite.java"/>
+                        <include name="**/ConverterTestSuite.java"/>
+                        <include name="**/*MappingTestSuite.java"/>
+                        <include name="**/ClassLoaderTestCases.java"/>
+                        <include name="**/MappingClassLoaderTestCases.java"/>
+                        <include name="**/*amespaceTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/MappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/DeploymentXMLMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/SAXMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydata/XMLBinaryDataMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/XMLBinaryDataCollectionMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/choice/XMLChoiceMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/converter/CompositeObjectSelfConverterTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/containeracessor/ContainerAccessorTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                    <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+        </sequential>
+    </macrodef>
+    <macrodef name="run_oxm_docpres_tests">
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/oxm/docpres" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}/oxm/docpres"/>
+            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <sysproperty key="platformType" value="DOC_PRES"/>
+                <sysproperty key="metadataType" value="JAVA"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="parser" value="${parser}"/>
+                <syspropertyset refid="parser.properties"/>
+                <batchtest todir="${report.dir}/oxm/docpres">
+                    <fileset dir="${src.dir}">
+                        <include name="**/*TestSuite.java"/>
+                        <include name="**/ClassLoaderTestCases.java"/>
+                        <include name="**/MappingClassLoaderTestCases.java"/>
+                        <exclude name="**/ReadOnlyTestSuite.java"/>
+                        <exclude name="**/OXTestSuite.java"/>
+                        <exclude name="**/OXMSRGTestSuite.java"/>
+                        <exclude name="**/OneTo*TestSuite.java"/>
+                        <exclude name="**/DeploymentXMLOXTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/MappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/DeploymentXMLMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/SAXMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/KeyBasedMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/keybased/compositekeyclass/CompositeKeyClassMappingTestSuite.java"/>
+                        <!--
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/choice/XMLChoiceMappingTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/choicecollection/XMLChoiceCollectionMappingTestSuite.java"/>
+                        -->
+                        <exclude name="org/eclipse/persistence/testing/oxm/mappings/sequenced/SequencedMappingTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath>
+                    <path refid="@{runpathref}"/>
+                </classpath>
+            </junit>
+        </sequential>
+    </macrodef>
+
+    <!-- Compile macros -->
+    <macrodef name="compile_moxy_tests">
+        <attribute name="subcomponent"/>
+        <attribute name="compilepathref"/>
+        <sequential>
+            <mkdir dir="${classes.dir}"/>
+            <javac srcdir="${src.dir}"
+                destdir="${classes.dir}"
+                debug="${javac.debug}"
+                debuglevel="${javac.debuglevel}"
+                optimize="${javac.optimize}"
+                source="${javac.version}"
+                deprecation="${javac.deprecation}"
+                failonerror="false"
+                includes="org/eclipse/persistence/testing/@{subcomponent}/**/*.java">
+                <classpath>
+                    <path refid="@{compilepathref}"/>
+                </classpath>
+            </javac>
+        </sequential>
+    </macrodef>
+</project>

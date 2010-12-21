@@ -1,0 +1,4 @@
+<ns0:wrapper xmlns:ns0="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:root arrayType="thearraytype" offset="theoffset" position="theposition" extra="theextra" imported1="aaa" imported2="bbb" imported3="ccc" id="123" href="abc" importedsecond="ddd"/>
+   <ns0:child arrayType="thearraytype" offset="theoffset" position="theposition" childextra="thechildextra" included1="aaa" included2="bbb" included3="ccc" id="123" href="abc"/>
+</ns0:wrapper>

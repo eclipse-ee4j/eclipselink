@@ -1,0 +1,4 @@
+<employee>
+  <name>Jane Doe</name>
+  <writeOnlyField>Write Only Data</writeOnlyField>
+</employee>

@@ -1,0 +1,2 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<root><customer phone-number-id="A B"><address-id>1</address-id></customer><customer phone-number-id="B C"><address-id>2</address-id></customer><address id="1"/><address id="2"/><phone-number id="A"/><phone-number id="B"/><phone-number id="C"/></root>

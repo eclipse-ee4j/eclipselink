@@ -1,0 +1,55 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<plsql-stored-procedure-call>
+   <procedure-name>REC_TEST</procedure-name>
+   <arguments>
+      <argument plsql-record="EMPLOYEE RECORD">
+         <name>Z</name>
+         <type-name>emp%ROWTYPE</type-name>
+         <fields>
+            <field jdbc-type="NUMERIC_TYPE">
+               <name>EMPNO</name>
+               <precision>4</precision>
+               <scale>0</scale>
+            </field>
+            <field jdbc-type="VARCHAR_TYPE">
+               <name>ENAME</name>
+               <length>10</length>
+            </field>
+            <field jdbc-type="VARCHAR_TYPE">
+               <name>JOB</name>
+               <length>9</length>
+            </field>
+            <field jdbc-type="NUMERIC_TYPE">
+               <name>MGR</name>
+               <precision>4</precision>
+               <scale>0</scale>
+            </field>
+            <field jdbc-type="DATE_TYPE">
+               <name>HIREDATE</name>
+            </field>
+            <field jdbc-type="NUMERIC_TYPE">
+               <name>SAL</name>
+               <precision>7</precision>
+               <scale>2</scale>
+            </field>
+            <field jdbc-type="NUMERIC_TYPE">
+               <name>COMM</name>
+               <precision>7</precision>
+               <scale>2</scale>
+            </field>
+            <field jdbc-type="NUMERIC_TYPE">
+               <name>DEPTNO</name>
+               <precision>2</precision>
+               <scale>0</scale>
+            </field>
+         </fields>
+      </argument>
+      <argument jdbc-type="VARCHAR_TYPE">
+         <name>AA</name>
+         <length>40</length>
+      </argument>
+      <argument plsql-type="PLSQLBoolean">
+         <name>BB</name>
+      </argument>
+   </arguments>
+</plsql-stored-procedure-call>

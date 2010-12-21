@@ -1,0 +1,4 @@
+<employee>
+  <name>Jane Doe</name>
+  <xmlData>&lt;root&gt;&lt;child&gt;A string wrapped in cdata&lt;/child&gt;&lt;/root&gt;</xmlData>
+</employee>

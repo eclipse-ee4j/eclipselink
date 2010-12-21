@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xml-schema>
+        <xml-ns prefix="xsd" namespace-uri="http://www.w3.org/2001/XMLSchema"/>
+        <xml-ns prefix="xsi" namespace-uri="http://www.w3.org/2001/XMLSchema-instance"/>
+    </xml-schema>
+
+    <java-types>
+        <java-type name="Person">
+            <xml-root-element name="person"/>
+            <java-attributes>
+                <xml-attribute java-attribute="id" type="java.lang.Integer"/>
+                <xml-element java-attribute="name" type="java.lang.String"/>
+                <xml-element java-attribute="payments" type="java.lang.Double" container-type="java.util.ArrayList"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+
+</xml-bindings>

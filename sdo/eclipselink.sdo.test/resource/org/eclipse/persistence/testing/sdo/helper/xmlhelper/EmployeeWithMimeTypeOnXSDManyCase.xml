@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:employeeType xmlns:ns2="http://www.w3.org/2004/08/xop/include" xmlns:ns1="http://www.example.org" xmlns:ns0="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns1:id>1</ns1:id>
+   <ns1:name>Employee1</ns1:name>
+   <ns1:photo>
+      <ns2:Include href="c_id0"/>
+   </ns1:photo>
+   <ns1:photo>
+      <ns2:Include href="c_id0"/>
+   </ns1:photo>
+</ns1:employeeType>

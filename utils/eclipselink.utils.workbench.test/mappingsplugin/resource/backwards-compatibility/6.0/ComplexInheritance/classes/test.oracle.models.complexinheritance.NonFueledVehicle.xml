@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+   <name>test.oracle.models.complexinheritance.NonFueledVehicle</name>
+   <modifier>1</modifier>
+   <superclass-handle>
+      <type-name>test.oracle.models.complexinheritance.Vehicle</type-name>
+   </superclass-handle>
+   <methods>
+      <method>
+         <name>NonFueledVehicle</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+      </method>
+      <method>
+         <name>example4</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-handle>
+               <type-name>test.oracle.models.complexinheritance.NonFueledVehicle</type-name>
+            </type-handle>
+         </return-type-declaration>
+         <method-parameters>
+            <method-parameter>
+               <type-declaration>
+                  <type-handle>
+                     <type-name>test.oracle.models.complexinheritance.Company</type-name>
+                  </type-handle>
+               </type-declaration>
+            </method-parameter>
+         </method-parameters>
+      </method>
+   </methods>
+</class>

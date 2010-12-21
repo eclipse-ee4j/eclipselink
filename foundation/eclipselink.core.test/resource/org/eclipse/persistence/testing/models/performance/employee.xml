@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.performance.Address</class>
+         <alias>Address</alias>
+         <primary-key>
+            <field table="ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>city</attribute-name>
+               <field table="ADDRESS" name="CITY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>country</attribute-name>
+               <field table="ADDRESS" name="COUNTRY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>postalCode</attribute-name>
+               <field table="ADDRESS" name="P_CODE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>province</attribute-name>
+               <field table="ADDRESS" name="PROVINCE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>street</attribute-name>
+               <field table="ADDRESS" name="STREET" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>ADDRESS_SEQ</sequence-name>
+            <sequence-field table="ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <!--change-policy xsi:type="attribute-level-change-policy"/-->
+         <tables>
+            <table name="ADDRESS"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.performance.Employee</class>
+         <alias>Employee</alias>
+         <primary-key>
+            <field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>firstName</attribute-name>
+               <field table="EMPLOYEE" name="F_NAME" xsi:type="column"/>
+               <null-value xsi:type="xsd:string"></null-value>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>version</attribute-name>
+               <field table="EMPLOYEE" name="VERSION" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>lastName</attribute-name>
+               <field table="EMPLOYEE" name="L_NAME" xsi:type="column"/>
+               <null-value xsi:type="xsd:string"></null-value>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>salary</attribute-name>
+               <field table="EMPLOYEE" name="SALARY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>gender</attribute-name>
+               <field table="EMPLOYEE" name="GENDER" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="aggregate-object-mapping">
+               <attribute-name>period</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.performance.EmploymentPeriod</reference-class>
+               <field-translations>
+                  <field-translation>
+                     <source-field name="startDate->DIRECT" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="START_DATE" xsi:type="column"/>
+                  </field-translation>
+                  <field-translation>
+                     <source-field name="endDate->DIRECT" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="END_DATE" xsi:type="column"/>
+                  </field-translation>
+               </field-translations>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>address</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.performance.Address</reference-class>
+               <private-owned>true</private-owned>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="EMPLOYEE" name="ADDR_ID" xsi:type="column"/>
+                     <target-field table="ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="EMPLOYEE" name="ADDR_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query">
+                  <reference-class>org.eclipse.persistence.testing.models.performance.Address</reference-class>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>manager</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.performance.Employee</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="EMPLOYEE" name="MANAGER_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="EMPLOYEE" name="MANAGER_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query">
+                  <reference-class>org.eclipse.persistence.testing.models.performance.Employee</reference-class>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>managedEmployees</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.performance.Employee</reference-class>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="EMPLOYEE" name="MANAGER_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="container-policy">
+                  <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
+               </container>
+               <indirection xsi:type="transparent-collection-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <reference-class>org.eclipse.persistence.testing.models.performance.Employee</reference-class>
+                  <container xsi:type="container-policy">
+                     <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>phoneNumbers</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.performance.PhoneNumber</reference-class>
+               <private-owned>true</private-owned>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="PHONE" name="EMP_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="container-policy">
+                  <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
+               </container>
+               <indirection xsi:type="transparent-collection-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <reference-class>org.eclipse.persistence.testing.models.performance.PhoneNumber</reference-class>
+                  <container xsi:type="container-policy">
+                     <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="many-to-many-mapping">
+               <attribute-name>projects</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.performance.Project</reference-class>
+               <relation-table>PROJ_EMP</relation-table>
+               <source-relation-foreign-key>
+                  <field-reference>
+                     <source-field table="PROJ_EMP" name="EMP_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </source-relation-foreign-key>
+               <target-relation-foreign-key>
+                  <field-reference>
+                     <source-field table="PROJ_EMP" name="PROJ_ID" xsi:type="column"/>
+                     <target-field table="PROJECT" name="PROJ_ID" xsi:type="column"/>
+                  </field-reference>
+               </target-relation-foreign-key>
+               <container xsi:type="container-policy">
+                  <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
+               </container>
+               <indirection xsi:type="transparent-collection-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <reference-class>org.eclipse.persistence.testing.models.performance.Project</reference-class>
+                  <container xsi:type="container-policy">
+                     <collection-type>org.eclipse.persistence.indirection.IndirectSet</collection-type>
+                  </container>
+               </selection-query>
+               <insert-query xsi:type="data-modify-query"/>
+               <delete-query xsi:type="data-modify-query"/>
+               <delete-all-query xsi:type="data-modify-query"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <locking xsi:type="version-locking-policy">
+            <version-field table="EMPLOYEE" name="VERSION" xsi:type="column"/>
+            <store-version-in-cache>false</store-version-in-cache>
+         </locking>
+         <sequencing>
+            <sequence-name>EMP_SEQ</sequence-name>
+            <sequence-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <!--change-policy xsi:type="attribute-level-change-policy"/-->
+         <tables>
+            <table name="EMPLOYEE"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.performance.EmploymentPeriod</class>
+         <alias>EmploymentPeriod</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>endDate</attribute-name>
+               <field name="endDate->DIRECT" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>startDate</attribute-name>
+               <field name="startDate->DIRECT" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <!--change-policy xsi:type="attribute-level-change-policy"/-->
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.performance.LargeProject</class>
+         <alias>LargeProject</alias>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.performance.Project</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>budget</attribute-name>
+               <field table="LPROJECT" name="BUDGET" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>milestoneVersion</attribute-name>
+               <field table="LPROJECT" name="MILESTONE" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <!--change-policy xsi:type="attribute-level-change-policy"/-->
+         <tables>
+            <table name="LPROJECT"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.performance.PhoneNumber</class>
+         <alias>PhoneNumber</alias>
+         <primary-key>
+            <field table="PHONE" name="PHONE_ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="PHONE" name="PHONE_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>areaCode</attribute-name>
+               <field table="PHONE" name="AREA_CODE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>number</attribute-name>
+               <field table="PHONE" name="P_NUMBER" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>type</attribute-name>
+               <field table="PHONE" name="TYPE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>owner</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.performance.Employee</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="PHONE" name="EMP_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="PHONE" name="EMP_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query">
+                  <reference-class>org.eclipse.persistence.testing.models.performance.Employee</reference-class>
+               </selection-query>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>PHONE_SEQ</sequence-name>
+            <sequence-field table="PHONE" name="PHONE_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <query-keys>
+            <query-key name="id" xsi:type="direct-query-key">
+               <field table="PHONE" name="EMP_ID" xsi:type="column"/>
+            </query-key>
+         </query-keys>
+         <!--change-policy xsi:type="attribute-level-change-policy"/-->
+         <tables>
+            <table name="PHONE"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.performance.Project</class>
+         <alias>Project</alias>
+         <primary-key>
+            <field table="PROJECT" name="PROJ_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <class-indicator-field table="PROJECT" name="PROJ_TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.performance.SmallProject</class>
+                  <class-indicator xsi:type="xsd:string">S</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.performance.LargeProject</class>
+                  <class-indicator xsi:type="xsd:string">L</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>description</attribute-name>
+               <field table="PROJECT" name="DESCRIP" xsi:type="column"/>
+               <null-value xsi:type="xsd:string"></null-value>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="PROJECT" name="PROJ_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>version</attribute-name>
+               <field table="PROJECT" name="VERSION" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <field table="PROJECT" name="PROJ_NAME" xsi:type="column"/>
+               <null-value xsi:type="xsd:string"></null-value>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>teamLeader</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.performance.Employee</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="PROJECT" name="LEADER_ID" xsi:type="column"/>
+                     <target-field table="EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="PROJECT" name="LEADER_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query">
+                  <reference-class>org.eclipse.persistence.testing.models.performance.Employee</reference-class>
+               </selection-query>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <locking xsi:type="version-locking-policy">
+            <version-field table="PROJECT" name="VERSION" xsi:type="column"/>
+            <store-version-in-cache>false</store-version-in-cache>
+         </locking>
+         <sequencing>
+            <sequence-name>PROJ_SEQ</sequence-name>
+            <sequence-field table="PROJECT" name="PROJ_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <!--change-policy xsi:type="attribute-level-change-policy"/-->
+         <tables>
+            <table name="PROJECT"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.performance.SmallProject</class>
+         <alias>SmallProject</alias>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.performance.Project</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <!--change-policy xsi:type="attribute-level-change-policy"/-->
+         <tables>
+            <table name="SPROJECT"/>
+         </tables>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+   <login xsi:type="database-login">
+      <platform-class>org.eclipse.persistence.platform.database.OraclePlatform</platform-class>
+      <user-name></user-name>
+      <driver-class>sun.jdbc.odbc.JdbcOdbcDriver</driver-class>
+      <connection-url>jdbc:odbc:</connection-url>
+   </login>
+</object-persistence>

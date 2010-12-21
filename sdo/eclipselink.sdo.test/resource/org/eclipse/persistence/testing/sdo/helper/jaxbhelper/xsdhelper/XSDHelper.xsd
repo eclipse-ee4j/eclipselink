@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="urn:xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:xsd" elementFormDefault="qualified" xmlns:sdoXml="commonj.sdo/xml">
+
+        <xs:complexType name="root">
+                <xs:sequence>
+                        <xs:element name="child1" type="tns:child1"/>
+                        <xs:element ref="tns:child2"/>
+                </xs:sequence>
+        </xs:complexType>
+
+        <xs:complexType name="child1"  sdoXml:name="renamedChild1">
+                        <xs:attribute name="id" type="xs:int"/>
+        </xs:complexType>
+
+        <xs:element name="child2">
+                <xs:complexType>
+                        <xs:attribute name="id" type="xs:int"/>
+                </xs:complexType>
+        </xs:element>
+
+</xs:schema>

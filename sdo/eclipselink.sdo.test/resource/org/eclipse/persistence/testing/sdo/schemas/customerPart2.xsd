@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri1" xmlns="my.uri1" elementFormDefault="qualified" sdoJava:package="defaultPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="my.url2">
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import schemaLocation="customerurl2.xsd" namespace="my.url2"/>
+   <xsd:complexType name="PhoneType">
+      <xsd:attribute name="number" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:complexType name="AddressType">
+      <xsd:attribute name="street" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:complexType name="CustomerType">
+      <xsd:sequence>
+         <xsd:element name="addressType" type="ns0:AddressType" minOccurs="0"/>
+         <xsd:element name="phoneType" type="ns0:PhoneType" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="customerType" type="CustomerType"/>
+   <xsd:element name="phoneType" type="PhoneType"/>
+   <xsd:element name="addressType" type="AddressType"/>
+</xsd:schema>

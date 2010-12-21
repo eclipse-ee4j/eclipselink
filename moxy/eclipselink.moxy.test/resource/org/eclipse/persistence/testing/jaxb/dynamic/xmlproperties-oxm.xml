@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" package-name="mynamespace">
+
+    <xml-schema element-form-default="UNQUALIFIED" attribute-form-default="UNQUALIFIED" namespace="mynamespace">
+        <xml-ns prefix="ns1" namespace-uri="mynamespace"/>
+        <xml-ns prefix="xsd" namespace-uri="http://www.w3.org/2001/XMLSchema"/>
+        <xml-ns prefix="xsi" namespace-uri="http://www.w3.org/2001/XMLSchema-instance"/>
+    </xml-schema>
+
+    <java-types>
+        <java-type name="mynamespace.Person">
+            <xml-root-element name="person"/>
+            <xml-properties>
+                <xml-property name="identifier" value="101" value-type="java.lang.Integer"/>
+                <xml-property name="active" value="false" value-type="java.lang.Boolean"/>
+            </xml-properties>
+            <java-attributes>
+                <xml-element java-attribute="name" type="java.lang.String">
+                    <xml-properties>
+                        <xml-property name="language" value="ENGLISH" value-type="java.lang.String"/>
+                        <xml-property name="comment" value="first and last name" value-type="java.lang.String"/>
+                    </xml-properties>
+                </xml-element>
+            </java-attributes>
+        </java-type>
+    </java-types>
+
+</xml-bindings>

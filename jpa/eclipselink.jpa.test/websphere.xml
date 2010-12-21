@@ -1,0 +1,180 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     yipzhao - initial implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - websphere-install  : adds jars
+        - websphere-setup    : removes and creates datasource and shared library
+        - websphere-start    : starts server
+        - websphere-stop     : stops server
+        - websphere-deploy   : deploys ear
+        - websphere-undeploy : undeploys ear
+-->
+
+<project name="Eclipse Persistence Services JPA WebSphere Testing" basedir=".">
+
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/websphere.properties"/>
+    <property file="./websphere.properties"/>
+
+    <condition property="is.as">
+        <contains string="${server.version}" substring="as"/>
+    </condition>
+
+    <condition property="is.nd">
+        <contains string="${server.version}" substring="nd"/>
+    </condition>
+
+    <!-- This copy eclipselink.jar, junit.jar to WebSphere server lib/ext. -->
+    <target name="websphere-install">
+        <copy file="${junit.lib}" todir="${was.home}/lib/ext"/>
+        <copy file="${eclipselink.jar.dir}/eclipselink.jar" todir="${was.home}/lib/ext"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}" todir="${was.home}/lib/ext"/>
+        <copy file="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}" todir="${was.home}/lib/ext" overwrite="true"/>
+    </target>
+
+    <!-- Start the server. -->
+    <target name="websphere-start">
+        <echo message="WebSphere Server is Starting......"/>
+        <antcall target="websphere-start-as" inheritRefs="true"/>
+        <antcall target="websphere-start-nd" inheritRefs="true"/>
+        <echo message="Finish Starting WebSphere Server."/>
+    </target>
+
+    <!-- Start the AS edition server. -->
+    <target name="websphere-start-as" if="is.as">
+        <exec executable="${was.home}/bin/startServer.${suffix}">
+            <arg value="server1"/>
+            <arg value="-Dis.JTA=${is.JTA}"/>
+            <arg value="-Dejb.lookup=${ejb.lookup}"/>
+        </exec> 
+    </target>
+
+    <!-- Start the ND edition server. -->
+    <target name="websphere-start-nd" if="is.nd">
+        <echo message="Starting Deployment Manager......"/>
+        <exec executable="${was.home}/profiles/Dmgr01/bin/startManager.${suffix}"/>
+        <echo message="Starting Node......"/>
+        <exec executable="${was.home}/profiles/AppSrv01/bin/startNode.${suffix}"/>
+        <echo message="Starting Server......"/>
+        <exec executable="${was.home}/profiles/AppSrv01/bin/startServer.${suffix}">
+            <arg value="server1"/>
+            <arg value="-Dis.JTA=${is.JTA}"/>
+            <arg value="-Dejb.lookup=${ejb.lookup}"/>
+        </exec> 
+    </target>
+
+    <!--
+        This target is to create datasource, shared library for running JPA tests on the WebSphere server.
+        Note: WebSphere server must be running.
+    -->
+    <target name="websphere-setup">
+        <echo message="*****Config WebSphere Server*****"/>
+        <copy overwrite="true" file="${was.jython.scripts.dir}/configWebSphere.py" tofile="${was.home}/bin/configWebSphere.py"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleDriver%%" value="${jdbc.driver.jar}"/>
+		<replace file="${was.home}/bin/configWebSphere.py" token="%%nodeName%%" value="${nodeName}"/>
+		<replace file="${was.home}/bin/configWebSphere.py" token="%%serverName%%" value="${serverName}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%dbUser%%" value="${db.user}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%dbPassword%%" value="${db.pwd}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%dbURL%%" value="${db.url}"/>
+        <antcall target="set-transaction-type-for-non-jta-ds" inheritRefs="true"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%eclipselinkLibDir%%" value="${eclipselink.jar.dir}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleExtensionLibDir%%" value="${oracle.extensions.jar.dir}"/>
+        <sleep seconds="20"/>
+        <exec executable="${was.home}/bin/wsadmin.${suffix}">
+              <arg line="-lang jython -user ${server.user} -password ${server.pwd} -f ${was.home}/bin/configWebSphere.py"/>
+        </exec>
+    </target>
+
+    <target name="set-transaction-type-for-non-jta-ds" if="is.nonjta.datasource">
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%nonTransactionalDS%%" value="true"/>
+    </target>
+
+    <!-- websphere-setup removes and recreates datasource and shared library, so we don't need to do anything in websphere-reset. -->
+    <target name="websphere-reset">
+    </target>
+
+    <!-- Stop the server. -->
+    <target name="websphere-stop">
+        <echo message="WebSphere Server is Stopping......"/>
+        <antcall target="websphere-stop-as" inheritRefs="true"/>
+        <antcall target="websphere-stop-nd" inheritRefs="true"/>
+        <delete file="${was.home}/lib/ext/eclipselink.jar" failonerror="false"/>
+        <echo message="Finish Stopping WebSphere Server."/>
+    </target>
+
+    <!-- Stop the AS edition server. -->
+    <target name="websphere-stop-as" if="is.as">
+        <exec executable="${was.home}/bin/stopServer.${suffix}">
+            <arg value="server1"/>
+        </exec> 
+    </target>
+
+    <!-- Stop the ND edition server. -->
+    <target name="websphere-stop-nd" if="is.nd">
+        <echo message="Stoping Server......"/>
+        <exec executable="${was.home}/profiles/AppSrv01/bin/stopServer.${suffix}">
+            <arg value="server1"/>
+        </exec>
+        <echo message="Stoping Node......"/>
+        <exec executable="${was.home}/profiles/AppSrv01/bin/stopNode.${suffix}"/>
+        <echo message="Stoping Deployment Manager......"/>
+        <exec executable="${was.home}/profiles/Dmgr01/bin/stopManager.${suffix}"/>
+    </target>
+
+    <!--
+        Deploy the application ear to the server.
+        Note: WebSphere server must be running.
+    -->
+    <target name="websphere-deploy">
+        <echo message="*****Deploy ${application.name} on WebSphere Server*****"/>
+        <copy overwrite="true" file="${was.jython.scripts.dir}/installApps.py" tofile="${was.home}/bin/installApps.py"/>
+		<replace file="${was.home}/bin/installApps.py" token="%%serverVersion%%" value="${server.version}"/>
+	    <replace file="${was.home}/bin/installApps.py" token="%%cellName%%" value="${cellName}"/>
+		<replace file="${was.home}/bin/installApps.py" token="%%nodeName%%" value="${nodeName}"/>
+		<replace file="${was.home}/bin/installApps.py" token="%%serverName%%" value="${serverName}"/>
+        <replace file="${was.home}/bin/installApps.py" token="%%appName%%" value="${application.name}"/>
+        <replace file="${was.home}/bin/installApps.py" token="%%ear%%" value="${application.name}.ear"/>
+        <sleep seconds="20"/>
+        <exec executable="${was.home}/bin/wsadmin.${suffix}">
+            <arg line="-lang jython -user ${server.user} -password ${server.pwd} -f ${was.home}/bin/installApps.py"/>
+        </exec>
+    </target>
+
+    <!--
+        Undeploy the application ear to the server.
+        Note: WebSphere server must be running.
+    -->
+    <target name="websphere-undeploy">
+        <echo message="*****Undeploy ${application.name} on WebSphere Server*****"/>
+        <copy overwrite="true" file="${was.jython.scripts.dir}/unInstallApps.py" tofile="${was.home}/bin/unInstallApps.py"/>
+        <replace file="${was.home}/bin/unInstallApps.py" token="%%appName%%" value="${application.name}"/>
+        <sleep seconds="20"/>
+        <exec executable="${was.home}/bin/wsadmin.${suffix}">
+            <arg line="-lang jython -user ${server.user} -password ${server.pwd} -f ${was.home}/bin/unInstallApps.py"/>
+        </exec>
+    </target>
+
+</project>

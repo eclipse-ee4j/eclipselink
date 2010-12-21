@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="listOfString">
+      <xsd:sequence>
+         <xsd:element name="item" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="testTagName2" type="xsd:string"/>
+   <xsd:element name="testTagName1" type="listOfString"/>
+</xsd:schema>

@@ -1,0 +1,174 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     kyuan - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - jboss-install : recreates server and adds jars (ignore this step)
+        - jboss-setup : creates connection pool
+        - jboss-reset : removes connection pool
+        - jboss-start : starts server
+        - jboss-stop : stops server
+        - jboss-deploy : deploys ear
+        - jboss-undeploy : undeploys ear
+
+        It requires some configuration of the jboss.properties, it should be run through build.xml, not directly.
+        To connect to the jboss admin console use http://localhost:8080/jmx-console, this may be useful for debugging deployment failures.
+        Sometimes if a test or deployment fails, you server gets screwed up and you need to re-install your domain (ant server.install).
+-->
+
+<project name="Eclipse Persistence Services JPA JBoss Testing" basedir=".">
+
+    <property name="env" environment="env" value="env"/>
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/jboss.properties"/>
+    <property file="./jboss.properties"/>
+    <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
+
+    <!-- Set db name by check db.driver -->
+    <condition property="db.name" value="oracle">
+        <contains string="${db.driver}" substring="oracle"/>
+    </condition>
+
+    <condition property="db.name" value="mysql">
+        <contains string="${db.driver}" substring="mysql"/>
+    </condition>
+
+    <condition property="db.name" value="mssql">
+        <contains string="${db.driver}" substring="sqlserver"/>
+    </condition>
+
+    <condition property="db.name" value="db2">
+        <contains string="${db.driver}" substring="db2"/>
+    </condition>
+
+    <condition property="db.name" value="sybase">
+        <contains string="${db.driver}" substring="sybase"/>
+    </condition>
+
+    <condition property="is.eap">
+        <contains string="${server.version}" substring="eap"/>
+    </condition>
+
+    <!-- Here will use default server configuration. -->
+    <target name="jboss-install">
+        <copy file="${junit.lib}" todir="${jboss.server}/lib"/>
+        <copy file="${eclipselink.lib}" todir="${jboss.server}/lib"/>
+        <copy file="${jdbc.driver.jar}" todir="${jboss.server}/lib"/>
+        <copy file="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}" todir="${jboss.server}/lib" overwrite="true"/>
+        <antcall target="copy-eclipselink-persistence-jars-to-domain-lib" inheritRefs="true"/>
+    </target>
+
+    <target name="copy-eclipselink-persistence-jars-to-domain-lib" if="is.eap">
+        <copy file="${eclipselink.plugins.trunk}/${persistence10.jar}" todir="${jboss.server}/lib" overwrite="true"/>
+    </target>
+
+    <!-- This target is to create datasource required for running JPA tests on the JBoss server. -->
+    <target name="jboss-setup">
+        <copy todir="${jboss.server}/deploy">
+            <fileset dir="./resource/jboss/">
+                <include name="${db.name}-*.xml"/>
+            </fileset>
+        </copy>
+        <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@username@" value="${db.user}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@password@" value="${db.pwd}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@url@" value="${db.url}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@driverclass@" value="${db.driver}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-xa-ds.xml" token="@username@" value="${db.user}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-xa-ds.xml" token="@password@" value="${db.pwd}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-xa-ds.xml" token="@url@" value="${db.url}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-xa-ds.xml" token="@driverclass@" value="${db.driver}"/>
+    </target>
+
+    <!-- This target is to remove the datasource created by target "jboss-setup" -->
+    <target name="jboss-reset">
+        <delete dir="${jboss.server}/tmp"/>
+        <delete dir="${jboss.server}/work"/>
+        <delete dir="${jboss.server}/data"/>
+        <delete dir="${jboss.server}/log"/>
+        <delete file="${jboss.server}/deploy/${db.name}-ds.xml"/>
+    </target>
+
+    <!-- Start the server. -->
+    <target name="jboss-start">
+        <java classname="org.jboss.Main" 
+            fork="true"
+            failonerror="false" >
+            <jvmarg value="-XX:MaxPermSize=512m"/>
+            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-Xmx960m"/>
+            <sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/>
+            <sysproperty key="http.proxyPort" value="80"/>
+            <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
+            <sysproperty key="java.endorsed.dirs" value="${jboss.home}/lib/endorsed"/>
+            <classpath>
+                <pathelement location="${jboss.home}/lib/jboss-common-core.jar"/>
+                <pathelement location="${jboss.home}/lib/jboss-logging-spi.jar"/>
+                <pathelement location="${jboss.home}/bin/run.jar"/>
+                <pathelement location="${jdbc.driver.jar}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
+            </classpath>           
+        </java>
+    </target>
+
+    <!-- Stop the server. -->
+    <target name="jboss-stop">
+        <java classname="org.jboss.Shutdown" 
+            fork="true"
+            failonerror="false">
+            <arg line="-S -u ${server.user} -p ${server.pwd} ${server.url}"/>
+            <classpath>
+                <fileset dir="${server.lib}" includes="${server.depend}"/>
+                <pathelement location="${jboss.home}/bin/shutdown.jar"/>
+            </classpath>
+        </java>
+    </target>
+
+    <!-- Deploy the application ear to the server. -->
+    <target name="jboss-deploy">
+        <copy todir="${jboss.server}/deploy">
+            <fileset dir="./">
+                <include name="${ear.name}"/>
+            </fileset>
+        </copy> 
+        <sleep seconds="10"/>
+    </target>
+
+    <!-- Undeploy the application ear to the server. -->
+    <target name="jboss-undeploy">
+        <delete>
+            <fileset dir="${jboss.server}/deploy" includes="*.ear"/>
+        </delete>
+    </target>
+
+</project>

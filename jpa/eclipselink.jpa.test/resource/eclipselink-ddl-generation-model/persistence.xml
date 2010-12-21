@@ -1,0 +1,114 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="ddlGeneration" transaction-type="RESOURCE_LOCAL">
+        <!-- This persistence unit is configured to use 
+        name="eclipselink.ddl-generation" value="drop-and-create-tables",
+        any models that do not use a TableCreator class should be placed
+        here -->
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
+        <mapping-file>META-INF/merge-inherited-superclasses.xml</mapping-file>
+        <mapping-file>META-INF/merge-inherited-beers.xml</mapping-file>
+        <mapping-file>META-INF/merge-inherited-consumer.xml</mapping-file>
+        <mapping-file>META-INF/merge-inherited-certification.xml</mapping-file>
+        <mapping-file>META-INF/ddl-generation-model.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.EmbeddedSerialNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.EquipmentDAO</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.PortDAO</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MapHolder</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapKey</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValueWithBackPointer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MMEntityMapValue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Inventor</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Patent</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Many</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.One</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyRecord</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Zipcode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ContactInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
+        <properties>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlGeneration.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlGeneration.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="ddlTablePerClass" transaction-type="RESOURCE_LOCAL">
+        <!-- This persistence unit is configured to use 
+        name="eclipselink.ddl-generation" value="drop-and-create-tables",
+        any models that do not use a TableCreator class should be placed
+        here -->
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Benefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Car</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Customer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.GoldBenefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.GoldCustomer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.LuxuryCar</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.SuperLuxuryCar</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumBenefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumCustomer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.StandardBenefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.SUV</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Team</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Player</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.ProgrammingLanguage</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.BaseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.CodeExample</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.DesignPattern</class>
+        <properties>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlTablePerClass.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlTablePerClass.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="ddlTableSuffix" transaction-type="RESOURCE_LOCAL">
+        <!-- This persistence unit is configured to use 
+        name="eclipselink.ddl-generation" value="drop-and-create-tables",
+        but creates invalid tables.  This PU is used to validate the DDL jdbc files created-->
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
+        <mapping-file>META-INF/ddl-create-table-suffix-model.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MapHolder</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapKey</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValueWithBackPointer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MMEntityMapValue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Inventor</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Patent</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Many</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.One</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyRecord</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Zipcode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ContactInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
+        <properties>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlTableSuffix.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlTableSuffix.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.ddl-generation.table-creation-suffix" value="propertyCreationSuffix"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+
+

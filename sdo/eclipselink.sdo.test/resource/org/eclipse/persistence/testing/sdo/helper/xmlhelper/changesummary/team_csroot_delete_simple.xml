@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:root xsi:type="ns0:Team" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:manager>
+      <ns0:id>111</ns0:id>
+      <ns0:name>Jane Doe</ns0:name>
+      <ns0:phone>
+         <ns0:number>1234567</ns0:number>
+      </ns0:phone>
+      <ns0:phone>
+         <ns0:number>2345678</ns0:number>
+      </ns0:phone>
+      <ns0:phone>
+         <ns0:number>4567890</ns0:number>
+      </ns0:phone>
+   </ns0:manager>
+   <ns0:myChangeSummary delete="#/ns0:root/ns0:myChangeSummary/ns0:manager/ns0:address #/ns0:root/ns0:myChangeSummary/ns0:manager/ns0:phone[3]" xmlns:sdo="commonj.sdo">
+      <ns0:manager sdo:ref="#/ns0:root/ns0:manager">
+         <ns0:address xsi:type="ns0:Address">
+            <ns0:street>theStreet</ns0:street>
+            <ns0:yard>
+               <ns0:squarefootage>10000</ns0:squarefootage>
+            </ns0:yard>
+         </ns0:address>
+         <ns0:phone sdo:ref="#/ns0:root/ns0:manager/ns0:phone[1]"/>
+         <ns0:phone sdo:ref="#/ns0:root/ns0:manager/ns0:phone[2]"/>
+         <ns0:phone xsi:type="ns0:Phone">
+            <ns0:number>3456789</ns0:number>
+         </ns0:phone>
+         <ns0:phone sdo:ref="#/ns0:root/ns0:manager/ns0:phone[3]"/>
+      </ns0:manager>
+   </ns0:myChangeSummary>
+</ns0:root>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:any" xmlns="urn:any" elementFormDefault="qualified">
+
+    <xs:complexType name="extended-child">
+        <xs:complexContent>
+            <xs:extension base="base"/>
+         </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="restricted-child">
+        <xs:complexContent>
+            <xs:restriction base="base"/>
+         </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="base" abstract="true">
+        <xs:sequence>
+            <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

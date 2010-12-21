@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <shipTo country="US">
+      <name>Alice Smith</name>
+      <street>123 Maple Street</street>
+      <city>Mill Valley</city>
+      <state>CA</state>
+   </shipTo>
+   <billTo country="US">
+      <name>Robert Smith</name>
+      <street>8 Oak Avenue</street>
+      <city>Mill Valley</city>
+      <state>PA</state>
+      <testExtra>extraContext</testExtra>
+   </billTo>
+   <comment>Hurry, my lawn is going wild!</comment>
+   <items>
+      <item partNum="872-AA">
+         <productName>Lawnmower</productName>
+         <quantity>1</quantity>
+         <USPrice>148.95</USPrice>
+         <comment>Confirm this is electric</comment>
+      </item>
+      <item partNum="926-AA">
+         <productName>Baby Monitor</productName>
+         <quantity>1</quantity>
+         <USPrice>39.98</USPrice>
+         <shipDate>1999-05-21</shipDate>
+      </item>
+   </items>
+   <phone>
+      <addr country="US" xsi:type="ns0:USAddressType" ns0:globalTest="globalAttributeTest">
+         <name>Test Smith</name>
+         <street>Test Avenue</street>
+         <city>Test Valley</city>
+         <state>Test</state>
+         <zip>TestZIP</zip>
+         <item partNum="1234" xsi:type="ns0:LineItemType">
+            <productName>AddressItem</productName>
+            <quantity>1</quantity>
+            <USPrice>10.99</USPrice>
+         </item>
+         <dwelling ns0:globalTest="globalAttributeTest">
+            <dwellingType>duplex</dwellingType>
+            <sqFootage>1500</sqFootage>
+            <ns0:globalTest>globalElementTest</ns0:globalTest>
+         </dwelling>
+         <aname>atest</aname>
+         <ns0:globalTest>globalElementTest</ns0:globalTest>
+      </addr>
+      <number>12345678</number>
+      <ext>123</ext>
+   </phone>
+   <companyName>theCompany1</companyName>
+   <phone>
+      <number>12345678</number>
+      <ext>234</ext>
+      <ext>456</ext>
+   </phone>
+   <companyName>theCompany2</companyName>
+</ns0:purchaseOrder>

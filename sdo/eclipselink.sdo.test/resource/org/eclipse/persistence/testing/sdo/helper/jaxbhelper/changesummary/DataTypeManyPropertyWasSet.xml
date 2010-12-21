@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:root xmlns:tns="urn:changesummary" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <tns:simple-list>OldValue</tns:simple-list>
+   <tns:simple-list>NewValue</tns:simple-list>
+   <tns:sdo-change-summary xmlns:sdo="commonj.sdo">
+      <tns:root sdo:ref="#/tns:root">
+         <tns:simple-list>OldValue</tns:simple-list>
+      </tns:root>
+   </tns:sdo-change-summary>
+</tns:root>

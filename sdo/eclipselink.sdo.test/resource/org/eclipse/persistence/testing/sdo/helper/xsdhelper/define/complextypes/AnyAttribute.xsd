@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:any-attribute" xmlns="urn:any-attribute" elementFormDefault="qualified">
+
+    <xs:complexType name="extended-child">
+        <xs:complexContent>
+            <xs:extension base="base"/>
+         </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="restricted-child">
+        <xs:complexContent>
+            <xs:restriction base="base"/>
+         </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="base" abstract="true">
+            <xs:anyAttribute/>
+    </xs:complexType>
+
+</xs:schema>

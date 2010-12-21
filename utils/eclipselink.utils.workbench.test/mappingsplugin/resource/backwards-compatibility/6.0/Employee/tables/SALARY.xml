@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+   <short-name>SALARY</short-name>
+   <columns>
+      <column>
+         <name>EMP_ID</name>
+         <type>NUMBER</type>
+         <unique>true</unique>
+         <primary-key>true</primary-key>
+      </column>
+      <column>
+         <name>SALARY</name>
+         <type>NUMBER</type>
+         <allows-null>true</allows-null>
+      </column>
+   </columns>
+</table>

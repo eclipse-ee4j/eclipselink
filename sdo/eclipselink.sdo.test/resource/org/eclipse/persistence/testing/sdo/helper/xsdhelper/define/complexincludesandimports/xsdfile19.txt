@@ -1,0 +1,3 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:client="http://example.com/process">
+	<import namespace="http://example.com/process" schemaLocation="includeProcess.xsd"/>
+</schema>

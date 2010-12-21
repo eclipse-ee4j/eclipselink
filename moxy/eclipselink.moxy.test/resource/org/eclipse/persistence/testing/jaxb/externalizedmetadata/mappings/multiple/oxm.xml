@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple">
+    <java-types>
+        <java-type name="CustomQuoteRequest">
+            <xml-root-element name="QuoteRequest"/>
+            <java-attributes>
+                <xml-attribute java-attribute="requestId" xml-path="QuoteReq/@ReqId"/>
+                <xml-attribute java-attribute="currencyPairCode" xml-path="QuoteReq/Instrmt/@Sym">
+                    <xml-java-type-adapter value="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple.InstrmtAdapter" />
+                    <xml-properties>
+                        <xml-property name="1" value="A" />
+                        <xml-property name="2" value="66" value-type="java.lang.Integer" />
+                    </xml-properties>
+                </xml-attribute>
+                <xml-attribute java-attribute="currencyPairCode" xml-path="QuoteReq/Leg/@Sym" write-only="true">
+                    <xml-java-type-adapter value="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple.LegAdapter" />
+                    <xml-properties>
+                        <xml-property name="1" value="B" />
+                        <xml-property name="2" value="9.9" value-type="java.lang.Double" />
+                    </xml-properties>
+                </xml-attribute>
+                <xml-element java-attribute="date" name="OrderDate">
+                    <xml-java-type-adapter value="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple.DateAdapter" />
+                </xml-element>
+                <xml-element java-attribute="date" xml-path="QuoteReq/Instrmt/Ordered/text()" type="java.sql.Date" write-only="true"/>
+                <xml-element java-attribute="date" xml-path="QuoteReq/Leg/Ordered/text()"  write-only="true"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

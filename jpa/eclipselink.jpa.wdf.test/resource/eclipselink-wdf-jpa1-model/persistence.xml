@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+	<persistence-unit name="jpa1testmodel" transaction-type="RESOURCE_LOCAL">
+		<description>ATS Test Persistence Unit</description>
+	        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<non-jta-data-source>%%data-source-name%%</non-jta-data-source>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.component.Component</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.component.Metric</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.component.MetricFloat</class>
+		
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.abstr.AbstractEmployee</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.abstr.ContractEmployee</class>
+
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Account</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.BankAccount</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Bicycle</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.BrokerageAccount</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Car</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.CheckingAccount</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.CostCenter</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Course</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.CreditCardAccount</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Cubicle</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Hobby</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Material</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.MountainBike</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.MotorVehicle</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Office</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Patent</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.PatentReview</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Project</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.RoadBike</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.SavingsAccount</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Task</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Trailer</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.TravelProfile</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Truck</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.UniqueColorOffice</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Vehicle</class>
+
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.ReadOnlyEntity</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.ReadOnlyEntitySubclass</class>
+
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.EmbeddedFieldAccess</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.EmbeddingFieldAccess</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.EmbeddedPropertyAccess</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.EmbeddingPropertyAccess</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Item_Byte</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.employee.Item_Attribute_Byte</class>
+		
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.island.Island</class>
+		
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.jpql.City</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Cop</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Person</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Tesla</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Informer</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Criminal</class>
+		
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.myst.Cave</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.myst.Creature</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.myst.MythicalCreature</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.myst.Weapon</class>
+
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.node.CascadingNode</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.node.CascadingNodeDescription</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.node.Node</class>
+		
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.Nasty</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.Timestamp</class>
+		
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesFieldAccess</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesPropertyAccess</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.types.TemporalTypesFieldAccess</class>
+
+                <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Animal</class>
+                <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Element</class>
+                <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Plant</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+		           %%server-platform-property%%
+                   <property name="eclipselink.target-database" value="%%database-platform%%"/>
+                   <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+                   <property name="eclipselink.cache.shared.default" value="false"/>
+                   <property name="eclipselink.temporal.mutable" value="true"/> 
+                   <property name="eclipselink.weaving" value="false"/>
+		</properties>
+	</persistence-unit>
+	<!--
+	<persistence-unit name="jpa1testmodel_jta">
+		<description>ATS Test Persistence Unit</description>
+	        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<jta-data-source>jdbc/EclipseLinkDS</jta-data-source>
+		<properties>
+		           %%server-platform-property%%
+                   <property name="eclipselink.target-database" value="%%database-platform%%"/>
+                   <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+                   <property name="eclipselink.cache.shared.default" value="false"/>
+                   <property name="eclipselink.temporal.mutable" value="true"/> 
+                   <property name="eclipselink.weaving" value="false"/>
+		</properties>
+	</persistence-unit>
+	-->
+</persistence>
+

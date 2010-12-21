@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+    <firstName><![CDATA[Jane]]></firstName>
+    <address>
+        <street><![CDATA[123 A Street]]></street>
+    </address>
+    <phone-number><![CDATA[613-555-1111]]></phone-number>
+    <lastName><![CDATA[Doe]]></lastName>
+</employee>

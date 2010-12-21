@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="addressURI"  elementFormDefault="qualified" sdoJava:package="addressuri" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="addressURI">
+   <xsd:import namespace="commonj.sdo"/>
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import namespace="commonj.sdo/xml"/>
+   <xsd:complexType name="Address">
+      <xsd:attribute name="street" type="xsd:string"/>
+      <xsd:attribute name="city" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="address" type="Address"/>
+</xsd:schema>

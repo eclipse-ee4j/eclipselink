@@ -1,0 +1,384 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ ******************************************************************************/  
+package org.eclipse.persistence.oxm.record;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Node;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.AttributesImpl;
+
+/**
+ * <p>Use this type of MarshalRecord when the marshal target is a
+ * ContentHandler.</p>
+ * <p><code>
+ * XMLContext xmlContext = new XMLContext("session-name");<br>
+ * XMLMarshaller xmlMarshaller = xmlContext.createMarshaller();<br>
+ * ContentHandlerRecord contentHandlerRecord = new ContentHandlerRecord();<br>
+ * marshalRecord.setContentHandler(myContentHandler);<br>
+ * xmlMarshaller.marshal(myObject, contentHandlerRecord);<br>
+ * </code></p>
+ * <p>If the marshal(ContentHandler) method is called on XMLMarshaller, then the
+ * ContentHanlder is automatically wrapped in a ContentHandlerRecord.</p>
+ * <p><code>
+ * XMLContext xmlContext = new XMLContext("session-name");<br>
+ * XMLMarshaller xmlMarshaller = xmlContext.createMarshaller();<br>
+ * xmlMarshaller.marshal(myObject, contentHandler);<br>
+ * </code></p>
+ * @see org.eclipse.persistence.oxm.XMLMarshaller
+ */
+public class ContentHandlerRecord extends MarshalRecord {
+    private ContentHandler contentHandler;
+    private LexicalHandler lexicalHandler;
+    private XPathFragment xPathFragment;
+    private AttributesImpl attributes;
+    private int level;
+    private Map<Integer, List<String>> prefixMappings;
+
+    public ContentHandlerRecord() {
+        level = 0;
+        prefixMappings = new HashMap<Integer, List<String>>();
+        attributes = new AttributesImpl();
+    }
+
+    // bug#5035551 - content handler record will act more like writer 
+    // record in that startElement is called with any attributes that
+    // are to be written to the element.  So, instead of calling 
+    // openStartElement > attribute > closeStartElement, we'll gather
+    // any required attributes and make a single call to openAndCloseStartElement.
+    // This is necessary as the contentHandler.startElement() call results in
+    // a completed element the we cannot add attributes to after the fact.
+    protected boolean isStartElementOpen = false;
+
+    /**
+     * Return the ContentHandler that the object will be marshalled to.
+     * @return The marshal target.
+     */
+    public ContentHandler getContentHandler() {
+        return contentHandler;
+    }
+
+    /**
+     * Set the ContentHandler that the object will be marshalled to.
+     * @param contentHandler The marshal target.
+     */
+    public void setContentHandler(ContentHandler contentHandler) {
+        this.contentHandler = contentHandler;
+    }
+
+    /**
+     * Set the LexicalHandler to receive CDATA related events
+     */
+    public void setLexicalHandler(LexicalHandler lexicalHandler) {
+        this.lexicalHandler = lexicalHandler;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void startDocument(String encoding, String version) {
+        try {
+            contentHandler.startDocument();
+        } catch (SAXException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void endDocument() {
+        try {
+            contentHandler.endDocument();
+        } catch (SAXException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    @Override
+    public void startPrefixMappings(NamespaceResolver namespaceResolver) {
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void startPrefixMapping(String prefix, String namespaceURI) {
+        try {
+            contentHandler.startPrefixMapping(prefix, namespaceURI);
+            List<String> currentLevelPrefixMappings = prefixMappings.get(level);
+            if(null == currentLevelPrefixMappings) {
+                currentLevelPrefixMappings = new ArrayList<String>();
+                prefixMappings.put(level, currentLevelPrefixMappings);
+            }
+            currentLevelPrefixMappings.add(prefix);
+        } catch (SAXException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Add the namespace declarations to the XML document.
+     * @param namespaceResolver The NamespaceResolver contains the namespace
+     * prefix and URI pairings that need to be declared.
+     */
+    public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
+        if (namespaceResolver == null) {
+            return;
+        }
+        String namespaceURI = namespaceResolver.getDefaultNamespaceURI();
+        if(null != namespaceURI) {
+            attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);
+        }
+
+        for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
+            String namespacePrefix = entry.getKey();
+            attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, entry.getValue());
+        }
+    }
+
+    @Override
+    public void endPrefixMappings(NamespaceResolver namespaceResolver) {
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void endPrefixMapping(String prefix) {
+        try {
+            contentHandler.endPrefixMapping(prefix);
+        } catch (SAXException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * 
+     * Create a start element tag - this call results in a complete start element, 
+     * i.e. closeStartElement() does not need to be called after a call to this 
+     * method.
+     * 
+     */
+    private void openAndCloseStartElement() {
+        try {
+            level ++;
+            contentHandler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
+        } catch (SAXException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
+        super.openStartElement(xPathFragment, namespaceResolver);
+        if (isStartElementOpen) {
+            openAndCloseStartElement();
+        }
+        this.isStartElementOpen = true;
+        this.xPathFragment = xPathFragment;
+        this.attributes.clear();
+        
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void element(XPathFragment frag) {
+        if (isStartElementOpen) {
+            openAndCloseStartElement();
+            isStartElementOpen = false;
+        }
+        try {
+            this.attributes.clear();
+            String namespaceURI = frag.getNamespaceURI();
+            String localName = frag.getLocalName();
+            String shortName = frag.getShortName();
+            contentHandler.startElement(namespaceURI, localName, shortName, attributes);
+            contentHandler.endElement(namespaceURI, localName, shortName);
+        } catch (SAXException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
+        String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
+        attribute(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), value);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void attribute(String namespaceURI, String localName, String qName, String value) {
+        if(namespaceURI == XMLConstants.XMLNS_URL) {
+            if(localName == XMLConstants.XMLNS) {
+                localName = "";
+            }
+            this.startPrefixMapping(localName, value);
+        }        
+        attributes.addAttribute(namespaceURI, localName, qName, XMLConstants.CDATA, value);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void closeStartElement() {
+        // do nothing - the openAndCloseStartElement call results in a 
+        // complete start element
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
+        if (isStartElementOpen) {
+            openAndCloseStartElement();
+            isStartElementOpen = false;
+        }
+        try {
+            contentHandler.endElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName());
+            level--;
+            List<String> currentLevelPrefixMappings = prefixMappings.get(level);
+            if(null != currentLevelPrefixMappings) {
+                for(String prefix : currentLevelPrefixMappings) {
+                    contentHandler.endPrefixMapping(prefix);
+                }
+                currentLevelPrefixMappings.clear();
+            }
+            isStartElementOpen = false;
+        } catch (SAXException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void characters(String value) {
+        if (isStartElementOpen) {
+            openAndCloseStartElement();
+            isStartElementOpen = false;
+        }
+        try {
+            char[] characters = value.toCharArray();
+            contentHandler.characters(characters, 0, characters.length);
+        } catch (SAXException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void cdata(String value) {
+        //No specific support for CDATA in a ContentHandler. Just treat as regular
+        //Character data as a SAX parser would.
+        if (isStartElementOpen) {
+            openAndCloseStartElement();
+            isStartElementOpen = false;
+        }
+        try {
+            if(lexicalHandler != null) {
+                lexicalHandler.startCDATA();
+            }
+            characters(value);
+            if(lexicalHandler != null) {
+                lexicalHandler.endCDATA();
+            }
+        } catch(SAXException ex) {
+            throw XMLMarshalException.marshalException(ex);
+        }
+    }
+
+    /**
+     * Receive notification of a node.
+     * @param node The Node to be added to the document
+     * @param namespaceResolver The NamespaceResolver can be used to resolve the
+     * namespace URI/prefix of the node
+     */
+    public void node(Node node, NamespaceResolver namespaceResolver) {
+        if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
+            Attr attr = (Attr) node;
+            String resolverPfx = null;
+            if (getNamespaceResolver() != null) {
+                resolverPfx = this.getNamespaceResolver().resolveNamespaceURI(attr.getNamespaceURI());
+            } 
+            String namespaceURI = attr.getNamespaceURI();
+            String localName = attr.getLocalName();
+            if(localName == null) {
+                localName = XMLConstants.EMPTY_STRING;
+            }
+            // If the namespace resolver contains a prefix for the attribute's URI,
+            // use it instead of what is set on the attribute
+            if (resolverPfx != null) {
+                attribute(namespaceURI, localName, resolverPfx+XMLConstants.COLON+attr.getLocalName(), attr.getNodeValue());
+            } else {
+                attribute(namespaceURI, localName, attr.getName(), attr.getNodeValue());
+                // May need to declare the URI locally
+                if (namespaceURI != null) {
+                    attribute(XMLConstants.XMLNS_URL, localName ,XMLConstants.XMLNS + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
+                    this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
+                }
+            }
+        } else {
+            if (isStartElementOpen) {
+                openAndCloseStartElement();
+                isStartElementOpen = false;
+            }
+            if (node.getNodeType() == Node.TEXT_NODE) {
+                characters(node.getNodeValue());
+            } else {
+                XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
+                xfragReader.setContentHandler(contentHandler);
+                try {
+                    xfragReader.parse(node);
+                } catch (SAXException sex) {
+                    throw XMLMarshalException.marshalException(sex);
+                }
+            }
+        }
+    }
+
+    public String resolveNamespacePrefix(XPathFragment frag, NamespaceResolver resolver) {
+        String resolved = frag.getNamespaceURI();
+        if (resolved == null) {
+            return XMLConstants.EMPTY_STRING;
+        }
+        return resolved;
+    }
+
+    public String resolveNamespacePrefix(String s) {
+        String resolved = super.resolveNamespacePrefix(s);
+        if (resolved == null) {
+            return XMLConstants.EMPTY_STRING;
+        }
+        return resolved;
+    }
+
+}

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.complexmapping.Shipment</name>
+   <class-handle>
+      <type-name>test.oracle.models.complexmapping.Shipment</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>Shipment</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <cache-size>100</cache-size>
+         <cache-type>None</cache-type>
+         <existence-checking>Assume existence</existence-checking>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>MAP_SHIP</column-table-name>
+               <column-name>SP_TS</column-name>
+            </column-handle>
+            <column-handle>
+               <column-table-name>MAP_SHIP</column-table-name>
+               <column-name>SP_TSMIL</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>creationTimestamp</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexmapping.Shipment</attribute-declaring-type-name>
+            <attribute-name>creationTimestamp</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>MAP_SHIP</column-table-name>
+            <column-name>SP_TS</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>creationTimestampMillis</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexmapping.Shipment</attribute-declaring-type-name>
+            <attribute-name>creationTimestampMillis</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>MAP_SHIP</column-table-name>
+            <column-name>SP_TSMIL</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="many-to-many">
+         <name>employees</name>
+         <read-only>true</read-only>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexmapping.Shipment</attribute-declaring-type-name>
+            <attribute-name>employees</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.complexmapping.Employee</descriptor-name>
+         </reference-descriptor-handle>
+         <reference-handle>
+            <reference-table-name>MAP_EMSP</reference-table-name>
+            <reference-name>MAP_EMSP_MAP_SHIP2</reference-name>
+         </reference-handle>
+         <container-policy type="list">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+         <relation-table-handle>
+            <table-name>MAP_EMSP</table-name>
+         </relation-table-handle>
+         <target-reference-handle>
+            <reference-table-name>MAP_EMSP</reference-table-name>
+            <reference-name>MAP_EMSP_MAP_EMP2</reference-name>
+         </target-reference-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>quantityShipped</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexmapping.Shipment</attribute-declaring-type-name>
+            <attribute-name>quantityShipped</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>MAP_SHIP</column-table-name>
+            <column-name>QUANTITY</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>shipMode</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexmapping.Shipment</attribute-declaring-type-name>
+            <attribute-name>shipMode</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>MAP_SHIP</column-table-name>
+            <column-name>SHP_MODE</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <primary-table-handle>
+      <table-name>MAP_SHIP</table-name>
+   </primary-table-handle>
+</descriptor>

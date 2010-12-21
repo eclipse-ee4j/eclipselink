@@ -1,0 +1,578 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     egwin  - initial API and implementation
+#******************************************************************************/-->
+<!-- =============================================================================
+*  General Comments
+*  This buildfile contains:
+*        - targets to generate a p2 repository for eclipselink on the
+*          download site.
+*
+*  It is setup to run by "default" in test mode on a local windows machine.
+*  To use in production, it should be called after overriding with some variables:
+*        - the target repository dir
+*        - the install location of the Eclipse SDK libraries
+*        - the version qualifier of the built bundles to sign and promote to p2
+*
+*  The command-line would look something like:
+*        ant -Dp2.SDK.install.dir=${sdk.install.dir} -Dbundle.install.file=${bundle.install.filepath} \
+*            -Dversion.qualifier=${version.qualifier} -Dp2.repos.dir=${update.site.base.dir}
+*
+*  There are some additional parameters that should be added:
+*        - flags to specify if the repos should be overwritten or built upon (would change how the repos is built)
+*
+*  In addition, it may be useful to call into this build to access the signing target directly:
+*       <antcall target="pack-and-sign">
+*           <param name="repack" value="-repack" or ""/>          - will 'normalize' the jar
+*           <param name="pack" value="-pack" or ""/>              - will pack the jars *.jar->*.jar.gz
+*           <param name="target" value="${classes.dir}"/>         - can be a zip, jar, or directory
+*           <param name="destination" value="${p2.feature.dir}"/> - can be a zip, jar, dir or url
+*       </antcall>
+*
+*================================================================================= -->
+
+<project name="features" default="build" basedir=".">
+
+    <available file="../${ant.project.name}" type="dir" property="p2.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="p2.is.local"/>
+
+    <target name="init">
+        <dirname  property="feature.build.location_temp" file="${ant.file.features}"/>
+        <pathconvert targetos="unix" property="feature.build.location">
+            <path>
+                <pathelement location="${feature.build.location_temp}"/>
+            </path>
+        </pathconvert>
+        <property file="${user.home}/build.properties"/>
+        <!-- feature.2.base.dir needs to be explicit (not relative) for antcall usage            -->
+        <!-- (I think the selectbundle call reverts to calling dir - despite the antcall "dir=") -->
+        <property name="feature.2.base.dir"           value="${feature.build.location}/.."/>
+        <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
+        <property name="feature.common.dir"           value="${feature.build.location}/common"/>
+        <property name="feature.2.jpa.plugins.dir"    value="${feature.2.base.dir}/jpa/plugins"/>
+        <property name="feature.2.sdo.plugins.dir"    value="${feature.2.base.dir}/sdo/plugins"/>
+        <property name="feature.2.buildsys.dir"       value="${feature.2.base.dir}/buildsystem"/>
+        <echo message="ant.project.name            ='${ant.project.name}'"/>
+        <echo message="basedir                     ='${basedir}'"/>
+        <echo message="feature.build.location      ='${feature.build.location}'"/>
+        <echo message="feature.2.base.dir          ='${feature.2.base.dir}'"/>
+        <echo message="feature.2.common.plugins.dir='${feature.2.common.plugins.dir}'"/>
+        <echo message="feature.common.dir          ='${feature.common.dir}'"/>
+        <echo message="feature.2.jpa.plugins.dir   ='${feature.2.jpa.plugins.dir}'"/>
+        <echo message="feature.2.sdo.plugins.dir   ='${feature.2.sdo.plugins.dir}'"/>
+        <echo message="feature.2.buildsys.dir      ='${feature.2.buildsys.dir}'"/>
+        <echo message=" ---"/>
+
+        <!-- Custom task definitions -->
+        <property name="custom.tasks.lib" value="${feature.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <echo message="custom.tasks.lib               ='${custom.tasks.lib}'"/>
+        <echo message="custom.echo.task.class         ='${custom.echo.task.class}'"/>
+        <echo message="custom.selectbundle.task.class ='${custom.selectbundle.task.class}'"/>
+        <echo message=" ---"/>
+        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+
+        <!-- Defaults of Pre-Set variables -->
+        <property name="release.version"                    value="2.2.0"/>
+        <property name="version.qualifier"                  value="qualifier"/>
+        <property name="version.string"                     value="${release.version}.${version.qualifier}"/>
+        <property name="eclipselink.install.prefix"         value="eclipselink"/>
+        <property name="eclipselink.plugins.install.prefix" value="eclipselink-plugins"/>
+        <property name="eclipselink.zip.suffix"             value=".zip"/>
+        <property name="classes.dir"                        value="classes"/>
+        <property name="specification.vendor"               value="Eclipse.org - EclipseLink Project"/>
+        <property name="p2.archive.presigned.zip"           value="${eclipselink.install.prefix}-P2-${release.version}${eclipselink.zip.suffix}"/>
+        <property name="build.id"                           value="${release.version}"/>
+        <echo message="release.version                   ='${release.version}'"/>
+        <echo message="version.qualifier                 ='${version.qualifier}'"/>
+        <echo message="version.string                    ='${version.string}'"/>
+        <echo message="eclipselink.install.prefix        ='${eclipselink.install.prefix}'"/>
+        <echo message="eclipselink.plugins.install.prefix='${eclipselink.plugins.install.prefix}'"/>
+        <echo message="eclipselink.zip.suffix            ='${eclipselink.zip.suffix}'"/>
+        <echo message="classes.dir                       ='${classes.dir}'"/>
+        <echo message="specification.vendor              ='${specification.vendor}'"/>
+        <echo message="p2.archive.presigned.zip          ='${p2.archive.presigned.zip}'"/>
+        <echo message="build.id                          ='${build.id}'"/>
+        <echo message=" ---"/>
+
+        <!-- Helper definitions derived from Pre-set variables -->
+        <property name="feature.build.dir"                  value="${classes.dir}/features"/>
+        <property name="bundle.working.dir"                 value="${classes.dir}/plugins"/>
+        <echo message="feature.build.dir      ='${feature.build.dir}'"/>
+        <echo message="bundle.working.dir     ='${bundle.working.dir}'"/>
+        <echo message=" ---"/>
+
+        <!-- Tool definitions -->
+        <property name="p2.SDK.install.dir" value="C:/eclipseSDK-3.6M6/eclipse"/>
+        <property name="p2.SDK.plugin.dir" value="${p2.SDK.install.dir}/plugins"/>
+        <property name="p2.publisher.jar" value="org.eclipse.equinox.p2.publisher_*.jar"/>
+        <property name="p2.launcher.jar" value="org.eclipse.equinox.launcher_*.jar"/>
+        <property name="p2.artifact.jar" value="org.eclipse.equinox.artifact.repository_*.jar"/>
+        <property name="signing.script" value="dir"/>
+        <property name="signing.dir" value="${classes.dir}"/>
+        <available file="${p2.SDK.plugin.dir}" property="sdk.install.exist"/>
+        <echo message="p2.SDK.install.dir ='${p2.SDK.install.dir}'"/>
+        <say  message="p2.SDK.plugin.dir  ='${p2.SDK.plugin.dir}'" if="sdk.install.exist"/>
+        <say  message="p2.SDK.plugin.dir:  '${p2.SDK.plugin.dir}' not found!" unless="sdk.install.exist"/>
+        <echo message="p2.publisher.jar   ='${p2.publisher.jar}'"/>
+        <echo message="p2.launcher.jar    ='${p2.launcher.jar}'"/>
+        <echo message="p2.artifact.jar    ='${p2.artifact.jar}'"/>
+        <echo message="signing.script     ='${signing.script}'"/>
+        <echo message="signing.dir        ='${signing.dir}'"/>
+        <echo message=" ---"/>
+
+        <!-- Input definitions -->
+        <property name="p2.composite.home.dir"    value="C:/__EL-CompositeRepositoryTest2Site"/>
+        <condition property="p2.repos.dir"        value="${p2.composite.home.dir}/${version.string}"
+                                                   else="C:/__EL-RepositorySite">
+            <isset property="do.composite"/>
+        </condition>
+        <property name="p2.mirror.dir"            value="C:/__EL-MirroredRepoSite"/>
+        <property name="p2.feature.dir"           value="${p2.repos.dir}/features"/>
+        <property name="p2.bundle.dir"            value="${p2.repos.dir}/plugins"/>
+        <condition property="bundle.install.file" value="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"
+                                                   else="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
+            <available file="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+        </condition>
+        <property name="site.dir"                 value="${feature.build.location}/${classes.dir}"/>
+        <property name="site.dir.url"             value="file:${site.dir}"/>
+        <property name="site.url"                 value="${site.dir.url}/site.xml"/>
+        <available file="${bundle.install.file}" property="bundle.installer.exist"/>
+        <echo message="p2.composite.home.dir ='${p2.composite.home.dir}'"/>
+        <echo message="p2.repos.dir          ='${p2.repos.dir}'"/>
+        <echo message="p2.mirror.dir         ='${p2.mirror.dir}'"/>
+        <echo message="p2.feature.dir        ='${p2.feature.dir}'"/>
+        <echo message="p2.bundle.dir         ='${p2.bundle.dir}'"/>
+        <say  message="bundle.install.file   ='${bundle.install.file}'" if="bundle.installer.exist"/>
+        <say  message="bundle.install.file:   '${bundle.install.file}' not found!" unless="bundle.installer.exist"/>
+        <echo message="site.dir              ='${site.dir}'"/>
+        <echo message="site.dir.url          ='${site.dir.url}'"/>
+        <echo message="site.url              ='${site.url}'"/>
+        <echo message=" ---"/>
+
+        <!-- Output definitions -->
+        <property name="p2.repos.url"             value="file:/${p2.repos.dir}"/> <!-- DO NOT Override this one -->
+        <property name="p2.mirror.url"            value="file:/${p2.mirror.dir}"/> <!-- DO NOT Override this one -->
+        <property name="p2.release.repos.name"    value="EclipseLink Repository"/>
+        <property name="p2.milestone.repos.name"  value="EclipseLink Milestone Repository"/>
+        <property name="p2.nightly.repos.name"    value="EclipseLink Nightly Build Repository"/>
+        <property name="p2.release.repos.url"     value="http://download.eclipse.org/rt/eclipselink/updates"/>
+        <property name="p2.milestone.repos.url"   value="http://download.eclipse.org/rt/eclipselink/incremental-updates/milestone"/>
+        <property name="p2.nightly.repos.url"     value="http://download.eclipse.org/rt/eclipselink/incremental-updates/nightly"/>
+        <property name="metadata.repos.name"      value="&quot;${p2.release.repos.name}&quot;"/>
+        <property name="artifact.repos.name"      value="&quot;EclipseLink Artifacts&quot;"/>
+        <echo message="p2.repos.url            ='${p2.repos.url}'"/>
+        <echo message="p2.mirror.url           ='${p2.mirror.url}'"/>
+        <echo message="p2.release.repos.name   ='${p2.release.repos.name}'"/>
+        <echo message="p2.milestone.repos.name ='${p2.milestone.repos.name}'"/>
+        <echo message="p2.nightly.repos.name   ='${p2.nightly.repos.name}'"/>
+        <echo message="p2.release.repos.url    ='${p2.release.repos.url}'"/>
+        <echo message="p2.milestone.repos.url  ='${p2.milestone.repos.url}'"/>
+        <echo message="p2.nightly.repos.url    ='${p2.nightly.repos.url}'"/>
+        <echo message="metadata.repos.name     ='${metadata.repos.name}'"/>
+        <echo message="artifact.repos.name     ='${artifact.repos.name}'"/>
+
+        <!-- Feature Dependency variables -->
+        <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+        <property name="sdo.prefix" value="commonj.sdo"/>
+        <property name="sdo.criteria" value="[2.1.1,2.2.0)"/>
+        <property name="activation.prefix" value="javax.activation"/>
+        <property name="activation.criteria" value="[1.1.0,1.2.0)"/>
+        <property name="mail.prefix" value="javax.mail"/>
+        <property name="mail.criteria" value="[1.4.0,1.5.0)"/>
+        <property name="persistence.prefix" value="javax.persistence"/>
+        <property name="persistence.criteria" value="[2.0.0,2.1.0)"/>
+        <property name="servlet.prefix" value="javax.servlet"/>
+        <property name="servlet.criteria" value="[2.4.0,2.5.0)"/>
+        <property name="xml.bind.prefix" value="javax.xml.bind"/>
+        <property name="xml.bind.criteria" value="[2.2.0,2.3.0)"/>
+        <property name="xml.stream.prefix" value="javax.xml.stream"/>
+        <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
+    </target>
+
+    <!-- Need to copy only the bundles that will be in the features into the "p2.repos.dir/plugins" dir
+         (so must copy from main plugins to new temp location). Also need to filter copy the feature xml
+         files to "p2.repos.dir/features" to substitute the actual version.qualifer string into it.
+         Then can Generate P2.                                                                        -->
+    <target name="build"                         depends="init, build-features, build-p2"/>
+    <target name="build-p2"                      depends="create-sign-zipfile, clear-p2-loc, assemble-repos"/>
+    <target name="build-features-sign-jars-wait" depends="init, build-features, sign-jars, retrieve-signed-archive"/>
+    <!-- ** DO NOT ALTER LIGHTLY ** - Needed by automated process -->
+    <target name="build-features-create-signzip" depends="init, build-features, create-sign-zipfile"/>
+    <target name="build-features"                depends="clean, create-deployable-features"/>
+    <target name="sign-jars"                     depends="copy-and-queue-for-sign, retrieve-signed-archive"/>
+    <target name="assemble-repos"                depends="populate-p2-site, publish-p2-repos"/>
+    <!-- End ** DO NOT ALTER LIGHTLY ** Block -->
+
+    <!-- Feature Targets -->
+    <!-- clean -->
+    <target name="clean" depends="init" description="Clean all generated content">
+        <delete dir="${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
+    </target>
+
+    <!-- build feature jars -->
+    <target name="jar-feature" description="General target for packaging a feature">
+        <jar jarfile="${feature.build.dir}/${feature.name}_${version.string}.jar" duplicate="preserve">
+            <fileset dir="${feature.common.dir}">
+                <include name="*.html"/>
+            </fileset>
+            <fileset dir="${feature.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+            </fileset>
+            <fileset dir="${classes.dir}/${feature.name}">
+                <include name="*.*"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="resolve-feature-dependencies" depends="init">
+        <selectbundle basename="${sdo.prefix}" directory="${feature.2.sdo.plugins.dir}"
+                     criterion="${sdo.criteria}" property="sdo.version" versiononly="true"
+        />
+        <selectbundle basename="${activation.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${activation.criteria}" property="activation.version" versiononly="true"
+        />
+        <selectbundle basename="${mail.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${mail.criteria}" property="mail.version" versiononly="true"
+        />
+        <selectbundle basename="${persistence.prefix}" directory="${feature.2.jpa.plugins.dir}"
+                     criterion="${persistence.criteria}" property="persistence.version" versiononly="true"
+        />
+        <selectbundle basename="${servlet.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${servlet.criteria}" property="servlet.version" versiononly="true"
+        />
+        <selectbundle basename="${xml.bind.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${xml.bind.criteria}" property="xml.bind.version" versiononly="true"
+        />
+        <selectbundle basename="${xml.stream.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${xml.stream.criteria}" property="xml.stream.version" versiononly="true"
+        />
+        <echo message="Searching ${feature.2.sdo.plugins.dir}..."/>
+        <say  message="   sdo.version         = '${sdo.version}'"         if="sdo.version"/>
+        <say  message="   '${sdo.prefix}_${sdo.criteria}.jar' not found! Generated features will be invalid."                 unless="sdo.version"/>
+        <echo message="Searching ${feature.2.jpa.plugins.dir}..."/>
+        <say  message="   persistence.version = '${persistence.version}'" if="persistence.version"/>
+        <say  message="   '${persistence.prefix}_${persistence.criteria}.jar' not found! Generated features will be invalid." unless="persistence.version"/>
+        <echo message="Searching ${feature.2.common.plugins.dir}..."/>
+        <say  message="   activation.version  = '${activation.version}'"  if="activation.version"/>
+        <say  message="   '${activation.prefix}_${activation.criteria}.jar' not found! Generated features will be invalid."   unless="activation.version"/>
+        <say  message="   mail.version        = '${mail.version}'"        if="mail.version"/>
+        <say  message="   '${mail.prefix}_${mail.criteria}.jar' not found! Generated features will be invalid."               unless="mail.version"/>
+        <say  message="   servlet.version     = '${servlet.version}'"     if="servlet.version"/>
+        <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."         unless="servlet.version"/>
+        <say  message="   xml.bind.version    = '${xml.bind.version}'"    if="xml.bind.version"/>
+        <say  message="   '${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="xml.bind.version"/>
+        <say  message="   xml.stream.version  = '${xml.stream.version}'"  if="xml.stream.version"/>
+        <say  message="   '${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="xml.stream.version"/>
+    </target>
+
+    <target name="create-deployable-features" depends="resolve-feature-dependencies">
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${feature.build.dir}"/>
+        <!--          Filters for feature.xml files                 -->
+        <filter token="VERSION"             value="${release.version}"/>
+        <filter token="QUALIFIER"           value="${version.qualifier}"/>
+        <!--          Filters for dependencies in feature.xml files -->
+        <filter token="SDO_VERSION"         value="${sdo.version}"/>
+        <filter token="ACTIVATION_VERSION"  value="${activation.version}"/>
+        <filter token="MAIL_VERSION"        value="${mail.version}"/>
+        <filter token="PERSISTENCE_VERSION" value="${persistence.version}"/>
+        <filter token="SERVLET_VERSION"     value="${servlet.version}"/>
+        <filter token="XMLBIND_VERSION"     value="${xml.bind.version}"/>
+        <filter token="XMLSTREAM_VERSION"   value="${xml.stream.version}"/>
+        <!--          Filters for feature.properties files          -->
+        <filter token="PROVIDER"            value="${specification.vendor}"/>
+        <filter token="REPOS_NAME"          value="${p2.release.repos.name}"/>
+        <filter token="MILESTONE_REPOS"     value="${p2.milestone.repos.name}"/>
+        <filter token="PRIME_UPDATE_URL"    value="${p2.release.repos.url}"/> <!-- should be helios update? -->
+        <filter token="SECOND_UPDATE_URL"   value="${p2.milestone.repos.url}"/> <!-- should be eclipselink release p2? -->
+        <copy todir="${classes.dir}" filtering="true">
+            <fileset dir="${feature.build.location}">
+                <include name="**/feature*.*"/>
+            </fileset>
+        </copy>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.dbws"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.jpa"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.moxy"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.sdo"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.dbws.source"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.jpa.source"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.moxy.source"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.sdo.source"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.sdk"/>
+        </antcall>
+    </target>
+
+    <!-- Signing targets -->
+    <target name="create-eclipselink-buildfile">
+        <echo message="update eclipselink.build for Galileo, and place in features dir for later check-in."/>
+        <filter token="VERSION"   value="${release.version}"/>
+        <filter token="QUALIFIER" value="${version.qualifier}"/>
+        <copy todir="${classes.dir}" filtering="true">
+            <fileset dir="${feature.2.base.dir}/buildsystem">
+                <include name="eclipselink.build"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="create-sign-zipfile" depends="create-eclipselink-buildfile">
+        <delete file="${p2.archive.presigned.zip}"/>
+        <zip destfile="${p2.archive.presigned.zip}">
+            <!-- Removed based on decision not to sign non-Galileo artifacts due to signing issues - 5/20/09 -->
+            <!-- zipfileset dir="${feature.2.base.dir}"                         includes="eclipselink*.jar"/ -->
+            <!-- zipfileset dir="${feature.2.util.dbws}"                        includes="eclipselink-dbwsutils*.jar"/ -->
+            <zipfileset dir="${classes.dir}"                                    includes="eclipselink.build"/>
+            <!-- Removed based on decision to have different repos names, by build type - 5/26/09            -->
+            <!-- zipfileset dir="${classes.dir}"                                includes="site.xml"/         -->
+            <zipfileset dir="${feature.build.dir}"            prefix="features" includes="*.jar"/>
+            <zipfileset dir="${feature.2.common.plugins.dir}" prefix="plugins"  includes="org.eclipse.persistence*${release.version}.${version.qualifier}.jar"/>
+        </zip>
+    </target>
+
+    <target name="copy-and-queue-for-sign">
+        <delete file="${signing.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
+        <delete file="${signing.dir}/signed-output/${p2.archive.presigned.zip}" failonerror="false"/>
+        <copy file="${signed.archive.src.file}" todir="${signing.dir}"/> <!-- wait til cleared to avoid version confusion and overwriting? -->
+        <exec executable="${signing.script}" dir="${signing.dir}" failonerror="false"> <!-- need to not stop if authority fails -->
+            <arg value="${p2.archive.presigned.zip}"/>
+            <arg value="nomail"/>
+            <arg value="signed-output/"/>
+        </exec>
+    </target>
+
+    <target name="retrieve-signed-archive" unless="signing.time.limit.exceeded" depends="wait-for-sign-jar,wait-report-timeout">
+        <copy tofile="${signed.archive.dest.file}" file="${signing.dir}/signed-output/${p2.archive.presigned.zip}"/>
+    </target>
+    <target name="wait-report-timeout" if="signing.time.limit.exceeded">
+        <echo message="Signing aborted, wait time exceeded!"/>
+    </target>
+    <target name="wait-for-sign-jar" depends="init">
+        <echo message="Waiting for ${signing.dir}/signed-output/${p2.archive.presigned.zip}"/>
+        <!-- With nightly builds taking anywhere from 85 to 120 minutes to complete, max wait-time can  -->
+        <!-- only be roughly 100 minutes since the build starts at 2:35am and MUST finish before the    -->
+        <!-- first continuous build at 6:30 (that leaves roughly a 15 minute window)                    -->
+        <waitfor maxwait="100" maxwaitunit="minute" checkevery="15" checkeveryunit="second" timeoutproperty="signing.time.limit.exceeded">
+            <available file="${signing.dir}/signed-output/${p2.archive.presigned.zip}"/>
+        </waitfor>
+    </target>
+
+    <!-- P2 Targets -->
+    <!-- clean -->
+    <target name="test-ready-to-go">
+        <condition property="p2.archive.zip" value="${p2.archive.presigned.zip}" else="foobar.error">
+            <available file="${p2.archive.presigned.zip}"/>
+        </condition>
+        <available file="${p2.archive.zip}" property="signing.archive.exist"/>
+        <condition property="ready-to-go">
+            <and>
+                <isset property="signing.archive.exist"/>
+                <isset property="bundle.installer.exist"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="not-ready-to-go" unless="ready-to-go" depends="test-ready-to-go">
+        <fail message="Bundle Installer or p2 archive not found! Skipping P2 repos generation."/>
+    </target>
+
+    <target name="clear-p2-loc" if="ready-to-go" depends="not-ready-to-go">
+        <delete dir="${p2.repos.dir}" failonerror="true"/>
+        <echo message="Test without cleaning repos first."/>
+    </target>
+
+    <target name="populate-p2-site" if="ready-to-go" depends="init">
+        <mkdir dir="${p2.bundle.dir}"/>
+        <mkdir dir="${p2.feature.dir}"/>
+        <!-- populate update site with feature and bundle jars -->
+        <unzip dest="${p2.bundle.dir}" src="${bundle.install.file}">
+            <patternset>
+                <include name="**/*.jar"/>
+            </patternset>
+        </unzip>
+        <!-- Remove jars we are not including in features at this time (needs to be separate because exclude in unzip does not seem to work) -->
+        <delete>
+            <fileset
+                dir="${p2.bundle.dir}"
+                includes="
+                          *jms*.jar,
+                          com.sun*.jar,
+                          eclipselink*.jar,
+                          javax.persistence*_1.*.jar,
+                          *preview*.jar,
+                          *javax.resource*.jar,
+                          *javax.transaction*.jar,
+                          javax.xml.bind.source*.jar,
+                          *modelgen*.jar,
+                          *servlet*.jar,
+                          *soap*.jar,
+                          *xml.ws*.jar"
+            />
+        </delete>
+        <unzip dest="${p2.feature.dir}" src="${p2.archive.zip}">
+            <patternset>
+                <include name="features/*.jar"/>
+            </patternset>
+            <mapper type="flatten"/>
+        </unzip>
+    </target>
+
+    <target name="publish-p2-repos" depends="init, publish-p2-solitary, publish-p2-child"/>
+
+    <target name="create-site-for-generation" unless="do.composite">
+        <mkdir dir="${site.dir}"/>
+        <delete file="${site.dir}/site.xml" quiet="true"/>
+        <filter token="REPOS_URL"          value="${p2.repos.url}"/>
+        <filter token="VERSION"            value="${release.version}"/>
+        <filter token="QUALIFIER"          value="${version.qualifier}"/>
+        <copy todir="${site.dir}" file="${feature.build.location}/site.xml" filtering="true"/>
+    </target>
+
+    <target name="publish-p2-solitary" unless="do.composite" depends="create-site-for-generation">
+        <copy todir="${p2.repos.dir}" file="${site.dir}/site.xml" filtering="false"/>
+        <echo message="java.home        ='${java.home}'"/>
+        <echo message="p2.SDK.plugin.dir='${p2.SDK.plugin.dir}'"/>
+        <echo message="p2.launcher.jar  ='${p2.launcher.jar}'"/>
+        <echo message="p2.publisher.jar ='${p2.publisher.jar}'"/>
+        <echo message="-----"/>
+        <echo message="p2.repos.dir     ='${p2.repos.dir}'"/>
+        <echo message="p2.repos.url     ='${p2.repos.url}'"/>
+        <!-- Metadata generator apparently doesn't rebuild the artifact and content xml files if they already exist -->
+        <mkdir dir="${p2.repos.dir}"/>
+        <delete  failonerror="false">
+            <fileset dir="${p2.repos.dir}" includes="artifact*.*, content*.*"/>
+        </delete>
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.publisher.jar}"/>
+                <pathelement location="${p2.SDK.plugin.dir}" />
+            </classpath>
+            <arg line=" -application org.eclipse.equinox.p2.publisher.UpdateSitePublisher" />
+            <arg line=" -metadataRepository ${p2.repos.url}" />
+            <arg line=" -artifactRepository ${p2.repos.url}" />
+            <arg line=" -source ${p2.repos.dir}" />
+            <arg line=" -compress -publishArtifacts -configs all" />
+        </java>
+    </target>
+
+    <target name="publish-p2-child" if="do.composite">
+        <echo message="java.home        ='${java.home}'"/>
+        <echo message="p2.SDK.plugin.dir='${p2.SDK.plugin.dir}'"/>
+        <echo message="p2.launcher.jar  ='${p2.launcher.jar}'"/>
+        <echo message="p2.publisher.jar ='${p2.publisher.jar}'"/>
+        <echo message="-----"/>
+        <echo message="p2.repos.dir     ='${p2.repos.dir}'"/>
+        <echo message="p2.repos.url     ='${p2.repos.url}'"/>
+        <!-- Metadata generator apparently doesn't rebuild the artifact and content xml files if they already exist -->
+        <mkdir dir="${p2.repos.dir}"/>
+        <delete  failonerror="false">
+            <fileset dir="${p2.repos.dir}" includes="artifact*.*, content*.*"/>
+        </delete>
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.publisher.jar}"/>
+                <pathelement location="${p2.SDK.plugin.dir}" />
+            </classpath>
+            <arg line=" -application org.eclipse.equinox.p2.publisher.FeaturesAndBundlesPublisher" />
+            <arg line=" -metadataRepository ${p2.repos.url}" />
+            <arg line=" -artifactRepository ${p2.repos.url}" />
+            <arg line=" -source ${p2.repos.dir}" />
+            <arg line=" -compress -publishArtifacts -configs all" />
+        </java>
+    </target>
+
+    <target name="mirror-p2-repos" depends="init"> <!-- , create-site-for-generation" -->
+        <property name="p2.mirror.name" value="EclipseLink build ${version.string} Repository"/>
+        <echo message="java.home        ='${java.home}'"/>
+        <echo message="p2.SDK.plugin.dir='${p2.SDK.plugin.dir}'"/>
+        <echo message="p2.launcher.jar  ='${p2.launcher.jar}'"/>
+        <echo message="p2.publisher.jar ='${p2.publisher.jar}'"/>
+        <echo message="-----"/>
+        <echo message="source URL (p2.repos.url)       ='${p2.repos.url}'"/>
+        <echo message="destination dir (p2.mirror.dir) ='${p2.mirror.dir}'"/>
+        <echo message="destination URL (p2.mirror.url) ='${p2.mirror.url}'"/>
+        <echo message="destination name(p2.mirror.name)='${p2.mirror.name}'"/>
+        <echo message="-----"/>
+        <!-- Metadata generator apparently doesn't rebuild the artifact and content xml files if they already exist -->
+        <mkdir dir="${p2.mirror.dir}"/>
+        <delete  failonerror="false">
+            <fileset dir="${p2.mirror.dir}" includes="artifact*.*, content*.*"/>
+        </delete>
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2.M.mirror"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.artifact.jar}"/>
+                <pathelement location="${p2.SDK.plugin.dir}" />
+            </classpath>
+            <arg line=" -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication" />
+            <arg line=" -source ${p2.repos.url}" />
+            <arg line=" -destination ${p2.mirror.url}" />
+            <arg line=" -destinationName '${p2.mirror.name}'" />
+        </java>
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2.A.mirror"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.artifact.jar}"/>
+                <pathelement location="${p2.SDK.plugin.dir}" />
+            </classpath>
+            <arg line=" -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication" />
+            <arg line=" -source ${p2.repos.url}" />
+            <arg line=" -destination ${p2.mirror.url}" />
+            <arg line=" -destinationName '${p2.mirror.name}'" />
+            <arg line=" -verbose -raw" />
+        </java>
+    </target>
+
+</project>

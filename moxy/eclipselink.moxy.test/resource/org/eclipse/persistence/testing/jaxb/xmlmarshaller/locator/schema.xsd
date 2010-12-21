@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="root">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="stringWithMaxSize5" />
+                <xs:element ref="child" minOccurs="2" maxOccurs="2" />
+             </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="child">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="stringWithMaxSize5"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="stringWithMaxSize5">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="5"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

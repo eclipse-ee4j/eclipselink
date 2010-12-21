@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.contact.PersonImpl</name>
+   <class-handle>
+      <type-name>test.oracle.models.contact.PersonImpl</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>PersonImpl</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy/>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>PERSON</column-table-name>
+               <column-name>ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="variable-one-to-one">
+         <name>contact</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.contact.PersonImpl</attribute-declaring-type-name>
+            <attribute-name>contact</attribute-name>
+         </attribute-handle>
+         <uses-method-accessing>true</uses-method-accessing>
+         <get-method-handle>
+            <method-declaring-type-name>test.oracle.models.contact.PersonImpl</method-declaring-type-name>
+            <method-signature>getContact()</method-signature>
+         </get-method-handle>
+         <set-method-handle>
+            <method-declaring-type-name>test.oracle.models.contact.PersonImpl</method-declaring-type-name>
+            <method-signature>setContact(test.oracle.models.contact.Contact)</method-signature>
+         </set-method-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.contact.Contact</descriptor-name>
+         </reference-descriptor-handle>
+         <column-query-key-pairs>
+            <column-query-key-pair>
+               <column-handle>
+                  <column-table-name>PERSON</column-table-name>
+                  <column-name>ID</column-name>
+               </column-handle>
+               <query-key-name>id</query-key-name>
+            </column-query-key-pair>
+         </column-query-key-pairs>
+         <class-indicator-policy type="relational-field">
+            <indicator-type>
+               <type-handle>
+                  <type-name>java.lang.String</type-name>
+               </type-handle>
+            </indicator-type>
+            <class-indicator-values>
+               <class-indicator-value>
+                  <indicator>E</indicator>
+                  <descriptor-value-handle>
+                     <descriptor-name>test.oracle.models.contact.EmailAddress</descriptor-name>
+                  </descriptor-value-handle>
+               </class-indicator-value>
+               <class-indicator-value>
+                  <indicator>P</indicator>
+                  <descriptor-value-handle>
+                     <descriptor-name>test.oracle.models.contact.PhoneNumber</descriptor-name>
+                  </descriptor-value-handle>
+               </class-indicator-value>
+            </class-indicator-values>
+            <column-handle>
+               <column-table-name>PERSON</column-table-name>
+               <column-name>CONTACT_TYPE</column-name>
+            </column-handle>
+         </class-indicator-policy>
+      </mapping>
+   </mappings>
+   <primary-table-handle>
+      <table-name>PERSON</table-name>
+   </primary-table-handle>
+   <interface-alias-policy>
+      <interface-alias-type-handle>
+         <type-name>test.oracle.models.contact.Person</type-name>
+      </interface-alias-type-handle>
+   </interface-alias-policy>
+</descriptor>

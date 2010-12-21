@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="http://www.example.com/xsds/real" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.com/xsds/real">
+   <xsd:element name="my-things">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:any processContents="skip" namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>

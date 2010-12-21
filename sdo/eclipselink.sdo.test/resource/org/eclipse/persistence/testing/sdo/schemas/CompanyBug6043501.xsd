@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://someOtherUri" xmlns="http://someOtherUri" elementFormDefault="qualified" sdoJava:package="defaultPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns5="http://testUri">
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import namespace="http://testUri" schemaLocation="PersonBug6043501.xsd"/>
+   <xsd:complexType name="CompanyType">
+     <xsd:sequence>
+         <xsd:element name="companyName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="ceo" type="EmployeeType" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="EmployeeType">
+     <xsd:complexContent>
+         <xsd:extension base="ns5:PersonType">
+            <xsd:sequence>
+               <xsd:element name="jobTitle" type="xsd:string" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="employeeType" type="EmployeeType"/>
+   <xsd:element name="companyType" type="CompanyType"/>
+</xsd:schema>

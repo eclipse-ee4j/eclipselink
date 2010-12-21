@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="employee">
+      <xsd:sequence/>
+      <xsd:attribute name="fname" type="xsd:string"/>
+      <xsd:attribute name="lname" type="xsd:string"/>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
+      <xsd:attribute name="things">
+         <xsd:simpleType>
+            <xsd:list itemType="xsd:string"/>
+         </xsd:simpleType>
+      </xsd:attribute>
+   </xsd:complexType>
+   <xsd:element name="employee" type="employee"/>
+</xsd:schema>

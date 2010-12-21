@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+	<employee id="222">
+		<name>Joe Smith</name>
+		<address-id>999</address-id>
+	</employee>
+	<address aid="199">
+		<street>Some Other St.</street>
+		<city>Anyothertown</city>
+		<country>Canada</country>
+		<zip>X0X0X0</zip>
+	</address>
+	<address aid="99">
+		<street>Some St.</street>
+		<city>Anytown</city>
+		<country>Canada</country>
+		<zip>X0X0X0</zip>
+	</address>
+	<address aid="11199">
+		<street>Another St.</street>
+		<city>Anytown</city>
+		<country>Canada</country>
+		<zip>Y0Y0Y0</zip>
+	</address>
+	<address aid="1199">
+		<street>Some St.</street>
+		<city>Sometown</city>
+		<country>Canada</country>
+		<zip>X0X0X0</zip>
+	</address>
+</root>

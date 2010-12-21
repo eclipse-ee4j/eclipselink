@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<customer>
+  <contact-method>
+    <id>123</id>
+	<street>1 A Street</street>
+	<postal-code>A1B 2C3</postal-code>
+  </contact-method>
+</customer>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xsd:schema targetNamespace='http://www.example.org' xmlns='http://www.example.org' elementFormDefault='qualified' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
+   <xsd:complexType name='myTestType'>
+      <xsd:sequence>
+         <xsd:any/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name='myTestType2'>
+      <xsd:sequence>
+         <xsd:any maxOccurs='2'/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name='myTestType3'>
+      <xsd:sequence maxOccurs='unbounded'>
+         <xsd:any/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name='myTestType4'>
+      <xsd:sequence maxOccurs='unbounded'>
+         <xsd:element name="test" type="xsd:string"/>
+         <xsd:element name="test2" type="xsd:string"/>
+         <xsd:any/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name='myTestType5'>
+      <xsd:sequence maxOccurs='unbounded'>
+         <xsd:sequence>
+            <xsd:sequence>
+               <xsd:element name="test" type= "xsd:string"/>
+               <xsd:element name="test2" type="xsd:string"/>
+               <xsd:any/>
+            </xsd:sequence>
+         </xsd:sequence>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name='myTestType2' type='myTestType2' />
+   <xsd:element name='myTestType4' type='myTestType4' />
+   <xsd:element name='myTestType' type='myTestType' />
+   <xsd:element name='myTestType3' type='myTestType3' />
+   <xsd:element name='myTestType5' type='myTestType5' />
+   <xsd:element name='blah' type='xsd:anyType' />
+</xsd:schema>

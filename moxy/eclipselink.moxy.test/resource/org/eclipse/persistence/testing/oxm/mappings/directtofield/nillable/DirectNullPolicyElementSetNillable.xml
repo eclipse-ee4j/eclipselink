@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<employee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <id>123</id>
+    <first-name xsi:nil="true"/>
+    <last-name>Doe</last-name>
+</employee>

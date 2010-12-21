@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.2" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>Relationships Test Model Instance Document</description>
+    <persistence-unit-metadata>
+        <exclude-default-mappings/>
+        <persistence-unit-defaults>
+            <access>PROPERTY</access>
+        </persistence-unit-defaults>
+    </persistence-unit-metadata>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.relationships</package>
+    <access>PROPERTY</access>
+    <table-generator name="DISTRIBUTOR_GENERATOR_TABLE" table="XML_DISTRIBUTOR_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DTR_SEQ"/>
+    <named-query name="findAllXMLOrdersByItem">
+        <query>SELECT OBJECT(theorder) FROM XMLExtendedOrder theorder WHERE theorder.item.itemId = :id</query>
+    </named-query>
+    <named-query name="findAllXMLItemsByName">
+        <query>SELECT OBJECT(item) FROM XMLExtendedItem item WHERE item.name = ?1</query>
+    </named-query>
+    <mapped-superclass class="Human">
+        <table-generator name="CUSTOMER_GENERATOR_TABLE" table="XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CUST_SEQ"/>
+        <named-query name="findAllXMLCustomers">
+            <query>SELECT OBJECT(thecust) FROM XMLExtendedCustomer thecust</query>
+            <hint name="refresh" value="true"/>
+        </named-query>
+        <named-native-query name="findAllSQLXMLCustomers">
+            <query>select * from XML_CUSTOMER</query>
+        </named-native-query>
+        <attributes>
+            <transient name="new"/>
+        </attributes>
+    </mapped-superclass>
+    <mapped-superclass  class="Company">
+        <attributes>
+            <basic name="name"/>
+            <one-to-one name="ceo">
+                <join-column name="CEO_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-one>
+        </attributes>
+    </mapped-superclass>
+    <mapped-superclass class="DistributingCompany">
+        <association-override name="ceo">
+            <join-column name="CHIEF_ID"/>
+        </association-override>
+        <attributes>
+            <id name="distributorId">
+                <generated-value strategy="TABLE" generator="DISTRIBUTOR_GENERATOR_TABLE"/>
+            </id>
+        </attributes>
+    </mapped-superclass>
+    <mapped-superclass class="ManufacturingCompany">
+        <sequence-generator name="MANUFACTURER_SEQ_GEN"/>
+        <attribute-override name="name">
+            <column name="COMPANY_NAME"/>
+        </attribute-override>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="MANUFACTURER_SEQ_GEN"/>
+            </id>
+        </attributes>
+    </mapped-superclass>
+    <entity name="XMLExtendedCustomer" class="Customer">
+        <table name="XML_CUSTOMER"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="customerId">
+                <column name="CUST_ID"/>
+                <generated-value strategy="TABLE" generator="CUSTOMER_GENERATOR_TABLE"/>
+            </id>
+            <basic name="city">
+                <column name="CITY"/>
+            </basic>
+            <basic name="name">
+                <column name="NAME"/>
+            </basic>
+            <version name="version">
+                <column name="CUST_VERSION"/>
+            </version>
+            <one-to-many name="orders" target-entity="Order" mapped-by="customer">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+                <batch-fetch type="EXISTS"/>
+            </one-to-many>
+        </attributes>
+    </entity>
+    <entity name="XMLExtendedOrder" class="Order" metadata-complete="false">
+        <table name="XML_ORDER"/>
+        <copy-policy class="org.eclipse.persistence.testing.models.jpa.xml.relationships.TestInstantiationCopyPolicy"/>
+        <table-generator name="ORDER_TABLE_GENERATOR" table="XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="ORDER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="orderId">
+                <column name="ORDER_ID"/>
+                <generated-value strategy="TABLE" generator="ORDER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="quantity"/>
+            <basic name="shippingAddress">
+                <column name="SHIP_ADDR"/>
+            </basic>
+            <version name="version">
+                <column name="ORDER_VERSION"/>
+            </version>
+            <many-to-one name="customer" target-entity="Customer" fetch="LAZY">
+                <join-column name="CUST_ID"/>
+            </many-to-one>
+            <one-to-one name="item" fetch="LAZY">
+                <!--primary-key-join-column name="ITEM_ID" referenced-column-name="ITEM_ID"/-->
+                <join-column name="ITEM_ID" referenced-column-name="ITEM_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-refresh/>
+                </cascade>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLExtendedItem" class="Item" metadata-complete="false">
+        <table name="XML_ITEM"/>
+        <instantiation-copy-policy/>
+        <table-generator name="ITEM_TABLE_GENERATOR" table="XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="ITEM_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="itemId">
+                <column name="ITEM_ID"/>
+                <generated-value strategy="TABLE" generator="ITEM_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name"/>
+            <basic name="description"/>
+            <basic name="image">
+                <column name="IMAGE" length="1280"/>
+                <lob/>
+            </basic>
+            <version name="version">
+                <column name="ITEM_VERSION"/>
+            </version>
+            <variable-one-to-one name="manufacturer"/>
+            <variable-one-to-one name="distributor" target-interface="Distributor" fetch="LAZY">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <discriminator-column name="DISTRIBUTOR_TYPE" discriminator-type="INTEGER"/>
+                <discriminator-class discriminator="1" value="MegaBrands"/>
+                <discriminator-class discriminator="2" value="Namco"/> 
+                <join-column name="DISTRIBUTOR_ID" referenced-column-name="distributorId"/>
+            </variable-one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLLego" class="Lego" exclude-default-mappings="false">
+        <table name="XML_LEGO"/>
+    </entity>
+    <entity name="XMLMattel" class="Mattel">
+        <table name="XML_MATTEL"/>
+    </entity>
+    <entity name="XMLMegaBrands" class="MegaBrands">
+        <table name="XML_MEGABRANDS"/>
+    </entity>
+    <entity name="XMLNamco" class="Namco">
+        <table name="XML_NAMCO"/>
+        <clone-copy-policy method="cloneNamco" working-copy-method="cloneWorkingCopyNamco"/>
+    </entity>
+    <entity name="XMLCEO" class="CEO">
+        <table name="XML_CEO"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE"/>
+            </id>
+            <basic name="name"/>
+        </attributes>
+    </entity>
+</entity-mappings>

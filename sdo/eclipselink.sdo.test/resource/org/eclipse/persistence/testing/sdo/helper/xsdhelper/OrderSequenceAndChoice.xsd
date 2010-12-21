@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"> 
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:complexType name="AddressType">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="street" type="xsd:string" minOccurs="0"/>
+         <xsd:choice> 
+            <xsd:element name="USPrice" type="xsd:string" minOccurs="0"/> 
+               <xsd:sequence> 
+                  <xsd:element name="CDNPrice" type="xsd:string" minOccurs="0"/> 
+                  <xsd:element name="exchangeRate" type="xsd:string" minOccurs="0"/> 
+               </xsd:sequence> 
+         </xsd:choice> 
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+	 <xsd:choice>
+	    <xsd:element name="state" type="xsd:string" minOccurs="0"/>
+            <xsd:sequence>
+               <xsd:element name="one" type="xsd:string" minOccurs="0"/>
+               <xsd:element name="two" type="xsd:string" minOccurs="0"/>
+                  <xsd:choice>
+                     <xsd:element name="three" type="xsd:string" minOccurs="0"/>
+                     <xsd:element name="four" type="xsd:string" minOccurs="0"/>
+                  </xsd:choice>
+               <xsd:element name="five" type="xsd:string" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:element name="province" type="xsd:string" minOccurs="0"/>
+ 	 </xsd:choice>
+         <xsd:choice>
+	    <xsd:element name="zip" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="postalCode" type="xsd:string" minOccurs="0"/>
+ 	 </xsd:choice>
+         <xsd:element name="country" type="xsd:string" minOccurs="0" default="US"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="PurchaseOrderType">
+      <xsd:sequence>
+         <xsd:element name="shipTo" type="AddressType" minOccurs="0"/>
+         <xsd:element name="billTo" type="AddressType" minOccurs="0"/>
+         <xsd:element name="comment" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="poId" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="purchaseOrderType" type="PurchaseOrderType"/>
+   <xsd:element name="addressType" type="AddressType"/>
+</xsd:schema>

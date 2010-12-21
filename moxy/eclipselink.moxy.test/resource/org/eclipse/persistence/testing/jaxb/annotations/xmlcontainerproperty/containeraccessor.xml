@@ -1,0 +1,13 @@
+<employee id = "10">
+  <first-name>Jane</first-name>
+  <last-name>Doe</last-name>
+  <address>
+	<street>123 Fake Street</street>
+	<city>Ottawa</city>
+  </address>
+  <phone-numbers>
+    <number>123-4567</number>
+	<number>234-5678</number>
+  </phone-numbers>
+</employee>
+  

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+   <name>test.oracle.models.complexinheritance.SportsCar</name>
+   <modifier>1</modifier>
+   <superclass-handle>
+      <type-name>test.oracle.models.complexinheritance.Car</type-name>
+   </superclass-handle>
+   <methods>
+      <method>
+         <name>SportsCar</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+      </method>
+      <method>
+         <name>example1</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-handle>
+               <type-name>test.oracle.models.complexinheritance.Car</type-name>
+            </type-handle>
+         </return-type-declaration>
+      </method>
+   </methods>
+</class>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+    <integers>
+        <my-integer>66</my-integer>
+    </integers>
+    <my-write-only-integer>66</my-write-only-integer>
+</employee>

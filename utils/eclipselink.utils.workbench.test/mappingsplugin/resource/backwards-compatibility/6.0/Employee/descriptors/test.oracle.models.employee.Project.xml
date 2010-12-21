@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.employee.Project</name>
+   <class-handle>
+      <type-name>test.oracle.models.employee.Project</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>Project</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <cache-size>100</cache-size>
+         <cache-type>Full</cache-type>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational">
+         <locking-type>Optimistic Locking</locking-type>
+         <version-locking-type>Version Locking</version-locking-type>
+         <store-in-cache>false</store-in-cache>
+         <version-locking-column-handle>
+            <column-table-name>PROJECT</column-table-name>
+            <column-name>VERSION</column-name>
+         </version-locking-column-handle>
+         <optimistic-locking-type>Version Locking</optimistic-locking-type>
+      </locking-policy>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>PROJECT</column-table-name>
+               <column-name>PROJ_ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>description</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Project</attribute-declaring-type-name>
+            <attribute-name>description</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>PROJECT</column-table-name>
+            <column-name>DESCRIP</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>id</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Project</attribute-declaring-type-name>
+            <attribute-name>id</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>PROJECT</column-table-name>
+            <column-name>PROJ_ID</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>name</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Project</attribute-declaring-type-name>
+            <attribute-name>name</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>PROJECT</column-table-name>
+            <column-name>PROJ_NAME</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="one-to-one">
+         <name>teamLeader</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Project</attribute-declaring-type-name>
+            <attribute-name>teamLeader</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.employee.Employee</descriptor-name>
+         </reference-descriptor-handle>
+         <indirection-type>value-holder-indirection</indirection-type>
+         <reference-handle>
+            <reference-table-name>PROJECT</reference-table-name>
+            <reference-name>PROJECT_EMPLOYEE</reference-name>
+         </reference-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>version</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.employee.Project</attribute-declaring-type-name>
+            <attribute-name>version</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>PROJECT</column-table-name>
+            <column-name>VERSION</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <inheritance-policy type="relational">
+      <class-indicator-policy type="relational-field">
+         <indicator-type>
+            <type-handle>
+               <type-name>java.lang.String</type-name>
+            </type-handle>
+         </indicator-type>
+         <class-indicator-values>
+            <class-indicator-value>
+               <indicator>L</indicator>
+               <descriptor-value-handle>
+                  <descriptor-name>test.oracle.models.employee.LargeProject</descriptor-name>
+               </descriptor-value-handle>
+            </class-indicator-value>
+            <class-indicator-value>
+               <indicator>S</indicator>
+               <descriptor-value-handle>
+                  <descriptor-name>test.oracle.models.employee.SmallProject</descriptor-name>
+               </descriptor-value-handle>
+            </class-indicator-value>
+         </class-indicator-values>
+         <column-handle>
+            <column-table-name>PROJECT</column-table-name>
+            <column-name>PROJ_TYPE</column-name>
+         </column-handle>
+      </class-indicator-policy>
+      <read-all-subclasses-view-handle>
+         <table-name>EMPLOYEE</table-name>
+      </read-all-subclasses-view-handle>
+   </inheritance-policy>
+   <primary-table-handle>
+      <table-name>PROJECT</table-name>
+   </primary-table-handle>
+   <uses-sequencing>true</uses-sequencing>
+   <sequence-number-name>PROJ_SEQ</sequence-number-name>
+   <sequence-number-table-handle>
+      <table-name>PROJECT</table-name>
+   </sequence-number-table-handle>
+   <sequence-number-column-handle>
+      <column-table-name>PROJECT</column-table-name>
+      <column-name>PROJ_ID</column-name>
+   </sequence-number-column-handle>
+</descriptor>

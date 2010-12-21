@@ -1,0 +1,18 @@
+<employee  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <id>123</id>
+ <name>Scott Tiger</name>
+ <home-address xsi:type="address-type">
+  <street>613 Cedar Lane</street>
+  <city>Bangor</city>
+  <state>Maine</state>
+  <zip-code>04401</zip-code>
+ </home-address>
+ <work-address xsi:type="address-type">
+  <street>45 Commercial Street</street>
+  <city>Bangor</city>
+  <state>Maine</state>
+  <zip-code>04405</zip-code>
+ </work-address>
+ <phone>1234567890</phone>
+  <badge-id>e001</badge-id>
+</employee>

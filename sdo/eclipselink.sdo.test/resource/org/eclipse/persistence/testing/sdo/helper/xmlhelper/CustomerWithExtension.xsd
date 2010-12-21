@@ -1,0 +1,49 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://www.example.org"
+            targetNamespace="http://www.example.org"
+            elementFormDefault="unqualified"
+            attributeFormDefault="unqualified"> 
+
+	<xsd:element name="customer" type="customerType"/>
+
+	<xsd:complexType name="addressType">
+    		<xsd:sequence>
+			<xsd:element name="permanent" type="xsd:boolean"/>			</xsd:sequence>
+		<xsd:attribute name="street" type="xsd:string"/>
+		<xsd:attribute name="city" type="xsd:string"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="usAddressType">
+		<xsd:complexContent>
+	    		<xsd:extension base="addressType">
+				<xsd:attribute name="zip" type="xsd:int"/>
+			</xsd:extension>
+
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="cdnAddressType">
+		<xsd:complexContent>
+    			<xsd:extension base="addressType">
+				<xsd:attribute name="postalcode" type="xsd:string"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+		
+	<xsd:complexType name="testType">
+		<xsd:simpleContent>
+    			<xsd:extension base="xsd:string">
+				<xsd:attribute name="tester" type="xsd:int"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+		
+	<xsd:complexType name="customerType">
+	 	<xsd:sequence>
+      			<xsd:element name="firstName" type="xsd:string"/>	
+			<xsd:element name="lastName" type="xsd:string"/>				<xsd:element name="address" type="addressType"/>			</xsd:sequence>
+		<xsd:attribute name="customerID" type="xsd:int"/>
+		<xsd:attribute name="sin" type="xsd:string"/>	
+	</xsd:complexType>
+
+</xsd:schema>

@@ -1,0 +1,66 @@
+<project name="Ant Customizations" default="all">
+    <target name="all"   depends="build, publish"/>
+    <target name="build" depends="jar"/>
+
+    <target name="init">
+        <property environment="env"/>
+        <property name="ant.dir_temp"     value="${env.ANT_HOME}/lib"/>
+        <pathconvert targetos="unix" property="ant.dir">
+            <path>
+                <pathelement location="${ant.dir_temp}"/>
+            </path>
+        </pathconvert>
+        <property name="publish.dir" value=".."/>
+        <property name="project.dir" value="."/>
+        <property name="output.dir"  value="${project.dir}/output"/>
+        <property name="src.dir"     value="${project.dir}/src"/>
+        <property name="classes.dir" value="${output.dir}/classes"/>
+        <property name="custom.jar"  value="ant_customizations.jar"/>
+        <property name="custom.lib"  value="${output.dir}/${custom.jar}"/>
+        <tstamp/>
+        <echo message="ant.dir = '${ant.dir}'"/>
+        <available file="${ant.dir}" type="dir" property="ant.exists"/>
+    </target>
+
+    <target name="pub_init">
+        <available file="${publish.dir}/${custom.jar}" property="pub.jar.exists"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${output.dir}" quiet="true"/>
+    </target>
+
+    <target name="compile" depends="init, clean">
+        <mkdir dir="${classes.dir}"/>
+        <javac
+            srcdir="${src.dir}"
+            destdir="${classes.dir}"
+            debug="true"
+            debuglevel="lines,vars,source"
+            failonerror="false"
+            includes="org/eclipse/persistence/**/*.java"
+            classpath="${ant.dir}/ant.jar"
+        />
+    </target>
+
+    <target name="jar" if="ant.exists" depends="compile">
+        <delete file="${custom.lib}" quiet="true"/>
+        <jar jarfile="${custom.lib}">
+            <fileset
+                dir="${classes.dir}"
+                includes="**"
+            />
+        </jar>
+    </target>
+
+    <target name="test">
+    </target>
+
+    <target name="archive-old" if="pub.jar.exists">
+        <move file="${publish.dir}/${custom.jar}" tofile="${publish.dir}/ant_customizations_bak_on_${DSTAMP}${TSTAMP}.jar"/>
+    </target>
+
+    <target name="publish" depends="init, pub_init, archive-old">
+        <copy file="${custom.lib}" todir="${publish.dir}"/>
+    </target>
+</project>

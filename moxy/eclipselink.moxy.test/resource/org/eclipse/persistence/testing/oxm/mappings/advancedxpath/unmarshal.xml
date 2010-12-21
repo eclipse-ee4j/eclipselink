@@ -1,0 +1,6 @@
+<ns:customer xmlns:ns="urn:example">
+    <ns:address>Wrong Street</ns:address>
+    <ns:address>Right Street</ns:address>
+    <ns:phone-number/>
+    <ns:address>Wrong Street</ns:address>
+</ns:customer>

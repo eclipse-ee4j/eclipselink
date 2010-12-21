@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="Eclipse Persistence Services - 1.1.1.v20090430-r4097" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">
+   <name>Descriptor PK Backwards Compatibility</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="xml-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.oxm.descriptor.primarykey.Customer</class>
+         <alias>Customer</alias>
+         <primary-key>
+            <field name="lastName" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>firstName</attribute-name>
+               <get-method>getFirstName</get-method>
+               <set-method>setFirstName</set-method>
+               <field name="personal-info/first-name/text()" xsi:type="node"/>
+               <attribute-classification>java.lang.String</attribute-classification>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>lastName</attribute-name>
+               <field name="personal-info/last-name/text()" xsi:type="node"/>
+               <attribute-classification>java.lang.String</attribute-classification>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <default-root-element>ns1:customer</default-root-element>
+         <default-root-element-field name="ns1:customer" xsi:type="node">
+            <leaf-element-type>ns1:customer-type</leaf-element-type>
+         </default-root-element-field>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>ns1</prefix>
+                  <namespace-uri>http://www.example.org/customer-example</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+         <schema xsi:type="schema-file-reference">
+            <resource>..\config\Customer.xsd</resource>
+            <schema-context>/ns1:customer-type</schema-context>
+            <node-type>complex-type</node-type>
+         </schema>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+   <login xsi:type="xml-login">
+      <platform-class>org.eclipse.persistence.oxm.platform.SAXPlatform</platform-class>
+      <user-name></user-name>
+      <document-preservation-policy xsi:type="no-document-preservation-policy">
+         <node-ordering-policy xsi:type="append-new-elements-ordering-policy"/>
+      </document-preservation-policy>
+   </login>
+</object-persistence>

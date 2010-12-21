@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<employee id="123" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<responsibility>make the coffee</responsibility>
+	<responsibility>do the dishes</responsibility>
+	<responsibility>take out the garbage</responsibility>
+</employee>

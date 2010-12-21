@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
+    <description>Advanced Test Model Instance Document</description>
+    <entity name="Employee" class="org.eclipse.persistence.testing.models.jpa.advanced.Employee" access="PROPERTY">
+        <table name="CMP3_EMPLOYEE"/>
+        <secondary-table name="CMP3_SALARY">
+            <primary-key-join-column name="EMP_ID" referenced-column-name="emp_ID"/><!-- wrong case on EMP_ID used intentionally-->
+        </secondary-table>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <!-- id name="id">
+                <column name="EMP_ID"/>
+                <generated-value strategy="TABLE" generator="XML_EMPLOYEE_TABLE_GENERATOR"/>
+            </id -->
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="salary">
+                <column table="CMP3_SALARY"/>
+            </basic>
+            <basic name="payScale">
+                <column name="PAY_SCALE"/>
+                <enumerated>STRING</enumerated>
+            </basic>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <many-to-one name="address" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Address" fetch="LAZY">
+                <join-column name="ADDR_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+            <many-to-one name="manager" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Employee" fetch="LAZY">
+                <join-column name="MANAGER_EMP_ID" referenced-column-name="emp_id"/><!-- wrong case on EMP_ID used -->
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+            <one-to-many name="phoneNumbers" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber" mapped-by="owner">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="managedEmployees" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Employee" mapped-by="manager">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="dealers" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Dealer">
+                <join-column name="FK_EMP_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </one-to-many>
+            <many-to-many name="projects" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Project">
+                <order-by>name</order-by>
+                <join-table name="CMP3_EMP_PROJ">
+                    <join-column name="EMPLOYEES_EMP_ID" referenced-column-name="EMP_ID"/>
+                    <inverse-join-column name="projects_PROJ_ID" referenced-column-name="PROJ_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-many>
+            <embedded name="period">
+                <attribute-override name="startDate">
+                    <column name="START_DATE" nullable="false"/>
+                </attribute-override>
+                <attribute-override name="endDate">
+                    <column name="END_DATE" nullable="true"/>
+                </attribute-override>
+            </embedded>
+            <transient name="responsibilities"/>
+        </attributes>
+    </entity>
+    <entity name="Address" class="org.eclipse.persistence.testing.models.jpa.advanced.Address" access="PROPERTY">
+        <table name="CMP3_ADDRESS"/>
+        <sequence-generator name="XML_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ADDRESS_SEQ" allocation-size="25"/>
+        <named-native-query name="findAllAddresses" result-class="org.eclipse.persistence.testing.models.jpa.advanced.Address">
+            <query>SELECT * FROM CMP3_ADDRESS</query>
+        </named-native-query>
+        <named-native-query name="findAllSQLAddressesByCity_QuestionMark_Number" result-class="org.eclipse.persistence.testing.models.jpa.advanced.Address">
+            <query>select * from CMP3_ADDRESS where city=?1</query>
+        </named-native-query>
+        <named-native-query name="findAllSQLAddressesByCity_QuestionMark" result-class="org.eclipse.persistence.testing.models.jpa.advanced.Address">
+            <query>select * from CMP3_ADDRESS where city=?</query>
+        </named-native-query>
+        <named-native-query name="findAllSQLAddressesByCityAndCountry_QuestionMark_Number" result-class="org.eclipse.persistence.testing.models.jpa.advanced.Address">
+            <query>select * from CMP3_ADDRESS where city=?1 and country=?2</query>
+        </named-native-query>
+        <named-native-query name="findAllSQLAddressesByCityAndCountry_QuestionMark" result-class="org.eclipse.persistence.testing.models.jpa.advanced.Address">
+            <query>select * from CMP3_ADDRESS where city=? and country=?</query>
+        </named-native-query>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="ID">
+                <column name="ADDRESS_ID"/>
+                <generated-value strategy="SEQUENCE" generator="XML_ADDRESS_SEQUENCE_GENERATOR"/>
+            </id>
+            <basic name="postalCode">
+                <column name="P_CODE"/>
+            </basic>
+            <basic name="street"/>
+            <basic name="city"/>
+            <basic name="province"/>
+            <basic name="country"/>
+        </attributes>
+    </entity>
+    <entity name="PhoneNumber" class="org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber" access="PROPERTY">
+        <table name="CMP3_PHONENUMBER"/>
+        <id-class class="org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumberPK"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="OWNER_ID" insertable="false" updatable="false"/>
+            </id>
+            <id name="type">
+                <column name="TYPE"/>
+            </id>
+            <basic name="number">
+                <column name="NUMB"/>
+            </basic>
+            <basic name="areaCode">
+                <column name="AREA_CODE"/>
+            </basic>
+            <many-to-one name="owner" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Employee" access="FIELD">
+                <join-column name="OWNER_ID" referenced-column-name="emp_ID"/><!-- wrong case on EMP_ID used -->
+            </many-to-one>
+        </attributes>
+    </entity>
+    <entity name="LargeProject" class="org.eclipse.persistence.testing.models.jpa.advanced.LargeProject" access="PROPERTY">
+        <table name="CMP3_LPROJECT"/>
+        <discriminator-value>L</discriminator-value>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+    </entity>
+    <entity name="SmallProject" class="org.eclipse.persistence.testing.models.jpa.advanced.SmallProject" access="PROPERTY">
+        <table name="CMP3_PROJECT"/>
+        <discriminator-value>S</discriminator-value>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+    </entity>
+    <entity name="Project" class="org.eclipse.persistence.testing.models.jpa.advanced.Project" access="PROPERTY">
+        <table name="CMP3_PROJECT"/>
+        <inheritance strategy="JOINED"/>
+        <discriminator-value>P</discriminator-value>
+        <discriminator-column name="PROJ_TYPE"/>
+        <sequence-generator name="XML_PROJECT_SEQUENCE_GENERATOR" sequence-name="PROJECT_SEQ" allocation-size="10"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="PROJ_ID"/>
+                <generated-value strategy="SEQUENCE" generator="XML_PROJECT_SEQUENCE_GENERATOR"/>
+            </id>
+            <basic name="name">
+                <column name="PROJ_NAME"/>
+            </basic>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <one-to-one name="teamLeader" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Employee" access="PROPERTY">
+                <join-column name="LEADER_ID"/>
+            </one-to-one>
+            <many-to-many name="teamMembers" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Employee" mapped-by="projects" access="PROPERTY"/>
+        </attributes>
+    </entity>
+    <entity name="AdvancedCustomer" class="org.eclipse.persistence.testing.models.jpa.advanced.Customer" access="PROPERTY">
+      <table name="CMP3_ADV_CUSTOMER"/>
+        <table-generator name="XML_ADV_CUSTOMER_TABLE_GENERATOR" table="CMP3_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_ADV_CUSTOMER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="CUSTOMER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_ADV_CUSTOMER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="budget"/>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+        </attributes>
+    </entity>
+    <entity name="Dealer" class="org.eclipse.persistence.testing.models.jpa.advanced.Dealer" access="PROPERTY">
+      <table name="CMP3_DEALER"/>
+        <table-generator name="NATIVE_DEALER_TABLE_GENERATOR" table="CMP3_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_DEALER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="DEALER_ID"/>
+                <generated-value strategy="TABLE" generator="NATIVE_DEALER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="status"/>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <one-to-many name="customers" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Customer">
+                <join-column name="FK_DEALER_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </one-to-many>
+        </attributes>
+    </entity>
+    <entity name="Man" class="org.eclipse.persistence.testing.models.jpa.advanced.Man" access="PROPERTY">
+      <table name="XML_MAN"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="IDENTITY"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <one-to-one name="partnerLink" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.PartnerLink" mapped-by="man"/>
+        </attributes>
+    </entity>
+    <entity name="Woman" class="org.eclipse.persistence.testing.models.jpa.advanced.Woman" access="PROPERTY">
+      <table name="XML_WOMAN"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="IDENTITY"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <one-to-one name="partnerLink" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.PartnerLink" mapped-by="woman"/>
+        </attributes>
+    </entity>
+    <entity name="PartnerLink" class="org.eclipse.persistence.testing.models.jpa.advanced.PartnerLink" access="PROPERTY">
+      <table name="XML_MW"/>
+        <id-class class="org.eclipse.persistence.testing.models.jpa.advanced.PartnerLinkPK"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <one-to-one name="man" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Man" id="true">
+                <join-column name="M"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-one>
+            <one-to-one name="woman" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Woman" id="true">
+                <join-column name="W"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="Cubicle" class="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle" access="PROPERTY">
+      <table name="CMP3_CUBICLE"/>
+        <id-class class="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CubiclePK"/>
+        <table-generator name="XML_COMPOSITE_PK_TABLE_GENERATOR" table="CMP3_COMPOSITE_PK_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_CUBICLE_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_COMPOSITE_PK_TABLE_GENERATOR"/>
+            </id>
+            <id name="code" >
+                <column name="CODE"/>
+            </id>
+            <one-to-one name="scientist" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist" mapped-by="cubicle">
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="Department" class="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department" access="PROPERTY">
+      <table name="CMP3_DEPARTMENT"/>
+        <id-class class="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.DepartmentPK"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="name" >
+                <column name="NAME"/>
+            </id>
+            <id name="role" >
+                <column name="DROLE"/>
+            </id>
+            <id name="location" >
+                <column name="LOCATION"/>
+            </id>
+            <one-to-many name="scientists" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist"  fetch="EAGER" mapped-by="department">
+                <order-by/>
+            </one-to-many>
+        </attributes>
+    </entity>
+    <entity name="JuniorScientist" class="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.JuniorScientist" access="PROPERTY">
+    </entity>
+    <entity name="Scientist" class="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist" access="PROPERTY">
+      <table name="CMP3_SCIENTIST"/>
+        <id-class class="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.ScientistPK"/>
+        <sequence-generator name="XML_SCIENTIST_SEQUENCE_GENERATOR" sequence-name="SCIENTIST_SEQ" allocation-size="1"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="idNumber" >
+                <column name="ID_NUMBER"/>
+                <generated-value strategy="SEQUENCE" generator="XML_SCIENTIST_SEQUENCE_GENERATOR"/>
+            </id>
+            <id name="firstName" >
+                <column name="F_NAME"/>
+            </id>
+            <id name="lastName" >
+                <column name="L_NAME"/>
+            </id>
+            <many-to-one name="department" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department">
+                <join-column name="DEPT_NAME" referenced-column-name="NAME"/>
+                <join-column name="DEPT_ROLE" referenced-column-name="DROLE"/>
+                <join-column name="DEPT_LOCATION" referenced-column-name="LOCATION"/>
+            </many-to-one>
+            <one-to-one name="cubicle" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle">
+                <join-column name="CUBE_ID" referenced-column-name="ID"/>
+                <join-column name="CUBE_CODE" referenced-column-name="CODE"/>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="Administrator" class="org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Administrator" access="PROPERTY">
+      <table name="CMP3_ADMIN"/>
+      <secondary-table name="CMP3_ADMIN_CONTRACT"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <basic name="contractCompany">
+                <column name="CONTRACT_COMPANY"/>
+            </basic>
+            <basic name="endDate">
+                <column name="END_DATE" table="CMP3_ADMIN_CONTRACT"/>
+            </basic>
+            <version name="version"/>
+            <one-to-one name="employee" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Employee" id="true"/>
+        </attributes>
+    </entity>
+    <entity name="DepartmentAdminRole" class="org.eclipse.persistence.testing.models.jpa.advanced.derivedid.DepartmentAdminRole" access="PROPERTY">
+        <table name="CMP3_DEPT_ADMIN"/>
+        <id-class class="org.eclipse.persistence.testing.models.jpa.advanced.derivedid.DepartmentAdminRolePK"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <one-to-one name="department" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department" id="true">
+                <join-column name="DEPT_NAME" referenced-column-name="NAME"/>
+                <join-column name="DEPT_ROLE" referenced-column-name="DROLE"/>
+                <join-column name="DEPT_LOCATION" referenced-column-name="LOCATION"/>
+            </one-to-one>
+            <one-to-one name="admin" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Administrator" id="true"/>
+        </attributes>
+    </entity>
+    <entity name="Buyer" class="org.eclipse.persistence.testing.models.jpa.advanced.Buyer">
+        <attributes>
+            <basic name="description">
+                <column name="Descrip"/>
+            </basic>
+        </attributes>
+    </entity>
+    <embeddable class="org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod">
+        <attributes>
+            <basic name="startDate">
+                <column name="S_DATE"/>
+            </basic>
+            <basic name="endDate">
+                <column name="E_DATE"/>
+            </basic>
+        </attributes>
+    </embeddable>
+</entity-mappings>

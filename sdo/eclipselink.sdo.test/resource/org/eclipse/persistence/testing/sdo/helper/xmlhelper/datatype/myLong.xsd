@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myLong-NS" targetNamespace="myLong-NS">
+
+	<element name="myLong" type="nist:myLong-Type"/>
+
+	<simpleType name="myLong-Type">
+		<restriction base="long"/>
+	</simpleType>
+
+</schema>

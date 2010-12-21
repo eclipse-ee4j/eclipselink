@@ -1,0 +1,61 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<sessions version="10g Developer Preview 3 (10.1.3.0 )" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <session xsi:type="server-session">
+      <name>ServerSession</name>
+      <remote-command>
+         <commands>
+            <cache-sync>boolean</cache-sync>
+         </commands>
+         <transport xsi:type="rmi-transport">
+            <on-connection-error>KeepConnection</on-connection-error>
+            <discovery>
+               <packet-time-to-live>int</packet-time-to-live>
+            </discovery>
+            <jndi-naming-service>
+               <user-name>admin1</user-name>
+               <password>password1</password>
+            </jndi-naming-service>
+         </transport>
+      </remote-command>
+      <event-listener-classes/>
+      <logging xsi:type="eclipselink-log">
+         <log-level>finest</log-level>
+      </logging>
+      <primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
+      <login xsi:type="database-login">
+         <platform-class>@dbPlatform@</platform-class>
+         <external-connection-pooling>boolean</external-connection-pooling>
+         <external-transaction-controller>boolean</external-transaction-controller>
+         <sequencing>
+            <default-sequence xsi:type="native-sequence">
+               <name>Native</name>
+               <preallocation-size>int</preallocation-size>
+            </default-sequence>
+         </sequencing>
+         <driver-class>@driverClass@</driver-class>
+         <bind-all-parameters>boolean</bind-all-parameters>
+         <cache-all-statements>boolean</cache-all-statements>
+         <byte-array-binding>boolean</byte-array-binding>
+         <string-binding>boolean</string-binding>
+         <streams-for-binding>boolean</streams-for-binding>
+         <force-field-names-to-upper-case>boolean</force-field-names-to-upper-case>
+         <optimize-data-conversion>boolean</optimize-data-conversion>
+         <trim-strings>boolean</trim-strings>
+         <batch-writing>boolean</batch-writing>
+         <max-batch-writing-size>int</max-batch-writing-size>
+         <native-sql>boolean</native-sql>
+      </login>
+      <connection-pools>
+         <read-connection-pool>
+            <name>ReadConnectionPool</name>
+            <max-connections>int</max-connections>
+            <min-connections>int</min-connections>
+         </read-connection-pool>
+         <write-connection-pool>
+            <name>default</name>
+            <max-connections>int</max-connections>
+            <min-connections>int</min-connections>
+         </write-connection-pool>
+      </connection-pools>
+   </session>
+</sessions>

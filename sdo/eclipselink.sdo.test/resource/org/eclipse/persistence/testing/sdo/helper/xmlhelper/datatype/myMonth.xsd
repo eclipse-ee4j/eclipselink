@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myMonth-NS" targetNamespace="myMonth-NS">
+
+	<element name="myMonth" type="nist:myMonth-Type"/>
+
+	<simpleType name="myMonth-Type">
+		<restriction base="gMonth"/>
+	</simpleType>
+
+</schema>

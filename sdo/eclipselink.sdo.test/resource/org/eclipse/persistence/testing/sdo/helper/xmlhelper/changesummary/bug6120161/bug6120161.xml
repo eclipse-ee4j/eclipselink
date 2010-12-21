@@ -1,0 +1,93 @@
+<ns2:processCSDeptElement xmlns:ns2="http://example.com/app/" xmlns:ns1="http://example.com/dept/" xmlns:ns0="http://example.com/process/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns2:processData>
+      <ns0:Value xsi:type="ns1:Dept">
+         <ns1:Deptno>20</ns1:Deptno>
+         <ns1:Dname>RESEARCH</ns1:Dname>
+         <ns1:Loc>DALLAS</ns1:Loc>
+         <ns1:Emp>
+            <ns1:Empno>7566</ns1:Empno>
+            <ns1:Ename>JONES</ns1:Ename>
+            <ns1:Job>MANAGER</ns1:Job>
+            <ns1:Mgr>7839</ns1:Mgr>
+            <ns1:Sal>1230</ns1:Sal>
+            <ns1:Comm>1</ns1:Comm>
+            <ns1:Deptno>20</ns1:Deptno>
+         </ns1:Emp>
+         <ns1:Emp>
+            <ns1:Empno>7788</ns1:Empno>
+            <ns1:Ename>SCOTT</ns1:Ename>
+            <ns1:Job>ANALYST</ns1:Job>
+            <ns1:Mgr>7566</ns1:Mgr>
+            <ns1:Sal>3006</ns1:Sal>
+            <ns1:Comm xsi:nil="true"/>
+            <ns1:Deptno>20</ns1:Deptno>
+         </ns1:Emp>
+         <ns1:Emp>
+            <ns1:Empno>7876</ns1:Empno>
+            <ns1:Ename>ADAMS</ns1:Ename>
+            <ns1:Job>CLERK</ns1:Job>
+            <ns1:Mgr>7788</ns1:Mgr>
+            <ns1:Sal>1280</ns1:Sal>
+            <ns1:Comm>10</ns1:Comm>
+            <ns1:Deptno>20</ns1:Deptno>
+         </ns1:Emp>
+         <ns1:Emp>
+            <ns1:Empno>7902</ns1:Empno>
+            <ns1:Ename>FORD</ns1:Ename>
+            <ns1:Job>ANALYST</ns1:Job>
+            <ns1:Mgr>7566</ns1:Mgr>
+            <ns1:Sal>3000</ns1:Sal>
+            <ns1:Comm xsi:nil="true"/>
+            <ns1:Deptno>20</ns1:Deptno>
+         </ns1:Emp>
+         <ns1:Emp>
+            <ns1:Empno>8082</ns1:Empno>
+            <ns1:Ename>ADAMS</ns1:Ename>
+            <ns1:Job>CLERK</ns1:Job>
+            <ns1:Mgr>7788</ns1:Mgr>
+            <ns1:Sal>1280</ns1:Sal>
+            <ns1:Comm>10</ns1:Comm>
+            <ns1:Deptno>20</ns1:Deptno>
+         </ns1:Emp>
+         <ns1:Emp>
+            <ns1:Empno>8083</ns1:Empno>
+            <ns1:Ename>ADAMS</ns1:Ename>
+            <ns1:Job>CLERK</ns1:Job>
+            <ns1:Mgr>7788</ns1:Mgr>
+            <ns1:Sal>1280</ns1:Sal>
+            <ns1:Comm>10</ns1:Comm>
+            <ns1:Deptno>20</ns1:Deptno>
+         </ns1:Emp>
+         <ns1:Emp>
+            <ns1:Ename>ADAMS_TEST</ns1:Ename>
+            <ns1:Job>CLERK</ns1:Job>
+            <ns1:Mgr>7788</ns1:Mgr>
+            <ns1:Sal>1280</ns1:Sal>
+            <ns1:Comm>10</ns1:Comm>
+            <ns1:Deptno>20</ns1:Deptno>
+         </ns1:Emp>
+      </ns0:Value>
+      <ns0:ChangeSummary create="#/ns2:processCSDeptElement/ns2:processData/ns0:Value[1]/ns1:Emp[7]" delete="#/ns2:processCSDeptElement/ns2:processData/ns0:ChangeSummary/ns0:Value/ns1:Emp[5]" xmlns:sdo="commonj.sdo">
+         <ns0:Value sdo:ref="#/ns2:processCSDeptElement/ns2:processData/ns0:Value[1]">
+            <ns1:Emp sdo:ref="#/ns2:processCSDeptElement/ns2:processData/ns0:Value[1]/ns1:Emp[1]"/>
+            <ns1:Emp sdo:ref="#/ns2:processCSDeptElement/ns2:processData/ns0:Value[1]/ns1:Emp[2]"/>
+            <ns1:Emp sdo:ref="#/ns2:processCSDeptElement/ns2:processData/ns0:Value[1]/ns1:Emp[3]"/>
+            <ns1:Emp sdo:ref="#/ns2:processCSDeptElement/ns2:processData/ns0:Value[1]/ns1:Emp[4]"/>
+            <ns1:Emp xsi:type="ns1:Emp">
+               <ns1:Empno>8081</ns1:Empno>
+               <ns1:Ename>ADAMS</ns1:Ename>
+               <ns1:Job>CLERK</ns1:Job>
+               <ns1:Mgr>7788</ns1:Mgr>
+               <ns1:Sal>1280</ns1:Sal>
+               <ns1:Comm>10</ns1:Comm>
+               <ns1:Deptno>20</ns1:Deptno>
+            </ns1:Emp>
+            <ns1:Emp sdo:ref="#/ns2:processCSDeptElement/ns2:processData/ns0:Value[1]/ns1:Emp[5]"/>
+            <ns1:Emp sdo:ref="#ns2:processCSDeptElement//ns2:processData/ns0:Value[1]/ns1:Emp[6]"/>
+         </ns0:Value>
+         <ns1:Emp sdo:ref="#/ns2:processCSDeptElement/ns2:processData/ns0:Value[1]/ns1:Emp[2]">
+            <ns1:Sal>3005</ns1:Sal>
+         </ns1:Emp>
+      </ns0:ChangeSummary>
+   </ns2:processData>
+</ns2:processCSDeptElement>

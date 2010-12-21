@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myObject-NS" targetNamespace="myObject-NS">
+
+	<element name="myObject" type="nist:myObject-Type"/>
+
+	<simpleType name="myObject-Type">
+		<restriction base="anySimpleType"/>
+	</simpleType>
+
+</schema>

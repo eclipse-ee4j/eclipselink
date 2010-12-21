@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <shipTo country="US">
+      <name>Alice Smith</name>
+      <street>123 Maple Street</street>
+      <city>Mill Valley</city>
+      <state>CA</state>
+      <zip>90952</zip>
+   </shipTo>shipTo>
+   <billTo country="US">
+      <name>Robert Smith</name>
+      <street>8 Oak Avenue</street>
+      <city>Mill Valley</city>
+      <state>PA</state>
+      <zip>95819</zip>
+   </billTo>billTo>
+   <comment>Hurry, my lawn is going wild!</comment>
+   <items>
+      <item partNum="872-AA">
+         <productName>Lawnmower</productName>
+         <quantity>1</quantity>
+         <USPrice>148.95</USPrice>
+		 <!-- levels2 = null fails assertTrue here -->
+		 <levels2>
+			<level2>
+			</level2>
+			<level2>
+				<comment2>comment 1</comment2>
+			</level2>
+		 </levels2>
+         <comment>Confirm this is electric2</comment>
+      </item>
+      <item partNum="926-AA">
+         <productName>Baby Monitor</productName>
+         <quantity>1</quantity>
+         <USPrice>39.99</USPrice>
+		 <levels2>
+			<level2>
+			</level2>
+			<level2>
+				<comment2>comment 2</comment2>
+			</level2>
+		 </levels2>
+         <shipDate>1999-05-21</shipDate>
+      </item>
+   </items>
+</ns0:purchaseOrder>

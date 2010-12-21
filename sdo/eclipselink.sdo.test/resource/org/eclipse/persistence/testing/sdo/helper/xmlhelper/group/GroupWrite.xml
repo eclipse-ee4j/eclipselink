@@ -1,0 +1,9 @@
+<tns:AAA xmlns:tns="theURI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <tns:BBB>111</tns:BBB>
+   <tns:CCC>xxx</tns:CCC>
+   <tns:testElement>testElementValue</tns:testElement>
+   <tns:XXX>1</tns:XXX>
+   <tns:XXX>3</tns:XXX>
+   <tns:YYY>2</tns:YYY>
+   <tns:YYY>4</tns:YYY>
+</tns:AAA>

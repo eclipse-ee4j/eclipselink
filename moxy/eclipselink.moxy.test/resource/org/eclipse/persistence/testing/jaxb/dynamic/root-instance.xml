@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:doc-wrapper xmlns:ns0="myNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ns0:root>
+	    <comp-obj>
+	        <value xsi:nil="true"/>
+	        <any-coll>
+	            <any-coll-value>aNyOne</any-coll-value>
+	            <any-coll-value>aNyTwo</any-coll-value>
+	        </any-coll>
+	    </comp-obj>
+	    <comp-coll>
+	        <item>
+	            <value>123</value>
+	        </item>
+	        <item>
+	            <value>456</value>
+	        </item>
+	    </comp-coll>
+	    <comp-dir-coll>qWe</comp-dir-coll>
+	    <comp-dir-coll>rTy</comp-dir-coll>
+	    <bin-data>YWJjZGU=</bin-data>
+	    <bin-data-coll>MTIz</bin-data-coll>
+	    <bin-data-coll>NDU2</bin-data-coll>
+	    <any-obj>
+	        <any-obj-value>aNy</any-obj-value>
+	    </any-obj>
+	    <any-att anyAtt1="aNyaTT1" anyAtt2="aNyAttTWO"/>
+	    <transform>
+	        <first-val>transformValue1</first-val>
+	        <second-val>transformValue2</second-val>
+	    </transform>
+	    <frag>XML Fragment Text Content</frag>
+	    <frag-coll>XML Fragment Collection One</frag-coll>
+	    <frag-coll>XML Fragment Collection Two</frag-coll>
+        <obj-ref-id>13579</obj-ref-id>
+        <coll-ref-id>112233</coll-ref-id>
+        <coll-ref-id>445566</coll-ref-id>
+        <choice-int>2112</choice-int>
+		<choice-coll-double>3.14159</choice-coll-double>
+		<choice-coll-string>Pi</choice-coll-string>
+		<choice-coll-boolean>true</choice-coll-boolean>
+	</ns0:root>
+    <obj-ref-target id="13579" xsi:type="subclass">
+        <superclass-value>SUPER</superclass-value>
+        <subclass-value>SUB</subclass-value>
+    </obj-ref-target>
+    <coll-ref-target id="112233">
+        <value>collRefVal1</value>
+    </coll-ref-target>
+    <coll-ref-target id="445566">
+        <value>collRefVal2</value>
+    </coll-ref-target>
+</ns0:doc-wrapper>

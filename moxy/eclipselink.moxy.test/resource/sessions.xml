@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipselink_sessions_1.0.xsd" version="0">
+	<session xsi:type="database-session">
+		<name>org.eclipse.persistence.testing.oxm.jaxb.sax</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.jaxb.xmlmarshaller.EmployeeProject</primary-project>
+		<login xsi:type="xml-login">
+			<platform-class>org.eclipse.persistence.oxm.platform.SAXPlatform</platform-class>
+		</login>
+	</session>
+	<session xsi:type="database-session">
+		<name>org.eclipse.persistence.testing.oxm.jaxb.dom</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.jaxb.xmlmarshaller.EmployeeProject</primary-project>
+		<login xsi:type="xml-login">
+			<platform-class>org.eclipse.persistence.oxm.platform.DOMPlatform</platform-class>
+		</login>
+	</session>
+	<session xsi:type="database-session">
+		<name>XMLMarshallerTestSession</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerTestProject</primary-project>
+	</session>
+	<session xsi:type="database-session">
+		<name>XMLMarshallerTestSession2</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerCarProject</primary-project>
+	</session>
+	<session xsi:type="database-session">
+		<name>XMLMarshallerEventsTestSession</name>
+		<event-listener-classes>
+			<event-listener-class>org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerEventListener</event-listener-class>
+		</event-listener-classes>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerTestProject</primary-project>
+	</session>
+	<session xsi:type="database-session">
+		<name>InheritanceSession</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.inheritance.InheritanceProject</primary-project>
+	</session>
+	<session xsi:type="database-session">
+		<name>ConverterSession</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.converter.ConverterProject</primary-project>
+	</session>
+	<session xsi:type="database-session">
+		<name>TransformationMappingSession</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.mappings.transformation.TransformationMappingTestProject</primary-project>
+	</session>
+	<session xsi:type="database-session">
+		<name>DocumentPreservationSession</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.documentpreservation.DocPreservationTestProject</primary-project>
+	</session>
+	<session xsi:type="database-session">
+		<name>TwoProjects-Customer-DOM</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.xmlmarshaller.twoprojects.CustomerProject</primary-project>
+		<login xsi:type="xml-login">
+			<platform-class>org.eclipse.persistence.oxm.platform.DOMPlatform</platform-class>
+		</login>
+	</session>
+	<session xsi:type="database-session">
+		<name>TwoProjects-Employee-DOM</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.xmlmarshaller.twoprojects.EmployeeProject</primary-project>
+		<login xsi:type="xml-login">
+			<platform-class>org.eclipse.persistence.oxm.platform.DOMPlatform</platform-class>
+		</login>
+	</session>
+	<session xsi:type="database-session">
+		<name>TwoProjects-Customer-SAX</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.xmlmarshaller.twoprojects.CustomerProject</primary-project>
+		<login xsi:type="xml-login">
+			<platform-class>org.eclipse.persistence.oxm.platform.SAXPlatform</platform-class>
+		</login>
+	</session>
+	<session xsi:type="database-session">
+		<name>TwoProjects-Employee-SAX</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.xmlmarshaller.twoprojects.EmployeeProject</primary-project>
+		<login xsi:type="xml-login">
+			<platform-class>org.eclipse.persistence.oxm.platform.SAXPlatform</platform-class>
+		</login>
+	</session>
+    <session xsi:type="database-session">
+       <name>org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml</name>
+       <primary-project xsi:type="xml">org/eclipse/persistence/testing/jaxb/schemagen/deploymentxml/EmployeeProject.xml</primary-project>
+    </session>
+    <session xsi:type="database-session">
+       <name>org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased</name>
+       <primary-project xsi:type="xml">org/eclipse/persistence/testing/oxm/schemamodelgenerator/mappings/pathbased/Customer-deployment.xml</primary-project>
+    </session>
+	<session xsi:type="database-session">
+		<name>org.eclipse.persistence.testing.jaxb.dynamic</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.jaxb.dynamic.TestModelProject</primary-project>
+	</session>
+	<session xsi:type="database-session">
+		<name>org.eclipse.persistence.testing.jaxb.dynamic.secondproject</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.jaxb.dynamic.secondproject.TestModelSecondProject</primary-project>
+	</session>
+</sessions>

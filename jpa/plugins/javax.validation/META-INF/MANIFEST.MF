@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Validation
+Bundle-SymbolicName: javax.validation
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - EclipseLink
+Export-Package: javax.validation,
+ javax.validation.bootstrap,
+ javax.validation.constraints,
+ javax.validation.groups,
+ javax.validation.metadata,
+ javax.validation.spi
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my3.uri" xmlns="my3.uri" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns:ns1="my4.uri" xmlns:ns2="my.uri">
+   <xsd:complexType name="T3">
+      <xsd:attribute ref="ns1:attributeInt"/>
+   </xsd:complexType>
+   <xsd:element name="t3" type="T3"/>
+</xsd:schema>

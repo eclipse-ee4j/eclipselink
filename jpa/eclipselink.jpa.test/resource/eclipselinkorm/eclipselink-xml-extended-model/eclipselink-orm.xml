@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.2" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>Advanced Extended Test Model Instance Document</description>
+    <persistence-unit-metadata>
+        <persistence-unit-defaults>
+            <access-methods get-method="getMy" set-method="setMy"/>
+        </persistence-unit-defaults>
+    </persistence-unit-metadata>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.advanced</package>
+    <type-converter name="String2String" data-type="String" object-type="String"/>
+    <mapped-superclass class="Person" access="PROPERTY">
+        <attributes>
+            <id name="id">
+                <column name="CUSTOMER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_ADV_CUSTOMER_TABLE_GENERATOR"/>
+            </id>
+        </attributes>
+    </mapped-superclass>
+    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.GoalieGear" access="FIELD">
+        <fetch-group name="AgeGroup">
+            <attribute name="ageGroup"/>
+        </fetch-group>
+    </mapped-superclass>
+    <mapped-superclass class="ShovelPerson" access="VIRTUAL">
+        <access-methods get-method="get" set-method="set"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_SHOVEL_OWNER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name" attribute-type="String"/>
+        </attributes>
+    </mapped-superclass>
+    <entity class="Employee" existence-checking="CHECK_DATABASE">
+        <customizer class="EmployeeCustomizer"/>
+        <!-- test the AUTO default for change tracking. -->
+        <change-tracking/>
+        <!-- This secondary table is identical to the one specified in the
+             advanced-extended-entity-mappings.xml. It is here on purpose
+             and used to test bug 240063. Do not remove it or change its
+             contents. -->
+        <secondary-table name="CMP3_XML_SALARY">
+            <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
+        </secondary-table>
+        <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
+        <cache type="SOFT_WEAK" size="730" shared="true" disable-hits="true" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
+            <!-- disable-hits is set to true. Do not change it, the employee customizer will set it to false and there is a test to verify that. -->
+            <expiry>1000</expiry>
+        </cache>
+        <object-type-converter name="sex" data-type="String" object-type="Employee$Gender">
+            <conversion-value data-value="F" object-value="Female"/>
+            <conversion-value data-value="M" object-value="Male"/>
+            <default-object-value>Male</default-object-value>
+        </object-type-converter>
+        <property name="entityName" value="XMLEmployee"/>
+        <property name="entityIntegerProperty" value="1" value-type="Integer"/>
+        <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>
+        <attributes>
+            <id name="id">
+                <column name="EMP_ID"/>
+                <generated-value strategy="TABLE" generator="XML_EMPLOYEE_TABLE_GENERATOR"/>
+                <property name="attributeName" value="id"/>
+            </id>
+            <basic name="firstName" access="FIELD">
+                <column name="F_NAME"/>
+                <convert>String2String</convert>
+                <property name="attributeName" value="firstName"/>
+            </basic>
+            <basic name="lastName" access="FIELD">
+                <column name="L_NAME"/>
+                <property name="attributeName" value="lastName"/>
+                <property name="BooleanProperty" value="true" value-type="java.lang.Boolean"/>
+                <property name="ByteProperty" value="1" value-type="java.lang.Byte"/>
+                <property name="CharacterProperty" value="A"  value-type="java.lang.Character"/>
+                <property name="DoubleProperty" value="1" value-type="java.lang.Double"/>
+                <property name="FloatProperty" value="1" value-type="java.lang.Float"/>
+                <property name="IntegerProperty" value="1" value-type="java.lang.Integer"/>
+                <property name="LongProperty" value="1" value-type="java.lang.Long"/>
+                <property name="ShortProperty" value="1" value-type="java.lang.Short"/>
+                <property name="BigDecimalProperty" value="1" value-type="java.math.BigDecimal"/>
+                <property name="BigIntegerProperty" value="1" value-type="java.math.BigInteger"/>
+                <property name="TimeProperty" value="13:59:59" value-type="java.sql.Time"/>
+                <property name="TimeStampProperty" value="2008-04-10 13:59:59" value-type="java.sql.Timestamp"/>
+                <property name="DateProperty" value="2008-04-10" value-type="java.sql.Date"/>
+            </basic>
+            <basic name="sin">
+                <column name="SIN"/>
+                <property name="attributeName" value="sin"/>
+                <access-methods get-method="returnSIN" set-method="enterSIN"/>
+            </basic>
+            <basic name="gender">
+                <column name="GENDER"/>
+                <convert>sex</convert>
+                <property name="attributeName" value="gender"/>
+            </basic>
+            <basic name="salary">
+                <column table="CMP3_XML_SALARY"/>
+                <property name="attributeName" value="salary"/>
+            </basic>
+            <basic name="payScale">
+                <column name="PAY_SCALE"/>
+                <enumerated>STRING</enumerated>
+                <property name="attributeName" value="payScale"/>
+            </basic>
+            <basic-collection name="responsibilities">
+                <value-column name="DESCRIPTION"/>
+                <convert>String2String</convert>
+                <collection-table name="CMP3_XML_RESPONS"/>
+                <property name="attributeName" value="responsibilities"/>
+            </basic-collection>
+            <basic-map name="creditCards" fetch="EAGER">
+                <key-column name="CARD"/>
+                <key-converter>CreditCard</key-converter>
+                <value-column name="NUMB"/>
+                <value-converter>Long2String</value-converter>
+                <object-type-converter name="CreditCard">
+                    <conversion-value data-value="VI" object-value="Visa"/>
+                    <conversion-value data-value="AM" object-value="Amex"/>
+                    <conversion-value data-value="MC" object-value="Mastercard"/>
+                    <conversion-value data-value="DI" object-value="DinersClub"/>
+                </object-type-converter>
+                <type-converter name="Long2String" data-type="String" object-type="Long"/>
+                <!-- Let the collection table default in this case (XMLEmployee_CREDITCARDS) -->
+                <property name="attributeName" value="creditCards"/>
+            </basic-map>
+            <version name="version">
+                <column name="VERSION"/>
+                <property name="attributeName" value="version"/>
+            </version>
+            <many-to-one name="address" target-entity="Address" fetch="LAZY">
+                <join-column name="ADDR_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <join-fetch>OUTER</join-fetch>
+                <property name="attributeName" value="address"/>
+            </many-to-one>
+            <many-to-one name="manager" target-entity="Employee" fetch="LAZY">
+                <join-column name="MANAGER_EMP_ID" referenced-column-name="EMP_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <property name="attributeName" value="manager"/>
+            </many-to-one>
+            <one-to-many name="phoneNumbers" target-entity="PhoneNumber" mapped-by="owner">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+                <property name="attributeName" value="phoneNumbers"/>
+            </one-to-many>
+            <one-to-many name="managedEmployees" target-entity="Employee" mapped-by="manager">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+                <property name="attributeName" value="managedEmployees"/>
+            </one-to-many>
+            <one-to-many name="dealers" target-entity="Dealer">
+                <join-column name="FK_EMP_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+                <property name="attributeName" value="dealers"/>
+            </one-to-many>
+            <many-to-many name="projects" target-entity="Project">
+                <order-by>name</order-by>
+                <join-table name="CMP3_XML_PROJ_EMP">
+                    <join-column name="EMP_ID" referenced-column-name="EMP_ID"/>
+                    <inverse-join-column name="PROJ_ID" referenced-column-name="PROJ_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <property name="attributeName" value="projects"/>
+            </many-to-many>
+            <element-collection name="creditLines" fetch="EAGER">
+                <map-key-convert>CreditLine</map-key-convert>
+                <map-key-column name="BANK"/>
+                <column name="ACCOUNT"/>
+                <convert>Long2String</convert>
+                <object-type-converter name="CreditLine">
+                    <conversion-value data-value="RBC" object-value="RoyalBank"/>
+                    <conversion-value data-value="CIBC" object-value="CanadianImperial"/>
+                    <conversion-value data-value="SB" object-value="Scotiabank"/>
+                    <conversion-value data-value="TD" object-value="TorontoDominion"/>
+                </object-type-converter>
+                <collection-table name="EMP_CREDITLINES">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
+                <property name="attributeName" value="creditLines"/>
+            </element-collection>
+            <embedded name="period">
+                <attribute-override name="startDate">
+                    <column name="START_DATE" nullable="false"/>
+                </attribute-override>
+                <attribute-override name="endDate">
+                    <column name="END_DATE" nullable="true"/>
+                </attribute-override>
+                <property name="attributeName" value="period"/>
+            </embedded>
+            <transformation name="normalHours" mutable="false">
+                <read-transformer method="buildNormalHours"/>
+                <write-transformer method="getStartTime">
+                    <column name="START_TIME"/>
+                </write-transformer>
+                <write-transformer method="getEndTime">
+                    <column name="END_TIME"/>
+                </write-transformer>
+                <property name="attributeName" value="normalHours"/>
+            </transformation>
+            <transformation name="overtimeHours" mutable="false">
+                <read-transformer transformer-class="AdvancedReadTransformer"/>
+                <write-transformer transformer-class="AdvancedWriteTransformer">
+                    <column name="START_OVERTIME" column-definition="TIME"/>
+                </write-transformer>
+                <write-transformer transformer-class="AdvancedWriteTransformer">
+                    <column name="END_OVERTIME" column-definition="TIME"/>
+                </write-transformer>
+                <property name="attributeName" value="overtimeHours"/>
+            </transformation>
+        </attributes>
+    </entity>
+    <entity class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address">
+        <change-tracking type="DEFERRED"/>
+        <cache shared="true"/>
+        <cache-interceptor class="org.eclipse.persistence.testing.models.jpa.xml.advanced.CacheAuditor"/>
+        <named-stored-procedure-query name="SProcXMLAddress" result-class="Address" procedure-name="SProc_Read_XMLAddress">
+            <parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Integer"/>
+            <parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/>
+            <parameter direction="OUT" name="city_v" query-parameter="CITY" type="String"/>
+            <parameter direction="OUT" name="country_v" query-parameter="COUNTRY" type="String"/>
+            <parameter direction="OUT" name="province_v" query-parameter="PROVINCE" type="String"/>
+            <parameter direction="OUT" name="p_code_v" query-parameter="P_CODE" type="String"/> 
+        </named-stored-procedure-query>       
+        <named-stored-procedure-query name="SProcXMLInOut" result-class="Address" procedure-name="SProc_Read_XMLInOut">
+            <parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Long"/>
+            <parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/> 
+        </named-stored-procedure-query>
+        <query-redirectors
+            all-queries="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
+            read-all="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
+            read-object="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
+            report="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
+            insert="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
+            update="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
+            delete="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
+       />
+        <attributes>
+            <basic name="province">
+                <convert>ProvinceConverter</convert>
+                <converter name="ProvinceConverter" class="ProvinceConverter"/>
+            </basic>
+            <basic name="type">
+                <convert>class-instance</convert>
+            </basic>
+        </attributes>
+    </entity>
+    <entity class="PhoneNumber">
+        <customizer class="ChangeTrackingCustomizer"/>
+        <change-tracking type="ATTRIBUTE"/>
+    </entity>
+    <entity class="LargeProject" existence-checking="ASSUME_NON_EXISTENCE"/>
+    <entity class="SmallProject" existence-checking="ASSUME_EXISTENCE"/>
+    <entity class="Project" existence-checking="CHECK_CACHE">
+        <customizer class="ChangeTrackingCustomizer"/>
+        <change-tracking type="OBJECT"/>
+        <optimistic-locking type="SELECTED_COLUMNS">
+            <selected-column name="VERSION"/>
+        </optimistic-locking>
+    </entity>
+    <entity name="XMLReadOnlyClass" class="ReadOnlyClass" access="PROPERTY" read-only="true">
+        <table name="CMP3_XML_READONLY"/>
+        <attributes>
+            <id name="id"/>
+        </attributes>
+    </entity>
+    <entity name="XMLAdvancedCustomer" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Customer" access="PROPERTY">
+      <table name="CMP3_XML_ADV_CUSTOMER"/>
+        <table-generator name="XML_ADV_CUSTOMER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_ADV_CUSTOMER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="CUSTOMER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_ADV_CUSTOMER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="budget"/>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+        </attributes>
+    </entity>
+    <entity name="XMLDealer" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Dealer" access="PROPERTY">
+        <table name="CMP3_XML_DEALER"/>
+        <table-generator name="XML_DEALER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_DEALER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="DEALER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_DEALER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="status"/>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <one-to-many name="customers" target-entity="Customer">
+                <join-column name="FK_DEALER_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+                <property name="attributeName" value="customers"/>
+            </one-to-many>
+        </attributes>
+    </entity>
+    <entity name="XMLHockeyGear" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.HockeyGear" access="FIELD">
+        <fetch-group name="MSRP">
+            <attribute name="msrp"/>
+        </fetch-group>
+    </entity>
+    <entity name="XMLChestProtector" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.ChestProtector" access="FIELD">
+        <!--  currently has no fetch groups -->
+    </entity>
+    <entity name="XMLPads" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.Pads" access="FIELD">
+        <fetch-group name="HeightAndWidth">
+            <attribute name="height"/>
+            <attribute name="width"/>
+        </fetch-group>
+        <fetch-group name="Weight">
+            <attribute name="weight"/>
+        </fetch-group>
+    </entity>
+    <entity name="XMLLoner" class="Loner" access="PROPERTY">
+        <table name="XML_LONER"/>
+        <table-generator name="XML_LONER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_LONER_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_LONER_TABLE_GENERATOR"/>
+            </id>
+            <version name="version" attribute-type="java.lang.Integer">
+                <column name="VERSION"/>
+            </version>
+            <one-to-many name="confidants" attribute-type="java.util.Collection" target-entity="Confidant" fetch="LAZY" mapped-by="loner">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-many>
+            <element-collection name="characteristics" attribute-type="java.util.List" target-class="String" fetch="LAZY">
+                <column name="CHARACTERISTIC"/>
+                <collection-table name="XML_LONER_CHARACTERISTICS">
+                    <join-column name="LONER_ID"/>
+                </collection-table>
+            </element-collection>
+            <embedded name="name" attribute-type="Name"/>
+        </attributes>
+    </entity>
+    <entity name="XMLConfidant" class="Confidant" access="FIELD">
+        <table name="XML_CONFIDANT"/>
+        <table-generator name="XML_CONFIDANT_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_CONFIDANT_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_CONFIDANT_TABLE_GENERATOR"/>
+            </id>
+            <one-to-one name="loner" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Loner">
+                <join-column name="LONER_ID"/>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLShovel" class="Shovel" access="VIRTUAL">
+        <table name="XML_SHOVEL"/>
+        <table-generator name="XML_SHOVEL_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_SHOVEL_TABLE_GENERATOR"/>
+            </id>
+            <basic name="cost" attribute-type="Double">
+                <column name="COST"/>
+            </basic>
+            <version name="version" attribute-type="Integer">
+                <column name="VERSION"/>
+            </version>
+            <many-to-one name="owner" target-entity="ShovelOwner">
+                <join-column name="OWNER_ID"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </many-to-one>
+            <one-to-many name="operators" target-entity="ShovelDigger" mapped-by="shovel" attribute-type="java.util.List">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <many-to-many name="projects" target-entity="ShovelProject" attribute-type="java.util.List">
+                <join-table name="XML_SHOVEL_PROJECTS">
+                    <join-column name="SHOVEL_ID" referenced-column-name="ID"/>
+                    <inverse-join-column name="PROJECT_ID" referenced-column-name="ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-many>
+            <embedded name="sections" attribute-type="ShovelSections"/>
+        </attributes>
+    </entity>
+    <entity name="XMLShovelDigger" class="ShovelDigger" parent-class="ShovelPerson" access="VIRTUAL">
+        <table name="XML_SHOVEL_DIGGER"/>
+        <table-generator name="XML_SHOVEL_DIGGER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_DIGGER_SEQ"/>
+        <attribute-override name="name">
+            <column name="DIGGER_NAME"/>
+        </attribute-override>
+        <attributes>
+            <one-to-one name="shovel" target-entity="Shovel">
+                <join-column name="SHOVEL_ID"/>
+                <access-methods get-method="getX" set-method="setX"/>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLShovelOwner" class="ShovelOwner" parent-class="ShovelPerson" access="VIRTUAL">
+        <table name="XML_SHOVEL_OWNER"/>
+        <table-generator name="XML_SHOVEL_OWNER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_OWNER_SEQ"/>
+        <attribute-override name="name">
+            <column name="OWNER_NAME"/>
+        </attribute-override>
+    </entity>
+    <entity name="XMLShovelProject" class="ShovelProject" access="VIRTUAL">
+        <access-methods get-method="get" set-method="set"/>
+        <table name="XML_SHOVEL_PROJECT"/>
+        <table-generator name="XML_SHOVEL_PROJECT_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_PROJECT_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_SHOVEL_PROJECT_TABLE_GENERATOR"/>
+            </id>
+            <basic name="description" attribute-type="String">
+                <column name="DESCRIP"/>
+            </basic>
+            <many-to-many name="shovels" target-entity="Shovel" mapped-by="projects" attribute-type="java.util.List"/>
+        </attributes>
+    </entity>
+    <entity name="XMLViolation" class="Violation" access="FIELD">
+        <table name="XML_VIOLATION"/>
+        <attributes>
+            <id name="id">
+                <enumerated>STRING</enumerated>
+            </id>
+            <many-to-many name="violationCodes">
+                <join-table name="XML_VIOLATION_CODES">
+                    <join-column name="VIOLATION_ID"/>
+                    <inverse-join-column name="VIOLATION_CODE_ID"/>
+                </join-table>
+            </many-to-many>
+        </attributes>
+    </entity>
+    <entity name="XMLViolationCode" class="ViolationCode" access="FIELD">
+        <table name="XML_VIOLATION_CODE"/>
+        <attributes>
+            <id name="id">
+                <enumerated>ORDINAL</enumerated>
+            </id>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity name="XMLStudent" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Student">
+        <additional-criteria>
+            <criteria>this.name LIKE :NAME</criteria>
+        </additional-criteria>
+    </entity>
+    <entity name="XMLSchool" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.School">
+        <additional-criteria>
+            <criteria>this.name LIKE 'Ottawa%'</criteria>
+        </additional-criteria>
+    </entity>
+    <entity name="XMLBolt" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Bolt">
+        <additional-criteria>
+            <criteria>this.nut.size = :NUT_SIZE and this.nut.color = :NUT_COLOR order by this.id</criteria>
+        </additional-criteria>
+    </entity>
+    <embeddable class="ShovelSections" access="VIRTUAL">
+        <access-methods get-method="getMaterial" set-method="setMaterial"/>
+        <attributes>
+            <basic name="handle" attribute-type="ShovelSections$MaterialType"/>
+            <basic name="shaft" attribute-type="ShovelSections$MaterialType"/>
+            <basic name="scoop" attribute-type="ShovelSections$MaterialType"/>
+        </attributes>
+    </embeddable>
+    <embeddable class="Name" access="FIELD">
+        <attributes>
+            <basic name="firstName" attribute-type="java.lang.String">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName" attribute-type="String">
+                <column name="L_NAME"/>
+            </basic>
+        </attributes>
+    </embeddable>
+    <embeddable class="EmploymentPeriod">
+        <property name="embeddableClassName" value="EmploymentPeriod"/>
+        <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>
+    </embeddable>
+</entity-mappings>

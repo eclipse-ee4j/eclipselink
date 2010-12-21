@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.example.org/customer-example" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://www.example.org/customer-example">
+   <xsd:complexType name="address-type">
+      <xsd:sequence>
+         <xsd:element name="street" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="state" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="zip-code" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="customer-type">
+      <xsd:sequence>
+         <xsd:element name="personal-info">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="first-name" type="xsd:string" minOccurs="0"/>
+                  <xsd:element name="last-name" type="xsd:string" minOccurs="0"/>
+                  <xsd:element ref="ns1:gender"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element ref="ns1:contact-info"/>
+         <xsd:element name="things">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="stuff" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="contact-info">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="billing-address" type="ns1:address-type" minOccurs="0"/>
+            <xsd:element name="shipping-address" type="ns1:address-type" minOccurs="0"/>
+            <xsd:element ref="ns1:phone-number" maxOccurs="unbounded"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="gender" type="xsd:string"/>
+   <xsd:element name="customer" type="ns1:customer-type"/>
+   <xsd:element name="phone-number">
+      <xsd:complexType>
+         <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+               <xsd:attribute name="number-type" type="xsd:string"/>
+            </xsd:extension>
+         </xsd:simpleContent>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>

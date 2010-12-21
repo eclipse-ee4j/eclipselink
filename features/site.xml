@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site pack200="true">
+   <description
+      url="@REPOS_URL@">
+      This site contains runtime and source features for EclipseLink JPA, MOXy and SDO components
+   </description>
+   <feature url="features/org.eclipse.persistence.sdk_@VERSION@.@QUALIFIER@.jar" id="org.eclipse.persistence.sdk" version="@VERSION@.@QUALIFIER@">
+      <category name="org.eclipse.persistence.sdk.categoryIU"/>
+   </feature>
+   <category-def name="org.eclipse.persistence.sdk.categoryIU" label="EclipseLink"/>
+</site>

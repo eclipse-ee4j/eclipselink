@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+   <short-name>SEQUENCE</short-name>
+   <columns>
+      <column>
+         <name>SEQ_COUNT</name>
+         <type>NUMBER</type>
+         <allows-null>true</allows-null>
+      </column>
+      <column>
+         <name>SEQ_NAME</name>
+         <type>VARCHAR2</type>
+         <size>20</size>
+         <unique>true</unique>
+         <primary-key>true</primary-key>
+      </column>
+   </columns>
+</table>

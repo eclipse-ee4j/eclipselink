@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-schema>
+   <name>employee.xsd</name>
+   <schema-source type="file">
+      <location>employee.xsd</location>
+   </schema-source>
+   <built-in-namespaces>
+      <namespace url="http://www.w3.org/2001/XMLSchema" prefix="xs"/>
+      <namespace url="http://www.w3.org/2001/XMLSchema-instance" prefix="xsi"/>
+   </built-in-namespaces>
+   <declared-namespaces>
+      <namespace>
+         <namespace-prefix-is-user-defined>false</namespace-prefix-is-user-defined>
+         <declared>false</declared>
+         <element-declarations>
+            <element-declaration type="element">
+               <name>address</name>
+               <type type="complex-type">
+                  <abstract>false</abstract>
+                  <derivation-method>restriction</derivation-method>
+                  <base-type type="complex-type-ref">
+                     <name>anyType</name>
+                     <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                  </base-type>
+                  <attributes>
+                     <attribute type="attribute">
+                        <name>employee-id</name>
+                        <use>required</use>
+                        <type type="simple-type-ref">
+                           <name>long</name>
+                           <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                        </type>
+                     </attribute>
+                  </attributes>
+                  <content type="complex">
+                     <mixed-flag>true</mixed-flag>
+                     <particle compositor="sequence" type="model-group">
+                        <particles>
+                           <particle type="element">
+                              <name>street</name>
+                              <type type="simple-type-ref">
+                                 <name>string</name>
+                                 <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                              </type>
+                              <min-occurs>2</min-occurs>
+                              <max-occurs>2</max-occurs>
+                           </particle>
+                           <particle type="element">
+                              <name>city</name>
+                              <type type="simple-type-ref">
+                                 <name>string</name>
+                                 <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                              </type>
+                           </particle>
+                           <particle type="element">
+                              <name>province</name>
+                              <type type="simple-type-ref">
+                                 <name>string</name>
+                                 <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                              </type>
+                           </particle>
+                           <particle type="element">
+                              <name>postal-code</name>
+                              <type type="simple-type-ref">
+                                 <name>string</name>
+                                 <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                              </type>
+                           </particle>
+                        </particles>
+                     </particle>
+                  </content>
+               </type>
+            </element-declaration>
+            <element-declaration type="element">
+               <name>employee</name>
+               <type type="complex-type">
+                  <abstract>false</abstract>
+                  <derivation-method>restriction</derivation-method>
+                  <base-type type="complex-type-ref">
+                     <name>anyType</name>
+                     <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                  </base-type>
+                  <attributes>
+                     <attribute type="attribute">
+                        <name>id</name>
+                        <use>optional</use>
+                        <type type="simple-type-ref">
+                           <name>long</name>
+                           <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                        </type>
+                     </attribute>
+                  </attributes>
+                  <content type="complex">
+                     <mixed-flag>false</mixed-flag>
+                     <particle compositor="sequence" type="model-group">
+                        <particles>
+                           <particle type="element">
+                              <name>personal-information</name>
+                              <type type="complex-type">
+                                 <abstract>false</abstract>
+                                 <derivation-method>restriction</derivation-method>
+                                 <base-type type="complex-type-ref">
+                                    <name>anyType</name>
+                                    <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                 </base-type>
+                                 <attributes>
+                                    <attribute type="attribute">
+                                       <name>first-name</name>
+                                       <use>optional</use>
+                                       <type type="simple-type-ref">
+                                          <name>string</name>
+                                          <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                       </type>
+                                    </attribute>
+                                    <attribute type="attribute">
+                                       <name>gender</name>
+                                       <use>optional</use>
+                                       <type type="simple-type-ref">
+                                          <name>gender-type</name>
+                                       </type>
+                                    </attribute>
+                                    <attribute type="attribute">
+                                       <name>last-name</name>
+                                       <use>optional</use>
+                                       <type type="simple-type-ref">
+                                          <name>string</name>
+                                          <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                       </type>
+                                    </attribute>
+                                 </attributes>
+                                 <content type="empty"/>
+                              </type>
+                           </particle>
+                           <particle type="element">
+                              <name>contact-information</name>
+                              <type type="complex-type">
+                                 <abstract>false</abstract>
+                                 <derivation-method>restriction</derivation-method>
+                                 <base-type type="complex-type-ref">
+                                    <name>anyType</name>
+                                    <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                 </base-type>
+                                 <content type="complex">
+                                    <mixed-flag>false</mixed-flag>
+                                    <particle compositor="sequence" type="model-group">
+                                       <particles>
+                                          <particle type="element-ref">
+                                             <name>address</name>
+                                          </particle>
+                                          <particle type="element">
+                                             <name>phone</name>
+                                             <type type="complex-type-ref">
+                                                <name>phone-type</name>
+                                             </type>
+                                             <max-occurs>2147483640</max-occurs>
+                                          </particle>
+                                       </particles>
+                                    </particle>
+                                 </content>
+                              </type>
+                           </particle>
+                           <particle type="element">
+                              <name>dependent-information</name>
+                              <type type="complex-type">
+                                 <abstract>false</abstract>
+                                 <derivation-method>restriction</derivation-method>
+                                 <base-type type="complex-type-ref">
+                                    <name>anyType</name>
+                                    <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                 </base-type>
+                                 <content type="complex">
+                                    <mixed-flag>false</mixed-flag>
+                                    <particle compositor="sequence" type="model-group">
+                                       <particles>
+                                          <particle type="element">
+                                             <name>dependent</name>
+                                             <type type="complex-type">
+                                                <abstract>false</abstract>
+                                                <derivation-method>restriction</derivation-method>
+                                                <base-type type="complex-type-ref">
+                                                   <name>anyType</name>
+                                                   <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                                </base-type>
+                                                <attributes>
+                                                   <attribute type="attribute">
+                                                      <name>first-name</name>
+                                                      <use>optional</use>
+                                                      <type type="simple-type-ref">
+                                                         <name>string</name>
+                                                         <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                                      </type>
+                                                   </attribute>
+                                                   <attribute type="attribute">
+                                                      <name>last-name</name>
+                                                      <use>optional</use>
+                                                      <type type="simple-type-ref">
+                                                         <name>string</name>
+                                                         <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                                      </type>
+                                                   </attribute>
+                                                </attributes>
+                                                <content type="complex">
+                                                   <mixed-flag>false</mixed-flag>
+                                                   <particle compositor="sequence" type="model-group">
+                                                      <particles>
+                                                         <particle type="element-ref">
+                                                            <name>address</name>
+                                                         </particle>
+                                                         <particle type="element">
+                                                            <name>phone-no</name>
+                                                            <type type="complex-type-ref">
+                                                               <name>phone-type</name>
+                                                            </type>
+                                                         </particle>
+                                                      </particles>
+                                                   </particle>
+                                                </content>
+                                             </type>
+                                             <max-occurs>3</max-occurs>
+                                          </particle>
+                                       </particles>
+                                    </particle>
+                                 </content>
+                              </type>
+                           </particle>
+                           <particle type="element">
+                              <name>responsibility</name>
+                              <type type="simple-type-ref">
+                                 <name>string</name>
+                                 <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                              </type>
+                              <max-occurs>2147483640</max-occurs>
+                           </particle>
+                           <particle type="element">
+                              <name>working-hours</name>
+                              <type type="complex-type">
+                                 <abstract>false</abstract>
+                                 <derivation-method>restriction</derivation-method>
+                                 <base-type type="complex-type-ref">
+                                    <name>anyType</name>
+                                    <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                 </base-type>
+                                 <content type="complex">
+                                    <mixed-flag>false</mixed-flag>
+                                    <particle compositor="sequence" type="model-group">
+                                       <particles>
+                                          <particle compositor="sequence" type="model-group">
+                                             <particles>
+                                                <particle type="element">
+                                                   <name>start-time</name>
+                                                   <type type="simple-type-ref">
+                                                      <name>dateTime</name>
+                                                      <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                                   </type>
+                                                </particle>
+                                                <particle type="element">
+                                                   <name>end-time</name>
+                                                   <type type="simple-type-ref">
+                                                      <name>dateTime</name>
+                                                      <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                                                   </type>
+                                                </particle>
+                                             </particles>
+                                          </particle>
+                                       </particles>
+                                    </particle>
+                                 </content>
+                              </type>
+                           </particle>
+                        </particles>
+                     </particle>
+                  </content>
+               </type>
+            </element-declaration>
+            <element-declaration type="element">
+               <name>phone-number</name>
+               <type type="complex-type-ref">
+                  <name>phone-type</name>
+               </type>
+            </element-declaration>
+         </element-declarations>
+         <type-definitions>
+            <type-definition type="simple-type">
+               <name>gender-type</name>
+               <variety>atomic</variety>
+               <base-type type="simple-type-ref">
+                  <name>string</name>
+                  <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+               </base-type>
+            </type-definition>
+            <type-definition type="complex-type">
+               <name>phone-type</name>
+               <abstract>false</abstract>
+               <derivation-method>restriction</derivation-method>
+               <base-type type="complex-type-ref">
+                  <name>anyType</name>
+                  <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+               </base-type>
+               <attributes>
+                  <attribute type="attribute">
+                     <name>type</name>
+                     <use>required</use>
+                     <type type="simple-type-ref">
+                        <name>string</name>
+                        <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                     </type>
+                  </attribute>
+               </attributes>
+               <content type="complex">
+                  <mixed-flag>false</mixed-flag>
+                  <particle compositor="sequence" type="model-group">
+                     <particles>
+                        <particle type="element">
+                           <name>area-code</name>
+                           <type type="simple-type-ref">
+                              <name>anySimpleType</name>
+                              <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                           </type>
+                        </particle>
+                        <particle type="element">
+                           <name>number</name>
+                           <type type="simple-type-ref">
+                              <name>anySimpleType</name>
+                              <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                           </type>
+                        </particle>
+                     </particles>
+                  </particle>
+               </content>
+            </type-definition>
+         </type-definitions>
+         <model-group-definitions>
+            <model-group-definition type="model-group-def">
+               <name>working-hours-group</name>
+               <model-group compositor="sequence" type="model-group">
+                  <particles>
+                     <particle compositor="sequence" type="model-group">
+                        <particles>
+                           <particle type="element">
+                              <name>start-time</name>
+                              <type type="simple-type-ref">
+                                 <name>dateTime</name>
+                                 <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                              </type>
+                           </particle>
+                           <particle type="element">
+                              <name>end-time</name>
+                              <type type="simple-type-ref">
+                                 <name>dateTime</name>
+                                 <namespace-url>http://www.w3.org/2001/XMLSchema</namespace-url>
+                              </type>
+                           </particle>
+                        </particles>
+                     </particle>
+                  </particles>
+               </model-group>
+            </model-group-definition>
+         </model-group-definitions>
+      </namespace>
+   </declared-namespaces>
+</xml-schema>

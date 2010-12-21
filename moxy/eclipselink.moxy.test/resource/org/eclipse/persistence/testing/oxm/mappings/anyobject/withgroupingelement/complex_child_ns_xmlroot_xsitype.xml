@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<myns:root xmlns:myns="www.example.com/some-dir/some.xsd">
+  <myns:nested>
+    <myns:blah xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="myns:childType">child's text</myns:blah>
+  </myns:nested>
+</myns:root>

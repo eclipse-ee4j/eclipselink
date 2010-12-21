@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.insurance.HealthPolicy</name>
+   <class-handle>
+      <type-name>test.oracle.models.insurance.HealthPolicy</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>HealthPolicy</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <existence-checking>Assume existence</existence-checking>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>POLICY</column-table-name>
+               <column-name>POL_ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>coverageRate</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.insurance.HealthPolicy</attribute-declaring-type-name>
+            <attribute-name>coverageRate</attribute-name>
+         </attribute-handle>
+         <uses-method-accessing>true</uses-method-accessing>
+         <get-method-handle>
+            <method-declaring-type-name>test.oracle.models.insurance.HealthPolicy</method-declaring-type-name>
+            <method-signature>getCoverageRate()</method-signature>
+         </get-method-handle>
+         <set-method-handle>
+            <method-declaring-type-name>test.oracle.models.insurance.HealthPolicy</method-declaring-type-name>
+            <method-signature>setCoverageRate(float)</method-signature>
+         </set-method-handle>
+         <column-handle>
+            <column-table-name>POLICY</column-table-name>
+            <column-name>COV_RATE</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <inheritance-policy type="relational">
+      <is-root>false</is-root>
+      <parent-descriptor-handle>
+         <descriptor-name>test.oracle.models.insurance.Policy</descriptor-name>
+      </parent-descriptor-handle>
+      <read-subclasses-on-query>false</read-subclasses-on-query>
+   </inheritance-policy>
+   <instantiation-policy>
+      <policy-type>Factory</policy-type>
+      <factory-type-handle>
+         <type-name>test.oracle.models.insurance.HealthPolicy</type-name>
+      </factory-type-handle>
+      <factory-method-handle>
+         <method-declaring-type-name>test.oracle.models.insurance.HealthPolicy</method-declaring-type-name>
+         <method-signature>example1()</method-signature>
+      </factory-method-handle>
+      <isntantiation-method-handle>
+         <method-declaring-type-name>test.oracle.models.insurance.HealthPolicy</method-declaring-type-name>
+         <method-signature>clone()</method-signature>
+      </isntantiation-method-handle>
+   </instantiation-policy>
+   <primary-table-handle>
+      <table-name>POLICY</table-name>
+   </primary-table-handle>
+</descriptor>

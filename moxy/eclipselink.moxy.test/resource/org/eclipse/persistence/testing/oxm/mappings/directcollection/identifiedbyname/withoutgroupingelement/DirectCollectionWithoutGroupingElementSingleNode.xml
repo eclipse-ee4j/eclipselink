@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<employee id="123">
+	<responsibility>type write read</responsibility>
+</employee>

@@ -1,0 +1,7 @@
+<vehicle-data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="car">
+    <model>Mustang GT</model>
+    <manufacturer>Ford</manufacturer>
+    <top-speed>354</top-speed>
+    <number-of-doors>2</number-of-doors>
+    <miles-per-gallon>26</miles-per-gallon>
+</vehicle-data>

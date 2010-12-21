@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="myNamespace" xmlns:myns="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="doc-wrapper">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="root" type="myns:root-type"/>
+                <xs:element name="obj-ref-target" type="myns:obj-ref-target-superclass-type" maxOccurs="1"/>
+                <xs:element name="obj-coll-target" type="myns:obj-coll-target-type" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="root-type">
+        <xs:sequence>
+            <xs:element name="comp-obj" type="myns:comp-obj-target-type" maxOccurs="1"/>
+            <xs:element name="any-coll" type="xs:anyType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="comp-obj-target-type">
+        <xs:sequence>
+            <xs:element name="value" type="xs:string" nillable="true"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="any-coll-target-type">
+        <xs:sequence>
+            <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="obj-ref-target-superclass-type">
+        <xs:sequence>
+            <xs:element name="superclass-value" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="obj-ref-target-subclass-type">
+        <xs:complexContent>
+            <xs:extension base="myns:obj-ref-target-superclass-type">
+                <xs:sequence>
+                    <xs:element name="subclass-value" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="obj-coll-target-type">
+        <xs:sequence>
+            <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

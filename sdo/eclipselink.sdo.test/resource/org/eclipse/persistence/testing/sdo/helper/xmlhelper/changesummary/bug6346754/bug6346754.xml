@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:processData xsi:type="ns0:ProcessData" xmlns:ns1="http://example.com/supplier/service/" xmlns:ns0="http://example.com/process/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:Value xsi:type="ns2:Supplier" xmlns:ns2="http://example.com/supplier/">
+      <ns2:SupplierId>163002</ns2:SupplierId>
+      <ns2:Name>NDSvc</ns2:Name>
+      <ns2:OnHoldFlag>N</ns2:OnHoldFlag>
+      <ns2:SupplierSite xmlns:ns1="http://example.com/address/">
+         <ns2:SupplierId>163002</ns2:SupplierId>
+         <ns2:SupplierSiteId>163003</ns2:SupplierSiteId>
+         <ns2:SiteName>NDSvcSite</ns2:SiteName>
+         <ns2:PaymentTermsCode>NET_30</ns2:PaymentTermsCode>
+         <ns2:CarrierCode>DHL</ns2:CarrierCode>
+         <ns2:PurchasingSiteFlag xsi:nil="true"/>
+         <ns2:AddressId xsi:nil="true"/>
+      </ns2:SupplierSite>
+   </ns0:Value>
+   <ns0:Value xsi:type="ns2:Supplier" xmlns:ns2="http://example.com/supplier/">
+      <ns2:Name>NDSvc2</ns2:Name>
+      <ns2:OnHoldFlag>N</ns2:OnHoldFlag>
+      <ns2:SupplierSite xmlns:ns1="http://example.com/address/">
+         <ns2:SiteName>NDSvc2Site</ns2:SiteName>
+         <ns2:PaymentTermsCode>NET_30</ns2:PaymentTermsCode>
+         <ns2:CarrierCode>DHL</ns2:CarrierCode>
+      </ns2:SupplierSite>
+   </ns0:Value>
+   <ns0:ChangeSummary create="#/ns1:processData/ns0:Value[2] #/ns1:processData/ns0:Value[2]/ns2:SupplierSite[1]" xmlns:sdo="commonj.sdo">
+      <ns0:processData sdo:ref="#/ns1:processData">
+         <ns0:Value sdo:ref="#/ns1:processData/ns0:Value[1]" xmlns:ns2="http://example.com/supplier/" xsi:type="ns2:Supplier"/>
+      </ns0:processData>
+   </ns0:ChangeSummary>
+</ns1:processData>

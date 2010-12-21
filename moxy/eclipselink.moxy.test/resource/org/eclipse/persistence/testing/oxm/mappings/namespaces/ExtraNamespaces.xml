@@ -1,0 +1,70 @@
+<ns1:root xmlns:ns1="http://www.example.com/rootns" xmlns:ns2="http://www.example.com/ns2">
+   <ns2:companies>
+      <ns2:company xmlns:aaa="http://www.example.com/aaa">
+	     <ns2:companyname>theCompany1</ns2:companyname>
+		 <ns2:manager xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://www.example.com/ns4" xmlns:ns3="http://www.example.com/ns3" xmlns:ns7="http://www.example.com/ns7">
+		 	<ns4:personal-info ns4:id="123">
+			   <ns4:name>Jane Doe</ns4:name>
+     	    </ns4:personal-info>
+			<ns3:title>theJobTitle</ns3:title>
+         </ns2:manager>
+		 <ns2:departments>
+    	    <ns2:dept xmlns:ns3="http://www.example.com/ns3">
+			   <ns3:deptName>dept1</ns3:deptName>
+			   <ns3:teams>
+   			      <ns4:team xmlns:ns5="http://www.example.com/ns5" xmlns:ns4="http://www.example.com/ns4" xmlns:ns6="http://www.example.com/ns6">
+	  			     <ns4:teamName>team1</ns4:teamName>
+					 <ns5:leader>
+						<ns4:employee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   					       <ns4:personal-info ns4:id="111">
+	  			              <ns4:name>Sally Smith</ns4:name>
+                  	       </ns4:personal-info>
+   						</ns4:employee>
+ 					 </ns5:leader>
+					 <ns6:emp xsi:type="ns4:emp-type" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   					    <ns4:personal-info ns4:id="222">
+	  			           <ns4:name>Bob Jones</ns4:name>
+                  	    </ns4:personal-info>
+					</ns6:emp>
+					<ns6:emp xsi:type="ns2:manager-type" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns7="http://www.example.com/ns7">
+   					    <ns4:personal-info ns4:id="333">
+	  			           <ns4:name>Colleen Jones</ns4:name>
+                  	    </ns4:personal-info>
+						<ns3:title>Colleen's Job</ns3:title>
+					</ns6:emp>
+   			      </ns4:team>
+   			      <ns4:team xmlns:ns5="http://www.example.com/ns5" xmlns:ns4="http://www.example.com/ns4" xmlns:ns6="http://www.example.com/ns6">
+	  			     <ns4:teamName>team2</ns4:teamName>
+   			      </ns4:team>
+   			   </ns3:teams>
+	 	    </ns2:dept>
+    	    <ns2:dept xmlns:ns3="http://www.example.com/ns3">
+			   <ns3:deptName>dept2</ns3:deptName>
+			    <ns3:teams>
+   			      <ns4:team xmlns:ns5="http://www.example.com/ns5" xmlns:ns4="http://www.example.com/ns4" xmlns:ns6="http://www.example.com/ns6">
+	  			     <ns4:teamName>team3</ns4:teamName>
+   			      </ns4:team>
+   			      <ns3:xmlroot1 xmlns:ns5="http://www.example.com/ns5" xmlns:ns4="http://www.example.com/ns4" xmlns:ns6="http://www.example.com/ns6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns4:team">
+	  			     <ns4:teamName>team4</ns4:teamName>
+   			      </ns3:xmlroot1>
+				  <ns0:xmlroot2 xmlns:ns0="someNewUri" xmlns:ns5="http://www.example.com/ns5" xmlns:ns4="http://www.example.com/ns4" xmlns:ns6="http://www.example.com/ns6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns4:team">
+	  			     <ns4:teamName>team5</ns4:teamName>
+   			      </ns0:xmlroot2>
+				  <ns6:xmlroot3 xmlns:ns5="http://www.example.com/ns5" xmlns:ns4="http://www.example.com/ns4" xmlns:ns6="http://www.example.com/ns6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns4:team">
+	  			     <ns4:teamName>team6</ns4:teamName>
+   			      </ns6:xmlroot3>
+				  <ns6Other:xmlroot4 xmlns:ns6Other="http://www.example.com/ns6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns6Other:project-type">
+	  			     <ns6Other:name>theName</ns6Other:name>
+                     <ns6Other:description>theDescription</ns6Other:description>
+   			      </ns6Other:xmlroot4>
+				  <ns3:xmlroot1simple>xmlroot1simple</ns3:xmlroot1simple>
+                  <ns4:xmlroot2simple xmlns:ns4="someNewUri">xmlroot2simple</ns4:xmlroot2simple>
+   			   </ns3:teams>
+	 	    </ns2:dept>
+		 </ns2:departments>
+      </ns2:company>
+      <ns2:company xmlns:aaa="http://www.example.com/aaa">
+	  	 <ns2:companyname>theCompany2</ns2:companyname>
+      </ns2:company>
+   </ns2:companies>
+</ns1:root>

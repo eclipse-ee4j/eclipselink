@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:person xmlns:ns1="mynamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <write1></write1>
+   <write2></write2>
+   <write3></write3>
+   <read1 xsi:nil="true"/>
+   <read2 xsi:nil="true"/>
+   <read3 xsi:nil="true"/>
+   <read4 xsi:nil="true"/>
+   <read5 xsi:nil="true"/>
+   <read6 xsi:nil="true"/>
+   <read7 xsi:nil="true"/>
+   <read8 xsi:nil="true"/>
+   <read9/>
+   <read10/>
+   <read11/>
+   <read12/>
+</ns1:person>
