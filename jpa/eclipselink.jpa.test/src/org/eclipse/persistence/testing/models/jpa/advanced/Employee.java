@@ -193,7 +193,21 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }
-    public enum SalaryRate {JUNIOR, SENIOR, MANAGER, EXECUTIVE}
+    public enum SalaryRate {
+        JUNIOR("JUN"), 
+        SENIOR("SEN"), 
+        MANAGER("MAN"), 
+        EXECUTIVE("EX");
+        
+        String salaryRate;
+        SalaryRate(String salaryRate){
+            this.salaryRate=salaryRate;
+        }
+        public String toString() {
+            return salaryRate;
+         }
+
+    }
     public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
     
     private int salary;

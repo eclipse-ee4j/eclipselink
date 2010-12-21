@@ -54,6 +54,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee.EmployeeStatus;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
@@ -175,6 +176,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleSingleArgSubstringTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("elementCollectionIsNotEmptyTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("relationshipElementCollectionIsNotEmptyTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("enumWithToStringTest"));
 
         
         return suite;
@@ -2117,6 +2119,23 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             Employee emp = (Employee)i.next();
             assertTrue(emp.getResponsibilities() != null && !emp.getResponsibilities().isEmpty());
         }
+    }
+    
+    // Bug 332207
+    public void enumWithToStringTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("Nick");
+        emp.setPayScale(Employee.SalaryRate.SENIOR);
+        em.persist(emp);
+        em.flush();
+        em.clear();
+        clearCache();
+        Query query = em.createQuery("SELECT e from Employee e where e.payScale = org.eclipse.persistence.testing.models.jpa.advanced.Employee.SalaryRate.SENIOR");
+        emp = (Employee)query.getSingleResult();
+        assertTrue("Enumeration not properly returned", emp.getPayScale() == Employee.SalaryRate.SENIOR);
+        rollbackTransaction(em);
     }
 }
 

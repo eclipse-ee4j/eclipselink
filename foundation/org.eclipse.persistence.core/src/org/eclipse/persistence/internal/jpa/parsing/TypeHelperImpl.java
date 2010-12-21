@@ -115,8 +115,9 @@ public class TypeHelperImpl
         Object[] constants = clazz.getEnumConstants();
         if (constants != null) {
             for (int i = 0; i < constants.length; i++) {
-                if (constant.equals(constants[i].toString())) {
-                    return constants[i];
+                Enum<?> enumConstant = (Enum<?>) constants[i];
+                if (enumConstant.name().equals(constant)) {
+                   return enumConstant;
                 }
             }
         }
