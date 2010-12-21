@@ -89,13 +89,13 @@
         <property name="svn.exec" value="/usr/local/bin/svn"/>
     </target>
     <target name="init-win" if="_Win" depends="init-linux">
-        <!-- property file="${user.home}/build.properties"/ -->
+        <property file="${user.home}/build.properties"/>
         <property name="svn.exec" value="svn"/>
-        <!-- property name="build.root.dir"  value="."/>
+        <property name="build.root.dir"  value="."/>
         <property name="build.deps.dir"  value="${extensions.depend.dir}"/>
         <property name="log.dir"         value="./logs"/>
         <property name="junit.dir"       value="${build.deps.dir}/junit"/>
-        <property name="current.svnrev.file" value="${log.dir}/.current_svnrev_this_current"/ -->
+        <property name="current.svnrev.file" value="${log.dir}/.current_svnrev_this_current"/>
     </target>
 
     <!-- Setup properties needed if testing using a local repos on RedHat     -->

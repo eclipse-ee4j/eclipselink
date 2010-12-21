@@ -53,8 +53,7 @@ CreatePath() {
     for directory in `echo $1 | tr '/' ' '`
     do
         newdir=${newdir}/${directory}
-        if [ ! -d "/${newdir}" ]
-        then
+        if [ ! -d "/${newdir}" ] ; then
             #echo "creating ${newdir}"
             mkdir ${newdir}
             if [ $? -ne 0 ]
@@ -93,20 +92,17 @@ parseHandoff() {
 
     ## Parse handoff_file for BRANCH, QUALIFIER, TARGET, and HOST
     BRANCH=`echo ${handoff_file} | cut -s -d'-' -f4`
-    if [ "${BRANCH}" = "" ]
-    then
+    if [ "${BRANCH}" = "" ] ; then
         echo "BRANCH ${handoff_error_string}"
         exit 2
     fi
     QUALIFIER=`echo ${handoff_file} | cut -s -d'-' -f5,6 | cut -d'.' -f1`
-    if [ "${QUALIFIER}" = "" ]
-    then
+    if [ "${QUALIFIER}" = "" ] ; then
         echo "QUALIFIER ${handoff_error_string}"
         exit 2
     fi
     PROC=`echo ${handoff_file} | cut -s -d'-' -f3`
-    if [ !  \( \( "${PROC}" = "test" \) -o \( "${PROC}" = "build" \) \) ]
-    then
+    if [ !  \( \( "${PROC}" = "test" \) -o \( "${PROC}" = "build" \) \) ] ; then
         echo "PROC ${handoff_error_string}"
         exit 2
     fi
@@ -147,16 +143,14 @@ runAnt() {
 
     ## Parse $QUALIFIER for build date value
     BLDDATE=`echo ${QUALIFIER} | cut -s -d'-' -f1 | cut -s -dv -f2`
-    if [ "${BLDDATE}" = "" ]
-    then
+    if [ "${BLDDATE}" = "" ] ; then
         echo "BLDDATE Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
         exit 2
     fi
 
     ## Parse $QUALIFIER for SVN revision value
     SVNREV=`echo ${QUALIFIER} | cut -s -d'-' -f2 | cut -s -dr -f2`
-    if [ "${SVNREV}" = "" ]
-    then
+    if [ "${SVNREV}" = "" ] ; then
         echo "SVNREV Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
         exit 2
     fi

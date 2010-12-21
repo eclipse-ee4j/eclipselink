@@ -37,7 +37,7 @@
         - package : jars JPA persistent unit and tests jar
         - test-jpa-spring: runs all Spring tests
         - test-jpa-spring-local: runs Spring local tests
-        - test-jpa-spring-container: runs Srping container tests
+        - test-jpa-spring-container: runs Spring container tests
 
         It requires some configuration of the build.properties and test.properties to run.
         It also requires the following third-party jars available in ../../../extension.lib.external/spring

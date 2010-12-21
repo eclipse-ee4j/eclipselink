@@ -12,10 +12,8 @@ ORACLEBLD=false
 UD2M=false
 TARGET=$1
 BRANCH=$2
-if [ ! "${TARGET}" = "" ]
-then
-    if [ ! "`echo ${TARGET} | grep '\.test'`" = "" ]
-    then
+if [ ! "${TARGET}" = "" ] ; then
+    if [ ! "`echo ${TARGET} | grep '\.test'`" = "" ] ; then
         TARGET=`echo ${TARGET} | cut -d. -f1`
         TEST=true
     fi
@@ -23,11 +21,9 @@ then
 else
     TARG_NM="default"
 fi
-if [ "${TARGET}" = "oraclebld" ]
-then
+if [ "${TARGET}" = "oraclebld" ] ; then
     ORACLEBLD=true
-    if [ ! "${BRANCH}" = "" ]
-    then
+    if [ ! "${BRANCH}" = "" ] ; then
         TARGET=${BRANCH}
         BRANCH=$3
         TARG_NM=${TARGET}
@@ -36,14 +32,11 @@ then
         TARGET=
     fi
 fi
-if [ "${TARGET}" = "milestone" ]
-then
+if [ "${TARGET}" = "milestone" ] ; then
     MILESTONE=true
-    if [ ! "${BRANCH}" = "" ]
-    then
+    if [ ! "${BRANCH}" = "" ] ; then
         QUALIFIER=$3
-        if [ ! "${QUALIFIER}" = "" ]
-        then
+        if [ ! "${QUALIFIER}" = "" ] ; then
             #temporarily store Name of Milestone in TARGET
             #Syntax: ./bootstrap.sh milestone M4 QUALIFIER [branch]
             #  milestone - tells system that it will be promoting a build to a milestone
@@ -55,8 +48,7 @@ then
             TARGET=${BRANCH}
             BRANCH=$4
             TARG_NM=${TARGET}
-            if [ "${TARGET}" = "release" ]
-            then
+            if [ "${TARGET}" = "release" ] ; then
                 RELEASE=true
                 TARGET=milestone
             fi
@@ -73,11 +65,9 @@ then
         exit
     fi
 fi
-if [ "${TARGET}" = "custom" ]
-then
+if [ "${TARGET}" = "custom" ] ; then
     CUSTOM=true
-    if [ ! "${BRANCH}" = "" ]
-    then
+    if [ ! "${BRANCH}" = "" ] ; then
         CUSTOM_TARG=${BRANCH}
         BRANCH=$3
     else
@@ -86,18 +76,15 @@ then
         exit
     fi
 fi
-if [ "${TARGET}" = "release" ]
-then
+if [ "${TARGET}" = "release" ] ; then
     echo "Error: 'release' is not a valid initial target. Use 'milestone release' instead. Exiting..."
     exit 2
 fi
-if [ "${TARGET}" = "uploadDeps" ]
-then
+if [ "${TARGET}" = "uploadDeps" ] ; then
     UD2M=true
     TARGET=
     TARG_NM=uploadDeps
-    if [ ! "${BRANCH}" = "" ]
-    then
+    if [ ! "${BRANCH}" = "" ] ; then
         BRANCH=
     fi
 fi
@@ -105,8 +92,7 @@ fi
 ##-- Convert "BRANCH" to BRANCH_NM (version or trunk) and BRANCH (svn branch path)
 #    BRANCH_NM is used for reporting and naming purposes
 #    BRANCH    is used to quailify the actual Branch path
-if [ ! "${BRANCH}" = "" ]
-then
+if [ ! "${BRANCH}" = "" ] ; then
     BRANCH_NM=${BRANCH}
     BRANCH=branches/${BRANCH}/
 else
@@ -119,12 +105,10 @@ echo "Branch     ='${BRANCH}'"
 echo "Branch name='${BRANCH_NM}'"
 
 SVN_EXEC=/usr/local/bin/svn
-if [ ! -x ${SVN_EXEC} ]
-then
+if [ ! -x ${SVN_EXEC} ] ; then
     echo "Cannot find svn executable using default value. Attempting Autofind..."
     SVN_EXEC=`which svn`
-    if [ $? -ne 0 ]
-    then
+    if [ $? -ne 0 ] ; then
         echo "Error: Unable to find SVN client install!"
         exit 1
     else
@@ -137,15 +121,13 @@ START_DATE=`date '+%y%m%d-%H%M'`
 #Directories
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
-if [ "${ORACLEBLD}" = "true" ]
-then
+if [ "${ORACLEBLD}" = "true" ] ; then
     JAVA_HOME=/shared/common/jdk1.6.0_21
     ANT_HOME=/usr/share/ant
     HOME_DIR=/shared/el_continuous
 else
     # Conditional to allow single branch testing of jdk and ant env
-    if [ ! "${BRANCH}" = "" ]
-    then
+    if [ ! "${BRANCH}" = "" ] ; then
         JAVA_HOME=/shared/common/jdk-1.6.x86_64
     else
         JAVA_HOME=/shared/common/jdk-1.6.x86_64
@@ -184,12 +166,10 @@ CreatePath() {
     for directory in `echo $1 | tr '/' ' '`
     do
         newdir=${newdir}/${directory}
-        if [ ! -d "/${newdir}" ]
-        then
+        if [ ! -d "/${newdir}" ] ; then
             #echo "creating ${newdir}"
             mkdir ${newdir}
-            if [ $? -ne 0 ]
-            then
+            if [ $? -ne 0 ] ; then
                 echo "    Create failed!"
                 exit
             fi
@@ -204,8 +184,7 @@ getPrevRevision() {
     for prev_log in `ls -1 ${LOG_DIR} | grep bsb-${BRANCH_NM}_${TARG_NM} | sort -t_ -k3 -r | grep -v ${LOGFILE_NAME}`
     do
         ## exclude "build unnecessary" cb's without effecting other build types
-        if [ "`tail ${LOG_DIR}/${prev_log} | grep unnece | tr -d '[:punct:]'`" = "" ]
-        then
+        if [ "`tail ${LOG_DIR}/${prev_log} | grep unnece | tr -d '[:punct:]'`" = "" ] ; then
             PREV_REV=`cat ${LOG_DIR}/${prev_log} | grep revision | grep -m1 svn | cut -d= -f2 | tr -d '\047'`
             break
         fi
@@ -214,8 +193,7 @@ getPrevRevision() {
 
 unset setDbLogin
 setDbLogin() {
-    if [ ! -f $JDBC_LOGIN_INFO_FILE ]
-    then
+    if [ ! -f $JDBC_LOGIN_INFO_FILE ] ; then
         echo "No db Login info available!"
         exit
     else
@@ -254,10 +232,8 @@ genTestSummary() {
     infile=$1
     outfile=$2
 
-    if [ -f ${infile} ]
-    then
-        if [ -n ${infile} ]
-        then
+    if [ -f ${infile} ] ; then
+        if [ -n ${infile} ] ; then
             tests=0
             errors=0
             failures=0
@@ -292,8 +268,7 @@ genTestSummary() {
                 fi
             done
             # print out final totals
-            if [ ! "$first_line" = "true" ]
-            then
+            if [ ! "$first_line" = "true" ] ; then
                 echo "  Tests run:${tests} Failures:${failures} Errors:${errors}" >> ${outfile}
             fi
         else
@@ -302,8 +277,7 @@ genTestSummary() {
     fi
 
     # Return status based upon existence of test success (all pass="true (0)" else="fail (1)")
-    if [ \( "$Terrors" -gt 0 \) -o \( "$Tfailures" -gt 0 \) ]
-    then
+    if [ \( "$Terrors" -gt 0 \) -o \( "$Tfailures" -gt 0 \) ] ; then
         returncode=1
     else
         returncode=0
@@ -328,13 +302,11 @@ genTestSummary() {
 #--------- MAIN --------#
 
 #Test for existence of dependencies, send email and fail if any of the above not found.
-if [ ! -d ${JAVA_HOME} ]
-then
+if [ ! -d ${JAVA_HOME} ] ; then
     echo "Java not found!"
     echo "Expecting Java at: ${JAVA_HOME}"
     JAVA_HOME=/shared/common/jdk1.6.0_05
-    if [ ! -d ${JAVA_HOME} ]
-    then
+    if [ ! -d ${JAVA_HOME} ] ; then
         echo "Java not found!"
         echo "Expecting Java at: ${JAVA_HOME}"
         exit
@@ -342,39 +314,32 @@ then
         echo "Java found at: ${JAVA_HOME}"
     fi
 fi
-if [ ! -d ${ANT_HOME} ]
-then
+if [ ! -d ${ANT_HOME} ] ; then
     echo "Ant not found!"
     echo "Expecting Ant at: ${ANT_HOME}"
     exit
 fi
-if [ ! -d ${HOME_DIR} ]
-then
+if [ ! -d ${HOME_DIR} ] ; then
     echo "Need to create HOME_DIR (${HOME_DIR})"
     CreatePath ${HOME_DIR}
 fi
-if [ ! -d ${LOG_DIR} ]
-then
+if [ ! -d ${LOG_DIR} ] ; then
     echo "Need to create LOG_DIR (${LOG_DIR})"
     CreatePath ${LOG_DIR}
 fi
-if [ ! -d ${BLD_DEPS_DIR} ]
-then
+if [ ! -d ${BLD_DEPS_DIR} ] ; then
     echo "Need to create BLD_DEPS_DIR (${BLD_DEPS_DIR})"
     CreatePath ${BLD_DEPS_DIR}
 fi
-if [ ! -f ${CUR_DIR}/${BOOTSTRAP_BLDFILE} ]
-then
+if [ ! -f ${CUR_DIR}/${BOOTSTRAP_BLDFILE} ] ; then
     echo "Need bootstrap buildfile (${BOOTSTRAP_BLDFILE}) in the current directory to proceed."
     exit 1
 else
-    if [ ! "${HOME_DIR}" = "${CUR_DIR}" ]
-    then
+    if [ ! "${HOME_DIR}" = "${CUR_DIR}" ] ; then
         cp ${CUR_DIR}/${BOOTSTRAP_BLDFILE} ${HOME_DIR}/${BOOTSTRAP_BLDFILE}
     fi
 fi
-if [ ! -f $JDBC_LOGIN_INFO_FILE ]
-then
+if [ ! -f $JDBC_LOGIN_INFO_FILE ] ; then
     echo "No db Login info available!"
     exit
 else
@@ -390,28 +355,24 @@ ANT_OPTS="-Xmx512m"
 ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 
 # Test for "milestone" flag to start a build promotion rather than a real build
-if [ "${MILESTONE}" = "true" ]
-then
+if [ "${MILESTONE}" = "true" ] ; then
     ## Parse $QUALIFIER for build date value
     BLDDATE=`echo ${QUALIFIER} | cut -s -d'-' -f1 | cut -s -dv -f2`
-    if [ "${BLDDATE}" = "" ]
-    then
+    if [ "${BLDDATE}" = "" ] ; then
         echo "BLDDATE Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
         exit 2
     fi
 
     ## Parse $QUALIFIER for SVN revision value
     SVNREV=`echo ${QUALIFIER} | cut -s -d'-' -f2 | cut -s -dr -f2`
-    if [ "${SVNREV}" = "" ]
-    then
+    if [ "${SVNREV}" = "" ] ; then
         echo "SVNREV Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
         exit 2
     fi
 
     # Setup parameters for Ant build
     ANT_BASEARG="${ANT_BASEARG} -Dsvn.revision=${SVNREV} -Dbuild.date=${BLDDATE}"
-    if [ "${RELEASE}" = "true" ]
-    then
+    if [ "${RELEASE}" = "true" ] ; then
         ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=RELEASE"
     else
         ANT_BASEARG="${ANT_BASEARG} -Dbuild.type=${TARGET}"
@@ -419,24 +380,20 @@ then
     TARGET=milestone
 fi
 
-if [ "${LOCAL_REPOS}" = "true" ]
-then
+if [ "${LOCAL_REPOS}" = "true" ] ; then
     ANT_BASEARG="${ANT_BASEARG} -D_LocalRepos=1"
 fi
 
 
-if [ "${TEST}" = "true" ]
-then
+if [ "${TEST}" = "true" ] ; then
     ANT_BASEARG="${ANT_BASEARG} -D_NoUpdateSrc=1"
 fi
 
-if [ "${UD2M}" = "true" ]
-then
+if [ "${UD2M}" = "true" ] ; then
     ANT_BASEARG="-f \"${UD2M_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -D_NoUpdateSrc=1"
 fi
 
-if [ "${CUSTOM}" = "true" ]
-then
+if [ "${CUSTOM}" = "true" ] ; then
     ANT_BASEARG="${ANT_BASEARG} -Dcustom.target=\"${CUSTOM_TARG}\""
 fi
 
@@ -465,8 +422,7 @@ echo "Build completed at: `date`" >> ${DATED_LOG}
 echo "Build complete."
 
 # If promoting a build just exit. there is no post-build processing
-if [ \( "${MILESTONE}" = "true" \) -o \( "${CUSTOM}" = "true" \) ]
-then
+if [ \( "${MILESTONE}" = "true" \) -o \( "${CUSTOM}" = "true" \) ] ; then
     exit
 fi
 ##  ---------------------------------------- ####### ------------------------------------  ##
@@ -477,8 +433,7 @@ echo "Post-build Processing Starting..."
 genSafeTmpDir
 
 MAILFROM=eric.gwin@oracle.com
-if [ "${ORACLEBLD}" = "true" ]
-then
+if [ "${ORACLEBLD}" = "true" ] ; then
     MAIL_EXEC=/usr/bin/mail
     MAILLIST="ejgwin@gmail.com"
 #    SUCC_MAILLIST="eric.gwin@oracle.com"
@@ -505,8 +460,7 @@ TESTS_FAILED="false"
 ## Verify Build Started before bothering with setting up for an email or post-processing
 ## if [ not "build unnecessary"  ] - (if build wasn't aborted due to no changes)
 ##
-if [ "`tail ${DATED_LOG} | grep unnece | tr -d '[:punct:]'`" = "" ]
-then
+if [ "`tail ${DATED_LOG} | grep unnece | tr -d '[:punct:]'`" = "" ] ; then
     ## find the current version (cannot use $BRANCH, because need current version stored in ANT buildfiles)
     ##
     VERSION=`cat ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
@@ -520,8 +474,7 @@ then
     ## find the revision of the last build
     ##
     getPrevRevision
-    if [ ! "$PREV_REV" = "" ]
-    then
+    if [ ! "$PREV_REV" = "" ] ; then
         ## Include everything but the revision of the last build (jump 1 up from it)
         PREV_REV=`expr "${PREV_REV}" + "1"`
         ## Prepend the ":" for the "to" syntax of the "svn log" command
@@ -536,8 +489,7 @@ then
     ## Verify Compile complete before bothering with post-build processing for test results
     ## if [ not build failed ]
     ##
-    if [ ! "`tail ${DATED_LOG} | grep 'BUILD SUCCESSFUL'`" = "" ]
-    then
+    if [ ! "`tail ${DATED_LOG} | grep 'BUILD SUCCESSFUL'`" = "" ] ; then
         ## Ant log preprocessing to generate test results files
         ##
         cat ${DATED_LOG} | grep -n '^test-' | grep -v "\-jar" | grep -v "\-errors:" | grep -v lrg | grep -v t-srg | tr -d ' ' > ${PARSE_RESULT_FILE}
@@ -550,23 +502,20 @@ then
 
         ## make sure TESTDATA_FILE is empty
         ##
-        if [ -f ${TESTDATA_FILE} ]
-        then
+        if [ -f ${TESTDATA_FILE} ] ; then
             rm -f ${TESTDATA_FILE}
         fi
         touch ${TESTDATA_FILE}
 
         ## postpend notification if signing failed
-        if [ ! "`cat ${DATED_LOG} | grep 'SigningAborted'`" = "" ]
-        then
+        if [ ! "`cat ${DATED_LOG} | grep 'SigningAborted'`" = "" ] ; then
             CAVEAT_TXT=" Signing failed. P2 not generated!"
         fi
 
         ## run routine to generate test results file and generate MAIL_SUBJECT based upon exit status
         ##
         genTestSummary ${SORTED_RESULT_FILE} ${TESTDATA_FILE}
-        if [ $? -eq 0  ]
-        then
+        if [ $? -eq 0  ] ; then
             MAIL_SUBJECT="${BRANCH_NM} ${TARG_NM} build complete.${CAVEAT_TXT}"
             MAILLIST=${SUCC_MAILLIST}
         else
@@ -579,19 +528,16 @@ then
         BUILD_FAILED="true"
     fi
 
-    if [ "${TESTS_FAILED}" = "true" ]
-    then
+    if [ "${TESTS_FAILED}" = "true" ] ; then
         echo "Build had Test issues that need to be resolved."
         LOGPREFIX=TestFail
-        if [ "${TARG_NM}" = "cb" ]
-        then
+        if [ "${TARG_NM}" = "cb" ] ; then
             TEST_RESULT_ARCHIVE=TestResult_-${BRANCH_NM}_${TARG_NM}_${START_DATE}.zip
             # Zip up test results and copy them to appropriate location
             ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="${TEST_RESULT_ARCHIVE}" save-tst-results
             echo "Command to zip test results"
             echo "   ant ${ANT_BASEARG} -l ${LOG_DIR}/SaveTstResults_${LOGFILE_NAME} -Dtest.result.dest.dir="${FailedNFSDir}" -Dtest.result.zip="${TEST_RESULT_ARCHIVE}" save-tst-results"
-            if [ "${ORACLEBLD}" = "true" ]
-            then
+            if [ "${ORACLEBLD}" = "true" ] ; then
                 scp ${BRANCH_PATH}/${TEST_RESULT_ARCHIVE} build.eclipse.org:${FailedNFSDir}/${TEST_RESULT_ARCHIVE}
             else
                 cp ${BRANCH_PATH}/${TEST_RESULT_ARCHIVE} ${FailedNFSDir}/.
@@ -600,16 +546,13 @@ then
        fi
     fi
 
-    if [ "${BUILD_FAILED}" = "true" ]
-    then
+    if [ "${BUILD_FAILED}" = "true" ] ; then
         LOGPREFIX=BuildFail
         echo "Build had issues to be resolved."
     fi
 
-    if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
-    then
-        if [ "${ORACLEBLD}" = "true" ]
-        then
+    if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ] ; then
+        if [ "${ORACLEBLD}" = "true" ] ; then
             scp ${DATED_LOG} build.eclipse.org:${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
         else
             cp ${DATED_LOG} ${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
@@ -629,8 +572,7 @@ then
     echo "the format [BUILDLOG_LINE#: NUMBER_OF_ERRORS]:" >> ${MAILBODY}
     cat ${COMPILE_RESULT_FILE} >> ${MAILBODY}
     echo "-----------------------------------" >> ${MAILBODY}
-    if [ \( -f ${TESTDATA_FILE} \) -a \( -n ${TESTDATA_FILE} \) ]
-    then
+    if [ \( -f ${TESTDATA_FILE} \) -a \( -n ${TESTDATA_FILE} \) ] ; then
         cat ${TESTDATA_FILE} >> ${MAILBODY}
         echo "-----------------------------------" >> ${MAILBODY}
         echo "" >> ${MAILBODY}
@@ -639,10 +581,8 @@ then
         touch ${MAILBODY}
     fi
     echo "Build log: (${DATED_LOG})" >> ${MAILBODY}
-    if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
-    then
-        if [ \( ! "${TARG_NM}" = "cb" \) -a \( "${TESTS_FAILED}" = "true" \) ]
-        then
+    if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ] ; then
+        if [ \( ! "${TARG_NM}" = "cb" \) -a \( "${TESTS_FAILED}" = "true" \) ] ; then
             echo "Test logs can be found on the download server at:" >> ${MAILBODY}
             echo "    http://www.eclipse.org/eclipselink/downloads/nightly.php" >> ${MAILBODY}
         fi
@@ -658,16 +598,14 @@ then
     ##
     echo "Sending email..."
     cat ${MAILBODY} | ${MAIL_EXEC} -r ${MAILFROM} -s "BUILD STATUS:: ${MAIL_SUBJECT}" ${MAILLIST}
-    if [ $? -eq 0  ]
-    then
+    if [ $? -eq 0  ] ; then
        echo "     complete."
     else
        echo "     failed."
     fi
 else
     echo "Build was aborted...   Post-Processing unecessary."
-    if [ "`cat ${DATED_LOG} | grep -n  -m1 env.TARGET |  cut -d= -f2 | tr -d '\047' | tr -d ' '`" = "nightly" ]
-    then
+    if [ "`cat ${DATED_LOG} | grep -n  -m1 env.TARGET |  cut -d= -f2 | tr -d '\047' | tr -d ' '`" = "nightly" ] ; then
         if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
         echo "Because no changes to the repository were detected." > ${MAILBODY}
         echo " " >> ${MAILBODY}

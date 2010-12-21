@@ -49,7 +49,7 @@
 
     <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
     <!-- Version properties -->
-    <property name="release.version"               value="2.2.0"/>
+    <property name="release.version"               value="2.3.0"/>
     <!-- Project infrastructure properties -->
     <property name="src.dir"                       value="src"/>
     <property name="asm.classes.dir"             value="."/>
