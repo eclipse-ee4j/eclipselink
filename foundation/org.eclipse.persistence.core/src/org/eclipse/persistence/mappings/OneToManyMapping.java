@@ -505,7 +505,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         if(modifyRow.isEmpty()) {
             return;
         }
-        addTargetQuery = new DataModifyQuery();
+        
+        if (!hasCustomAddTargetQuery){
+            addTargetQuery = new DataModifyQuery();
+        }
         
         if (!addTargetQuery.hasSessionName()) {
             addTargetQuery.setSessionName(session.getName());

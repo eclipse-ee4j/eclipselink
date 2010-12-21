@@ -106,6 +106,7 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
 import org.eclipse.persistence.config.CascadePolicy;
@@ -371,6 +372,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             suite.addTest(new EntityManagerJUnitTestSuite("testSelectEmbeddable"));
             suite.addTest(new EntityManagerJUnitTestSuite("testNonPooledConnection"));
             suite.addTest(new EntityManagerJUnitTestSuite("testExclusiveIsolatedLeaksConnectionOnClear"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testSetTargetQueryOneToMany"));
         }
         return suite;
     }
@@ -10081,6 +10083,26 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             pool.releaseConnection(accessor);
             fail("Exclusive connection has not been released after the EntityManager has been closed.");
         }
-    }        
+    }
+    
+    // Bug 331692
+    public void testSetTargetQueryOneToMany(){
+        EntityManager em = createEntityManager("customizeAddTarget");
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("Nick");
+        em.persist(emp);
+        em.flush();
+        emp.addDealer(new Dealer());
+        em.flush();
+        em.clear();
+        clearCache("customizeAddTarget");
+        
+        emp = em.find(Employee.class, emp.getId());
+        
+        assertTrue("The add Target Query was not correctly customized", emp.getFirstName() == null);
+        
+        rollbackTransaction(em);
+    }
 }
 
