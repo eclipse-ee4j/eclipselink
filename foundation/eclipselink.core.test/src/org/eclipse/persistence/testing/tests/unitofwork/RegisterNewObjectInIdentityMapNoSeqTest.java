@@ -21,6 +21,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 
 
 /**
@@ -72,7 +73,10 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         ClassDescriptor descriptor = getSession().getClassDescriptor(Weather.class);
         descriptor.setIdValidation(idValidationOriginal);
         if(keepSequencing) {
-            descriptor.getSequence().setShouldAlwaysOverrideExistingValue(shouldAlwaysOverrideExistingValueOriginal);
+            // ReturningPolicyTestModel substitutes sequences for returning
+            if(descriptor.getSequence() != null) {
+                descriptor.getSequence().setShouldAlwaysOverrideExistingValue(shouldAlwaysOverrideExistingValueOriginal);
+            }
         } else {
             descriptor.setSequenceNumberField(this.sequenceNumberField);
             descriptor.setSequenceNumberName(this.sequenceNumberName);
@@ -92,6 +96,10 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         idValidationOriginal = descriptor.getIdValidation(); 
         descriptor.setIdValidation(idValidation);
         if(keepSequencing) {
+            if(descriptor.getSequence() == null) {
+                // ReturningPolicyTestModel substitutes sequences for returning
+                throw new TestWarningException("Cannot run test with descriptor.getSequence() == null");
+            }
             if(!shouldAlwaysOverrideExistingValue) {
                 if(descriptor.getSequence().shouldAcquireValueAfterInsert()) {
                     throw new TestProblemException("Cannot run test with keepSequencing==true and alwayOverrideExistingValueOriginal==false with Identity sequence: it should always override");

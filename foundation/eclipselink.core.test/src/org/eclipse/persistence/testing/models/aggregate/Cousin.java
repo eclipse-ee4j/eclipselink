@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.aggregate;
 public class Cousin {
 
     protected int id;
+    protected String name;
     
     public Cousin() {
         super();
@@ -32,4 +33,11 @@ public class Cousin {
         this.id = id;
     }
     
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
 }

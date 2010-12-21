@@ -113,8 +113,8 @@ public class SubstituteSequencingWithReturningPolicyAdapter implements ProjectAn
     }
 
     public void createSequences(Session session) {
-        if (session.getPlatform().supportsSequenceObjects()) {
-            throw new TestWarningException("Currently supports Oracle platform only");
+        if (!session.getPlatform().supportsSequenceObjects()) {
+            throw new TestWarningException("Requires database platform that supports sequence objects (like Oracle) - they will be used by triggers");
         }
         SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
         Hashtable sequenceNameToDefinition = new Hashtable();

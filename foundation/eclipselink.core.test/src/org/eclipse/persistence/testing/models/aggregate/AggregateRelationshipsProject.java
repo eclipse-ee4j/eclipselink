@@ -172,6 +172,11 @@ public ClassDescriptor buildCousinClassDescriptor() {
 	idMapping.setFieldName("AGG_COUSIN.ID");
 	descriptor.addMapping(idMapping);
 	
+    DirectToFieldMapping nameMapping = new DirectToFieldMapping();
+    nameMapping.setAttributeName("name");
+    nameMapping.setFieldName("AGG_COUSIN.NAME");
+    descriptor.addMapping(nameMapping);
+    
 	return descriptor;
 }
 
@@ -245,6 +250,11 @@ public ClassDescriptor buildRelativeClassDescriptor() {
 	idMapping.setFieldName("AGG_RELATIVE.REL_ID");
 	descriptor.addMapping(idMapping);
 	
+    DirectToFieldMapping nameMapping = new DirectToFieldMapping();
+    nameMapping.setAttributeName("name");
+    nameMapping.setFieldName("AGG_RELATIVE.NAME");
+    descriptor.addMapping(nameMapping);
+    
 	return descriptor;
 }
 

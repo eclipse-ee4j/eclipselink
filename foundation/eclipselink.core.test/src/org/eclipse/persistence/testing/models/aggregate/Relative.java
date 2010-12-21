@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.aggregate;
 public class Relative {
 
     protected int id;
+    protected String name;
 
     public Relative() {
         super();
@@ -32,5 +33,12 @@ public class Relative {
     public void setId(int id) {
         this.id = id;
     }
+        
+    public String getName() {
+        return name;
+    }
     
+    public void setName(String name) {
+        this.name = name;
+    }
 }

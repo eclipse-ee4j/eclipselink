@@ -85,6 +85,17 @@ public TableDefinition buildAGG_COUSINTable() {
     fieldID.setShouldAllowNull(false);
     table.addField(fieldID);
     
+    FieldDefinition fieldNAME = new FieldDefinition();
+    fieldNAME.setName("NAME");
+    fieldNAME.setTypeName("VARCHAR2");
+    fieldNAME.setSize(20);
+    fieldNAME.setSubSize(0);
+    fieldNAME.setIsPrimaryKey(false);
+    fieldNAME.setIsIdentity(false);
+    fieldNAME.setUnique(false);
+    fieldNAME.setShouldAllowNull(true);
+    table.addField(fieldNAME);
+    
     return table;
 }
 
@@ -217,6 +228,17 @@ public TableDefinition buildAGG_RELATIVETable() {
     fieldREL_ID.setUnique(false);
     fieldREL_ID.setShouldAllowNull(false);
     table.addField(fieldREL_ID);
+    
+    FieldDefinition fieldNAME = new FieldDefinition();
+    fieldNAME.setName("NAME");
+    fieldNAME.setTypeName("VARCHAR2");
+    fieldNAME.setSize(20);
+    fieldNAME.setSubSize(0);
+    fieldNAME.setIsPrimaryKey(false);
+    fieldNAME.setIsIdentity(false);
+    fieldNAME.setUnique(false);
+    fieldNAME.setShouldAllowNull(true);
+    table.addField(fieldNAME);
     
     return table;
 }
