@@ -1970,16 +1970,15 @@ public class AnnotationsProcessor {
 
             property.setInverseReference(true);
         }
+        
         processXmlJavaTypeAdapter(property, info, cls);
-
         processXmlElement(property, info);
 
         JavaClass ptype = property.getActualType();
-
         if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER)) {
             property.setIsSwaAttachmentRef(true);
             property.setSchemaType(XMLConstants.SWA_REF_QNAME);
-        } else if (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
+        } else if (isMtomAttachment(property)) {
             property.setIsMtomAttachment(true);
             property.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
         }
@@ -3945,5 +3944,24 @@ public class AnnotationsProcessor {
             propMap.put(prop.name(), pvalue);
         }
         return propMap;
+    }
+    
+    /**
+     * Indicates if a given Property represents an MTOM attachment.  Will return true
+     * if the given Property's actual type is one of:
+     * 
+     * - DataHandler
+     * - byte[]
+     * - Byte[]
+     * - Image
+     * - Source
+     * - MimeMultipart
+     * 
+     * @param property
+     * @return
+     */
+    public boolean isMtomAttachment(Property property) {
+        JavaClass ptype = property.getActualType();
+        return (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART));
     }
 }

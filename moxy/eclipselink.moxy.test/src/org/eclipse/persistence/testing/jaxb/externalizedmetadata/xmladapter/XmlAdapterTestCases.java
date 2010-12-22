@@ -15,15 +15,21 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter;
 import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyCalendar;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.hexbinary.Customer;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.someotherpackage.SomeLameClass;
+import org.w3c.dom.Document;
 
 /**
  * Tests XmlJavaTypeAdapter via eclipselink-oxm.xml
@@ -41,6 +47,9 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
     
     private static final String CLS_CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel";
     private static final String CLS_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/classlevel/";
+
+    private static final String HEX_CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.hexbinary";
+    private static final String HEX_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/";
 
     private final static int DAY = 12;
     private final static int MONTH = 4;
@@ -184,7 +193,52 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
             fail("An unexpected exception occurred");
         }
     }
+    
+    public void testHexBinary() {
+        String src = HEX_PATH + "hexbinary.xml";
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(HEX_PATH + "hexbinary-oxm.xml"));
+        JAXBContext ctx = null;
+        try {
+            ctx = JAXBContextFactory.createContext(new Class[]{ Customer.class }, properties);
+        } catch (JAXBException jaxbex) {
+            fail("JAXBContext creation failed");
+        }
+        try {
+            Object result = ctx.createUnmarshaller().unmarshal(new File(src));
+            assertTrue("Unmarshal failed - objects are not equal", getControlCustomer().equals(result));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred during unmarshal.");
+        } 
+        try {
+            Document testDoc = parser.newDocument();
+            Document ctrlDoc = parser.newDocument();
+            try {
+                ctrlDoc = getControlDocument(src);
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("An unexpected exception occurred loading control document [" + src + "].");
+            }
 
+            Marshaller marshaller = ctx.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.marshal(getControlCustomer(), testDoc);
+            assertTrue("The Customer did not marshal correctly - document comparison failed: ", compareDocuments(ctrlDoc, testDoc));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred during marshal.");
+        }
+    }
+
+    protected Object getControlCustomer() {
+        byte[] bytes = new byte[] {30,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4};
+        Customer customer = new Customer();
+        customer.hexBytes = bytes;
+        customer.base64Bytes = bytes;
+        return customer;
+    }
+    
     protected Object getControlObjectClass() {
         org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyClass sc = new org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyClass();
         MyCalendar mCal = new MyCalendar();

@@ -715,7 +715,6 @@ public class XMLProcessor {
             }
         }
         
-        
         reapplyPackageAndClassAdapters(oldProperty, typeInfo);
         // handle XmlJavaTypeAdapter
         if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
@@ -739,6 +738,9 @@ public class XMLProcessor {
         if (xmlAttribute.isXmlAttachmentRef()) {
             oldProperty.setIsSwaAttachmentRef(true);
             oldProperty.setSchemaType(XMLConstants.SWA_REF_QNAME);
+        } else if (aProcessor.isMtomAttachment(oldProperty)) {
+            oldProperty.setIsMtomAttachment(true);
+            oldProperty.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
         }
 
         // handle xml-schema-type
@@ -918,6 +920,9 @@ public class XMLProcessor {
         if (xmlElement.isXmlAttachmentRef()) {
             oldProperty.setIsSwaAttachmentRef(true);
             oldProperty.setSchemaType(XMLConstants.SWA_REF_QNAME);
+        } else if (aProcessor.isMtomAttachment(oldProperty)) {
+            oldProperty.setIsMtomAttachment(true);
+            oldProperty.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
         }
 
         // handle xml-schema-type
@@ -1415,6 +1420,11 @@ public class XMLProcessor {
         if (oldProperty.getGetMethodName() == null && oldProperty.getSetMethodName() == null) {
             oldProperty.setMethodProperty(false);
         }
+        
+        oldProperty.setIsSwaAttachmentRef(false);
+        oldProperty.setIsMtomAttachment(false);
+        oldProperty.setSchemaType(null);
+
         unsetXmlElementRefs(oldProperty, tInfo);
         unsetXmlElements(oldProperty);
         unsetXmlAnyAttribute(oldProperty, tInfo);
