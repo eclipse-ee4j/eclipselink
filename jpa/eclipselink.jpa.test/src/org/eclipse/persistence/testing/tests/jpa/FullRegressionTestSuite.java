@@ -223,6 +223,7 @@ public class FullRegressionTestSuite extends TestSuite {
 
         // DataTypes model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.NullBindingJUnitTestCase.suite());
+        fullSuite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.datatypes.DoesRelationConformTest.class);
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.arraypks.PrimitiveArrayPKCachingJUnitTestCase.suite());
 
         // DateTime model

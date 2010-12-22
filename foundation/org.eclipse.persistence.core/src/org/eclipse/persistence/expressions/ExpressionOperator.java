@@ -850,23 +850,26 @@ public class ExpressionOperator implements Serializable {
         // Note, compareTo for String returns a number <= -1 if the String is less than.  We assumed that
         // it would return -1.  The same thing for strings that are greater than (ie it returns >= 1). PWK
         // Equals
-        if (this.selector == Equal) {
+
+        if (this.selector == Equal || this.selector == NotEqual) {
             if ((left == null) && (right == null)) {
-                return true;
+                return  this.selector == Equal;
             } else if ((left == null) || (right == null)) {
-                return false;
+                return this.selector == NotEqual;
+            }
+            if (left instanceof Number && left instanceof Comparable && right instanceof Comparable
+                && left.getClass().equals (right.getClass())) {
+                return (((Comparable) left).compareTo( (Comparable) right) == 0) == (this.selector == Equal);
             }
             if (((left instanceof Number) && (right instanceof Number)) && (left.getClass() != right.getClass())) {
-                return ((Number)left).doubleValue() == ((Number)right).doubleValue();
+                double leftDouble = ((Number)left).doubleValue();
+                double rightDouble = ((Number)right).doubleValue();
+                if (Double.isNaN(leftDouble) && Double.isNaN(rightDouble)){
+                    return this.selector == Equal;
+                }
+                return (leftDouble == rightDouble) == (this.selector == Equal);
             }
-            return left.equals(right);
-        } else if (this.selector == NotEqual) {
-            if ((left == null) && (right == null)) {
-                return false;
-            } else if ((left == null) || (right == null)) {
-                return true;
-            }
-            return !left.equals(right);
+            return left.equals( right) == (this.selector == Equal);
         } else if (this.selector == IsNull) {
             return (left == null);
         }
