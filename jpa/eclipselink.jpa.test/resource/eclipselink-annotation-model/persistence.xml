@@ -203,4 +203,12 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     
+    <persistence-unit name="customizeAddTarget">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.logging.level" value="OFF"/>
+             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.AddTargetCustomizer"/>
+        </properties>
+    </persistence-unit>
 </persistence>
