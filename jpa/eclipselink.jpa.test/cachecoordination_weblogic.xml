@@ -138,7 +138,7 @@
                 fork="true"
                 failonerror="true">
                 <jvmarg value="-server"/>
-                <jvmarg value="-Xms512m"/>
+                <jvmarg value="-Xms768m"/>
                 <jvmarg value="-Xmx960m"/>
                 <!--jvmarg value="-XXjra:delay=180,recordingtime=900,filename=./jrockit-prof.xml,latency=true,tracedepth=128,sampletime=2 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=qaott48:2124"/-->
                 <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
@@ -167,7 +167,7 @@
                         fork="true"
                         failonerror="true">
                         <jvmarg value="-server"/>
-                        <jvmarg value="-Xms512m"/>
+                        <jvmarg value="-Xms768m"/>
                         <jvmarg value="-Xmx960m"/>
                         <jvmarg value="-XX:MaxPermSize=256m"/>
                         <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
@@ -192,7 +192,7 @@
                         fork="true"
                         failonerror="true">
                         <jvmarg value="-server"/>
-                        <jvmarg value="-Xms512m"/>
+                        <jvmarg value="-Xms768m"/>
                         <jvmarg value="-Xmx960m"/>
                         <jvmarg value="-XX:MaxPermSize=256m"/>
                         <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
@@ -236,7 +236,7 @@
                 <fileset dir="${weblogic.home}/lib" includes="weblogic.jar,weblogic_sp.jar"/>
                 <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
             </classpath>
-            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-Xms768m"/>
             <jvmarg value="-Xmx960m"/>
         </wlserver>
         <wlconfig url="t3://${rcm.wls.admin.httphost}:${rcm.wls.admin.port}/" username="${server.user}" password="${server.pwd}">

@@ -1175,7 +1175,7 @@
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
-             maxmemory="512m"
+             maxmemory="768m"
              failonerror="false"
              dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${test.agent}"/>
@@ -1277,7 +1277,7 @@
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
-        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="768m" dir="${eclipselink.jpa.test}/${run.dir}">
             <sysproperty key="TEST_SERVER_PLATFORM" value="org.eclipse.persistence.testing.framework.server.SpringPlatform"/>
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <jvmarg value="${TEST_AGENT}"/>
@@ -1326,7 +1326,7 @@
         <echo>Running test on ${db.url}</echo>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
-             maxmemory="512m"
+             maxmemory="768m"
              failonerror="false"
              dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${jvmarg.performance.baseline.version}"/>
@@ -1933,7 +1933,7 @@
         </condition>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
-             maxmemory="512m"
+             maxmemory="768m"
              failonerror="false"
              dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${jvmarg.performance.baseline.version}"/>

@@ -111,7 +111,7 @@
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
                 <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
             </classpath>
-            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-Xms768m"/>
             <jvmarg value="-Xmx960m"/>
             <!-- Using the following instead of above "jvmarg" setting when using SUN jdk because jrockit doesn't support PermSize
             <jvmarg value="-XX:PermSize=128m"/>

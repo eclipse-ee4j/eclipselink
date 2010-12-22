@@ -332,7 +332,7 @@
                 <isset property="db.platform"/>
             </not>
         </condition>
-        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="768m" dir="${run.dir}">
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="${ORM_TESTING}"/>

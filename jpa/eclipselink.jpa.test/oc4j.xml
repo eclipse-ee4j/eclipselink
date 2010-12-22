@@ -79,7 +79,7 @@
         <java jar="${oc4j.home}/j2ee/home/oc4j.jar"
             fork="true"
             failonerror="false">
-            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-Xms768m"/>
             <jvmarg value="-Xmx960m"/>
             <jvmarg value="-XX:PermSize=128m"/>
             <jvmarg value="-XX:MaxPermSize=256m"/>

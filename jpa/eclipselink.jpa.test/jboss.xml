@@ -122,8 +122,8 @@
         <java classname="org.jboss.Main" 
             fork="true"
             failonerror="false" >
-            <jvmarg value="-XX:MaxPermSize=512m"/>
-            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-XX:MaxPermSize=768m"/>
+            <jvmarg value="-Xms768m"/>
             <jvmarg value="-Xmx960m"/>
             <sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/>
             <sysproperty key="http.proxyPort" value="80"/>

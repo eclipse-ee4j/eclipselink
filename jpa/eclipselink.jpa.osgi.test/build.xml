@@ -221,7 +221,7 @@
         <dirname property="report.dirname" file="${eclipselink.jpa.osgi.test}/${report.dir}/${test.class}-test-results"/>
         <java jar="${equinox.launcher.jar}"
                  fork="true"
-                 maxmemory="512m"
+                 maxmemory="768m"
                  failonerror="false"
                  dir="${eclipselink.jpa.osgi.test}/${run.dir}">
                 <arg value="-console -clean"/>

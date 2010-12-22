@@ -196,7 +196,7 @@
                target="${javac.version}"
                deprecation="${javac.deprecation}"
                failonerror="true"
-               memoryMaximumSize="512m"
+               memoryMaximumSize="768m"
                fork="true"
                classpathref="osgi.compile.path"
         />
