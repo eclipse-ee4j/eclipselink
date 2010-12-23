@@ -39,6 +39,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     12/17/2010-2.2 Guy Pelletier 
  *       - 330755: Nested embeddables can't be used as embedded ids
+ *     12/23/2010-2.3 Guy Pelletier  
+ *       - 331386: NPE when mapping chain of 2 multi-column relationships using JPA 2.0 and @EmbeddedId composite PK-FK
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -127,12 +129,8 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         for (MappingAccessor accessor : accessors) {
             if (accessor.isBasic()) {
                 addIdFieldFromAccessor(accessor);
-            } else if (accessor.isDerivedIdClass()) {
-                for (MappingAccessor embeddedAccessor : accessor.getReferenceAccessors()) {
-                    addIdFieldFromAccessor(embeddedAccessor);
-                }
-            } else if (accessor.isEmbedded()) {
-                // Recursively bury down on the embedded accessors.
+            } else if (accessor.isDerivedIdClass() || accessor.isEmbedded()) {
+                // Recursively bury down on the embedded or derived id class accessors.
                 addIdFieldsFromAccessors(accessor.getReferenceAccessors());
             } else {
                 // EmbeddedId is solely a JPA feature, so we will not allow 

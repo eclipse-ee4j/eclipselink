@@ -31,6 +31,13 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Employee</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ContactInfo</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PostAddress</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PostAddressId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Foo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.FooId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Bar</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.BarId</class>
+        
         <properties>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
