@@ -2950,6 +2950,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public boolean isInTransaction() {
         return this.transactionMutex != null && this.transactionMutex.isAcquired();
     }
+    
+    /**
+     * PUBLIC:
+     * Returns true if Protected Entities should be built within this session
+     */
+    public boolean isProtectedSession(){
+        return true;
+    }
 
     /**
      * PUBLIC:

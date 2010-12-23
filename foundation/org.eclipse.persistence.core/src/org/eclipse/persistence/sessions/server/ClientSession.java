@@ -709,4 +709,13 @@ public class ClientSession extends AbstractSession {
     public boolean isExclusiveConnectionRequired() {
         return !this.connectionPolicy.isLazy && isActive();
     }
+    
+    /**
+     * PUBLIC:
+     * Returns true if Protected Entities should be built within this session
+     */
+    public boolean isProtectedSession(){
+        return false;
+    }
+
 }

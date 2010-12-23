@@ -342,7 +342,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         this.setField(new XMLField(xpathString));
     }
 
-    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManger, boolean isTargetProtected) {
+    @Override
+    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManger, AbstractSession targetSession) {
         return descriptor.getObjectBuilder().buildObject(query, nestedRow, joinManger);
     }
 
@@ -542,7 +543,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             }
 
             //Object element 
-            objectToAdd = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, null, joinManager, isTargetProtected);
+            objectToAdd = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, null, joinManager, executionSession);
             if (hasConverter()) {
                 if (getConverter() instanceof XMLConverter) {
                     objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());

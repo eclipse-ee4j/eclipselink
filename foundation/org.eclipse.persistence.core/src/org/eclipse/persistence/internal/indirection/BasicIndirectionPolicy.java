@@ -236,10 +236,10 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
         }
         if (unitOfWorkIndirectionObject instanceof DatabaseValueHolder) {
             ValueHolderInterface valueHolder = null;
-            if (session.isClientSession()){
+            if (session.isIsolatedClientSession()){
                 valueHolder =  ((DatabaseValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
             }
-            if (session.isDatabaseSession()){
+            if (!session.isProtectedSession()){
                 valueHolder = ((DatabaseValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
                 while (valueHolder instanceof DatabaseValueHolder && ((DatabaseValueHolder)valueHolder).getWrappedValueHolder() != null){
                     valueHolder = ((DatabaseValueHolder)valueHolder).getWrappedValueHolder();

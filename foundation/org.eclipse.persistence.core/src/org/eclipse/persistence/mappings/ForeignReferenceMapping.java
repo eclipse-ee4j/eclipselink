@@ -274,7 +274,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true);
         Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,// no original
                                                                             clone, unitOfWork, true);// building clone directly from row.
-        setAttributeValueInObject(clone, clonedAttributeValue);
+        if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
+            Object oldAttribute = this.getAttributeValueFromObject(clone);
+            setAttributeValueInObject(clone, clonedAttributeValue); // set this first to prevent infinite recursion
+            if (this.indirectionPolicy.objectIsInstantiatedOrChanged(oldAttribute)){
+                this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
+            }
+        }else{
+            setAttributeValueInObject(clone, clonedAttributeValue);
+        }
         if((joinManager != null && joinManager.isAttributeJoined(this.descriptor, this)) || (isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY)) {
             // need to instantiate to extended the lock beyond the source object table(s).
             this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
@@ -1326,7 +1334,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (descriptor.isProtectedIsolation() && isTargetProtected && this.isCacheable){
             attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, executionSession, false);
         }
-        setAttributeValueInObject(targetObject, attributeValue);
+        if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
+            Object oldAttribute = this.getAttributeValueFromObject(targetObject);
+            setAttributeValueInObject(targetObject, attributeValue); // set this first to prevent infinite recursion
+            if (this.indirectionPolicy.objectIsInstantiatedOrChanged(oldAttribute)){
+                this.indirectionPolicy.instantiateObject(targetObject, attributeValue);
+            }
+        }else{
+            setAttributeValueInObject(targetObject, attributeValue);
+        }
         return attributeValue;
     }    
 
@@ -1914,8 +1930,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 	            Object cached = cacheKey.getObject();
 	            if (cached != null){
 	                result = this.getAttributeValueFromObject(cached);
+	                return result;
 	            }
-	            return result;
 	        }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
 	            return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
 	        }

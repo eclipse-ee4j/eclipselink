@@ -432,7 +432,8 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
     }
 
-    protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, boolean isTargetProtected) {
+    @Override
+    protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, AbstractSession targetSession) {
         return objectBuilder.buildObject(query, nestedRow, joinManager);
     }
 
@@ -543,7 +544,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 }
             }
             ObjectBuilder objectBuilder = aDescriptor.getObjectBuilder();
-            toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, null, joinManager, isTargetProtected);
+            toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, null, joinManager, executionSession);
         }
 
         if (getConverter() != null) {

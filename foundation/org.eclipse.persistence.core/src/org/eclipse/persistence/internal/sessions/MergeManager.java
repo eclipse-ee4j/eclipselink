@@ -591,11 +591,11 @@ public class MergeManager {
         Object original = cacheKey.getObject();
         AbstractSession sharedSession = parentSession;
         if (descriptor.isProtectedIsolation()){
-            if (parentSession.isClientSession()){
+            if (parentSession.isIsolatedClientSession()){
                 //merge into the shared cache as well.
                 sharedSession = parentSession.getParent();
                 cacheKey = mergeChangesOfWorkingCopyIntoOriginal(clone, objectChangeSet, descriptor, sharedSession, unitOfWork);
-            }else if (parentSession.isDatabaseSession()){
+            }else if (!parentSession.isProtectedSession()){
                 descriptor.getObjectBuilder().cacheForeignKeyValues(clone, cacheKey, descriptor, sharedSession);
             }
         }

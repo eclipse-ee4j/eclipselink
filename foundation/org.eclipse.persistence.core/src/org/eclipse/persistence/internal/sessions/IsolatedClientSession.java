@@ -151,4 +151,13 @@ public class IsolatedClientSession extends ClientSession {
     public boolean isIsolatedClientSession() {
         return true;
     }    
+
+    /**
+     * PUBLIC:
+     * Returns true if Protected Entities should be built within this session
+     */
+    public boolean isProtectedSession(){
+        return true;
+    }
+
 }

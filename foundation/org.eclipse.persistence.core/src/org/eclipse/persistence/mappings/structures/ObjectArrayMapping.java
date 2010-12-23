@@ -86,9 +86,10 @@ public class ObjectArrayMapping extends AbstractCompositeCollectionMapping  impl
         this.structureName = structureName;
     }
     
-    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, boolean isTargetProtected) {
+    @Override
+    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, AbstractSession targetSession) {
         Object element = descriptor.getObjectBuilder().buildNewInstance();
-        descriptor.getObjectBuilder().buildAttributesIntoObject(element, parentCacheKey, nestedRow, query, joinManager, false, isTargetProtected);
+        descriptor.getObjectBuilder().buildAttributesIntoObject(element, parentCacheKey, nestedRow, query, joinManager, false, targetSession);
         return element;
     }
 

@@ -1060,11 +1060,20 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         }
  
         Object attributeValue = this.indirectionPolicy.valueFromMethod(object, row, query.getSession());
+        Object oldAttribute = null;
+        if (executionSession.isUnitOfWork() && query.shouldRefreshIdentityMapResult()){
+            oldAttribute = this.getAttributeValueFromObject(object);
+        }
         try {
             this.attributeAccessor.setAttributeValueInObject(object, attributeValue);
         } catch (DescriptorException exception) {
             exception.setMapping(this);
             throw exception;
+        }
+        if (executionSession.isUnitOfWork() && query.shouldRefreshIdentityMapResult()){
+            if (this.indirectionPolicy.objectIsInstantiatedOrChanged(oldAttribute)){
+                this.indirectionPolicy.instantiateObject(object, attributeValue);
+            }
         }
         return attributeValue;
     }

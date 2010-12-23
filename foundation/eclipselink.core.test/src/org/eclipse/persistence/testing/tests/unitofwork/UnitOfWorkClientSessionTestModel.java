@@ -46,6 +46,7 @@ public class UnitOfWorkClientSessionTestModel extends org.eclipse.persistence.te
 
     public void addTests() {
         addTest(new UnitOfWorkTestSuite());
+        addTest(new ProtectedUnitOfWorkTestSuite());
         // bug 3128227
         addTest(new UnitOfWorkRollbackConnectionReleaseTest());
     }

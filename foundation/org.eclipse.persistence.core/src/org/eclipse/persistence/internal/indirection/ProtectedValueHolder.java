@@ -30,20 +30,19 @@ public class ProtectedValueHolder extends DatabaseValueHolder {
     
     protected transient ValueHolderInterface wrappedValueHolder;
     protected transient DatabaseMapping mapping;
-    protected transient AbstractSession cloningSession;
 
     public ProtectedValueHolder(ValueHolderInterface attributeValue, DatabaseMapping mapping, AbstractSession cloningSession) {
         this.wrappedValueHolder = attributeValue;
         this.mapping = mapping;
-        this.cloningSession = cloningSession;
+        this.session = cloningSession;
     }
 
     @Override
     protected Object instantiate() throws DatabaseException {
-        if (cloningSession == null){
+        if (this.session == null){
             throw ValidationException.instantiatingValueholderWithNullSession();
         }
-        return mapping.buildContainerClone(this.wrappedValueHolder.getValue(), cloningSession);
+        return mapping.buildContainerClone(this.wrappedValueHolder.getValue(), this.session);
     }
 
     @Override
