@@ -261,11 +261,11 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
             descriptor = this.getReferenceDescriptor(nestedElementClass, executionSession);
         }
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-        Object toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, cacheKey, joinManager, isTargetProtected);
+        Object toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, cacheKey, joinManager, executionSession);
         if(getConverter() != null) {
             toReturn = getConverter().convertDataValueToObjectValue(toReturn, executionSession);
         }
-        return buildCompositeObject(objectBuilder, nestedRow, sourceQuery, cacheKey, joinManager, isTargetProtected);
+        return buildCompositeObject(objectBuilder, nestedRow, sourceQuery, cacheKey, joinManager, executionSession);
     }
 
     /**
@@ -302,7 +302,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
         setAttributeValueInObject(original, element);
     }
 
-    protected abstract Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManger, boolean isTargetProtected);
+    protected abstract Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManger, AbstractSession targetSession);
 
     /**
      * INTERNAL:

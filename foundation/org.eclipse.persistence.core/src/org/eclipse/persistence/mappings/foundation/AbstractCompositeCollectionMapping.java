@@ -839,7 +839,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
                 descriptor = this.getReferenceDescriptor(newElementClass, executionSession);
             }
 
-            Object element = buildCompositeObject(descriptor, nestedRow, sourceQuery, cacheKey, joinManager, isTargetProtected);
+            Object element = buildCompositeObject(descriptor, nestedRow, sourceQuery, cacheKey, joinManager, executionSession);
             if (hasConverter()) {
                 element = getConverter().convertDataValueToObjectValue(element, executionSession);
             }
@@ -848,7 +848,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
         return result;
     }
 
-    protected abstract Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManger, boolean isTargetProtected);
+    protected abstract Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManger, AbstractSession targetSession);
 
     /**
      * Return whether the specified object and all its components have been deleted.

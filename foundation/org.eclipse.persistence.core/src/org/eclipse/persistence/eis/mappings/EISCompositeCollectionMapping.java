@@ -119,12 +119,13 @@ public class EISCompositeCollectionMapping extends AbstractCompositeCollectionMa
         this.setField(new DatabaseField(fieldName));
     }
 
-    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentsCacheKey, JoinedAttributeManager joinManager, boolean isTargetProtected) {
+    @Override
+    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentsCacheKey, JoinedAttributeManager joinManager, AbstractSession targetSession) {
         if (((EISDescriptor)descriptor).getDataFormat() == EISDescriptor.XML) {
             return descriptor.getObjectBuilder().buildObject(query, nestedRow, joinManager);
         } else {
             Object element = descriptor.getObjectBuilder().buildNewInstance();
-            descriptor.getObjectBuilder().buildAttributesIntoObject(element, parentsCacheKey, nestedRow, query, joinManager, false, true);
+            descriptor.getObjectBuilder().buildAttributesIntoObject(element, parentsCacheKey, nestedRow, query, joinManager, false, targetSession);
             return element;
         }
     }

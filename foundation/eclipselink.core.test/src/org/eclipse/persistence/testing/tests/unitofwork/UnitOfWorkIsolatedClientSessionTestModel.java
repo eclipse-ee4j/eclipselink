@@ -22,6 +22,13 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  */
 public class UnitOfWorkIsolatedClientSessionTestModel extends UnitOfWorkClientSessionTestModel {
 
+    public void addTests() {
+        addTest(new UnitOfWorkTestSuite());
+        // No protected tests if all entities are isolated
+        // bug 3128227
+        addTest(new UnitOfWorkRollbackConnectionReleaseTest());
+    }
+
     public void setup() {
         for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();

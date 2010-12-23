@@ -108,7 +108,7 @@ new UpdateDeepOwnershipTest((org.eclipse.persistence.testing.models.ownership.Ob
         addTest(new NoIdentityMapUnitOfWorkTest());
         addTest(new RefreshObjectNoIdentityMapUnitOfWorkTest());
         addTest(new RelationshipTreeInsertTest());
-        //addTest(new UnitOfWorkComplexRefreshTest()); ** BUG#5231637, refresh does not cascade.
+        addTest(new UnitOfWorkComplexRefreshTest());
         addTest(new ViolateObjectSpaceTest());
         //code coverage
         addTest(new NoValidationWithInitIdentityMaps());

@@ -38,7 +38,6 @@ public class UnitOfWorkRollbackConnectionReleaseTest extends AutoVerifyTestCase 
         m_clientSession.getIdentityMapAccessor().initializeAllIdentityMaps();
         m_clientSession.setWriteConnection(accessor);
         accessor.rollbackTransaction((AbstractSession)getSession());
-        accessor.disconnect((AbstractSession)getSession());
     }
 
     public void setup() {

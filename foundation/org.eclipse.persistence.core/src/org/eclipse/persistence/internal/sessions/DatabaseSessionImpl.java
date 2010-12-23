@@ -560,6 +560,14 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     }
 
     /**
+     * PUBLIC:
+     * Returns true if Protected Entities should be built within this session
+     */
+    public boolean isProtectedSession(){
+        return false;
+    }
+
+    /**
      * INTERNAL:
      * Return the login for the read connection.  Used by the platform autodetect feature
      */
