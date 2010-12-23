@@ -29,6 +29,9 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMet
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyCalendar;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.hexbinary.Customer;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.someotherpackage.SomeLameClass;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref.Bar;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref.Foo;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref.FooBar;
 import org.w3c.dom.Document;
 
 /**
@@ -51,11 +54,16 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
     private static final String HEX_CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.hexbinary";
     private static final String HEX_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/";
 
+    private static final String ELT_REF_CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref";
+    private static final String ELT_REF_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/xmlelementref/";
+
     private final static int DAY = 12;
     private final static int MONTH = 4;
     private final static int YEAR = 1997;
     private static Calendar CALENDAR = new GregorianCalendar(YEAR, MONTH, DAY);
     private final static int ID = 66;
+    public final static String BAR_ITEM = "66";
+    public final static String FOOBAR_ITEM = "99";
     Class[] propArray;
 
     /**
@@ -211,20 +219,93 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
             e.printStackTrace();
             fail("An unexpected exception occurred during unmarshal.");
         } 
+        Document testDoc = parser.newDocument();
+        Document ctrlDoc = parser.newDocument();
         try {
-            Document testDoc = parser.newDocument();
-            Document ctrlDoc = parser.newDocument();
-            try {
-                ctrlDoc = getControlDocument(src);
-            } catch (Exception e) {
-                e.printStackTrace();
-                fail("An unexpected exception occurred loading control document [" + src + "].");
-            }
-
+            ctrlDoc = getControlDocument(src);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred loading control document [" + src + "].");
+        }
+        try {
             Marshaller marshaller = ctx.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(getControlCustomer(), testDoc);
             assertTrue("The Customer did not marshal correctly - document comparison failed: ", compareDocuments(ctrlDoc, testDoc));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred during marshal.");
+        }
+    }
+
+    public void testAdapterWithElementRef() {
+        String src = ELT_REF_PATH + "foo.xml";
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(ELT_REF_PATH + "foo-oxm.xml"));
+        JAXBContext ctx = null;
+        try {
+            ctx = JAXBContextFactory.createContext(new Class[]{ Foo.class, Bar.class }, properties);
+        } catch (JAXBException jaxbex) {
+            fail("JAXBContext creation failed");
+        }
+        try {
+            Object result = ctx.createUnmarshaller().unmarshal(new File(src));
+            assertTrue("Unmarshal failed - objects are not equal", getControlFoo().equals(result));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred during unmarshal.");
+        } 
+        Document testDoc = parser.newDocument();
+        Document ctrlDoc = parser.newDocument();
+        try {
+            ctrlDoc = getControlDocument(src);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred loading control document [" + src + "].");
+        }
+        try {
+            Marshaller marshaller = ctx.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.marshal(getControlFoo(), testDoc);
+            //marshaller.marshal(getControlFoo(), System.out);
+            assertTrue("Foo did not marshal correctly - document comparison failed: ", compareDocuments(ctrlDoc, testDoc));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred during marshal.");
+        }
+    }
+    
+    public void testAdapterWithElementRefs() {
+        String src = ELT_REF_PATH + "foobar.xml";
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(ELT_REF_PATH + "foobar-oxm.xml"));
+        JAXBContext ctx = null;
+        try {
+            ctx = JAXBContextFactory.createContext(new Class[]{ Foo.class, Bar.class, FooBar.class }, properties);
+        } catch (JAXBException jaxbex) {
+            fail("JAXBContext creation failed");
+        }
+        try {
+            Object result = ctx.createUnmarshaller().unmarshal(new File(src));
+            assertTrue("Unmarshal failed - objects are not equal", getControlFoobar().equals(result));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred during unmarshal.");
+        } 
+        Document testDoc = parser.newDocument();
+        Document ctrlDoc = parser.newDocument();
+        try {
+            ctrlDoc = getControlDocument(src);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred loading control document [" + src + "].");
+        }
+        try {
+            Marshaller marshaller = ctx.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.marshal(getControlFoobar(), testDoc);
+            //marshaller.marshal(getControlFoobar(), System.out);
+            assertTrue("Foo did not marshal correctly - document comparison failed: ", compareDocuments(ctrlDoc, testDoc));
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("An unexpected exception occurred during marshal.");
@@ -262,5 +343,17 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
         sc.cal = CALENDAR;
         sc.id = ID;
         return sc;
+    }
+    
+    protected Object getControlFoo() {
+        Foo foo = new Foo();
+        foo.item = BAR_ITEM;
+        return foo;
+    }
+
+    protected Object getControlFoobar() {
+        Foo foo = new Foo();
+        foo.item = FOOBAR_ITEM;
+        return foo;
     }
 }

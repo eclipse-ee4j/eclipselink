@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="xml-access-methods" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -51,7 +52,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "xmlAccessMethods",
     "xmlElementWrapper",
-    "xmlProperties"
+    "xmlProperties",
+    "xmlJavaTypeAdapter"
 })
 public class XmlElementRef
     extends JavaAttribute
@@ -63,6 +65,8 @@ public class XmlElementRef
     protected XmlElementWrapper xmlElementWrapper;
     @XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
+    @XmlElement(name = "xml-java-type-adapter")
+    protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @XmlAttribute(name = "name")
     protected String name;
     @XmlAttribute(name = "namespace")
@@ -148,6 +152,30 @@ public class XmlElementRef
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
+    }
+
+    /**
+     * Gets the value of the xmlJavaTypeAdapter property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlJavaTypeAdapter }
+     *     
+     */
+    public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
+        return xmlJavaTypeAdapter;
+    }
+
+    /**
+     * Sets the value of the xmlJavaTypeAdapter property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlJavaTypeAdapter }
+     *     
+     */
+    public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
+        this.xmlJavaTypeAdapter = value;
     }
 
     /**

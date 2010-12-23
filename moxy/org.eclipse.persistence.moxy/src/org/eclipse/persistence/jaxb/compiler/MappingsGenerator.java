@@ -716,8 +716,7 @@ public class MappingsGenerator {
     public DatabaseMapping generateMappingForReferenceProperty(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
         boolean isCollection = isCollectionType(property) || property.getType().isArray();
         if ((property.isMixedContent() && isCollection) || property.isAny()) {
-            XMLAnyCollectionMapping mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
-            return mapping;
+            return generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
         }
         DatabaseMapping mapping;
         if (isCollection) {

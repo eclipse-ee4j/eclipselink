@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-ref" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="read-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -51,7 +52,8 @@ import javax.xml.bind.annotation.XmlType;
     "xmlAccessMethods",
     "xmlElementRef",
     "xmlElementWrapper",
-    "xmlProperties"
+    "xmlProperties",
+    "xmlJavaTypeAdapter"
 })
 public class XmlElementRefs
     extends JavaAttribute
@@ -65,6 +67,8 @@ public class XmlElementRefs
     protected XmlElementWrapper xmlElementWrapper;
     @XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
+    @XmlElement(name = "xml-java-type-adapter")
+    protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @XmlAttribute(name = "xml-mixed")
     protected Boolean xmlMixed;
     @XmlAttribute(name = "read-only")
@@ -171,6 +175,30 @@ public class XmlElementRefs
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
+    }
+
+    /**
+     * Gets the value of the xmlJavaTypeAdapter property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlJavaTypeAdapter }
+     *     
+     */
+    public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
+        return xmlJavaTypeAdapter;
+    }
+
+    /**
+     * Sets the value of the xmlJavaTypeAdapter property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlJavaTypeAdapter }
+     *     
+     */
+    public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
+        this.xmlJavaTypeAdapter = value;
     }
 
     /**

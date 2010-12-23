@@ -1045,6 +1045,11 @@ public class XMLProcessor {
         eltRefs.add(xmlElementRef);
         oldProperty.setXmlElementRefs(eltRefs);
         oldProperty.setIsReference(true);
+        
+        // handle XmlAdapter
+        if (xmlElementRef.getXmlJavaTypeAdapter() != null) {
+            oldProperty.setXmlJavaTypeAdapter(xmlElementRef.getXmlJavaTypeAdapter());
+        }
         // check for container type
         if (!xmlElementRef.getContainerType().equals(DEFAULT)) {
             setContainerType(oldProperty, xmlElementRef.getContainerType());
@@ -1095,6 +1100,11 @@ public class XMLProcessor {
 
         oldProperty.setXmlElementRefs(eltRefs);
         oldProperty.setIsReference(true);
+        
+        // handle XmlAdapter
+        if (xmlElementRefs.getXmlJavaTypeAdapter() != null) {
+            oldProperty.setXmlJavaTypeAdapter(xmlElementRefs.getXmlJavaTypeAdapter());
+        }
         // handle XmlElementWrapper
         if (xmlElementRefs.getXmlElementWrapper() != null) {
             oldProperty.setXmlElementWrapper(xmlElementRefs.getXmlElementWrapper());
