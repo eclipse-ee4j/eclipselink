@@ -29,6 +29,7 @@ public class CacheableTableCreator extends TableCreator {
         addTableDefinition(buildSUB_CACHEABLE_NONE_ENTITYTable());
         addTableDefinition(buildCACHEABLE_PROTECTED_ENTITYTable());
         addTableDefinition(buildCACHEABLE_FORCE_PROTECTED_ENTITYTable());
+        addTableDefinition(buildCACHEABLE_FORCE_PROTECTED_ENTITY_WITH_COMPOSITTable());
     }
     
     public static TableDefinition buildCACHEABLE_FALSE_ENTITYTable() {
@@ -245,6 +246,53 @@ public class CacheableTableCreator extends TableCreator {
         return table;
     }
     
+    public static TableDefinition buildCACHEABLE_FORCE_PROTECTED_ENTITY_WITH_COMPOSITTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CACHEABLE_F_P_W_C");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(75);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldEMBNAME = new FieldDefinition();
+        fieldEMBNAME.setName("EMB_NAME");
+        fieldEMBNAME.setTypeName("VARCHAR");
+        fieldEMBNAME.setSize(75);
+        fieldEMBNAME.setShouldAllowNull(true);
+        fieldEMBNAME.setIsPrimaryKey(false);
+        fieldEMBNAME.setUnique(false);
+        fieldEMBNAME.setIsIdentity(false);
+        table.addField(fieldEMBNAME);
+        
+
+        FieldDefinition falseFK = new FieldDefinition();
+        falseFK.setName("PROTECTED_FK");
+        falseFK.setTypeName("NUMERIC");
+        falseFK.setSize(15);
+        falseFK.setShouldAllowNull(true);
+        falseFK.setIsPrimaryKey(false);
+        falseFK.setUnique(false);
+        falseFK.setIsIdentity(false);
+        table.addField(falseFK);
+
+        return table;
+    }
     public static TableDefinition buildSUB_CACHEABLE_FALSE_ENTITYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_SUB_CACHEABLE_FALSE");

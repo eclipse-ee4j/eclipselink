@@ -2754,7 +2754,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     session.getProject().setHasProxyIndirection(true);
                 }
                 ClassDescriptor referencedDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
-                if ( referencedDescriptor!= null){
+                if (referencedDescriptor!= null){
                     referencedDescriptor.referencingClasses.add(this);
                     if (this.isSharedIsolation() && !referencedDescriptor.isSharedIsolation()){
                         this.cacheIsolation = CacheIsolationType.PROTECTED;
@@ -2762,6 +2762,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 }
             }
 
+            if (mapping.isAggregateObjectMapping()){
+                ClassDescriptor referencedDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                if (referencedDescriptor!= null){
+                    referencedDescriptor.referencingClasses.add(this);
+                    if (this.isSharedIsolation() && !referencedDescriptor.isSharedIsolation()){
+                        this.cacheIsolation = CacheIsolationType.PROTECTED;
+                    }
+                }
+            }
             // If this descriptor uses a cascaded version optimistic locking 
             // or has cascade locking policies set then prepare check the 
             // mappings.

@@ -109,6 +109,9 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ALL</shared-cache-mode>
     </persistence-unit>
@@ -126,6 +129,9 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
     </persistence-unit>
@@ -143,6 +149,9 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
@@ -160,6 +169,9 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
@@ -177,6 +189,9 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>UNSPECIFIED</shared-cache-mode>
     </persistence-unit>

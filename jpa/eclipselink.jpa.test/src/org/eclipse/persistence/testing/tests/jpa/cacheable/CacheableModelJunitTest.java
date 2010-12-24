@@ -45,7 +45,10 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreato
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity;
+import org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite;
+import org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity;
+import org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable;
  
 /*
  * By default the tests in this suite assume the "DISABLE_SELECTIVE" persistence
@@ -66,6 +69,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     private static int m_cacheableTrueEntity2Id;
     private static int m_childCacheableFalseEntityId;
     private static int m_cacheableProtectedEntityId;
+    private static int m_forcedProtectedEntityCompositId;
     
     public CacheableModelJunitTest() {
         super();
@@ -236,6 +240,8 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             suite.addTest(new CacheableModelJunitTest("testUpdateProtectedOneToMany"));
             
             suite.addTest(new CacheableModelJunitTest("testProtectedRelationshipsMetadata"));
+            suite.addTest(new CacheableModelJunitTest("testForceProtectedFromEmbeddable"));
+            suite.addTest(new CacheableModelJunitTest("testEmbeddableProtectedCaching"));
         }
         return suite;
     }
@@ -924,6 +930,18 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             em.persist(childCacheableFalseEntity);
             m_childCacheableFalseEntityId = childCacheableFalseEntity.getId();
             
+            ForceProtectedEntityWithComposite fpewc = new ForceProtectedEntityWithComposite();
+            fpewc.setName("testCreateEntities");
+            ProtectedEmbeddable pe = new ProtectedEmbeddable();
+            fpewc.setProtectedEmbeddable(pe);
+            CacheableFalseEntity cfe = new CacheableFalseEntity();
+            pe.setCacheableFalseEntity(cfe);
+            SharedEmbeddable se = new SharedEmbeddable();
+            fpewc.setSharedEmbeddable(se);
+            em.persist(fpewc);
+            m_forcedProtectedEntityCompositId = fpewc.getId();
+            em.persist(cfe);
+            
             commitTransaction(em);
         } finally {
             closeEntityManager(em);   
@@ -1089,6 +1107,42 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         closeEM(em);
         }
         
+    }
+    
+    public void testForceProtectedFromEmbeddable(){
+        EntityManager em = createDSEntityManager();
+        ClassDescriptor forcedProtectedDescriptor = em.unwrap(ServerSession.class).getDescriptor(ForceProtectedEntityWithComposite.class);
+        ClassDescriptor protectedEmbeddableDesc = forcedProtectedDescriptor.getMappingForAttributeName("protectedEmbeddable").getReferenceDescriptor();
+        ClassDescriptor sharedEmbeddableDesc = forcedProtectedDescriptor.getMappingForAttributeName("sharedEmbeddable").getReferenceDescriptor();
+        assertFalse("Isolation of Entity not altered when embeddable has noncacheable relationship", forcedProtectedDescriptor.isSharedIsolation());
+        assertFalse("Isolation of Embeddable not altered when embeddable has noncacheable relationship", protectedEmbeddableDesc.isSharedIsolation());
+        assertFalse("Isolation of Embeddable not altered when Parent Entity is Protected", sharedEmbeddableDesc.isSharedIsolation());
+    }
+    
+    public void testEmbeddableProtectedCaching(){
+        EntityManager em = createDSEntityManager();
+        beginTransaction(em);
+        try{
+            ForceProtectedEntityWithComposite cte = em.find(ForceProtectedEntityWithComposite.class, m_forcedProtectedEntityCompositId);
+            
+        ProtectedEmbeddable pe = cte.getProtectedEmbeddable();
+        
+        ServerSession session = em.unwrap(ServerSession.class);
+        closeEM(em);
+        ForceProtectedEntityWithComposite cachedCPE = (ForceProtectedEntityWithComposite) session.getIdentityMapAccessor().getFromIdentityMap(cte);
+        assertNotNull("ForceProtectedEntityWithComposite was not found in the cache", cachedCPE);
+        
+        cachedCPE.getProtectedEmbeddable().setName("NewName"+System.currentTimeMillis());
+        
+        em = createDSEntityManager();
+        beginTransaction(em);
+        ForceProtectedEntityWithComposite managedCPE = em.find(ForceProtectedEntityWithComposite.class, cte.getId());
+        
+        assertEquals("Cache was not used for Protected Isolation", cachedCPE.getProtectedEmbeddable().getName(),managedCPE.getProtectedEmbeddable().getName());
+        }finally{
+        rollbackTransaction(em);
+        closeEM(em);
+        }
     }
     
     public void testProtectedCaching(){
