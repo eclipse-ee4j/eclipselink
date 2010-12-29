@@ -49,7 +49,6 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;

@@ -14,13 +14,13 @@ package org.eclipse.persistence.sessions;
 
 import java.util.*;
 import java.io.*;
+import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;

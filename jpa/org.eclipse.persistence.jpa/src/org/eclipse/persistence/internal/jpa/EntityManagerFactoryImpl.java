@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.*;
+import org.eclipse.persistence.config.ReferenceMode;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 import org.eclipse.persistence.config.EntityManagerProperties;
@@ -44,7 +45,6 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.queries.FetchGroupTracker;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;

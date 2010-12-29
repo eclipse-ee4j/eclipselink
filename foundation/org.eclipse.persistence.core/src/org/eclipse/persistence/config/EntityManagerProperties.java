@@ -54,7 +54,7 @@ public class EntityManagerProperties {
      * in that case it affects all EntityManagers created by the factory. 
      * The property cannot be applied to existing active persistence unit context.
      * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
-     * @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     * @see org.eclipse.persistence.config.ReferenceMode
      */
     public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE = PersistenceUnitProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE;
 

@@ -18,6 +18,7 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.*;
 
 import org.eclipse.persistence.config.FlushClearCache;
+import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
@@ -29,7 +30,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 
 
 public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {

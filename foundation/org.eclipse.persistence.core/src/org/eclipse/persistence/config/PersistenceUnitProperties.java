@@ -27,6 +27,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
 import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -35,7 +36,6 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;

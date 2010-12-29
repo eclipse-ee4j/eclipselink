@@ -17,6 +17,7 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.*;
 import java.io.*;
 
+import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -58,7 +59,6 @@ import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.Command;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.Session
@@ -204,7 +204,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      *  Stores the default reference mode that a UnitOfWork will use when referencing
      *  managed objects.
-     *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     *  @see org.eclipse.persistence.config.ReferenceMode
      */
     protected ReferenceMode defaultReferenceMode = null;
 
@@ -4458,7 +4458,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      *  Stores the default Session wide reference mode that a UnitOfWork will use when referencing
      *  managed objects.
-     *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     *  @see org.eclipse.persistence.config.ReferenceMode
      */
     public ReferenceMode getDefaultReferenceMode() {
         return defaultReferenceMode;
@@ -4467,7 +4467,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      *  Stores the default Session wide reference mode that a UnitOfWork will use when referencing
      *  managed objects.
-     *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     *  @see org.eclipse.persistence.config.ReferenceMode
      */
    public void setDefaultReferenceMode(ReferenceMode defaultReferenceMode) {
         this.defaultReferenceMode = defaultReferenceMode;

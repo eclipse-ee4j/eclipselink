@@ -14,6 +14,7 @@ package org.eclipse.persistence.sessions.remote;
 
 import java.util.*;
 
+import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.sessions.*;
@@ -21,7 +22,6 @@ import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
 import org.eclipse.persistence.logging.SessionLog;

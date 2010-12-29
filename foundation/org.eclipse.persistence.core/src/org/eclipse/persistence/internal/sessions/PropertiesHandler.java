@@ -27,7 +27,6 @@ import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 
 /**
  * 

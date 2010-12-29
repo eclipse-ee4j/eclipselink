@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.io.*;
 import java.lang.reflect.*;
 
+import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.exceptions.*;
@@ -31,7 +32,6 @@ import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;

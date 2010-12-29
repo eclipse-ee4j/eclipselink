@@ -10,7 +10,7 @@
  * Contributors:
  *     Gordon Yorke - ER 214661 - VM Managed Entity Detachment
  ******************************************************************************/  
-package org.eclipse.persistence.sessions.factories;
+package org.eclipse.persistence.config;
 
 /**
  * <b>Purpose:</b> This class is a configuration property used to specify

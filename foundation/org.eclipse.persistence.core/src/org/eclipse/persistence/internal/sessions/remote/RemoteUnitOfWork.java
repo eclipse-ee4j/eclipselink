@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.sessions.remote;
 
 import java.util.*;
 
+import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.*;
@@ -23,7 +24,6 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.logging.SessionLog;
 
