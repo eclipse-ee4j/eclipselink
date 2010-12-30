@@ -25,6 +25,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.XmlAccessorOrderTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.XmlAccessorTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.XmlAdapterTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.list.XmlAdapterListTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.negative.XmlAdapterNegativeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.ClassLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.PackageLevelTestCases;
@@ -110,6 +111,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlDiscriminatorTestCases.class);
         suite.addTestSuite(XmlJoinNodeTestCases.class);
         suite.addTestSuite(XmlMetadataCompleteTestCases.class);
+        suite.addTestSuite(XmlAdapterListTestCases.class);
         return suite;
     }
     

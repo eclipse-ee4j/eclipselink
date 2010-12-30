@@ -130,6 +130,8 @@ public class Property implements Cloneable {
     // XmlJoinNodes specific attributes
     private XmlJoinNodes xmlJoinNodes;
     private List<XmlJoinNodes> xmlJoinNodesList;
+
+    private static final String MARSHAL_METHOD_NAME = "marshal";
     
     public Property() {}
 
@@ -141,29 +143,69 @@ public class Property implements Cloneable {
         this.helper = helper;
     }
     
+    /**
+     * Set an XmlAdapter on this Property.  The type, generic type and 
+     * original type will be set as required based on the XmlAdapter's
+     * marshal method return type and input parameters.
+     * 
+     * @param adapterCls
+     */
     public void setAdapterClass(JavaClass adapterCls) {
         adapterClass = adapterCls;
         JavaClass newType  = helper.getJavaClass(Object.class);
+        ArrayList<JavaMethod> marshalMethods = new ArrayList<JavaMethod>();
                 
         // look for marshal method
-        boolean setGeneric = false;
         for (Iterator<JavaMethod> methodIt = adapterClass.getDeclaredMethods().iterator(); methodIt.hasNext(); ) {
             JavaMethod method = methodIt.next();
-            if (method.getName().equals("marshal")) {
-            	JavaClass returnType = method.getReturnType();            	
-            	if(!returnType.getQualifiedName().equals(newType.getQualifiedName())){
+            if (method.getName().equals(MARSHAL_METHOD_NAME)) {
+            	JavaClass returnType = method.getReturnType();
+            	// try and find a marshal method where Object is not the return type
+            	// to avoid processing an inherited default marshal method 
+            	if (!returnType.getQualifiedName().equals(newType.getQualifiedName())){
             		newType = (JavaClass) method.getReturnType();
-            		JavaClass paramType = method.getParameterTypes()[0];
-            		setGeneric = isCollectionType(this.getType()) && !(isCollectionType(paramType));
-            		break;
+            		setTypeFromAdapterClass(newType, method.getParameterTypes()[0]);
+                    return;
             	}
+            	// found a marshal method with an Object return type; add 
+            	// it to the list in case we need to process it later
+            	marshalMethods.add(method);
             }
         }
-        if(setGeneric) {
+        // if there are no marshal methods to process just set type 
+        // and original type, then return
+        if (marshalMethods.size() == 0) {
+            setTypeFromAdapterClass(newType, null);
+            return;
+        }
+        // at this point we didn't find a marshal method with a non-Object return type
+        for (JavaMethod method : marshalMethods) {
+            JavaClass paramType = method.getParameterTypes()[0];
+            // look for non-Object parameter type
+            if (!paramType.equals(newType)) {
+                setTypeFromAdapterClass(newType, paramType);
+                return;
+            }
+        }
+        // at this point we will just grab the first marshal method
+        setTypeFromAdapterClass(newType, marshalMethods.get(0).getParameterTypes()[0]);
+    }
+    
+    /**
+     * This convenience method will set the generic type, type and original type
+     * for this Porperty as required based on a given 'new' type and parameter 
+     * type. This method will typically be called when setting the type during 
+     * adapter processing.
+     * 
+     * @param newType
+     * @param parameterType
+     */
+    private void setTypeFromAdapterClass(JavaClass newType, JavaClass parameterType) {
+        if (isCollectionType(this.getType()) && !(isCollectionType(parameterType))) {
             this.setGenericType(newType);
         } else {
-           this.setOriginalType(this.getType());
-           this.setType(newType);
+            this.setOriginalType(this.getType());
+            this.setType(newType);
         }
     }
     
