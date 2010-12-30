@@ -26,6 +26,8 @@
  *       - 267217: Add Named Access Type to EclipseLink-ORM
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     12/30/2010-2.3 Guy Pelletier  
+ *       - 312253: Descriptor exception with Embeddable on DDL gen
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -43,6 +45,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
@@ -349,10 +353,10 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // Process any table defaults and log warning messages.
         processTable(m_collectionTable, getDefaultCollectionTableName());
         
-        // Set the reference table on the mapping (only in a direct collection
-        // case). For an embeddable collection, the table will be set on the
-        // fields.
-        if (! isDirectEmbeddableCollection()) {
+        // Set the reference table on the mapping.
+        if (isDirectEmbeddableCollection()) {
+            ((AggregateCollectionMapping) mapping).setDefaultSourceTable(m_collectionTable.getDatabaseTable());
+        } else {
             ((DirectCollectionMapping) mapping).setReferenceTable(m_collectionTable.getDatabaseTable());
         }
     }
@@ -464,6 +468,4 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     public void setIsNonCacheable(boolean noncacheable){
         m_nonCacheable = noncacheable;
     }
-    
-    
 }

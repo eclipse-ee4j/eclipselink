@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/30/2010-2.3 Guy Pelletier  
+ *       - 312253: Descriptor exception with Embeddable on DDL gen
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -70,6 +72,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * in non-remote case referenceDescriptor is assigned to remoteReferenceDescriptor; in remote - another way around.
      */  
     protected ClassDescriptor remoteReferenceDescriptor;
+    
+    /** Default source table that should be used with the default source fields of this mapping. */
+    protected DatabaseTable defaultSourceTable;
 
     /** Indicates whether the entire target object is primary key - in that case the object can't be updated in the db,
      * but rather deleted and then re-inserted. 
@@ -1346,59 +1351,71 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     protected void initializeReferenceDescriptor(AbstractSession session) throws DescriptorException {
         super.initializeReferenceDescriptor(session);
-
+        
         HashMap<DatabaseField, DatabaseField> fieldTranslation = null;
         HashMap<DatabaseTable, DatabaseTable> tableTranslation = null;
 
+        ClassDescriptor referenceDescriptor = getReferenceDescriptor();
+        ClassDescriptor clonedDescriptor = (ClassDescriptor) referenceDescriptor.clone();
+        
         int nAggregateTables = 0;
-        if(getReferenceDescriptor().getTables() != null) {
-            nAggregateTables = getReferenceDescriptor().getTables().size();
+        if (referenceDescriptor.getTables() != null) {
+            nAggregateTables = referenceDescriptor.getTables().size();
         }
-        if (!this.aggregateToSourceFields.isEmpty()) {
+        
+        if (! aggregateToSourceFields.isEmpty()) {
             DatabaseTable aggregateDefaultTable = null;
             if (nAggregateTables != 0) {
-                aggregateDefaultTable = getReferenceDescriptor().getTables().get(0);
+                aggregateDefaultTable = referenceDescriptor.getTables().get(0);
             } else {
                 aggregateDefaultTable = new DatabaseTable();
             }
+            
             tableTranslation = new HashMap<DatabaseTable, DatabaseTable>();
             fieldTranslation = new HashMap<DatabaseField, DatabaseField>();
-
-            Iterator<Map.Entry<String, DatabaseField>> iterator = this.aggregateToSourceFields.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, DatabaseField> entry = iterator.next(); 
-                DatabaseField aggregateField = new DatabaseField(entry.getKey());
-                //322233 - continue using a string for the Aggregate field name 
-                //  because the table may or may not have been set.  DatabaseFields without a table
-                //  will match any DatabaseField with a table if the name is the same, breaking
-                //  legacy support for AggregateCollection inheritance models
-                if (!aggregateField.hasTableName()) {
+            
+            for (String aggregateFieldName : aggregateToSourceFields.keySet()) {
+                DatabaseField aggregateField = new DatabaseField(aggregateFieldName);
+                // 322233 - continue using a string for the Aggregate field name 
+                // because the table may or may not have been set. DatabaseFields without a table
+                // will match any DatabaseField with a table if the name is the same, breaking
+                // legacy support for AggregateCollection inheritance models
+                if (! aggregateField.hasTableName()) {
                     aggregateField.setTable(aggregateDefaultTable);
                 }
-                DatabaseField sourceField = entry.getValue();
-                if (!sourceField.hasTableName()) {
-                    //TODO: throw exception: source field doesn't have table
+                
+                DatabaseField sourceField = aggregateToSourceFields.get(aggregateFieldName);
+                if (! sourceField.hasTableName()) {
+                    if (defaultSourceTable == null) {
+                        // TODO: throw exception: source field doesn't have table
+                    } else {
+                        sourceField.setTable(defaultSourceTable);
+                    }
                 }
+                
                 DatabaseTable sourceTable = sourceField.getTable();
                 DatabaseTable savedSourceTable = tableTranslation.get(aggregateField.getTable());
                 if (savedSourceTable == null) {
                     tableTranslation.put(aggregateField.getTable(), sourceTable);
                 } else {
-                    if(!sourceTable.equals(savedSourceTable)) {
+                    if (! sourceTable.equals(savedSourceTable)) {
                         // TODO: throw exception: aggregate table mapped to two source tables
                     }
                 }
+                
                 fieldTranslation.put(aggregateField, sourceField);
             }
+         
+            // Translate the table and fields now.
+            translateTablesAndFields(clonedDescriptor, fieldTranslation, tableTranslation);
         } else {
             if (nAggregateTables == 0) {
-                //TODO: throw exception
+                if (defaultSourceTable == null) {
+                    // TODO: throw exception
+                } else {
+                    clonedDescriptor.addTable(defaultSourceTable);
+                }
             }
-        }
-        
-        ClassDescriptor clonedDescriptor = (ClassDescriptor)getReferenceDescriptor().clone();
-        if( fieldTranslation != null) {
-            translateTablesAndFields(clonedDescriptor, fieldTranslation, tableTranslation); 
         }
         
         updateNestedAggregateMappings(clonedDescriptor, session);
@@ -2493,5 +2510,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     */
     public void setIsListOrderFieldUpdatable(boolean isUpdatable) {
        this.isListOrderFieldUpdatable = isUpdatable;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set a default source table to use with the source fields of this mapping.
+     */
+    public void setDefaultSourceTable(DatabaseTable table) {
+        defaultSourceTable = table;
     }
 }
