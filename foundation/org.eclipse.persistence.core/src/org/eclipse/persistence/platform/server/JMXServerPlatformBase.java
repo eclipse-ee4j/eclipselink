@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 2010, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,6 +18,8 @@
  *       - 328006: Refactor WebLogic MBeanServer registration to use active 
  *         WLS com.bea server when multiple instances returned 
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>        
+ *     01/01/2011-2.2 Michael O'Brien 
+ *       - 333160: ModuleName string extraction code does not handle -1 not found index in 3 of 5 cases 
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
@@ -87,14 +89,15 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * 2) Module name - the ejb or war jar name (there is a 1-many relationship for module:session(s)) 
      */
     /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
-    protected static String APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "annotation: ";
-    protected static String APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "";
+    private static String APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT = "postfix,match~should;be]implemented!by`subclass^";
+    protected static String APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT;
+    protected static String APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT;
 
     /** Override by subclass: Search String in application server session for ejb modules */
-    protected static String APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = ".jar/";
+    protected static String APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT;
     /** Override by subclass: Search String in application server session for war modules */
-    protected static String APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = ".war/";
-    protected static String APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "";    
+    protected static String APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT;
+    protected static String APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT;    
     
     
     /** Cache the ServerPlatform MBeanServer for performance */
@@ -490,54 +493,75 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * @return
      */
     protected void initializeApplicationNameAndModuleName() {
+        // 333160: Fail Fast: we wrap the entire function in a try/catch - even though no exceptions like IOBE should occur - because this initialization should not stop server predeploy in "any" way
         // The database session name is used to get the module name (no reflection required)
-        String databaseSessionName = getDatabaseSession().getName();
+        String databaseSessionName = getMBeanSessionName();
+        
         // The classLoader toString() is used to get the application name (no reflection required)
         String classLoaderName = getDatabaseSession().getPlatform().getConversionManager().getLoader().toString();
-        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "jmx_mbean_classloader_in_use", 
+        try {
+            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "jmx_mbean_classloader_in_use", 
                 "Platform ConversionManager", classLoaderName);
-        // Get property from persistence.xml or sessions.xml
-        String jpaModuleName = getModuleName(false);
-        String jpaApplicationName = getApplicationName(false);     
+            // Get property from persistence.xml or sessions.xml
+            String jpaModuleName = getModuleName(false);
+            String jpaApplicationName = getApplicationName(false);     
         
-        if (jpaModuleName == null) {
-            String subString = databaseSessionName.substring(databaseSessionName.indexOf(
-                    APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX) + 
+            // Get the name past the matching string if we have a match
+            int startIndex = databaseSessionName.indexOf(
+                APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX);
+            if (jpaModuleName == null && startIndex > -1) {
+                String subString = databaseSessionName.substring(startIndex + 
                     APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX.length());
-            if(null != subString) {
-                setModuleName(subString);
-            } else {
-                subString = databaseSessionName.substring(databaseSessionName.indexOf(
-                        APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX) + 
-                        APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX.length());
+                if(null == subString) {
+                    startIndex = databaseSessionName.indexOf(
+                        APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX);
+                    if(startIndex > -1) {
+                        subString = databaseSessionName.substring(startIndex +  
+                                APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX.length());
+                    }
+                }            
+                // clear terminating characters like ".jar/"
+                if(null != subString) {
+                    int endIndex = subString.indexOf(APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX);
+                    if(endIndex > -1) {
+                        subString = subString.substring(0, endIndex);
+                    }
+                }
                 setModuleName(subString);
             }
-            
-            if(null != jpaModuleName && jpaModuleName.indexOf(APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX) > -1) {
-                jpaModuleName = jpaModuleName.substring(0,
-                        jpaModuleName.indexOf(APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX)); 
-            }
-        }
 
-        // Get the application name from the ClassLoader, it is also present in the session name
-        if (jpaApplicationName == null) {
-            jpaApplicationName = classLoaderName.substring(classLoaderName.indexOf(
-                        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX) + 
+            // Get the application name from the ClassLoader, it is also present in the session name
+            startIndex = classLoaderName.indexOf(
+                APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX);
+            if (jpaApplicationName == null && startIndex > -1) {                
+                jpaApplicationName = classLoaderName.substring(startIndex + 
                         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX.length());
-            if(null != jpaApplicationName && jpaApplicationName.indexOf(APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX) > -1) {
-                jpaApplicationName = jpaApplicationName.substring(0,
-                        jpaApplicationName.indexOf(APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX)); 
+                // Clear terminating delimiting characters like "/}
+                if(null != jpaApplicationName) {
+                    int endIndex = jpaApplicationName.indexOf(APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX);
+                    if(endIndex > -1) {
+                        jpaApplicationName = jpaApplicationName.substring(0, endIndex);
+                    }
+                }
+                // replace encodable characters
+                if(null != jpaApplicationName) {
+                    jpaApplicationName = jpaApplicationName.replaceAll("[=,:] ", "_");
+                }
+                setApplicationName(jpaApplicationName);
             }
-            if(null != jpaApplicationName) {
-                jpaApplicationName = jpaApplicationName.replaceAll("[=,:] ", "_");
-            }
-            setApplicationName(jpaApplicationName);
-        }
-        // Final check for null values - incorporated into the get functions in these logs
-        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_application_name", 
+            // Final check for null values - incorporated into the get functions in these logs (null will be converted to "UNKNOWN")
+            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_application_name", 
                 getDatabaseSession().getName(), getApplicationName());
-        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_module_name", 
+            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_module_name", 
                 getDatabaseSession().getName(), getModuleName());
-    }
-    
+        } catch (Exception e) {
+            // 333160: Fail Fast: we wrap the entire function in a try/catch - even though no exceptions like IOBE should occur - because this initialization should not stop server predeploy in "any" way
+            // However, we should never arrive here
+            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_application_name", 
+                    classLoaderName, "unavailable");
+            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_module_name", 
+                    databaseSessionName, "unavailable");
+            e.printStackTrace();
+        }
+    }    
 }

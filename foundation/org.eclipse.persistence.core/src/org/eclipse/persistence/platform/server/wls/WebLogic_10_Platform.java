@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,7 +23,9 @@
  *     10/18/2010-2.1.2 Michael O'Brien 
  *       - 328006: Refactor WebLogic MBeanServer registration to use active 
  *         WLS com.bea server when multiple instances returned 
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>        
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>
+ *     01/01/2011-2.2 Michael O'Brien 
+ *       - 333160: ModuleName string extraction code does not handle -1 not found index in 1 of 3 cases 
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.wls;
 
@@ -97,8 +99,8 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = ".jar/";
         /** Override by subclass: Search String in application server session for war modules */
         APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = ".war/";
-        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "";
-        APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "";
+        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "postfix,match~not;required^";
+        APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "postfix,match~not;required^";
     }
     
     /**
@@ -306,9 +308,14 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                 if(classLoaderOrString instanceof ClassLoader) {
                     // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
                     String jpaModuleNameRoot = ((ClassLoader)classLoaderOrString).toString();
-                    classLoaderOrString = jpaModuleNameRoot.substring(jpaModuleNameRoot.indexOf(
-                            WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX) + 
-                            WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX.length());
+                    if(null != jpaModuleNameRoot) {
+                        int startIndex = jpaModuleNameRoot.indexOf(
+                            WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX);
+                        if(startIndex > -1) {
+                            classLoaderOrString = jpaModuleNameRoot.substring(startIndex +  
+                                    WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX.length());
+                        }
+                    }
                 }        
             } catch (Exception ex) { // catch all Illegal*Exception and PrivilegedActionException
                 /*
