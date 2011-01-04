@@ -49,6 +49,8 @@
  *       - 309445: CannonicalModelProcessor process all files (minor correction to patch for bug above)
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     01/04/2011-2.3 Guy Pelletier 
+ *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -70,7 +72,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -354,7 +355,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * Return true if this accessor represents a 1-1 primary key relationship.
      */
     public boolean isOneToOnePrimaryKeyRelationship() {
-        return isOneToOne() && ! m_primaryKeyJoinColumns.isEmpty();
+        return ! m_primaryKeyJoinColumns.isEmpty();
     }
     
     /**
@@ -623,7 +624,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * exception will be thrown).
      */
     protected void processOneToOnePrimaryKeyRelationship(OneToOneMapping mapping) {
-        List<PrimaryKeyJoinColumnMetadata> pkJoinColumns = processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(getPrimaryKeyJoinColumns()));
+        List<PrimaryKeyJoinColumnMetadata> pkJoinColumns = processPrimaryKeyJoinColumns(getPrimaryKeyJoinColumns());
  
         // Add the source foreign key fields to the mapping.
         for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : pkJoinColumns) {
@@ -635,10 +636,10 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             
             // Add a source foreign key to the mapping.
             mapping.addForeignKeyField(fkField, pkField);
-            
-            // Mark the mapping read only
-            mapping.setIsReadOnly(true);
         }
+        
+        // Mark the mapping read only
+        mapping.setIsReadOnly(true);
     }
     
     /**

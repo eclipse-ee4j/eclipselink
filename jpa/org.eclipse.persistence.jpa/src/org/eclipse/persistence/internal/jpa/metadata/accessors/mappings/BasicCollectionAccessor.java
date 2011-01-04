@@ -27,6 +27,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     01/04/2011-2.3 Guy Pelletier 
+ *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -43,7 +45,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -210,7 +211,7 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
         // Add all the primaryKeyJoinColumns (reference key fields) to the 
         // mapping. Primary key join column validation is performed in the
         // processPrimaryKeyJoinColumns call.
-        for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(getCollectionTable().getPrimaryKeyJoinColumns()))) {
+        for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(getCollectionTable().getPrimaryKeyJoinColumns())) {
             // Look up the primary key field from the referenced column name.
             DatabaseField pkField = getReferencedField(primaryKeyJoinColumn.getReferencedColumnName(), getOwningDescriptor(), MetadataLogger.PK_COLUMN);
             

@@ -25,11 +25,15 @@
  *       - 214519: Allow appending strings to CREATE TABLE statements
  *     11/23/2010-2.2 Frank Schwarz 
  *       - 328774: TABLE_PER_CLASS-mapped key of a java.util.Map does not work for querying
+ *     01/04/2011-2.3 Guy Pelletier 
+ *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -265,6 +269,68 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em))
                 rollbackTransaction(em);
             fail("DDL generation may generate wrong Primary Key constraint, thrown:" + e);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    // Test for bug 330628
+    public void testPrimaryKeyJoinColumns() {
+        EntityManager em = createEntityManager(DDL_PU);
+        beginTransaction(em);
+        
+        try {
+            Country country = new Country();
+            country.setName("USA");
+            country.setIsoCode("840");
+            
+            State state = new State();
+            state.setCountry(country);
+            state.setIsoCode("36");
+            state.setName("New York");
+            
+            Set<State> states = new HashSet<State>();
+            states.add(state);
+            country.setStates(states);
+            
+            City city = new City();
+            city.setName("Rochester");
+            city.setState(state);
+            
+            Set<City> cities = new HashSet<City>();
+            cities.add(city);
+            state.setCities(cities);
+            
+            ZipArea zipArea = new ZipArea();
+            zipArea.setCity(city);
+            
+            Set<ZipArea> zipAreas = new HashSet<ZipArea>();
+            zipAreas.add(zipArea);
+            city.setZipAreas(zipAreas);
+            
+            Zip zip = new Zip();
+            zip.setCode("14621");
+            zip.setCountry(country);
+            zip.setZipAreas(zipAreas);
+            zipArea.setZip(zip);
+
+            Set<Zip> zips = new HashSet<Zip>();
+            country.setZips(zips);
+            
+            em.persist(country);
+            em.persist(state);
+            em.persist(city);
+            em.persist(zipArea);
+            em.persist(zip);
+            
+            commitTransaction(em);
+            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+
+            fail("Error persisting new country with city, states and zips : " + e);
         } finally {
             closeEntityManager(em);
         }

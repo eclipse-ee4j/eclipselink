@@ -77,6 +77,8 @@
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  *     12/01/2010-2.2 Guy Pelletier 
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *     01/04/2011-2.3 Guy Pelletier 
+ *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -112,7 +114,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityClassListenerMetadata;
@@ -173,7 +174,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Add multiple fields to the descriptor. Called from either Inheritance 
      * or SecondaryTable context.
      */
-    protected void addMultipleTableKeyFields(PrimaryKeyJoinColumnsMetadata primaryKeyJoinColumns, DatabaseTable targetTable, String PK_CTX, String FK_CTX) {
+    protected void addMultipleTableKeyFields(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns, DatabaseTable targetTable, String PK_CTX, String FK_CTX) {
         // ProcessPrimaryKeyJoinColumns will validate the primary key join
         // columns passed in and will return a list of PrimaryKeyJoinColumnMetadata.
         for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(primaryKeyJoinColumns)) {
@@ -993,20 +994,24 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * parent descriptor must be provided.
      */
     public void processInheritancePrimaryKeyJoinColumns() {
-        PrimaryKeyJoinColumnsMetadata pkJoinColumns;
-        
+        // If there are no primary key join columns specified in XML, look for
+        // some defined through annotations.
         if (m_primaryKeyJoinColumns.isEmpty()) {
-            // Look for annotations.
-            MetadataAnnotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
-            MetadataAnnotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
-                
-            pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn, getAccessibleObject());
-        } else {
-            // Used what is specified in XML.
-            pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(m_primaryKeyJoinColumns);
+            // Process all the primary key join columns first.
+            if (isAnnotationPresent(PrimaryKeyJoinColumns.class)) {
+                MetadataAnnotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
+                for (Object primaryKeyJoinColumn : (Object[]) primaryKeyJoinColumns.getAttributeArray("value")) { 
+                    m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, getAccessibleObject()));
+                }
+            }
+            
+            // Process the single primary key join column second.
+            if (isAnnotationPresent(PrimaryKeyJoinColumn.class)) {
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(PrimaryKeyJoinColumn.class), getAccessibleObject()));
+            }
         }
         
-        addMultipleTableKeyFields(pkJoinColumns, getDescriptor().getPrimaryTable(), MetadataLogger.INHERITANCE_PK_COLUMN, MetadataLogger.INHERITANCE_FK_COLUMN);
+        addMultipleTableKeyFields(m_primaryKeyJoinColumns, getDescriptor().getPrimaryTable(), MetadataLogger.INHERITANCE_PK_COLUMN, MetadataLogger.INHERITANCE_FK_COLUMN);
     }
     
     /**
@@ -1090,7 +1095,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         getDescriptor().addTable(secondaryTable.getDatabaseTable());
         
         // Get the primary key join column(s) and add the multiple table key fields.
-        addMultipleTableKeyFields(new PrimaryKeyJoinColumnsMetadata(secondaryTable.getPrimaryKeyJoinColumns()), secondaryTable.getDatabaseTable(), MetadataLogger.SECONDARY_TABLE_PK_COLUMN, MetadataLogger.SECONDARY_TABLE_FK_COLUMN);
+        addMultipleTableKeyFields(secondaryTable.getPrimaryKeyJoinColumns(), secondaryTable.getDatabaseTable(), MetadataLogger.SECONDARY_TABLE_PK_COLUMN, MetadataLogger.SECONDARY_TABLE_FK_COLUMN);
     }
     
     /**

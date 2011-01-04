@@ -45,6 +45,8 @@
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  *     12/01/2010-2.2 Guy Pelletier 
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *     01/04/2011-2.3 Guy Pelletier 
+ *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -82,7 +84,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
@@ -684,32 +685,45 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Process the primary key join columms for this accessors annotated element.
      */    
-    protected List<PrimaryKeyJoinColumnMetadata> processPrimaryKeyJoinColumns(PrimaryKeyJoinColumnsMetadata primaryKeyJoinColumns) {
+    protected List<PrimaryKeyJoinColumnMetadata> processPrimaryKeyJoinColumns(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns) {
         // If the primary key join columns were not specified (that is empty),
         // this call will add any defaulted columns as necessary.
-         List<PrimaryKeyJoinColumnMetadata> pkJoinColumns = primaryKeyJoinColumns.values(m_descriptor);
-        
-        if (m_descriptor.hasCompositePrimaryKey()) {
-            // Validate the number of primary key fields defined.
-            if (pkJoinColumns.size() != m_descriptor.getPrimaryKeyFields().size()) {
-                throw ValidationException.incompletePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
+        if (primaryKeyJoinColumns.isEmpty()) {
+            if (getDescriptor().hasCompositePrimaryKey()) {
+                // Add a default one for each part of the composite primary
+                // key. Foreign and primary key to have the same name.
+                for (DatabaseField primaryKeyField : getDescriptor().getPrimaryKeyFields()) {
+                    PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata();
+                    primaryKeyJoinColumn.setReferencedColumnName(primaryKeyField.getName());
+                    primaryKeyJoinColumn.setName(primaryKeyField.getName());
+                    primaryKeyJoinColumns.add(primaryKeyJoinColumn);
+                }
+            } else {
+                // Add a default one for the single case, not setting any
+                // foreign and primary key names. They will default based
+                // on which accessor is using them.
+                primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata());
             }
-            
+        }
+        
+        if (getDescriptor().hasCompositePrimaryKey()) {
             // All the primary and foreign key field names should be specified.
-            for (PrimaryKeyJoinColumnMetadata pkJoinColumn : pkJoinColumns) {
+            // The number of join columns need not match the number of primary
+            // key columns since we allow joining to partials.
+            for (PrimaryKeyJoinColumnMetadata pkJoinColumn : primaryKeyJoinColumns) {
                 if (pkJoinColumn.isPrimaryKeyFieldNotSpecified() || pkJoinColumn.isForeignKeyFieldNotSpecified()) {
                     throw ValidationException.incompletePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
                 }
             }
         } else {
-            if (pkJoinColumns.size() > 1) {
+            if (primaryKeyJoinColumns.size() > 1) {
                 throw ValidationException.excessivePrimaryKeyJoinColumnsSpecified(getAnnotatedElement());
             }
         }
         
-        return pkJoinColumns;
+        return primaryKeyJoinColumns;
     }
-      
+    
     /**
      * INTERNAL:
      * Process the XML defined struct converters and check for a StructConverter 

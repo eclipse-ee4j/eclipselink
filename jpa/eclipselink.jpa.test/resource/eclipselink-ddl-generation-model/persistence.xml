@@ -40,6 +40,15 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MappedSuperclassType</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityType</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EmbeddableType</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.City</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.CityId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Country</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.State</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.StateId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Zip</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ZipArea</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ZipAreaId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ZipId</class>
         
         <properties>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
