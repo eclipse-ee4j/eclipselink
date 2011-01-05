@@ -693,6 +693,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     }
     
     /**
+     * INTERNAL:
      * Process settings common to ForeignReferenceMapping.
      */
     protected void processRelationshipMapping(ForeignReferenceMapping mapping) {
@@ -724,7 +725,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         if (m_nonCacheable){
             mapping.setIsCacheable(false);
         }
-
     }
     
     /**
