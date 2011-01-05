@@ -1478,12 +1478,16 @@ public class AnnotationsProcessor {
                     if (!Modifier.isStatic(modifiers)) {
                         Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
                         properties.add(property);
-                    } else if (Modifier.isFinal(modifiers) && helper.isAnnotationPresent(nextField, XmlAttribute.class)) {
+                    } else if (helper.isAnnotationPresent(nextField, XmlAttribute.class)) {
                         try {
                             Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
                             Object value = ((JavaFieldImpl) nextField).get(null);
-                            String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
-                            property.setFixedValue(stringValue);
+                            if(value != null) {
+                                String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
+                                property.setFixedValue(stringValue);
+                            } else {
+                                property.setWriteOnly(true);
+                            }
                             properties.add(property);
                         } catch (ClassCastException e) {
                             // do Nothing
