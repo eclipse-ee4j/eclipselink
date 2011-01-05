@@ -10087,6 +10087,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     // Bug 331692
     public void testSetTargetQueryOneToMany(){
+		if (isOnServer()) {
+            return;
+        }
+        
         EntityManager em = createEntityManager("customizeAddTarget");
         beginTransaction(em);
         Employee emp = new Employee();
