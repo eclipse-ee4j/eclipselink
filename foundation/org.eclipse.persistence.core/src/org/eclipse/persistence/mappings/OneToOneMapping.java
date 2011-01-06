@@ -75,6 +75,11 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     protected boolean isOneToOneRelationship = false;
     
     /**
+     * Defines if this mapping was built using primary key join columns.
+     */
+    protected boolean isOneToOnePrimaryKeyRelationship = false;
+    
+    /**
      * PUBLIC:
      * Default constructor.
      */
@@ -1356,12 +1361,26 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     }
     
     /**
+     * Return if this mapping is mapped using primary key join columns.
+     */
+    public boolean isOneToOnePrimaryKeyRelationship() {
+        return isOneToOnePrimaryKeyRelationship;
+    }
+    
+    /**
      * Define if this mapping is really for a OneToOne relationship.
      * This is a backward compatibility issue, in that before the ManyToOneMapping
      * was created OneToOneMapping was used for both.
      */
     public void setIsOneToOneRelationship(boolean isOneToOneRelationship) {
         this.isOneToOneRelationship = isOneToOneRelationship;
+    }
+    
+    /**
+     * Set if this mapping is defined using primary key join columns.
+     */
+    public void setIsOneToOnePrimaryKeyRelationship(boolean isOneToOnePrimaryKeyRelationship) {
+        this.isOneToOnePrimaryKeyRelationship = isOneToOnePrimaryKeyRelationship;
     }
 
     /**

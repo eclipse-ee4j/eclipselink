@@ -51,6 +51,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     01/04/2011-2.3 Guy Pelletier 
  *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
+ *     01/06/2011-2.3 Guy Pelletier
+ *       - 312244: can't map optional one-to-one relationship using @PrimaryKeyJoinColumn
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -640,6 +642,10 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         // Mark the mapping read only
         mapping.setIsReadOnly(true);
+        
+        // Set the primary key join column flag. This will also set the mapping
+        // to read only.
+        mapping.setIsOneToOnePrimaryKeyRelationship(true);
     }
     
     /**

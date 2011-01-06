@@ -49,6 +49,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ZipArea</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ZipAreaId</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ZipId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Course</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Material</class>
         
         <properties>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->

@@ -27,6 +27,8 @@
  *       - 328774: TABLE_PER_CLASS-mapped key of a java.util.Map does not work for querying
  *     01/04/2011-2.3 Guy Pelletier 
  *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
+ *     01/06/2011-2.3 Guy Pelletier
+ *       - 312244: can't map optional one-to-one relationship using @PrimaryKeyJoinColumn
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
@@ -269,6 +271,25 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em))
                 rollbackTransaction(em);
             fail("DDL generation may generate wrong Primary Key constraint, thrown:" + e);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    // Test for bug 312244
+    public void testOptionalPrimaryKeyJoinColumnRelationship() {
+        EntityManager em = createEntityManager(DDL_PU);
+        beginTransaction(em);
+        
+        try {
+            em.persist(new Course());
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+
+            fail("Error persisting new course without material failed : " + e);
         } finally {
             closeEntityManager(em);
         }

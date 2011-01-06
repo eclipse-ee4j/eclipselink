@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Sei Syvalta  - Bug 330237 - Tables are created in unspecified order (DDL creation)
+ *     01/06/2011-2.3 Guy Pelletier
+ *       - 312244: can't map optional one-to-one relationship using @PrimaryKeyJoinColumn
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -626,7 +628,13 @@ public class DefaultTableGenerator {
                 break;
             }
         }
-        addForeignMappingFkConstraint(mapping.getSourceToTargetKeyFields(), cascadeDelete);
+
+        // If the mapping is optional and uses primary key join columns, don't 
+        // generate foreign key constraints which would require the target to 
+        // always be set.
+        if (! mapping.isOptional() || ! mapping.isOneToOnePrimaryKeyRelationship()) {
+            addForeignMappingFkConstraint(mapping.getSourceToTargetKeyFields(), cascadeDelete);
+        }
     }
     
     protected void addForeignKeyFieldToSourceTargetTable(OneToManyMapping mapping) {
@@ -875,7 +883,7 @@ public class DefaultTableGenerator {
      * Add a foreign key constraint to the source table.
      */
     protected void addForeignKeyConstraint(TableDefinition sourceTableDef, TableDefinition targetTableDef, 
-            List<String> fkFields, List<String> targetFields, boolean cascadeOnDelete) {
+        List<String> fkFields, List<String> targetFields, boolean cascadeOnDelete) {
 
         // Only generate FK constraints if instructed to
         if (! this.generateFKConstraints){
