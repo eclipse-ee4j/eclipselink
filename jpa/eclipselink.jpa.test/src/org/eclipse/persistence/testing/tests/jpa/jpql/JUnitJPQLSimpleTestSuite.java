@@ -1106,7 +1106,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         expectedResult.add(emp1);
         expectedResult.add(emp2);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.getId() + "OR emp.id = " + emp2.getId();
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.getId() + " OR emp.id = " + emp2.getId();
 
         List result = em.createQuery(ejbqlString).getResultList();
         clearCache();
