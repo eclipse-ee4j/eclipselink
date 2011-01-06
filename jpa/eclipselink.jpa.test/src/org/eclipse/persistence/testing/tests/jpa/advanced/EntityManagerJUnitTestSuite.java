@@ -8989,17 +8989,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalTestPostAcquirePreReleaseEvents(true);
     }
     public void internalTestPostAcquirePreReleaseEvents(boolean useExternalConnectionPool){
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
         ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
         
         Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testPostAcquirePreReleaseEvents can't run on this platform.",  ss.getPlatform().isSybase());
         if (ss.getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testPostAcquirePreReleaseEvents skipped for this platform, "
                             + "Symfoware platform doesn't support failover.");
-            return;
-        }
-        
-        if (isOnServer()) {
-            // Uses DefaultConnector.
             return;
         }
         
