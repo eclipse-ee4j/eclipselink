@@ -77,7 +77,7 @@ public class PersistenceProvider extends org.eclipse.persistence.jpa.Persistence
                 // we will assume generic OSGI
                 Class initializerClass = Class.forName(this.initializerClassName);
                 Class[] argTypes = new Class[]{ClassLoader.class, Map.class};
-                Object[] args = new Object[]{classLoader, m, this};
+                Object[] args = new Object[]{classLoader, m};
                 initializer = (JPAInitializer)initializerClass.getConstructor(argTypes).newInstance(args);
                 initializer.initialize(m);
                 return initializer;
