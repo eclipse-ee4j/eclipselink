@@ -476,6 +476,10 @@ public abstract class JUnitTestCase extends TestCase {
         return getServerSession().getDatasourcePlatform();
     }
    
+    public static Platform getDbPlatform(String puName) {
+        return getServerSession(puName).getDatasourcePlatform();
+    }
+   
     public void setUp() {
     }
     

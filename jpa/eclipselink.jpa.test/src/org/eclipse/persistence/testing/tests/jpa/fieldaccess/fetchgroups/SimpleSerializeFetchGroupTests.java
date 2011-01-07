@@ -893,7 +893,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     
         // verify merged in shared the db - clear both em and shared caches.
         // Must read through the old EntityManager - the changes haven't been committed in the db.
-        clearCache();
+        clearCache("fieldaccess");
         em.clear();
         Employee empDb = em.find(Employee.class, id);
         assertEquals("newFirstName", empDb.getFirstName());
@@ -933,7 +933,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         // save the original Employee for clean up
         Employee empOriginal = em.find(Employee.class, id);
         closeEntityManager(em);
-        clearCache();
+        clearCache("fieldaccess");
         int newSalary = empOriginal.getSalary() * 2;
         if(newSalary == 0) {
             newSalary = 100;
@@ -982,7 +982,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
         // verify merged in shared the db - clear both em and shared caches.
         // Must read through the old EntityManager - the changes haven't been committed in the db.
-        clearCache();
+        clearCache("fieldaccess");
         em.clear();
         Employee empDb = em.find(Employee.class, id);
         assertEquals("newFirstName", empDb.getFirstName());

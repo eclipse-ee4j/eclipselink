@@ -20,7 +20,6 @@ import junit.framework.*;
 
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.Customer;
 
 /**
  * Test transactional operations with uni and bi-directional relationships.
@@ -46,12 +45,12 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
-        clearCache();
+        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+        clearCache("fieldaccess");
     }
     
     public void selfReferencingManyToManyTest() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         
         beginTransaction(em);
   
@@ -79,7 +78,7 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
         
         commitTransaction(em);
         
-        clearCache();
+        clearCache("fieldaccess");
         
         Customer newOwen = em.find(Customer.class, owenId);
         Customer newKirty = em.find(Customer.class, kirtyId);
@@ -97,7 +96,7 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
      * This test emulates a CTS test that failed.
      */
     public void testManyToManyClearDelete() throws Exception {
-        EntityManager entityManager = createEntityManager();
+        EntityManager entityManager = createEntityManager("fieldaccess");
 
         beginTransaction(entityManager);
         Customer owen = new Customer();

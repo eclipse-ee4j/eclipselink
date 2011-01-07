@@ -35,7 +35,7 @@ public class JAXBTestSuite extends JUnitTestCase {
     }
     
     public void testSetup() {
-        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
+        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
     }
     
     public static Test suite() {
@@ -48,15 +48,15 @@ public class JAXBTestSuite extends JUnitTestCase {
     }
      
     public void testMarshal() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         Order order = new Order();
         em.persist(order);
         commitTransaction(em);
         closeEntityManager(em);
         
-        clearCache();
-        em = createEntityManager();
+        clearCache("fieldaccess");
+        em = createEntityManager("fieldaccess");
         beginTransaction(em);
         order = em.find(Order.class, order.getOrderId());
         commitTransaction(em);
@@ -72,7 +72,7 @@ public class JAXBTestSuite extends JUnitTestCase {
         //JAXBElement elem = (JAXBElement) JAXBContext.newInstance(Order.class, Customer.class).createUnmarshaller().unmarshal(reader);
         order = (Order) JAXBContext.newInstance(Order.class, Customer.class).createUnmarshaller().unmarshal(reader);
         
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         beginTransaction(em);
         em.merge(order);
         commitTransaction(em);

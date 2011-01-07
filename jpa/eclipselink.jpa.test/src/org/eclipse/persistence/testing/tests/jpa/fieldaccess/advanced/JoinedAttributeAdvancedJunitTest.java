@@ -69,7 +69,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         UnitOfWork uow = acquireUnitOfWork();
 
         // use alternate way for Symfoware as it doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193)
-        if (!(JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+        if (!(JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
             UpdateAllQuery updateEmployees = new UpdateAllQuery(Employee.class);
             updateEmployees.addUpdate("manager", null);
             updateEmployees.addUpdate("address", null);
@@ -376,8 +376,8 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
     }
     
     public void testTwoUnrelatedResultWithOneToManyJoins() {
-        if (getServerSession().getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testTwoUnrelatedResultWithOneToManyJoins skipped for this platform, "
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testTwoUnrelatedResultWithOneToManyJoins skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -441,8 +441,8 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
     }
     
     public void testMultipleUnrelatedResultWithOneToManyJoins() {
-        if (getServerSession().getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testMultipleUnrelatedResultWithOneToManyJoins skipped for this platform, "
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testMultipleUnrelatedResultWithOneToManyJoins skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -517,8 +517,8 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
     }
     
     public void testTwoUnrelatedResultWithOneToOneJoins() {
-        if (getServerSession().getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testTwoUnrelatedResultWithOneToOneJoins skipped for this platform, "
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testTwoUnrelatedResultWithOneToOneJoins skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -580,8 +580,8 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
     }
     
     public void testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem() {
-        if (getServerSession().getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem skipped for this platform, "
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }

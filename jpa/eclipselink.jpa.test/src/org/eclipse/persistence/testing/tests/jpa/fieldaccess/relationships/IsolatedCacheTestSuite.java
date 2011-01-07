@@ -20,7 +20,6 @@ import javax.persistence.*;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem;
 
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
 
@@ -32,7 +31,7 @@ public class IsolatedCacheTestSuite extends JUnitTestCase {
     }
     
     public void testSetup () {
-        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
+        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
     }
     
     public static Test suite() {
@@ -46,7 +45,7 @@ public class IsolatedCacheTestSuite extends JUnitTestCase {
     }
          
     public void testCacheIsolationDBQueryHit() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         
         // Step 1 - get an isolated item in the cache.
         beginTransaction(em);

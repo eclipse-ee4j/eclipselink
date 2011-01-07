@@ -87,7 +87,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         employeePopulator.buildExamples();
         //Persist the examples in the database
         employeePopulator.persistExample(getServerSession("fieldaccess"));
-        clearCache();
+        clearCache("fieldaccess");
     }
 
     public void testInheritanceNoDiscriminatorColumn() throws Exception {
@@ -241,7 +241,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
     }
 
     public void testPessimisticLocking() throws Exception {
-        if (!isSelectForUpateSupported()) {
+        if (!isSelectForUpateSupported("fieldaccess")) {
             return;
         }
         EntityManager em = createEntityManager("fieldaccess");

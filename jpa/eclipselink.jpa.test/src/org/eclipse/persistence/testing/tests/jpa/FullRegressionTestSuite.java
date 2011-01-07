@@ -143,7 +143,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ExpressionJUnitTestSuite.class);
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.RelationshipModelJUnitTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.IsolatedCacheTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.VirtualAttributeTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.JAXBTestSuite.suite());
         // Fetch Groups tests.
         TestSuite suiteFg = new TestSuite();

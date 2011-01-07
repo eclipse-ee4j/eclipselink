@@ -539,9 +539,8 @@
                                org/eclipse/persistence/testing/models/jpa/ddlgeneration/**
                                org/eclipse/persistence/testing/models/jpa/delimited/**
                                org/eclipse/persistence/testing/models/jpa/validationfailed/**
-                               org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
+                               org/eclipse/persistence/testing/models/jpa/fieldaccess/**
                                org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/**
-                               org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
                                org/eclipse/persistence/testing/models/jpa/metamodel/**
                                org/eclipse/persistence/testing/models/jpa/partitioned/**
                                org/eclipse/persistence/testing/models/jpa/beanvalidation/**
@@ -660,6 +659,10 @@
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.advanced.field.access.model}">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.advanced.field.access.model}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/fieldaccess/relationships/**"/>
         </copy>
         <antcall target="prepare-spring-xmls" inheritRefs="true">
             <param name="MODEL_NAME" value="${eclipselink.advanced.field.access.model}"/>
@@ -2175,7 +2178,7 @@
 
     <target name="server-test-fieldaccess-relationships">
         <antcall target="server-run-all" inheritRefs="true">
-            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="PERSISTENCE_UNIT_NAME" value="fieldaccess"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/relationships"/>
             <param name="MODEL_NAME" value="eclipselink-relationships-field-access-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/relationships"/>

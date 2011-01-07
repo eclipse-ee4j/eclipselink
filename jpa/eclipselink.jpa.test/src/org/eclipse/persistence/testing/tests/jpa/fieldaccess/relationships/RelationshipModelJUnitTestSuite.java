@@ -71,8 +71,8 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
-        clearCache();
+        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+        clearCache("fieldaccess");
     }
     
     /*
@@ -80,7 +80,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
      * Also tests bugs 4288845 and 4293920, that params are passed in and used correctly.
      */
     public void testExecuteUpdateTest() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         Integer[] cusIDs = new Integer[2];
         String nameChange1 = "New Name1";
         String nameChange2 = "New Name2";
@@ -94,7 +94,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             em.persist(cusClone1);
             commitTransaction(em);
             em.clear();
-            clearCache();
+            clearCache("fieldaccess");
             cusIDs[0] = cusClone1.getCustomerId();
 
             beginTransaction(em);
@@ -102,7 +102,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             Query query = em.createQuery("UPDATE FieldAccessCustomer customer SET customer.name = '" + nameChange1 + "' WHERE customer.customerId = " + cusIDs[0]);
             query.executeUpdate();
             em.clear();
-            clearCache();
+            clearCache("fieldaccess");
             // getEntityManager().refresh(cus);
             cus = em.find(Customer.class, cusIDs[0]);
             returnedName1 = cus.getName();
@@ -112,7 +112,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             query2.setParameter("name", nameChange2);
             query2.executeUpdate();
             em.clear();
-            clearCache();
+            clearCache("fieldaccess");
             // getEntityManager().refresh(cus);
             cus = em.find(Customer.class, cusIDs[0]);
             returnedName2 = cus.getName();
@@ -123,7 +123,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             query3.setParameter("id", cusIDs[0]);
             query3.executeUpdate();
             em.clear();
-            clearCache();
+            clearCache("fieldaccess");
             // getEntityManager().refresh(cus);
             cus = em.find(Customer.class, cusIDs[0]);
             returnedName3 = cus.getName();
@@ -184,13 +184,13 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
 
         Customer cusClone1 = RelationshipsExamples.customerExample1();
         Customer cusClone2 = RelationshipsExamples.customerExample2();
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         em.persist(cusClone1);
         em.persist(cusClone2);
         commitTransaction(em);
         em.clear();
-        clearCache();
+        clearCache("fieldaccess");
 
         cusIDs[0] = cusClone1.getCustomerId();
         cusIDs[1] = cusClone2.getCustomerId();
@@ -266,13 +266,13 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
 
         Customer cusClone1 = RelationshipsExamples.customerExample1();
         Customer cusClone2 = RelationshipsExamples.customerExample2();
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         em.persist(cusClone1);
         em.persist(cusClone2);
         commitTransaction(em);
         em.clear();
-        clearCache();
+        clearCache("fieldaccess");
 
         cusIDs[0] = cusClone1.getCustomerId();
         cusIDs[1] = cusClone2.getCustomerId();
@@ -352,14 +352,14 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
 
         Customer cusClone1 = RelationshipsExamples.customerExample1();
         Customer cusClone2 = RelationshipsExamples.customerExample2();
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try {
             beginTransaction(em);
             em.persist(cusClone1);
             em.persist(cusClone2);
             commitTransaction(em);
                 
-            clearCache();
+            clearCache("fieldaccess");
             cusIDs[0] = cusClone1.getCustomerId();
             cusIDs[1] = cusClone2.getCustomerId();
             beginTransaction(em);
@@ -437,7 +437,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         Exception m_exception = null;
         boolean m_npeCaught;
         boolean m_illegalArgumentExceptionCaught;
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         m_npeCaught = false;
         m_illegalArgumentExceptionCaught = false;
   
@@ -475,7 +475,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         Order order1 = RelationshipsExamples.orderExample1();
         order1.setCustomer(cusClone1);
         order1.setItem(item1);
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try {
             beginTransaction(em);
             em.persist(cusClone1);
@@ -485,10 +485,10 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             orderIDs[0] = order1.getOrderId();
             itemIDs[0] = item1.getItemId();
     
-            clearCache();
+            clearCache("fieldaccess");
     
             try {
-                ServerSession ss = getServerSession();
+                ServerSession ss = getServerSession("fieldaccess");
                 Vector vec = new Vector();
                 vec.add(itemIDs[0]);
                 list = (List) ss.executeQuery("findAllFieldAccessOrdersByItem", vec);
@@ -532,25 +532,25 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         Order order3 = RelationshipsExamples.orderExample3();
         customer.addOrder(order3);
         order3.setItem(item3);
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try {
             beginTransaction(em);
             em.persist(customer);
             commitTransaction(em);
             beginTransaction(em);
-            verifyObjectInEntityManager(customer);
-            verifyObjectInEntityManager(order1);
-            verifyObjectInEntityManager(order2);
-            verifyObjectInEntityManager(item1);
-            verifyObjectInEntityManager(item2);
+            verifyObjectInEntityManager(customer, "fieldaccess");
+            verifyObjectInEntityManager(order1, "fieldaccess");
+            verifyObjectInEntityManager(order2, "fieldaccess");
+            verifyObjectInEntityManager(item1, "fieldaccess");
+            verifyObjectInEntityManager(item2, "fieldaccess");
             commitTransaction(em);
-            clearCache();
+            clearCache("fieldaccess");
             beginTransaction(em);
-            verifyObjectInEntityManager(customer);
-            verifyObjectInEntityManager(order1);
-            verifyObjectInEntityManager(order2);
-            verifyObjectInEntityManager(item1);
-            verifyObjectInEntityManager(item2);  
+            verifyObjectInEntityManager(customer, "fieldaccess");
+            verifyObjectInEntityManager(order1, "fieldaccess");
+            verifyObjectInEntityManager(order2, "fieldaccess");
+            verifyObjectInEntityManager(item1, "fieldaccess");
+            verifyObjectInEntityManager(item2, "fieldaccess");  
             commitTransaction(em);      
         } finally {
             if (isTransactionActive(em)) {
@@ -563,14 +563,14 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     // Test that updating a customer works correctly.
     public void testUpdateCustomer() {        
         Customer customer = RelationshipsExamples.customerExample4();
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try {
             beginTransaction(em);
             em.persist(customer);
             commitTransaction(em);
             closeEntityManager(em);
-            clearCache();
-            em = createEntityManager();
+            clearCache("fieldaccess");
+            em = createEntityManager("fieldaccess");
             beginTransaction(em);
             customer = em.find(Customer.class, customer.getCustomerId());
             Item item1 = RelationshipsExamples.itemExample1();
@@ -587,28 +587,28 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             customer.addOrder(order3);
             order3.setItem(item3);
             // Force LAZY otherwise compare will fail on was.
-            getServerSession().copy(customer);
+            getServerSession("fieldaccess").copy(customer);
             commitTransaction(em);
             beginTransaction(em);
-            verifyObjectInEntityManager(customer);
-            verifyObjectInEntityManager(order1);
-            verifyObjectInEntityManager(item1);
-            verifyObjectInEntityManager(order2);
-            verifyObjectInEntityManager(item2);
-            verifyObjectInEntityManager(order3);
-            verifyObjectInEntityManager(item3);
+            verifyObjectInEntityManager(customer, "fieldaccess");
+            verifyObjectInEntityManager(order1, "fieldaccess");
+            verifyObjectInEntityManager(item1, "fieldaccess");
+            verifyObjectInEntityManager(order2, "fieldaccess");
+            verifyObjectInEntityManager(item2, "fieldaccess");
+            verifyObjectInEntityManager(order3, "fieldaccess");
+            verifyObjectInEntityManager(item3, "fieldaccess");
             commitTransaction(em);
-            clearCache();
+            clearCache("fieldaccess");
             beginTransaction(em);
-            verifyObjectInEntityManager(customer);
-            verifyObjectInEntityManager(order1);
-            verifyObjectInEntityManager(item1);
-            verifyObjectInEntityManager(order2);
-            verifyObjectInEntityManager(item2);
-            verifyObjectInEntityManager(order3);
-            verifyObjectInEntityManager(item3);
+            verifyObjectInEntityManager(customer, "fieldaccess");
+            verifyObjectInEntityManager(order1, "fieldaccess");
+            verifyObjectInEntityManager(item1, "fieldaccess");
+            verifyObjectInEntityManager(order2, "fieldaccess");
+            verifyObjectInEntityManager(item2, "fieldaccess");
+            verifyObjectInEntityManager(order3, "fieldaccess");
+            verifyObjectInEntityManager(item3, "fieldaccess");
             commitTransaction(em);
-            clearCache();
+            clearCache("fieldaccess");
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
@@ -620,7 +620,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     // Test that deleting a customer works correctly.
     public void testDeleteCustomer() {        
         Customer customer = RelationshipsExamples.customerExample4();
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try {
             beginTransaction(em);
             Item item1 = RelationshipsExamples.itemExample1();
@@ -638,14 +638,14 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             em.persist(customer);
             commitTransaction(em);
             closeEntityManager(em);
-            clearCache();
-            em = createEntityManager();
+            clearCache("fieldaccess");
+            em = createEntityManager("fieldaccess");
             beginTransaction(em);
             customer = em.find(Customer.class, customer.getCustomerId());
             em.remove(customer);
             commitTransaction(em);
             beginTransaction(em);
-            verifyDelete(customer);
+            verifyDelete(customer, "fieldaccess");
             commitTransaction(em);
         } finally {
             if (isTransactionActive(em)) {
@@ -658,7 +658,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     // Test reading a customer works correctly.
     public void testReadCustomer() {        
         Customer customer = RelationshipsExamples.customerExample4();
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try {
             beginTransaction(em);
             Item item1 = RelationshipsExamples.itemExample1();
@@ -676,15 +676,15 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             em.persist(customer);
             commitTransaction(em);
             closeEntityManager(em);
-            clearCache();
-            em = createEntityManager();
+            clearCache("fieldaccess");
+            em = createEntityManager("fieldaccess");
             beginTransaction(em);
-            QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+            QuerySQLTracker counter = new QuerySQLTracker(getServerSession("fieldaccess"));
             customer = em.find(Customer.class, customer.getCustomerId());
             for (Order order : customer.getOrders()) {
                 order.getCustomer();
             }
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 2) {
+            if (isWeavingEnabled("fieldaccess") && counter.getSqlStatements().size() > 2) {
                 fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
             }
             commitTransaction(em);

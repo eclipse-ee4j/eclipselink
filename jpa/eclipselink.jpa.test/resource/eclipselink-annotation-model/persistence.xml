@@ -46,7 +46,6 @@
             <property name="eclipselink.cache.type.Employee" value="Weak"/>
             <property name="eclipselink.cache.type.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="HardWeak"/>
             <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.relationships.IsolatedItem" value="false"/>
-            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem" value="false"/>
             <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>

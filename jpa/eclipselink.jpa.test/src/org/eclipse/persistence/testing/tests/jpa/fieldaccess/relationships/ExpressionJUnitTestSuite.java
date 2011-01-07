@@ -36,8 +36,8 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
     
     public void setUp () {
         super.setUp();
-        clearCache();
-        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());        
+        clearCache("fieldaccess");
+        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));        
     }
 
     
@@ -46,15 +46,15 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      *   tests that leftTrim(trim_char) works.
      */
     public void testLeftTrimWithTrimChar() throws Exception {
-        Platform dbPlatform = getDbPlatform();
+        Platform dbPlatform = getDbPlatform("fieldaccess");
         if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware())) {
-            getServerSession().logMessage("Test testLeftTrimWithTrimChar skipped for this platform");
+            getServerSession("fieldaccess").logMessage("Test testLeftTrimWithTrimChar skipped for this platform");
             return;
         }
 
         Customer c = RelationshipsExamples.customerExample4();
         //customer4.setCity("Manotick");
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try{
             
             beginTransaction(em);
@@ -67,7 +67,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try {
             ExpressionBuilder builder = new ExpressionBuilder();
@@ -92,7 +92,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                 }
             }
             closeEntityManager(em);
-            em = createEntityManager();
+            em = createEntityManager("fieldaccess");
             beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
@@ -117,7 +117,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
 
         Customer c = RelationshipsExamples.customerExample4();
         c.setCity(" anotick");
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try{
             beginTransaction(em);
             em.persist(c);
@@ -129,7 +129,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try {
             ExpressionBuilder builder = new ExpressionBuilder();
@@ -154,7 +154,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                 }
             }
             closeEntityManager(em);
-            em = createEntityManager();
+            em = createEntityManager("fieldaccess");
             beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
@@ -176,15 +176,15 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      *   tests that rightTrim(trim_char) works.
      */
     public void testRightTrimWithTrimChar() throws Exception {
-        Platform dbPlatform = getDbPlatform();
+        Platform dbPlatform = getDbPlatform("fieldaccess");
         if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware())) {
-            getServerSession().logMessage("Test testRightTrimWithTrimChar skipped for this platform");
+            getServerSession("fieldaccess").logMessage("Test testRightTrimWithTrimChar skipped for this platform");
             return;
         }
 
         Customer c = RelationshipsExamples.customerExample4();
         c.setCity("ManotickM");
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try{
             beginTransaction(em);
             em.persist(c);
@@ -196,7 +196,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try {
             ExpressionBuilder builder = new ExpressionBuilder();
@@ -220,7 +220,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
             }
-            em = createEntityManager();
+            em = createEntityManager("fieldaccess");
             beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
@@ -245,7 +245,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
 
         Customer c = RelationshipsExamples.customerExample4();
         c.setCity("Manotic ");
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try{
             
             beginTransaction(em);
@@ -258,7 +258,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try {
             ExpressionBuilder builder = new ExpressionBuilder();
@@ -272,7 +272,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
             assertTrue("Test error: No Items found", result.size()!=0 );
             Customer returned = (Customer)result.get(0);
-            if (!getServerSession().getPlatform().isMaxDB()) {
+            if (!getServerSession("fieldaccess").getPlatform().isMaxDB()) {
                 // bug 327435: MaxDB trims trailing spaces of [VAR]CHAR fields
                 assertTrue("Test error: No Customers found", "Manotic ".equals(returned.getCity()));
             }
@@ -285,7 +285,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
             }
-            em = createEntityManager();
+            em = createEntityManager("fieldaccess");
             beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
@@ -306,15 +306,15 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      *   tests that trim(trim_char) works.
      */
     public void testTrimWithTrimChar() throws Exception {
-        Platform dbPlatform = getDbPlatform();
+        Platform dbPlatform = getDbPlatform("fieldaccess");
         if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware() )) {
-            getServerSession().logMessage("Test testTrimWithTrimChar skipped for this platform");
+            getServerSession("fieldaccess").logMessage("Test testTrimWithTrimChar skipped for this platform");
             return;
         }
         Item i = new Item();
         i.setName("itemi");
         i.setDescription("itemi description");
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try{
             beginTransaction(em);
             em.persist(i);
@@ -326,7 +326,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try {
             ExpressionBuilder builder = new ExpressionBuilder();
@@ -350,7 +350,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
             }
-            em = createEntityManager();
+            em = createEntityManager("fieldaccess");
             try{
                 beginTransaction(em);
                 i = em.find(Item.class, i.getItemId());
@@ -371,16 +371,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      *   tests that trim() works.
      */
     public void testTrimWithoutTrimChar() throws Exception {
-        Platform dbPlatform = getDbPlatform();
+        Platform dbPlatform = getDbPlatform("fieldaccess");
         if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() 
                 || dbPlatform.isInformix() || dbPlatform.isSQLAnywhere() || dbPlatform.isHSQL() || dbPlatform.isSymfoware())) {
-            getServerSession().logMessage("Test testTrimWithoutTrimChar skipped for this platform");
+            getServerSession("fieldaccess").logMessage("Test testTrimWithoutTrimChar skipped for this platform");
             return;
         }
         Item i = new Item();
         i.setName(" tem ");
         i.setDescription("itemi description");
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try{
             beginTransaction(em);
             em.persist(i);
@@ -392,7 +392,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try {
             ExpressionBuilder builder = new ExpressionBuilder();
@@ -416,7 +416,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
             }
-            em = createEntityManager();
+            em = createEntityManager("fieldaccess");
             try{
                 beginTransaction(em);
                 i = em.find(Item.class, i.getItemId());
@@ -440,7 +440,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         Item i = new Item();
         i.setName("itemi");
         i.setDescription("itemi description");
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try{
             beginTransaction(em);
             em.persist(i);
@@ -452,7 +452,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try {
             ExpressionBuilder builder = new ExpressionBuilder();
@@ -476,7 +476,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
             }
-            em = createEntityManager();
+            em = createEntityManager("fieldaccess");
             try{
                 beginTransaction(em);
                 i = em.find(Item.class, i.getItemId());
@@ -500,7 +500,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         Item i = new Item();
         i.setName("itemi");
         i.setDescription("itemi description");
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         try{
             beginTransaction(em);
             em.persist(i);
@@ -512,7 +512,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try {
             ExpressionBuilder builder = new ExpressionBuilder();
@@ -536,7 +536,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
             }
-            em = createEntityManager();
+            em = createEntityManager("fieldaccess");
             try{
                 beginTransaction(em);
                 i = em.find(Item.class, i.getItemId());

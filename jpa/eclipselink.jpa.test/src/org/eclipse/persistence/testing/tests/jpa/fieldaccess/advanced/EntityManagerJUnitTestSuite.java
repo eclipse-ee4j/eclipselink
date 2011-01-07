@@ -580,8 +580,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testSubString() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testSubString skipped for this platform, "
+        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testSubString skipped for this platform, "
                     + "Symfoware doesn't allow dynamic parameter as first argument of SUBSTRING.");
             return;
         }
@@ -1757,8 +1757,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     protected void internalTestReadTransactionIsolation(boolean shouldOriginalBeInParentCache, boolean shouldUpdateAll, boolean shouldRefresh, boolean shouldFlush) {
-        if (shouldUpdateAll && (JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("A testReadTransactionIsolation test skipped for this platform, "
+        if (shouldUpdateAll && (JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("A testReadTransactionIsolation test skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -1892,8 +1892,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // test for bug 4755392: 
     // AFTER DELETEALL OBJECT STILL DEEMED EXISTING
     public void testFindDeleteAllPersist() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testFindDeleteAllPersist skipped for this platform, "
+        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testFindDeleteAllPersist skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -2747,8 +2747,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testNullifyAddressIn() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testNullifyAddressIn skipped for this platform, "
+        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testNullifyAddressIn skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -2816,7 +2816,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         // Only throw error if weaving was used.
-        if (isWeavingEnabled()) {
+        if (isWeavingEnabled("fieldaccess")) {
             assertNotNull("The correct exception was not thrown while traversing an uninstantiated lazy relationship on a serialized object: " + exception, exception);
         }
         beginTransaction(em);
@@ -3608,7 +3608,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             employee = em.find(Employee.class, employee.getId());
             counter.getSqlStatements().clear();
             em.remove(employee);
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
+            if (isWeavingEnabled("fieldaccess") && counter.getSqlStatements().size() > 3) {
                 fail("Only 2 delete and 1 select should have occured.");
             }
             commitTransaction(em);
@@ -3639,8 +3639,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
          }
      }
      public void testDeleteAllProjectsWithNullTeamLeader() {
-         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-             getServerSession().logMessage("Test testDeleteAllProjectsWithNullTeamLeader skipped for this platform, "
+         if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+             getServerSession("fieldaccess").logMessage("Test testDeleteAllProjectsWithNullTeamLeader skipped for this platform, "
                      + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
              return;
          }
@@ -3650,8 +3650,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
          internalDeleteAllProjectsWithNullTeamLeader("SmallProject");
      }
      public void testDeleteAllLargeProjectsWithNullTeamLeader() {
-         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-             getServerSession().logMessage("Test testDeleteAllLargeProjectsWithNullTeamLeader skipped for this platform, "
+         if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+             getServerSession("fieldaccess").logMessage("Test testDeleteAllLargeProjectsWithNullTeamLeader skipped for this platform, "
                      + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
              return;
          }
@@ -3748,8 +3748,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalUpdateUsingTempStorage(true);
     }
     protected void internalUpdateUsingTempStorage(boolean useParameter) {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testUpdateUsingTempStorage* skipped for this platform, "
+        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testUpdateUsingTempStorage* skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -3922,8 +3922,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalTestUpdateAllProjects(Project.class);
     }
     protected void internalTestUpdateAllProjects(Class cls) {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testUpdateAll*Projects skipped for this platform, "
+        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testUpdateAll*Projects skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -4030,8 +4030,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalTestUpdateAllProjectsWithName(Project.class);
     }
     protected void internalTestUpdateAllProjectsWithName(Class cls) {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testUpdateAll*ProjectsWithName skipped for this platform, "
+        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testUpdateAll*ProjectsWithName skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -4112,8 +4112,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalTestUpdateAllProjectsWithNullTeamLeader(Project.class);
     }
     protected void internalTestUpdateAllProjectsWithNullTeamLeader(Class cls) {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform, "
+        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -4626,7 +4626,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      */
     public void testWeaving() {
         // Only test if weaving was on, test runs without weaving must set this system property.
-        if (JUnitTestCase.isWeavingEnabled()) {
+        if (JUnitTestCase.isWeavingEnabled("fieldaccess")) {
             internalTestWeaving(new Employee(), true, true);
             internalTestWeaving(new FormerEmployment(), true, false);
             internalTestWeaving(new Address(), true, false);

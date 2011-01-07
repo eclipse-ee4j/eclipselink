@@ -635,7 +635,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests a @NamedStoredProcedureQuery.
      */
     public void testNamedStoredProcedureQuery() {
-        if (!supportsStoredProcedures()) {
+        if (!supportsStoredProcedures("fieldaccess")) {
             return;
         }
         EntityManager em = createEntityManager("fieldaccess");
@@ -683,7 +683,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests a @NamedStoredProcedureQuery.
      */
     public void testNamedStoredProcedureQueryInOut() {
-        if (!supportsStoredProcedures()) {
+        if (!supportsStoredProcedures("fieldaccess")) {
             return;
         }
         EntityManager em = createEntityManager("fieldaccess");
@@ -731,7 +731,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * bug 254946 
      */
     public void testNamedStoredProcedureQueryWithRawData() {
-        if (!supportsStoredProcedures()) {
+        if (!supportsStoredProcedures("fieldaccess")) {
             return;
         }
         EntityManager em = createEntityManager("fieldaccess");

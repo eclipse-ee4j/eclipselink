@@ -55,6 +55,7 @@
             <property name="eclipselink.validate-existence" value="true"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.weaving" value="false"/>
+            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem" value="false"/>
         </properties>
     </persistence-unit>
 
