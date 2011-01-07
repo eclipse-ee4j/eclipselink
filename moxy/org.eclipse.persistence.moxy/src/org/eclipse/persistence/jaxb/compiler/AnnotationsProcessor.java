@@ -307,6 +307,13 @@ public class AnnotationsProcessor {
                         } else {
                             this.localElements.add(element);
                         }
+                        String rootNamespace = element.getElementName().getNamespaceURI();
+                        if(rootNamespace == null) {
+                            rootNamespace = XMLConstants.EMPTY_STRING;
+                        }
+                        if (rootNamespace.equals(XMLConstants.EMPTY_STRING)) {
+                            isDefaultNamespaceAllowed = false;
+                        }
                     }
                 }
             }
