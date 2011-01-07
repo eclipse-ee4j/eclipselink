@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ package org.eclipse.persistence;
  */
 public class Version {
     // The current copyright info for EclipseLink.
-    private static final String CopyrightString = "Copyright (c) 1998, 2010 Oracle.  All rights reserved.";
+    private static final String CopyrightString = "Copyright (c) 1998, 2011 Oracle.  All rights reserved.";
 
     // The current version of EclipseLink.
     // This will be used by all product components and included in exceptions.
