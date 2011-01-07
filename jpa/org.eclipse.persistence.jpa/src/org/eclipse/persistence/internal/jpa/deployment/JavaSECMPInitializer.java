@@ -251,6 +251,14 @@ public class JavaSECMPInitializer extends JPAInitializer {
         return usesAgent;
     }
     
+    /**
+     * Indicates whether initialPuInfos and initialEmSetupImpls are used.
+     */
+    @Override
+    protected boolean keepAllPredeployedPersistenceUnits() {
+        return usesAgent;
+    }
+
     /*********************************/
     /***** Temporary Classloader *****/
     /*********************************/
