@@ -25,6 +25,8 @@ import javax.xml.bind.PropertyException;
 import javax.xml.bind.util.JAXBResult;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class MarshallerEncodingTest extends OXTestCase {
@@ -237,7 +239,7 @@ public class MarshallerEncodingTest extends OXTestCase {
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
         try {
             marshaller.marshal(controlObject, byteOutStream);
-        } catch (MarshalException e) {
+        } catch (JAXBException e) {
             assertTrue(true);
             return;
         } catch (Exception e) {

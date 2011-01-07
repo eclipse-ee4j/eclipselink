@@ -145,27 +145,29 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
 
         Class generatedClass = null;
-        if(jaxbContext.getTypeMappingInfoToGeneratedType() != null) {
-            if(elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
-                    TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(elt.getDeclaredType());
-                    generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
-            }else if(elt instanceof JAXBTypeElement){
-                Type objectType = ((JAXBTypeElement)elt).getType();
-                TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(objectType);
-                generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
-            }
+        if (jaxbContext.getTypeMappingInfoToGeneratedType() != null) {
+        	if (jaxbContext.getTypeToTypeMappingInfo() != null) {
+	            if (elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
+	                    TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(elt.getDeclaredType());
+	                    generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
+	            } else if (elt instanceof JAXBTypeElement){
+	                Type objectType = ((JAXBTypeElement)elt).getType();
+	                TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(objectType);
+	                generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
+	            }
+        	}
         } else {
-            if(elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
-                if(jaxbContext.getArrayClassesToGeneratedClasses() != null){
+            if (elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
+                if (jaxbContext.getArrayClassesToGeneratedClasses() != null){
                     generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
                 }
-            }else if(elt instanceof JAXBTypeElement){
+            } else if( elt instanceof JAXBTypeElement){
                 Type objectType = ((JAXBTypeElement)elt).getType();
                 generatedClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(objectType);
             }
         }
 
-        if(generatedClass != null ) {
+        if (generatedClass != null ) {
             ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
             Object newObject = desc.getInstantiationPolicy().buildNewInstance();
             ((ManyValue)newObject).setItem(objectValue);
@@ -235,7 +237,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             xmlMarshaller.marshal(object, contentHandler);
         } catch (Exception e) {
-            throw new MarshalException(e);
+            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(e);
         }
     }
 
@@ -253,7 +255,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             record.setMarshaller(this.xmlMarshaller);
             this.xmlMarshaller.marshal(object, record);
         } catch (Exception ex) {
-            throw new MarshalException(ex);
+            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(ex);
         }
     }
 
@@ -295,7 +297,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             xmlMarshaller.marshal(object, node);
         } catch (Exception e) {
-            throw new MarshalException(e);
+            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(e);
         }
     }
 
@@ -311,7 +313,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             xmlMarshaller.marshal(object, outputStream);
         } catch (Exception e) {
-            throw new MarshalException(e);
+            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(e);
         }
     }
 
@@ -340,7 +342,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             xmlMarshaller.marshal(object, result);
         } catch (Exception e) {
-            throw new MarshalException(e);
+            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(e);
         }
     }
 
@@ -382,7 +384,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             record.setMarshaller(this.xmlMarshaller);
             this.xmlMarshaller.marshal(object, record);
         } catch (Exception ex) {
-            throw new MarshalException(ex);
+            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(ex);
         }
     }
 
@@ -466,7 +468,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             xmlMarshaller.marshal(object, writer);
         } catch (Exception e) {
-            throw new MarshalException(e);
+            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(e);
         }
     }
 

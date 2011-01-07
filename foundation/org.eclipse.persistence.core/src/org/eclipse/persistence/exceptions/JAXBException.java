@@ -101,6 +101,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int BINDINGS_PKG_NOT_SET = 50069;
     public static final int INCORRECT_NUMBER_OF_XMLJOINNODES_ON_XMLELEMENTS = 50070;
     public static final int INVALID_XML_PATH_ATTRIBUTE = 50071;
+    public static final int MARSHAL_FAILURE = 50072;
 
     protected JAXBException(String message) {
         super(message);
@@ -931,5 +932,12 @@ public class JAXBException extends EclipseLinkException {
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XML_PATH_ATTRIBUTE, args));
         validationException.setErrorCode(INVALID_XML_PATH_ATTRIBUTE);
         return validationException;
+    }
+    
+    public static JAXBException marshalFailure(Exception ex) {
+        Object[] args = { };
+        JAXBException jaxbException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, MARSHAL_FAILURE, args), ex);
+        jaxbException.setErrorCode(MARSHAL_FAILURE);
+        return jaxbException;
     }
 }

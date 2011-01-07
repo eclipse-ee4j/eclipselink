@@ -29,6 +29,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
@@ -67,7 +68,7 @@ public class MarshalSchemaValidationTestCases extends OXTestCase {
         marshaller.setEventHandler(eventHandler);
         try {
             marshaller.marshal(employee, new DefaultHandler());
-        } catch (MarshalException ex) {
+        } catch (JAXBException ex) {
             assertEquals(2, eventHandler.getErrorCount());
             return;
         } catch(Exception e) {
@@ -84,7 +85,7 @@ public class MarshalSchemaValidationTestCases extends OXTestCase {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document document = db.newDocument();
             marshaller.marshal(employee, document);
-        } catch (MarshalException ex) {
+        } catch (JAXBException ex) {
             assertEquals(2, eventHandler.getErrorCount());
             return;
         } catch(Exception e) {
@@ -98,7 +99,7 @@ public class MarshalSchemaValidationTestCases extends OXTestCase {
         marshaller.setEventHandler(eventHandler);
         try {
             marshaller.marshal(employee, new ByteArrayOutputStream());
-        } catch (MarshalException ex) {
+        } catch (JAXBException ex) {
             assertEquals(2, eventHandler.getErrorCount());
             return;
         } catch(Exception e) {
@@ -112,7 +113,7 @@ public class MarshalSchemaValidationTestCases extends OXTestCase {
         marshaller.setEventHandler(eventHandler);
         try {
             marshaller.marshal(employee, new StreamResult(new ByteArrayOutputStream()));
-        } catch (MarshalException ex) {
+        } catch (JAXBException ex) {
             assertEquals(2, eventHandler.getErrorCount());
             return;
         } catch(Exception e) {
@@ -126,7 +127,7 @@ public class MarshalSchemaValidationTestCases extends OXTestCase {
         marshaller.setEventHandler(eventHandler);
         try {
             marshaller.marshal(employee, new StringWriter());
-        } catch (MarshalException ex) {
+        } catch (JAXBException ex) {
             assertEquals(2, eventHandler.getErrorCount());
             return;
         } catch(Exception e) {
@@ -144,7 +145,7 @@ public class MarshalSchemaValidationTestCases extends OXTestCase {
             }
             XMLEventWriter xmlEventWriter = XML_OUTPUT_FACTORY.createXMLEventWriter(new ByteArrayOutputStream());
             marshaller.marshal(employee, xmlEventWriter);
-        } catch (MarshalException ex) {
+        } catch (JAXBException ex) {
             assertEquals(2, eventHandler.getErrorCount());
             return;
         } catch(XMLStreamException e) {
@@ -164,7 +165,7 @@ public class MarshalSchemaValidationTestCases extends OXTestCase {
             }
             XMLStreamWriter xmlStreamWriter = XML_OUTPUT_FACTORY.createXMLStreamWriter(new ByteArrayOutputStream());
             marshaller.marshal(employee, xmlStreamWriter);
-        } catch (MarshalException ex) {
+        } catch (JAXBException ex) {
             assertEquals(2, eventHandler.getErrorCount());
             return;
         } catch(XMLStreamException e) {
