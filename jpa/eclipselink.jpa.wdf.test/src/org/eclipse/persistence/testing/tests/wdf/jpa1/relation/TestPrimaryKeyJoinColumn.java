@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.persistence.EntityManager;
 
-import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Course;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
@@ -13,7 +12,6 @@ import org.junit.Test;
 public class TestPrimaryKeyJoinColumn extends JPA1Base {
     
     @Test
-    @Bugzilla(bugid=312244)
     public void testPersistCourseWithoutMaterial() {
         
         JPAEnvironment env = getEnvironment();
