@@ -10015,6 +10015,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         connectionPolicy.setPoolName(null);
         EntityManager em;
         boolean isEmInjected = isOnServer() && ss.getLogin().shouldUseExternalTransactionController();
+        boolean isSpring = isOnServer() && getServerPlatform().isSpring();
         if (isEmInjected) {
             em = createEntityManager();
             // In server jta case need a transaction - otherwise the wrapped EntityManagerImpl is not kept.
@@ -10025,7 +10026,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Map properties = new HashMap(1);
             properties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
             em = emFactory.createEntityManager(properties);
-            beginTransaction(em);
+            if(isSpring) {
+                em.getTransaction().begin();
+            } else {
+                beginTransaction(em);
+            }
         }
         try {
             // native query triggers early begin transaction
@@ -10033,7 +10038,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // verify that the connection is really not pooled.
             assertTrue("Test problem: connection should be not pooled", em.unwrap(UnitOfWork.class).getParent().getAccessor().getPool() == null);
         } finally {
-            rollbackTransaction(em);
+            if(isSpring) {
+                em.getTransaction().rollback();
+            } else {
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
     }
@@ -10043,6 +10052,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         ServerSession ss = getServerSession();
         EntityManager em;
         boolean isEmInjected = isOnServer() && ss.getLogin().shouldUseExternalTransactionController();
+        boolean isSpring = isOnServer() && getServerPlatform().isSpring();
         if (isEmInjected) {
             em = createEntityManager();
             // In server jta case need a transaction - otherwise the wrapped EntityManagerImpl is not kept.
@@ -10053,7 +10063,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Map properties = new HashMap(1);
             properties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, "Always");
             em = emFactory.createEntityManager(properties);
-            beginTransaction(em);
+            if(isSpring) {
+                em.getTransaction().begin();
+            } else {
+                beginTransaction(em);
+            }
         }
 
         // any query on ExclusiveIsolated session triggers the exclusive connection to be acquired.
@@ -10061,7 +10075,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // the exclusive connection
         Accessor accessor = em.unwrap(UnitOfWork.class).getParent().getAccessor(); 
         // connection is still held because it's an ExclusiveIsolatedSession
-        commitTransaction(em);
+        if(isSpring) {
+            em.getTransaction().commit();
+        } else {
+            commitTransaction(em);
+        }
         // before the bug was fixed that used to simply nullify the uow without releasing it and its parent ExclusiveIsolatedSession.
         em.clear();
         // closing EntityManager should release the exclusive connection.
