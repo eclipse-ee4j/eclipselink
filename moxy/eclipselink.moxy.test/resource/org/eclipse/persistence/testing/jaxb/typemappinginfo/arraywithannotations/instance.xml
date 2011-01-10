@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:FloatListType xmlns:ns0="http://jaxb.dev.java.net/array">
+    <item>3.14 3.25</item>
+</ns0:FloatListType>

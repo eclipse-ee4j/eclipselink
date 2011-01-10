@@ -158,6 +158,7 @@ public class AnnotationsProcessor {
     private static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
     private static final String ARRAY_NAMESPACE = "http://jaxb.dev.java.net/array";
     private static final String ARRAY_CLASS_NAME_SUFFIX = "Array";
+    private static final String JAXB_DEV = "jaxb.dev.java.net";
     private static final String ORG_W3C_DOM = "org.w3c.dom";
     private static final String CREATE = "create";
     private static final String ELEMENT_DECL_GLOBAL = "javax.xml.bind.annotation.XmlElementDecl.GLOBAL";
@@ -167,6 +168,15 @@ public class AnnotationsProcessor {
     private static final String JAVA_LANG_OBJECT = "java.lang.Object";
     private static final String SLASH = "/";
     private static final String AT_SIGN = "@";
+    private static final String SEMI_COLON = ";";
+    private static final String L = "L";
+    private static final String ITEM = "item";
+    private static final String IS_STR = "is";
+    private static final String GET_STR = "get";
+    private static final String SET_STR = "set";
+    private static final Character DOT_CHR = '.';
+    private static final Character DOLLAR_SIGN_CHR = '$';
+    private static final Character SLASH_CHR = '/';
 
     private ArrayList<JavaClass> typeInfoClasses;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
@@ -1975,8 +1985,8 @@ public class AnnotationsProcessor {
             if (targetInfo != null && targetInfo.getXmlAccessType() == XmlAccessType.PROPERTY) {
                 String propName = property.getPropertyName();
                 propName = Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
-                property.setInverseReferencePropertyGetMethodName("get" + propName);
-                property.setInverseReferencePropertySetMethodName("set" + propName);
+                property.setInverseReferencePropertyGetMethodName(GET_STR + propName);
+                property.setInverseReferencePropertySetMethodName(SET_STR + propName);
             }
 
             property.setInverseReference(true);
@@ -2255,12 +2265,12 @@ public class AnnotationsProcessor {
         // First collect all the getters and setters
         ArrayList<JavaMethod> propertyMethods = new ArrayList<JavaMethod>();
         for (JavaMethod next : new ArrayList<JavaMethod>(cls.getDeclaredMethods())) {
-            if (((next.getName().startsWith("get") && next.getName().length() > 3) || (next.getName().startsWith("is") && next.getName().length() > 2)) && next.getParameterTypes().length == 0 && next.getReturnType() != helper.getJavaClass(java.lang.Void.class)) {
+            if (((next.getName().startsWith(GET_STR) && next.getName().length() > 3) || (next.getName().startsWith(IS_STR) && next.getName().length() > 2)) && next.getParameterTypes().length == 0 && next.getReturnType() != helper.getJavaClass(java.lang.Void.class)) {
                 int modifiers = next.getModifiers();
                 if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
                     propertyMethods.add(next);
                 }
-            } else if (next.getName().startsWith("set") && next.getName().length() > 3 && next.getParameterTypes().length == 1) {
+            } else if (next.getName().startsWith(SET_STR) && next.getName().length() > 3 && next.getParameterTypes().length == 1) {
                 int modifiers = next.getModifiers();
                 if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
                     propertyMethods.add(next);
@@ -2284,14 +2294,14 @@ public class AnnotationsProcessor {
 
             JavaMethod propertyMethod = null;
 
-            if (!nextMethod.getName().startsWith("set")) {
-                if (nextMethod.getName().startsWith("get")) {
+            if (!nextMethod.getName().startsWith(SET_STR)) {
+                if (nextMethod.getName().startsWith(GET_STR)) {
                     propertyName = nextMethod.getName().substring(3);
-                } else if (nextMethod.getName().startsWith("is")) {
+                } else if (nextMethod.getName().startsWith(IS_STR)) {
                     propertyName = nextMethod.getName().substring(2);
                 }
                 getMethod = nextMethod;
-                String setMethodName = "set" + propertyName;
+                String setMethodName = SET_STR + propertyName;
 
                 // use the JavaBean API to correctly decapitalize the first
                 // character, if necessary
@@ -2317,12 +2327,12 @@ public class AnnotationsProcessor {
                 propertyName = nextMethod.getName().substring(3);
                 setMethod = nextMethod;
 
-                String getMethodName = "get" + propertyName;
+                String getMethodName = GET_STR + propertyName;
 
                 getMethod = cls.getDeclaredMethod(getMethodName, new JavaClass[] {});
                 if (getMethod == null) {
                     // try is instead of get
-                    getMethodName = "is" + propertyName;
+                    getMethodName = IS_STR + propertyName;
                     getMethod = cls.getDeclaredMethod(getMethodName, new JavaClass[] {});
                 }
                 if (getMethod != null && !getMethod.getAnnotations().isEmpty()) {
@@ -2555,10 +2565,10 @@ public class AnnotationsProcessor {
 
     public String getSchemaTypeNameForClassName(String className) {
         String typeName = EMPTY_STRING;
-        if (className.indexOf('$') != -1) {
-            typeName = decapitalize(className.substring(className.lastIndexOf('$') + 1));
+        if (className.indexOf(DOLLAR_SIGN_CHR) != -1) {
+            typeName = decapitalize(className.substring(className.lastIndexOf(DOLLAR_SIGN_CHR) + 1));
         } else {
-            typeName = decapitalize(className.substring(className.lastIndexOf('.') + 1));
+            typeName = decapitalize(className.substring(className.lastIndexOf(DOT_CHR) + 1));
         }
         // now capitalize any characters that occur after a "break"
         boolean inBreak = false;
@@ -3029,10 +3039,10 @@ public class AnnotationsProcessor {
 
                 String elementName = xmlRE.getName();
                 if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {
-                    if (javaClass.getName().indexOf("$") != -1) {
-                        elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('$') + 1));
+                    if (javaClass.getName().indexOf(DOLLAR_SIGN_CHR) != -1) {
+                        elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf(DOLLAR_SIGN_CHR) + 1));
                     } else {
-                        elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));
+                        elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf(DOT_CHR) + 1));
                     }
                     // TCK Compliancy
                     if (elementName.length() >= 3) {
@@ -3096,11 +3106,28 @@ public class AnnotationsProcessor {
      * annotations.
      */
     private boolean hasJAXBAnnotations(JavaHasAnnotations elem) {
-        if (helper.isAnnotationPresent(elem, XmlElement.class) || helper.isAnnotationPresent(elem, XmlAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyElement.class) || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) || helper.isAnnotationPresent(elem, XmlValue.class) || helper.isAnnotationPresent(elem, XmlElements.class) || helper.isAnnotationPresent(elem, XmlElementRef.class) || helper.isAnnotationPresent(elem, XmlElementRefs.class) || helper.isAnnotationPresent(elem, XmlID.class) || helper.isAnnotationPresent(elem, XmlSchemaType.class) || helper.isAnnotationPresent(elem, XmlElementWrapper.class) || helper.isAnnotationPresent(elem, XmlList.class) || helper.isAnnotationPresent(elem, XmlMimeType.class) || helper.isAnnotationPresent(elem, XmlIDREF.class) || helper.isAnnotationPresent(elem, XmlPath.class) || helper.isAnnotationPresent(elem, XmlPaths.class) || helper.isAnnotationPresent(elem, XmlInverseReference.class) || helper.isAnnotationPresent(elem, XmlReadOnly.class) || helper.isAnnotationPresent(elem, XmlWriteOnly.class) || helper.isAnnotationPresent(elem, XmlCDATA.class) || helper.isAnnotationPresent(elem, XmlAccessMethods.class) || helper.isAnnotationPresent(elem, XmlNullPolicy.class)) {
-            return true;
-
-        }
-        return false;
+    	return (helper.isAnnotationPresent(elem, XmlElement.class) || 
+    			helper.isAnnotationPresent(elem, XmlAttribute.class) || 
+    			helper.isAnnotationPresent(elem, XmlAnyElement.class) || 
+    			helper.isAnnotationPresent(elem, XmlAnyAttribute.class) || 
+    			helper.isAnnotationPresent(elem, XmlValue.class) || 
+    			helper.isAnnotationPresent(elem, XmlElements.class) || 
+    			helper.isAnnotationPresent(elem, XmlElementRef.class) || 
+    			helper.isAnnotationPresent(elem, XmlElementRefs.class) || 
+    			helper.isAnnotationPresent(elem, XmlID.class) || 
+    			helper.isAnnotationPresent(elem, XmlSchemaType.class) || 
+    			helper.isAnnotationPresent(elem, XmlElementWrapper.class) || 
+    			helper.isAnnotationPresent(elem, XmlList.class) || 
+    			helper.isAnnotationPresent(elem, XmlMimeType.class) || 
+    			helper.isAnnotationPresent(elem, XmlIDREF.class) || 
+    			helper.isAnnotationPresent(elem, XmlPath.class) || 
+    			helper.isAnnotationPresent(elem, XmlPaths.class) || 
+    			helper.isAnnotationPresent(elem, XmlInverseReference.class) || 
+    			helper.isAnnotationPresent(elem, XmlReadOnly.class) || 
+    			helper.isAnnotationPresent(elem, XmlWriteOnly.class) || 
+    			helper.isAnnotationPresent(elem, XmlCDATA.class) || 
+    			helper.isAnnotationPresent(elem, XmlAccessMethods.class) || 
+    			helper.isAnnotationPresent(elem, XmlNullPolicy.class));
     }
 
     private void validateElementIsInPropOrder(TypeInfo info, String name) {
@@ -3174,11 +3201,11 @@ public class AnnotationsProcessor {
     }
 
     private Class generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass, TypeMappingInfo typeMappingInfo) {
-        String packageName = "jaxb.dev.java.net";
+        String packageName = JAXB_DEV;
         NamespaceResolver combinedNamespaceResolver = new NamespaceResolver();
         if (!helper.isBuiltInJavaType(keyClass)) {
             String keyPackageName = keyClass.getPackageName();
-            packageName = packageName + "." + keyPackageName;
+            packageName = packageName + DOT_CHR + keyPackageName;
             NamespaceInfo keyNamespaceInfo = getNamespaceInfoForPackage(keyClass);
             if (keyNamespaceInfo != null) {
                 java.util.Vector<Namespace> namespaces = keyNamespaceInfo.getNamespaceResolver().getNamespaces();
@@ -3191,7 +3218,7 @@ public class AnnotationsProcessor {
 
         if (!helper.isBuiltInJavaType(valueClass)) {
             String valuePackageName = valueClass.getPackageName();
-            packageName = packageName + "." + valuePackageName;
+            packageName = packageName + DOT_CHR + valuePackageName;
             NamespaceInfo valueNamespaceInfo = getNamespaceInfoForPackage(valueClass);
             if (valueNamespaceInfo != null) {
                 java.util.Vector<Namespace> namespaces = valueNamespaceInfo.getNamespaceResolver().getNamespaces();
@@ -3221,30 +3248,30 @@ public class AnnotationsProcessor {
             getPackageToNamespaceMappings().put(packageName, namespaceInfo);
         }
 
-        int beginIndex = keyClass.getName().lastIndexOf(".") + 1;
+        int beginIndex = keyClass.getName().lastIndexOf(DOT_CHR) + 1;
         String keyName = keyClass.getName().substring(beginIndex);
-        int dollarIndex = keyName.indexOf('$');
+        int dollarIndex = keyName.indexOf(DOLLAR_SIGN_CHR);
         if (dollarIndex > -1) {
             keyName = keyName.substring(dollarIndex + 1);
         }
 
-        beginIndex = valueClass.getName().lastIndexOf(".") + 1;
+        beginIndex = valueClass.getName().lastIndexOf(DOT_CHR) + 1;
         String valueName = valueClass.getName().substring(beginIndex);
-        dollarIndex = valueName.indexOf('$');
+        dollarIndex = valueName.indexOf(DOLLAR_SIGN_CHR);
         if (dollarIndex > -1) {
             valueName = valueName.substring(dollarIndex + 1);
         }
-        String collectionClassShortName = mapClass.getRawName().substring(mapClass.getRawName().lastIndexOf('.') + 1);
+        String collectionClassShortName = mapClass.getRawName().substring(mapClass.getRawName().lastIndexOf(DOT_CHR) + 1);
         String suggestedClassName = keyName + valueName + collectionClassShortName;
 
-        String qualifiedClassName = packageName + "." + suggestedClassName;
+        String qualifiedClassName = packageName + DOT_CHR + suggestedClassName;
         qualifiedClassName = getNextAvailableClassName(qualifiedClassName);
 
-        String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
-        String internalKeyName = keyClass.getQualifiedName().replace('.', '/');
-        String internalValueName = valueClass.getQualifiedName().replace('.', '/');
+        String qualifiedInternalClassName = qualifiedClassName.replace(DOT_CHR, SLASH_CHR);
+        String internalKeyName = keyClass.getQualifiedName().replace(DOT_CHR, SLASH_CHR);
+        String internalValueName = valueClass.getQualifiedName().replace(DOT_CHR, SLASH_CHR);
 
-        Type mapType = Type.getType("L" + mapClass.getRawName().replace('.', '/') + ";");
+        Type mapType = Type.getType(L + mapClass.getRawName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
 
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;
@@ -3261,20 +3288,19 @@ public class AnnotationsProcessor {
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
                     if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {
                         String annotationClassName = nextAnnotation.annotationType().getName();
-                        Annotation fieldAttrs1ann0 = new Annotation("L" + annotationClassName.replace('.', '/') + ";");
+                        Annotation fieldAttrs1ann0 = new Annotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                         fieldAttrs1.annotations.add(fieldAttrs1ann0);
                         for (Method next : nextAnnotation.annotationType().getDeclaredMethods()) {
                             try {
                                 Object nextValue = next.invoke(nextAnnotation, new Object[] {});
                                 if (nextValue instanceof Class) {
-                                    Type nextType = Type.getType("L" + ((Class) nextValue).getName().replace('.', '/') + ";");
+                                    Type nextType = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                                     nextValue = nextType;
                                 }
                                 fieldAttrs1ann0.add(next.getName(), nextValue);
                             } catch (InvocationTargetException ex) {
                                 // ignore the invocation target exception here.
                             } catch (IllegalAccessException ex) {
-
                             }
                         }
                     }
@@ -3282,9 +3308,9 @@ public class AnnotationsProcessor {
             }
         }
         // FIELD ATTRIBUTES
-        SignatureAttribute fieldAttrs2 = new SignatureAttribute("L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;");
+        SignatureAttribute fieldAttrs2 = new SignatureAttribute(L + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;");
         fieldAttrs1.next = fieldAttrs2;
-        cw.visitField(Constants.ACC_PUBLIC, "entry", "L" + mapType.getInternalName() + ";", null, fieldAttrs1);
+        cw.visitField(Constants.ACC_PUBLIC, "entry", L + mapType.getInternalName() + SEMI_COLON, null, fieldAttrs1);
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -3305,7 +3331,7 @@ public class AnnotationsProcessor {
         cv.visitLabel(l0);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "entry", "L" + mapType.getInternalName() + ";");
+        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
         cv.visitInsn(Constants.RETURN);
         Label l1 = new Label();
         cv.visitLabel(l1);
@@ -3324,15 +3350,15 @@ public class AnnotationsProcessor {
 
         methodAttrs2 = new SignatureAttribute("()L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;");
         methodAttrs1.next = methodAttrs2;
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()L" + mapType.getInternalName() + ";", null, methodAttrs1);
+        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON, null, methodAttrs1);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "entry", "L" + mapType.getInternalName() + ";");
+        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + mapType.getInternalName() + ";");
+        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON);
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
 
@@ -3386,15 +3412,15 @@ public class AnnotationsProcessor {
         } else {
             if (componentClass.isPrimitive()) {
                 packageName = ARRAY_PACKAGE_NAME;
-                qualifiedClassName = packageName + "." + componentClass.getName() + ARRAY_CLASS_NAME_SUFFIX;
+                qualifiedClassName = packageName + DOT_CHR + componentClass.getName() + ARRAY_CLASS_NAME_SUFFIX;
             } else {
-                packageName = ARRAY_PACKAGE_NAME + "." + componentClass.getPackageName();
+                packageName = ARRAY_PACKAGE_NAME + DOT_CHR + componentClass.getPackageName();
                 if (componentClass.isMemberClass()) {
                     qualifiedClassName = componentClass.getName();
-                    qualifiedClassName = qualifiedClassName.substring(qualifiedClassName.indexOf('$') + 1);
-                    qualifiedClassName = ARRAY_PACKAGE_NAME + "." + componentClass.getPackageName() + "." + qualifiedClassName + ARRAY_CLASS_NAME_SUFFIX;
+                    qualifiedClassName = qualifiedClassName.substring(qualifiedClassName.indexOf(DOLLAR_SIGN_CHR) + 1);
+                    qualifiedClassName = ARRAY_PACKAGE_NAME + DOT_CHR + componentClass.getPackageName() + DOT_CHR + qualifiedClassName + ARRAY_CLASS_NAME_SUFFIX;
                 } else {
-                    qualifiedClassName = ARRAY_PACKAGE_NAME + "." + componentClass.getQualifiedName() + ARRAY_CLASS_NAME_SUFFIX;
+                    qualifiedClassName = ARRAY_PACKAGE_NAME + DOT_CHR + componentClass.getQualifiedName() + ARRAY_CLASS_NAME_SUFFIX;
                 }
             }
 
@@ -3412,7 +3438,7 @@ public class AnnotationsProcessor {
             }
         }
 
-        String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
+        String qualifiedInternalClassName = qualifiedClassName.replace(DOT_CHR, SLASH_CHR);
         String superClassName;
         if (componentClass.isArray()) {
             superClassName = "org/eclipse/persistence/internal/jaxb/many/MultiDimensionalArrayValue";
@@ -3430,7 +3456,7 @@ public class AnnotationsProcessor {
 
         if (componentClass.isArray()) {
             cv = cw.visitMethod(Constants.ACC_PROTECTED, "adaptedClass", "()Ljava/lang/Class;", null, null);
-            cv.visitLdcInsn(Type.getType("L" + nestedClass.getQualifiedName().replace('.', '/') + ";"));
+            cv.visitLdcInsn(Type.getType(L + nestedClass.getQualifiedName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
             cv.visitInsn(Constants.ARETURN);
             cv.visitMaxs(1, 1);
         }
@@ -3438,24 +3464,44 @@ public class AnnotationsProcessor {
         cv = cw.visitMethod(Constants.ACC_PROTECTED, "componentClass", "()Ljava/lang/Class;", null, null);
         JavaClass baseComponentClass = getBaseComponentType(componentClass);
         if (baseComponentClass.isPrimitive()) {
-            cv.visitFieldInsn(Constants.GETSTATIC, getObjectType(baseComponentClass).getQualifiedName().replace('.', '/'), "TYPE", "Ljava/lang/Class;");
+            cv.visitFieldInsn(Constants.GETSTATIC, getObjectType(baseComponentClass).getQualifiedName().replace(DOT_CHR, SLASH_CHR), "TYPE", "Ljava/lang/Class;");
         } else {
-            cv.visitLdcInsn(Type.getType("L" + baseComponentClass.getQualifiedName().replace('.', '/') + ";"));
+            cv.visitLdcInsn(Type.getType(L + baseComponentClass.getQualifiedName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
         }
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
-
+       
         RuntimeVisibleAnnotations getAdaptedValueMethodAnnotations = new RuntimeVisibleAnnotations();
+        // process any annotations set on the TypeMappingInfo instance
+        java.lang.annotation.Annotation[] annotations;
+        if (typeMappingInfo != null && ((annotations = getAnnotations(typeMappingInfo)) != null)) {
+        	for (java.lang.annotation.Annotation nextAnnotation : annotations) {
+                if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {
+                    Annotation annotation = new Annotation(L + nextAnnotation.annotationType().getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
+                    for (Method next : nextAnnotation.annotationType().getDeclaredMethods()) {
+                        try {
+                            Object nextValue = next.invoke(nextAnnotation, new Object[] {});
+                            if (nextValue instanceof Class) {
+                            	nextValue = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
+                            }
+                            annotation.add(next.getName(), nextValue);
+                        } catch (InvocationTargetException ex) {
+                        } catch (IllegalAccessException ex) {
+                        }
+                    }
+                	getAdaptedValueMethodAnnotations.annotations.add(annotation);
+                }
+            }
+        }        
         Annotation xmlElementAnnotation = new Annotation("Ljavax/xml/bind/annotation/XmlElement;");
-        xmlElementAnnotation.add("name", "item");
-        xmlElementAnnotation.add("type", Type.getType("L" + getObjectType(nestedClass).getName().replace('.', '/') + ";"));
+        xmlElementAnnotation.add("name", ITEM);
+        xmlElementAnnotation.add("type", Type.getType(L + getObjectType(nestedClass).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
         getAdaptedValueMethodAnnotations.annotations.add(xmlElementAnnotation);
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "getAdaptedValue", "()Ljava/util/List;", null, getAdaptedValueMethodAnnotations);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "adaptedValue", "Ljava/util/List;");
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
-
         return generateClassFromBytes(qualifiedClassName, cw.toByteArray());
     }
 
@@ -3526,42 +3572,41 @@ public class AnnotationsProcessor {
 
         String name = componentClass.getName();
 
-        Type componentType = Type.getType("L" + componentClass.getName().replace('.', '/') + ";");
+        Type componentType = Type.getType(L + componentClass.getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
         String componentTypeInternalName = null;
         if (name.equals("[B")) {
             name = "byteArray";
             componentTypeInternalName = componentType.getInternalName();
         } else if (name.equals("[Ljava.lang.Byte;")) {
             name = "ByteArray";
-            componentTypeInternalName = componentType.getInternalName() + ";";
+            componentTypeInternalName = componentType.getInternalName() + SEMI_COLON;
         } else {
-            componentTypeInternalName = "L" + componentType.getInternalName() + ";";
+            componentTypeInternalName = L + componentType.getInternalName() + SEMI_COLON;
         }
 
-        int beginIndex = name.lastIndexOf('.') + 1;
+        int beginIndex = name.lastIndexOf(DOT_CHR) + 1;
         name = name.substring(beginIndex);
-        int dollarIndex = name.indexOf('$');
+        int dollarIndex = name.indexOf(DOLLAR_SIGN_CHR);
         if (dollarIndex > -1) {
             name = name.substring(dollarIndex + 1);
         }
         String collectionClassRawName = collectionClass.getRawName();
 
-        String collectionClassShortName = collectionClassRawName.substring(collectionClassRawName.lastIndexOf('.') + 1);
+        String collectionClassShortName = collectionClassRawName.substring(collectionClassRawName.lastIndexOf(DOT_CHR) + 1);
         String suggestedClassName = collectionClassShortName + "Of" + name;
-        String qualifiedClassName = packageName + "." + suggestedClassName;
+        String qualifiedClassName = packageName + DOT_CHR + suggestedClassName;
         qualifiedClassName = getNextAvailableClassName(qualifiedClassName);
-        String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
+        String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf(DOT_CHR) + 1);
 
-        Type collectionType = Type.getType("L" + collectionClassRawName.replace('.', '/') + ";");
-        String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
+        Type collectionType = Type.getType(L + collectionClassRawName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
+        String qualifiedInternalClassName = qualifiedClassName.replace(DOT_CHR, SLASH_CHR);
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;
 
-        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", null, className.replace('.', '/') + ".java");
+        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", null, className.replace(DOT_CHR, SLASH_CHR) + ".java");
 
         // FIELD ATTRIBUTES
         RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
-
         if (typeMappingInfo != null) {
             java.lang.annotation.Annotation[] annotations = getAnnotations(typeMappingInfo);
             if (annotations != null) {
@@ -3569,31 +3614,29 @@ public class AnnotationsProcessor {
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
                     if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {
                         String annotationClassName = nextAnnotation.annotationType().getName();
-                        Annotation fieldAttrs1ann0 = new Annotation("L" + annotationClassName.replace('.', '/') + ";");
+                        Annotation fieldAttrs1ann0 = new Annotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                         fieldAttrs1.annotations.add(fieldAttrs1ann0);
                         for (Method next : nextAnnotation.annotationType().getDeclaredMethods()) {
                             try {
                                 Object nextValue = next.invoke(nextAnnotation, new Object[] {});
                                 if (nextValue instanceof Class) {
-                                    Type nextType = Type.getType("L" + ((Class) nextValue).getName().replace('.', '/') + ";");
+                                    Type nextType = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                                     nextValue = nextType;
                                 }
                                 fieldAttrs1ann0.add(next.getName(), nextValue);
                             } catch (InvocationTargetException ex) {
                                 // ignore the invocation target exception here.
                             } catch (IllegalAccessException ex) {
-
                             }
                         }
-
                     }
                 }
             }
         }
 
-        SignatureAttribute fieldAttrs2 = new SignatureAttribute("L" + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;");
+        SignatureAttribute fieldAttrs2 = new SignatureAttribute(L + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;");
         fieldAttrs1.next = fieldAttrs2;
-        cw.visitField(Constants.ACC_PUBLIC, "item", "L" + collectionType.getInternalName() + ";", null, fieldAttrs1);
+        cw.visitField(Constants.ACC_PUBLIC, ITEM, L + collectionType.getInternalName() + SEMI_COLON, null, fieldAttrs1);
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -3614,12 +3657,12 @@ public class AnnotationsProcessor {
         cv.visitLabel(l0);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "item", "L" + collectionType.getInternalName() + ";");
+        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, ITEM, L + collectionType.getInternalName() + SEMI_COLON);
         cv.visitInsn(Constants.RETURN);
         Label l1 = new Label();
         cv.visitLabel(l1);
-        // CODE ATTRIBUTE
 
+        // CODE ATTRIBUTE
         LocalVariableTypeTableAttribute cvAttr = new LocalVariableTypeTableAttribute();
         cv.visitAttribute(cvAttr);
 
@@ -3633,15 +3676,15 @@ public class AnnotationsProcessor {
 
         methodAttrs2 = new SignatureAttribute("()L" + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;");
         methodAttrs1.next = methodAttrs2;
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()L" + collectionType.getInternalName() + ";", null, methodAttrs1);
+        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()L" + collectionType.getInternalName() + SEMI_COLON, null, methodAttrs1);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "item", "L" + collectionType.getInternalName() + ";");
+        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, ITEM, L + collectionType.getInternalName() + SEMI_COLON);
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
 
         cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + collectionType.getInternalName() + ";");
+        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + collectionType.getInternalName() + SEMI_COLON);
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
 
@@ -3652,8 +3695,6 @@ public class AnnotationsProcessor {
         cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L" + collectionType.getInternalName() + ";)V");
         cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(2, 2);
-
-        // CLASS ATRIBUTE
 
         // CLASS ATTRIBUTE
         RuntimeVisibleAnnotations annotationsAttr = new RuntimeVisibleAnnotations();
@@ -3799,10 +3840,10 @@ public class AnnotationsProcessor {
             org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = info.getXmlRootElement();
             String elementName = xmlRE.getName();
             if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {
-                if (javaClass.getName().indexOf("$") != -1) {
-                    elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('$') + 1));
+                if (javaClass.getName().indexOf(DOLLAR_SIGN_CHR) != -1) {
+                    elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf(DOLLAR_SIGN_CHR) + 1));
                 } else {
-                    elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf('.') + 1));
+                    elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf(DOT_CHR) + 1));
                 }
 
                 // TCK Compliancy
