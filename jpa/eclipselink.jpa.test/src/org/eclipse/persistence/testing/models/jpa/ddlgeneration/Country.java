@@ -27,7 +27,7 @@ import javax.persistence.Table;
 public class Country implements Serializable
 {
     @Id
-    @Column(name = "iso_code")
+    @Column(name = "iso_code", length=50)
     private String isoCode;
 
     @Column(name = "name")

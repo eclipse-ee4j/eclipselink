@@ -40,7 +40,7 @@ public class City implements Serializable
     private String stateCode;
 
     @Id
-    @Column(name = "name")
+    @Column(name = "name", length=50)
     private String name;
 
     @ManyToOne

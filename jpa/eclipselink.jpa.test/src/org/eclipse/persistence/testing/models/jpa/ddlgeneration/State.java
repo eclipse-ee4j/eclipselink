@@ -35,7 +35,7 @@ public class State implements Serializable
     private String countryCode;
 
     @Id
-    @Column(name = "iso_code")
+    @Column(name = "iso_code", length=50)
     private String isoCode;
 
     @Column(name = "name")

@@ -35,7 +35,7 @@ public class Zip implements Serializable
     private String countryCode;
 
     @Id
-    @Column(name = "code")
+    @Column(name = "code", length=50)
     private String code;
 
     @ManyToOne
