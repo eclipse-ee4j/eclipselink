@@ -1635,6 +1635,10 @@ public abstract class Expression implements Serializable, Cloneable {
      * Transform the object-level value into a database-level value
      */
     public Object getFieldValue(Object objectValue, AbstractSession session) {
+        // Enums default to their ordinal
+        if (objectValue instanceof Enum){
+            return ((Enum)objectValue).ordinal();
+        }
         return objectValue;
 
     }
