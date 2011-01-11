@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PaymentInf>
+       <CreditorFrstName>
+               <id>CREDITOR-ID</id>
+       </CreditorFrstName>
+       <id>PAYMENT-ID</id>
+</PaymentInf>
