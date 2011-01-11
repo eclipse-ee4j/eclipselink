@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 2010, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,10 +18,18 @@
  *       - 328006: Refactor WebLogic MBeanServer registration to use active 
  *         WLS com.bea server when multiple instances returned 
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>        
+ *     01/01/2011-2.2 Michael O'Brien 
+ *       - 333160: ModuleName string extraction code does not handle -1 not found index in 3 of 5 cases 
+ *     11/01/2011-2.2 Michael O'Brien 
+ *       - 333336: findMBeanServer() requires security API AccessController.doPrivileged() 
+ *         private run method security block. 
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
 import java.lang.management.ManagementFactory;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.List;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -32,6 +40,11 @@ import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -69,6 +82,17 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * @since EclipseLink 2.1.1
  */
 public abstract class JMXServerPlatformBase extends ServerPlatformBase {
+    /** This JNDI address is for JMX MBean registration */
+    private static final String JMX_JNDI_RUNTIME_REGISTER = "java:comp/env/jmx/runtime";
+    /* 
+     * If the cached MBeanServer is not used, then the unregister jndi address must be used to create a context
+     * Note: the context must be explicitly closed after use or we may cache the user and get a
+     * weblogic.management.NoAccessRuntimeException when trying to use the associated MBeanServer
+     * see http://bugs.eclipse.org/238343
+     * see http://e-docs.bea.com/wls/docs100/jndi/jndi.html#wp467275  
+     */
+    /** This JNDI address is for JMX MBean unregistration */    
+    private static final String JMX_JNDI_RUNTIME_UNREGISTER = "java:comp/jmx/runtime";
 
     /** This is the prefix for all MBeans that are registered with their specific session name appended */
     public static final String JMX_REGISTRATION_PREFIX = "TopLink:Name=";
@@ -87,14 +111,15 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * 2) Module name - the ejb or war jar name (there is a 1-many relationship for module:session(s)) 
      */
     /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
-    protected static String APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "annotation: ";
-    protected static String APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "";
+    private static String APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT = "postfix,match~should;be]implemented!by`subclass^";
+    protected static String APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT;
+    protected static String APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT;
 
     /** Override by subclass: Search String in application server session for ejb modules */
-    protected static String APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = ".jar/";
+    protected static String APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT;
     /** Override by subclass: Search String in application server session for war modules */
-    protected static String APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = ".war/";
-    protected static String APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "";    
+    protected static String APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT;
+    protected static String APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = APP_SERVER_CLASSLOADER_OVERRIDE_DEFAULT;    
     
     
     /** Cache the ServerPlatform MBeanServer for performance */
@@ -158,24 +183,58 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * @return the JMX specification MBeanServer
      */
     public MBeanServer getMBeanServer() {
-        // lazy initialize the MBeanServer reference
+    	/**
+    	 * This function will attempt to get the MBeanServer via the findMBeanServer spec call.
+    	 * 1) If the return list is null we attempt to retrieve the PlatformMBeanServer 
+    	 * (if it exists or is enabled in this security context).
+    	 * 2) If the list of MBeanServers returned is more than one 
+    	 * we get the lowest indexed MBeanServer that does not on a null default domain.
+    	 * 3) 333336: we need to wrap JMX calls in doPrivileged blocks
+    	 * 4) fail-fast: if there are any issues with JMX - continue - don't block the deploy() 
+    	 */
+    	// lazy initialize the MBeanServer reference
         if(null == mBeanServer) {
+        	List<MBeanServer> mBeanServerList = null;
             try {
+            	if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            		try {
+            			mBeanServerList = (List<MBeanServer>) AccessController.doPrivileged(
+            				new PrivilegedExceptionAction() {
+                				public List<MBeanServer> run() {
+                					return MBeanServerFactory.findMBeanServer(null);
+                				}
+                			}
+               			);
+            		} catch (PrivilegedActionException pae) {
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                                "failed_to_find_mbean_server", "null or empty List returned from privileged MBeanServerFactory.findMBeanServer(null)");
+                        Context initialContext = null;
+            			try {
+            				initialContext = new InitialContext(); // the context should be cached
+            				mBeanServer = (MBeanServer) initialContext.lookup(JMX_JNDI_RUNTIME_REGISTER);
+                        } catch (NamingException ne) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "failed_to_find_mbean_server", ne);
+                        }            			
+            		}
+                } else {
+                    mBeanServerList = MBeanServerFactory.findMBeanServer(null);
+                }
                 // Attempt to get the first MBeanServer we find - usually there is only one - when agentId == null we return a List of them
-                List<MBeanServer> mBeanServerList = MBeanServerFactory.findMBeanServer(null);                
-                if(null == mBeanServerList || mBeanServerList.isEmpty()) {
+                if(null == mBeanServer && (null == mBeanServerList || mBeanServerList.isEmpty())) {
                     // Unable to acquire a JMX specification List of MBeanServer instances
                     getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
                             "failed_to_find_mbean_server", "null or empty List returned from MBeanServerFactory.findMBeanServer(null)");
                     // Try alternate static method
-                    mBeanServer = ManagementFactory.getPlatformMBeanServer();
-                    if(null == mBeanServer) {
-                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                    if (!PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        mBeanServer = ManagementFactory.getPlatformMBeanServer();
+                        if(null == mBeanServer) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
                                 "failed_to_find_mbean_server", "null returned from ManagementFactory.getPlatformMBeanServer()");
-                    } else {
-                        getAbstractSession().log(SessionLog.FINER, SessionLog.SERVER, 
-                            "jmx_mbean_runtime_services_registration_mbeanserver_print",
-                            new Object[]{mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0});
+                        } else {
+                            getAbstractSession().log(SessionLog.FINER, SessionLog.SERVER, 
+                                    "jmx_mbean_runtime_services_registration_mbeanserver_print",
+                                    new Object[]{mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0});
+                        }
                     }
                 } else {
                     // Use the first MBeanServer by default - there may be multiple domains each with their own MBeanServer
@@ -490,54 +549,75 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * @return
      */
     protected void initializeApplicationNameAndModuleName() {
+        // 333160: Fail Fast: we wrap the entire function in a try/catch - even though no exceptions like IOBE should occur - because this initialization should not stop server predeploy in "any" way
         // The database session name is used to get the module name (no reflection required)
-        String databaseSessionName = getDatabaseSession().getName();
+        String databaseSessionName = getMBeanSessionName();
+        
         // The classLoader toString() is used to get the application name (no reflection required)
         String classLoaderName = getDatabaseSession().getPlatform().getConversionManager().getLoader().toString();
-        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "jmx_mbean_classloader_in_use", 
+        try {
+            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "jmx_mbean_classloader_in_use", 
                 "Platform ConversionManager", classLoaderName);
-        // Get property from persistence.xml or sessions.xml
-        String jpaModuleName = getModuleName(false);
-        String jpaApplicationName = getApplicationName(false);     
+            // Get property from persistence.xml or sessions.xml
+            String jpaModuleName = getModuleName(false);
+            String jpaApplicationName = getApplicationName(false);     
         
-        if (jpaModuleName == null) {
-            String subString = databaseSessionName.substring(databaseSessionName.indexOf(
-                    APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX) + 
+            // Get the name past the matching string if we have a match
+            int startIndex = databaseSessionName.indexOf(
+                APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX);
+            if (jpaModuleName == null && startIndex > -1) {
+                String subString = databaseSessionName.substring(startIndex + 
                     APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX.length());
-            if(null != subString) {
-                setModuleName(subString);
-            } else {
-                subString = databaseSessionName.substring(databaseSessionName.indexOf(
-                        APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX) + 
-                        APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX.length());
+                if(null == subString) {
+                    startIndex = databaseSessionName.indexOf(
+                        APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX);
+                    if(startIndex > -1) {
+                        subString = databaseSessionName.substring(startIndex +  
+                                APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX.length());
+                    }
+                }            
+                // clear terminating characters like ".jar/"
+                if(null != subString) {
+                    int endIndex = subString.indexOf(APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX);
+                    if(endIndex > -1) {
+                        subString = subString.substring(0, endIndex);
+                    }
+                }
                 setModuleName(subString);
             }
-            
-            if(null != jpaModuleName && jpaModuleName.indexOf(APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX) > -1) {
-                jpaModuleName = jpaModuleName.substring(0,
-                        jpaModuleName.indexOf(APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX)); 
-            }
-        }
 
-        // Get the application name from the ClassLoader, it is also present in the session name
-        if (jpaApplicationName == null) {
-            jpaApplicationName = classLoaderName.substring(classLoaderName.indexOf(
-                        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX) + 
+            // Get the application name from the ClassLoader, it is also present in the session name
+            startIndex = classLoaderName.indexOf(
+                APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX);
+            if (jpaApplicationName == null && startIndex > -1) {                
+                jpaApplicationName = classLoaderName.substring(startIndex + 
                         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX.length());
-            if(null != jpaApplicationName && jpaApplicationName.indexOf(APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX) > -1) {
-                jpaApplicationName = jpaApplicationName.substring(0,
-                        jpaApplicationName.indexOf(APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX)); 
+                // Clear terminating delimiting characters like "/}
+                if(null != jpaApplicationName) {
+                    int endIndex = jpaApplicationName.indexOf(APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX);
+                    if(endIndex > -1) {
+                        jpaApplicationName = jpaApplicationName.substring(0, endIndex);
+                    }
+                }
+                // replace encodable characters
+                if(null != jpaApplicationName) {
+                    jpaApplicationName = jpaApplicationName.replaceAll("[=,:] ", "_");
+                }
+                setApplicationName(jpaApplicationName);
             }
-            if(null != jpaApplicationName) {
-                jpaApplicationName = jpaApplicationName.replaceAll("[=,:] ", "_");
-            }
-            setApplicationName(jpaApplicationName);
-        }
-        // Final check for null values - incorporated into the get functions in these logs
-        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_application_name", 
+            // Final check for null values - incorporated into the get functions in these logs (null will be converted to "UNKNOWN")
+            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_application_name", 
                 getDatabaseSession().getName(), getApplicationName());
-        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_module_name", 
+            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_module_name", 
                 getDatabaseSession().getName(), getModuleName());
-    }
-    
+        } catch (Exception e) {
+            // 333160: Fail Fast: we wrap the entire function in a try/catch - even though no exceptions like IOBE should occur - because this initialization should not stop server predeploy in "any" way
+            // However, we should never arrive here
+            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_application_name", 
+                    classLoaderName, "unavailable");
+            getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_module_name", 
+                    databaseSessionName, "unavailable");
+            e.printStackTrace();
+        }
+    }    
 }
