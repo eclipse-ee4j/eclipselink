@@ -30,7 +30,7 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25004", "An error occurred unmarshalling the document" },
                                            { "25005", "An error occurred validating the object" },
                                            { "25006", "A default root element was not specified for the XMLDescriptor mapped to {0}" },
-                                           { "25007", "A descriptor for class {0} was not found in the project" },
+                                           { "25007", "A descriptor for class {0} was not found in the project.  For JAXB, if the JAXBContext was bootstrapped using TypeMappingInfo[] you must call a marshal method that accepts TypeMappingInfo as an input parameter." },
                                            { "25008", "A descriptor with default root element {0} was not found in the project" },
                                            { "25010", "A schema reference was not specified for the XMLDescriptor mapped to {0}" },
                                            { "25011", "A null argument was encountered" },
@@ -51,7 +51,6 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25026", "Unable to update node [{0}], object not found in cache." },
                                            { "25027", "Unable to retrieve attachment with cid {0} because no AttachmentUnmarshaller was set."},
                                            { "25028", "No reference descriptor found for mapping {1} due to an unknown xsi:type value: {0}."}
-                                          
     };
 
     /**

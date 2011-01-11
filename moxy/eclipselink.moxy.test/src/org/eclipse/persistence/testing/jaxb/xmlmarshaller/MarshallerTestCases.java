@@ -30,7 +30,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
@@ -146,7 +145,7 @@ public class MarshallerTestCases extends OXTestCase {
             FileOutputStream filestream = new FileOutputStream(fd);
 
             marshaller.marshal(getControlObject(), filestream);
-        } catch (JAXBException e) {
+        } catch (MarshalException e) {
             assertTrue(true);
             return;
         } catch (Exception e) {
@@ -167,10 +166,10 @@ public class MarshallerTestCases extends OXTestCase {
 
         try {
             marshaller.marshal(new Car(), writer);
-        } catch (JAXBException jaxbex) {
-        	Throwable internalException = jaxbex.getInternalException();   
-            assertTrue("InternalException was not an XMLMarshalException as expected. ", internalException instanceof XMLMarshalException);
-            assertTrue("InternalException did not contain error code [25007 - DESCRIPTOR_NOT_FOUND_IN_PROJECT] as expected. ", ((XMLMarshalException)internalException).getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT);
+        } catch (MarshalException jaxbex) {
+        	Throwable internalException = jaxbex.getLinkedException();   
+            assertTrue("LinkedException was not an XMLMarshalException as expected. ", internalException instanceof XMLMarshalException);
+            assertTrue("LinkedException did not contain error code [25007 - DESCRIPTOR_NOT_FOUND_IN_PROJECT] as expected. ", ((XMLMarshalException)internalException).getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT);
             return;
         } catch (Exception e) {
             log(e.getMessage());
@@ -200,7 +199,7 @@ public class MarshallerTestCases extends OXTestCase {
             marshaller.marshal(getControlObject(), result);
         } catch (IllegalArgumentException e) {
             caughtException = false;
-        } catch (JAXBException e) {
+        } catch (MarshalException e) {
             caughtException = true;
         }
         assertTrue("JAXBMarshaller did not throw JAXBException as expected.", caughtException);
@@ -214,7 +213,7 @@ public class MarshallerTestCases extends OXTestCase {
             marshaller.marshal(getControlObject(), document.createAttribute("test"));
         } catch (IllegalArgumentException e) {
             caughtException = false;
-        } catch (JAXBException e) {
+        } catch (MarshalException e) {
             caughtException = true;
         }
         assertTrue("JAXBMarshaller did not throw JAXBException as expected.", caughtException);

@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
 import java.io.OutputStream;
@@ -53,15 +53,20 @@ import org.eclipse.persistence.jaxb.attachment.*;
 
 /**
  * INTERNAL:
- * <p><b>Purpose:</b>To Provide an implementation of the JAXB 2.0 Marshaller Interface
- * <p><b>Responsibilities:</b>
+ * <p>
+ * <b>Purpose:</b>To Provide an implementation of the JAXB 2.0 Marshaller
+ * Interface
+ * <p>
+ * <b>Responsibilities:</b>
  * <ul>
  * <li>Provide a JAXB wrapper on the XMLMarshaller API</li>
  * <li>Perform Object to XML Conversions</li>
  * </ul>
- * <p>This implementation of the JAXB 2.0 Marshaller interface provides the required functionality
- * by acting as a thin wrapper on the existing XMLMarshaller API.
- *
+ * <p>
+ * This implementation of the JAXB 2.0 Marshaller interface provides the
+ * required functionality by acting as a thin wrapper on the existing
+ * XMLMarshaller API.
+ * 
  * @author mmacivor
  * @since Oracle TopLink 11.1.1.0.0
  * @see javax.xml.bind.Marshaller
@@ -80,7 +85,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      * This constructor initializes various settings on the XML marshaller, and
      * stores the provided JAXBIntrospector instance for usage in marshal()
      * calls.
-     *
+     * 
      * @param newXMLMarshaller
      * @param newIntrospector
      */
@@ -100,7 +105,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      * JAXBElement. XMLRoot will be used to hold the contents of the JAXBElement
      * while the marshal operation is performed by TopLink OXM. This will avoid
      * adding any runtime dependencies to TopLink.
-     *
+     * 
      * @param elt
      * @return
      */
@@ -114,31 +119,31 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlroot.setNamespaceURI(qname.getNamespaceURI());
         xmlroot.setDeclaredType(elt.getDeclaredType());
         xmlroot.setNil(elt.isNil());
-        if(elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE || elt.getDeclaredType().getCanonicalName().equals("javax.activation.DataHandler")) {
+        if (elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE || elt.getDeclaredType().getCanonicalName().equals("javax.activation.DataHandler")) {
             xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
-            //need a binary data mapping so need to wrap
+            // need a binary data mapping so need to wrap
             Class generatedClass = getClassToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
-            if(generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
+            if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
                 ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
                 Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-                ((WrappedValue)newObject).setValue(objectValue);
+                ((WrappedValue) newObject).setValue(objectValue);
                 xmlroot.setObject(newObject);
                 return xmlroot;
             }
-        }else {
-            xmlroot.setSchemaType((QName)org.eclipse.persistence.internal.oxm.XMLConversionManager.getDefaultJavaTypes().get(elt.getDeclaredType()));
+        } else {
+            xmlroot.setSchemaType((QName) org.eclipse.persistence.internal.oxm.XMLConversionManager.getDefaultJavaTypes().get(elt.getDeclaredType()));
         }
 
-        if(elt instanceof WrappedValue){
+        if (elt instanceof WrappedValue) {
             xmlroot.setObject(elt);
             return xmlroot;
         }
-        if(qNameToGeneratedClasses != null){
+        if (qNameToGeneratedClasses != null) {
             Class theClass = qNameToGeneratedClasses.get(qname);
-            if(theClass != null && WrappedValue.class.isAssignableFrom(theClass)) {
+            if (theClass != null && WrappedValue.class.isAssignableFrom(theClass)) {
                 ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(theClass).getDescriptor(theClass);
                 Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-                ((WrappedValue)newObject).setValue(objectValue);
+                ((WrappedValue) newObject).setValue(objectValue);
                 xmlroot.setObject(newObject);
                 return xmlroot;
             }
@@ -146,31 +151,31 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
         Class generatedClass = null;
         if (jaxbContext.getTypeMappingInfoToGeneratedType() != null) {
-        	if (jaxbContext.getTypeToTypeMappingInfo() != null) {
-	            if (elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
-	                    TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(elt.getDeclaredType());
-	                    generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
-	            } else if (elt instanceof JAXBTypeElement){
-	                Type objectType = ((JAXBTypeElement)elt).getType();
-	                TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(objectType);
-	                generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
-	            }
-        	}
+            if (jaxbContext.getTypeToTypeMappingInfo() != null) {
+                if (elt.getDeclaredType() != null && elt.getDeclaredType().isArray()) {
+                    TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(elt.getDeclaredType());
+                    generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
+                } else if (elt instanceof JAXBTypeElement) {
+                    Type objectType = ((JAXBTypeElement) elt).getType();
+                    TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(objectType);
+                    generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
+                }
+            }
         } else {
-            if (elt.getDeclaredType() != null && elt.getDeclaredType().isArray()){
-                if (jaxbContext.getArrayClassesToGeneratedClasses() != null){
+            if (elt.getDeclaredType() != null && elt.getDeclaredType().isArray()) {
+                if (jaxbContext.getArrayClassesToGeneratedClasses() != null) {
                     generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
                 }
-            } else if( elt instanceof JAXBTypeElement){
-                Type objectType = ((JAXBTypeElement)elt).getType();
+            } else if (elt instanceof JAXBTypeElement) {
+                Type objectType = ((JAXBTypeElement) elt).getType();
                 generatedClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(objectType);
             }
         }
 
-        if (generatedClass != null ) {
+        if (generatedClass != null) {
             ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
             Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-            ((ManyValue)newObject).setItem(objectValue);
+            ((ManyValue) newObject).setItem(objectValue);
             xmlroot.setObject(newObject);
         }
 
@@ -186,10 +191,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     public AttachmentMarshaller getAttachmentMarshaller() {
-        if(xmlMarshaller.getAttachmentMarshaller() == null) {
+        if (xmlMarshaller.getAttachmentMarshaller() == null) {
             return null;
-        }        
-        return ((AttachmentMarshallerAdapter)xmlMarshaller.getAttachmentMarshaller()).getAttachmentMarshaller();
+        }
+        return ((AttachmentMarshallerAdapter) xmlMarshaller.getAttachmentMarshaller()).getAttachmentMarshaller();
     }
 
     public ValidationEventHandler getEventHandler() throws JAXBException {
@@ -237,7 +242,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             xmlMarshaller.marshal(object, contentHandler);
         } catch (Exception e) {
-            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(e);
+            throw new MarshalException(e);
         }
     }
 
@@ -255,24 +260,24 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             record.setMarshaller(this.xmlMarshaller);
             this.xmlMarshaller.marshal(object, record);
         } catch (Exception ex) {
-            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(ex);
+            throw new MarshalException(ex);
         }
     }
 
     public void marshal(Object object, XMLEventWriter eventWriter, TypeMappingInfo type) throws JAXBException {
-        if(jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
+        if (jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
             marshal(object, eventWriter);
         } else {
             JAXBElement element = null;
             Object value = object;
             if (object instanceof JAXBElement) {
-                //  use the JAXBElement's properties to populate an XMLRoot
-                element = (JAXBElement)object;
+                // use the JAXBElement's properties to populate an XMLRoot
+                element = (JAXBElement) object;
                 value = element.getValue();
             }
 
             RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
-            if(adapter != null) {
+            if (adapter != null) {
                 try {
                     value = adapter.getXmlAdapter().marshal(value);
                 } catch (Exception ex) {
@@ -297,7 +302,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             xmlMarshaller.marshal(object, node);
         } catch (Exception e) {
-            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(e);
+            throw new MarshalException(e);
         }
     }
 
@@ -313,7 +318,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             xmlMarshaller.marshal(object, outputStream);
         } catch (Exception e) {
-            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(e);
+            throw new MarshalException(e);
         }
     }
 
@@ -325,7 +330,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } finally {
                 writer.close();
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new MarshalException(ex);
         }
     }
@@ -342,23 +347,23 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             xmlMarshaller.marshal(object, result);
         } catch (Exception e) {
-            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(e);
+            throw new MarshalException(e);
         }
     }
 
     public void marshal(Object object, Result result, TypeMappingInfo type) throws JAXBException {
-        if(jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
+        if (jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
             marshal(object, result);
         } else {
             JAXBElement element = null;
             Object value = object;
             if (object instanceof JAXBElement) {
-                //  use the JAXBElement's properties to populate an XMLRoot
-                element = (JAXBElement)object;
+                // use the JAXBElement's properties to populate an XMLRoot
+                element = (JAXBElement) object;
                 value = element.getValue();
             }
             RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
-            if(adapter != null) {
+            if (adapter != null) {
                 try {
                     value = adapter.getXmlAdapter().marshal(value);
                 } catch (Exception ex) {
@@ -384,24 +389,24 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             record.setMarshaller(this.xmlMarshaller);
             this.xmlMarshaller.marshal(object, record);
         } catch (Exception ex) {
-            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(ex);
+            throw new MarshalException(ex);
         }
     }
 
     public void marshal(Object object, XMLStreamWriter streamWriter, TypeMappingInfo type) throws JAXBException {
-        if(jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
+        if (jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
             marshal(object, streamWriter);
         } else {
             JAXBElement element = null;
             Object value = object;
             if (object instanceof JAXBElement) {
                 // use the JAXBElement's properties to populate an XMLRoot
-                element = (JAXBElement)object;
+                element = (JAXBElement) object;
                 value = element.getValue();
             }
 
             RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
-            if(adapter != null) {
+            if (adapter != null) {
                 try {
                     value = adapter.getXmlAdapter().marshal(value);
                 } catch (Exception ex) {
@@ -416,23 +421,23 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     private Object wrapObject(Object object, JAXBElement wrapperElement, TypeMappingInfo typeMappingInfo) {
         Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
-        if(generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
+        if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
             ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
             Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-            ((WrappedValue)newObject).setValue(object);
+            ((WrappedValue) newObject).setValue(object);
             object = newObject;
-        } else if(generatedClass != null) {
-            //should be a many value
+        } else if (generatedClass != null) {
+            // should be a many value
             ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
             Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-            ((ManyValue)newObject).setItem(object);
+            ((ManyValue) newObject).setItem(object);
             object = newObject;
         }
 
-        if(null == wrapperElement) {
+        if (null == wrapperElement) {
             XMLRoot xmlRoot = new XMLRoot();
             QName xmlTagName = typeMappingInfo.getXmlTagName();
-            if(null == xmlTagName) {
+            if (null == xmlTagName) {
                 return object;
             }
             xmlRoot.setNamespaceURI(typeMappingInfo.getXmlTagName().getNamespaceURI());
@@ -468,7 +473,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             xmlMarshaller.marshal(object, writer);
         } catch (Exception e) {
-            throw org.eclipse.persistence.exceptions.JAXBException.marshalFailure(e);
+            throw new MarshalException(e);
         }
     }
 
@@ -486,7 +491,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     public void setAttachmentMarshaller(AttachmentMarshaller attachmentMarshaller) {
-        if(attachmentMarshaller == null) {
+        if (attachmentMarshaller == null) {
             xmlMarshaller.setAttachmentMarshaller(null);
         } else {
             xmlMarshaller.setAttachmentMarshaller(new AttachmentMarshallerAdapter(attachmentMarshaller));
@@ -542,7 +547,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         this.qNameToGeneratedClasses = qNameToClass;
     }
 
-    private HashMap<String, Class> getClassToGeneratedClasses(){
+    private HashMap<String, Class> getClassToGeneratedClasses() {
         return jaxbContext.getClassToGeneratedClasses();
     }
 

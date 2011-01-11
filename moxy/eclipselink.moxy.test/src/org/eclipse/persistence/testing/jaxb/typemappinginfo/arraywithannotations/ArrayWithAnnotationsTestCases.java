@@ -13,22 +13,18 @@
 package org.eclipse.persistence.testing.jaxb.typemappinginfo.arraywithannotations;
 
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.MarshalException;
 import javax.xml.bind.annotation.XmlList;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype.MyAttachmentMarshaller;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype.MyAttachmentUnmarshaller;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
 
 public class ArrayWithAnnotationsTestCases extends TypeMappingInfoTestCases {
@@ -71,4 +67,15 @@ public class ArrayWithAnnotationsTestCases extends TypeMappingInfoTestCases {
 		controlSchema.put(XML_TAG_NAME.getNamespaceURI(), instream);
 		return controlSchema;
 	}
+
+    public void testMarshalWithoutTMIExceptionHandling() {
+        try {
+            jaxbContext.createMarshaller().marshal(getControlObject(), System.out);
+        } catch (MarshalException e) {
+            return;
+        } catch (JAXBException j) {
+            fail("An unexpected javax.xml.bind.JAXBException was thrown.");
+        }
+        fail("The expected javax.xml.bind.MarshalException was not thrown.");
+    }
 }
