@@ -3016,12 +3016,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null){
-                    result = this.indirectionPolicy.cloneAttribute(this.getAttributeValueFromObject(cached), cached, cacheKey, null, session, false);
+                    return this.getAttributeValueFromObject(cached);
                 }
                 return result;
                 
             }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
-                return null;
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
         if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())

@@ -83,6 +83,7 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.simultaneous.SimultaneousTestsModel");
             tests.add("org.eclipse.persistence.testing.tests.writing.ComplexUpdateAndUnitOfWorkTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkClientSessionTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.ProtectedUnitOfWorkTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedClientSessionTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedAlwaysTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkSynchNewObjectsClientSessionTestModel");

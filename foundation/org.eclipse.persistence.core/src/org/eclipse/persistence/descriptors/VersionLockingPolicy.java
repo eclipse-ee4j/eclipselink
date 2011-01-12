@@ -538,7 +538,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      */
     public void mergeIntoParentCache(UnitOfWorkImpl uow, Object primaryKey, Object object) {
         if (isStoredInCache()) {
-            Object parentValue = uow.getParent().getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, object.getClass(), getDescriptor());
+            Object parentValue = uow.getParentIdentityMapSession(descriptor, false, false).getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, object.getClass(), getDescriptor());
             uow.getIdentityMapAccessor().updateWriteLockValue(primaryKey, object.getClass(), parentValue);
         }
     }

@@ -201,7 +201,7 @@ public class RemoteSession extends DistributedSession {
                 } else {
                     mergeManager.setCascadePolicy(query.getCascadePolicy());
                 }
-                clientSideDomainObject = mergeManager.mergeChanges(serverSideDomainObject, null);
+                clientSideDomainObject = mergeManager.mergeChanges(serverSideDomainObject, null, this);
             }
         }
 

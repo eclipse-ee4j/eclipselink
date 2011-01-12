@@ -184,6 +184,16 @@ public class CacheableTableCreator extends TableCreator {
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
         
+        FieldDefinition embNAME = new FieldDefinition();
+        embNAME.setName("SE_NAME");
+        embNAME.setTypeName("VARCHAR");
+        embNAME.setSize(75);
+        embNAME.setShouldAllowNull(true);
+        embNAME.setIsPrimaryKey(false);
+        embNAME.setUnique(false);
+        embNAME.setIsIdentity(false);
+        table.addField(embNAME);
+        
         FieldDefinition fieldDTYPE = new FieldDefinition();
         fieldDTYPE.setName("DTYPE");
         fieldDTYPE.setTypeName("VARCHAR2");
@@ -269,6 +279,16 @@ public class CacheableTableCreator extends TableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
+        
+        FieldDefinition fieldSE_NAME = new FieldDefinition();
+        fieldSE_NAME.setName("SE_NAME");
+        fieldSE_NAME.setTypeName("VARCHAR");
+        fieldSE_NAME.setSize(75);
+        fieldSE_NAME.setShouldAllowNull(true);
+        fieldSE_NAME.setIsPrimaryKey(false);
+        fieldSE_NAME.setUnique(false);
+        fieldSE_NAME.setIsIdentity(false);
+        table.addField(fieldSE_NAME);
         
         FieldDefinition fieldEMBNAME = new FieldDefinition();
         fieldEMBNAME.setName("EMB_NAME");

@@ -12,6 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unitofwork;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.IsolatedClientSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -36,6 +39,12 @@ public class UOWCommitAndResumeWithPreCalcChangeSet extends TransactionalTestCas
 
         // Acquire first unit of work
         this.originalObject = (Employee)getSession().readObject(Employee.class);
+        ClassDescriptor descriptor = getSession().getDescriptor(this.originalObject );
+        if (descriptor.isProtectedIsolation() && descriptor.shouldIsolateProtectedObjectsInUnitOfWork() && getSession() instanceof IsolatedClientSession){
+            // this will have read a version of the protected Entity into the Isolated Cache even though the test wants to isolated to UOW
+            //replace with actual shared cache version
+            this.originalObject = (Employee) ((AbstractSession)getSession()).getParentIdentityMapSession(descriptor, false, true).getIdentityMapAccessor().getFromIdentityMap(this.originalObject);
+        }
         this.unitOfWork = getSession().acquireUnitOfWork();
 
         this.unitOfWorkWorkingCopy = (Employee)this.unitOfWork.registerObject(this.originalObject);

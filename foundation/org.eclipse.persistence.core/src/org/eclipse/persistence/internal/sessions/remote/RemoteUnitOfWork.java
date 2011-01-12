@@ -119,7 +119,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
 
         // Iterate over each clone and let the object build merge to clones into the originals.
         while (clones.hasNext()) {
-            manager.mergeChanges(clones.next(), null);
+            manager.mergeChanges(clones.next(), null, this);
         }
     }
 

@@ -76,6 +76,7 @@ import org.eclipse.persistence.config.QueryHints;
 public class CacheableTrueEntity {
     private int id;
     private String name;
+    protected SharedEmbeddable sharedEmbeddable;
     
     public CacheableTrueEntity() {}
     

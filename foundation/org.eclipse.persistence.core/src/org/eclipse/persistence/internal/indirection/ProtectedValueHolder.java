@@ -42,7 +42,9 @@ public class ProtectedValueHolder extends DatabaseValueHolder {
         if (this.session == null){
             throw ValidationException.instantiatingValueholderWithNullSession();
         }
-        return mapping.buildContainerClone(this.wrappedValueHolder.getValue(), this.session);
+        //no need for original or cachekey here as the relationship must be cacheable and present in
+        // wrapped valueholder or the ProtectedValueHolder would not have been created.
+        return mapping.buildCloneForPartObject(this.wrappedValueHolder.getValue(),null, null, null, this.session, true);
     }
 
     @Override

@@ -1014,7 +1014,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
                         
             if ((object == null) && (objectChanges.isNew() || objectChanges.isAggregate()) && objectChanges.containsChangesFromSynchronization()) {
-                if (!mergeManager.getObjectsAlreadyMerged().containsKey(objectChanges)) {
+                if (!mergeManager.isAlreadyMerged(objectChanges, targetSession)) {
                     // CR 2855 - If we haven't merged this object already then 
                     // build a new object otherwise leave it as null which will 
                     // stop the recursion.
@@ -1023,22 +1023,22 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
                     Class objectClass = objectChanges.getClassType(mergeManager.getSession());
                     object = mergeManager.getSession().getDescriptor(objectClass).getObjectBuilder().buildNewInstance();
                     // Store the change set to prevent us from creating this new object again.
-                    mergeManager.getObjectsAlreadyMerged().put(objectChanges, object);
+                    mergeManager.recordMerge(objectChanges, object, targetSession);
                 } else {
                     // CR 4012 - We have all ready created the object, must be 
                     // in a cyclic merge on a new object so get it out of the 
                     // already merged collection
-                    object = mergeManager.getObjectsAlreadyMerged().get(objectChanges);
+                    object = mergeManager.getMergedObject(objectChanges, targetSession);
                 }
             } else {
                 object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession, true);
             }
                         
             if (objectChanges.containsChangesFromSynchronization()) {
-                mergeManager.mergeChanges(object, objectChanges);
+                mergeManager.mergeChanges(object, objectChanges, targetSession);
             }
         } else {
-            mergeManager.mergeChanges(objectChanges.getUnitOfWorkClone(), objectChanges);
+            mergeManager.mergeChanges(objectChanges.getUnitOfWorkClone(), objectChanges, targetSession);
         }
         
         return object;            

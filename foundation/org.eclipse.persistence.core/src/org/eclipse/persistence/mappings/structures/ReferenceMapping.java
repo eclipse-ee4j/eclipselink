@@ -18,6 +18,7 @@ import java.sql.*;
 import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -260,13 +261,12 @@ public class ReferenceMapping extends ObjectReferenceMapping {
                 Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null){
-                    Object attributeValue = this.getAttributeValueFromObject(cached);
-                    return this.indirectionPolicy.cloneAttribute(attributeValue, cached, cacheKey, null, executionSession, false);
+                    return this.getAttributeValueFromObject(cached);
                 }
                 return result;
                 
             }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
-                return null;
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
         Ref ref = (Ref)row.get(getField());

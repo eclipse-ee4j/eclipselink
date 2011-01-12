@@ -265,7 +265,7 @@ public class WriteLockManager {
                     if (descriptor.shouldIsolateObjectsInUnitOfWork()) {
                         continue;
                     }
-                    AbstractSession targetSession = session.getParentIdentityMapSession(descriptor, false, false);
+                    AbstractSession targetSession = session.getParentIdentityMapSession(descriptor, true, true);
                     CacheKey activeCacheKey = attemptToAcquireLock(descriptor, objectChangeSet.getId(), targetSession);
                     if (activeCacheKey == null) {
                         // if cacheKey is null then the lock was not available no need to synchronize this block,because if the

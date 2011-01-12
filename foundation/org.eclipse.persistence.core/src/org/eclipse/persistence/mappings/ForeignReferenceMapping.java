@@ -272,8 +272,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     @Override
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true);
-        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,// no original
-                                                                            clone, unitOfWork, true);// building clone directly from row.
+        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,clone, unitOfWork, true);// building clone directly from row.
         if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
             Object oldAttribute = this.getAttributeValueFromObject(clone);
             setAttributeValueInObject(clone, clonedAttributeValue); // set this first to prevent infinite recursion
@@ -1332,6 +1331,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected);
         if (descriptor.isProtectedIsolation() && isTargetProtected && this.isCacheable){
+            //must clone here as certain mappings require the clone object to clone the attribute.
             attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, executionSession, false);
         }
         if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
@@ -1922,19 +1922,20 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
-        if (this.descriptor.isProtectedIsolation()){
-            if (this.isCacheable && isTargetProtected && cacheKey != null){
-	            //cachekey will be null when isolating to uow
-	            //used cached collection
-	            Object result = null;
-	            Object cached = cacheKey.getObject();
-	            if (cached != null){
-	                result = this.getAttributeValueFromObject(cached);
-	                return result;
-	            }
-	        }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
-	            return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
-	        }
+        if (this.descriptor.isProtectedIsolation()) {
+            if (this.isCacheable && isTargetProtected && cacheKey != null) {
+                //cachekey will be null when isolating to uow
+                //used cached collection
+                Object result = null;
+                Object cached = cacheKey.getObject();
+                if (cached != null) {
+                    //this will just clone the indirection.
+                    //the indirection object is responsible for cloning the value.
+                    return this.getAttributeValueFromObject(cached);
+                }
+            } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
+            }
         }
         // PERF: Direct variable access.
         // If the query uses batch reading, return a special value holder

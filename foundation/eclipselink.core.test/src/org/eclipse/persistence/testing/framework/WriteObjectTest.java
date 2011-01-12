@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.framework;
 
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.*;
@@ -220,6 +221,10 @@ public class WriteObjectTest extends TransactionalTestCase {
 
         /* Must ensure that the object is from the database for updates. */
         this.objectToBeWritten = getSession().executeQuery(this.query);
+        if (this.query.getDescriptor().shouldIsolateProtectedObjectsInUnitOfWork() && getSession().isClientSession()){
+            //must get entity from server session and not the isolated session.
+            this.objectToBeWritten = ((ClientSession)getSession()).getParent().getIdentityMapAccessor().getFromIdentityMap(this.objectToBeWritten);
+        }
         if (this.objectToBeWritten == null) {
             this.objectToBeWritten = this.originalObject;
             this.query = new ReadObjectQuery();

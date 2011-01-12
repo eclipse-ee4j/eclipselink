@@ -354,7 +354,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
                 Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null){
-                    result = this.indirectionPolicy.cloneAttribute(this.getAttributeValueFromObject(cached), cached, cacheKey, null, session, false);
+                    return this.getAttributeValueFromObject(cached);
                 }
                 return result;
                 
