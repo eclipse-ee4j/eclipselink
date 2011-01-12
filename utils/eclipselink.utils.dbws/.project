@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>eclipselink.utils.dbws</name>
+	<name>org.eclipse.persistence.dbws.builder</name>
 	<comment></comment>
 	<projects>
 	</projects>
