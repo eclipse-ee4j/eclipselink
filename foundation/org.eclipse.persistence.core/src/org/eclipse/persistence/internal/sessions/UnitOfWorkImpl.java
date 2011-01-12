@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1579,6 +1579,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (this.project.hasNonIsolatedUOWClasses() || (this.modifyAllQueries != null)) {
                     // if we should be acquiring locks before commit let's do that here 
                     if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getUnitOfWorkChangeSet() != null)) {
+        //                this.getAccessor().writesCompleted(this);  <-is this all that is needed.
                         setMergeManager(new MergeManager(this));
                         //If we are merging into the shared cache acquire all required locks before merging.
                         this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
@@ -1936,7 +1937,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             Object primaryKey = keyFromObject(clone, descriptor);
 
             // This happens if clone was from the parent identity map.		
-            if (this.parent.getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, clone.getClass(), descriptor)) {
+            if (this.getParentIdentityMapSession(descriptor, false, true).getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, clone.getClass(), descriptor)) {
                 //cr 3796
                 if ((getUnregisteredNewObjects().get(clone) != null) && isMergePending()) {
                     //Another thread has read the new object before it has had a chance to
@@ -2025,19 +2026,17 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * Gets the next link in the chain of sessions followed by a query's check
-     * early return, the chain of sessions with identity maps all the way up to
-     * the root session.
+     * Returns the appropriate IdentityMap session for this descriptor.  Sessions can be 
+     * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
+     * at different levels based on Cache Isolation.  This method will return the correct Session
+     * for a particular Entity class based on the Isolation Level and the attributes provided.
      * <p>
-     * Used for session broker which delegates to registered sessions, or UnitOfWork
-     * which checks parent identity map also.
      * @param canReturnSelf true when method calls itself.  If the path
      * starting at <code>this</code> is acceptable.  Sometimes true if want to
      * move to the first valid session, i.e. executing on ClientSession when really
      * should be on ServerSession.
-     * @param terminalOnly return the session we will execute the call on, not
-     * the next step towards it.
-     * @return this if there is no next link in the chain
+     * @param terminalOnly return the last session in the chain where the Enitity is stored.
+     * @return Session with the required IdentityMap
      */
     public AbstractSession getParentIdentityMapSession(ClassDescriptor descriptor, boolean canReturnSelf, boolean terminalOnly) {
         if (canReturnSelf && !terminalOnly) {
@@ -3223,7 +3222,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                                 if ((!isNestedUnitOfWork) && descriptor.shouldIsolateObjectsInUnitOfWork() ) {
                                     break;
                                 }
-                                manager.mergeChanges(objectToWrite, changeSetToWrite);
+                                manager.mergeChanges(objectToWrite, changeSetToWrite, this.getParentIdentityMapSession(descriptor, false, false));
                             }
                         }
                     }
@@ -3244,7 +3243,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     for (ObjectChangeSet changeSetToWrite : objectChangesList.values()) {
                         if (changeSetToWrite.hasChanges()) {
                             Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
-                            manager.mergeChanges(objectToWrite, changeSetToWrite);
+                            manager.mergeChanges(objectToWrite, changeSetToWrite, this.parent);
                         }
                     }
                 }
@@ -3339,7 +3338,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         Object merged = null;
         try {
-            merged = manager.mergeChanges(implementation, null);
+            merged = manager.mergeChanges(implementation, null, this);
         } catch (RuntimeException exception) {
             merged = handleException(exception);
         }
@@ -3464,7 +3463,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object implementation = builder.unwrapObject(rmiClone, this);
         
-        Object mergedObject = manager.mergeChanges(implementation, null);
+        Object mergedObject = manager.mergeChanges(implementation, null, this);
         if (isSmartMerge()) {
             return builder.wrapObject(mergedObject, this);
         } else {
@@ -4473,7 +4472,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             Object clone = cloneEnum.next();
 
             // Revert each clone.
-            manager.mergeChanges(clone, null);
+            manager.mergeChanges(clone, null, this);
             ClassDescriptor descriptor = getDescriptor(clone);
 
             //revert the tracking policy
@@ -4544,7 +4543,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         manager.mergeOriginalIntoWorkingCopy();
         manager.setCascadePolicy(cascadeDepth);
         try {
-            manager.mergeChanges(implementation, null);
+            manager.mergeChanges(implementation, null, this);
         } catch (RuntimeException exception) {
             return handleException(exception);
         }

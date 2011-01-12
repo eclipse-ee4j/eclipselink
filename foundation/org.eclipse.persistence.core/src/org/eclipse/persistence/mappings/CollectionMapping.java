@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -277,7 +277,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return buildElementUnitOfWorkClone(element, parent, (UnitOfWorkImpl)cloningSession, isExisting);
         }
         if (referenceDescriptor.isProtectedIsolation()){
-            cloningSession.createProtectedInstanceFromCachedData(element, referenceDescriptor);
+            return cloningSession.createProtectedInstanceFromCachedData(element, referenceDescriptor);
         }
         return element;
     }
@@ -461,7 +461,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public void cascadeMerge_(Object sourceElement, MergeManager mergeManager, AbstractSession targetSession) {
         if (shouldMergeCascadeParts(mergeManager)) {
-            mergeManager.mergeChanges(mergeManager.getObjectToMerge(sourceElement, referenceDescriptor, targetSession), null);
+            mergeManager.mergeChanges(mergeManager.getObjectToMerge(sourceElement, referenceDescriptor, targetSession), null, targetSession);
         }
     }
 
@@ -1326,7 +1326,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 Object objectToMerge = containerPolicy.next(iterator, mergeManager.getSession());
                 if (shouldMergeCascadeParts(mergeManager) && (valueOfSource != null)) {
                     ObjectChangeSet changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(objectToMerge);
-                    mergeManager.mergeChanges(objectToMerge, changeSet);
+                    mergeManager.mergeChanges(objectToMerge, changeSet, targetSession);
                 }
 
                 // Let the mergemanager get it because I don't have the change for the object.
@@ -1449,9 +1449,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 if (shouldMergeCascadeParts(mergeManager)) {
                     if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
                         // If it is a unit of work, we have to check if I have a change Set for this object
-                        mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object));
+                        mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object), targetSession);
                     } else {
-                        mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), null);
+                        mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), null, targetSession);
                     }
                 }
                 wrappedObject = containerPolicy.createWrappedObjectFromExistingWrappedObject(wrappedObject, source, referenceDescriptor, mergeManager, targetSession);

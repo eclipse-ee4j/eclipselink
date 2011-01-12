@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -257,11 +257,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
             return;
         }
         if (mapping.isDirectToFieldMapping()) {
-            mapping.readFromRowIntoObject(row, null, object, cacheKey, query, query.getSession(), true);
+            //use null cachekey to ensure we build directly into the attribute
+            mapping.readFromRowIntoObject(row, null, object, null, query, query.getSession(), true);
         } else if (mapping.isAggregateObjectMapping()) {
-            ((AggregateObjectMapping)mapping).readFromReturnRowIntoObject(row, object, cacheKey, query, handledMappings);
+            ((AggregateObjectMapping)mapping).readFromReturnRowIntoObject(row, object, null, query, handledMappings);
         } else if (mapping.isTransformationMapping()) {
-            ((AbstractTransformationMapping)mapping).readFromReturnRowIntoObject(row, object, cacheKey, query, handledMappings);
+            ((AbstractTransformationMapping)mapping).readFromReturnRowIntoObject(row, object, null, query, handledMappings);
         } else {
             query.getSession().log(SessionLog.FINEST, SessionLog.QUERY, "field_for_unsupported_mapping_returned", field, this.descriptor);
         }
@@ -335,10 +336,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // PERF: Cache if all mappings should be read.
         boolean readAllMappings = query.shouldReadAllMappings();
         int size = mappings.size();
+        boolean isTargetProtected = targetSession.isProtectedSession();
+
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             if (readAllMappings || query.shouldReadMapping(mapping)) {
-                mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, targetSession.isProtectedSession());
+                mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
             }
         }
 
@@ -850,11 +853,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 if ((sharedCacheKey.getMutex().getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated) && ((sharedCacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !sharedCacheKey.getMutex().isLockedByMergeManager()))) {
                     
                     //need to refresh. shared cache instance
-                    cacheHit = refreshObjectIfRequired(concreteDescriptor, sharedCacheKey, cachedObject, query, joinManager, databaseRow, session, true);
-                    if (!cacheHit) {
-                        //shared cache was refreshed and a refresh has been requested so lets refresh the protected object as well
-                        refreshObjectIfRequired(concreteDescriptor, cacheKey, protectedObject, query, joinManager, databaseRow, session, true);
-                    }
+                    cacheHit = refreshObjectIfRequired(concreteDescriptor, sharedCacheKey, cachedObject, query, joinManager, databaseRow, session.getParent(), true);
+                    //shared cache was refreshed and a refresh has been requested so lets refresh the protected object as well
+                    refreshObjectIfRequired(concreteDescriptor, sharedCacheKey, protectedObject, query, joinManager, databaseRow, session, true);
                 } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(protectedObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(protectedObject, query.getEntityFetchGroup())))) {
                     cacheHit = false;
                     // The fetched object is not sufficient for the fetch group of the query 
@@ -1493,16 +1494,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     isARefresh = wasAnOriginal && (descriptor.shouldAlwaysRefreshCache() || descriptor.getCacheInvalidationPolicy().isInvalidated(originalCacheKey, query.getExecutionTime()));
                     // Otherwise can just register the cached original object and return it.
                     if (wasAnOriginal && (!isARefresh)){
-                        if (!descriptor.shouldIsolateProtectedObjectsInUnitOfWork()) {
+                        if (descriptor.isSharedIsolation() || !descriptor.shouldIsolateProtectedObjectsInUnitOfWork()) {
+                            // using shared isolation and the original is from the shared cache
+                            // or using protected isolation and isolated client sessions
                             return unitOfWork.cloneAndRegisterObject(original, originalCacheKey, unitOfWorkCacheKey, descriptor);
                         }
-                    }else{
-                        refreshObjectIfRequired(descriptor, originalCacheKey, original, query, joinManager, databaseRow, session.getParentIdentityMapSession(query), false);
-                        isARefresh = false;
                     }
-                } else if (descriptor.shouldIsolateProtectedObjectsInUnitOfWork()){
-                    originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, session, primaryKey, descriptor, joinManager);
-                    wasAnOriginal = originalCacheKey.getObject() != null;
                 }
             }
     
@@ -1548,12 +1545,19 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (isARefresh && fetchGroupManager != null) {
                 fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(), unitOfWork);
             }
-            // Build/refresh the clone from the row.
+            if (descriptor.isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()){
+                // we are at this point because we have isolated protected entities to the UnitOfWork
+                // we should ensure that we populate the cache as well.
+                originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, unitOfWork.getParentIdentityMapSession(descriptor, false, true), primaryKey, descriptor, joinManager);
+            }
+            //If we are unable to access the shared cache because of any of the above settings at this point
+            // the cachekey will be null so the attribute building will not be able to access the shared cache.
             if (isARefresh){
-                //null out cacheKey if the data should be refreshed.  THis will prevent us from using invalidated
-                // cached protected data during the read
+                //if we need to refresh the UOW then remove the cache key and the clone will be rebuilt not using any of the 
+                //cache.  This should be updated to force the buildAttributesIntoWorkingCopyClone to refresh the objects 
                 originalCacheKey = null;
             }
+            // Build/refresh the clone from the row.
             buildAttributesIntoWorkingCopyClone(workingClone, originalCacheKey, query, joinManager, databaseRow, unitOfWork, wasAClone);
             // Set fetch group after building object if not a refresh to avoid checking fetch during building.           
             if ((!isARefresh) && fetchGroupManager != null) {
@@ -1728,8 +1732,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * them for use when the entity is cloned.
      */
     public void cacheForeignKeyValues(AbstractRecord databaseRecord, CacheKey cacheKey, AbstractSession session){
+        Set<DatabaseField> foreignKeys = this.descriptor.getForeignKeyValuesForCaching();
+        if (foreignKeys.isEmpty()){
+            return;
+        }
         DatabaseRecord cacheRecord = new DatabaseRecord();
-        for (DatabaseField field : this.descriptor.getForeignKeyValuesForCaching()){
+        for (DatabaseField field : foreignKeys){
             cacheRecord.put(field, databaseRecord.get(field));
         }
         cacheKey.setProtectedForeignKeys(cacheRecord);
@@ -1743,8 +1751,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * them for use when the entity is cloned.
      */
     public void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
+        Set<DatabaseField> foreignKeys = this.descriptor.getForeignKeyValuesForCaching();
+        if (foreignKeys.isEmpty()){
+            return;
+        }
         DatabaseRecord cacheRecord = new DatabaseRecord();
-        for (DatabaseField field : this.descriptor.getForeignKeyValuesForCaching()){
+        for (DatabaseField field : foreignKeys){
             cacheRecord.put(field, extractValueFromObjectForField(source, field, session));
         }
         cacheKey.setProtectedForeignKeys(cacheRecord);

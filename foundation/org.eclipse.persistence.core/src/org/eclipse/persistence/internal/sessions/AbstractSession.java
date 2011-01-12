@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -954,24 +954,36 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * build/return a protected instance.
      */
     public Object createProtectedInstanceFromCachedData(Object cached, ClassDescriptor descriptor){
-        CacheKey cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(cached);
+        CacheKey localCacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(cached);
+        if (localCacheKey != null && localCacheKey.getObject() != null){
+            return localCacheKey.getObject();
+        }
         boolean identityMapLocked = this.shouldCheckWriteLock && getParent().getIdentityMapAccessorInstance().acquireWriteLock();
         boolean rootOfCloneRecursion = false;
+        CacheKey cacheKey = getParent().getIdentityMapAccessorInstance().getCacheKeyForObject(cached);
         try{
-            if (identityMapLocked) {
-                checkAndRefreshInvalidObject(cached, cacheKey, descriptor);
-            } else {
-                // Check if we have locked all required objects already.
-                if (this.objectsLockedForClone == null) {
-                    // PERF: If a simple object just acquire a simple read-lock.
-                    if (descriptor.shouldAcquireCascadedLocks()) {
-                        this.objectsLockedForClone = getParent().getIdentityMapAccessorInstance().getWriteLockManager().acquireLocksForClone(cached, descriptor, cacheKey, this);
-                    } else {
-                        checkAndRefreshInvalidObject(cached, cacheKey, descriptor);
-                        cacheKey.acquireReadLock();
+            Object key = null;
+            Object lockValue = null;
+            long readTime = 0; 
+            if (cacheKey != null){
+                if (identityMapLocked) {
+                    checkAndRefreshInvalidObject(cached, cacheKey, descriptor);
+                } else {
+                    // Check if we have locked all required objects already.
+                    if (this.objectsLockedForClone == null) {
+                        // PERF: If a simple object just acquire a simple read-lock.
+                        if (descriptor.shouldAcquireCascadedLocks()) {
+                            this.objectsLockedForClone = getParent().getIdentityMapAccessorInstance().getWriteLockManager().acquireLocksForClone(cached, descriptor, cacheKey, this);
+                        } else {
+                            checkAndRefreshInvalidObject(cached, cacheKey, descriptor);
+                            cacheKey.acquireReadLock();
+                        }
+                        rootOfCloneRecursion = true;
                     }
-                    rootOfCloneRecursion = true;
                 }
+                key = cacheKey.getKey();
+                lockValue = cacheKey.getWriteLockValue();
+                readTime = cacheKey.getReadTime();
             }
             if (descriptor.hasInheritance()){
                 descriptor = this.getClassDescriptor(cached.getClass());
@@ -980,10 +992,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             Object workingClone = builder.instantiateWorkingCopyClone(cached, this);
             // PERF: Cache the primary key if implements PersistenceEntity.
             builder.populateAttributesForClone(cached, cacheKey,  workingClone, this);
+            getIdentityMapAccessorInstance().putInIdentityMap(workingClone, key, lockValue, readTime, descriptor);
             return workingClone;
         }finally{
             if (rootOfCloneRecursion){
-                if (this.objectsLockedForClone == null) {
+                if (this.objectsLockedForClone == null && cacheKey != null) {
                     cacheKey.releaseReadLock();
                 } else {                        
                     for (Iterator iterator = this.objectsLockedForClone.values().iterator(); iterator.hasNext();) {
@@ -1863,7 +1876,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (query != null){
             descriptor = query.getDescriptor();
         }
-        return getParentIdentityMapSession(descriptor, false, true);
+        return getParentIdentityMapSession(descriptor, true, true);
     }
 
     /**
@@ -1914,19 +1927,17 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * Gets the next link in the chain of sessions followed by a query's check
-     * early return, the chain of sessions with identity maps all the way up to
-     * the root session.
+     * Returns the appropriate IdentityMap session for this descriptor.  Sessions can be 
+     * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
+     * at different levels based on Cache Isolation.  This method will return the correct Session
+     * for a particular Entity class based on the Isolation Level and the attributes provided.
      * <p>
-     * Used for session broker which delegates to registered sessions, or UnitOfWork
-     * which checks parent identity map also.
      * @param canReturnSelf true when method calls itself.  If the path
      * starting at <code>this</code> is acceptable.  Sometimes true if want to
      * move to the first valid session, i.e. executing on ClientSession when really
      * should be on ServerSession.
-     * @param terminalOnly return the session we will execute the call on, not
-     * the next step towards it.
-     * @return this if there is no next link in the chain
+     * @param terminalOnly return the last session in the chain where the Enitity is stored.
+     * @return Session with the required IdentityMap
      */
     public AbstractSession getParentIdentityMapSession(ClassDescriptor descriptor, boolean canReturnSelf, boolean terminalOnly) {
         return this;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -83,6 +83,7 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.simultaneous.SimultaneousTestsModel");
             tests.add("org.eclipse.persistence.testing.tests.writing.ComplexUpdateAndUnitOfWorkTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkClientSessionTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.unitofwork.ProtectedUnitOfWorkTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedClientSessionTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedAlwaysTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkSynchNewObjectsClientSessionTestModel");

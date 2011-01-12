@@ -18,6 +18,7 @@ import java.sql.*;
 import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -253,20 +254,19 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * Check for batch + aggregation reading.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
-        if (this.descriptor.isProtectedIsolation()){
-            if (this.isCacheable && isTargetProtected && cacheKey != null){
+        if (this.descriptor.isProtectedIsolation()) {
+            if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection
                 Object result = null;
                 Object cached = cacheKey.getObject();
-                if (cached != null){
-                    Object attributeValue = this.getAttributeValueFromObject(cached);
-                    return this.indirectionPolicy.cloneAttribute(attributeValue, cached, cacheKey, null, executionSession, false);
+                if (cached != null) {
+                    //this will just clone the indirection.
+                    //the indirection object is responsible for cloning the value.
+                    return this.getAttributeValueFromObject(cached);
                 }
-                return result;
-                
-            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
-                return null;
+            } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
         Ref ref = (Ref)row.get(getField());

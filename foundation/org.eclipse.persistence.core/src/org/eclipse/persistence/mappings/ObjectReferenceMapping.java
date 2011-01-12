@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -63,10 +63,6 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     @Override
     public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
-        if (getReferenceDescriptor().isIsolated()) {
- //           TODO
-            //referencing an isolated Entity.  Need to load as it will not be in the cache.
-        }
         if (attributeValue == null) {
             return null;
         }
@@ -364,7 +360,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                     //changes will  stop the recursion
                     targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager, targetSession, false);
                     if ((targetValueOfSource == null) && (set.isNew() || set.isAggregate()) && set.containsChangesFromSynchronization()) {
-                        if (!mergeManager.getObjectsAlreadyMerged().containsKey(set)) {
+                        if (!mergeManager.isAlreadyMerged(set, targetSession)) {
                             // if we haven't merged this object already then build a new object
                             // otherwise leave it as null which will stop the recursion
                             // CR 2855
@@ -372,19 +368,19 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                             Class objectClass = set.getClassType(mergeManager.getSession());
                             targetValueOfSource = mergeManager.getSession().getDescriptor(objectClass).getObjectBuilder().buildNewInstance();
                             //Store the changeset to prevent us from creating this new object again
-                            mergeManager.getObjectsAlreadyMerged().put(set, targetValueOfSource);
+                            mergeManager.recordMerge(set, targetValueOfSource, targetSession);
                         } else {
                             //CR 4012
                             //we have all ready created the object, must be in a cyclic
                             //merge on a new object so get it out of the already merged collection
-                            targetValueOfSource = mergeManager.getObjectsAlreadyMerged().get(set);
+                            targetValueOfSource = mergeManager.getMergedObject(set, targetSession);
                         }
                     } else {
                         // If We have not found it anywhere else load it from the database
                         targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager, targetSession, true);
                     }
                     if (set.containsChangesFromSynchronization()) {
-                        mergeManager.mergeChanges(targetValueOfSource, set);
+                        mergeManager.mergeChanges(targetValueOfSource, set, targetSession);
                     }
                     //bug:3604593 - ensure reference not changed source is invalidated if target object not found
                     if (targetValueOfSource == null) {
@@ -392,7 +388,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                       return;
                     }
                 } else {
-                    mergeManager.mergeChanges(set.getUnitOfWorkClone(), set);
+                    mergeManager.mergeChanges(set.getUnitOfWorkClone(), set, targetSession);
                 }
             }
         }
@@ -462,9 +458,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (shouldMergeCascadeParts(mergeManager) && (valueOfSource != null)) {
             if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
                 // If it is a unit of work, we have to check if I have a change Set fot this object
-                mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet()).getObjectChangeSetForClone(valueOfSource));
+                mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet()).getObjectChangeSetForClone(valueOfSource), targetSession);
             } else {
-                mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), null);
+                mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), null, targetSession);
             }
         }
 

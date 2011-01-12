@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Parameter;
@@ -53,6 +54,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
@@ -62,6 +64,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -1154,6 +1157,36 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         closeEntityManager(em);
     }
     
+    /**
+     * Remove an object from the shared cache as if garbage collected
+     * NPE will occur when it is read in using the CacheStoreMode.BYPASS setting outside a transaction.
+     */
+    public void testReadingEntityGarbageCollectedFromSharedCache(){
+        EntityManager em = createEntityManager();
+        Employee emp = (Employee)em.createQuery("Select e from Employee e").getResultList().get(0);
+        em.clear();
+        clearCache();
+//        CacheKey key = this.getServerSession().getIdentityMapAccessorInstance().getCacheKeyForObject(emp);
+//        key.setObject(null);
+        try{
+            //query for the shared object that has a cachekey but was garbage collected from the shared cache
+            Query q = em.createQuery("Select f from Employee f where f.id ="+emp.getId());
+            //only seems to reproduce with this setting and not in an early transaction
+            q.setHint(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
+            try {
+                Employee clone = (Employee)q.getSingleResult();
+            }catch (java.lang.NullPointerException e){
+                this.fail("NPE occured building an Entity whos reference in the shared cache was garbage collected: "+e);
+            }
+        }finally {
+            if (this.isTransactionActive(em)) {
+                this.rollbackTransaction(em);
+            }
+            this.getServerSession().getIdentityMapAccessorInstance().initializeAllIdentityMaps();
+        }
+    }
+
+
     /**
      * Tests a @PrivateOwned @OneToMany mapping.
      */

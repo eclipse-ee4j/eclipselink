@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -48,7 +48,7 @@ public class MergeManager {
     protected Map objectDescriptors;
 
     /** Used to unravel recursion. */
-    protected Map objectsAlreadyMerged;
+    protected Map<AbstractSession, Map<Object, Object>> objectsAlreadyMerged;
     
     /** Used to keep track of merged new objects. */
     protected IdentityHashMap mergedNewObjects;
@@ -236,7 +236,7 @@ public class MergeManager {
      * Recursively merge changes in the object dependent on the merge policy.
      * The map is used to resolve recursion.
      */
-    public Object mergeChanges(Object object, ObjectChangeSet objectChangeSet) throws ValidationException {
+    public Object mergeChanges(Object object, ObjectChangeSet objectChangeSet, AbstractSession targetSession) throws ValidationException {
         if (object == null) {
             return object;
         }
@@ -247,12 +247,12 @@ public class MergeManager {
         }
 
         // Means that object is either already merged or in the process of being merged.	
-        if (getObjectsAlreadyMerged().containsKey(object)) {
+        if (isAlreadyMerged(object, targetSession)) {
             return object;
         }
 
         // Put the object to be merged in the set.
-        getObjectsAlreadyMerged().put(object, object);
+        recordMerge(object, object, targetSession);
 
         Object mergedObject;
         if (shouldMergeWorkingCopyIntoOriginal()) {
@@ -272,6 +272,31 @@ public class MergeManager {
         }
 
         return mergedObject;
+    }
+
+    public void recordMerge(Object key, Object value, AbstractSession targetSession) {
+        Map sessionMap = this.objectsAlreadyMerged.get(targetSession);
+        if (sessionMap == null){
+            sessionMap = new IdentityHashMap();
+            this.objectsAlreadyMerged.put(targetSession, sessionMap);
+        }
+        sessionMap.put(key, value);
+    }
+
+    public boolean isAlreadyMerged(Object object, AbstractSession targetSession) {
+        Map sessionMap = this.objectsAlreadyMerged.get(targetSession);
+        if (sessionMap == null){
+            return false;
+        }
+        return sessionMap.containsKey(object);
+    }
+    
+    public Object getMergedObject(Object key, AbstractSession targetSession){
+        Map sessionMap = this.objectsAlreadyMerged.get(targetSession);
+        if (sessionMap == null){
+            return null;
+        }
+        return sessionMap.get(key);
     }
 
     /**
@@ -302,7 +327,7 @@ public class MergeManager {
             org.eclipse.persistence.queries.ObjectLevelReadQuery query = new org.eclipse.persistence.queries.ReadObjectQuery();
             query.setCascadePolicy(this.getCascadePolicy());
             this.session.getIdentityMapAccessorInstance().putInIdentityMap(serverSideDomainObject, primaryKey, objectDescriptor.getWriteLockValue(), objectDescriptor.getReadTime(), descriptor);
-            descriptor.getObjectBuilder().fixObjectReferences(serverSideDomainObject, getObjectDescriptors(), getObjectsAlreadyMerged(), query, (RemoteSession)this.session);
+            descriptor.getObjectBuilder().fixObjectReferences(serverSideDomainObject, getObjectDescriptors(), this.objectsAlreadyMerged.get(this.session), query, (RemoteSession)this.session);
             clientSideDomainObject = serverSideDomainObject;
         } else {
             // merge into the clientSideDomainObject from the serverSideDomainObject;
@@ -356,7 +381,7 @@ public class MergeManager {
                 // is being referenced which will force the load later.
                 Object object = objectChangeSet.getTargetVersionOfSourceObject(this, this.session, false);
                 if (object != null) {
-                    mergeChanges(object, objectChangeSet);
+                    mergeChanges(object, objectChangeSet, this.session);
                     this.session.incrementProfile(SessionProfiler.ChangeSetsProcessed);
                 } else if (objectChangeSet.isNew()) {
                     mergeNewObjectIntoCache(objectChangeSet);
@@ -812,18 +837,18 @@ public class MergeManager {
         ClassDescriptor descriptor = this.session.getDescriptor(localClassType);
         
         Object newObject = null;
-        if (!getObjectsAlreadyMerged().containsKey(changeSet)) {
+        if (!isAlreadyMerged(changeSet, this.session)) {
             // if we haven't merged this object already then build a new object
             // otherwise leave it as null which will stop the recursion
             newObject = descriptor.getObjectBuilder().buildNewInstance();
             // store the changeset to prevent us from creating this new object again
-            getObjectsAlreadyMerged().put(changeSet, newObject);
+            recordMerge(changeSet, newObject, this.session);
         } else {
             //we have all ready created the object, must be in a cyclic
             //merge on a new object so get it out of the alreadymerged collection
-            newObject = getObjectsAlreadyMerged().get(changeSet);
+            newObject = this.objectsAlreadyMerged.get(this.session).get(changeSet);
         }
-        mergeChanges(newObject, changeSet);
+        mergeChanges(newObject, changeSet, this.session);
         return newObject;
     }
 

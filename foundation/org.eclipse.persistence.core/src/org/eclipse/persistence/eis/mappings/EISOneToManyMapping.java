@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,6 +25,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -613,7 +614,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             } else {
                 targetElement = objectChangeSet.getUnitOfWorkClone();
             }
-            mergeManager.mergeChanges(targetElement, objectChangeSet);
+            mergeManager.mergeChanges(targetElement, objectChangeSet, targetSession);
         }
 
         return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
@@ -649,7 +650,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                 }
             }
             Object mergeElement = mergeManager.getObjectToMerge(element, referenceDescriptor, targetSession);
-            mergeManager.mergeChanges(mergeElement, objectChangeSet);
+            mergeManager.mergeChanges(mergeElement, objectChangeSet, targetSession);
         }
 
         return mergeManager.getTargetVersionOfSourceObject(element, referenceDescriptor, targetSession);
@@ -852,19 +853,19 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      */
     @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
-        if (this.descriptor.isProtectedIsolation()){
-            if (this.isCacheable && isTargetProtected && cacheKey != null){
+        if (this.descriptor.isProtectedIsolation()) {
+            if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection
                 Object result = null;
                 Object cached = cacheKey.getObject();
-                if (cached != null){
-                    result = this.indirectionPolicy.cloneAttribute(this.getAttributeValueFromObject(cached), cached, cacheKey, null, executionSession, false);
+                if (cached != null) {
+                    //this will just clone the indirection.
+                    //the indirection object is responsible for cloning the value.
+                    return this.getAttributeValueFromObject(cached);
                 }
-                return result;
-                
-            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
-                return null;
+            } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
         if (((EISDescriptor) this.getDescriptor()).getDataFormat() == EISDescriptor.XML) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 Oracle. All rights reserved.
+ * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -42,7 +42,9 @@ public class ProtectedValueHolder extends DatabaseValueHolder {
         if (this.session == null){
             throw ValidationException.instantiatingValueholderWithNullSession();
         }
-        return mapping.buildContainerClone(this.wrappedValueHolder.getValue(), this.session);
+        //no need for original or cachekey here as the relationship must be cacheable and present in
+        // wrapped valueholder or the ProtectedValueHolder would not have been created.
+        return mapping.buildCloneForPartObject(this.wrappedValueHolder.getValue(),null, null, null, this.session, true);
     }
 
     @Override

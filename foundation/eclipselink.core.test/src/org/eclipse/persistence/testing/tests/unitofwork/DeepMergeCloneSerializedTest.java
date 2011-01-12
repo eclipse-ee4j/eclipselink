@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,7 +22,10 @@ import java.sql.Time;
 
 import java.util.Date;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.IsolatedClientSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
@@ -63,7 +66,7 @@ public class DeepMergeCloneSerializedTest extends org.eclipse.persistence.testin
     public void reset() {
         if (getAbstractSession().isInTransaction()) {
             getAbstractSession().rollbackTransaction();
-            getSession().getIdentityMapAccessor().initializeIdentityMaps();
+            getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         }
     }
 
@@ -92,6 +95,12 @@ public class DeepMergeCloneSerializedTest extends org.eclipse.persistence.testin
             org.eclipse.persistence.sessions.UnitOfWork uow = session.acquireUnitOfWork();
             this.empObject = 
                     (Employee)session.readObject(Employee.class, new org.eclipse.persistence.expressions.ExpressionBuilder().get("firstName").equal("Bob"));
+            ClassDescriptor descriptor = session.getDescriptor(this.empObject);
+            if (descriptor.isProtectedIsolation() && descriptor.shouldIsolateProtectedObjectsInUnitOfWork() && session instanceof IsolatedClientSession){
+                // this will have read a version of the protected Entity into the Isolated Cache even though the test wants to isolated to UOW
+                //replace with actual shared cache version
+                this.empObject = (Employee) ((AbstractSession)session).getParentIdentityMapSession(descriptor, false, true).getIdentityMapAccessor().getFromIdentityMap(this.empObject);
+            }
             //force instantiations of value holders before serialization	
             this.empObject.getPhoneNumbers();
             if (this.empObject.getManager() != null) {

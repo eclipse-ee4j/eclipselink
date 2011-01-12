@@ -23,6 +23,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -347,19 +348,19 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      */
     @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected) throws DatabaseException {
-        if (this.descriptor.isProtectedIsolation()){
-            if (this.isCacheable && isTargetProtected && cacheKey != null){
+        if (this.descriptor.isProtectedIsolation()) {
+            if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection
                 Object result = null;
                 Object cached = cacheKey.getObject();
-                if (cached != null){
-                    result = this.indirectionPolicy.cloneAttribute(this.getAttributeValueFromObject(cached), cached, cacheKey, null, session, false);
+                if (cached != null) {
+                    //this will just clone the indirection.
+                    //the indirection object is responsible for cloning the value.
+                    return this.getAttributeValueFromObject(cached);
                 }
-                return result;
-                
-            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
-                return null;
+            } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
         // If any field in the foreign key is null then it means there are no referenced objects

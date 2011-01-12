@@ -14,27 +14,29 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
-public class ProtectedUnitOfWorkTestSuite extends UnitOfWorkTestSuite {
+public class ProtectedUnitOfWorkTestModel extends UnitOfWorkClientSessionTestModel {
     
     protected boolean hasIsolatedClasses = false;
     
     public void reset() {
-        super.reset();
         getSession().getProject().setHasIsolatedClasses(this.hasIsolatedClasses);
         ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
         descriptor.setCacheIsolation(CacheIsolationType.SHARED);
         descriptor.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_AFTER_TRANSACTION);
+        super.reset();
     }
 
     public void setup() {
-        super.setup();
         this.hasIsolatedClasses = getSession().getProject().hasIsolatedClasses();
         getSession().getProject().setHasIsolatedClasses(true);
         ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
         descriptor.setCacheIsolation(CacheIsolationType.PROTECTED);
         descriptor.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_FROM_CLIENT_SESSION);
+        super.setup();
     }
 
 
