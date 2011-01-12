@@ -144,7 +144,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSCHEMA_DEFAULTS);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
 
-        DynamicEntity person = jaxbContext.newDynamicEntity(PERSON);
+        DynamicEntity person = jaxbContext.newDynamicEntity(DEF_PACKAGE + "." + PERSON);
         assertNotNull("Could not create Dynamic Entity.", person);
 
         person.set("id", 456);
@@ -188,10 +188,10 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, new NoExtensionEntityResolver(), null, null);
 
-        DynamicEntity person = jaxbContext.newDynamicEntity(PERSON);
+        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
         assertNotNull("Could not create Dynamic Entity.", person);
 
-        DynamicEntity salary = jaxbContext.newDynamicEntity(CDN_CURRENCY);
+        DynamicEntity salary = jaxbContext.newDynamicEntity(BANK_PACKAGE + "." + CDN_CURRENCY);
         assertNotNull("Could not create Dynamic Entity.", salary);
 
         salary.set("value", new BigDecimal(75425.75));
@@ -771,7 +771,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSCHEMA_DEFAULTS);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
 
-        DynamicEntity person = jaxbContext.newDynamicEntity(PERSON);
+        DynamicEntity person = jaxbContext.newDynamicEntity(DEF_PACKAGE + "." + PERSON);
         assertNotNull("Could not create Dynamic Entity.", person);
 
         person.set("id", 456);
@@ -860,6 +860,8 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
     // Names of types to instantiate
     private static final String PACKAGE = "mynamespace";
+    private static final String DEF_PACKAGE = "generated";
+    private static final String BANK_PACKAGE = "banknamespace";
     private static final String PERSON = "Person";
     private static final String EMPLOYEE = "Employee";
     private static final String INDIVIDUO = "Individuo";
