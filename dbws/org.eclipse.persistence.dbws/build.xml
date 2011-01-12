@@ -87,8 +87,8 @@
         <property name="custom.tasks.lib" value="${dbws.2.buildsys.dir}/ant_customizations.jar"/>
         <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
         <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
-        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
-        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+        <taskdef  name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef  name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
 
         <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
         <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
@@ -228,8 +228,7 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="org/eclipse/persistence/dbws/*.xsd"/>
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+                <include name="xsd/*.xsd"/>
             </fileset>
         </jar>
     </target>
@@ -266,8 +265,7 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="org/eclipse/persistence/dbws/*.xsd"/>
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+                <include name="xsd/*.xsd"/>
             </fileset>
         </jar>
     </target>

@@ -227,7 +227,7 @@
         <ant antfile="build.xml" dir="${eclipselink.moxy.dynamic}"     target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.jaxb}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.util.dbws}"        target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws.builder}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.rename}"      target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench}"   target="clean"/>
         <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
@@ -287,10 +287,10 @@
     </target>
 
     <!-- Compiles all utils components. -->
-    <target name="build-util" depends="build-dbws-util, build-mw-and-rename"/>
+    <target name="build-util" depends="build-dbws-utils, build-mw-and-rename"/>
 
-    <target name="build-dbws-util" unless="java_is_v5">
-        <ant antfile="build.xml" dir="${eclipselink.util.dbws}"      target="build"/>
+    <target name="build-dbws-utils" unless="java_is_v5">
+        <ant antfile="build.xml" dir="${eclipselink.dbws.builder}"      target="build"/>
     </target>
     <target name="build-mw-and-rename">
         <ant antfile="build.xml" dir="${eclipselink.util.rename}"    target="build"/>
@@ -327,15 +327,15 @@
     </target>
 
     <!-- Compiles all tests (excluding Oracle extensions) -->
-    <target name="build-util-test"  depends="build-workbench-test, build-dbws-util-test"/>
+    <target name="build-util-test"  depends="build-workbench-test, build-dbws-utils-test"/>
 
     <target name="build-workbench-test">
         <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="all"/>
     </target>
 
-    <target name="build-dbws-util-test"  unless="java_is_v5">
+    <target name="build-dbws-utils-test"  unless="java_is_v5">
         <!-- Compiling dbws tests requires JDK 1.6 -->
-        <ant antfile="build.xml" dir="${eclipselink.util.dbws.test}" target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws.builder.test}" target="build"/>
     </target>
 
     <target name="test-host" description="verify host is defined">
@@ -700,6 +700,7 @@
     <target name="package-installer-zip" description="build EclipseLink installer zip - includes utils and javadocs">
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${eclipselink.plugins}/javax.persistence_unsigned_for_testing_1.0.0.jar" tofile="${build.dir}/javax.persistence_1.0.0.jar"/>
+        <copy file="${eclipselink.plugins}/org.eclipse.persistence.dbws.builder_${version.string}.jar" tofile="${build.dir}/${dbws-util.jar}"/>
         <zip destfile="${eclipselink.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="." prefix="eclipselink">
@@ -762,7 +763,8 @@
             <!-- grab the sdo jar -->
             <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj.sdo.jar}" prefix="eclipselink/jlib/sdo"/>
             <!-- grab the dbws util stuff -->
-            <zipfileset dir="${eclipselink.util.dbws}"    includes="${dbws-util.jar}, setenv.*, dbwsbuilder.*" prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${build.dir}/" includes="${dbws-util.jar}" prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${eclipselink.dbws.builder}"    includes="setenv.*, dbwsbuilder.*" prefix="eclipselink/utils/dbws"/>
             <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.jar}" prefix="eclipselink/utils/dbws"/>
             <zipfileset dir="${eclipselink.plugins}" includes="${servlet.jar}" prefix="eclipselink/utils/dbws"/>
             <!-- workbench jars -->
@@ -777,10 +779,10 @@
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
-            depends="test-core-srg, test-jpa-srg, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-utils-srg"
+            depends="test-core-srg, test-jpa-srg, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="test-core, test-jpa, test-wdf, test-moxy, test-sdo, test-dbws, test-dbws-utils"
+            depends="test-core, test-jpa, test-wdf, test-moxy, test-sdo, test-dbws, test-dbws-builder"
             />
 
     <!-- Run core LRG. -->
@@ -797,8 +799,8 @@
     <!-- Run Oracle Tests -->
     <target name="test-oracle" description="run all oracle specific tests">
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle.test}"      target="test-oracle"/>
-        <!-- ant antfile="build.xml" dir="${eclipselink.dbws.test.oracle}"       target="test-oracle"/ -->
-        <!-- ant antfile="build.xml" dir="${eclipselink.utils.dbws.test.oracle}" target="test-oracle"/ -->
+        <!-- ant antfile="build.xml" dir="${eclipselink.dbws.test.oracle}"           target="test-oracle"/ -->
+        <!-- ant antfile="build.xml" dir="${eclipselink.dbws.builder.test.oracle}"   target="test-oracle"/ -->
     </target>
     <!-- Run JPA LRG. -->
     <target name="test-jpa" description="run the jpa tests">
@@ -844,11 +846,11 @@
     <target name="test-dbws-srg" description="run the DBWS srg tests"  unless="java_is_v5">
         <ant antfile="build.xml" dir="${eclipselink.dbws.test}" target="test"/>
     </target>
-    <target name="test-dbws-utils" description="run the DBWS utils tests"  unless="java_is_v5">
-        <ant antfile="build.xml" dir="${eclipselink.util.dbws.test}" target="test"/>
+    <target name="test-dbws-builder" description="run the DBWS builder tests"  unless="java_is_v5">
+        <ant antfile="build.xml" dir="${eclipselink.dbws.builder.test}" target="test"/>
     </target>
-    <target name="test-dbws-utils-srg" description="run the DBWS utils srg tests"  unless="java_is_v5">
-        <ant antfile="build.xml" dir="${eclipselink.util.dbws.test}" target="test"/>
+    <target name="test-dbws-builder-srg" description="run the DBWS builder srg tests"  unless="java_is_v5">
+        <ant antfile="build.xml" dir="${eclipselink.dbws.builder.test}" target="test"/>
     </target>
 
 </project>

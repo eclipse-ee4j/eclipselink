@@ -32,78 +32,166 @@
 *     egwin - initial API and implementation
 *     egwin - update to adopt calling standards
 #******************************************************************************/-->
-<project name="eclipselink.utils.dbws" default="build" basedir=".">
+<project name="org.eclipse.persistence.dbws.builder" default="build" basedir=".">
     <!-- Test to make certain that build is run from component dir -->
-    <available file="../${ant.project.name}" type="dir" property="dbwsutil.is.local"/>
-    <fail unless="dbwsutil.is.local" message="Not running from '${ant.project.name}' directory"/>
+    <available file="../${ant.project.name}" type="dir" property="dbwsbldr.is.local"/>
+    <fail unless="dbwsbldr.is.local" message="Not running from '${ant.project.name}' directory"/>
     <condition property="is.java.version.16">
         <equals arg1="${ant.java.version}" arg2="1.6"/>
     </condition>
     <fail unless="is.java.version.16"
-        message="eclipselink.utils.dbws requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
+        message="org.eclipse.persistence.dbws.builder requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
     />
 
-    <dirname  property="dbwsutil.build.location_temp" file="${ant.file.eclipselink.utils.dbws}"/>
-    <pathconvert targetos="unix" property="dbwsutil.build.location">
+    <dirname  property="dbwsbldr.build.location_temp" file="${ant.file.org.eclipse.persistence.dbws.builder}"/>
+    <pathconvert targetos="unix" property="dbwsbldr.build.location">
         <path>
-            <pathelement location="${dbwsutil.build.location_temp}"/>
+            <pathelement location="${dbwsbldr.build.location_temp}"/>
         </path>
     </pathconvert>
-    <echo message="dbwsutil.build.location = '${dbwsutil.build.location}'"/>
-    <condition property="dbwsutil.2.base.dir" value="../.." else="..">
-        <contains string="${dbwsutil.build.location}" substring="utils/${ant.project.name}"/>
+    <echo message="dbwsbldr.build.location = '${dbwsbldr.build.location}'"/>
+    <condition property="dbwsbldr.2.base.dir" value="../.." else="..">
+        <contains string="${dbwsbldr.build.location}" substring="utils/${ant.project.name}"/>
     </condition>
-    <echo message="dbwsutil.2.base.dir = '${dbwsutil.2.base.dir}'"/>
-    <property name="dbwsutil.2.common.plugins.dir" value="${dbwsutil.2.base.dir}/plugins"/>
+    <echo message="dbwsbldr.2.base.dir = '${dbwsbldr.2.base.dir}'"/>
+    <property name="dbwsbldr.2.common.plugins.dir" value="${dbwsbldr.2.base.dir}/plugins"/>
+    <property name="dbwsbldr.2.plugins.dir" value="${dbwsbldr.build.location}/../plugins"/>
+    <property name="dbwsbldr.2.buildsys.dir" value="${dbwsbldr.2.base.dir}/buildsystem"/>
 
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
     <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <!-- properties checked into SVN -->
-    <property file="./build.properties"/>
+    <property file="${dbwsbldr.build.location}/build.properties"/>
 
-    <!-- versioning -->
-    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
-    <tstamp>
-       <format property="build.date" pattern="yyyyMMdd"/>
-       <format property="build.time" pattern="HHmm"/>
-    </tstamp>
-    <property name="build.type" value="SNAPSHOT"/>
-    <property name="svn.revision" value="NA"/>
-    <property name="version.string" value="${release.version}.qualifier"/>
-    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+    <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+    <property name="bndtool.prefix" value="bnd"/>
+    <property name="bndtool.separator" value="-"/>
+    <property name="bndtool.criteria" value="[0.0.350,0.1.0)"/>
 
-    <!-- Set Compile Path-->
-    <path id="dbwsutil.compile.path">
-        <pathelement path="${dbwsutil.2.common.plugins.dir}/${asm}"/>
-        <pathelement path="${dbwsutil.2.common.plugins.dir}/${servlet.jar}"/>
-        <pathelement path="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <pathelement path="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
-        <pathelement path="../plugins/${wsdl.jar}"/>
-    </path>
-    <available file="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
-    <available file="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar" property="dbws.bundle.exist"/>
-    <available file="${dbwsutil.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
-    <available file="../plugins/${wsdl.jar}" property="wsdl.exist"/>
-
-    <!-- all -->
-    <target name="build" depends="clean, compile, package" description="build dbwsutils jar"/>
+    <!-- Primary Targets: "jar" separate for dev use -->
+    <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
+    <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="." includes="${dbwsutil.jar}"/>
+            <fileset dir="${dbwsbldr.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
         </delete>
     </target>
 
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <property name="custom.tasks.lib" value="${dbwsbldr.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <taskdef  name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef  name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${dbwsbldr.2.base.dir}/../extension.lib.external"
+                                                    else="${dbwsbldr.build.location}">
+            <available file="${dbwsbldr.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.title"   value="EclipseLink DBWS Builder"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- dependency properties -->
+        <property name="asm.lib"     value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.asm_${version.string}.jar"/>
+        <property name="core.lib"    value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="dbws.lib"    value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
+        <property name="servlet.lib" value="${dbwsbldr.2.common.plugins.dir}/${servlet.jar}"/>
+        <property name="wsdl.lib"    value="${dbwsbldr.2.plugins.dir}/${wsdl.jar}"/>
+
+        <!-- dependency tests -->
+        <available file="${dbwsbldr.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
+        <available file="${core.lib}"               property="core.bundle.exist"/>
+        <available file="${dbws.lib}"               property="dbws.bundle.exist"/>
+        <available file="${servlet.lib}"            property="servlet.lib.exist"/>
+        <available file="${wsdl.lib}"               property="wsdl.lib.exist"/>
+        <fail message="Cannot find: '${asm}'"         unless="asm.exist"/>
+        <fail message="Cannot find: '${core.lib}'"    unless="core.bundle.exist"/>
+        <fail message="Cannot find: '${dbws.lib}'"    unless="dbws.bundle.exist"/>
+        <fail message="Cannot find: '${servlet.lib}'" unless="servlet.lib.exist"/>
+        <fail message="Cannot find: '${wsdl.lib}'"    unless="wsdl.lib.exist"/>
+
+        <!-- Set Compile Path-->
+        <path id="dbwsbldr.compile.path">
+            <pathelement path="${dbwsbldr.2.common.plugins.dir}/${asm}"/>
+            <pathelement path="${servlet.lib}"/>
+            <pathelement path="${core.lib}"/>
+            <pathelement path="${dbws.lib}"/>
+            <pathelement path="${wsdl.lib}"/>
+        </path>
+
+        <!-- Check for BND library -->
+        <property name="nobndtool.manifest.dir"      value="${dbwsbldr.build.location}/META-INF"/>
+        <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
+         **  once bnd is added to the buildsystem directory.                                       -->
+        <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <selectbundle basename="${bndtool.prefix}" directory="${dbwsbldr.2.buildsys.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <say message="bndtool.lib                     = '${bndtool.lib}'" if="bndtool.lib"/>
+        <say message="Bnd bundle not found in '${extensions.depend.dir}' or '${dbwsbldr.2.buildsys.dir}'!" unless="bndtool.lib"/>
+
+        <condition property="bld">
+            <or>
+                <isset property="bndtool.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bndtool.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.prefix}${bndtool.separator}[version].jar) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${dbwsbldr.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have renamed it, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.lib=[path]/[jarname] to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
+    </target>
+
     <!-- compile -->
-    <target name="compile" description="Compile DBWS Util classes">
-        <fail unless="core.bundle.exist" message="Core bundle cannot be found. Exiting..."/>
-        <fail unless="dbws.bundle.exist" message="DBWS bundle cannot be found. Exiting..."/>
-        <fail unless="asm.exist"         message="ASM Bundle cannot be found. Exiting..."/>
-        <fail unless="wsdl.exist"        message="WSDL Library cannot be found. Exiting..."/>
+    <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -117,22 +205,46 @@
                failonerror="true"
                memoryMaximumSize="512m"
                fork="true"
-               classpathref="dbwsutil.compile.path"
+               classpathref="dbwsbldr.compile.path"
         />
     </target>
 
     <!-- package -->
-    <target name="package" description="package DBWS util jar">
-        <jar jarfile="./${dbwsutil.jar}">
+    <target name="package-src" depends="init" description="jar OSGI Source bundle">
+        <jar jarfile="${dbwsbldr.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
-                <attribute name="Specification-Title"    value="${dbwsutil.util.specification.title}"/>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Title"   value="${dbwsutil.util.implementation.title}"/>
                 <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
                 <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Release-Designation"    value="${release.designation}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="${specification.title} Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
+            <fileset dir="${dbwsbldr.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="xsd/*.xsd"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package" if="nobnd" depends="init, package-src" description="jar OSGI bundle">
+        <jar jarfile="${dbwsbldr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
+            <fileset dir="${dbwsbldr.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
             <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
             </fileset>
@@ -145,17 +257,15 @@
         </jar>
     </target>
 
-    <!--  This target is used ONCE at the beginning of a release to update the bundle manifest files.  -->
-    <!--  Do not run it, or hook it up to the "build" target -->
-    <target name="update-manifest" if="svn.exec" description="update and check-in the manifest">
-        <filter token="VERSION" value="${release.version}"/>
-        <delete file="META-INF/MANIFEST.MF" failonerror="false"/>
-        <copy file="META-INF/MANIFEST.template" tofile="META-INF/MANIFEST.MF" filtering="true"/>
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg value="commit"/>
-            <arg value="-m ${version.string}"/>
-            <arg value="META-INF/MANIFEST.MF"/>
-        </exec>
+    <target name="bnd-package" if="bnd.bld" depends="init">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
+        <bnd
+            classpath="${classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.dbws.builder.bnd"
+            output="${dbwsbldr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
     </target>
-
 </project>

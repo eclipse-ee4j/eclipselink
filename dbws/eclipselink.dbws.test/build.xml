@@ -101,7 +101,7 @@
     <path id="dbws_test.run.path">
         <path refid="dbws_test.compile.path"/>
         <pathelement path="${jdbc.driver.jar}"/>
-        <pathelement path="./${eclipselink.utils.dbws.common.jar}"/>
+        <pathelement path="./${eclipselink.dbws.test.common.jar}"/>
     </path>
     <!-- Test dependencies -->
     <available file="../../${eclipselink.jar}" property="eclipselink.jar.exist"/>

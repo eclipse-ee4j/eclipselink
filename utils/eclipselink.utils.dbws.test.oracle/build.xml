@@ -39,33 +39,32 @@
         - package : packages tests into eclipselink-dbws-oracle-depend-test.jar
         - test: Runs DBWS utils Oracle-specific tests
 -->
-<project name="eclipselink.utils.dbws.test.oracle" default="build" basedir=".">
+<project name="eclipselink.dbws.builder.test.oracle" default="build" basedir=".">
     <!-- Test to make certain that build is run from component dir -->
-    <available file="../${ant.project.name}" type="dir" property="dbws_util_test_oracle.is.local"/>
-    <fail unless="dbws_util_test_oracle.is.local" message="Not running from '${ant.project.name}' directory"/>
+    <available file="../${ant.project.name}" type="dir" property="dbwsbldr_test_oracle.is.local"/>
+    <fail unless="dbwsbldr_test_oracle.is.local" message="Not running from '${ant.project.name}' directory"/>
 
     <condition property="is.java.version.16">
         <equals arg1="${ant.java.version}" arg2="1.6"/>
     </condition>
     <fail unless="is.java.version.16"
-        message="eclipselink.utils.dbws requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
+        message="This project requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
     />
 
-    <dirname  property="dbws_util_test_oracle.build.location_temp" file="${ant.file.eclipselink.utils.dbws.test.oracle}"/>
-    <pathconvert targetos="unix" property="dbws_util_test_oracle.build.location">
+    <dirname  property="dbwsbldr_test_oracle.build.location_temp" file="${ant.file.eclipselink.dbws.builder.test.oracle}"/>
+    <pathconvert targetos="unix" property="dbwsbldr_test_oracle.build.location">
         <path>
-            <pathelement location="${dbws_util_test_oracle.build.location_temp}"/>
+            <pathelement location="${dbwsbldr_test_oracle.build.location_temp}"/>
         </path>
     </pathconvert>
-    <echo message="dbws_util_test_oracle.build.location = '${dbws_util_test_oracle.build.location}'"/>
-    <condition property="dbws_util_test_oracle.2.base.dir" value="../.." else="..">
-        <contains string="${dbws_util_test_oracle.build.location}" substring="utils/${ant.project.name}"/>
+    <echo message="dbwsbldr_test_oracle.build.location = '${dbwsbldr_test_oracle.build.location}'"/>
+    <condition property="dbwsbldr_test_oracle.2.base.dir" value="../.." else="..">
+        <contains string="${dbwsbldr_test_oracle.build.location}" substring="utils/${ant.project.name}"/>
     </condition>
-    <echo message="dbws_util_test_oracle.2.base.dir = '${dbws_util_test_oracle.2.base.dir}'"/>
-    <property name="dbws_util_test_oracle.2.common.plugins.dir" value="${dbws_util_test_oracle.2.base.dir}/plugins"/>
-    <property name="dbws_util_test_oracle.2.dbwsutil.dir" value="../eclipselink.utils.dbws"/>
+    <echo message="dbwsbldr_test_oracle.2.base.dir = '${dbwsbldr_test_oracle.2.base.dir}'"/>
+    <property name="dbwsbldr_test_oracle.2.common.plugins.dir" value="${dbwsbldr_test_oracle.2.base.dir}/plugins"/>
 
-    <property name="custom.tasks.lib" value="${dbws_util_test_oracle.build.location}/${dbws_util_test_oracle.2.base.dir}/buildsystem/ant_customizations.jar"/>
+    <property name="custom.tasks.lib" value="${dbwsbldr_test_oracle.build.location}/${dbwsbldr_test_oracle.2.base.dir}/buildsystem/ant_customizations.jar"/>
     <property name="custom.tolower.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
     <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
     <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}'"/>
@@ -180,7 +179,7 @@
     picked up ahead of eclipselink.jar
   -->
   <!-- Set Compile Path-->
-  <path id="utils.dbws.test.oracle.compile.path">
+  <path id="dbwsbldr.test.oracle.compile.path">
     <pathelement path="${junit.lib}"/>
     <fileset
       dir="${core.plugins.dir}"
@@ -188,18 +187,14 @@
     />
     <fileset
       dir="${dbws.plugins.dir}"
-      includes="${dbws.plugins}"
-    />
-    <fileset
-      dir="${dbws.utils.dir}"
-      includes="${eclipselink.dbws.utils.jar}"
+      includes="${dbws.plugins}, org.eclipse.persistence.dbws.builder_${version.string}.jar"
     />
     <pathelement path="../../eclipselink.jar"/>
   </path>
   <!-- Test Path-->
-  <path id="utils.dbws.test.oracle.test.path">
+  <path id="dbwsbldr.test.oracle.test.path">
     <pathelement path="${jdbc.driver.jar}"/>
-    <path refid="utils.dbws.test.oracle.compile.path"/>
+    <path refid="dbwsbldr.test.oracle.compile.path"/>
     <pathelement location="${eclipselink.dbws.oracle.test.jar}"/>
   </path>
 
@@ -251,7 +246,7 @@
         forkmode="once"
         maxmemory="512m"
         >
-        <classpath refid="utils.dbws.test.oracle.test.path"/>
+        <classpath refid="dbwsbldr.test.oracle.test.path"/>
         <formatter
           type="xml"
         />
@@ -331,7 +326,7 @@
     <javac
       srcdir="${src.dir}"
       destdir="${classes.dir}"
-      classpathref="utils.dbws.test.oracle.compile.path"
+      classpathref="dbwsbldr.test.oracle.compile.path"
     />
   </target>
 

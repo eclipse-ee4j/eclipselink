@@ -363,7 +363,6 @@
         <zip destfile="${p2.archive.presigned.zip}">
             <!-- Removed based on decision not to sign non-Galileo artifacts due to signing issues - 5/20/09 -->
             <!-- zipfileset dir="${feature.2.base.dir}"                         includes="eclipselink*.jar"/ -->
-            <!-- zipfileset dir="${feature.2.util.dbws}"                        includes="eclipselink-dbwsutils*.jar"/ -->
             <zipfileset dir="${classes.dir}"                                    includes="eclipselink.build"/>
             <!-- Removed based on decision to have different repos names, by build type - 5/26/09            -->
             <!-- zipfileset dir="${classes.dir}"                                includes="site.xml"/         -->

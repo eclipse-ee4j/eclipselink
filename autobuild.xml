@@ -466,7 +466,7 @@
         <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"  tofile="${host.dir}/eclipselink-oxm-lrg-${version.string}.html"       failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"  tofile="${host.dir}/eclipselink-sdo-lrg-${version.string}.html"       failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"      tofile="${host.dir}/eclipselink-dbws-lrg-${version.string}.html"      failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html" tofile="${host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
         <!-- Remove any old results summary file, if it exists -->
         <delete file="${host.dir}/ResultsSummary.dat" failonerror="false"/>
         <!-- Run gen summary dat script -->
@@ -695,7 +695,7 @@
         <echo message="${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"/>
         <echo message="${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"/>
         <echo message="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
-        <echo message="${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html"/>
+        <echo message="${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html"/>
         <zip destfile="${basedir}/${test.result.zip}">
             <zipfileset dir="${build.root.dir}">
                 <include name="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
@@ -703,7 +703,7 @@
                 <include name="${eclipselink.moxy.test}/${report.dir}/**/junit-noframes.html"/>
                 <include name="${eclipselink.sdo.test}/${report.dir}/**/junit-noframes.html"/>
                 <include name="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html"/>
+                <include name="${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html"/>
             </zipfileset>
         </zip>
     </target>
