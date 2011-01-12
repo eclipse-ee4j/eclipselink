@@ -4,12 +4,12 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.wsdl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.utils.dbws"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.utils.dbws.test"/>
-	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.antlr"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.asm"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.oracle"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.dbws.builder.test"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws.builder"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

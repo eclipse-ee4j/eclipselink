@@ -594,14 +594,14 @@ public class DynamicTypeBuilder {
 
             project.getLogin().getPlatform().getConversionManager().setLoader(dynamicClassLoader);
 
-            for (Iterator<?> i = project.getAliasDescriptors().values().iterator(); i.hasNext();) {
+            for (Iterator<?> i = project.getOrderedDescriptors().iterator(); i.hasNext();) {
                 ClassDescriptor descriptor = (ClassDescriptor) i.next();
                 if (descriptor.getJavaClass() == null) {
                     createType(dynamicClassLoader, descriptor, project);
                 }
             }
             project.convertClassNamesToClasses(dynamicClassLoader);
-            for (Iterator<?> i = project.getAliasDescriptors().values().iterator(); i.hasNext();) {
+            for (Iterator<?> i = project.getOrderedDescriptors().iterator(); i.hasNext();) {
                 ClassDescriptor descriptor = (ClassDescriptor) i.next();
                 Class<?> dynamicClass = descriptor.getJavaClass();
                 // JAXB generates some classes that do not conform to DynamicEntity interface - ignore
