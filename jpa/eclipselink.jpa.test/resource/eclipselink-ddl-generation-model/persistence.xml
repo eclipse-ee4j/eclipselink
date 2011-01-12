@@ -51,6 +51,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ZipId</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Course</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Material</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Lobtest</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.LobtestPK</class>
         
         <properties>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
