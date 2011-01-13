@@ -17,7 +17,8 @@ Include-Resource:                     \
  ${dbwsbldr.2.base.dir}/about.html,   \
  ${dbwsbldr.2.base.dir}/readme.html,  \
  ${dbwsbldr.2.base.dir}/license.html, \
- xsd=resource/xsd
+ xsd=resource/xsd,                    \
+ META-INF/services=src/META-INF/services
 Import-Package:                                                         \
  javax.*;resolution:=optional,                                          \
  org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
