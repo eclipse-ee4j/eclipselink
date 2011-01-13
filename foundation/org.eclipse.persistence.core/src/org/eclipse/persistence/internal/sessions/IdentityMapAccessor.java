@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -922,7 +922,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * The output of this method will be logged to this session's SessionLog at FINEST level.
      */
     public void printIdentityMapLocks() {
-        if (getSession().shouldLog(SessionLog.FINEST, SessionLog.CACHE)) {
+        if (getSession().shouldLog(SessionLog.SEVERE, SessionLog.CACHE)) {
             getIdentityMapManager().printLocks();
         }
     }

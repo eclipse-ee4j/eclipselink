@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1442,6 +1442,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     if (this.project.hasNonIsolatedUOWClasses() || (this.modifyAllQueries != null)) {
                         // if we should be acquiring locks before commit let's do that here 
                         if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase()) {
+                            flushBatchStatements();
                             setMergeManager(new MergeManager(this));
                             //If we are merging into the shared cache acquire all required locks before merging.
                             getParent().getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
@@ -1596,6 +1597,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (this.project.hasNonIsolatedUOWClasses() || (this.modifyAllQueries != null)) {
                     // if we should be acquiring locks before commit let's do that here 
                     if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getUnitOfWorkChangeSet() != null)) {
+                        flushBatchStatements();
                         setMergeManager(new MergeManager(this));
                         //If we are merging into the shared cache acquire all required locks before merging.
                         this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
@@ -1832,6 +1834,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
     }
     
+    /**
+     * INTERNAL:
+     * Will request that the accessors flush and pending batch writes.  This is done before acquireing locks to ensure
+     * a deadlock does not occur when the writes can not be flushed after the locks have been acquired.
+     */
+    protected void flushBatchStatements(){
+        this.getAccessor().writesCompleted(this);
+    }
+
     /**
      * INTERNAL:
      * Causes any deferred events to be fired.  Called after operation completes
