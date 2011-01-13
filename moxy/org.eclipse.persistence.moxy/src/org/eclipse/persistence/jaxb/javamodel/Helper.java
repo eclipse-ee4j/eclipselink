@@ -81,7 +81,10 @@ public class Helper {
     public final static String DURATION = "javax.xml.datatype.Duration";
     public final static String XMLGREGORIANCALENDAR = "javax.xml.datatype.XMLGregorianCalendar";
     public final static String URI = "java.net.URI";
-
+    protected final static String JAVA_PKG = "java.";
+    protected final static String JAVAX_PKG = "javax.";
+    protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
+    
     /**
      * INTERNAL:
      * This is the preferred constructor.
@@ -241,14 +244,21 @@ public class Helper {
     }
 
     /**
-     * Indicates if the javaType map contains a key equal to
-     * the provided JavaClass' raw name.
+     * Indicates if a given JavaClass is a built-in Java type. 
+     * 
+     * A JavaClass is considered to be a built-in type if:
+     * 1 - the XMLToJavaTypeMap map contains a key equal to the provided 
+     *     JavaClass' raw name
+     * 2 - the provided JavaClass' raw name starts with "java."
+     * 3 - the provided JavaClass' raw name starts with "javax.", with
+     *     the exception of "javax.xml.ws." 
      * 
      * @param jClass
      * @return
      */
-    public boolean isBuiltInJavaType(JavaClass jClass) {    
-    	return getXMLToJavaTypeMap().containsKey(jClass.getRawName()) || jClass.getRawName().startsWith("java.") || jClass.getRawName().startsWith("javax.");
+    public boolean isBuiltInJavaType(JavaClass jClass) {
+        String rawName = jClass.getRawName();
+    	return (getXMLToJavaTypeMap().containsKey(rawName) || rawName.startsWith(JAVA_PKG) || (rawName.startsWith(JAVAX_PKG) && !rawName.startsWith(JAVAX_WS_PKG))) ;
     }
 
     public void setClassLoader(ClassLoader loader) {
