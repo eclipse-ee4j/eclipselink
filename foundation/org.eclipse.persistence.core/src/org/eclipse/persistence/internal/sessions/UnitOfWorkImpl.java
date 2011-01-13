@@ -1424,13 +1424,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     if (this.project.hasNonIsolatedUOWClasses() || (this.modifyAllQueries != null)) {
                         // if we should be acquiring locks before commit let's do that here 
                         if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase()) {
-                            
-                            Collection<Accessor> accessors = this.getAccessors();
-                            if (accessors != null){
-                                for (Accessor accessor: accessors){
-                                    accessor.writesCompleted(this);
-                                }
-                            }
+                            writesCompleted();//flush Batch Statements
                             setMergeManager(new MergeManager(this));
                             //If we are merging into the shared cache acquire all required locks before merging.
                             this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
@@ -1586,12 +1580,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (this.project.hasNonIsolatedUOWClasses() || (this.modifyAllQueries != null)) {
                     // if we should be acquiring locks before commit let's do that here 
                     if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getUnitOfWorkChangeSet() != null)) {
-                        Collection<Accessor> accessors = this.getAccessors();
-                        if (accessors != null){
-                            for (Accessor accessor: accessors){
-                                accessor.writesCompleted(this);
-                            }
-                        }
+                        writesCompleted();//flush Batch Statements
                         setMergeManager(new MergeManager(this));
                         //If we are merging into the shared cache acquire all required locks before merging.
                         this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
