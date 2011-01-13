@@ -108,7 +108,6 @@ public class CompositeCollectionTestCases extends OXTestCase {
         num.setExchange(456);
         num.setNumber(7890);
         phones.addElement(num);
-        System.out.println("WOIDUHWOUIRH");
         Document outputDoc = (Document)marshaller.objectToXML(emp);
         assertXMLIdentical(controlDocument, outputDoc);
     }

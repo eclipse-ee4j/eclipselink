@@ -1971,12 +1971,13 @@ public class SchemaGenerator {
                             element.setSimpleType(info.getSimpleType());
                         }
                     }
-                }
-                // check to see if we need to add an import
-                if (addImportIfRequired(schema, info.getSchema(), info.getClassNamespace())) {
-                    String prefix = schema.getNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
-                    if (prefix != null && !typeName.equals(EMPTY_STRING)) {
-                        typeName = prefix + COLON + typeName;
+                } else {
+                    // check to see if we need to add an import
+                    if (addImportIfRequired(schema, info.getSchema(), info.getClassNamespace())) {
+                        String prefix = schema.getNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
+                        if (prefix != null && (!typeName.equals(EMPTY_STRING))) {
+                            typeName = prefix + COLON + typeName;
+                        }
                     }
                 }
             } else if (!property.isMap()) {
