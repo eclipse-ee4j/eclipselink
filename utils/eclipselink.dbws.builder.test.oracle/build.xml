@@ -156,6 +156,9 @@
   <property file="${user.home}/test.properties"/>
   <!-- testing properties checked into SVN -->
   <property file="./test.properties"/>
+
+  <property name="version.string" value="${release.version}.qualifier"/>
+
   <!-- Test dependencies -->
   <available file="${junit.lib}" property="junit.jar.exist"/>
   <available file="${jdbc.driver.jar}" property="jdbc.jar.exist"/>
