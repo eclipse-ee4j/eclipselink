@@ -14,6 +14,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
@@ -52,6 +53,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         suite.addTest(new LifecycleCallbackJunitTest("testPrePersistSportsCarInheritAndExcludeDefault"));
         suite.addTest(new LifecycleCallbackJunitTest("testPostPersistSportsCarInheritAndExcludeDefault"));
         suite.addTest(new LifecycleCallbackJunitTest("testPrePersistSportsCarOverride"));
+        suite.addTest(new LifecycleCallbackJunitTest("testQueryInNativePreUpdateEvent"));
         suite.addTest(new LifecycleCallbackJunitTest("testDefaultListenerOnMacBook"));
 
         return suite;
@@ -272,6 +274,30 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         assertFalse("The PrePersist callback method on Sports car was not called.", sportsCarPrePersistCountBefore == sportsCarPrePersistCountAfter);
     }
     
+    /**
+     * bug: 243993 - RepeatableWriteUnitOfWork's usage of UnitOfWorkImpl can cause ConcurrentModificationException
+     *  - will occur if a native EclipseLink preUpdate event reads entities into the UOW, as it occurs while 
+     *  the uow is iterating over its clone list.  
+     */
+    public void testQueryInNativePreUpdateEvent(){
+        clearCache();
+
+        EntityManager em = createEntityManager();
+        List<Bus> results = em.createQuery("Select e from Bus e").getResultList();
+        for (Bus bus:results){
+            bus.setDescription("QueryInNativePreUpdateEvent");
+        }
+        beginTransaction(em);
+        try{
+            em.flush();
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);               
+            }
+            closeEntityManager(em);
+        }
+    }
+
     public void testDefaultListenerOnMacBook() {
         // Tests the default listeners on those entities that don't have their
         // own separate entity listener(s) as well.
