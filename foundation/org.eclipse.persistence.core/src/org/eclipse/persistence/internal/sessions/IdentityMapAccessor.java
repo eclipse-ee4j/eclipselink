@@ -931,7 +931,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * The output of this method will be logged to this session's SessionLog at FINEST level.
      */
     public void printIdentityMapLocks() {
-        if (getSession().shouldLog(SessionLog.FINEST, SessionLog.CACHE)) {
+        if (getSession().shouldLog(SessionLog.SEVERE, SessionLog.CACHE)) {
             getIdentityMapManager().printLocks();
         }
     }

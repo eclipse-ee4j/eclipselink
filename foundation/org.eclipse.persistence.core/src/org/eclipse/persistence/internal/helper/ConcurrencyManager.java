@@ -36,6 +36,7 @@ import org.eclipse.persistence.logging.*;
  * </ul>
  */
 public class ConcurrencyManager implements Serializable {
+    
     protected int numberOfReaders;
     protected int depth;
     protected int numberOfWritersWaiting;
@@ -452,18 +453,29 @@ public class ConcurrencyManager implements Serializable {
         // and a third when they and all the threads they are waiting on are done.
         // This is essentially a busy wait to determine if all the other threads are done.
         while (true) {
-            // 2612538 - the default size of Map (32) is appropriate
-            Map recursiveSet = new IdentityHashMap();
-            if (isBuildObjectOnThreadComplete(currentThread, recursiveSet)) {// Thread job done.
+            try{
+                // 2612538 - the default size of Map (32) is appropriate
+                Map recursiveSet = new IdentityHashMap();
+                if (isBuildObjectOnThreadComplete(currentThread, recursiveSet)) {// Thread job done.
+                    lockManager.releaseActiveLocksOnThread();
+                    removeDeferredLockManager(currentThread);
+                    AbstractSessionLog.getLog().log(SessionLog.FINER, "deferred_locks_released", currentThread.getName());
+                    return;
+                } else {// Not done yet, wait and check again.
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException interrupted) {
+                        AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, interrupted);
+                        lockManager.releaseActiveLocksOnThread();
+                        removeDeferredLockManager(currentThread);
+                        throw ConcurrencyException.waitWasInterrupted(interrupted.getMessage());
+                    }
+                }
+            }catch (Error error){
+                AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, error);
                 lockManager.releaseActiveLocksOnThread();
                 removeDeferredLockManager(currentThread);
-                AbstractSessionLog.getLog().log(SessionLog.FINER, "deferred_locks_released", currentThread.getName());
-                return;
-            } else {// Not done yet, wait and check again.
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException ignoreAndContinue) {
-                }
+                throw error;
             }
         }
     }

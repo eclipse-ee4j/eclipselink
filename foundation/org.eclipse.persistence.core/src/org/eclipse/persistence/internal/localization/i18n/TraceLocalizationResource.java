@@ -337,8 +337,10 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver", "JMX MBeanServer in use: [{0}] from index [{1}] " },
                                             { "jmx_unregistered_mbean", "Unregistered MBean [{0}] from MBeanServer [{1}]." },
                                             { "jmx_unable_to_unregister_mbean", "Unable to unregister MBean [{0}] because the MBeanServer is null. Verify that your ServerPlatform is JMX enabled." },
+                                            { "releasing_invalid_lock", "A lock has been encountered where the thread: {0} is no longer active.  The lock on object class :{1} id: {2} has been forcibly released"},
                                             { "acquire_connection", "Connection acquired from connection pool [{0}]." },
-                                            { "release_connection", "Connection released to connection pool [{0}]." }
+                                            { "release_connection", "Connection released to connection pool [{0}]." },
+                                            { "max_time_exceeded_for_acquirerequiredlocks_wait", "MAX TIME {0} seconds EXCEEDED FOR WRITELOCKMANAGER WAIT.  Waiting on Entity type: {1}with pk: {2} currently locked by thread: {3} with the following trace:\n"}
 
 
     };

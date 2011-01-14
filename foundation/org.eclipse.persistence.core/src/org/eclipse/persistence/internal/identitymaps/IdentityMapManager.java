@@ -1196,7 +1196,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
         }
         writer.write(Helper.cr() + TraceLocalization.buildMessage("lock_writer_footer", (Object[])null) + Helper.cr());
-        this.session.log(SessionLog.FINEST, SessionLog.CACHE, writer.toString(), null, null, false);
+        this.session.log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), null, null, false);
     }
 
     /**
@@ -1235,7 +1235,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
         }
         writer.write(Helper.cr() + TraceLocalization.buildMessage("lock_writer_footer", (Object[])null) + Helper.cr());
-        this.session.log(SessionLog.FINEST, SessionLog.CACHE, writer.toString(), null, null, false);
+        this.session.log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), null, null, false);
     }
 
     /**

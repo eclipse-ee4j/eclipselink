@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.identitymaps.*;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.helper.linkedlist.*;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -49,6 +50,8 @@ public class WriteLockManager {
 
     // this will allow us to prevent a readlock thread from looping forever.
     public static int MAXTRIES = 10000;
+    
+    public static int MAX_WAIT = 600000; //10 mins
 
     /* This attribute stores the list of threads that have had a problem acquiring locks */
     /*  the first element in this list will be the prevailing thread */
@@ -309,10 +312,33 @@ public class WriteLockManager {
                                         // verify that the cache key is still locked before we wait on it, as
                                         //it may have been released since we tried to acquire it.
                                         if (activeCacheKey.getMutex().isAcquired() && (activeCacheKey.getMutex().getActiveThread() != Thread.currentThread())) {
-                                            activeCacheKey.getMutex().wait();
+                                                Thread thread = activeCacheKey.getMutex().getActiveThread();
+                                                if (thread.isAlive()){
+                                                    long time = System.currentTimeMillis();
+                                                    activeCacheKey.getMutex().wait(MAX_WAIT);
+                                                    if (System.currentTimeMillis() - time >= MAX_WAIT){
+                                                        Object[] params = new Object[]{MAX_WAIT /1000, descriptor.getJavaClassName(), activeCacheKey.getKey(), thread.getName()};
+                                                        StringBuilder buffer = new StringBuilder(TraceLocalization.buildMessage("max_time_exceeded_for_acquirerequiredlocks_wait", params));
+                                                        StackTraceElement[] trace = thread.getStackTrace();
+                                                        for (StackTraceElement element : trace){
+                                                            buffer.append("\t\tat");
+                                                            buffer.append(element.toString());
+                                                            buffer.append("\n");
+                                                        }
+                                                        session.log(SessionLog.SEVERE, SessionLog.CACHE, buffer.toString());
+                                                        session.getIdentityMapAccessor().printIdentityMapLocks();
+                                                    }
+                                                }else{
+                                                    session.log(SessionLog.SEVERE, SessionLog.CACHE, "releasing_invalid_lock", new Object[] { thread.getName(),descriptor.getJavaClass(), objectChangeSet.getId()});
+                                                    //thread that held lock is no longer alive.  Something bad has happened like
+                                                    while (activeCacheKey.isAcquired()){
+                                                        // could have a depth greater than one.
+                                                        activeCacheKey.release();
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
-                                }
                             } catch (InterruptedException exception) {
                                 throw org.eclipse.persistence.exceptions.ConcurrencyException.waitWasInterrupted(exception.getMessage());
                             }

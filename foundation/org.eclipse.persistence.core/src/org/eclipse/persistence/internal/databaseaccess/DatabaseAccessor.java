@@ -1629,7 +1629,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * purpose is to ensure that the batched statements have been executed
      */
     public void writesCompleted(AbstractSession session) {
-        if (isInBatchWritingMode(session)) {
+        if (isConnected && isInBatchWritingMode(session)) {
             getActiveBatchWritingMechanism().executeBatchedStatements(session);
         }
     }
