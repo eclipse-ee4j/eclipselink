@@ -692,7 +692,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
 
                 concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, false, session);
-                if (cacheKey != null){
+                if (cacheKey != null && descriptor.isProtectedIsolation()){
                     cacheForeignKeyValues(databaseRow, cacheKey, session);
                 }
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
