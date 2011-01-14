@@ -23,7 +23,7 @@ public final class FrameworkResourceBundle extends ListResourceBundle {
 
 	static final Object[][] contents = { 
 		
-		{"COPYRIGHT", "Copyright \u00A9 1997, 2010 Oracle. All rights reserved. <p> This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html"},
+		{"COPYRIGHT", "Copyright \u00A9 1997, 2011 Oracle. All rights reserved. <p> This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html"},
 
 		// Helpful when having more than one Browse button in a panel
 		{"BROWSE_BUTTON_1", "&Browse..."},
