@@ -310,7 +310,12 @@ public class XMLMarshaller implements Cloneable {
         if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
             if (result instanceof DOMResult) {
                 DOMResult domResult = (DOMResult) result;
-                marshal(object, domResult.getNode());
+                // handle case where the node is null
+                if (domResult.getNode() == null) {
+                    domResult.setNode(this.objectToXML(object));
+                } else {
+                    marshal(object, domResult.getNode());
+                }
             } else if (result instanceof SAXResult) {
                 SAXResult saxResult = (SAXResult) result;
                 marshal(object, saxResult.getHandler());

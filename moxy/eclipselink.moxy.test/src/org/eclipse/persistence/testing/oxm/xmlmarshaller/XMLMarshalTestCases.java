@@ -295,6 +295,18 @@ public class XMLMarshalTestCases extends OXTestCase {
             assertXMLIdentical(controlDocument, document);
         }
 
+        /**
+         * Tests marshalling to DOMResult with null node.
+         */
+        public void testMarshalObjectToEmptyDOMResult() {
+            DOMResult result = new DOMResult();
+            marshaller.marshal(controlObject, result);
+            Document document = (Document) result.getNode();
+            log(controlDocument);
+            log(document);
+            assertXMLIdentical(controlDocument, document);
+        }
+
         public void testMarshalObjectToSAXResult() {
             SAXDocumentBuilder builder = new SAXDocumentBuilder();
             SAXResult result = new SAXResult(builder);
