@@ -70,7 +70,7 @@ public class JavaModelImpl implements JavaModel {
 
     public JavaClass getClass(String className) {
         try {
-            Class clazz = classLoader.loadClass(className);
+            Class clazz = this.classLoader.loadClass(className);
             return getClass(clazz);
         } catch(ClassNotFoundException e) {
             throw JAXBException.classNotFoundException(className);

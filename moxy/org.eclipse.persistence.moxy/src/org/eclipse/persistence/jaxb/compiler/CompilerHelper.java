@@ -31,12 +31,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 
 /**
  * Helper class for code that needs to be shared between AnnotationsProcessor,
@@ -404,5 +406,13 @@ public class CompilerHelper {
         }
         
         return superClass;
+    }
+    
+    public static void addClassToClassLoader(JavaClass cls, ClassLoader loader) {
+    
+        if(loader.getClass() == JaxbClassLoader.class && cls.getClass() == JavaClassImpl.class) {
+            Class wrappedClass = ((JavaClassImpl)cls).getJavaClass();
+            ((JaxbClassLoader)loader).putClass(wrappedClass.getName(), wrappedClass);
+        }
     }
 }

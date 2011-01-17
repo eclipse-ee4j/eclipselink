@@ -787,6 +787,7 @@ public class AnnotationsProcessor {
                 for (Property property : info.getPropertyList()) {
                     JavaClass type = property.getActualType();
                     if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
+                        CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
                         JavaClass[] jClassArray = new JavaClass[] { type };
                         buildNewTypeInfo(jClassArray);
                     }
@@ -795,6 +796,7 @@ public class AnnotationsProcessor {
                         for(Property choiceProp:property.getChoiceProperties()) {
                             type = choiceProp.getActualType();
                             if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
+                                CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
                                 JavaClass[] jClassArray = new JavaClass[] { type };
                                 buildNewTypeInfo(jClassArray);
                             }
@@ -969,6 +971,7 @@ public class AnnotationsProcessor {
                 for (Iterator<JavaClass> jClassIt = javaClass.getDeclaredClasses().iterator(); jClassIt.hasNext();) {
                     JavaClass innerClass = jClassIt.next();
                     if (shouldGenerateTypeInfo(innerClass)) {
+                        CompilerHelper.addClassToClassLoader(innerClass, helper.getClassLoader());
                         TypeInfo tInfo = typeInfo.get(innerClass.getQualifiedName());
                         if ((tInfo != null && !tInfo.isTransient()) || !helper.isAnnotationPresent(innerClass, XmlTransient.class)) {
                             classesToProcess.add(innerClass);
@@ -1363,6 +1366,7 @@ public class AnnotationsProcessor {
             TypeInfo ptypeInfo = typeInfo.get(ptype.getQualifiedName());
             boolean newTypeInfoForAdapter = false;
             if (ptypeInfo == null && shouldGenerateTypeInfo(ptype)) {
+                CompilerHelper.addClassToClassLoader(ptype, helper.getClassLoader());
                 JavaClass[] jClassArray = new JavaClass[] { ptype };
                 buildNewTypeInfo(jClassArray);
                 ptypeInfo = typeInfo.get(ptype.getQualifiedName());
