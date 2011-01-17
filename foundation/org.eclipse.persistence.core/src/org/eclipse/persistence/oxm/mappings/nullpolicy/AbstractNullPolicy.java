@@ -163,12 +163,12 @@ public abstract class AbstractNullPolicy {
         } else {
             // Nillable: write out xsi:nil="true" attribute in empty element    	
             if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
-                String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
+                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+                String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver, marshalRecord);
                 StringBuilder qName = new StringBuilder(XMLConstants.ATTRIBUTE); // Unsynchronized
                 qName.append(xsiPrefix).append(COLON_W_SCHEMA_NIL_ATTRIBUTE);
                 XPathFragment nilFragment = new XPathFragment(qName.toString());
                 nilFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                 marshalRecord.attribute(nilFragment, namespaceResolver, TRUE);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
                 return true;
@@ -204,7 +204,7 @@ public abstract class AbstractNullPolicy {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);
-            String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
+            String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver, marshalRecord);
             XPathFragment nilFragment = new XPathFragment(XMLConstants.ATTRIBUTE + xsiPrefix + COLON_W_SCHEMA_NIL_ATTRIBUTE);
             nilFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
             marshalRecord.attribute(nilFragment, namespaceResolver, TRUE);
@@ -366,18 +366,20 @@ public abstract class AbstractNullPolicy {
      * @param namespaceResolver
      * @return xsi prefix
      */
-    protected String processNamespaceResolverForXSIPrefix(NamespaceResolver namespaceResolver) {
+    protected String processNamespaceResolverForXSIPrefix(NamespaceResolver namespaceResolver, MarshalRecord marshalRecord) {
         String xsiPrefix;
         if (null == namespaceResolver) {
             // add new xsi entry into the properties map
             xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
             namespaceResolver = new NamespaceResolver();
             namespaceResolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         } else {
             // find an existing xsi entry in the map
             xsiPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
             if (null == xsiPrefix) {
-                xsiPrefix = namespaceResolver.generatePrefix();
+                xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+                marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
             }
         }
         return xsiPrefix;
