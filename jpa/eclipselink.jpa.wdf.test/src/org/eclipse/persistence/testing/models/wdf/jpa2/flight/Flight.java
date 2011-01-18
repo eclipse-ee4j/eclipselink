@@ -15,14 +15,12 @@ package org.eclipse.persistence.testing.models.wdf.jpa2.flight;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@IdClass(FlightId.class)
 @Table(name = "TMP2_FLIGHT")
 public class Flight {
 

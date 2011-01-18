@@ -16,13 +16,11 @@ package org.eclipse.persistence.testing.models.wdf.jpa2.flight;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@IdClass(ConnectionId.class)
 @Table(name = "TMP2_CONNECTION")
 public class Connection {
 

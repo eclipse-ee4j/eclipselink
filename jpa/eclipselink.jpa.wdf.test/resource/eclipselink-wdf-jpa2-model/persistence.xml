@@ -21,6 +21,9 @@
 		<class>org.eclipse.persistence.testing.models.wdf.jpa2.embedded.EmbeddedPropertyAccess</class>
 		<class>org.eclipse.persistence.testing.models.wdf.jpa2.embedded.EmbeddingFieldAccess</class>
 		<class>org.eclipse.persistence.testing.models.wdf.jpa2.embedded.EmbeddingPropertyAccess</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.flight.Carrier</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.flight.Connection</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa2.flight.Flight</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
                    <!--<property name="eclipselink.target-server" value="org.eclipse.persistence.platform.server.sap.SAPNetWeaver_7_1_Platform"/>  -->
