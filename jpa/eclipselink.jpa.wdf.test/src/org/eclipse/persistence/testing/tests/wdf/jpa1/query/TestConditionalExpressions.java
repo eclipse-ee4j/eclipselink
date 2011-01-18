@@ -771,13 +771,11 @@ public class TestConditionalExpressions extends QueryTest {
     }
     
     @Test
-    @Bugzilla(bugid=300488)
     public void testMemberOfHandling0() {
       assertValidQuery("select cri from Criminal cri, City c where cri.attachedCop member of c.cops");
     }
     
     @Test
-    @Bugzilla(bugid=300488)
     public void testMemberOfHandling4() {
         assertValidQuery("select cri from Criminal cri, City c where cri member c.criminals");
     }
