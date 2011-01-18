@@ -92,7 +92,6 @@ public class TestCount extends JPA1Base {
     }
     
     @Test
-    @Bugzilla(bugid=297331)
     public void testCountDistinctCompoundKey() {
         verifyCountResult("select count(distinct c) from Cubicle c", 1);
     }
