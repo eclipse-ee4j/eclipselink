@@ -42,6 +42,10 @@ public class UOWCommitAndResumeWithPreCalcChangeSet extends TransactionalTestCas
     }
 
     protected void test() {
+        if (this.unitOfWork.isRemoteUnitOfWork()){
+            //The tested API is not supported by a Remote UnitOfWork
+            return;
+        }
         this.unitOfWorkWorkingCopy.setFirstName("Andy-Von-Trumpet");
         this.unitOfWorkWorkingCopy.addPhoneNumber(new PhoneNumber("OldCell", "555", "4545"));
         Employee newEmp = new Employee();
@@ -69,6 +73,10 @@ public class UOWCommitAndResumeWithPreCalcChangeSet extends TransactionalTestCas
     }
 
     protected void verify() {
+        if (this.unitOfWork.isRemoteUnitOfWork()){
+            //The tested API is not supported by a Remote UnitOfWork
+            return;
+        }
         if (!this.originalObject.getFirstName().equals("Andy-Von-Trumpet")) {
             throw new TestErrorException("The values did not merge correctly");
         }
