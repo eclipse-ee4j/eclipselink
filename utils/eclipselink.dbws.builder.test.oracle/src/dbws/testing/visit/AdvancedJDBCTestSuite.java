@@ -774,6 +774,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         xmlContext2.createMarshaller().marshal(empObjectEntity, empObjectEntityDoc);
         String empObjectEntityString =
             DBWSTestHelper.documentToString(empObjectEntityDoc).replaceAll("[\r\n]", "");
+        empObjectEntityString = empObjectEntityString.replaceAll(">( *)<", "><");
         String anEmpObject = ANEMPOBJECT + today.toString() + ANEMPOBJECT_SUFFIX;
         assertTrue("instance empObject not same as control empObject",
             anEmpObject.equals(empObjectEntityString));
@@ -1114,7 +1115,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
        "</queries>" +
     "</object-persistence>";
     static final String ANEMPOBJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<emp_objectType xmlns=\"urn:struct3\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<employee_id>55</employee_id>" +
            "<address>" +
