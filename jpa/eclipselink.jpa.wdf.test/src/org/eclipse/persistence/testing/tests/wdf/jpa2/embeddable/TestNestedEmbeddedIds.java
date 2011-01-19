@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.models.wdf.jpa2.flight.Carrier;
 import org.eclipse.persistence.testing.models.wdf.jpa2.flight.Connection;
 import org.eclipse.persistence.testing.models.wdf.jpa2.flight.ConnectionId;
@@ -17,6 +18,7 @@ public class TestNestedEmbeddedIds extends JPA2Base {
 
 
     @Test
+    @Skip(server=true)
     public void testInsert() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
