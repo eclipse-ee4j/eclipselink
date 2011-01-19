@@ -785,6 +785,9 @@ public class AnnotationsProcessor {
             TypeInfo info = getTypeInfo().get(next.getQualifiedName());
             if(info != null) {
                 for (Property property : info.getPropertyList()) {
+                    if(property.isTransient()) {
+                       continue;
+                    }
                     JavaClass type = property.getActualType();
                     if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
                         CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
