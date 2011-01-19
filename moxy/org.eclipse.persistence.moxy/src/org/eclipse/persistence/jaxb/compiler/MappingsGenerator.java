@@ -952,11 +952,7 @@ public class MappingsGenerator {
             }
         }
         // if the XPath is set (via xml-path) use it; otherwise figure it out
-        if (property.getXmlPath() != null) {
-            mapping.setField(new XMLField(property.getXmlPath()));
-        } else {
-            mapping.setXPath(getXPathForField(property, namespaceInfo, false).getXPath());
-        }
+        mapping.setXPath(getXPathForField(property, namespaceInfo, false).getXPath());
         // handle null policy set via xml metadata
         if (property.isSetNullPolicy()) {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
@@ -1036,13 +1032,7 @@ public class MappingsGenerator {
             }
         }
         // if the XPath is set (via xml-path) use it; otherwise figure it out
-        XMLField xmlField;
-        if (property.getXmlPath() != null) {
-            xmlField = new XMLField(property.getXmlPath());
-            xmlField.setSchemaType(property.getSchemaType());
-        } else {
-            xmlField = getXPathForField(property, namespaceInfo, true);
-        }
+        XMLField xmlField = getXPathForField(property, namespaceInfo, true);
         mapping.setField(xmlField);
 
         if (property.getDefaultValue() != null) {
@@ -1116,11 +1106,7 @@ public class MappingsGenerator {
             }
         }
         // if the XPath is set (via xml-path) use it
-        if (property.getXmlPath() != null) {
-            mapping.setField(new XMLField(property.getXmlPath()));
-        } else {
-            mapping.setField(getXPathForField(property, namespaceInfo, false));
-        }
+        mapping.setField(getXPathForField(property, namespaceInfo, false));
         if (property.isSwaAttachmentRef()) {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.SWA_REF_QNAME);
             mapping.setSwaRef(true);
@@ -1170,11 +1156,7 @@ public class MappingsGenerator {
             }
         }
         // if the XPath is set (via xml-path) use it
-        if (property.getXmlPath() != null) {
-            mapping.setField(new XMLField(property.getXmlPath()));
-        } else {
-            mapping.setField(getXPathForField(property, namespaceInfo, false));
-        }
+        mapping.setField(getXPathForField(property, namespaceInfo, false));
         if (property.isSwaAttachmentRef()) {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.SWA_REF_QNAME);
             mapping.setSwaRef(true);
@@ -1680,12 +1662,7 @@ public class MappingsGenerator {
         mapping.useCollectionClassName(collectionType.getRawName());
 
         // if the XPath is set (via xml-path) use it; otherwise figure it out
-        XMLField xmlField;
-        if (property.getXmlPath() != null) {
-            xmlField = new XMLField(property.getXmlPath());
-        } else {
-            xmlField = getXPathForField(property, namespaceInfo, false);
-        }
+        XMLField xmlField = getXPathForField(property, namespaceInfo, false);
         mapping.setXPath(xmlField.getXPath());
 
         if (referenceClassName == null){
@@ -1790,13 +1767,7 @@ public class MappingsGenerator {
         mapping.useCollectionClassName(collectionType.getRawName());
 
         // if the XPath is set (via xml-path) use it; otherwise figure it out
-        XMLField xmlField;
-        if (property.getXmlPath() != null) {
-            xmlField = new XMLField(property.getXmlPath());
-            xmlField.setSchemaType(property.getSchemaType());
-        } else {
-            xmlField = getXPathForField(property, namespaceInfo, true);
-        }
+        XMLField xmlField = getXPathForField(property, namespaceInfo, true);
         mapping.setField(xmlField);
 
         if (helper.isAnnotationPresent(property.getElement(), XmlMixed.class)) {
@@ -2239,8 +2210,13 @@ public class MappingsGenerator {
     }
 
     public XMLField getXPathForField(Property property, NamespaceInfo namespaceInfo, boolean isTextMapping) {
-        String xPath = "";
         XMLField xmlField = null;
+        if (property.getXmlPath() != null) {
+            xmlField = new XMLField(property.getXmlPath());
+            xmlField.setSchemaType(property.getSchemaType());
+            return xmlField;
+        }
+        String xPath = "";
         if (property.isSetXmlElementWrapper()) {
             XmlElementWrapper wrapper = property.getXmlElementWrapper();
             String namespace = wrapper.getNamespace();

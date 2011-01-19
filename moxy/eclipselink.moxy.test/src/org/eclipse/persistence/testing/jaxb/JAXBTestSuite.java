@@ -109,6 +109,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlreadonly.XmlReadOnlyOverrideTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlreadonly.XmlReadOnlyOverrideTestCases.class);
         suite.addTestSuite(XmlPathsTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.enumtype.EnumTestCases.class);
         suite.addTestSuite(XmlPathsOverrideTestCases.class);
         suite.addTestSuite(XmlNullPolicyTestCases.class);
         suite.addTestSuite(XmlAccessMethodsTestCases.class);
