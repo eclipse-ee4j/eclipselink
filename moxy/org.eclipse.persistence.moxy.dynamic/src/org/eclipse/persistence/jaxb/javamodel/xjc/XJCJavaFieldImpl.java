@@ -43,9 +43,12 @@ public class XJCJavaFieldImpl implements JavaField {
     private JavaClass owningClass;
 
     private static Field JVAR_ANNOTATIONS = null;
+    private static Field JARRAYCLASS_COMPONENTTYPE = null;
     static {
         try {
             JVAR_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JVar.class, "annotations", true);
+            Class<?> c = Class.forName("com.sun.codemodel.JArrayClass");
+            JARRAYCLASS_COMPONENTTYPE = PrivilegedAccessHelper.getDeclaredField(c, "componentType", true);
         } catch (Exception e) {
             throw JAXBException.errorCreatingDynamicJAXBContext(e);
         }
@@ -115,6 +118,7 @@ public class XJCJavaFieldImpl implements JavaField {
     public JavaClass getResolvedType() {
         JType type = xjcField.type();
         JType basis = null;
+        boolean isArray = false;
 
         try {
             // Check to see if this type has a 'basis' field.
@@ -131,15 +135,23 @@ public class XJCJavaFieldImpl implements JavaField {
         if (type.isPrimitive()) {
             JPrimitiveType pType = (JPrimitiveType) type;
             classToReturn = pType.boxify();
-        } else {
-            if (type.getClass().getName().contains("JArrayClass")) {
-                classToReturn = (JClass) type;
-            } else {
-                try {
-                    classToReturn = jCodeModel._class(basis != null ? basis.fullName() : type.fullName());
-                } catch (JClassAlreadyExistsException ex) {
-                    classToReturn = jCodeModel._getClass(basis != null ? basis.fullName() : type.fullName());
+        } else if (type.getClass().getName().contains("JArrayClass")) {
+            isArray = true;
+            classToReturn = (JClass) type;
+            try {
+                JType componentType = (JType) PrivilegedAccessHelper.getValueFromField(JARRAYCLASS_COMPONENTTYPE, type);
+                if (componentType.isPrimitive()) {
+                    componentType = componentType.boxify();
+                    classToReturn = (JClass) componentType;
                 }
+            } catch (Exception e) {
+                throw JAXBException.errorCreatingDynamicJAXBContext(e);
+            }
+        } else {
+            try {
+                classToReturn = jCodeModel._class(basis != null ? basis.fullName() : type.fullName());
+            } catch (JClassAlreadyExistsException ex) {
+                classToReturn = jCodeModel._getClass(basis != null ? basis.fullName() : type.fullName());
             }
         }
 
@@ -156,17 +168,15 @@ public class XJCJavaFieldImpl implements JavaField {
             }
         }
 
-        if (classToReturn instanceof JDefinedClass) {
-            if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
-                return ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(classToReturn.fullName());
-            }
-            return new XJCJavaClassImpl((JDefinedClass) classToReturn, jCodeModel, dynamicClassLoader);
-        } else {
-            if (((XJCJavaClassImpl) this.owningClass).getJavaModel() != null) {
-                return ((XJCJavaClassImpl) this.owningClass).getJavaModel().getClass(classToReturn.fullName());
-            }
-            return new XJCJavaClassImpl((JDefinedClass) classToReturn, jCodeModel, dynamicClassLoader);
+        String className = classToReturn.fullName();
+        if (isArray) {
+            className += "[]";
         }
+
+        if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
+            return ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(className);
+        }
+        return new XJCJavaClassImpl((JDefinedClass) classToReturn, jCodeModel, dynamicClassLoader, isArray);
     }
 
     public boolean isFinal() {

@@ -2404,7 +2404,7 @@ public class MappingsGenerator {
                              this.qNamesToDeclaredClasses.put(next, declaredClass);
                          }catch(Exception e){
                          }
-            			return;
+            			continue;
             		}
             	}
                 Class generatedClass = generateWrapperClassAndDescriptor(type, next, nextElement, nextClassName, attributeTypeName);

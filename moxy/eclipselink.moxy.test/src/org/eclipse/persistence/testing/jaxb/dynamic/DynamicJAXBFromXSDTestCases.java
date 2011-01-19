@@ -47,7 +47,7 @@ import org.xml.sax.SAXException;
 
 public class DynamicJAXBFromXSDTestCases extends TestCase {
 
-	DynamicJAXBContext jaxbContext;
+    DynamicJAXBContext jaxbContext;
 
     static {
         try {
@@ -61,13 +61,13 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     public DynamicJAXBFromXSDTestCases(String name) throws Exception {
         super(name);
     }
-    
+
     public String getName() {
-    	return "Dynamic JAXB: XSD: " + super.getName();
+        return "Dynamic JAXB: XSD: " + super.getName();
     }
 
     // ====================================================================
-    
+
     public void testXmlSchemaQualified() throws Exception {
         // <xs:schema targetNamespace="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema"
         //      attributeFormDefault="qualified" elementFormDefault="qualified">
@@ -788,32 +788,64 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     }
 
     public void testNestedInnerClasses() throws Exception {
-    	// Tests multiple levels of inner classes, eg. mynamespace.Person.RelatedResource.Link
+        // Tests multiple levels of inner classes, eg. mynamespace.Person.RelatedResource.Link
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(NESTEDINNERCLASSES);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
 
-		DynamicEntity person = jaxbContext.newDynamicEntity("mynamespace.Person");
-		DynamicEntity resource = jaxbContext.newDynamicEntity("mynamespace.Person.RelatedResource");
-		DynamicEntity link = jaxbContext.newDynamicEntity("mynamespace.Person.RelatedResource.Link");
-		DynamicEntity link2 = jaxbContext.newDynamicEntity("mynamespace.Person.RelatedResource.Link");
+        DynamicEntity person = jaxbContext.newDynamicEntity("mynamespace.Person");
+        DynamicEntity resource = jaxbContext.newDynamicEntity("mynamespace.Person.RelatedResource");
+        DynamicEntity link = jaxbContext.newDynamicEntity("mynamespace.Person.RelatedResource.Link");
+        DynamicEntity link2 = jaxbContext.newDynamicEntity("mynamespace.Person.RelatedResource.Link");
 
-		link.set("linkName", "LINKFOO");
-		link2.set("linkName", "LINKFOO2");
-		
-		resource.set("resourceName", "RESBAR");
-		
-		ArrayList<DynamicEntity> links = new ArrayList<DynamicEntity>();
-		links.add(link);
-		links.add(link2);
-		
-		resource.set("link", links);
-		person.set("name", "Bob Smith");
-		person.set("relatedResource", resource);
-		
+        link.set("linkName", "LINKFOO");
+        link2.set("linkName", "LINKFOO2");
+
+        resource.set("resourceName", "RESBAR");
+
+        ArrayList<DynamicEntity> links = new ArrayList<DynamicEntity>();
+        links.add(link);
+        links.add(link2);
+
+        resource.set("link", links);
+        person.set("name", "Bob Smith");
+        person.set("relatedResource", resource);
+
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
     }
-    
+
+    public void testBinary() throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINARY);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+
+        byte[] byteArray = new byte[] {30,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4};
+
+        DynamicEntity person = jaxbContext.newDynamicEntity("mynamespace.Person");
+        person.set("name", "B. Nary");
+        person.set("abyte", (byte) 30);
+        person.set("base64", byteArray);
+        person.set("hex", byteArray);
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+    }
+
+    public void testBinaryGlobalType() throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINARY2);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+
+        byte[] byteArray = new byte[] {30,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4};
+
+        DynamicEntity person = jaxbContext.newDynamicEntity("mynamespace.Person");
+        person.set("name", "B. Nary");
+        person.set("abyte", (byte) 30);
+        person.set("base64", byteArray);
+        person.set("hex", byteArray);
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+    }
+
     // ====================================================================
 
     private void print(Object o) throws Exception {
@@ -823,7 +855,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     }
 
     // ====================================================================
-    
+
     private static final String RESOURCE_DIR = "org/eclipse/persistence/testing/jaxb/dynamic/";
     private static final String CONTEXT_PATH = "mynamespace";
 
@@ -852,7 +884,9 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String XMLELEMENTCOLLECTION = RESOURCE_DIR + "xmlelement-collection.xsd";
     private static final String JAXBCUSTOM = RESOURCE_DIR + "jaxbcustom.xsd";
     private static final String SUBSTITUTION = RESOURCE_DIR + "substitution.xsd";
-    private static final String NESTEDINNERCLASSES = RESOURCE_DIR + "nestedinnerclasses.xsd";    
+    private static final String NESTEDINNERCLASSES = RESOURCE_DIR + "nestedinnerclasses.xsd";
+    private static final String BINARY = RESOURCE_DIR + "binary.xsd";
+    private static final String BINARY2 = RESOURCE_DIR + "binary2.xsd";
 
     // Test Instance Docs
     private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";
@@ -871,5 +905,4 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String COMPASS_DIRECTION = "CompassDirection";
     private static final String NORTH_CONSTANT = "NORTH";
 
-    
 }

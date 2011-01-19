@@ -1234,6 +1234,31 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
     }
 
+    public void testBinary() throws Exception {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        InputStream iStream = classLoader.getResourceAsStream(BINARY);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + BINARY + "]");
+        }
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+
+        jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
+
+        byte[] b = new byte[] {30,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4};
+
+        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+        assertNotNull("Could not create Dynamic Entity.", person);
+        person.set("name", "Tony Robbins");
+        person.set("abyte", (byte) 19882);
+        person.set("base64", b);
+        person.set("hex", b);
+
+        Document personDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, personDoc);
+    }
+
     // Utility methods
     // ====================================================================
 
@@ -1322,6 +1347,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     private static final String XMLLIST = RESOURCE_DIR + "xmllist-oxm.xml";
     private static final String XMLELEMENTREF = RESOURCE_DIR + "xmlelementref-oxm.xml";
     private static final String SUBSTITUTION = RESOURCE_DIR + "substitution-oxm.xml";
+    private static final String BINARY = RESOURCE_DIR + "binary-oxm.xml";
 
     // Test Instance Docs
     private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";

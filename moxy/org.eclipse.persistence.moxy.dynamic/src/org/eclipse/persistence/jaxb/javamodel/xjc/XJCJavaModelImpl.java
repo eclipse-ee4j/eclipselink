@@ -64,12 +64,18 @@ public class XJCJavaModelImpl implements JavaModel {
             return cachedClass;
         }
 
+        String componentName = className;
+        boolean isArray = className.contains("[]");
+        if (isArray) {
+            componentName = className.replace("[]", "");
+        }
+
         try {
-            JavaClass jc = new XJCJavaClassImpl(jCodeModel._class(className), jCodeModel, dynamicClassLoader);
+            JavaClass jc = new XJCJavaClassImpl(jCodeModel._class(componentName), jCodeModel, dynamicClassLoader, isArray);
             this.javaModelClasses.put(className, jc);
             return jc;
         } catch (JClassAlreadyExistsException ex) {
-            JavaClass jc = new XJCJavaClassImpl(jCodeModel._getClass(className), jCodeModel, dynamicClassLoader);
+            JavaClass jc = new XJCJavaClassImpl(jCodeModel._getClass(componentName), jCodeModel, dynamicClassLoader, isArray);
             this.javaModelClasses.put(className, jc);
             return jc;
         }

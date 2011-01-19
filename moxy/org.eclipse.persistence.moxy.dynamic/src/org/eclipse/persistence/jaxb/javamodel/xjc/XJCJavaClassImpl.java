@@ -48,6 +48,7 @@ public class XJCJavaClassImpl implements JavaClass {
     private JDefinedClass xjcClass;
     private JCodeModel jCodeModel;
     private JavaModel javaModel;
+    private boolean isArray;
 
     private DynamicClassLoader dynamicClassLoader;
 
@@ -78,9 +79,14 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     public XJCJavaClassImpl(JDefinedClass jDefinedClass, JCodeModel codeModel, DynamicClassLoader loader) {
+        this(jDefinedClass, codeModel, loader, false);
+    }
+
+    public XJCJavaClassImpl(JDefinedClass jDefinedClass, JCodeModel codeModel, DynamicClassLoader loader, boolean isArray) {
         this.xjcClass = jDefinedClass;
         this.jCodeModel = codeModel;
         this.dynamicClassLoader = loader;
+        this.isArray = isArray;
     }
 
     // ========================================================================
@@ -129,7 +135,8 @@ public class XJCJavaClassImpl implements JavaClass {
         if (!isArray()) {
             return null;
         }
-        throw new UnsupportedOperationException("getComponentType");
+
+        return javaModel.getClass(this.xjcClass.fullName());
     }
 
     public JavaConstructor getConstructor(JavaClass[] parameterTypes) {
@@ -292,7 +299,10 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     public String getRawName() {
-        return getQualifiedName();
+        if (isArray) {
+            return xjcClass.fullName() + "[]";
+        }
+        return xjcClass.fullName();
     }
 
     public JavaClass getSuperclass() {
@@ -329,6 +339,9 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     public boolean isArray() {
+        if (this.isArray) {
+            return true;
+        }
         return this.xjcClass.isArray();
     }
 
@@ -344,7 +357,7 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     public boolean isEnum() {
-    	return xjcClass.getClassType().equals(ClassType.ENUM);
+        return xjcClass.getClassType().equals(ClassType.ENUM);
     }
 
     public boolean isFinal() {
@@ -356,7 +369,7 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     public boolean isMemberClass() {
-        throw new UnsupportedOperationException("isMemberClass");
+        return this.xjcClass.outer() != null;
     }
 
     public boolean isPrimitive() {
