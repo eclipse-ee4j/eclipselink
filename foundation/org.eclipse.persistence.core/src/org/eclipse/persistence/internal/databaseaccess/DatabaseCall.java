@@ -66,6 +66,8 @@ public abstract class DatabaseCall extends DatasourceCall {
 
     // The returned fields.
     transient protected Vector fields;
+    // PERF: fields array
+    transient protected DatabaseField[] fieldsArray;
 
     // Field matching is required for custom SQL when the fields order is not known.
     protected boolean isFieldMatchingRequired;
@@ -287,6 +289,14 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public Vector getFields() {
         return fields;
+    }
+
+    /**
+     * INTERNAL:
+     * The array of fields returned by the call.
+     */
+    public DatabaseField[] getFieldsArray() {
+        return fieldsArray;
     }
 
     /**
@@ -685,6 +695,15 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public void setFields(Vector fields) {
         this.fields = fields;
+        if (fields != null) {
+            int size = fields.size();
+            this.fieldsArray = new DatabaseField[size];
+            for (int index = 0; index < size; index++) {
+                this.fieldsArray[index] = (DatabaseField)fields.get(index);
+            }
+        } else {
+            this.fieldsArray = null;
+        }
     }
 
     /**
@@ -906,8 +925,8 @@ public abstract class DatabaseCall extends DatasourceCall {
             boolean hasParameterizedIN = false;
             Vector parameters = getParameters();
             Vector parameterTypes = getParameterTypes();
-            Vector parametersValues = new Vector(parameters.size());
             int size = parameters.size();
+            Vector parametersValues = new Vector(size);
             for (int index = 0; index < size; index++) {
                 Object parameter = parameters.get(index);
                 Object parameterType = parameterTypes.get(index);

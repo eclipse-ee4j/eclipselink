@@ -20,23 +20,25 @@ import org.eclipse.persistence.testing.framework.*;
  */
 public class MethodTest extends PerformanceComparisonTestCase {
     protected int index = 0;
-    protected volatile int vIndex = 0;
 
     public MethodTest() {
         setName("MethodExecution vs SynchronizedMethod PerformanceComparisonTest");
         setDescription("This test compares the performance for final, synchronized and normal method execution.");
         addSynchronizedTest();
+        addSynchronizedBlockTest();
         addFinalTest();
         addReflectionTest();
         addInlinedTest();
         addNormalTest();
+        addNormalTest2();
+        addNormalTest3();
         addVolatileTest();
     }
 
     /**
      * Normal.
      */
-    public void test() throws Exception {
+    public void test() throws Throwable {
         for (int index = 0; index < 100; index++) {
             doTest();
         }
@@ -45,10 +47,12 @@ public class MethodTest extends PerformanceComparisonTestCase {
     /**
      * Normal.
      */
-    public void doTest() throws Exception {
+    public void doTest() {
         // Do something simple.
-        index = 0;
         index = index + 10;
+        if (index > 1000) {
+            index = 0;
+        }
     }
 
     /**
@@ -56,6 +60,8 @@ public class MethodTest extends PerformanceComparisonTestCase {
      */
     public void addSynchronizedTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected int index2 = 0;
+            
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -64,8 +70,10 @@ public class MethodTest extends PerformanceComparisonTestCase {
 
             public synchronized void doTest() {
                 // Do something simple.
-                index = 0;
-                index = index + 10;
+                index2 = index2 + 10;
+                if (index2 > 1000) {
+                    index2 = 0;
+                }
             }
         };
         test.setName("SynchronizedTest");
@@ -78,6 +86,8 @@ public class MethodTest extends PerformanceComparisonTestCase {
      */
     public void addSynchronizedBlockTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected int index2 = 0;
+            
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -87,8 +97,10 @@ public class MethodTest extends PerformanceComparisonTestCase {
             public void doTest() {
                 synchronized (this) {
                     // Do something simple.
-                    index = 0;
-                    index = index + 10;
+                    index2 = index2 + 10;
+                    if (index2 > 1000) {
+                        index2 = 0;
+                    }
                 }
             }
         };
@@ -101,6 +113,8 @@ public class MethodTest extends PerformanceComparisonTestCase {
      */
     public void addFinalTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected int index2 = 0;
+            
             public final void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -109,8 +123,10 @@ public class MethodTest extends PerformanceComparisonTestCase {
 
             public final void doTest() {
                 // Do something simple.
-                index = 0;
-                index = index + 10;
+                index2 = index2 + 10;
+                if (index2 > 1000) {
+                    index2 = 0;
+                }
             }
         };
         test.setName("FinalTest");
@@ -122,19 +138,27 @@ public class MethodTest extends PerformanceComparisonTestCase {
      */
     public void addReflectionTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected int index2 = 0;
+            
             public Method method;
             public Object[] args;
 
+            /**
+             * Allows any test specific setup before starting the test run.
+             */
+            public void startTest() {
+                if (method == null) {
+                    Class[] argTypes = {  };
+                    try {
+                        method = getClass().getMethod("doTest", argTypes);
+                    } catch (Exception ignore) {
+                    }
+                    args = new Object[0];
+                }
+            }
+            
             public final void test() {
                 for (int index = 0; index < 100; index++) {
-                    if (method == null) {
-                        Class[] argTypes = {  };
-                        try {
-                            method = getClass().getMethod("doTest", argTypes);
-                        } catch (Exception ignore) {
-                        }
-                        args = new Object[0];
-                    }
                     try {
                         method.invoke(this, args);
                     } catch (Exception ignore) {
@@ -142,10 +166,12 @@ public class MethodTest extends PerformanceComparisonTestCase {
                 }
             }
 
-            public final void doTest() {
+            public void doTest() {
                 // Do something simple.
-                index = 0;
-                index = index + 10;
+                index2 = index2 + 10;
+                if (index2 > 1000) {
+                    index2 = 0;
+                }
             }
         };
         test.setName("ReflectionTest");
@@ -157,11 +183,15 @@ public class MethodTest extends PerformanceComparisonTestCase {
      */
     public void addInlinedTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected int index2 = 0;
+            
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     // Do something simple.
-                    MethodTest.this.index = 0;
-                    MethodTest.this.index = MethodTest.this.index + 10;
+                    index2 = index2 + 10;
+                    if (index2 > 1000) {
+                        index2 = 0;
+                    }
                 }
             }
         };
@@ -174,19 +204,62 @@ public class MethodTest extends PerformanceComparisonTestCase {
      */
     public void addNormalTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
                 }
             }
             
-            public final void doTest() {
+            public void doTest() {
                 // Do something simple.
-                index = 0;
                 index = index + 10;
+                if (index > 1000) {
+                    index = 0;
+                }
             }
         };
         test.setName("NormalTest");
+        addTest(test);
+    }
+    
+    /**
+     * Normal.
+     */
+    public void addNormalTest2() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            public void test() {
+                for (int index = 0; index < 100; index++) {
+                    MethodTest.this.doTest();
+                }
+            }
+        };
+        test.setName("NormalTest2");
+        addTest(test);
+    }
+    
+    /**
+     * Normal.
+     */
+    public void addNormalTest3() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected int index2 = 0;
+            
+            public void test() {
+                for (int index = 0; index < 100; index++) {
+                    doTest();
+                }
+            }
+            
+            public void doTest() {
+                // Do something simple.
+                index2 = index2 + 10;
+                if (index2 > 1000) {
+                    index2 = 0;
+                }
+            }
+        };
+        test.setName("NormalTest3");
         addTest(test);
     }
 
@@ -195,14 +268,20 @@ public class MethodTest extends PerformanceComparisonTestCase {
      */
     public void addVolatileTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected volatile int index2 = 0;
+            
             public void test() {
-                doTest();
+                for (int index = 0; index < 100; index++) {
+                    doTest();
+                }
             }
             
-            public final void doTest() {
+            public void doTest() {
                 // Do something simple.
-                vIndex = 0;
-                vIndex = vIndex + 10;
+                index2 = index2 + 10;
+                if (index2 > 1000) {
+                    index2 = 0;
+                }
             }
         };
         test.setName("VolatileTest");

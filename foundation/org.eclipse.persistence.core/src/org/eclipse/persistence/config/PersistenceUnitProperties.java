@@ -315,6 +315,16 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_PASSWORD = "password";
 
     /**
+     * The <code>"failover"</code> property.
+     * This can be append to a connection pool property,
+     * i.e. <code>"eclipselink.jdbc.connection_pool.node1.failover"</code>
+     * Configures the connection pool(s) to fail-over to if this connection pool fails.
+     * A comma separate list is allowed if multiple failover pools are required.
+     * @see #CONNECTION_POOL
+     */
+    public static final String CONNECTION_POOL_FAILOVER = "failover";
+    
+    /**
      * Allow configuring a <code>"eclipselink.connection-pool."</code> properties.
      * The name of the connection pool must be appended to configure the pool,
      * if no name is appended the default (write) pool is configured.
@@ -721,6 +731,19 @@ public class PersistenceUnitProperties {
      * @see org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy
      */
     public static final String PARTITIONING = "eclipselink.partitioning";
+    
+    /**
+     * "eclipselink.partitioning.callback"
+     * <p>Used to integrate with an external DataSource's data affinity support, such as UCP.
+     * <p>
+     * The value must be set to the full class name of the implementor of the DataPartitioningCallback interface.
+     * <p>i.e. "org.eclipse.persistence.platform.database.oracle.ucp.UCPDataPartitioningCallback".
+     * 
+     * @see org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback
+     * @see org.eclipse.persistence.annotations.Partitioning
+     * @see org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy
+     */
+    public static final String PARTITIONING_CALLBACK = "eclipselink.partitioning.callback";
     
     /**
      * Property <code>"eclipselink.jdbc.bind-parameters</code> configures whether parameter binding will be used in the

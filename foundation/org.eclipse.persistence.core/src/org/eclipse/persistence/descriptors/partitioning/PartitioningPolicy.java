@@ -57,10 +57,13 @@ public abstract class PartitioningPolicy implements java.io.Serializable {
      * INTERNAL:
      * Return an accessor from the pool.
      */
-    public Accessor acquireAccessor(String poolName, ServerSession session, DatabaseQuery query) {
+    public Accessor acquireAccessor(String poolName, ServerSession session, DatabaseQuery query, boolean returnNullIfDead) {
         ConnectionPool pool = session.getConnectionPool(poolName);
         if (pool == null) {
             throw QueryException.missingConnectionPool(poolName, query);
+        }
+        if (returnNullIfDead && pool.isDead()) {
+            return null;
         }
         return pool.acquireConnection();
     }
@@ -70,7 +73,7 @@ public abstract class PartitioningPolicy implements java.io.Serializable {
      * Return an accessor from the pool for the session.
      * For a client session the accessor is stored for the duration of the transaction.
      */
-    public Accessor getAccessor(String poolName, AbstractSession session, DatabaseQuery query) {
+    public Accessor getAccessor(String poolName, AbstractSession session, DatabaseQuery query, boolean returnNullIfDead) {
         Accessor accessor = null;
         if (session.isClientSession()) {                    
             ClientSession client = (ClientSession)session;
@@ -80,15 +83,15 @@ public abstract class PartitioningPolicy implements java.io.Serializable {
             } else {
                 accessor = client.getWriteConnections().get(poolName);
                 if (accessor == null) {
-                    accessor = acquireAccessor(poolName, client.getParent(), query);
+                    accessor = acquireAccessor(poolName, client.getParent(), query, returnNullIfDead);
                     // Assign a write connection for the duration of the transaction.
                     if (client.isExclusiveIsolatedClientSession() || session.isInTransaction()) {
-                        client.addWriteConnection(poolName, accessor);
+                        accessor = client.addWriteConnection(poolName, accessor);
                     }
                 }
             }
         } else if (session.isServerSession()) {
-            accessor = acquireAccessor(poolName, (ServerSession)session, query);
+            accessor = acquireAccessor(poolName, (ServerSession)session, query, returnNullIfDead);
         } else {
             throw QueryException.partitioningNotSupported(session, query);
         }

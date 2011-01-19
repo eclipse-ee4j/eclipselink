@@ -20,12 +20,20 @@ import javax.persistence.*;
 import junit.framework.*;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.descriptors.partitioning.CustomPartitioningPolicy;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
+import org.eclipse.persistence.descriptors.partitioning.RangePartitioningPolicy;
+import org.eclipse.persistence.descriptors.partitioning.RoundRobinPartitioningPolicy;
+import org.eclipse.persistence.descriptors.partitioning.UnionPartitioningPolicy;
+import org.eclipse.persistence.descriptors.partitioning.ValuePartitioningPolicy;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.partitioned.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 public class PartitionedTestSuite extends JUnitTestCase {
+    public static boolean validDatabase = true;
         
     public static Test suite() {
         TestSuite suite = new TestSuite("PartitioningTests");
@@ -61,24 +69,98 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        if (!getServerSession().getPlatform().isDerby()) {
-            warning("Partitioning tests only run on Derby.");
+        Map properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
+        if (getServerSession().getPlatform().isDerby()) {
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_MIN,
+                    "2");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_URL,
+                    "jdbc:derby:node2;create=true");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_URL,
+                    "jdbc:derby:node3;create=true");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_MAX,
+                    "8");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_FAILOVER,
+                    "node2, node1");
+        } else if (getServerSession().getPlatform().isH2()) {
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_MIN,
+                    "2");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_URL,
+                    "jdbc:h2:test2");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_URL,
+                    "jdbc:h2:test3");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_MAX,
+                    "8");
+        } else if (getServerSession().getPlatform().isHSQL()) {
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_MIN,
+                    "2");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_URL,
+                    "jdbc:hsqldb:file:test2");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_URL,
+                    "jdbc:hsqldb:file:test3");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_MAX,
+                    "8");
+        } else if (getServerSession().getPlatform().isOracle() && (getServerSession().getLogin().getURL().indexOf("ems56442") != -1)) {
+            // RAC testing (direct node).
+            String url = getServerSession().getLogin().getURL();
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_MIN,
+                    "2");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_URL,
+                    (url.substring(0, url.length() - 1)) + "3");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_URL,
+                    url);
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_MAX,
+                    "8");            
+        } else if (getServerSession().getPlatform().isOracle() && (getServerSession().getLogin().getURL().indexOf("@(DESCRIPTION") != -1)) {
+            // UCP RAC callback testing.
+            properties.put(
+                    PersistenceUnitProperties.PARTITIONING_CALLBACK,
+                    "org.eclipse.persistence.platform.database.oracle.ucp.UCPDataPartitioningCallback");            
+        } else {
+            warning("Partitioning tests only run on embedded databases or RAC.");
+            this.validDatabase = false;
             return;
         }
-        Map properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
-        properties.put(
-                PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_MIN,
-                "2");
-        properties.put(
-                PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_URL,
-                "jdbc:derby:node2;create=true");
-        properties.put(
-                PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_URL,
-                "jdbc:derby:node3;create=true");
-        properties.put(
-                PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_MAX,
-                "8");
         getEntityManagerFactory(getPersistenceUnitName(), properties);
+        if (getDatabaseSession().getPlatform().isOracle()) {
+            // Disable replication and unioning in RAC.
+            for (PartitioningPolicy policy : getDatabaseSession().getProject().getPartitioningPolicies().values()) {
+                if (policy instanceof RoundRobinPartitioningPolicy) {
+                    ((RoundRobinPartitioningPolicy)policy).setReplicateWrites(false);
+                } else if (policy instanceof UnionPartitioningPolicy) {
+                    ((UnionPartitioningPolicy)policy).setReplicateWrites(false);
+                } else if (policy instanceof CustomPartitioningPolicy) {
+                    ((EmployeePartitioningPolicy)((CustomPartitioningPolicy)policy).getPolicy()).setReplicate(false);
+                } else if (policy instanceof RangePartitioningPolicy) {
+                    ((RangePartitioningPolicy)policy).setUnionUnpartitionableQueries(false);
+                } else if (policy instanceof ValuePartitioningPolicy) {
+                    ((ValuePartitioningPolicy)policy).setUnionUnpartitionableQueries(false);
+                }
+            }
+            CollectionMapping mapping = (CollectionMapping)getDatabaseSession().getDescriptor(Employee.class).getMappingForAttributeName("projects");
+            PartitioningPolicy policy = getDatabaseSession().getProject().getPartitioningPolicy("defaut");
+            mapping.setPartitioningPolicy(policy);
+            mapping.getSelectionQuery().setPartitioningPolicy(policy);
+            mapping = (CollectionMapping)getDatabaseSession().getDescriptor(Employee.class).getMappingForAttributeName("managedEmployees");
+            mapping.setPartitioningPolicy(policy);
+            mapping.getSelectionQuery().setPartitioningPolicy(policy);
+        }
         new PartitionedTableCreator().replaceTables(getDatabaseSession());
         
         EntityManager em = createEntityManager();    
@@ -100,7 +182,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadEmployee() {
-        if (!getServerSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         EntityManager em = createEntityManager();    
@@ -140,7 +222,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadProject() {
-        if (!getServerSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         EntityManager em = createEntityManager();    
@@ -180,7 +262,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadAllEmployee() {
-        if (!getServerSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         EntityManager em = createEntityManager();    
@@ -207,7 +289,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test reading.
      */
     public void testReadAllProject() {
-        if (!getServerSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         EntityManager em = createEntityManager();    
@@ -234,7 +316,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test remove.
      */
     public void testRemoveEmployee() {
-        if (!getServerSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -246,7 +328,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test remove.
      */
     public void testRemoveProject() {
-        if (!getDatabaseSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -258,7 +340,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test persist.
      */
     public void testPersistEmployee() {
-        if (!getServerSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -270,7 +352,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test persist.
      */
     public void testPersistProject() {
-        if (!getServerSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -283,7 +365,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test update.
      */
     public void testUpdateEmployee() {
-        if (!getServerSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -321,7 +403,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test update.
      */
     public void testUpdateProject() {
-        if (!getServerSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         for (int index = 0; index < 3; index++) {
@@ -355,7 +437,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      * Test that partitioning is being used.
      */
     public void testPartitioning() throws Exception {
-        if (!getServerSession().getPlatform().isDerby()) {
+        if (!this.validDatabase) {
             return;
         }
         boolean found = false;
@@ -368,10 +450,12 @@ public class PartitionedTestSuite extends JUnitTestCase {
                 query.setParameter(1, project.getId());
                 List results = query.getResultList();
                 if (!results.isEmpty()) {
-                    if (found) {
+                    if (found && !getServerSession().getPlatform().isOracle()) {
                         fail("Data found in more than one partition.");
                     }
                     found = true;
+                } else if (getServerSession().getPlatform().isOracle()) {
+                    fail("Data not found in all partitions.");
                 }
                 commitTransaction(em);
             }

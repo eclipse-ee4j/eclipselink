@@ -405,7 +405,7 @@ public class TestModel extends TestCollection {
             if (getSession().getPlatform().isPostgreSQL()) {
                 getSession().getPlatform().setShouldForceFieldNamesToUpperCase(true);
             }
-            this.login = (Login)getSession().getDatasourceLogin().clone();
+            this.login = getSession().getDatasourceLogin().clone();
             this.sessionLog = (SessionLog)getSession().getSessionLog().clone();
         }
         try {

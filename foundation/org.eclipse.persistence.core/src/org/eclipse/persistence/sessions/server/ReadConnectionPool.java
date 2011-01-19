@@ -63,6 +63,10 @@ public class ReadConnectionPool extends ConnectionPool {
      * Wait until a connection is available and allocate the connection for the client.
      */
     public synchronized Accessor acquireConnection() throws ConcurrencyException {
+        // Check for dead database and fail-over.
+        if (this.isDead) {
+            return failover();
+        }
         Accessor leastBusyConnection = null;
 
         // Search for an unused connection, also find the least busy in case all are used.
@@ -71,14 +75,22 @@ public class ReadConnectionPool extends ConnectionPool {
             Accessor connection = this.connectionsAvailable.get(index);
             //if the pool has encountered a connection failure on one of the accessors lets test the others.
             if (this.checkConnections){
-                if (this.getOwner().getLogin().isConnectionHealthValidatedOnError() && this.getOwner().getServerPlatform().wasFailureCommunicationBased(null, connection, this.getOwner())){
-                    connectionsAvailable.remove(index);
+                if (this.owner.getLogin().isConnectionHealthValidatedOnError() && this.owner.getServerPlatform().wasFailureCommunicationBased(null, connection, this.owner)){
+                    this.connectionsAvailable.remove(index);
+                    try {
+                        //connection failed connect test
+                        connection.closeConnection();
+                    } catch (Exception ex){
+                        //ignore
+                    } finally {
+                        connection.releaseCustomizer();
+                    }
                     //reset index as we just removed a connection and should check at the same index again
                     --index;
                     //reset size as there are one less connection in the pool now.
                     --size;
                     continue; //skip back to beginning of loop
-                }else{
+                } else {
                     this.checkConnections = false;
                 }
             }
@@ -92,8 +104,21 @@ public class ReadConnectionPool extends ConnectionPool {
         }
 
         // If still not at max, add a new connection.
-        if ((leastBusyConnection.getCallCount() == 0) && (this.connectionsAvailable.size() + this.connectionsUsed.size()) < this.maxNumberOfConnections) {
-            Accessor connection = buildConnection();
+        if (((leastBusyConnection == null) || (leastBusyConnection.getCallCount() != 0))
+                    && (this.connectionsAvailable.size() + this.connectionsUsed.size()) < this.maxNumberOfConnections) {
+            Accessor connection = null;
+            try {
+                connection = buildConnection();
+            } catch (RuntimeException failed) {
+                if (!this.failoverConnectionPools.isEmpty()) {
+                    this.isDead = true;
+                    this.timeOfDeath = System.currentTimeMillis();
+                    this.owner.logThrowable(SessionLog.WARNING, SessionLog.SQL, failed);
+                    return acquireConnection();
+                } else {
+                    throw failed;
+                }
+            }
             this.connectionsAvailable.add(connection);
             connection.incrementCallCount(getOwner());
             leastBusyConnection = connection;
@@ -129,7 +154,7 @@ public class ReadConnectionPool extends ConnectionPool {
         }
         connection.decrementCallCount();
         if (!connection.isValid()){
-            getOwner().setCheckConnections();
+            this.checkConnections = true;
             this.connectionsAvailable.remove(connection);
             try{
                 connection.disconnect(getOwner());

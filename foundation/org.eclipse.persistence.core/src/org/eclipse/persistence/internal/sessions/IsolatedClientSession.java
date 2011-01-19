@@ -110,9 +110,8 @@ public class IsolatedClientSession extends ClientSession {
      */
     @Override
     protected CacheKey getCacheKeyFromTargetSessionForMerge(Object implementation, ObjectBuilder builder, ClassDescriptor descriptor, MergeManager mergeManager){
-        Object original = null;
         Object primaryKey = builder.extractPrimaryKeyFromObject(implementation, this, true);
-        CacheKey cacheKey = this.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
+        CacheKey cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
         return cacheKey;
     }
 

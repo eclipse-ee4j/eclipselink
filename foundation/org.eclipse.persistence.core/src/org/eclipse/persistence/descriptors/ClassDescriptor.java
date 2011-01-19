@@ -2687,19 +2687,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * This is done as a separate step to ensure that inheritance has been first resolved.
      */
     public void initialize(AbstractSession session) throws DescriptorException {
-        // These cached settings on the project must be set even if descriptor is initialized.
-        if (getHistoryPolicy() != null) {
-            session.getProject().setHasGenericHistorySupport(true);
-        }
-
-        // Record that there is an isolated class in the project.
-        if (!this.isSharedIsolation()) {
-            session.getProject().setHasIsolatedClasses(true);
-        }
-        if (!shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
-            session.getProject().setHasNonIsolatedUOWClasses(true);
-        }
-
         // Avoid repetitive initialization (this does not solve loops)
         if (isInitialized(INITIALIZED) || isInvalid()) {
             return;
@@ -3317,6 +3304,19 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Post initializations after mappings are initialized.
      */
     public void postInitialize(AbstractSession session) throws DescriptorException {
+        // These cached settings on the project must be set even if descriptor is initialized.
+        if (getHistoryPolicy() != null) {
+            session.getProject().setHasGenericHistorySupport(true);
+        }
+
+        // Record that there is an isolated class in the project.
+        if (!isSharedIsolation()) {
+            session.getProject().setHasIsolatedClasses(true);
+        }
+        if (!shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
+            session.getProject().setHasNonIsolatedUOWClasses(true);
+        }
+        
         // Avoid repetitive initialization (this does not solve loops)
         if (isInitialized(POST_INITIALIZED) || isInvalid()) {
             return;
@@ -3358,7 +3358,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     }
                 }
             }
-            if ((mapping.isForeignReferenceMapping() && !mapping.isCacheable()) || (mapping.isAggregateObjectMapping() && mapping.getReferenceDescriptor().hasNoncacheableMappings())){
+            if (isProtectedIsolation() &&
+                    ((mapping.isForeignReferenceMapping() && !mapping.isCacheable())
+                    || (mapping.isAggregateObjectMapping() && mapping.getReferenceDescriptor().hasNoncacheableMappings()))) {
                 ((ForeignReferenceMapping) mapping).collectQueryParameters(this.foreignKeyValuesForCaching);
             }
             if (mapping.isLockableMapping()){
@@ -3473,7 +3475,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     if (!mapping.isOneToOneMapping() || !((ForeignReferenceMapping)mapping).usesIndirection()) {
                         isMethodAccess = true;
                     }
-                    break;
                 } else if (!mapping.isWriteOnly()) {
                     // Avoid reflection.
                     mapping.setAttributeAccessor(new PersistenceObjectAttributeAccessor(mapping.getAttributeName()));

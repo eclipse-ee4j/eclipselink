@@ -12,11 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-// Java imports
 import java.sql.*;
 import java.io.*;
 
-// TopLink imports
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.*;
@@ -25,22 +23,18 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <b>Purpose</b>: Used as an abstraction of a database invocation.
- * A call is an EJBQL string.
+ * A call is an JPQL string.
  * <p><b>Responsibilities</b>:<ul>
- * <li> Parse the EJBQL String
+ * <li> Parse the JPQL String
  * <li> Populate the contained query's selection criteria. Add attributes to ReportQuery (if required).
  * </ul>
- *    @author Jon Driscoll and Joel Lucuik
- *    @since TopLink 4.0
- */
-/**
- * <b>Purpose</b>: Used as an abstraction of a database invocation.
- * A call is an EJBQL string.
+ * @author Jon Driscoll and Joel Lucuik
+ * @since TopLink 4.0
  */
 public class JPQLCall implements Serializable, Call {
     // Back reference to query, unfortunately required for events.
     protected DatabaseQuery query;
-    protected String ejbqlString;
+    protected String jpqlString;
 
     // Check that we aren't parsing more than once
     protected boolean isParsed;
@@ -55,11 +49,11 @@ public class JPQLCall implements Serializable, Call {
 
     /**
      * PUBLIC:
-     * Create a new JPQLCall with an ejbqlString
+     * Create a new JPQLCall with an jpqlString.
      */
-    public JPQLCall(String ejbqlString) {
+    public JPQLCall(String jpqlString) {
         this();
-        this.ejbqlString = ejbqlString;
+        this.jpqlString = jpqlString;
     }
 
     /**
@@ -105,7 +99,15 @@ public class JPQLCall implements Serializable, Call {
      * Return the EJBQL string for this call
      */
     public String getEjbqlString() {
-        return ejbqlString;
+        return jpqlString;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the EJBQL string for this call
+     */
+    public String getJPQLString() {
+        return jpqlString;
     }
 
     /**
@@ -193,8 +195,16 @@ public class JPQLCall implements Serializable, Call {
      * INTERNAL:
      * Set the EJBQL string for this call
      */
-    public void setEjbqlString(java.lang.String newEjbqlString) {
-        ejbqlString = newEjbqlString;
+    public void setEjbqlString(String jpqlString) {
+        this.jpqlString = jpqlString;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the JPQL string for this call
+     */
+    public void setJPQLString(String jpqlString) {
+        this.jpqlString = jpqlString;
     }
 
     /**
@@ -202,7 +212,7 @@ public class JPQLCall implements Serializable, Call {
      * Set the isParsed state
      */
     public void setIsParsed(boolean newIsParsed) {
-        isParsed = newIsParsed;
+        this.isParsed = newIsParsed;
     }
 
     /**
@@ -232,5 +242,18 @@ public class JPQLCall implements Serializable, Call {
      */
     public boolean isOneRowReturned() {
         return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Print the JPQL string.
+     */
+    public String toString() {
+        String name = getClass().getSimpleName();
+        if (getJPQLString() == null) {
+            return name;
+        } else {
+            return name + "(" + getJPQLString() + ")";
+        }
     }
 }

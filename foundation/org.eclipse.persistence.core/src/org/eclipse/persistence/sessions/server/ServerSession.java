@@ -747,7 +747,37 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             }
         }
     }
-
+    
+    /**
+     * INTERNAL:
+     * Release any invalid connection in the client session.
+     */
+    public void releaseInvalidClientSession(ClientSession clientSession) throws DatabaseException {
+        for (Iterator<Accessor> accessors = clientSession.getWriteConnections().values().iterator(); accessors.hasNext(); ) {
+            Accessor accessor = accessors.next();
+            if (!accessor.isValid()) {
+                if (clientSession.getConnectionPolicy().isPooled()) {
+                    try {
+                        accessor.getPool().releaseConnection(accessor);
+                    } catch (Exception ignore) {}
+                } else {
+                    if (!accessor.usesExternalConnectionPooling()) {
+                        clientSession.disconnect(accessor);
+                    } else {
+                        accessor.closeConnection();
+                    }
+                    if (this.maxNumberOfNonPooledConnections != NO_MAX) {
+                        synchronized (this) {
+                            this.numberOfNonPooledConnectionsUsed--;
+                            notify();
+                        }
+                    }
+                }
+                accessors.remove();
+            }
+        }
+    }
+    
     /**
      * INTERNAL:
      * Release the clients connection resource.
@@ -799,22 +829,6 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             }
         }
         this.readConnectionPool.releaseConnection(connection);
-    }
-
-    /**
-     * INTERNAL:
-     * This method is called to indicate that all available connections should be checked.
-     * No-op on external connection pools.
-     */
-    public void setCheckConnections() {
-        this.readConnectionPool.setCheckConnections();
-        for (Iterator poolsEnum = getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
-            ((ConnectionPool)poolsEnum.next()).setCheckConnections();
-        }
-        ConnectionPool sequencingPool = getSequencingServer().getConnectionPool();
-        if(sequencingPool != null) {
-            sequencingPool.setCheckConnections();
-        }
     }
     
     /**

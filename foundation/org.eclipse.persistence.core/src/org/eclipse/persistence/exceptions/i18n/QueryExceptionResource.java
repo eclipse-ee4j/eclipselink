@@ -177,7 +177,8 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6169", "A mapping was configured to use IN batch fetching, but the original query was not configured to use IN batch fetching and must be: [{0}]."},
        { "6170", "No value was provided for the additional criteria query parameter [{0}]. Additional criteria parameters must be set through Entity Manager, Entity Manager Factory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."},
        { "6171", "Partitioning not support for the session type [{0}]. Only ServerSession and ClientSession are supported."},
-       { "6172", "Missing connection pool for partitioning [{0}]."}
+       { "6172", "Missing connection pool for partitioning [{0}]."},
+       { "6173", "Connection pool [{0}] failed to fail-over, all servers are dead."}
     };
 
     /**

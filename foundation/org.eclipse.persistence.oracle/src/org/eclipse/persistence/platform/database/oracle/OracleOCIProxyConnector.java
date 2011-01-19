@@ -23,6 +23,7 @@ import oracle.jdbc.pool.OracleOCIConnectionPool;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.sessions.Session;
 
 public class OracleOCIProxyConnector extends JNDIConnector {
     /**
@@ -63,10 +64,10 @@ public class OracleOCIProxyConnector extends JNDIConnector {
      * In case "proxytype" property is specified connects using proxy connection,
      * otherwise calls its superclass.
      */
-    public Connection connect(Properties properties) throws DatabaseException, ValidationException {
+    public Connection connect(Properties properties, Session session) throws DatabaseException, ValidationException {
         String proxytype = properties.getProperty(OracleOCIConnectionPool.PROXYTYPE);
         if(proxytype == null || proxytype.length() == 0) {
-            return super.connect(properties);
+            return super.connect(properties, session);
         } else {
             try {
                 OracleOCIConnectionPool oracleOCIConnectionPool = (OracleOCIConnectionPool)getDataSource();

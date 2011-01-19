@@ -685,7 +685,7 @@ public class FetchGroupManager implements Cloneable {
         if (fetchGroup == null) {
             return true;
         }        
-        return fetchGroup.containsAttribute(attributeName);
+        return fetchGroup.containsAttributeInternal(attributeName);
     }
 
     /**

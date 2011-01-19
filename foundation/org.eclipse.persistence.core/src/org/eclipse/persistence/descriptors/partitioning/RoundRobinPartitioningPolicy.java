@@ -83,6 +83,11 @@ public class RoundRobinPartitioningPolicy extends ReplicationPartitioningPolicy 
         if (this.replicateWrites && query.isModifyQuery()) {
             return super.getConnectionsForQuery(session, query, arguments);
         }
+        if (session.getPlatform().hasPartitioningCallback()) {
+            // UCP support.
+            session.getPlatform().getPartitioningCallback().setPartitionId(nextIndex());
+            return null;
+        }
         List<Accessor> accessors = new ArrayList<Accessor>(1);
         if (session.isClientSession()) {
             ClientSession client = (ClientSession)session;
@@ -95,7 +100,7 @@ public class RoundRobinPartitioningPolicy extends ReplicationPartitioningPolicy 
             accessors.add(accessor);
             // Assign a write connection for the duration of the transaction.
             if (session.isExclusiveIsolatedClientSession() || session.isInTransaction()) {
-                ((ClientSession)session).addWriteConnection(accessor.getPool().getName(), accessor);
+                accessor = ((ClientSession)session).addWriteConnection(accessor.getPool().getName(), accessor);
             }
         } else if (session.isServerSession()) {
             Accessor accessor = nextAccessor((ServerSession)session, query);
@@ -126,7 +131,17 @@ public class RoundRobinPartitioningPolicy extends ReplicationPartitioningPolicy 
     public Accessor nextAccessor(ServerSession session, DatabaseQuery query) {
         int index = nextIndex();
         String poolName = this.connectionPools.get(index);
-        return acquireAccessor(poolName, session, query);
+        Accessor accessor = acquireAccessor(poolName, session, query, true);
+        // If the connection pools is dead, check the next one.
+        while (accessor == null) {
+            int nextIndex = nextIndex();
+            poolName = this.connectionPools.get(nextIndex);
+            if (index == nextIndex) {
+                return acquireAccessor(poolName, session, query, false);
+            }
+            accessor = acquireAccessor(poolName, session, query, true);
+        }
+        return accessor;
     }
     
 }

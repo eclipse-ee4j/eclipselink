@@ -14,9 +14,11 @@
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.models.jpa.performance.EmployeeTableCreator;
 
 /**
  * Performance tests that compare JPA performance.
@@ -49,5 +51,11 @@ public class OpenJPAPerformanceRegressionModel extends JPAPerformanceRegressionM
             properties.put("openjpa.Log", "DefaultLevel=WARN,SQL=TRACE");
         }
         getExecutor().setEntityManagerFactory(provider.createEntityManagerFactory("performance", properties));
+    }
+
+    // Open JPA does not seem to support constraints correctly.
+    public void setupDatabase(EntityManager manager) {
+        super.setupDatabase(manager);
+        new EmployeeTableCreator().dropConstraints(getDatabaseSession());
     }
 }

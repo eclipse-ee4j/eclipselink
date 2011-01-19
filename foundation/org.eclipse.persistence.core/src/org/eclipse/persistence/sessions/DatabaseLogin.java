@@ -16,10 +16,12 @@ import java.io.*;
 import java.sql.Connection;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.platform.database.*;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
+import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.exceptions.*;
 
@@ -78,14 +80,16 @@ public class DatabaseLogin extends DatasourceLogin {
     protected int delayBetweenConnectionAttempts;
     
     /**
-     * This value defaults to true and on an SQL Exception EclipseLink will ping the database to determine
+     * On an SQL Exception EclipseLink will ping the database to determine
      * if the connection used can continue to be used for queries.  This should have no impact on applications
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
      * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
-     * retry queries in the case of database failure. 
+     * retry queries in the case of database failure.
+     * By default (null) connection health is validate if the query does not have a timeout, and there is a ping string.
+     * Setting to true or false overrides this.
      */
-    protected boolean connectionHealthValidatedOnError;
+    protected Boolean connectionHealthValidatedOnError;
     
     /**
      * PUBLIC:
@@ -104,7 +108,6 @@ public class DatabaseLogin extends DatasourceLogin {
         this.useDefaultDriverConnect();
         this.delayBetweenConnectionAttempts = 5000;
         this.queryRetryAttemptCount = 3;
-        this.connectionHealthValidatedOnError = true;
     }
 
     /**
@@ -700,14 +703,25 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * Set the JDBC connection string.
+     * Set the JDBC URL.
      * This is the full JDBC connect URL. Normally EclipseLink breaks this into two parts to
      * allow for the driver header to be automatically set, however sometimes it is easier just to set the
      * entire URL at once.
      */
-    public void setURL(String url) throws ValidationException {
+    public void setURL(String url) {
         setDriverURLHeader("");
         setDatabaseURL(url);
+    }
+
+    /**
+     * PUBLIC:
+     * Return the JDBC URL.
+     * This is the full JDBC connect URL. Normally EclipseLink breaks this into two parts to
+     * allow for the driver header to be automatically set, however sometimes it is easier just to set the
+     * entire URL at once.
+     */
+    public String getURL() {
+        return getConnectionString();
     }
 
     /**
@@ -993,6 +1007,24 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     public void setUsesStringBinding(boolean usesStringBindingSize) {
         getPlatform().setUsesStringBinding(usesStringBindingSize);
+    }
+    
+    /**
+     * PUBLIC:
+     * Return callback.
+     * Used to integrate with data partitioning in an external DataSource such as UCP.
+     */
+    public DataPartitioningCallback getPartitioningCallback() {
+        return getPlatform().getPartitioningCallback();
+    }
+
+    /**
+     * PUBLIC:
+     * Set callback.
+     * Used to integrate with data partitioning in an external DataSource such as UCP.
+     */
+    public void setPartitioningCallback(DataPartitioningCallback partitioningCallback) {
+        getPlatform().setPartitioningCallback(partitioningCallback);
     }
 
     /**
@@ -1780,27 +1812,44 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
+     * INTERNAL:
+     * Validate if set, or no timeout.
+     */
+    public boolean isConnectionHealthValidatedOnError(DatabaseCall call) {
+        if (this.connectionHealthValidatedOnError == null) {
+            return (getPingSQL() == null) || (call == null) || (call.getQueryTimeout() == 0);
+        }
+        return this.connectionHealthValidatedOnError;
+    }
+
+    /**
      * PUBLIC:
-     * This value defaults to true if 'ping SQL' is available on the platform.
      * On an SQL Exception EclipseLink will ping the database to determine
      * if the connection used can continue to be used for queries.  This should have no impact on applications
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
      * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
      * retry queries in the case of database failure. 
+     * By default (null) connection health is validate if the query does not have a timeout, and there is a ping string.
+     * Setting to true or false overrides this.
      */
     public boolean isConnectionHealthValidatedOnError() {
-        return connectionHealthValidatedOnError && getPingSQL() != null;
+        if (this.connectionHealthValidatedOnError == null) {
+            return (getPingSQL() == null);
+        }
+        return this.connectionHealthValidatedOnError;
     }
 
     /**
      * PUBLIC:
-     * This value defaults to true and on an SQL Exception EclipseLink will ping the database to determine
+     * On an SQL Exception EclipseLink will ping the database to determine
      * if the connection used can continue to be used for queries.  This should have no impact on applications
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
      * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
      * retry queries in the case of database failure. 
+     * By default (null) connection health is validate if the query does not have a timeout, and there is a ping string.
+     * Setting to true or false overrides this.
      */
     public void setConnectionHealthValidatedOnError(boolean isConnectionHealthValidatedOnError) {
         this.connectionHealthValidatedOnError = isConnectionHealthValidatedOnError;

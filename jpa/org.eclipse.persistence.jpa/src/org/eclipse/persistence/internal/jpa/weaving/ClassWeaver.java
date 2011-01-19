@@ -1067,7 +1067,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_isAttributeFetched.visitVarInsn(ALOAD, 0);
         cv_isAttributeFetched.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
         cv_isAttributeFetched.visitVarInsn(ALOAD, 1);
-        cv_isAttributeFetched.visitMethodInsn(INVOKEVIRTUAL, FETCHGROUP_SHORT_SIGNATURE, "containsAttribute", "(Ljava/lang/String;)Z");
+        cv_isAttributeFetched.visitMethodInsn(INVOKEVIRTUAL, FETCHGROUP_SHORT_SIGNATURE, "containsAttributeInternal", "(Ljava/lang/String;)Z");
         Label gotoFalse = new Label();
         cv_isAttributeFetched.visitJumpInsn(IFEQ, gotoFalse);
         cv_isAttributeFetched.visitLabel(gotoTrue);

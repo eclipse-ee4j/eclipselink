@@ -24,7 +24,7 @@ import org.eclipse.persistence.internal.sequencing.SequencingFactory;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -72,7 +72,7 @@ public class ClientSession extends AbstractSession {
         this.project = parent.getProject();
         if (connectionPolicy.isUserDefinedConnection()) {
             // PERF: project only requires clone if login is different
-            this.setProject((Project)getProject().clone());
+            this.setProject(getProject().clone());
             this.setLogin(connectionPolicy.getLogin());
         }
         this.isLoggingOff = parent.isLoggingOff();
@@ -210,7 +210,7 @@ public class ClientSession extends AbstractSession {
         if (query.getAccessors() == null) {
             // First check for a partitioning policy.
             // An exclusive session will always use a single connection once allocated.
-            if (!hasWriteConnection() || !isExclusiveIsolatedClientSession()) {
+            if (!hasWriteConnection()  || !isExclusiveIsolatedClientSession()) {
                 Collection<Accessor> accessors = getAccessors(call, translationRow, query);
                 if (accessors != null && !accessors.isEmpty()) {
                     query.setAccessors(accessors);
@@ -562,6 +562,18 @@ public class ClientSession extends AbstractSession {
             this.eventManager.postReleaseClientSession();
         }
     }
+    
+    /**
+     * INTERNAL:
+     * A query execution failed due to an invalid query.
+     * Re-connect and retry the query.
+     */
+    @Override
+    public Object retryQuery(DatabaseQuery query, AbstractRecord row, DatabaseException databaseException, int retryCount, AbstractSession executionSession) {
+        // If not in a transaction and has a write connection, must release it if invalid.
+        getParent().releaseInvalidClientSession(this);
+        return super.retryQuery(query, row, databaseException, retryCount, executionSession);
+    }
 
     /**
      * INTERNAL:
@@ -602,8 +614,9 @@ public class ClientSession extends AbstractSession {
      * INTERNAL:
      * Add the connection to the client session.
      * Multiple connections are supported to allow data partitioning and replication.
+     * The accessor is returned, as if detected to be dead it may be replaced.
      */
-    public void addWriteConnection(String poolName, Accessor writeConnection) {
+    public Accessor addWriteConnection(String poolName, Accessor writeConnection) {
         getWriteConnections().put(poolName, writeConnection);
         writeConnection.createCustomizer(this);
         //if connection is using external connection pooling then the event will be risen right after it connects.
@@ -614,8 +627,62 @@ public class ClientSession extends AbstractSession {
         if (isInTransaction()) {
             basicBeginTransaction(writeConnection);
         }
+        return getWriteConnections().get(poolName);
     }
-
+    
+    /**
+     * INTERNAL:
+     * A begin transaction failed.
+     * Re-connect and retry the begin transaction.
+     */
+    @Override
+    public DatabaseException retryTransaction(Accessor writeConnection, DatabaseException databaseException, int retryCount, AbstractSession executionSession) {
+        if (writeConnection.getPool() == null) {
+            return super.retryTransaction(writeConnection, databaseException, retryCount, executionSession);
+        }
+        String poolName = writeConnection.getPool().getName();
+        DatabaseLogin login = getLogin();
+        int count = login.getQueryRetryAttemptCount();
+        DatabaseException exceptionToThrow = databaseException;
+        while (retryCount < count) {
+            getWriteConnections().remove(poolName);
+            //if connection is using external connection pooling then the event will be risen right after it connects.
+            if (!writeConnection.usesExternalConnectionPooling()) {
+                preReleaseConnection(writeConnection);
+            }
+            writeConnection.getPool().releaseConnection(writeConnection);
+            try {
+                // attempt to reconnect for a certain number of times.
+                // servers may take some time to recover.
+                ++retryCount;
+                writeConnection = writeConnection.getPool().acquireConnection();
+                writeConnection.beginTransaction(this);
+                //passing the retry count will prevent a runaway retry where
+                // we can acquire connections but are unable to execute any queries
+                if (retryCount > 1) {
+                    // We are retrying more than once lets wait to give connection time to restart.
+                    //Give the failover time to recover.
+                    Thread.currentThread().sleep(login.getDelayBetweenConnectionAttempts());
+                }
+                getWriteConnections().put(poolName, writeConnection);
+                writeConnection.createCustomizer(this);
+                //if connection is using external connection pooling then the event will be risen right after it connects.
+                if (!writeConnection.usesExternalConnectionPooling()) {
+                    postAcquireConnection(writeConnection);
+                }
+                return null;
+            } catch (DatabaseException ex){
+                //replace original exception with last exception thrown
+                //this exception could be a data based exception as opposed
+                //to a connection exception that needs to go back to the customer.
+                exceptionToThrow = ex;
+            } catch (InterruptedException ex) {
+                //Ignore interrupted exception.
+            }
+        }
+        return exceptionToThrow;
+    }
+    
     /**
      * INTERNAL:
      * Set the connection to be used for database modification.
@@ -707,13 +774,4 @@ public class ClientSession extends AbstractSession {
     public boolean isExclusiveConnectionRequired() {
         return !this.connectionPolicy.isLazy && isActive();
     }
-    
-    /**
-     * PUBLIC:
-     * Returns true if Protected Entities should be built within this session
-     */
-    public boolean isProtectedSession(){
-        return false;
-    }
-
 }

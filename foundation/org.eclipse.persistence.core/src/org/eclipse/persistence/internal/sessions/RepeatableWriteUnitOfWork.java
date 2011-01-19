@@ -402,21 +402,26 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             return;
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
-        if (this.unitOfWorkChangeSet == null) {
-            this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
-        }
 
         // 256277: stop any nested flushing - there should only be one level 
         this.isWithinFlush = true; // set before calculateChanges as a PrePersist callback may contain a query that requires a pre flush()
 
         UnitOfWorkChangeSet changeSet = this.unitOfWorkChangeSet;
         // This also discovers unregistered new objects, (which persists them and assign sequence, so no need to assign sequence twice).
-        calculateChanges(cloneMap(getCloneMapping()), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist);
+        boolean hasChanges = hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries();
+        // PERF: Avoid checking for change if uow is empty.
+        if (hasCloneMapping() || hasChanges) {
+            if (this.unitOfWorkChangeSet == null) {
+                this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
+                changeSet = this.unitOfWorkChangeSet;
+            }
+            calculateChanges(cloneMap(getCloneMapping()), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist);
+            hasChanges = hasChanges || (changeSet.hasChanges() || changeSet.hasForcedChanges());
+        }
         
-        boolean changeSetHasChanges = (changeSet.hasChanges() || changeSet.hasForcedChanges() || this.hasDeletedObjects() || this.hasModifyAllQueries());
         try {
             //bug 323370: flush out batch statements regardless of the changeSet having changes.
-            if (!changeSetHasChanges){
+            if (!hasChanges) {
                 //flushing the batch mechanism
                 writesCompleted();
                 //return if there were no changes in the change set.  
@@ -431,7 +436,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             setLifecycle(WriteChangesFailed);
             throw exception;
         } finally {
-            isWithinFlush = false;  // clear the flag in the case that we have changes          
+            this.isWithinFlush = false;  // clear the flag in the case that we have changes          
         }
 
         if (this.cumulativeUOWChangeSet == null) {

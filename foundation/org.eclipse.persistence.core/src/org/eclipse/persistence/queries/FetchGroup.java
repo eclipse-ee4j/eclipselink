@@ -133,12 +133,12 @@ public class FetchGroup extends AttributeGroup {
         query.setShouldUseDefaultFetchGroup(false);
         Session session = entity._persistence_getSession();
         boolean shouldLoadResultIntoSelectionObject = false;
-        if(session.isUnitOfWork()) {
+        if (session.isUnitOfWork()) {
             shouldLoadResultIntoSelectionObject = !((UnitOfWork)session).isObjectRegistered(entity);
         } else {
             shouldLoadResultIntoSelectionObject = !session.getIdentityMapAccessor().containsObjectInIdentityMap(entity);
         }
-        if(shouldLoadResultIntoSelectionObject) {
+        if (shouldLoadResultIntoSelectionObject) {
             // entity is not in the cache.
             // instead of updating object in the cache update entity directly.
             query.setShouldLoadResultIntoSelectionObject(true);
@@ -151,12 +151,12 @@ public class FetchGroup extends AttributeGroup {
         }
         Object result = session.executeQuery(query);
         if (result == null) {
-            Object[] args = { query.getSelectionId() };
             // the object was not found in the db end exception will be thrown - restore the fetch group back.
-            if(shouldLoadResultIntoSelectionObject) {
+            if (shouldLoadResultIntoSelectionObject) {
                 entity._persistence_setFetchGroup(this);
                 entity._persistence_setSession(session);
             }
+            Object[] args = { query.getSelectionId() };
             return ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
         }
         return null;

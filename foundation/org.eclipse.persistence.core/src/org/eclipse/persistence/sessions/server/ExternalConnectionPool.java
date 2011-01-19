@@ -48,6 +48,10 @@ public class ExternalConnectionPool extends ConnectionPool {
      * a new connection (retrieve it from the external pool).
      */
     public Accessor acquireConnection() throws ConcurrencyException {
+        // Check for dead database and fail-over.
+        if (this.isDead) {
+            return failover();
+        }
         Accessor connection = (Accessor)this.cachedConnection.clone();
         if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
             Object[] args = new Object[1];
@@ -91,6 +95,18 @@ public class ExternalConnectionPool extends ConnectionPool {
             Object[] args = new Object[1];
             args[0] = this.name;
             this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "release_connection", args, connection);
+        }
+        if (!this.failoverConnectionPools.isEmpty()) {
+            if (!connection.isValid()) {
+                if (this.checkConnections) {
+                    // If 2nd dead connection, then assume dead.
+                    this.isDead = true;
+                } else {
+                    this.checkConnections = true;
+                }
+            } else {
+                this.checkConnections = false;            
+            }
         }
         connection.closeConnection();
         connection.releaseCustomizer();

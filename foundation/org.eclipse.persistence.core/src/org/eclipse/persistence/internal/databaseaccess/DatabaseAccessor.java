@@ -50,6 +50,7 @@ import org.eclipse.persistence.internal.helper.ThreadCursoredList;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ArrayRecord;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -622,7 +623,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                                 // Bug 2804663 - LOBValueWriter is no longer a singleton
                                 getLOBWriter().fetchLocatorAndWriteValue(dbCall, resultSet);
                             } else {
-                                result = fetchRow(dbCall.getFields(), resultSet, metaData, session);
+                                result = fetchRow(dbCall.getFields(), dbCall.getFieldsArray(), resultSet, metaData, session);
                             }
                             if (resultSet.next()) {
                                 // Raise more rows event, some apps may interpret as error or warning.
@@ -646,7 +647,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                             } else {
                                 results = new Vector(20);
                                 while (hasNext) {
-                                    results.addElement(fetchRow(dbCall.getFields(), resultSet, metaData, session));
+                                    results.add(fetchRow(dbCall.getFields(), dbCall.getFieldsArray(), resultSet, metaData, session));
                                     hasNext = resultSet.next();
                                 }
                             }
@@ -723,7 +724,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     // Initial next was already validated before this method is called.
                     boolean hasNext = true;
                     while (hasNext) {
-                        results.addElement(fetchRow(dbCall.getFields(), resultSet, metaData, session));
+                        results.add(fetchRow(dbCall.getFields(), dbCall.getFieldsArray(), resultSet, metaData, session));
                         hasNext = resultSet.next();
                     }
                     resultSet.close();// This must be closed in case the statement is cached and not closed.
@@ -932,6 +933,36 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
         // Row creation is optimized through sharing the same fields for the entire result set.
         return new DatabaseRecord(fields, values);
+    }
+
+    /**
+     * Return a new DatabaseRow.<p>
+     * Populate the row from the data in cursor. The fields representing the results
+     * and the order of the results are stored in fields.
+     * <p><b>NOTE</b>:
+     * Make sure that the field name is set.  An empty field name placeholder is
+     * used in the sortFields() method when the number of fields defined does not
+     * match the number of column names available on the database.
+     * PERF: This method must be highly optimized.
+     */
+    protected AbstractRecord fetchRow(Vector fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
+        int size = fieldsArray.length;
+        Object[] values = new Object[size];
+        // PERF: Pass platform and optimize data flag.
+        DatabasePlatform platform = getPlatform();
+        boolean optimizeData = platform.shouldOptimizeDataConversion();
+        for (int index = 0; index < size; index++) {
+            DatabaseField field = fieldsArray[index];
+            // Field can be null for fetch groups.
+            if (field != null) {
+                values[index] = getObject(resultSet, field, metaData, index + 1, platform, optimizeData, session);
+            } else {
+                values[index] = null;
+            }
+        }
+
+        // Row creation is optimized through sharing the same fields for the entire result set.
+        return new ArrayRecord(fields, fieldsArray, values);
     }
 
     /**
@@ -1413,12 +1444,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * If the method did not process the message of it was not a comm failure then null 
      * will be returned.
      */
-    public DatabaseException processExceptionForCommError(AbstractSession session, SQLException exception, Call call){
-        if (session.getLogin().isConnectionHealthValidatedOnError() && (call == null || ((DatabaseCall)call).getQueryTimeout() == 0) && this.getConnection() != null && session.getServerPlatform().wasFailureCommunicationBased(exception, this, session)){
-            this.setIsValid(false);
+    public DatabaseException processExceptionForCommError(AbstractSession session, SQLException exception, Call call) {
+        if (session.getLogin().isConnectionHealthValidatedOnError((DatabaseCall)call)
+                && (getConnection() != null)
+                && session.getServerPlatform().wasFailureCommunicationBased(exception, this, session)) {
+            setIsValid(false);
             //store exception for later as we must close the statement.
             return DatabaseException.sqlException(exception, call, this, session, true);
-        }else {
+        } else {
             return null;
         }
     }

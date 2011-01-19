@@ -34,6 +34,7 @@ public class JNDIConnector implements Connector {
     protected DataSource dataSource;
     protected Context context;
     protected String name;
+    protected boolean isCallbackRegistered;
     public static final int STRING_LOOKUP = 1;
     public static final int COMPOSITE_NAME_LOOKUP = 2;
     public static final int COMPOUND_NAME_LOOKUP = 3;
@@ -85,20 +86,12 @@ public class JNDIConnector implements Connector {
             throw new InternalError("Clone failed");
         }
     }
-
-    /**
-     * INTERNAL:
-     * Connect with the specified properties and session. Return the Connection.
-     */
-    public Connection connect(Properties properties, Session session) throws DatabaseException, ValidationException {
-        return connect(properties);
-    }
     
     /**
      * INTERNAL:
      * Connect with the specified properties and return the Connection.
      */
-    public Connection connect(Properties properties) throws DatabaseException, ValidationException {
+    public Connection connect(Properties properties, Session session) throws DatabaseException, ValidationException {
         String user = properties.getProperty("user");
         DataSource dataSource = getDataSource();
         if (dataSource == null) {
@@ -117,6 +110,10 @@ public class JNDIConnector implements Connector {
             }
         }
 
+        if (!this.isCallbackRegistered && session.getPlatform().hasPartitioningCallback()) {
+            session.getPlatform().getPartitioningCallback().register(dataSource, session);
+            this.isCallbackRegistered = true;
+        }
         try {
             // WebLogic connection pools do not require a user name and password.
             // JDBCLogin usually initializes these values with an empty string.

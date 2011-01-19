@@ -97,6 +97,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.Connector;
+import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.DefaultConnector;
 import org.eclipse.persistence.sessions.JNDIConnector;
@@ -348,6 +349,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEmployee_with_status_enum_collection_instantiated"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteMan"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNestedBatchQueryHint"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeadConnectionFailover"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeadPoolFailover"));
         if (!isJPA10()) {
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachNull"));
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachRemovedObject"));
@@ -9162,6 +9165,181 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    /**
+     * Tests that queries will be re-executed if a query fails from a dead connection. 
+     */
+    public void testDeadConnectionFailover(){
+        if (JUnitTestCase.getServerSession().getPlatform().isSymfoware() || JUnitTestCase.getServerSession().getPlatform().isSybase()) {
+            warning("Test testDeadConnectionFailover skipped for this platform, Sybase, Symfoware platform doesn't support failover.");
+            return;
+        }
+        
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
+        ServerSession server = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
+                
+        // cache the original driver name and connection string.
+        String originalDriverName = server.getLogin().getDriverClassName();
+        String originalConnectionString = server.getLogin().getConnectionString();
+        
+        // the new driver name and connection string to be used by the test
+        String newDriverName = DriverWrapper.class.getName();
+        String newConnectionString = DriverWrapper.codeUrl(originalConnectionString);
+        
+        // setup the wrapper driver
+        DriverWrapper.initialize(originalDriverName);
+        
+        server.logout();
+        server.getLogin().setDriverClassName(newDriverName);
+        server.getLogin().setConnectionHealthValidatedOnError(true);
+        server.getLogin().setConnectionString(newConnectionString);
+        server.login();        
+        try {
+            EntityManager em = createEntityManager();
+            em.createQuery("Select e from Employee e").getResultList();
+            em.getTransaction().begin();
+            em.persist(new Employee());
+            em.getTransaction().commit();
+            // test several configurations:
+            // all exclusive connection modes
+            String[] exclusiveConnectionModes = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
+            for (String exclusiveConnectionMode : exclusiveConnectionModes) {
+                try {
+                    HashMap emProperties = new HashMap(1);
+                    emProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
+                    em = createEntityManager(emProperties);
+                    List<Employee> employees = em.createQuery("Select e from Employee e").getResultList();
+                    DriverWrapper.breakOldConnections();
+                    List<Employee> employees2 = em.createQuery("Select e from Employee e").getResultList();
+                    if (employees.size() != employees2.size()) {
+                        fail("Query results not the same after failure.");
+                    }
+                    DriverWrapper.breakOldConnections();
+                    em.getTransaction().begin();
+                    em.persist(new Employee());
+                    DriverWrapper.breakOldConnections();
+                    em.getTransaction().commit();
+                    em.getTransaction().begin();
+                    em.persist(new Employee());
+                    em.flush();
+                    DriverWrapper.breakOldConnections();
+                    boolean failed = false;
+                    try {
+                        em.getTransaction().commit();
+                    } catch (Exception shouldFail) {
+                        failed = true;
+                    }
+                    if (!failed) {
+                        fail("Retry should not work in a transaction.");
+                    }
+                } catch (Exception failed) {
+                    fail("Retry did not work, mode:" + exclusiveConnectionMode + " error:" + failed);
+                } finally {
+                    try {
+                        em.close();
+                    } catch (Exception ignore) {}
+                }
+            }
+        } finally {
+            // clear the driver wrapper
+            DriverWrapper.clear();
+    
+            // reconnect the session using the original driver and connection string
+            server.logout();
+            server.getLogin().setDriverClassName(originalDriverName);
+            server.getLogin().setConnectionString(originalConnectionString);
+            server.login();
+        }
+    }
+
+
+    /**
+     * Tests that a dead connection pool can fail over. 
+     */
+    public void testDeadPoolFailover(){
+        if (JUnitTestCase.getServerSession().getPlatform().isSymfoware() || JUnitTestCase.getServerSession().getPlatform().isSybase()) {
+            warning("Test testDeadConnectionFailover skipped for this platform, Sybase, Symfoware platform doesn't support failover.");
+            return;
+        }
+        
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
+        ServerSession server = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
+                
+        // cache the original driver name and connection string.
+        DatabaseLogin originalLogin = (DatabaseLogin)server.getLogin().clone();
+        
+        // the new driver name and connection string to be used by the test
+        String newDriverName = DriverWrapper.class.getName();
+        String newConnectionString = DriverWrapper.codeUrl(originalLogin.getConnectionString());
+        
+        // setup the wrapper driver
+        DriverWrapper.initialize(originalLogin.getDriverClassName());
+        
+        server.logout();
+        server.getLogin().setDriverClassName(newDriverName);
+        server.getLogin().setConnectionHealthValidatedOnError(true);
+        server.getLogin().setConnectionString(newConnectionString);
+        server.addConnectionPool("backup", originalLogin, 2, 4);
+        server.getDefaultConnectionPool().addFailoverConnectionPool("backup");
+        server.getReadConnectionPool().addFailoverConnectionPool("backup");
+        server.login();
+        try {
+            EntityManager em = createEntityManager();
+            em.createQuery("Select e from Employee e").getResultList();
+            em.getTransaction().begin();
+            em.persist(new Employee());
+            em.getTransaction().commit();
+            // test several configurations:
+            // all exclusive connection modes
+            String[] exclusiveConnectionModes = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
+            for (String exclusiveConnectionMode : exclusiveConnectionModes) {
+                try {
+                    HashMap emProperties = new HashMap(1);
+                    emProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
+                    em = createEntityManager(emProperties);
+                    List<Employee> employees = em.createQuery("Select e from Employee e").getResultList();
+                    DriverWrapper.breakAll();
+                    List<Employee> employees2 = em.createQuery("Select e from Employee e").getResultList();
+                    if (employees.size() != employees2.size()) {
+                        fail("Query results not the same after failure.");
+                    }
+                    em.getTransaction().begin();
+                    em.persist(new Employee());
+                    em.getTransaction().commit();
+                    em.getTransaction().begin();
+                    em.persist(new Employee());
+                    em.flush();
+                    em.getTransaction().commit();
+                } catch (Exception failed) {
+                    fail("Retry did not work, mode:" + exclusiveConnectionMode + " error:" + failed);
+                } finally {
+                    try {
+                        em.close();
+                    } catch (Exception ignore) {}
+                }
+            }
+        } finally {
+            // clear the driver wrapper
+            DriverWrapper.clear();
+    
+            // reconnect the session using the original driver and connection string
+            server.logout();
+            server.getConnectionPools().remove("backup");
+            server.getDefaultConnectionPool().setFailoverConnectionPools(new ArrayList());
+            server.getReadConnectionPool().setFailoverConnectionPools(new ArrayList());
+            server.getLogin().setDriverClassName(originalLogin.getDriverClassName());
+            server.getLogin().setConnectionString(originalLogin.getConnectionString());
+            server.login();
+        }
+    }
+    
     /**
      * This test ensures that the eclipselink.batch query hint works. It tests
      * two things.

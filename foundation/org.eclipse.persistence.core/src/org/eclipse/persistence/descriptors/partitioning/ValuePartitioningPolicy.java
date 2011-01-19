@@ -106,7 +106,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
                 // Use all connections.
                 List<Accessor> accessors = new ArrayList<Accessor>(this.partitions.size());
                 for (String poolName : this.partitions.values()) {
-                    accessors.add(getAccessor(poolName, session, query));
+                    accessors.add(getAccessor(poolName, session, query, false));
                 }
                 return accessors;
             } else {
@@ -124,7 +124,12 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
             }
             poolName = this.defaultConnectionPool;
         }
-        accessors.add(getAccessor(poolName, session, query));
+        if (session.getPlatform().hasPartitioningCallback()) {
+            // UCP support.
+            session.getPlatform().getPartitioningCallback().setPartitionId(Integer.parseInt(poolName));
+            return null;
+        }
+        accessors.add(getAccessor(poolName, session, query, false));
         return accessors;
     }
     

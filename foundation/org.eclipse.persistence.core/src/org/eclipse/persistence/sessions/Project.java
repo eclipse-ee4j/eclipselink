@@ -421,11 +421,11 @@ public class Project implements Serializable, Cloneable {
      * INTERNAL:
      * Clones the descriptor
      */
-    public Object clone() {
+    public Project clone() {
         try {
-            return super.clone();
-        } catch (Exception exception) {
-            return null;
+            return (Project)super.clone();
+        } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception.toString());
         }
     }
 
@@ -792,8 +792,6 @@ public class Project implements Serializable, Cloneable {
     public boolean hasNonIsolatedUOWClasses() {
         return hasNonIsolatedUOWClasses;
     }
-    
-    
     
     /**
      * INTERNAL:

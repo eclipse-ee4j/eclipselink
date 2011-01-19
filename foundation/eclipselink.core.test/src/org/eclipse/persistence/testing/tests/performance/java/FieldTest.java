@@ -44,6 +44,8 @@ public class FieldTest extends PerformanceComparisonTestCase {
      */
     public void addSetMethodTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected Object variable;
+            
             public void test() {
                 setVariable(new String("hello"));
             }
@@ -64,6 +66,8 @@ public class FieldTest extends PerformanceComparisonTestCase {
      */
     public void addAssignableSetTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected Object variable;
+            
             public Class object = Object.class;
 
             public void test() {
@@ -86,6 +90,8 @@ public class FieldTest extends PerformanceComparisonTestCase {
      */
     public void addReflectionMethodTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected Object variable;
+            
             public Method method;
 
             public final void test() {
@@ -122,17 +128,18 @@ public class FieldTest extends PerformanceComparisonTestCase {
      */
     public void addReflectionFieldTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            protected Object variable;
+            
             public Field field;
-            public Object[] args;
 
             public final void test() {
                 if (field == null) {
                     try {
-                        field = getClass().getField("variable");
+                        field = getClass().getDeclaredField("variable");
+                        field.setAccessible(true);
                     } catch (Exception ignore) {
                         throw new Error(ignore.toString());
                     }
-                    args = new Object[0];
                 }
                 try {
                     field.set(this, new String("hello"));

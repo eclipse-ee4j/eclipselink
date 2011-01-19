@@ -189,23 +189,23 @@ public class DatabaseField implements Cloneable, Serializable {
                 return true;
             }
 
-            //preserve old behaviour if static shouldIgnoreCaseOnFieldComparisons is set
+            //preserve old behavior if static shouldIgnoreCaseOnFieldComparisons is set
             if (DatabasePlatform.shouldIgnoreCaseOnFieldComparisons()) {
-                if (getName().equalsIgnoreCase(field.getName())) {
+                if (this.name.equalsIgnoreCase(field.name)) {
                     //getTableName will cause NPE if there isn't a table.  use hasTableName instead
                     if ((!hasTableName()) || (!field.hasTableName())) {
                         return true;
                     }
-                    return (getTable().equals(field.getTable()));
+                    return (this.table.equals(field.table));
                 }
             } else {
                 String ourNameToCompare;
                 String fieldNameToCompare;
                 if (field.shouldUseDelimiters() || shouldUseDelimiters()) {
-                    ourNameToCompare = this.getName();
-                    fieldNameToCompare = field.getName();
+                    ourNameToCompare = this.name;
+                    fieldNameToCompare = field.name;
                 } else {
-                    ourNameToCompare = this.getNameForComparisons();
+                    ourNameToCompare = getNameForComparisons();
                     fieldNameToCompare = field.getNameForComparisons();
                 }
                 
@@ -214,7 +214,7 @@ public class DatabaseField implements Cloneable, Serializable {
                     if ((!hasTableName()) || (!field.hasTableName())) {
                         return true;
                     }
-                    return (getTable().equals(field.getTable()));
+                    return (this.table.equals(field.table));
                 }
             }
         }
@@ -255,15 +255,13 @@ public class DatabaseField implements Cloneable, Serializable {
 
     /**
      * Returns this fields name with database delimiters if useDelimiters is true.
-     * 
-     * This method should be called any time the field name is requested for writing SQL
-     * @return
+     * This method should be called any time the field name is requested for writing SQL.
      */
     public String getNameDelimited(DatasourcePlatform platform) {
-        if (useDelimiters){
-            return platform.getStartDelimiter() + name + platform.getEndDelimiter();
+        if (this.useDelimiters){
+            return platform.getStartDelimiter() + this.name + platform.getEndDelimiter();
         }
-        return name;
+        return this.name;
     }
     
     /**
@@ -595,11 +593,11 @@ public class DatabaseField implements Cloneable, Serializable {
      * gets the string used for comparisons and in determining the hashcode.
      */
     public String getNameForComparisons(){
-        if (nameForComparisons == null) {
-            if (!getUseUpperCaseForComparisons() || getName()== null){
-                return this.getName();
+        if (this.nameForComparisons == null) {
+            if ((!this.useUpperCaseForComparisons) || (this.name == null)) {
+                this.nameForComparisons = this.name;
             }
-            this.nameForComparisons = this.getName().toUpperCase();
+            this.nameForComparisons = this.name.toUpperCase();
         }
         return this.nameForComparisons;
     }

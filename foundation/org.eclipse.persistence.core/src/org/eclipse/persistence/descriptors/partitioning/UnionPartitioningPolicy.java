@@ -79,7 +79,7 @@ public class UnionPartitioningPolicy extends ReplicationPartitioningPolicy {
         }
         List<Accessor> accessors = new ArrayList<Accessor>(this.connectionPools.size());
         for (String poolName : this.connectionPools) {
-            accessors.add(getAccessor(poolName, session, query));
+            accessors.add(getAccessor(poolName, session, query, false));
         }
         return accessors;
     }

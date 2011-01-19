@@ -991,7 +991,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 int mappingsSize = mappings.size();
                 for (int index = 0; index < mappingsSize; index++) {
                     DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                    if(fetchGroup == null || fetchGroup.containsAttribute(mapping.getAttributeName())) {
+                    if(fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
                         addChange(mapping.compareForChange(this.cloneObject, this.cloneObject, this, unitOfWork));
                     }
                 }

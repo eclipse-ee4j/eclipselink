@@ -58,6 +58,8 @@ import org.eclipse.persistence.testing.framework.*;
  * Performance tests that compare JPA performance.
  */
 public class JPAPerformanceRegressionModel extends TestModel {
+    
+    public boolean isEmulated;
 
     public JPAPerformanceRegressionModel() {
         setDescription("Performance tests that compare JPA performance.");
@@ -145,6 +147,17 @@ public class JPAPerformanceRegressionModel extends TestModel {
         return suite;        
     }
 
+    public void setupDatabase(EntityManager manager) {
+        // Create schema using session from entity manager to create sequences correctly.
+        try {
+            // Create schema.
+            new EmployeeTableCreator().replaceTables(((JpaEntityManager)manager).getServerSession());
+        } catch (ClassCastException cast) {
+            // Create using DatabaseSession if not EclipseLink JPA.
+            new EmployeeTableCreator().replaceTables(getDatabaseSession());
+        }
+    }
+
     public TestSuite getMiscTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("JPAMiscTestSuite");
@@ -186,14 +199,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         // Populate database.
         EmulatedDriver.emulate = false;
         EntityManager manager = getExecutor().createEntityManager();
-        // Create schema using session from entity manager to create sequences correctly.
-        try {
-            // Create schema.
-            new EmployeeTableCreator().replaceTables(((JpaEntityManager)manager).getServerSession());
-        } catch (ClassCastException cast) {
-            // Create using DatabaseSession if not EclipseLink JPA.
-            new EmployeeTableCreator().replaceTables(getDatabaseSession());
-        }
+        setupDatabase(manager);
         
         manager.getTransaction().begin();
 
@@ -238,6 +244,9 @@ public class JPAPerformanceRegressionModel extends TestModel {
      * Setup the JPA provider.
      */
     public void setupProvider() {
+        if (org.eclipse.persistence.testing.framework.junit.JUnitTestCase.isOnServer()) {
+            return;
+        }
         // Configure provider to be EclipseLink.
         String providerClass = "org.eclipse.persistence.jpa.PersistenceProvider";
         PersistenceProvider provider = null;
@@ -264,15 +273,15 @@ public class JPAPerformanceRegressionModel extends TestModel {
         properties.put("eclipselink.jdbc.url", getSession().getLogin().getConnectionString());
         properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
         properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());
-        /*
-        // For emulated connection testing.
-        try {
-            Class.forName(getSession().getLogin().getDriverClassName());
-        } catch (Exception ignore) {}
-        properties.put("eclipselink.jdbc.driver", "org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver");
-        properties.put("eclipselink.jdbc.url", "emulate:" + getSession().getLogin().getConnectionString());
-        properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
-        properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());*/
+        
+        if (this.isEmulated) {
+            // For emulated connection testing.
+            try {
+                Class.forName(getSession().getLogin().getDriverClassName());
+            } catch (Exception ignore) {}
+            properties.put("eclipselink.jdbc.driver", "org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver");
+            properties.put("eclipselink.jdbc.url", "emulate:" + getSession().getLogin().getConnectionString());
+        }
 
         //properties.put("eclipselink.jdbc.batch-writing", "JDBC");
         //properties.put("eclipselink.persistence-context.close-on-commit", "true");

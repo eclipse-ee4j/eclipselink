@@ -20,15 +20,22 @@ import org.eclipse.persistence.testing.framework.*;
  */
 public class ForLoopTest extends PerformanceComparisonTestCase {
     public Vector list;
+    public List arrayList;
 
     public ForLoopTest() {
         setName("ForLoop vs Enumeration PerformanceComparisonTest");
         setDescription("This test compares the performance of index for loops vs enumeration/iterators.");
+        addIndexArrayListTest();
         addEnumeratorTest();
         addIteratorTest();
+        addIteratorArrayListTest();
+        addForTest();
+        addForArrayListTest();
         list = new Vector();
+        arrayList = new ArrayList();
         for (int index = 0; index < 100; index++) {
             list.add(new Object());
+            arrayList.add(new Object());
         }
     }
 
@@ -73,6 +80,73 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
             }
         };
         test.setName("IteratorTest");
+        test.setAllowableDecrease(-70);
+        addTest(test);
+    }
+
+    /**
+     * iterator loop.
+     */
+    public void addIteratorArrayListTest() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            public void test() {
+                for (Iterator iter = arrayList.iterator(); iter.hasNext();) {
+                    Object object = iter.next();
+                    object.hashCode();
+                }
+            }
+        };
+        test.setName("ArrayListIteratorTest");
+        test.setAllowableDecrease(-70);
+        addTest(test);
+    }
+
+    /**
+     * for loop.
+     */
+    public void addForArrayListTest() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            public void test() {
+                for (Object object : arrayList) {
+                    object.hashCode();
+                }
+            }
+        };
+        test.setName("ForArrayListTest");
+        test.setAllowableDecrease(-70);
+        addTest(test);
+    }
+
+    /**
+     * for loop.
+     */
+    public void addForTest() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            public void test() {
+                for (Object object : list) {
+                    object.hashCode();
+                }
+            }
+        };
+        test.setName("ForTest");
+        test.setAllowableDecrease(-70);
+        addTest(test);
+    }
+
+    /**
+     * index loop.
+     */
+    public void addIndexArrayListTest() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            public void test() {
+                int size = arrayList.size();
+                for (int index = 0; index < size; index++) {
+                    Object object = arrayList.get(index);
+                    object.hashCode();
+                }
+            }
+        };
+        test.setName("IndexArrayListTest");
         test.setAllowableDecrease(-70);
         addTest(test);
     }

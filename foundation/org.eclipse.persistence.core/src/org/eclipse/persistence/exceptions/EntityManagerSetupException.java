@@ -42,6 +42,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
     public static final int NO_TEMPORARY_CLASSLOADER_AVAILABLE=28025;    
     public static final int CREATE_CONTAINER_EMF_NOT_SUPPORTED_IN_OSGI=28026;  
     public static final int COULD_NOT_FIND_PERSISTENCE_UNIT_BUNDLE=28027;  
+    public static final int FAILED_TO_INSTANTIATE_PROPERTY = 28028;
     
     /**
      * INTERNAL:
@@ -137,6 +138,14 @@ public class EntityManagerSetupException extends EclipseLinkException {
 
         EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, FAILED_TO_INSTANTIATE_SERVER_PLATFORM, args), exception);
         setupException.setErrorCode(FAILED_TO_INSTANTIATE_SERVER_PLATFORM);
+        return setupException;
+    }
+
+    public static EntityManagerSetupException failedToInstantiateProperty(String className, String property, Exception exception) {
+        Object[] args = { className, property };
+
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, FAILED_TO_INSTANTIATE_PROPERTY, args), exception);
+        setupException.setErrorCode(FAILED_TO_INSTANTIATE_PROPERTY);
         return setupException;
     }
     

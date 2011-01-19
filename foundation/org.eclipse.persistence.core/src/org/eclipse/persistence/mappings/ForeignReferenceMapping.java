@@ -1979,7 +1979,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         ReadQuery targetQuery = this.selectionQuery;
 
         // Copy nested fetch group from the source query 
-        if(targetQuery.isObjectLevelReadQuery() && targetQuery.getDescriptor().hasFetchGroupManager()) {
+        if (targetQuery.isObjectLevelReadQuery() && targetQuery.getDescriptor().hasFetchGroupManager()) {
             FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup();
             if (sourceFG != null) {                    
                 FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
@@ -2007,6 +2007,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 targetQuery.setIsExecutionClone(true);
             }
             targetQuery.setQueryId(sourceQuery.getQueryId());
+            ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
         }
 
         // If the source query is cascading then the target query must use the same settings.
@@ -2038,8 +2039,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 }
             }
             
-            if(isExtendingPessimisticLockScope(sourceQuery) ) {
-                if(extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) {
+            if (isExtendingPessimisticLockScope(sourceQuery)) {
+                if (this.extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) {
                     if (targetQuery == this.selectionQuery) {
                         // perf: bug#4751950, first prepare the query before cloning.
                         if (targetQuery.shouldPrepare()) {
@@ -2049,12 +2050,11 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                         targetQuery.setIsExecutionClone(true);
                     }
                     extendPessimisticLockScopeInTargetQuery((ObjectLevelReadQuery)targetQuery, sourceQuery);
-                } else if(extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY) {
-                    ReadQuery dedicatedQuery = this.getExtendPessimisticLockScopeDedicatedQuery(executionSession, sourceQuery.getLockMode());
+                } else if (this.extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY) {
+                    ReadQuery dedicatedQuery = getExtendPessimisticLockScopeDedicatedQuery(executionSession, sourceQuery.getLockMode());
                     executionSession.executeQuery(dedicatedQuery, row);
                 }
             }
-            ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
         }
         targetQuery = prepareHistoricalQuery(targetQuery, sourceQuery, executionSession);
 

@@ -177,7 +177,7 @@ public class XMLProjectReader {
             project = new EclipseLinkObjectPersistenceRuntimeXMLProject();
         }
         // bug261072: clone the project since readObjectPersistenceRuntimeFormat will change its datasourceLogin and Classloader 
-        return readObjectPersistenceRuntimeFormat(document, classLoader, (Project)project.clone());
+        return readObjectPersistenceRuntimeFormat(document, classLoader, project.clone());
     }
 
     private static XMLParser createXMLParser(XMLPlatform xmlPlatform, boolean namespaceAware, boolean whitespacePreserving, String schema){

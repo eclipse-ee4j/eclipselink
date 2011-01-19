@@ -93,7 +93,11 @@ public class ReplicationPartitioningPolicy extends PartitioningPolicy {
         }
         List<Accessor> accessors = new ArrayList<Accessor>(this.connectionPools.size());
         for (String poolName : this.connectionPools) {
-            accessors.add(getAccessor(poolName, session, query));
+            Accessor accessor = getAccessor(poolName, session, query, true);
+            // Do not replicate to dead connection pools.
+            if (accessor != null) {
+                accessors.add(accessor);
+            }
         }
         return accessors;
     }    

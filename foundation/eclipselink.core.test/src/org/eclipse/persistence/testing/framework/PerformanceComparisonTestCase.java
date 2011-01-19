@@ -248,7 +248,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
         try {
             Class.forName(getSession().getLogin().getDriverClassName());
         } catch (Exception ignore) {}
-        Project project = (Project)getSession().getProject().clone();
+        Project project = getSession().getProject().clone();
         DatabaseLogin login = (DatabaseLogin)project.getLogin().clone();
         try {
             Class.forName(login.getDriverClassName());

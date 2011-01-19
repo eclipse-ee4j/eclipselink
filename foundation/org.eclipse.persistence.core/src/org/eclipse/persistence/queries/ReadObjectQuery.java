@@ -288,11 +288,13 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * null means there is none.
      */
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
-        checkDescriptor(session);
+        if (this.descriptor == null) {
+            checkDescriptor(session);
+        }
 
-        if (isCustomQueryUsed() == null) {
+        if (this.isCustomQueryUsed == null) {
             // Check if user defined a custom query in the query manager.
-            if (!isUserDefined()) {
+            if (!this.isUserDefined) {
                 if (!isCallQuery()) {
                     DescriptorQueryManager descriptorQueryManager = this.descriptor.getQueryManager();
         
@@ -301,17 +303,17 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                     if (descriptorQueryManager.hasReadObjectQuery()) {
                         // If the query require special SQL generation or execution do not use the static read object query.
                         // PERF: the read-object query should always be static to ensure no regeneration of SQL.
-                        if ((!hasJoining() || !getJoinedAttributeManager().hasJoinedAttributeExpressions()) && (!hasPartialAttributeExpressions()) && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup()) && (getHintString() == null)
-                                && wasDefaultLockMode() && shouldIgnoreBindAllParameters() && (!hasFetchGroup()) && (getFetchGroupName() == null) && shouldUseDefaultFetchGroup()) {
+                        if ((!hasJoining() || !this.joinedAttributeManager.hasJoinedAttributeExpressions()) && (!hasPartialAttributeExpressions()) && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup())
+                                && this.wasDefaultLockMode && (shouldBindAllParameters == null) && (this.hintString == null)) {
                             if ((this.selectionId != null) || (this.selectionObject != null)) {// Must be primary key.
-                                setIsCustomQueryUsed(true);
-                            } else {            
-                                if (getSelectionCriteria() != null) {
-                                    AbstractRecord primaryKeyRow = this.descriptor.getObjectBuilder().extractPrimaryKeyRowFromExpression(getSelectionCriteria(), translationRow, session);
-                
+                                this.isCustomQueryUsed = true;
+                            } else {
+                                Expression selectionCriteria = getSelectionCriteria();
+                                if (selectionCriteria != null) {
+                                    AbstractRecord primaryKeyRow = this.descriptor.getObjectBuilder().extractPrimaryKeyRowFromExpression(selectionCriteria, translationRow, session);                
                                     // Only execute the query if the selection criteria has the primary key fields set
                                     if (primaryKeyRow != null) {
-                                        setIsCustomQueryUsed(true);
+                                        this.isCustomQueryUsed = true;
                                     }
                                 }
                             }
@@ -319,12 +321,12 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                     }
                 }
             }
-            if (isCustomQueryUsed() == null) {
-                setIsCustomQueryUsed(false);
+            if (this.isCustomQueryUsed == null) {
+                this.isCustomQueryUsed = false;
             }
         }
         
-        if (isCustomQueryUsed().booleanValue()) {
+        if (this.isCustomQueryUsed.booleanValue()) {
             return this.descriptor.getQueryManager().getReadObjectQuery();
         } else {
             return null;
@@ -922,7 +924,8 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Return if the query has an non-default fetch group defined for itself.
      */
     protected boolean hasNonDefaultFetchGroup() {
-        return this.descriptor.hasFetchGroupManager() && ((this.fetchGroup != null) || (this.fetchGroupName != null) || (!this.shouldUseDefaultFetchGroup));
+        return this.descriptor.hasFetchGroupManager() && ((this.fetchGroup != null) || (this.fetchGroupName != null)
+                || (!this.shouldUseDefaultFetchGroup && (this.descriptor.getFetchGroupManager().getDefaultFetchGroup() != null)));
 
     }
 }

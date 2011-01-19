@@ -240,7 +240,7 @@ public class TestSystem {
         DatabaseLogin login = new DatabaseLogin(new org.eclipse.persistence.platform.database.PostgreSQLPlatform());
         login.setDriverClassName("org.postgresql.Driver");
         login.setDriverURLHeader("jdbc:postgresql:");
-        login.setDatabaseURL("//qaott40.ca.oracle.com/toplink");
+        login.setDatabaseURL("//ottvm048.ca.oracle.com/toplink");
         setLogin(login);
     }
 
@@ -252,7 +252,7 @@ public class TestSystem {
         login.useDB2();
         login.setDriverClassName("com.ibm.db2.jcc.DB2Driver");
         login.setDriverURLHeader("jdbc:db2://");
-        login.setDatabaseURL("tlsvrdb7.ca.oracle.com:50001/TOPLINK");
+        login.setDatabaseURL("ottvm046.ca.oracle.com:50000/TOPLINK2");
         login.setUserName("");
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
@@ -327,7 +327,7 @@ public class TestSystem {
         login.setUserName(userName);
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
-        login.setDatabaseURL("//qaott51.ca.oracle.com:3306/"+userName);
+        login.setDatabaseURL("//ottvm045.ca.oracle.com:3306/"+userName);
         login.useByteArrayBinding();
         setLogin(login);
     }

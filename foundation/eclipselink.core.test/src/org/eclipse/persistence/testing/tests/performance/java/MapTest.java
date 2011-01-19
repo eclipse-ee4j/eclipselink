@@ -28,9 +28,9 @@ public class MapTest extends PerformanceComparisonTestCase {
         this.size = size;
         setName("Hashtable vs Maps size " + size + " PerformanceComparisonTest");
         setDescription("Compares the performance between HashMap and Hashtable.");
+        addHashtable2Test();
         addHashMapTest();
         addLinkedMapTest();
-        addMapTest();
         addIdentityHashMapTest();
         addHashSetTest();
         addConcurrentHashMapTest();
@@ -80,6 +80,28 @@ public class MapTest extends PerformanceComparisonTestCase {
     }
 
     /**
+     * HashMap.
+     */
+    public void addHashtable2Test() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                public void test() {
+                    Map map = new Hashtable(10);
+                    for (int index = 0; index < size; index++) {
+                        map.put(values[index], values[index]);
+                    }
+                    for (int index = 0; index < size; index++) {
+                        Object result = map.get(values[index]);
+                    }
+                    for (int index = 0; index < size; index++) {
+                        Object result = map.remove(values[index]);
+                    }
+                }
+            };
+        test.setName("Hashtable2Test");
+        addTest(test);
+    }
+
+    /**
      * LinkedMap.
      */
     public void addLinkedMapTest() {
@@ -99,29 +121,6 @@ public class MapTest extends PerformanceComparisonTestCase {
             };
         test.setName("LinkedMapTest");
         test.setAllowableDecrease(-20);
-        addTest(test);
-    }
-
-    /**
-     * Map.
-     */
-    public void addMapTest() {
-        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
-                public void test() {
-                    Map map = new IdentityHashMap(10);
-                    for (int index = 0; index < size; index++) {
-                        map.put(values[index], values[index]);
-                    }
-                    for (int index = 0; index < size; index++) {
-                        Object result = map.get(values[index]);
-                    }
-                    for (int index = 0; index < size; index++) {
-                        Object result = map.remove(values[index]);
-                    }
-                }
-            };
-        test.setName("MapTest");
-        test.setAllowableDecrease(-50);
         addTest(test);
     }
 

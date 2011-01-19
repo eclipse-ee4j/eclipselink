@@ -60,8 +60,13 @@ public class PinnedPartitioningPolicy extends PartitioningPolicy {
      * Get a connection from each pool.
      */
     public List<Accessor> getConnectionsForQuery(AbstractSession session, DatabaseQuery query, AbstractRecord arguments) {
+        if (session.getPlatform().hasPartitioningCallback()) {
+            // UCP support.
+            session.getPlatform().getPartitioningCallback().setPartitionId(Integer.parseInt(this.connectionPool));
+            return null;
+        }
         List<Accessor> accessors = new ArrayList<Accessor>(1);
-        accessors.add(getAccessor(this.connectionPool, session, query));
+        accessors.add(getAccessor(this.connectionPool, session, query, false));
         return accessors;
     }    
     

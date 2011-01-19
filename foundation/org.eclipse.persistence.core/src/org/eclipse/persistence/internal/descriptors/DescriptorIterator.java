@@ -399,13 +399,13 @@ public abstract class DescriptorIterator {
             mappings = builder.getRelationshipMappings();
         }
         
-        if(shouldIterateOnFetchGroupAttributesOnly()) {
+        if (shouldIterateOnFetchGroupAttributesOnly()) {
             if(getCurrentDescriptor().hasFetchGroupManager()) {
                 FetchGroup fetchGroup = getCurrentDescriptor().getFetchGroupManager().getObjectFetchGroup(sourceObject);
-                if(fetchGroup != null) {
+                if (fetchGroup != null) {
                     List<DatabaseMapping> fetchGroupMappings = new ArrayList();
-                    for(DatabaseMapping mapping : mappings) {
-                        if(fetchGroup.containsAttribute(mapping.getAttributeName())) {
+                    for (DatabaseMapping mapping : mappings) {
+                        if (fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
                             fetchGroupMappings.add(mapping);
                         }
                     }
@@ -414,13 +414,13 @@ public abstract class DescriptorIterator {
             }
         }
         
-        if(this.usesGroup) {
+        if (this.usesGroup) {
             AttributeGroup currentGroupOriginal = this.currentGroup;
             AttributeItem currentItemOriginal = this.currentItem;
             for (DatabaseMapping mapping : mappings) {
                 this.currentItem = this.currentGroup.getItem(mapping.getAttributeName());
                 // iterate only over the mappings found in the group
-                if(currentItem != null) {
+                if (currentItem != null) {
                     mapping.iterate(this);
                     this.currentGroup = currentGroupOriginal;
                 }

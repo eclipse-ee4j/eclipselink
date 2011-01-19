@@ -106,9 +106,16 @@ public class RangePartitioningPolicy extends FieldPartitioningPolicy {
         } else {
             accessors = new ArrayList<Accessor>(1);
         }
-        for (RangePartition partition : this.partitions) {
+        int size = this.partitions.size();
+        for (int index = 0; index < size; index++) {
+            RangePartition partition = this.partitions.get(index);
             if ((value == null) || partition.isInRange(value)) {
-                accessors.add(getAccessor(partition.getConnectionPool(), session, query));
+                if (session.getPlatform().hasPartitioningCallback()) {
+                    // UCP support.
+                    session.getPlatform().getPartitioningCallback().setPartitionId(index);
+                    return null;
+                }
+                accessors.add(getAccessor(partition.getConnectionPool(), session, query, false));
                 if (value != null) {
                     break;
                 }

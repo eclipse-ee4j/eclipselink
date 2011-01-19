@@ -820,7 +820,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void checkPrepare(AbstractSession session, AbstractRecord translationRow, boolean force) {
         // CR#3823735 For custom queries the prePrepare may not have been called yet.
-        checkPrePrepare(session);
+        if (!this.isPrePrepared || (this.descriptor == null)) {
+            checkPrePrepare(session);
+        }
         super.checkPrepare(session, translationRow, force);
     }
 
@@ -1470,18 +1472,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     }
 
     /**
-     * PUBLIC:
-     * Return the current locking mode.
-     */
-    public short getLockMode() {
-        if (lockingClause == null) {
-            return DEFAULT_LOCK_MODE;
-        } else {
-            return lockingClause.getLockMode();
-        }
-    }
-
-    /**
      * INTERNAL:
      * It is not exactly as simple as a query being either locking or not.
      * Any combination of the reference class object and joined attributes
@@ -1569,7 +1559,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return if partial attributes.
      */
     public boolean hasPartialAttributeExpressions() {
-        return (partialAttributeExpressions != null) && (!partialAttributeExpressions.isEmpty());
+        return (this.partialAttributeExpressions != null) && (!this.partialAttributeExpressions.isEmpty());
     }
     
     /**
@@ -1577,7 +1567,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return if additional field.
      */
     public boolean hasAdditionalFields() {
-        return (additionalFields != null) && (!additionalFields.isEmpty());
+        return (this.additionalFields != null) && (!this.additionalFields.isEmpty());
     }
     
     /**
@@ -1731,7 +1721,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if(executionFetchGroup != null) {
                 String nestedAttributeName = ((QueryKeyExpression)expression).getNestedAttributeName();
                 if(nestedAttributeName != null) {
-                    if(!executionFetchGroup.containsAttribute(nestedAttributeName)) {
+                    if(!executionFetchGroup.containsAttributeInternal(nestedAttributeName)) {
                         getSession().log(SessionLog.WARNING, SessionLog.QUERY, "query_has_joined_attribute_outside_fetch_group", new Object[]{toString(), nestedAttributeName});
                     }
                 }
@@ -1801,7 +1791,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * return true if this query has computed its distinct value already
      */
     public boolean isDistinctComputed() {
-        return getDistinctState() != UNCOMPUTED_DISTINCT;
+        return this.distinctState != UNCOMPUTED_DISTINCT;
     }
 
     /**
@@ -1890,7 +1880,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * The early phase of preparation is to check if this is a pessimistic
      * locking query.
      */
-    protected void setIsPrePrepared(boolean isPrePrepared) {
+    public void setIsPrePrepared(boolean isPrePrepared) {
         // Only unprepare if was prepared to begin with, prevent unpreparing during prepare.
         if (this.isPrePrepared && !isPrePrepared) {
             setIsPrepared(false);
@@ -2029,28 +2019,30 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void prepareFetchGroup() throws QueryException {
         FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
         if (fetchGroupManager != null) {
-            if(this.fetchGroup == null) {
-                if(this.fetchGroupName != null) {
+            this.entityFetchGroup = null;
+            if (this.fetchGroup == null) {
+                if (this.fetchGroupName != null) {
                     this.fetchGroup = fetchGroupManager.getFetchGroup(this.fetchGroupName);
+                } else if (this.shouldUseDefaultFetchGroup) {
+                    this.fetchGroup = this.descriptor.getFetchGroupManager().getDefaultFetchGroup();
+                    if (this.fetchGroup != null) {
+                        this.entityFetchGroup = this.descriptor.getFetchGroupManager().getDefaultEntityFetchGroup();
+                    }
                 }
             }
-            // that may be either fetchGroup or defaultFetchGroup from descriptor
-            FetchGroup executionFetchGroup = getExecutionFetchGroup();
-            if(executionFetchGroup != null) {
+            if (this.fetchGroup != null) {
                 if (hasPartialAttributeExpressions()) {
                     //fetch group does not work with partial attribute reading
                     throw QueryException.fetchGroupNotSupportOnPartialAttributeReading();
                 }
-                if(this.fetchGroup != null) {
+                if (this.entityFetchGroup == null) {
                     this.descriptor.getFetchGroupManager().prepareAndVerify(this.fetchGroup);
                     this.entityFetchGroup = fetchGroupManager.getEntityFetchGroup(this.fetchGroup);
-                } else {
-                    this.entityFetchGroup = null;
                 }
             }
         } else {
             // FetchGroupManager is null
-            if(this.fetchGroup != null || this.fetchGroupName != null) {
+            if ((this.fetchGroup != null) || (this.fetchGroupName != null)) {
                 throw QueryException.fetchGroupValidOnlyIfFetchGroupManagerInDescriptor(getDescriptor().getJavaClassName(), getName());
             }
         }
@@ -2063,48 +2055,45 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     protected void prePrepare() throws QueryException {
         // For bug 3136413/2610803 building the selection criteria from an EJBQL string or
         // an example object is done just in time.
-        buildSelectionCriteria(session);
-        checkDescriptor(session);
+        buildSelectionCriteria(this.session);
+        checkDescriptor(this.session);
 
         // Validate and prepare join expressions.           
         if (hasJoining()) {
-            getJoinedAttributeManager().prepareJoinExpressions(session);
+            this.joinedAttributeManager.prepareJoinExpressions(this.session);
         }
 
         prepareFetchGroup();
 
         // Add mapping joined attributes.
-        if (getQueryMechanism().isExpressionQueryMechanism() && getDescriptor().getObjectBuilder().hasJoinedAttributes()) {
-            getJoinedAttributeManager().processJoinedMappings(session);
-            if(getJoinedAttributeManager().hasOrderByExpressions()) {
-                Iterator<Expression> it = getJoinedAttributeManager().getOrderByExpressions().iterator();
-                while(it.hasNext()) {
-                    addOrdering(it.next());
+        if (getQueryMechanism().isExpressionQueryMechanism() && this.descriptor.getObjectBuilder().hasJoinedAttributes()) {
+            getJoinedAttributeManager().processJoinedMappings(this.session);
+            if (this.joinedAttributeManager.hasOrderByExpressions()) {
+                for (Expression orderBy : this.joinedAttributeManager.getOrderByExpressions()) {
+                    addOrdering(orderBy);
                 }
             }
-            if(getJoinedAttributeManager().hasAdditionalFieldExpressions()) {
-                Iterator<Expression> it = getJoinedAttributeManager().getAdditionalFieldExpressions().iterator();
-                while(it.hasNext()) {
-                    addAdditionalField(it.next());
+            if (this.joinedAttributeManager.hasAdditionalFieldExpressions()) {
+                for (Expression additionalField : this.joinedAttributeManager.getAdditionalFieldExpressions()) {
+                    addAdditionalField(additionalField);
                 }
             }
         }
 
-        if (lockModeType != null) {
-            if (lockModeType.equals(NONE)) {
+        if (this.lockModeType != null) {
+            if (this.lockModeType.equals(NONE)) {
                 setLockMode(ObjectBuildingQuery.NO_LOCK);
-            } else if (lockModeType.contains(PESSIMISTIC_)) {
+            } else if (this.lockModeType.contains(PESSIMISTIC_)) {
                 // If no wait timeout was set from a query hint, grab the
                 // default one from the session if one is available.
-                Integer timeout = (waitTimeout == null) ? getSession().getPessimisticLockTimeoutDefault() : waitTimeout;
-                
+                Integer timeout = (this.waitTimeout == null) ? this.session.getPessimisticLockTimeoutDefault() : this.waitTimeout;                
                 if (timeout == null) {
                     setLockMode(ObjectBuildingQuery.LOCK);
                 } else {
                     if (timeout.intValue() == 0) {
                         setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);    
                     } else {
-                        lockingClause = ForUpdateClause.newInstance(timeout);    
+                        this.lockingClause = ForUpdateClause.newInstance(timeout);    
                     }
                 }
             }
@@ -2117,25 +2106,23 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if (hasJoining()) {
                 lockingClause = getJoinedAttributeManager().setupLockingClauseForJoinedExpressions(lockingClause, getSession());
             }
-            if (descriptor.hasPessimisticLockingPolicy()) {
+            if (this.descriptor.hasPessimisticLockingPolicy()) {
                 lockingClause = new ForUpdateOfClause();
-                lockingClause.setLockMode(descriptor.getCMPPolicy().getPessimisticLockingPolicy().getLockingMode());
+                lockingClause.setLockMode(this.descriptor.getCMPPolicy().getPessimisticLockingPolicy().getLockingMode());
                 lockingClause.addLockedExpression(getExpressionBuilder());
             }
-            if (lockingClause == null) {
-                this.lockingClause = ForUpdateClause.newInstance(NO_LOCK);
-            } else {
+            if (lockingClause != null) {
                 this.lockingClause = lockingClause;
                 // SPECJ: Locking not compatible with distinct for batch reading.
                 dontUseDistinct();
             }
-        } else if ((getLockMode() == NO_LOCK) && (!descriptor.hasPessimisticLockingPolicy())) {
+        } else if ((getLockMode() <= NO_LOCK) && (!descriptor.hasPessimisticLockingPolicy())) {
             setWasDefaultLockMode(true);            
         }
-        setRequiresDeferredLocks(DeferredLockManager.SHOULD_USE_DEFERRED_LOCKS && (hasJoining() || (descriptor.shouldAcquireCascadedLocks())));
+        setRequiresDeferredLocks(DeferredLockManager.SHOULD_USE_DEFERRED_LOCKS && (hasJoining() || (this.descriptor.shouldAcquireCascadedLocks())));
 
-        if(hasJoining() && hasPartialAttributeExpressions()) {
-            session.log(SessionLog.WARNING, SessionLog.QUERY, "query_has_both_join_attributes_and_partial_attributes", new Object[]{this, this.getName()});
+        if (hasJoining() && hasPartialAttributeExpressions()) {
+            this.session.log(SessionLog.WARNING, SessionLog.QUERY, "query_has_both_join_attributes_and_partial_attributes", new Object[]{this, getName()});
         }
     }
 
@@ -2642,7 +2629,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // if block
         EntityFetchGroup entityFG = getEntityFetchGroup(); 
         if(entityFG  != null) {
-            return entityFG.containsAttribute(mapping.getAttributeName());
+            return entityFG.containsAttributeInternal(mapping.getAttributeName());
         }
 
         return isPartialAttribute(attrName);
@@ -2714,7 +2701,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * locking will be configured according to the pessimistic locking policy.
      */
     public boolean isDefaultLock() {
-        return (lockingClause == null) || wasDefaultLockMode();
+        return (this.lockingClause == null) || wasDefaultLockMode();
     }
     
     /**
@@ -2726,15 +2713,15 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public boolean isDefaultPropertiesQuery() {
         return super.isDefaultPropertiesQuery()
-            && (!isResultSetOptimizedQuery())
+            && (!this.isResultSetOptimizedQuery)
             && (isDefaultLock())
             && (!isDistinctComputed())
             && (!hasAdditionalFields())
             && (!hasPartialAttributeExpressions())
             && (!hasNonFetchJoinedAttributeExpressions())
-            && (!hasFetchGroup())
-            && (getFetchGroupName() == null)
-            && (shouldUseDefaultFetchGroup());
+            && (this.fetchGroup == null)
+            && (this.fetchGroupName == null)
+            && (this.shouldUseDefaultFetchGroup);
     }
     
     /**
@@ -2777,9 +2764,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Note that the returned fetchGroup may be updated during preProcess.
      */
     public FetchGroup getExecutionFetchGroup() {
-        if(this.fetchGroup == null && this.shouldUseDefaultFetchGroup && this.descriptor != null && this.descriptor.hasFetchGroupManager()) {
-            return this.descriptor.getFetchGroupManager().getDefaultFetchGroup();
-        }
         return this.fetchGroup;
     }
 
@@ -2789,9 +2773,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Should not be called before preProcess - may not yet exist.
      */
     public EntityFetchGroup getEntityFetchGroup() {
-        if(this.fetchGroup == null && this.shouldUseDefaultFetchGroup && this.descriptor != null && this.descriptor.hasFetchGroupManager()) {
-            return this.descriptor.getFetchGroupManager().getDefaultEntityFetchGroup();
-        }
         return this.entityFetchGroup;
     }
     
@@ -2850,14 +2831,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setShouldUseDefaultFetchGroup(boolean shouldUseDefaultFetchGroup) {
         this.shouldUseDefaultFetchGroup = shouldUseDefaultFetchGroup;
-
-        // Clear mutually exclusive FetchGroup configuration
-        if (shouldUseDefaultFetchGroup) {
-            this.fetchGroup = null;
-            this.fetchGroupName = null;
-            this.entityFetchGroup = null;
-        }
-
+        this.fetchGroup = null;
+        this.fetchGroupName = null;
+        this.entityFetchGroup = null;
         // Force prepare again so executeFetchGroup is calculated
         setIsPrePrepared(false);
     }

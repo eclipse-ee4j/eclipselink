@@ -34,6 +34,7 @@ import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.DatabaseSession
@@ -808,5 +809,40 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         for (Enumeration objectsEnum = domainObjects.elements(); objectsEnum.hasMoreElements();) {
             writeObject(objectsEnum.nextElement());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * A query execution failed due to an invalid query.
+     * Re-connect and retry the query.
+     */
+    @Override
+    public Object retryQuery(DatabaseQuery query, AbstractRecord row, DatabaseException databaseException, int retryCount, AbstractSession executionSession) {
+        if (getClass() != DatabaseSessionImpl.class) {
+            return super.retryQuery(query, row, databaseException, retryCount, executionSession);
+        }
+        //attempt to reconnect connection:
+        int count = getLogin().getQueryRetryAttemptCount();
+        while (retryCount < count) {
+            try {
+                // if database session then re-establish connection
+                // else the session will just get a new
+                // connection from the pool
+                databaseException.getAccessor().reestablishConnection(this);
+                break;
+            } catch (DatabaseException ex) {
+                // failed to get connection because of
+                // database error.
+                ++retryCount;
+                try {
+                    // Give the failover time to recover.
+                    Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                    log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
+                } catch (InterruptedException intEx) {
+                    break;
+                }
+            }
+        }
+        return executionSession.executeQuery(query, row, retryCount);
     }
 }

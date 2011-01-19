@@ -95,7 +95,7 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
                 // Use all connections.
                 List<Accessor> accessors = new ArrayList<Accessor>(this.connectionPools.size());
                 for (String poolName : this.connectionPools) {
-                    accessors.add(getAccessor(poolName, session, query));
+                    accessors.add(getAccessor(poolName, session, query, false));
                 }
                 return accessors;
             } else {
@@ -103,10 +103,16 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
                 return null;
             }
         }
+        int index = value.hashCode() & (this.connectionPools.size() - 1);
+        if (session.getPlatform().hasPartitioningCallback()) {
+            // UCP support.
+            session.getPlatform().getPartitioningCallback().setPartitionId(index);
+            return null;
+        }
         // Use the mapped connection pool.
         List<Accessor> accessors = new ArrayList<Accessor>(1);
-        String poolName = this.connectionPools.get(value.hashCode() & (this.connectionPools.size() - 1));
-        accessors.add(getAccessor(poolName, session, query));
+        String poolName = this.connectionPools.get(index);
+        accessors.add(getAccessor(poolName, session, query, false));
         return accessors;
     }
     

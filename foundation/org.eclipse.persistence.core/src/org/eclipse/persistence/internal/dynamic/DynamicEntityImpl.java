@@ -149,7 +149,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     public boolean isSet(String propertyName) throws DynamicException {
         if (fetchPropertiesManager().contains(propertyName)) {
             if (_persistence_getFetchGroup() != null && 
-                !_persistence_getFetchGroup().containsAttribute(propertyName)) {
+                !_persistence_getFetchGroup().containsAttributeInternal(propertyName)) {
                 return false;
             }
             PropertyWrapper wrapper = propertiesMap.get(propertyName);
@@ -343,7 +343,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * Return true if the attribute is in the fetch group being tracked.
      */
     public boolean _persistence_isAttributeFetched(String attribute) {
-        return this.fetchGroup == null || this.fetchGroup.containsAttribute(attribute);
+        return this.fetchGroup == null || this.fetchGroup.containsAttributeInternal(attribute);
     }
     /**
      * Reset all attributes of the tracked object to the un-fetched state with

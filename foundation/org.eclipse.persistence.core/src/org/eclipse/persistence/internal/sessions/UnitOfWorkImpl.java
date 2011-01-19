@@ -498,6 +498,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Normally all ids are assigned during the commit automatically.
      */
     protected void assignSequenceNumbers(Map objects) throws DatabaseException {
+        if (objects.isEmpty()) {
+            return;
+        }
+        
         Sequencing sequencing = getSequencing();
         if (sequencing == null) {
             return;
@@ -643,29 +647,21 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 visitedNodes.put(object, object);
             }
         }
-        if(hasDeletedObjects() && !isNestedUnitOfWork())
-        {
-            Object obj1;
-            for(Iterator iterator1 = ((IdentityHashMap)((IdentityHashMap)deletedObjects).clone()).keySet().iterator(); iterator1.hasNext(); getDescriptor(obj1).getObjectBuilder().recordPrivateOwnedRemovals(obj1, this, true))
-                obj1 = iterator1.next();
-
+        if (hasDeletedObjects() && !isNestedUnitOfWork()) {
+            for (Object deletedObject : ((IdentityHashMap)((IdentityHashMap)this.deletedObjects).clone()).keySet()) {
+                getDescriptor(deletedObject).getObjectBuilder().recordPrivateOwnedRemovals(deletedObject, this, true);
+            }
         }
-        if(deletedPrivateOwnedObjects != null && !this.isNestedUnitOfWork)
-        {
-            for(Iterator iterator2 = deletedPrivateOwnedObjects.entrySet().iterator(); iterator2.hasNext();)
-            {
-                java.util.Map.Entry entry = (java.util.Map.Entry)iterator2.next();
-                DatabaseMapping databasemapping = (DatabaseMapping)entry.getKey();
-                Iterator iterator6 = ((List)entry.getValue()).iterator();
-                while(iterator6.hasNext()) 
-                {
-                    Object obj4 = iterator6.next();
-                    databasemapping.getReferenceDescriptor().getObjectBuilder().recordPrivateOwnedRemovals(obj4, this, false);
+        if ((this.deletedPrivateOwnedObjects != null) && !this.isNestedUnitOfWork) {
+            for (Map.Entry<DatabaseMapping, List<Object>> entry : this.deletedPrivateOwnedObjects.entrySet()) {
+                DatabaseMapping databasemapping = entry.getKey();
+                for (Object deletedObject : entry.getValue()) {
+                    databasemapping.getReferenceDescriptor().getObjectBuilder().recordPrivateOwnedRemovals(deletedObject, this, false);
                 }
             }
-
-            deletedPrivateOwnedObjects.clear();
+            this.deletedPrivateOwnedObjects.clear();
         }
+        
         if (this.project.hasMappingsPostCalculateChangesOnDeleted()) {
             if (hasDeletedObjects()) {
                 for (Iterator deletedObjects = getDeletedObjects().keySet().iterator(); deletedObjects.hasNext();) {
@@ -682,7 +678,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
         }
         
-        if (this.shouldDiscoverNewObjects) {
+        if (this.shouldDiscoverNewObjects && !changedObjects.isEmpty()) {
             // Third discover any new objects from the new or changed objects.
             Map newObjects = new IdentityHashMap();
             // Bug 294259 -  Do not replace the existingObjects list
@@ -704,7 +700,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         
         // Remove any orphaned privately owned objects from the UnitOfWork and ChangeSets,
         // these are the objects remaining in the UnitOfWork privateOwnedObjects map
-        if (this.hasPrivateOwnedObjects()) {
+        if (hasPrivateOwnedObjects()) {
             Map visitedObjects = new IdentityHashMap();
             for (Set privateOwnedObjects : getPrivateOwnedObjects().values()) {
                 for (Object objectToRemove : privateOwnedObjects) {
@@ -1494,8 +1490,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     }
                     // PERF: clone is faster than new.
                     calculateChanges(cloneMap(getCloneMapping()), this.unitOfWorkChangeSet, true);
-                    // Also must first set the commit manager active.
-                    getCommitManager().setIsActive(true);
         
                 } catch (RuntimeException exception){
                     // The number of SQL statements been prepared need be stored into UOW 
@@ -1508,9 +1502,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
             // Bug 2834266 only commit to the database if changes were made, avoid begin/commit of transaction
             if (hasChanges) {
+                // Also must first set the commit manager active.
+                getCommitManager().setIsActive(true);
                 commitToDatabase(commitTransaction);
             } else {
-                try{
+                try {
                     // CR#... need to commit the transaction if begun early.
                     if (wasTransactionBegunPrematurely()) {
                         if (commitTransaction) {
@@ -1520,7 +1516,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             commitTransaction();
                         }
                     }
-                    getCommitManager().setIsActive(false);
                 } catch( RuntimeException exception){
                     // The number of SQL statements been prepared need be stored into UOW 
                     // before any exception being thrown.
@@ -5411,6 +5406,16 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         return wasTransactionBegunPrematurely;
     }
+    
+    /**
+     * INTERNAL:
+     * A query execution failed due to an invalid query.
+     * Re-connect and retry the query.
+     */
+    @Override
+    public Object retryQuery(DatabaseQuery query, AbstractRecord row, DatabaseException databaseException, int retryCount, AbstractSession executionSession) {
+        return getParent().retryQuery(query, row, databaseException, retryCount, executionSession);
+    }
 
     /**
      * ADVANCED: Writes all changes now before commit().
@@ -5769,7 +5774,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (descriptor.hasFetchGroupManager()) {
             reference = getIdentityMapAccessor().getFromIdentityMap(primaryKey, theClass);
             if (reference == null) {
-                if ((id instanceof List) || (id instanceof CacheId) || (descriptor.getCMPPolicy() != null)) {
+                if ((id instanceof List) || (id instanceof CacheId) || (descriptor.getCMPPolicy() == null)) {
                     AbstractRecord row = descriptor.getObjectBuilder().buildRowFromPrimaryKeyValues(primaryKey, this);
                     reference = descriptor.getObjectBuilder().buildNewInstance();
                     descriptor.getObjectBuilder().buildPrimaryKeyAttributesIntoObject(reference, row, new ReadObjectQuery(), this);

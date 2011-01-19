@@ -90,7 +90,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
                 int size = mappings.size();
                 for (int index = 0; index < size; index++) {
                     DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                    if(fetchGroup == null || fetchGroup.containsAttribute(mapping.getAttributeName())) {
+                    if ((fetchGroup == null) || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
                         changes.addChange(mapping.compareForChange(clone, null, changes, session));
                     }
                 }

@@ -120,6 +120,15 @@ public class AttributeGroup implements Serializable, Cloneable {
     }
 
     /**
+     * INTERNAL:
+     * Return if the attribute is defined in the group.
+     * Only local attribute names are checked.
+     */
+    public boolean containsAttributeInternal(String attributeName) {
+        return (this.items != null) && this.items.containsKey(attributeName);
+    }
+
+    /**
      * Return if the attribute is defined in the group.
      */
     public boolean containsAttribute(String attributeNameOrPath) {
@@ -415,6 +424,9 @@ public class AttributeGroup implements Serializable, Cloneable {
         return false;
     }
 
+    /**
+     * Convert the group to a FetchGroup for usage with queries.
+     */
     public FetchGroup toFetchGroup() {
         if (isFetchGroup()) {
             return (FetchGroup) this;
@@ -439,6 +451,9 @@ public class AttributeGroup implements Serializable, Cloneable {
         return false;
     }
 
+    /**
+     * Convert the group to a CopyGroup for usage with the copy() API.
+     */
     public CopyGroup toCopyGroup() {
         if (isCopyGroup()) {
             return (CopyGroup) this;
@@ -464,6 +479,9 @@ public class AttributeGroup implements Serializable, Cloneable {
         return false;
     }
 
+    /**
+     * Convert the group to a LoadGroup for usage with queries.
+     */
     public LoadGroup toLoadGroup() {
         if (this.isLoadGroup()) {
             return (LoadGroup) this;

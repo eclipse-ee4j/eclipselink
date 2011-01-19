@@ -13,6 +13,7 @@
 package org.eclipse.persistence.sessions.server;
 
 import java.util.*;
+
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.internal.helper.*;
@@ -38,8 +39,13 @@ public class ConnectionPool {
     protected Login login;
     protected String name;
     protected ServerSession owner;
-    protected boolean checkConnections;
-    
+    protected volatile boolean checkConnections;
+    protected volatile long timeOfDeath;
+    protected volatile long deadCheckTime;
+    protected volatile boolean isDead;
+    protected List<String> failoverConnectionPools;
+
+    public static final long DEAD_CHECK_TIME = 1000 * 60 * 10; // 10 minutes.
     public static final int MAX_CONNECTIONS = 32;
     public static final int MIN_CONNECTIONS = 32;
     public static final int INITIAL_CONNECTIONS = 1;
@@ -50,12 +56,7 @@ public class ConnectionPool {
      * A connection pool is used to specify how connection should be pooled in a server session.
      */
     public ConnectionPool() {
-        this.maxNumberOfConnections = MAX_CONNECTIONS;
-        this.minNumberOfConnections = MIN_CONNECTIONS;
-        this.initialNumberOfConnections = INITIAL_CONNECTIONS;
-        this.waitTimeout = WAIT_TIMEOUT;
-        this.checkConnections = false;
-        resetConnections();
+        this(null, null, null);
     }
 
     /**
@@ -85,8 +86,36 @@ public class ConnectionPool {
         this.maxNumberOfConnections = maxNumberOfConnections;
         this.minNumberOfConnections = minNumberOfConnections;
         this.initialNumberOfConnections = initialNumberOfConnections;
+        this.deadCheckTime = DEAD_CHECK_TIME;
         this.checkConnections = false;
+        this.failoverConnectionPools = new ArrayList<String>();
         resetConnections();
+    }
+    
+    /**
+     * INTERNAL:
+     * The connection pool is dead fail over to the fail-over pool.
+     */
+    public Accessor failover() {
+        if ((this.timeOfDeath + this.deadCheckTime) < System.currentTimeMillis()) {
+            // Retry database to see if it is back up.
+            this.isDead = false;
+            return acquireConnection();
+        } else {
+            for (String poolName : this.failoverConnectionPools) {
+                ConnectionPool pool = this.owner.getConnectionPool(poolName);
+                if (!pool.isDead()) {
+                    if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+                        Object[] args = new Object[2];
+                        args[0] = this.name;
+                        args[1] = poolName;
+                        this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "failover", args);
+                    }
+                    return pool.acquireConnection();
+                }
+            }
+            throw QueryException.failoverFailed(this.name);
+        }        
     }
     
     /**
@@ -94,13 +123,34 @@ public class ConnectionPool {
      * Wait until a connection is available and allocate the connection for the client.
      */
     public synchronized Accessor acquireConnection() throws ConcurrencyException {
+        // Check for dead database and fail-over.
+        if (this.isDead) {
+            return failover();
+        }
         // PERF: Using direct variable access to minimize concurrency bottleneck.
         while (this.connectionsAvailable.isEmpty()) {
             if ((this.connectionsUsed.size() + this.connectionsAvailable.size()) < this.maxNumberOfConnections) {
-                Accessor connection = buildConnection();
+                Accessor connection = null;
+                try {
+                    connection = buildConnection();
+                } catch (RuntimeException failed) {
+                    if (!this.failoverConnectionPools.isEmpty()) {
+                        this.isDead = true;
+                        this.timeOfDeath = System.currentTimeMillis();
+                        this.owner.logThrowable(SessionLog.WARNING, SessionLog.SQL, failed);
+                        return acquireConnection();
+                    } else {
+                        throw failed;
+                    }
+                }
                 this.connectionsUsed.add(connection);
                 if (this.owner.isInProfile()) {
                     this.owner.updateProfile(MONITOR_HEADER + this.name, Integer.valueOf(this.connectionsUsed.size()));
+                }
+                if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+                    Object[] args = new Object[1];
+                    args[0] = this.name;
+                    this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "acquire_connection", args, connection);
                 }
                 return connection;
             }
@@ -131,7 +181,7 @@ public class ConnectionPool {
                     if (this.connectionsAvailable.isEmpty()) {
                         this.checkConnections = false;
                         //we have emptied out all connections so let's have the connection pool build more
-                        return this.acquireConnection();
+                        return acquireConnection();
                     } else {
                         //test next connection
                         --connectionSize;
@@ -282,7 +332,7 @@ public class ConnectionPool {
         this.connectionsUsed.remove(connection);
 
         if (!connection.isValid()) {
-            this.owner.setCheckConnections();
+            this.checkConnections = true;
             try {
                 connection.disconnect(this.owner);
             } catch (DatabaseException ex) {
@@ -309,6 +359,8 @@ public class ConnectionPool {
         this.connectionsUsed = new Vector();
         this.connectionsAvailable = new Vector();
         this.checkConnections = false;
+        this.isDead = false;
+        this.timeOfDeath = 0;
     }
 
     /**
@@ -485,5 +537,48 @@ public class ConnectionPool {
      */
     public void setWaitTimeout(int waitTimeout) {
         this.waitTimeout = waitTimeout;
+    }
+    
+    /**
+     * ADVANCED:
+     * Return if the connection pool's database is down, and failover should be used.
+     */
+    public boolean isDead() {
+        return isDead;
+    }
+
+    /**
+     * ADVANCED:
+     * Set if the connection pool's database is down, and failover should be used.
+     */
+    public void setIsDead(boolean isDead) {
+        this.isDead = isDead;
+    }
+
+    /**
+     * PUBLIC:
+     * Return the list of connection pools to used if this pool database goes down.
+     * The failover pools should be a clustered, replicated or backuped database.
+     */
+    public List<String> getFailoverConnectionPools() {
+        return failoverConnectionPools;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the list of connection pools to used if this pool database goes down.
+     * The failover pools should be a clustered, replicated or backuped database.
+     */
+    public void setFailoverConnectionPools(List<String> failoverConnectionPools) {
+        this.failoverConnectionPools = failoverConnectionPools;
+    }
+
+    /**
+     * PUBLIC:
+     * Add the connection pool to used if this pool database goes down.
+     * The failover pools should be a clustered, replicated or backuped database.
+     */
+    public boolean addFailoverConnectionPool(String poolName) {
+        return this.failoverConnectionPools.add(poolName);
     }
 }

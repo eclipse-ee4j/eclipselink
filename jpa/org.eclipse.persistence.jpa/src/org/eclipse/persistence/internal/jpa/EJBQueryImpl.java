@@ -227,12 +227,6 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
 
             ((JPQLCallQueryMechanism) databaseQuery.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 
-            // GF#1324 eclipselink.refresh query hint does not cascade
-            // cascade by mapping as default for read query
-            if (databaseQuery.isReadQuery()) {
-                databaseQuery.cascadeByMapping();
-            }
-
             // Apply the lock mode.
             if (lockMode != null && !lockMode.name().equals(ObjectLevelReadQuery.NONE)) {
                 if (databaseQuery.isObjectLevelReadQuery()) {
@@ -431,12 +425,15 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         // QueryException.cannotConformExpression -
         // and true otherwise.
         boolean shouldResetConformResultsInUnitOfWork = false;
-        if (isFlushModeAUTO()) {
+        DatabaseQuery query = getDatabaseQueryInternal();
+        boolean isObjectLevelReadQuery = query.isObjectLevelReadQuery();
+        if (isFlushModeAUTO() && (!isObjectLevelReadQuery || !((ObjectLevelReadQuery)query).isReadOnly())) {
             performPreQueryFlush();
-            if (getDatabaseQueryInternal().isObjectLevelReadQuery()) {
-                if (((ObjectLevelReadQuery) getDatabaseQueryInternal()).shouldConformResultsInUnitOfWork()) {
+            if (isObjectLevelReadQuery) {
+                if (((ObjectLevelReadQuery)query).shouldConformResultsInUnitOfWork()) {
                     cloneSharedQuery();
-                    ((ObjectLevelReadQuery) getDatabaseQueryInternal()).setCacheUsage(ObjectLevelReadQuery.UseDescriptorSetting);
+                    query = getDatabaseQueryInternal();
+                    ((ObjectLevelReadQuery)query).setCacheUsage(ObjectLevelReadQuery.UseDescriptorSetting);
                     shouldResetConformResultsInUnitOfWork = true;
                 }
             }
@@ -451,12 +448,13 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             // The lock mode setters and getters validate the query type
             // so should be safe to make the casting.
             cloneSharedQuery();
+            query = getDatabaseQueryInternal();
 
             // Set the lock mode (the session is passed in to do some validation
             // checks)
             // If the return value from the set returns true, it indicates that
             // we were unable to set the lock mode.
-            if (((ObjectLevelReadQuery) getDatabaseQueryInternal()).setLockModeType(lockMode.name(), (AbstractSession) getActiveSession())) {
+            if (((ObjectLevelReadQuery)query).setLockModeType(lockMode.name(), (AbstractSession) getActiveSession())) {
                 throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
             }
         }
@@ -464,31 +462,31 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         Session session = getActiveSession();
         try {
             // in case it's a user-defined query
-            if (getDatabaseQueryInternal().isUserDefined()) {
+            if (query.isUserDefined()) {
                 // and there is an active transaction
                 if (this.entityManager.checkForTransaction(false) != null) {
                     // verify whether uow has begun early transaction
-                    if (session.isUnitOfWork() && !((UnitOfWorkImpl) session).wasTransactionBegunPrematurely()) {
+                    if (session.isUnitOfWork() && !((UnitOfWorkImpl)session).wasTransactionBegunPrematurely()) {
                         // uow begins early transaction in case it hasn't
                         // already begun.
                         // TODO: This is not good, it means that no SQL queries
                         // can ever use the cache,
                         // using isUserDefined to mean an SQL query is also
                         // wrong.
-                        ((UnitOfWorkImpl) session).beginEarlyTransaction();
+                        ((UnitOfWorkImpl)session).beginEarlyTransaction();
                     }
                 }
             }
 
             // Execute the query and return the result.
-            return session.executeQuery(getDatabaseQueryInternal(), parameterValues);
+            return session.executeQuery(query, parameterValues);
         } catch (DatabaseException e) {
             // If we catch a database exception as a result of executing a
             // pessimistic locking query we need to ask the platform which
             // JPA 2.0 locking exception we should throw. It will be either
             // be a PessimisticLockException or a LockTimeoutException (if
             // the query was executed using a wait timeout value)
-            if (lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_)) {
+            if (this.lockMode != null && this.lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_)) {
                 // ask the platform if it is a lock timeout
                 if (session.getPlatform().isLockTimeoutException(e)) {
                     throw new LockTimeoutException(e);
@@ -503,10 +501,10 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             setRollbackOnly();
             throw e;
         } finally {
-            lockMode = null;
+            this.lockMode = null;
 
             if (shouldResetConformResultsInUnitOfWork) {
-                ((ObjectLevelReadQuery) getDatabaseQueryInternal()).conformResultsInUnitOfWork();
+                ((ObjectLevelReadQuery)query).conformResultsInUnitOfWork();
             }
         }
     }

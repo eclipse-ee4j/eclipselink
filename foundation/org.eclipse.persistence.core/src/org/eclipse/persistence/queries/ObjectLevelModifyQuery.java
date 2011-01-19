@@ -195,13 +195,13 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * In particular check that the tables on the descriptor are set.
      */
     protected void prepare() throws QueryException {
-        checkDescriptor(getSession());
+        checkDescriptor(this.session);
 
-        if (getObject() != null) {// Prepare can be called without the object set yet.
-            setObject(getDescriptor().getObjectBuilder().unwrapObject(getObject(), getSession()));
+        if (this.object != null) {// Prepare can be called without the object set yet.
+            this.object = this.descriptor.getObjectBuilder().unwrapObject(this.object, this.session);
         }
 
-        if (getDescriptor().isAggregateDescriptor()) {
+        if (this.descriptor.isAggregateDescriptor()) {
             throw QueryException.aggregateObjectCannotBeDeletedOrWritten(getDescriptor(), this);
         }
 

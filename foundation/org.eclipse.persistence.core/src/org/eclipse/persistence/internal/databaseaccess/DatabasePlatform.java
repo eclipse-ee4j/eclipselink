@@ -68,6 +68,7 @@ import org.eclipse.persistence.platform.database.DBasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
+import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
@@ -176,6 +177,9 @@ public class DatabasePlatform extends DatasourcePlatform {
     public static int DEFAULT_MAX_BATCH_WRITING_SIZE = 32000;
     public static int DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE = 100;
     
+    /** Timeout used is isValid() check for dead connections. */
+    public static int IS_VALID_TIMEOUT = 0;
+    
     /** This attribute will store the SQL query that will be used to 'ping' the database
      * connection in order to check the health of a connection.
      */
@@ -221,6 +225,11 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     protected String tableCreationSuffix;
     
+    /**
+     * Used to integrate with data partitioning in an external DataSource such as UCP.
+     */
+    protected DataPartitioningCallback partitioningCallback;
+
     public DatabasePlatform() {
         this.tableQualifier = "";
         this.usesNativeSQL = false;
@@ -249,6 +258,30 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public void initialize() {
         getPlatformOperators();
+    }
+
+    /**
+     * Check if has callback.
+     * Used to integrate with data partitioning in an external DataSource such as UCP.
+     */
+    public boolean hasPartitioningCallback() {
+        return this.partitioningCallback != null;
+    }
+    
+    /**
+     * Return callback.
+     * Used to integrate with data partitioning in an external DataSource such as UCP.
+     */
+    public DataPartitioningCallback getPartitioningCallback() {
+        return partitioningCallback;
+    }
+
+    /**
+     * Set callback.
+     * Used to integrate with data partitioning in an external DataSource such as UCP.
+     */
+    public void setPartitioningCallback(DataPartitioningCallback partitioningCallback) {
+        this.partitioningCallback = partitioningCallback;
     }
     
     /**
@@ -2578,13 +2611,20 @@ public class DatabasePlatform extends DatasourcePlatform {
     }          
 
      public boolean wasFailureCommunicationBased(SQLException exception, Connection connection, AbstractSession sessionForProfile){
-         if (connection == null || this.pingSQL == null){
+         if (connection == null) {
              //Without a connection we are  unable to determine what caused the error so return false.
              //The only case where connection will be null should be External Connection Pooling so
              //returning false is ok as there is no connection management requirement
-        	 
-        	 //If there is no ping sql then we can not perform the ping.
              return false;
+         } else if (this.pingSQL == null) {
+             // By default us the JDBC isValid API unless a ping SQL has been set.
+             // The ping SQL is set by most platforms, but user could set to null to used optimized JDBC check if desired.
+             try {
+                 return connection.isValid(IS_VALID_TIMEOUT);
+             } catch (Throwable failed) {
+                 // Catch throwable as old JDBC drivers may not support isValid.
+                 return false;
+             }
          }
          PreparedStatement statement = null;
          try{

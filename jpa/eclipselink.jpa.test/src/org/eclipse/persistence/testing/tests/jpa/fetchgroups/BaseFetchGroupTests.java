@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -111,7 +112,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
 
         employeeDescriptorIsIsolatedOriginal = employeeDescriptor.isIsolated();
         if(employeeDescriptorIsIsolatedOriginal) {
-            employeeDescriptor.setIsIsolated(false);
+            employeeDescriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
         }
         
         clearCache();
@@ -141,7 +142,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         clearReadQueries(phoneDescriptor);
         clearReadQueries(addressDescriptor);
         if(employeeDescriptorIsIsolatedOriginal) {
-            employeeDescriptor.setIsIsolated(true);
+            employeeDescriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
         }
         
         clearCache();        

@@ -317,7 +317,6 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
             query.setParameter("ID", minimumEmployeeId(em));
 
-            assertNull(getFetchGroup(query));
             assertNotNull(employeeDescriptor.getFetchGroupManager().getDefaultFetchGroup());
 
             query.setHint(QueryHints.FETCH_GROUP_DEFAULT, "false");

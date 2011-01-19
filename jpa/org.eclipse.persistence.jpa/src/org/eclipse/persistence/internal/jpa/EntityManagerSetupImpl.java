@@ -108,6 +108,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
+import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
@@ -563,6 +564,34 @@ public class EntityManagerSetupImpl {
         }    
         return false;
     }
+
+    /**
+     * Checks for partitioning properties.
+     */  
+    protected void updatePartitioning(Map m, ClassLoader loader) {
+        // Partitioning
+        String partitioning = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PARTITIONING, m, this.session);
+        if (partitioning != null) {
+            PartitioningPolicy partitioningPolicy = this.session.getProject().getPartitioningPolicy(partitioning);
+            if (partitioningPolicy == null) {
+                throw DescriptorException.missingPartitioningPolicy(partitioning, null, null);
+            }
+            this.session.setPartitioningPolicy(partitioningPolicy);
+        }
+        
+        String callbackClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PARTITIONING_CALLBACK, m, this.session);
+        if (callbackClassName != null) {
+            Class cls = findClassForProperty(callbackClassName, PersistenceUnitProperties.PARTITIONING_CALLBACK, loader);
+            DataPartitioningCallback callback = null;
+            try {
+                Constructor constructor = cls.getConstructor();
+                callback = (DataPartitioningCallback)constructor.newInstance();
+            } catch (Exception exception) {
+                throw EntityManagerSetupException.failedToInstantiateServerPlatform(callbackClassName, PersistenceUnitProperties.PARTITIONING_CALLBACK, exception);
+            }
+            this.session.getLogin().setPartitioningCallback(callback);
+        }
+    }
     
     /**
      * Update loggers and settings for the singleton logger and the session logger. 
@@ -887,6 +916,16 @@ public class EntityManagerSetupImpl {
                     ((DatabaseLogin)pool.getLogin()).setPassword((String)entry.getValue());
                 } else if (attribute.equals(PersistenceUnitProperties.CONNECTION_POOL_WAIT)) {
                     pool.setWaitTimeout(Integer.parseInt((String)entry.getValue()));
+                } else if (attribute.equals(PersistenceUnitProperties.CONNECTION_POOL_FAILOVER)) {
+                    String failoverPools = (String)entry.getValue();
+                    if ((failoverPools.indexOf(',') != -1) || (failoverPools.indexOf(' ') != -1)) {
+                        StringTokenizer tokenizer = new StringTokenizer(failoverPools, " ,");
+                        while (tokenizer.hasMoreTokens()) {
+                            pool.addFailoverConnectionPool(tokenizer.nextToken());
+                        }
+                    } else {
+                        pool.addFailoverConnectionPool((String)entry.getValue());
+                    }
                 } else if (poolName.equals("read") && attribute.equals(PersistenceUnitProperties.CONNECTION_POOL_SHARED)) {
                     boolean shared = Boolean.parseBoolean((String)entry.getValue());
                     if (shared) {
@@ -1614,16 +1653,7 @@ public class EntityManagerSetupImpl {
         updatePessimisticLockTimeout(m);
         updateQueryTimeout(m);
         updateCacheCoordination(m, loader);
-
-        // Partitioning
-        String partitioning = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PARTITIONING, m, this.session);
-        if (partitioning != null) {
-            PartitioningPolicy partitioningPolicy = this.session.getProject().getPartitioningPolicy(partitioning);
-            if (partitioningPolicy == null) {
-                throw DescriptorException.missingPartitioningPolicy(partitioning, null, null);
-            }
-            this.session.setPartitioningPolicy(partitioningPolicy);
-        }
+        updatePartitioning(m, loader);
         
         // Customizers should be processed last
         processDescriptorCustomizers(m, loader);

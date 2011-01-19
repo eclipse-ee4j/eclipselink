@@ -543,6 +543,8 @@
                                org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/**
                                org/eclipse/persistence/testing/models/jpa/metamodel/**
                                org/eclipse/persistence/testing/models/jpa/partitioned/**
+                               org/eclipse/persistence/testing/models/jpa/performance/**
+                               org/eclipse/persistence/testing/models/jpa/performance2/**
                                org/eclipse/persistence/testing/models/jpa/beanvalidation/**
                                org/eclipse/persistence/testing/models/weaving/**"/>
         </copy>
@@ -1109,6 +1111,26 @@
         </antcall>
     </target>
 
+    <!-- Runs performance tests. -->
+    <target name="test-performance-nocache-emu" depends="clean-test,config-trunk, config-flat">
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAEmulatedIsolatedPerformanceRegressionModel"/>
+            <param name="RUN_PATH" value="run.performance.classpath"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+        </antcall>
+    </target>
+
+    <!-- Runs performance tests. -->
+    <target name="test-performance-emu" depends="clean-test,config-trunk, config-flat">
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAEmulatedPerformanceRegressionModel"/>
+            <param name="RUN_PATH" value="run.performance.classpath"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+        </antcall>
+    </target>
+
     <!-- Runs performance tests comparing with TopLink. -->
     <target name="test-performance-toplink" depends="clean-test,config-trunk, config-flat">
         <path id="run.classpath.toplink">
@@ -1164,6 +1186,22 @@
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.OpenJPAPerformanceRegressionModel"/>
             <param name="RUN_PATH" value="run.classpath.openjpa"/>
+            <param name="TEST_AGENT" value="-javaagent:../${openjpa.jar}"/>
+            <param name="TEST_WEAVING" value="-Dignore"/>
+        </antcall>
+    </target>
+
+    <!-- Runs performance tests comparing with OpenJPA. -->
+    <target name="test-performance-datanucleus" depends="clean-test,config-trunk, config-flat">
+        <path id="run.classpath.datanucleus">
+            <fileset dir="${datanucleus.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <path refid="run.performance.classpath"/>
+        </path>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.DataNucleusPerformanceRegressionModel"/>
+            <param name="RUN_PATH" value="run.classpath.datanucleus"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-Dignore"/>
         </antcall>
@@ -1666,7 +1704,8 @@
             target="${javac.version}"
             deprecation="${javac.deprecation}"
             failonerror="false"
-            includes="org/eclipse/persistence/testing/framework/**/*.java">
+            includes="org/eclipse/persistence/testing/framework/**,
+                org/eclipse/persistence/testing/tests/performance/emulateddb/**">
             <classpath refid="compile.server.path"/>
         </javac>
         <javac
@@ -2012,6 +2051,19 @@
         <!-- Oracle proxy authentication needs to be setup properly for the following model -->
         <antcall target="server-test-proxy-authentication" inheritRefs="true"/>
         <antcall target="generate-servertest-report" inheritRefs="true"/>
+    </target>
+
+    <target name="server-test-performance">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="performance"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/performance"/>
+            <param name="MODEL_NAME" value="jpa-performance"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/performance"/>
+            <param name="TEST_NAME" value="jpa-performance"/>
+            <param name="EAR_NAME" value="jpa-performance"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
     </target>
 
     <target name="server-test-advanced">

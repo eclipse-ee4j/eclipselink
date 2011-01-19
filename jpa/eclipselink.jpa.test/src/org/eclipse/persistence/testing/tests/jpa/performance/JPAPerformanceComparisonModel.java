@@ -26,6 +26,7 @@ import org.eclipse.persistence.sessions.Session;
 //import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 //import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -209,7 +210,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 test = new PerformanceComparisonTestCase() {
                     public void startTest() {
                         EntityManager em = createEntityManager();
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setIsIsolated(true);
+                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
                         createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
                         em.close();
                     }
@@ -220,7 +221,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                     }
                     public void endTest() {
                         EntityManager em = createEntityManager();
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setIsIsolated(false);
+                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
                         createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
                         em.close();
                     }
@@ -232,7 +233,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 test = new PerformanceComparisonTestCase() {
                     public void startTest() {
                         EntityManager em = createEntityManager();
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setIsIsolated(true);
+                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
                         em.close();
                     }
                     public void test() {
@@ -242,7 +243,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                     }
                     public void endTest() {
                         EntityManager em = createEntityManager();
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setIsIsolated(false);
+                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
                         em.close();
                     }
                 };
@@ -346,9 +347,9 @@ public class JPAPerformanceComparisonModel extends TestModel {
     public TestCase buildBatchFetchTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             public void setup() {
-                createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setIsIsolated(true);
+                createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setCacheIsolation(CacheIsolationType.ISOLATED);
                 createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
-                createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setIsIsolated(true);
+                createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
                 createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
                 createEntityManager().unwrap(Session.class).getProject().setHasIsolatedClasses(true);
                 
@@ -394,9 +395,9 @@ public class JPAPerformanceComparisonModel extends TestModel {
             }
             
             public void reset() {
-                createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setIsIsolated(false);
+                createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setCacheIsolation(CacheIsolationType.ISOLATED);
                 createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
-                createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setIsIsolated(false);
+                createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
                 createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
                 createEntityManager().unwrap(Session.class).getProject().setHasIsolatedClasses(false);
             }

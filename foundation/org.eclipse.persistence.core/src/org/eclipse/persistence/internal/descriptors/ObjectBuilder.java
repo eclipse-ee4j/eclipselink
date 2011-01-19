@@ -335,9 +335,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         // PERF: Cache if all mappings should be read.
         boolean readAllMappings = query.shouldReadAllMappings();
-        int size = mappings.size();
         boolean isTargetProtected = targetSession.isProtectedSession();
-
+        int size = mappings.size();
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             if (readAllMappings || query.shouldReadMapping(mapping)) {
@@ -518,17 +517,16 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public void instantiateEagerMappings(Object object, AbstractSession session) {
         // Force instantiation to eager mappings.
-        List<DatabaseMapping> eagerMappings = getEagerMappings();
-        if (!eagerMappings.isEmpty()) {
+        if (!this.eagerMappings.isEmpty()) {
             FetchGroup fetchGroup = null;
             FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
-            if(fetchGroupManager != null) {
+            if (fetchGroupManager != null) {
                 fetchGroup = fetchGroupManager.getObjectFetchGroup(object);
             }
-            int size = eagerMappings.size();
+            int size = this.eagerMappings.size();
             for (int index = 0; index < size; index++) {
-                DatabaseMapping mapping = eagerMappings.get(index);
-                if(fetchGroup == null || fetchGroup.containsAttribute(mapping.getAttributeName())) {
+                DatabaseMapping mapping = this.eagerMappings.get(index);
+                if (fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
                     mapping.instantiateAttribute(object, session);
                 }
             }
@@ -653,7 +651,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * from the values stored in the database row.
      */
     protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
-        if (concreteDescriptor.isProtectedIsolation() && session.isIsolatedClientSession()){
+        boolean isProtected = concreteDescriptor.isProtectedIsolation();
+        if (isProtected && session.isIsolatedClientSession()){
             return buildProtectedObject(returnCacheKey, query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
         }
         Object domainObject = null;
@@ -692,7 +691,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
 
                 concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, false, session);
-                if (cacheKey != null && descriptor.isProtectedIsolation()){
+                if (isProtected && (cacheKey != null)) {
                     cacheForeignKeyValues(databaseRow, cacheKey, session);
                 }
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
@@ -948,7 +947,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public Object buildObjectsInto(ReadAllQuery query, List databaseRows, Object domainObjects) throws DatabaseException {
         int size = databaseRows.size();
-        if(size > 0) {
+        if (size > 0) {
             AbstractSession session = query.getSession();
             // PERF: Avoid lazy init of join manager if no joining.
             JoinedAttributeManager joinManager = null;
@@ -956,7 +955,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 joinManager = query.getJoinedAttributeManager();
             }
             ContainerPolicy policy = query.getContainerPolicy();
-            if(policy.shouldAddAll()) {
+            if (policy.shouldAddAll()) {
                 List domainObjectsIn = new ArrayList(size);
                 List<AbstractRecord> databaseRowsIn = new ArrayList(size);
                 for (int index = 0; index < size; index++) {
@@ -969,12 +968,17 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
                 policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query, (CacheKey)null, true);
             } else {
+                boolean quickAdd = (domainObjects instanceof Collection) && !this.hasWrapperPolicy;
                 for (int index = 0; index < size; index++) {
                     AbstractRecord databaseRow = (AbstractRecord)databaseRows.get(index);
                     // PERF: 1-m joining nulls out duplicate rows.
                     if (databaseRow != null) {
                         Object domainObject = buildObject(query, databaseRow, joinManager);
-                        policy.addInto(domainObject, domainObjects, session, databaseRow, query, (CacheKey)null, true);
+                        if (quickAdd) {
+                            ((Collection)domainObjects).add(domainObject);
+                        } else {
+                            policy.addInto(domainObject, domainObjects, session, databaseRow, query, (CacheKey)null, true);
+                        }
                     }
                 }
             }
@@ -1731,13 +1735,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * This is used when the mapping is protected but we have retrieved the fk values and will cache
      * them for use when the entity is cloned.
      */
-    public void cacheForeignKeyValues(AbstractRecord databaseRecord, CacheKey cacheKey, AbstractSession session){
+    public void cacheForeignKeyValues(AbstractRecord databaseRecord, CacheKey cacheKey, AbstractSession session) {
         Set<DatabaseField> foreignKeys = this.descriptor.getForeignKeyValuesForCaching();
-        if (foreignKeys.isEmpty()){
+        if (foreignKeys.isEmpty()) {
             return;
         }
-        DatabaseRecord cacheRecord = new DatabaseRecord();
-        for (DatabaseField field : foreignKeys){
+        DatabaseRecord cacheRecord = new DatabaseRecord(foreignKeys.size());
+        for (DatabaseField field : foreignKeys) {
             cacheRecord.put(field, databaseRecord.get(field));
         }
         cacheKey.setProtectedForeignKeys(cacheRecord);
@@ -1750,13 +1754,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * This is used when the mapping is protected but we have retrieved the fk values and will cache
      * them for use when the entity is cloned.
      */
-    public void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session){
+    public void cacheForeignKeyValues(Object source, CacheKey cacheKey, ClassDescriptor descriptor, AbstractSession session) {
         Set<DatabaseField> foreignKeys = this.descriptor.getForeignKeyValuesForCaching();
-        if (foreignKeys.isEmpty()){
+        if (foreignKeys.isEmpty()) {
             return;
         }
-        DatabaseRecord cacheRecord = new DatabaseRecord();
-        for (DatabaseField field : foreignKeys){
+        DatabaseRecord cacheRecord = new DatabaseRecord(foreignKeys.size());
+        for (DatabaseField field : foreignKeys) {
             cacheRecord.put(field, extractValueFromObjectForField(source, field, session));
         }
         cacheKey.setProtectedForeignKeys(cacheRecord);
@@ -1883,24 +1887,24 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public Object copyObject(Object original, CopyGroup copyGroup) {
         Object copy = copyGroup.getCopies().get(original);
-        if(copyGroup.shouldCascadeTree()) {
-            FetchGroupManager fetchGroupManager = getDescriptor().getFetchGroupManager();
-            if(fetchGroupManager != null) {
+        if (copyGroup.shouldCascadeTree()) {
+            FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
+            if (fetchGroupManager != null) {
                 // empty copy group means all the attributes should be copied - don't alter it.
-                if(copyGroup.hasItems()) {
+                if (copyGroup.hasItems()) {
                     // by default add primary key attribute(s) if not already in the group
-                    if(!copyGroup.shouldResetPrimaryKey()) {
-                        for(DatabaseMapping mapping : getPrimaryKeyMappings()) {
+                    if (!copyGroup.shouldResetPrimaryKey()) {
+                        for (DatabaseMapping mapping : this.primaryKeyMappings) {
                             String name = mapping.getAttributeName();
-                            if(!copyGroup.containsAttribute(name)) {
+                            if (!copyGroup.containsAttributeInternal(name)) {
                                copyGroup.addAttribute(name); 
                             }
                         }
                     } else {
-                        for(DatabaseMapping mapping : getPrimaryKeyMappings()) {
-                            if(mapping.isForeignReferenceMapping()) {
+                        for (DatabaseMapping mapping : this.primaryKeyMappings) {
+                            if (mapping.isForeignReferenceMapping()) {
                                 String name = mapping.getAttributeName();
-                                if(!copyGroup.containsAttribute(name)) {
+                                if (!copyGroup.containsAttributeInternal(name)) {
                                    copyGroup.addAttribute(name); 
                                 }
                             }
@@ -1908,17 +1912,17 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     }
                     
                     // by default version attribute if not already in the group
-                    if(!copyGroup.shouldResetVersion()) {
-                        if(this.lockAttribute != null) {
-                            if(!copyGroup.containsAttribute(this.lockAttribute)) {
+                    if (!copyGroup.shouldResetVersion()) {
+                        if (this.lockAttribute != null) {
+                            if (!copyGroup.containsAttributeInternal(this.lockAttribute)) {
                                copyGroup.addAttribute(this.lockAttribute); 
                             }
                         }
                     }
                     
                     FetchGroup fetchGroup = fetchGroupManager.getObjectFetchGroup(original);
-                    if(fetchGroup != null) {
-                        if(!fetchGroup.getAttributeNames().containsAll(copyGroup.getAttributeNames())) {
+                    if (fetchGroup != null) {
+                        if (!fetchGroup.getAttributeNames().containsAll(copyGroup.getAttributeNames())) {
                             // trigger fetch group if it does not contain all attributes of the copy group.
                             fetchGroup.onUnfetchedAttribute((FetchGroupTracker)original, null);
                         }
@@ -3250,7 +3254,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (((!cascadeOnly && !isTargetCloneOfOriginal) 
                     || (cascadeOnly && mapping.isForeignReferenceMapping())
                     || (isTargetCloneOfOriginal && mapping.isCloningRequired()))
-                  && (sourceFetchGroup == null || sourceFetchGroup.containsAttribute(mapping.getAttributeName()))) {
+                  && (sourceFetchGroup == null || sourceFetchGroup.containsAttributeInternal(mapping.getAttributeName()))) {
                 mapping.mergeIntoObject(target, isUnInitialized, source, mergeManager, targetSession);
             }
         }
@@ -3289,7 +3293,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // PERF: Avoid events if no listeners.
         if (this.descriptor.getEventManager().hasAnyEventListeners()) {
             DescriptorEvent event = new DescriptorEvent(clone);
-            event.setSession((AbstractSession) cloningSession);
+            event.setSession(cloningSession);
             event.setOriginalObject(original);
             event.setDescriptor(descriptor);
             event.setEventCode(DescriptorEventManager.PostCloneEvent);

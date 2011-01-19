@@ -690,6 +690,10 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setShouldRefreshIdentityMapResult(((Boolean)valueToApply).booleanValue());
+                // Set default cascade to be by mapping.
+                if (!((ObjectBuildingQuery)query).shouldCascadeParts()) {
+                    ((ObjectBuildingQuery)query).cascadeByMapping();
+                }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }

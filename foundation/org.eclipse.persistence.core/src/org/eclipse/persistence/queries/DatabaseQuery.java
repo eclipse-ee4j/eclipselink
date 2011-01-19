@@ -546,15 +546,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         try {
             // This query is first prepared for global common state, this must be synced.
             if (!this.isPrepared) {// Avoid the monitor is already prepare, must
+                // If this query will use the custom query, do not prepare.
+                if ((!force) && this.shouldPrepare && (checkForCustomQuery(session, translationRow) != null)) {
+                    return;
+                }
                 // check again for concurrency.
                 // Profile the query preparation time.
                 session.startOperationProfile(SessionProfiler.QueryPreparation, this, SessionProfiler.ALL);
-                // If this query will use the custom query, do not prepare.
-                if ((!force) && shouldPrepare() && (checkForCustomQuery(session, translationRow) != null)) {
-                    // Profile the query preparation time.
-                    session.endOperationProfile(SessionProfiler.QueryPreparation, this, SessionProfiler.ALL);
-                    return;
-                }
                 // Prepared queries cannot be custom as then they would never have
                 // been prepared.
                 synchronized (this) {
@@ -725,10 +723,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public Object execute(AbstractSession session, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
         DatabaseQuery queryToExecute = this;
-        if (! isJPQLCallQuery()){
-            checkDescriptor(session);
-        }else{
+        // JPQL call may not have defined the reference class yet, so need to use prepare.
+        if (isJPQLCallQuery() && isObjectLevelReadQuery()) {
             ((ObjectLevelReadQuery)this).checkPrePrepare(session);
+        } else {
+            checkDescriptor(session);
         }
         QueryRedirector localRedirector = getRedirector();
         // refactored redirection for bug 3241138
@@ -963,16 +962,16 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public Call getDatasourceCall() {
         Call call = null;
-        if (getQueryMechanism() instanceof DatasourceCallQueryMechanism) {
-            DatasourceCallQueryMechanism mechanism = (DatasourceCallQueryMechanism) getQueryMechanism();
+        if (this.queryMechanism instanceof DatasourceCallQueryMechanism) {
+            DatasourceCallQueryMechanism mechanism = (DatasourceCallQueryMechanism) this.queryMechanism;
             call = mechanism.getCall();
             // If has multiple calls return the first one.
-            if (mechanism.hasMultipleCalls()) {
+            if ((call == null) && mechanism.hasMultipleCalls()) {
                 call = (Call) mechanism.getCalls().get(0);
             }
         }
-        if ((call == null) && getQueryMechanism().isJPQLCallQueryMechanism()) {
-            call = ((JPQLCallQueryMechanism) getQueryMechanism()).getJPQLCall();
+        if ((call == null) && (this.queryMechanism != null) && this.queryMechanism.isJPQLCallQueryMechanism()) {
+            call = ((JPQLCallQueryMechanism) this.queryMechanism).getJPQLCall();
         }
         return call;
     }
@@ -1146,7 +1145,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * used with expression queries, null will be returned for others.
      */
     public Expression getSelectionCriteria() {
-        return getQueryMechanism().getSelectionCriteria();
+        if (this.queryMechanism == null) {
+            return null;
+        }
+        return this.queryMechanism.getSelectionCriteria();
     }
 
     /**
@@ -1382,7 +1384,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * call.
      */
     public boolean isCallQuery() {
-        return getQueryMechanism().isCallQueryMechanism();
+        return (this.queryMechanism != null) && this.queryMechanism.isCallQueryMechanism();
     }
     
     /**
@@ -1390,7 +1392,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * cascading a delete of an aggregate collection in a UnitOfWork CR 2811
      */
     public boolean isCascadeOfAggregateDelete() {
-        return getCascadePolicy() == CascadeAggregateDelete;
+        return this.cascadePolicy == CascadeAggregateDelete;
     }
 
     /**
@@ -1439,7 +1441,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Return true if this query uses an expression query mechanism
      */
     public boolean isExpressionQuery() {
-        return getQueryMechanism().isExpressionQueryMechanism();
+        return (this.queryMechanism == null) || this.queryMechanism.isExpressionQueryMechanism();
     }
 
     /**
@@ -1559,8 +1561,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Return true if this query uses an JPQL query mechanism .
      */
     public boolean isJPQLCallQuery() {
-        Call call = getDatasourceCall();
-        return (call != null) && (call instanceof JPQLCall);
+        return ((this.queryMechanism != null)
+                && this.queryMechanism.isJPQLCallQueryMechanism()
+                && ((JPQLCallQueryMechanism)this.queryMechanism).getJPQLCall() != null);
     }
 
     /**
@@ -1577,7 +1580,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * criteria.
      */
     public boolean isDefaultPropertiesQuery() {
-        return (!isUserDefined()) && (shouldPrepare()) && (getQueryTimeout() == DescriptorQueryManager.DefaultTimeout) && (getHintString() == null) && (shouldIgnoreBindAllParameters()) && (shouldIgnoreCacheStatement()) && (shouldUseWrapperPolicy());
+        return (!this.isUserDefined) && (this.shouldPrepare) && (this.queryTimeout == DescriptorQueryManager.DefaultTimeout)
+            && (this.hintString == null) && (this.shouldBindAllParameters == null) && (this.shouldCacheStatement == null) && (this.shouldUseWrapperPolicy);
     }
 
     /**
@@ -1606,17 +1610,17 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected void prepare() throws QueryException {
         // If the queryTimeout is DefaultTimeout, resolve using the
         // DescriptorQueryManager.
-        if (getQueryTimeout() == DescriptorQueryManager.DefaultTimeout) {
-            if (getDescriptor() == null) {
-                setQueryTimeout(DescriptorQueryManager.NoTimeout);
+        if (this.queryTimeout == DescriptorQueryManager.DefaultTimeout) {
+            if (this.descriptor == null) {
+                setQueryTimeout(this.session.getQueryTimeoutDefault());
             } else {
-                setQueryTimeout(getDescriptor().getQueryManager().getQueryTimeout());
+                int timeout = this.descriptor.getQueryManager().getQueryTimeout();
+                // No timeout means none set, so use the session default.
+                if ((timeout == DescriptorQueryManager.DefaultTimeout) || (timeout == DescriptorQueryManager.NoTimeout)) {
+                    timeout = this.session.getQueryTimeoutDefault();
+                }
+                setQueryTimeout(timeout);
             }
-        }
-
-        if (getQueryTimeout() == DescriptorQueryManager.DefaultTimeout || getQueryTimeout() == DescriptorQueryManager.NoTimeout) {
-            // Timeout not overridden at descriptor level. Use session timeout
-            setQueryTimeout(session.getQueryTimeoutDefault());
         }
 
         this.argumentFields = buildArgumentFields();

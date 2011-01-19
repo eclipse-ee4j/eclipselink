@@ -80,7 +80,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * has size <tt>10</tt> and its standard capacity increment is zero.
      */
     public IndirectList() {
-        this(10);
+        super(0, 0);
+        this.initialCapacity = 10;
     }
 
     /**
@@ -93,7 +94,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      *               is negative
      */
     public IndirectList(int initialCapacity) {
-        this(initialCapacity, 0);
+        super(0, 0);
+        this.initialCapacity = initialCapacity;
     }
 
     /**
@@ -108,9 +110,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      *               is negative
      */
     public IndirectList(int initialCapacity, int capacityIncrement) {
-        super(0);
+        super(0, capacityIncrement);
         this.initialCapacity = initialCapacity;
-        this.capacityIncrement = capacityIncrement;
     }
 
     /**

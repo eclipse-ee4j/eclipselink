@@ -189,6 +189,7 @@ public class QueryException extends ValidationException {
     public final static int ADDITIONAL_CRITERIA_VALUE_MISSING = 6170;
     public final static int PARTIONING_NOT_SUPPORTED = 6171;
     public final static int MISSING_CONNECTION_POOL = 6172;
+    public final static int FAILOVER_FAILED = 6173;
 
     /**
      * INTERNAL:
@@ -1565,6 +1566,14 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, MISSING_CONNECTION_POOL, args), query);
         queryException.setErrorCode(MISSING_CONNECTION_POOL);
+        return queryException;
+    }
+
+    public static QueryException failoverFailed(String poolName) {
+        Object[] args = { poolName };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, FAILOVER_FAILED, args));
+        queryException.setErrorCode(FAILOVER_FAILED);
         return queryException;
     }
     
