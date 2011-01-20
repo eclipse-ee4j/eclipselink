@@ -119,10 +119,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlroot.setNamespaceURI(qname.getNamespaceURI());
         xmlroot.setDeclaredType(elt.getDeclaredType());
         xmlroot.setNil(elt.isNil());
-        if (elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE || elt.getDeclaredType().getCanonicalName().equals("javax.activation.DataHandler")) {
-            xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+        if (elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE || 
+                elt.getDeclaredType().getCanonicalName().equals("javax.activation.DataHandler") ||
+                elt.getDeclaredType().isEnum()) {
             // need a binary data mapping so need to wrap
             Class generatedClass = getClassToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
+            if(!elt.getDeclaredType().isEnum()) {
+                xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+            }
             if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
                 ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
                 Object newObject = desc.getInstantiationPolicy().buildNewInstance();

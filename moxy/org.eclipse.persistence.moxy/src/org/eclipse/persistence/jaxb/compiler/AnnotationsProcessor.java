@@ -2549,6 +2549,13 @@ public class AnnotationsProcessor {
                 info.addJavaFieldToXmlEnumValuePair(field.getName(), enumValue);
             }
         }
+        //Add a non-named element declaration for each enumeration to trigger class generation
+        ElementDeclaration elem = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false);
+
+        if(this.javaClassToTypeMappingInfos.get(javaClass) != null) {
+            elem.setTypeMappingInfo(this.javaClassToTypeMappingInfos.get(javaClass));
+        }
+        this.getLocalElements().add(elem);
     }
 
     private String decapitalize(String javaName) {

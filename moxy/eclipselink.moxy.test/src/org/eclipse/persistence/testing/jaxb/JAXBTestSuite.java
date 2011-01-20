@@ -31,6 +31,7 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.nil.JAXBElementNilTestCa
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementBase64TestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementDataHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.enumeration.JAXBElementEnumTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestSuite;
@@ -129,6 +130,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(JAXBElementBase64TestCases.class);
         suite.addTestSuite(JAXBElementDataHandlerTestCases.class);
         suite.addTestSuite(RootWithCompositeObjectTestCases.class);
+        suite.addTestSuite(JAXBElementEnumTestCases.class);
         // suite.addTestSuite(JAXBInheritanceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.RootWithCompositeCollectionTestCases.class);
         suite.addTest(XmlAdapterTestSuite.suite());
