@@ -160,17 +160,17 @@ public class ConnectionWrapper implements Connection {
     }
 
     public void rollback() throws SQLException {
+        conn.rollback();
         if(broken) {
             throw new SQLException(getExceptionString());
         }
-        conn.rollback();
     }
 
     public void close() throws SQLException {
+        conn.close();
         if(broken) {
             throw new SQLException(getExceptionString());
         }
-        conn.close();
     }
 
     public boolean isClosed() throws SQLException {
