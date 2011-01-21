@@ -19,9 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 public class Root {
 
-    @XmlTransient
     private Mapped mapped;
-
     private Unmapped unmapped;
 
     @XmlElement

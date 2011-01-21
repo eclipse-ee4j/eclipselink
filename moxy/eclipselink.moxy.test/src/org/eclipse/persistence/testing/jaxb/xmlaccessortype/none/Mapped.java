@@ -17,7 +17,6 @@ import javax.xml.bind.annotation.XmlValue;
 
 public class Mapped {
 
-    @XmlTransient
     private String value;
 
     @XmlValue

@@ -2473,32 +2473,43 @@ public class AnnotationsProcessor {
     }
 
     public ArrayList getNoAccessTypePropertiesForClass(JavaClass cls, TypeInfo info) {
-        ArrayList list = new ArrayList();
+        ArrayList<Property> list = new ArrayList<Property>();
         if (cls == null) {
             return list;
         }
-        ArrayList fieldProperties = getFieldPropertiesForClass(cls, info, false);
-        ArrayList methodProperties = getPropertyPropertiesForClass(cls, info, false);
 
         // Iterate over the field and method properties. If ANYTHING contains an
         // annotation and
         // doesn't appear in the other list, add it to the final list
-        for (int i = 0; i < fieldProperties.size(); i++) {
-            Property next = (Property) fieldProperties.get(i);
+        List<Property> fieldProperties = getFieldPropertiesForClass(cls, info, false);
+        Map<String, Property> fields = new HashMap<String, Property>(fieldProperties.size());
+        for(Property next : fieldProperties) {
             JavaHasAnnotations elem = next.getElement();
             if (!hasJAXBAnnotations(elem)) {
                 next.setTransient(true);
             }
             list.add(next);
+            fields.put(next.getPropertyName(), next);
         }
-        for (int i = 0; i < methodProperties.size(); i++) {
-            Property next = (Property) methodProperties.get(i);
+
+        List<Property> methodProperties = getPropertyPropertiesForClass(cls, info, false);
+        for(Property next : methodProperties) {
             JavaHasAnnotations elem = next.getElement();
-            if (!hasJAXBAnnotations(elem)) {
+            if (hasJAXBAnnotations(elem)) {
+                // If the property is annotated remove the corresponding field
+                Property fieldProperty = fields.get(next.getPropertyName());
+                list.remove(fieldProperty);
+                list.add(next);
+            } else {
+                // If the property is not annotated only add it if there is no
+                // corresponding field.
                 next.setTransient(true);
+                if(fields.get(next.getPropertyName()) == null) {
+                    list.add(next);
+                }
             }
-            list.add(next);
         }
+
         return list;
     }
 
