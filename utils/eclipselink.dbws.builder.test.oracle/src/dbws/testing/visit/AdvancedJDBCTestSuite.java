@@ -775,6 +775,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         String empObjectEntityString =
             DBWSTestHelper.documentToString(empObjectEntityDoc).replaceAll("[\r\n]", "");
         empObjectEntityString = empObjectEntityString.replaceAll(">( *)<", "><");
+        if (empObjectEntityString.startsWith(STANDALONE_XML_HEADER)) {
+            empObjectEntityString = 
+                empObjectEntityString.replace(STANDALONE_XML_HEADER, REGULAR_XML_HEADER);
+        }
         String anEmpObject = ANEMPOBJECT + today.toString() + ANEMPOBJECT_SUFFIX;
         assertTrue("instance empObject not same as control empObject",
             anEmpObject.equals(empObjectEntityString));
@@ -1114,8 +1118,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
           "</query>" +
        "</queries>" +
     "</object-persistence>";
+    static final String STANDALONE_XML_HEADER =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
+    static final String REGULAR_XML_HEADER =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>";
     static final String ANEMPOBJECT =
-        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        REGULAR_XML_HEADER +
         "<emp_objectType xmlns=\"urn:struct3\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<employee_id>55</employee_id>" +
            "<address>" +
