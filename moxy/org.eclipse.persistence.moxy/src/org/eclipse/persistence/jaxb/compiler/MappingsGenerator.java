@@ -1781,10 +1781,14 @@ public class MappingsGenerator {
         // handle null policy set via xml metadata
         if (property.isSetNullPolicy()) {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
-        } else if (property.getActualType() == null || property.getActualType().getRawName().equals("java.lang.String")) {
+        } else if (property.isNillable()){
+            mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+            mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+        }
+        if (property.getActualType() == null || property.getActualType().getRawName().equals("java.lang.String")) {
             mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
         }
-        
+
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
         }

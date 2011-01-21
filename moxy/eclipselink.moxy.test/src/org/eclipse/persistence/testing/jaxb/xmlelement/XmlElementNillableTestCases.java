@@ -30,7 +30,7 @@ public class XmlElementNillableTestCases extends JAXBTestCases {
     protected Object getControlObject() {
         EmployeeNillable employee = new EmployeeNillable();
         employee.setString(null);
-        // employee.getStrings().add(null);
+        employee.getStrings().add(null);
         employee.setEmployee(null);
         employee.getEmployees().add(null);
         return employee;
