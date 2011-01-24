@@ -1818,8 +1818,13 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         String columnName = dbColumn.getName();
         int jdbcType = dbColumn.getJDBCType();
         String dmdTypeName = dbColumn.getJDBCTypeName();
-        Class<?> attributeClass = getClassFromJDBCType(dmdTypeName.toUpperCase(),
-            databasePlatform);
+        Class<?> attributeClass;
+        if ("CHAR".equalsIgnoreCase(dmdTypeName) && dbColumn.getPrecision() > 1) {
+            attributeClass = String.class;
+        }
+        else {
+            attributeClass = getClassFromJDBCType(dmdTypeName.toUpperCase(), databasePlatform);
+        }
         dtfm.setAttributeClassificationName(attributeClass.getName());
         String fieldName = nct.generateElementAlias(columnName);
         dtfm.setAttributeName(fieldName);
