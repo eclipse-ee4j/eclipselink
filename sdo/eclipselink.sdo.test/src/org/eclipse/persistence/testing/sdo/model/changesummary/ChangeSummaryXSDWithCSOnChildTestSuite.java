@@ -39,8 +39,8 @@ public class ChangeSummaryXSDWithCSOnChildTestSuite {
         suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonChildUnsetComplexSingleBelowRootTest.class));
         suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleBelowRootTest.class));
         suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest.class));
-       
+        suite.addTestSuite(ChangeSummaryOnChildGetRootObjectTestCases.class);
+
         return suite;
-        
     }
 }

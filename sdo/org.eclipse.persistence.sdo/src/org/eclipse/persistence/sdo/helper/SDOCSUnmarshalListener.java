@@ -12,6 +12,7 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.sdo.helper;
 
+import commonj.sdo.DataObject;
 import commonj.sdo.helper.HelperContext;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -57,6 +58,9 @@ public class SDOCSUnmarshalListener implements XMLUnmarshalListener {
     }
 
     public void afterUnmarshal(Object target, Object parent) {
+        if(target.getClass() == SDOChangeSummary.class) {
+            ((SDOChangeSummary) target).setRootDataObject((DataObject) parent);
+        }
     }
 
 }

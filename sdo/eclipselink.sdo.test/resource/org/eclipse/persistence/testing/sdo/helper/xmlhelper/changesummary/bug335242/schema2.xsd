@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pi="pi" targetNamespace="pi" xmlns:sdo="commonj.sdo">
+   <xsd:import namespace="commonj.sdo"/>
+<xsd:element name="productInstance" type="pi:ProductInstanceConfiguratorType"/>
+  <xsd:complexType name="ProductInstanceConfiguratorType">
+    <xsd:sequence>
+      <xsd:element name="header" minOccurs="1" maxOccurs="1" type="pi:HeaderType"/>
+      <!-- xsd:element name="line" minOccurs="1" maxOccurs="unbounded" type="pi:LineType"/-->
+      <xsd:element name="changeSummary" type="sdo:ChangeSummaryType" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="HeaderType">
+    <xsd:sequence>
+      <xsd:element name="headerId" minOccurs="1" maxOccurs="1" type="sdo:Long"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+</xsd:schema>

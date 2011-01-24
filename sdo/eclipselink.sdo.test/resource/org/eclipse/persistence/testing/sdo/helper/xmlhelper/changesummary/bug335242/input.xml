@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:initMsgSDO xmlns:ns0="cz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:InitializationMessageType">
+   <lineId>100</lineId>
+   <callingApplicationId>1000</callingApplicationId>
+   <currentProductInstance xsi:type="pi:ProductInstanceConfiguratorType" xmlns:pi="pi">
+      <header>
+         <headerId>2000</headerId>
+      </header>
+      <changeSummary create="#/ns0:initMsgSDO/currentProductInstance/header" xmlns:sdo="commonj.sdo">
+         <currentProductInstance sdo:ref="#/ns0:initMsgSDO/currentProductInstance" sdo:unset="header"/>
+      </changeSummary>
+   </currentProductInstance>
+</ns0:initMsgSDO>
