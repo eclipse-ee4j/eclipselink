@@ -35,7 +35,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMet
  */
 public class XmlElementTestCases extends ExternalizedMetadataTestCases {
     private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
+    private MyStreamSchemaOutputResolver outputResolver; 
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/";
     
@@ -46,15 +46,15 @@ public class XmlElementTestCases extends ExternalizedMetadataTestCases {
      */
     public XmlElementTestCases(String name) {
         super(name);
-        outputResolver = new MySchemaOutputResolver();
+        outputResolver = new MyStreamSchemaOutputResolver();
     }
     
     private void doGenerateSchema() {
         if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
+            generateSchemaWithFileName(new Class[] { Employee.class} , CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2, outputResolver);
             // validate schema
             String controlSchema = PATH + "schema.xsd";
-            compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+            compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(controlSchema));
             shouldGenerateSchema = false;
         }
     }

@@ -51,10 +51,11 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlElementRefsSchemaGen() {
-        MySchemaOutputResolver outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
+        MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
+        generateSchemaWithFileName(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2, outputResolver);
         // validate schema
         String controlSchema = PATH + "schema.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(controlSchema));
     }
 
     /**

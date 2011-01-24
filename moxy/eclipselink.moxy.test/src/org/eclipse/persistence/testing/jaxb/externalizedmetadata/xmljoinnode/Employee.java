@@ -16,7 +16,7 @@ import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNodes;
 
 public class Employee {
-    public int id;
+    public String id;
     
     // the following is invalid and should be overridden by XML metadata
     @XmlJoinNodes({
@@ -27,7 +27,7 @@ public class Employee {
     
     public Employee() {}
     
-    public Employee(int id, Address workAddress) {
+    public Employee(String id, Address workAddress) {
         this.id = id;
         this.workAddress = workAddress;
     }

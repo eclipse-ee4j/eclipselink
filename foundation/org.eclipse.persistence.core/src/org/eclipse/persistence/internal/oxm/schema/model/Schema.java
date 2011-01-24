@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Result;
+
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 
@@ -38,6 +40,7 @@ public class Schema {
     private Map attributeGroups;
     private Map groups;
     private Annotation annotation;
+    private Result result;
 
     public Schema() {
         namespaceResolver = new NamespaceResolver();
@@ -254,5 +257,60 @@ public class Schema {
             }
         }
         return globalGroup;
+    }
+
+    /**
+     * Return the Result for this Schema.  This will typically be set 
+     * after a call to SchemaOutputResolver.createOutput().
+     * 
+     * @return the Result for this instance, or null if not set
+     */
+    public Result getResult() {
+        return result;
+    }
+
+    /**
+     * Set the Result for this Schema.  This method will typically be
+     * called after a call to SchemaOutputResolver.createOutput().
+     * 
+     * @param result
+     */
+    public void setResult(Result result) {
+        this.result = result;
+    }
+    
+    /**
+     * Indicates if a Result has been set for this Schema.
+     *  
+     * @return true if a Result has been set, false otherwise
+     */
+    public boolean hasResult() {
+        return getResult() != null;
+    }
+    
+    /**
+     * Indicates if this Schema has a Result, and that Result has
+     * a non-null systemID.
+     * 
+     * @return true if this Schema has a non-null Result has a 
+     *         non-null systemID.
+     */
+    public boolean hasSystemId() {
+        return getSystemId() != null;
+    }
+    
+    /**
+     * Get the SystemId for this Schema.  This value will typically be 
+     * used as the schemaLocation in an import statement.
+     * 
+     * @return the systemID set on this Schema's Result object if both
+     *         the Result and the Result's systemID are non-null, 
+     *         otherwise null 
+     */
+    public String getSystemId() {
+        if (hasResult()) {
+            return getResult().getSystemId();
+        }
+        return null;
     }
 }

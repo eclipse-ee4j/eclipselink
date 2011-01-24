@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.compiler;
 
 import java.awt.Image;
 import java.beans.Introspector;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -22,10 +23,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -112,13 +115,21 @@ public class SchemaGenerator {
     private static final String OBJECT_CLASSNAME = "java.lang.Object";
     private static final String ID = "ID";
     private static final String IDREF = "IDREF";
+    private static final String BACKSLASH = "/";
     private static final Character DOLLAR_SIGN_CHAR = '$';
     private static final Character DOT_CHAR = '.';
 
+    private SchemaOutputResolver outputResolver;
+    
     public SchemaGenerator(Helper helper) {
         this.helper = helper;
     }
 
+    public Schema generateSchema(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses, SchemaOutputResolver outputResolver) {
+        this.outputResolver = outputResolver;
+        return generateSchema(typeInfoClasses, typeInfo, userDefinedSchemaTypes, packageToNamespaceMappings, additionalGlobalElements, arrayClassesToGeneratedClasses);
+    }
+    
     public Schema generateSchema(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses) {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
@@ -581,11 +592,10 @@ public class SchemaGenerator {
         }
         Schema schema = schemaForNamespace.get(namespace);
         if (schema == null) {
-            NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(namespace);
-
             schema = new Schema();
-            schema.setName(SCHEMA + schemaCount + SCHEMA_EXT);
+            String schemaName = SCHEMA + schemaCount + SCHEMA_EXT;
 
+            NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(namespace);
             if (namespaceInfo != null) {
                 if (namespaceInfo.getLocation() != null && !namespaceInfo.getLocation().equals(GENERATE)) {
                     return null;
@@ -596,6 +606,23 @@ public class SchemaGenerator {
                     schema.getNamespaceResolver().put(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
                 }
             }
+
+            if (outputResolver != null) {
+                try {
+                    Result res = outputResolver.createOutput(namespace, schemaName);
+                    // if the resolver returns null, schema generation for this namespace URI will be skipped
+                    if (res == null) {
+                        return null;
+                    }
+                    schema.setResult(res);
+                    if (res.getSystemId() != null) {
+                        schemaName = res.getSystemId();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            schema.setName(schemaName);
             schemaCount++;
 
             if (!namespace.equals(EMPTY_STRING)) {

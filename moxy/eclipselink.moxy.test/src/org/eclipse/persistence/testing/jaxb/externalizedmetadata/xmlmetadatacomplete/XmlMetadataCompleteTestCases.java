@@ -85,9 +85,10 @@ public class XmlMetadataCompleteTestCases extends ExternalizedMetadataTestCases 
      * Positive test.
      */
     public void testOverrideSchemaGen() {
-        MySchemaOutputResolver resolver = generateSchemaWithFileName(classes, CONTEXT_PATH, OXM_OVERRIDES_DOC, 2);
+        MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver(); 
+        generateSchemaWithFileName(classes, CONTEXT_PATH, OXM_OVERRIDES_DOC, 2, resolver);
         // validate the schema2
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(XSD_DOC_OVERRIDE_1));
-        compareSchemas(resolver.schemaFiles.get(NSX_NAMESPACE), new File(XSD_DOC_OVERRIDE_2));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(XSD_DOC_OVERRIDE_1));
+        compareSchemas(resolver.schemaFiles.get(NSX_NAMESPACE).toString(), new File(XSD_DOC_OVERRIDE_2));
     }
 }

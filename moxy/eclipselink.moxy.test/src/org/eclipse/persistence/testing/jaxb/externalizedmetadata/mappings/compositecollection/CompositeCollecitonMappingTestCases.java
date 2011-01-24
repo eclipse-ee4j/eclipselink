@@ -53,7 +53,7 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
     private static final String EMPLOYEES_NS = "http://www.example.com/employees"; 
     private static final String CONTACTS_NS = "http://www.example.com/contacts"; 
     
-    private MySchemaOutputResolver employeeResolver;
+    private MyStreamSchemaOutputResolver employeeResolver;
 
     /**
      * This is the preferred (and only) constructor.
@@ -73,7 +73,8 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
      */
     public void setUp() throws Exception {
         super.setUp();
-        employeeResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
+        employeeResolver = new MyStreamSchemaOutputResolver(); 
+        generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2, employeeResolver);
     }
 
     /**
@@ -145,9 +146,9 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
     
     public void testSchemaGenAndValidation() {
         // validate employee schema
-        compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS), new File(PATH + "employee.xsd"));
+        compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS).toString(), new File(PATH + "employee.xsd"));
         // validate contacts schema
-        compareSchemas(employeeResolver.schemaFiles.get(CONTACTS_NS), new File(PATH + "contacts.xsd"));
+        compareSchemas(employeeResolver.schemaFiles.get(CONTACTS_NS).toString(), new File(PATH + "contacts.xsd"));
         
         // validate employee.xml
         String src = PATH + "employee.xml";

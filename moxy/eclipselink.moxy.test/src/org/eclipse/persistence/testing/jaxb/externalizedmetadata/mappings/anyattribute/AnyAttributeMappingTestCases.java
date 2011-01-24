@@ -79,20 +79,22 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
      */
     public void testSchemaGenAndValidation() {
         // generate employee & stuff schemas
-        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
+        MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver();
+        generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2, resolver);
         // validate employee schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employee.xsd"));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(PATH + "employee.xsd"));
         // validate stuff schema
-        compareSchemas(resolver.schemaFiles.get(STUFF_NS), new File(PATH + "stuff.xsd"));
+        compareSchemas(resolver.schemaFiles.get(STUFF_NS).toString(), new File(PATH + "stuff.xsd"));
         // validate employee.xml
         String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
         assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
         
         // generate read only employee schema
-        resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "read-only-employee-oxm.xml", 1);
+        resolver = new MyStreamSchemaOutputResolver();
+        generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "read-only-employee-oxm.xml", 1, resolver);
         // validate read only employee schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "read-only-employee.xsd"));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(PATH + "read-only-employee.xsd"));
         // validate read-only-employee.xml
         src = PATH + "read-only-employee.xml";
         result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
@@ -106,9 +108,10 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
         // NOTE THAT marshal-read-only-employee.xml NEEDS TO BE CHANGED AS WELL - PLEASE SEE THAT FILE FOR INFO
 
         // generate write only employee schema
-        resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "write-only-employee-oxm.xml", 1);
+        resolver = new MyStreamSchemaOutputResolver();
+        generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "write-only-employee-oxm.xml", 1, resolver);
         // validate write only employee schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "write-only-employee.xsd"));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(PATH + "write-only-employee.xsd"));
         // validate write-only-employee.xml
         src = PATH + "write-only-employee.xml";
         result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);

@@ -208,7 +208,7 @@ public class Generator {
         // process any additional global elements
         processAdditionalElements(additionalGlobalElements, annotationsProcessor);
         
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses());
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses(), outputResolver);
         Project proj = new SchemaModelProject();
         XMLContext context = new XMLContext(proj);
         XMLMarshaller marshaller = context.createMarshaller();
@@ -222,7 +222,13 @@ public class Generator {
                 NamespaceResolver schemaNamespaces = schema.getNamespaceResolver();
                 schemaNamespaces.put(XMLConstants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
                 schemaDescriptor.setNamespaceResolver(schemaNamespaces);
-                javax.xml.transform.Result target = outputResolver.createOutput(schema.getTargetNamespace(), schema.getName());
+                // make sure we don't call into the provided output resolver more than once
+                javax.xml.transform.Result target;
+                if (schema.hasResult()) {
+                    target = schema.getResult();
+                } else {
+                    target = outputResolver.createOutput(schema.getTargetNamespace(), schema.getName());
+                }
                 marshaller.marshal(schema, target);
                 schemaCount++;
             } catch (IOException ex) {

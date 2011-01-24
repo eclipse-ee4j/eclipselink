@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="addressNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">  
+<xsd:schema xmlns:ns0="addressNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="addressNamespace">
    <xsd:complexType name="address-type">
       <xsd:sequence>
          <xsd:element name="country-name" type="xsd:string" minOccurs="0"/>

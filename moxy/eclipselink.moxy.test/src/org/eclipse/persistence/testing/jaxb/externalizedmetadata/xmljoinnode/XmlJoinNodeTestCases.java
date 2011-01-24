@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -49,7 +51,7 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
     private static final String INSTANCE_DOC = PATH + "company.xml";
     private static final String WORK_ADDRESS_NS = "http://www.example.com";
     private Class[] classes;
-    private MySchemaOutputResolver resolver;
+    private MyStreamSchemaOutputResolver resolver;
     private JAXBContext jCtx;
 
     /**
@@ -71,7 +73,8 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
         super.setUp();
         classes = new Class[] { Company.class };
         // schema generation also creates the JAXBContext
-        resolver = generateSchemaWithFileName(classes, CONTEXT_PATH, OXM_DOC, 2);
+        resolver = new MyStreamSchemaOutputResolver();
+        generateSchemaWithFileName(classes, CONTEXT_PATH, OXM_DOC, 2, resolver);
         jCtx = getJAXBContext();
         assertNotNull("Setup failed: JAXBContext is null", jCtx);
     }
@@ -80,11 +83,11 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
      * Return the control Company object.
      */
     private Company getControlObject() {
-        Address ottawa100 = new Address(100, "45 O'Connor St.", "400", "Ottawa", "K1P1A4");
-        Address ottawa200 = new Address(200, "1 Anystreet Rd.", "9", "Ottawa", "K4P1A2");
-        Address kanata100 = new Address(100, "99 Some St.", "1001", "Kanata", "K0A3m0");
-        Employee emp101 = new Employee(101, ottawa100);
-        Employee emp102 = new Employee(102, kanata100);
+        Address ottawa100 = new Address("a100", "45 O'Connor St.", "400", "Kanata", "K1P1A4");
+        Address ottawa200 = new Address("a200", "1 Anystreet Rd.", "9", "Ottawa", "K4P1A2");
+        Address kanata100 = new Address("a101", "99 Some St.", "1001", "Kanata", "K0A3m0");
+        Employee emp101 = new Employee("e101", ottawa100);
+        Employee emp102 = new Employee("e102", kanata100);
         ArrayList empList = new ArrayList();
         empList.add(emp101);
         empList.add(emp102);
@@ -102,10 +105,11 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testSchemaGen() {
         // validate company schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(XSD_DOC));
-        
+        Writer sw = resolver.schemaFiles.get(EMPTY_NAMESPACE);
+        compareSchemas(sw.toString(), new File(XSD_DOC));
         // validate work address schema
-        compareSchemas(resolver.schemaFiles.get(WORK_ADDRESS_NS), new File(WORK_ADD_XSD_DOC));
+        sw = resolver.schemaFiles.get(WORK_ADDRESS_NS);
+        compareSchemas(sw.toString(), new File(WORK_ADD_XSD_DOC));
     }
 
     /**
@@ -144,8 +148,8 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
             assertNotNull(workAddress);
             assertNotNull(workAddress.id);
             assertNotNull(workAddress.cityName);
-            assertTrue("Expected work address id [ba100] but was [" + workAddress.id + "]", workAddress.id == 100);
-            assertTrue("Expected work address city [Ottawa] but was [" + workAddress.cityName + "]", workAddress.cityName.equals("Ottawa"));
+            assertTrue("Expected work address id [a100] but was [" + workAddress.id + "]", workAddress.id.equals("a100"));
+            assertTrue("Expected work address city [Kanata] but was [" + workAddress.cityName + "]", workAddress.cityName.equals("Kanata"));
             // verify employee 102
             emp = (Employee) testCo.employees.get(1);
             assertNotNull(emp);
@@ -153,7 +157,7 @@ public class XmlJoinNodeTestCases extends ExternalizedMetadataTestCases {
             assertNotNull(workAddress);
             assertNotNull(workAddress.id);
             assertNotNull(workAddress.cityName);
-            assertTrue("Expected work address id [ba100] but was [" + workAddress.id + "]", workAddress.id == 100);
+            assertTrue("Expected work address id [a101] but was [" + workAddress.id + "]", workAddress.id.equals("a101"));
             assertTrue("Expected work address city [Kanata] but was [" + workAddress.cityName + "]", workAddress.cityName.equals("Kanata"));
         } catch (JAXBException e) {
             e.printStackTrace();

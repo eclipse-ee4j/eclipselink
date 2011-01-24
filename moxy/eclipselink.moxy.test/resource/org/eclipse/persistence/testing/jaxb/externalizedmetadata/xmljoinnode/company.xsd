@@ -26,7 +26,7 @@
          </xsd:element>
          <xsd:element ref="x:work-address" minOccurs="0"/>
       </xsd:sequence>
-      <xsd:attribute name="id" type="xsd:int" use="required"/>
+      <xsd:attribute name="id" type="xsd:string" use="required"/>
    </xsd:complexType>
    <xsd:element name="business-address" type="address"/>
    <xsd:element name="company" type="company"/>

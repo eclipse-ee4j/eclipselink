@@ -13,15 +13,13 @@
 package org.eclipse.persistence.testing.jaxb.schemagen.imports;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.net.URL;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -33,78 +31,82 @@ import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.address.Address;
-import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class SchemaGenImportTestCases extends TestCase {
+    static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/imports.xml";
+    static String INVALID_XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/invalid_imports.xml";
+    static String EMPLOYEE_XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/employee.xsd";
+    static String ADDRESS_XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/address.xsd";
+    static String EMPLOYEE_NS = "employeeNamespace";
+    static String ADDRESS_NS = "addressNamespace";
+    static String FILE = "file:///";
+
     public SchemaGenImportTestCases(String name) throws Exception {
         super(name);
     }
 
-    public void testSchemaGenerationWithImport() throws Exception {
-        boolean exception = false;
-        String msg = null;
-        String src = "org/eclipse/persistence/testing/jaxb/schemagen/imports/imports.xml";
-        String tmpdir = System.getenv("T_WORK");
+    public void testSchemaGenerationWithImport() {
+        Class[] jClasses = new Class[] { Address.class, Employee.class};
 
-        String sourceFile = "org/eclipse/persistence/testing/jaxb/schemagen/imports/someExistingSchema.xsd";
-    	String targetFile = tmpdir + "/someExistingSchema.xsd";
+        Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
+        MySystemIDSchemaOutputResolver mysor = new MySystemIDSchemaOutputResolver();
+        gen.generateSchemaFiles(mysor, null);
 
-    	File copiedFile = null;
+        // validate a valid instance doc against the generated employee schema
+        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        Schema employeeSchema = null;
         try {
-        	copiedFile = copyFile(sourceFile, targetFile);
-            Class[] jClasses = new Class[] { Address.class, Employee.class};
-            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
-            gen.generateSchemaFiles(tmpdir, null);
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));           
-            
-            Validator validator = theSchema.newValidator();
-            StreamSource ss = new StreamSource(new File(src)); 
-            validator.validate(ss);            
-        } catch (Exception ex) {
-        	ex.printStackTrace();
-            exception = true;
-            msg = ex.toString();
-        } finally{
-        	if(copiedFile != null){
-        		copiedFile.delete();
-        	}
+            employeeSchema = sFact.newSchema(mysor.schemaFiles.get(EMPLOYEE_NS));
+        } catch (SAXException e) {
+            fail("SchemaFactory could not create Employee schema");
         }
-        assertTrue("Schema validation failed unexpectedly: " + msg, exception==false);
-                        
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-        builderFactory.setIgnoringElementContentWhitespace(true);
-        builderFactory.setNamespaceAware(true);
-        DocumentBuilder parser = builderFactory.newDocumentBuilder();
-            
-        InputStream stream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/imports/schema0.xsd");
-        Document control = parser.parse(stream);
-            
-        stream = new FileInputStream(new File(tmpdir + "/schema0.xsd"));
-        Document test = parser.parse(stream);
-            
-        JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
         
-        assertTrue("schema0.xsd did not match control document", xmlComparer.isSchemaEqual(control, test));
-        	
+        StreamSource ss;
+        Validator validator = employeeSchema.newValidator();
+        try {
+            ss = new StreamSource(new File(XML_RESOURCE)); 
+            validator.validate(ss);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail("An unexpected exception occurred");
+        }
+        try {
+            ss = new StreamSource(new File(INVALID_XML_RESOURCE)); 
+            validator.validate(ss);
+        } catch (Exception ex) {
+            return;
+        }
+        fail("The expected exception never occurred");
     }
     
-    private File copyFile(String sourceFile, String targetFile) throws Exception{
-        File inputFile = new File(sourceFile);
-    	File outputFile = new File(targetFile);
-
-    	FileReader in = new FileReader(inputFile);
-    	FileWriter out = new FileWriter(outputFile);
-    	int c;
-
-    	while ((c = in.read()) != -1){
-    	    out.write(c);
+    /**
+     * SchemaOutputResolver for writing out the generated schema.  Sets
+     * the SystemID on the returned result.
+     */
+    public static class MySystemIDSchemaOutputResolver extends SchemaOutputResolver {
+        // keep a list of processed schemas for the validation phase of the test(s)
+        public Map<String, File> schemaFiles;
+        
+        public MySystemIDSchemaOutputResolver() {
+            schemaFiles = new HashMap<String, File>();
         }
-
-    	in.close();
-    	out.close();
-    	return outputFile;
+        
+        public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
+            File schemaFile = null;
+            Result res = null;
+            if (namespaceURI == null) {
+                namespaceURI = "";
+            } else if (namespaceURI.equals(EMPLOYEE_NS)) {
+                schemaFile = new File(EMPLOYEE_XSD_RESOURCE);
+            } else if (namespaceURI.equals(ADDRESS_NS)) {
+                schemaFile = new File(ADDRESS_XSD_RESOURCE);
+            }
+            schemaFiles.put(namespaceURI, schemaFile);
+            res = new StreamResult(schemaFile);
+            return res;
+        }
     }
 }

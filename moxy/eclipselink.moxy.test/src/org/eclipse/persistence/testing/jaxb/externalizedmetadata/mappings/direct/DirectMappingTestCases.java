@@ -177,13 +177,14 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testSchemaGenAndValidation() {
         // generate employee and project schemas
-        MySchemaOutputResolver resolver = generateSchemaWithFileName(getEmployeeArray(), CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2);
+        MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver(); 
+        generateSchemaWithFileName(getEmployeeArray(), CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2, resolver);
         // validate employees schema
         String controlSchema = PATH + "employees.xsd";
-        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS), new File(controlSchema));
+        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS).toString(), new File(controlSchema));
         // validate projects schema
         controlSchema = PATH + "projects.xsd";
-        compareSchemas(resolver.schemaFiles.get(PROJECTS_NS), new File(controlSchema));
+        compareSchemas(resolver.schemaFiles.get(PROJECTS_NS).toString(), new File(controlSchema));
         // validate employee.xml
         String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPLOYEES_NS, resolver);
@@ -194,22 +195,25 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
         assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
 
         // generate vehicles schema
-        resolver = generateSchemaWithFileName(new Class[] { Car.class, Truck.class }, CONTEXT_PATH, PATH + "vehicles-oxm.xml", 2);
+        resolver = new MyStreamSchemaOutputResolver(); 
+        generateSchemaWithFileName(new Class[] { Car.class, Truck.class }, CONTEXT_PATH, PATH + "vehicles-oxm.xml", 2, resolver);
         // validate vehicles schema
         controlSchema = PATH + "vehicles.xsd";
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(controlSchema));
 
         // generate team schema
-        resolver = generateSchemaWithFileName(new Class[] { Team.class }, CONTEXT_PATH, PATH + "team-oxm.xml", 3);
+        resolver = new MyStreamSchemaOutputResolver(); 
+        generateSchemaWithFileName(new Class[] { Team.class }, CONTEXT_PATH, PATH + "team-oxm.xml", 3, resolver);
         // validate vehicles schema
         controlSchema = PATH + "team.xsd";
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(controlSchema));
 
         // generate price schema
-        resolver = generateSchemaWithFileName(getPriceArray(), CONTEXT_PATH, PATH + "eclipselink-oxm-xml-value.xml", 1);
+        resolver = new MyStreamSchemaOutputResolver(); 
+        generateSchemaWithFileName(getPriceArray(), CONTEXT_PATH, PATH + "eclipselink-oxm-xml-value.xml", 1, resolver);
         // validate price schema
         controlSchema = PATH + "price.xsd";
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(controlSchema));
         // validate price.xml
         src = PATH + "price.xml";
         result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);

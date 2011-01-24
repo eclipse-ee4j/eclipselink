@@ -68,7 +68,7 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
     private static final String CONTACTS_NS = "http://www.example.com/contacts"; 
     private static final String ADDRESS_NS = "http://www.example.com/address"; 
     
-    private MySchemaOutputResolver employeeResolver;
+    private MyStreamSchemaOutputResolver employeeResolver;
 
     /**
      * This is the preferred (and only) constructor.
@@ -88,7 +88,8 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void setUp() throws Exception {
         super.setUp();
-        employeeResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
+        employeeResolver = new MyStreamSchemaOutputResolver();  
+        generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2, employeeResolver);
     }
 
     /**
@@ -152,9 +153,9 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testSchemaGenAndValidation() {
         // validate employee schema
-        compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS), new File(PATH + "employee.xsd"));
+        compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS).toString(), new File(PATH + "employee.xsd"));
         // validate contacts schema
-        compareSchemas(employeeResolver.schemaFiles.get(CONTACTS_NS), new File(PATH + "contacts.xsd"));
+        compareSchemas(employeeResolver.schemaFiles.get(CONTACTS_NS).toString(), new File(PATH + "contacts.xsd"));
         
         // validate employee.xml
         String src = PATH + "employee.xml";
@@ -167,38 +168,41 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
         
         // validate schema generation with three namespaces (no cyclic imports)
-        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { 
+        MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver(); 
+        generateSchemaWithFileName(new Class[] {
                   org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.multiplenamespaces.Employee.class 
-                }, MULTI_NS_CONTEXT_PATH, MULTI_NS_PATH + "employee-oxm.xml", 3);
+                }, MULTI_NS_CONTEXT_PATH, MULTI_NS_PATH + "employee-oxm.xml", 3, resolver);
         
         // validate three namespace employee schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(MULTI_NS_PATH + "employee.xsd"));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(MULTI_NS_PATH + "employee.xsd"));
         // validate three namespace contacts schema
-        compareSchemas(resolver.schemaFiles.get(CONTACTS_NS), new File(MULTI_NS_PATH + "contacts.xsd"));
+        compareSchemas(resolver.schemaFiles.get(CONTACTS_NS).toString(), new File(MULTI_NS_PATH + "contacts.xsd"));
         // validate three namespace address schema
-        compareSchemas(resolver.schemaFiles.get(ADDRESS_NS), new File(MULTI_NS_PATH + "address.xsd"));
+        compareSchemas(resolver.schemaFiles.get(ADDRESS_NS).toString(), new File(MULTI_NS_PATH + "address.xsd"));
 
         // validate schema generation with cyclic imports (due to xml-path w/multiple namespaces)
-        resolver = generateSchemaWithFileName(new Class[] { 
+        resolver = new MyStreamSchemaOutputResolver();   
+        generateSchemaWithFileName(new Class[] { 
                   org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.Employee.class 
-                }, CYCLIC_CONTEXT_PATH, CYCLIC_PATH + "cyclic-oxm.xml", 2);
+                }, CYCLIC_CONTEXT_PATH, CYCLIC_PATH + "cyclic-oxm.xml", 2, resolver);
         
         // validate cyclic employee schema
-        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS), new File(CYCLIC_PATH + "employee.xsd"));
+        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS).toString(), new File(CYCLIC_PATH + "employee.xsd"));
         // validate cyclic contacts schema
-        compareSchemas(resolver.schemaFiles.get(CONTACTS_NS), new File(CYCLIC_PATH + "contacts.xsd"));
+        compareSchemas(resolver.schemaFiles.get(CONTACTS_NS).toString(), new File(CYCLIC_PATH + "contacts.xsd"));
 
         // validate schema generation with three namespaces (cyclic imports)
-        resolver = generateSchemaWithFileName(new Class[] { 
+        resolver = new MyStreamSchemaOutputResolver();   
+        generateSchemaWithFileName(new Class[] { 
                   org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.multiplenamespaces.Employee.class 
-                }, MULTI_NS_CYCLIC_CONTEXT_PATH, MULTI_NS_CYCLIC_PATH + "employee-oxm.xml", 3);
+                }, MULTI_NS_CYCLIC_CONTEXT_PATH, MULTI_NS_CYCLIC_PATH + "employee-oxm.xml", 3, resolver);
         
         // validate three namespace cyclic employee schema
-        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS), new File(MULTI_NS_CYCLIC_PATH + "employee.xsd"));
+        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS).toString(), new File(MULTI_NS_CYCLIC_PATH + "employee.xsd"));
         // validate three namespace cyclic contacts schema
-        compareSchemas(resolver.schemaFiles.get(CONTACTS_NS), new File(MULTI_NS_CYCLIC_PATH + "contacts.xsd"));
+        compareSchemas(resolver.schemaFiles.get(CONTACTS_NS).toString(), new File(MULTI_NS_CYCLIC_PATH + "contacts.xsd"));
         // validate three namespace cyclic address schema
-        compareSchemas(resolver.schemaFiles.get(ADDRESS_NS), new File(MULTI_NS_CYCLIC_PATH + "/address.xsd"));
+        compareSchemas(resolver.schemaFiles.get(ADDRESS_NS).toString(), new File(MULTI_NS_CYCLIC_PATH + "/address.xsd"));
     }
     
     /**

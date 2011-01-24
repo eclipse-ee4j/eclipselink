@@ -6,7 +6,7 @@
   <lastName>lastName</lastName>
   <address postal-code="">
     <country-name>country-name</country-name>
-    <street-name>street-name</street-name>
+    <street-naame>street-name</street-naame>
   </address>
   <startTime>12:00:00</startTime>
   <responsibilities>responsibilities</responsibilities>

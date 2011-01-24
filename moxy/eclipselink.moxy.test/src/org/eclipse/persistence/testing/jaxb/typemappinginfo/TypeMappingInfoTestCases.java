@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,6 +55,8 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases.MyStreamSchemaOutputResolver;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -424,15 +427,17 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	    }	
 	    
 	    public void testSchemaGen(Map<String, InputStream> controlSchemas) throws Exception {
-	    	MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+	    	MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
 			jaxbContext.generateSchema(outputResolver);
 			
-			Map<String, File> generatedSchemas = outputResolver.getSchemaFiles();
+			Map<String, Writer> generatedSchemas = outputResolver.schemaFiles;
 			assertEquals(controlSchemas.size(), generatedSchemas.size());
 
 			for(String next:controlSchemas.keySet()){
 				InputStream nextControlValue = controlSchemas.get(next);						
-				File nextGeneratedValue = generatedSchemas.get(next);
+				
+				Writer sw = generatedSchemas.get(next);
+				InputSource nextGeneratedValue = new InputSource(new StringReader(sw.toString()));
 				
 				assertNotNull("Generated Schema not found.", nextGeneratedValue);
 				
@@ -450,29 +455,6 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 				assertTrue("generated schema did not match control schema", isEqual);
 			}
 	    }
-	    
-	    public class MySchemaOutputResolver extends SchemaOutputResolver {
-			// keep a list of processed schemas for the validation phase of the
-			// test(s)
-			public Map<String, File> schemaFiles;
-
-			public MySchemaOutputResolver() {
-				schemaFiles = new HashMap<String, File>();
-			}
-
-			public Result createOutput(String namespaceURI, String suggestedFileName)throws IOException {
-				File schemaFile = new File(suggestedFileName);
-				if(namespaceURI == null){
-					namespaceURI ="";
-				}
-				schemaFiles.put(namespaceURI, schemaFile);
-				return new StreamResult(schemaFile);
-			}		
-			
-			public Map<String, File> getSchemaFiles() {
-				return schemaFiles;
-			}
-		}
 	    
     /**
      * Return an Element for a given xml-element snippet.

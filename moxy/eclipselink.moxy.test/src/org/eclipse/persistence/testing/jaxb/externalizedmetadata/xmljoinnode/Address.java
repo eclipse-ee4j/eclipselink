@@ -22,7 +22,7 @@ public class Address {
     @XmlID
     @XmlPath("@id")
     @XmlAttribute
-    public int id;
+    public String id;
     public String street;
     public String suite;
     
@@ -33,7 +33,7 @@ public class Address {
     
     public Address() {}
     
-    public Address(int id, String street, String suite, String cityName, String postal) {
+    public Address(String id, String street, String suite, String cityName, String postal) {
         this.id = id;
         this.street = street;
         this.suite = suite;

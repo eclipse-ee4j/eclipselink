@@ -19,10 +19,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -507,15 +509,17 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
     public void testSchemaGen(List<InputStream> controlSchemas) throws Exception {
-        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
         getJAXBContext().generateSchema(outputResolver);
 
-        List<File> generatedSchemas = outputResolver.getSchemaFiles();
+        List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
         assertEquals(controlSchemas.size(), generatedSchemas.size());
 
         for(int i=0;i<controlSchemas.size(); i++){
             InputStream nextControlValue = controlSchemas.get(i);
-            File nextGeneratedValue =generatedSchemas.get(i);
+
+            Writer sw = generatedSchemas.get(i);
+            InputSource nextGeneratedValue = new InputSource(new StringReader(sw.toString()));
 
             assertNotNull("Generated Schema not found.", nextGeneratedValue);
 
@@ -551,6 +555,36 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
 
         public List<File> getSchemaFiles() {
+            return schemaFiles;
+        }
+    }
+    
+    /**
+     * SchemaOutputResolver for writing out the generated schema.  Returns a StreamResult
+     * wrapping a StringWriter.
+     *
+     */
+    public static class MyStreamSchemaOutputResolver extends SchemaOutputResolver {
+        // keep a list of processed schemas for the validation phase of the test(s)
+        private List<Writer> schemaFiles;
+        
+        public MyStreamSchemaOutputResolver() {
+            schemaFiles = new ArrayList<Writer>();
+        }
+        
+        public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
+            if (namespaceURI == null) {
+                namespaceURI = "";
+            }
+            
+            StringWriter sw = new StringWriter();
+            schemaFiles.add(sw);
+            Result res = new StreamResult(sw);
+            res.setSystemId(suggestedFileName);
+            return res;
+        }
+        
+        public List<Writer> getSchemaFiles() {
             return schemaFiles;
         }
     }

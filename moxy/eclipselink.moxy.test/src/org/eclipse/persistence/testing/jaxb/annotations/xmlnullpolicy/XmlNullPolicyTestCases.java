@@ -100,10 +100,11 @@ public class XmlNullPolicyTestCases extends ExternalizedMetadataTestCases {
      */
     public void testSchemaGenAndValidation() {
         // generate employee and project schemas
-        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2);
+        MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver(); 
+        generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2, resolver);
         // validate employees schema
         String controlSchema = PATH + "employees.xsd";
-        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS), new File(controlSchema));
+        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS).toString(), new File(controlSchema));
         // validate employee.xml
         String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPLOYEES_NS, resolver);

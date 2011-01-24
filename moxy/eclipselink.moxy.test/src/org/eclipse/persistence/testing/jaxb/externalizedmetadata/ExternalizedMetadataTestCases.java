@@ -14,12 +14,22 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Scanner;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.SchemaOutputResolver;
@@ -48,6 +58,9 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
+import org.xml.sax.InputSource;
 
 import junit.framework.TestCase;
 
@@ -131,6 +144,24 @@ public class ExternalizedMetadataTestCases extends TestCase {
     }
 
     /**
+     * Generate the schema using the CONTEXT_PATH.
+     *
+     * @param contextPath
+     * @param expectedSchemaCount
+     * @param resolver
+     */
+    public void generateSchema(String contextPath, int expectedSchemaCount, MyStreamSchemaOutputResolver outputResolver) {
+        try {
+            generateSchema(contextPath, outputResolver);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail("Schema generation failed unexpectedly: " + ex.toString());
+        }
+        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
+    }
+
+    /**
      * Generate the schema(s) for a given context path, and apply the eclipselink-oxm.xml
      * file(s) in the properties map.
      * 
@@ -182,7 +213,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
         String metadataFile = path + "eclipselink-oxm.xml";
         return generateSchemaWithFileName(contextPath, metadataFile, expectedSchemaCount);
     }
-
     
     public MySchemaOutputResolver generateSchemaWithFileName(String contextPath, String metadataFile, int expectedSchemaCount) {        
         InputStream iStream = loader.getResourceAsStream(metadataFile);
@@ -240,8 +270,32 @@ public class ExternalizedMetadataTestCases extends TestCase {
         return generateSchemaWithFileName(classes, contextPath, metadataFile, expectedSchemaCount);
     }
 
-    public MySchemaOutputResolver generateSchemaWithFileName(Class[] classes, String contextPath, String metadataFile, int expectedSchemaCount) {
+    public void generateSchemaWithFileName(Class[] classes, String contextPath, String metadataFile, int expectedSchemaCount, MyStreamSchemaOutputResolver outputResolver) {
+        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        InputStream iStreamCopy = loader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }        
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(contextPath, new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
         
+        validateBindingsFileAgainstSchema(iStreamCopy);
+        
+        try {
+            generateSchema(classes, properties, outputResolver, loader); 
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail("Schema generation failed unexpectedly: " + ex.toString());
+        }
+        if(expectedSchemaCount >0){
+            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        }
+        assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
+    }
+    
+    public MySchemaOutputResolver generateSchemaWithFileName(Class[] classes, String contextPath, String metadataFile, int expectedSchemaCount) {
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         InputStream iStreamCopy = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
@@ -311,7 +365,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param contextPath
      * @param outputResolver
      */
-    protected void generateSchema(String contextPath, MySchemaOutputResolver outputResolver, Map<String, Map<String, Source>> properties) throws Exception {
+    protected void generateSchema(String contextPath, SchemaOutputResolver outputResolver, Map<String, Map<String, Source>> properties) throws Exception {
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(contextPath, loader, properties);
             jaxbContext.generateSchema(outputResolver);
@@ -326,7 +380,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param contextPath
      * @param outputResolver
      */
-    protected void generateSchema(String contextPath, MySchemaOutputResolver outputResolver) throws Exception {
+    protected void generateSchema(String contextPath, SchemaOutputResolver outputResolver) throws Exception {
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(contextPath, loader);
             jaxbContext.generateSchema(outputResolver);
@@ -344,8 +398,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param outputResolver
      * @param classLoader
      */
-    protected void generateSchema(Class[] classesToBeBound, java.util.Map properties, MySchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
-        //JAXBContext jaxbContext;
+    protected void generateSchema(Class[] classesToBeBound, java.util.Map properties, SchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classesToBeBound, properties, classLoader);
             jaxbContext.generateSchema(outputResolver);
@@ -363,8 +416,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param outputResolver
      * @param classLoader
      */
-    protected void generateSchema(Type[] typesToBeBound, java.util.Map properties, MySchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
-        //JAXBContext jaxbContext;
+    protected void generateSchema(Type[] typesToBeBound, java.util.Map properties, SchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(typesToBeBound, properties, classLoader);
             jaxbContext.generateSchema(outputResolver);
@@ -397,7 +449,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
         }
         return null;
     }
-
         
     /**
      * Validates a given instance doc against a given schema.
@@ -422,7 +473,85 @@ public class ExternalizedMetadataTestCases extends TestCase {
         }
         return null;
     }
-    
+
+    /**
+     * Validates a given instance doc against the generated schema.
+     * 
+     * @param src
+     * @param schemaIndex index in output resolver's list of generated schemas
+     * @param outputResolver contains one or more schemas to validate against
+     */
+    protected String validateAgainstSchema(String src, String namespace, MyStreamSchemaOutputResolver outputResolver) {
+        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        sFact.setResourceResolver(new ResourceResolver(outputResolver));
+        Schema theSchema;
+        try {
+            Writer sw = outputResolver.schemaFiles.get(namespace);
+            theSchema = sFact.newSchema(new StreamSource(new StringReader(sw.toString())));
+            Validator validator = theSchema.newValidator();
+            StreamSource ss = new StreamSource(new File(src));             
+            validator.validate(ss);
+        } catch (Exception e) {
+            //e.printStackTrace();
+            if (e.getMessage() == null) {
+                return "An unknown exception occurred.";
+            }
+            return e.getMessage();
+        }
+        return null;
+    }
+
+    /**
+     * Class responsible from resolving schema imports during schema
+     * validation.
+     *
+     */
+    class ResourceResolver implements LSResourceResolver {
+        private MyStreamSchemaOutputResolver oResolver;
+        
+        public ResourceResolver(MyStreamSchemaOutputResolver resolver) {
+            oResolver = resolver;
+        }
+        
+        @Override
+        public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseUri) {
+            return new MyLSInput(namespaceURI, oResolver);
+        }
+    }
+
+    /**
+     * Class which will be returned to from resolveResource() call in 
+     * ResourceResolver.
+     * 
+     */
+    class MyLSInput implements LSInput {
+        private String sValue;
+        private MyStreamSchemaOutputResolver oResolver;
+
+        public MyLSInput(String value, MyStreamSchemaOutputResolver resolver) {
+            sValue = value;
+            oResolver = resolver;
+        }
+        public void setSystemId(String arg0) {}
+        public void setStringData(String arg0) {}
+        public void setPublicId(String arg0) {}
+        public void setEncoding(String arg0) {}
+        public void setCharacterStream(Reader arg0) {}
+        public void setCertifiedText(boolean arg0) {}
+        public void setByteStream(InputStream arg0) {}
+        public void setBaseURI(String arg0) {}
+        public String getSystemId() {return null;}
+        public String getStringData() {
+            return oResolver.schemaFiles.get(sValue).toString();
+        }
+        public String getPublicId() {return null;}
+        public String getEncoding() {return null;}
+        public Reader getCharacterStream() {return null;}
+        public boolean getCertifiedText() {return false;}
+        public InputStream getByteStream() {return null;}
+        public String getBaseURI() {return null;}
+    }
+
     /**
      * Validates a given bindings file against the eclipselink oxm schema.
      * 
@@ -477,19 +606,72 @@ public class ExternalizedMetadataTestCases extends TestCase {
             Document test = parser.parse(stream);
             JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
             if (!xmlComparer.isSchemaEqual(control, test)) {
-                fail("The test schema did not match the control schema");
+                fail("The test schema did not match the control schema.\nEXPECTED:\n" + getFileAsText(controlSchema) + "\nACTUAL:\n" + getFileAsText(testSchema));
             }
         } catch (Exception x) {
             fail("An error occurred during schema comparison: " + x.getMessage());
         }
     }
     
+    /**
+     * Compare two schemas for equality.  
+     * 
+     * @param testSchema
+     * @param controlSchema
+     */
+    public static void compareSchemas(String testSchema, File controlSchema) {
+        if (testSchema == null || controlSchema == null) {
+            fail("Can't compare null schema file.");
+        }
+        try {
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setIgnoringElementContentWhitespace(true);
+            builderFactory.setNamespaceAware(true);
+            DocumentBuilder parser = builderFactory.newDocumentBuilder();
+            InputStream stream = new FileInputStream(controlSchema);
+
+            Document control = parser.parse(stream);
+            
+            InputSource source = new InputSource(new StringReader(testSchema));
+            Document test = parser.parse(source);
+            
+            JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
+            if (!xmlComparer.isSchemaEqual(control, test)) {
+                fail("The test schema did not match the control schema.\nEXPECTED:\n" + getFileAsText(controlSchema) + "\nACTUAL:\n" + testSchema);
+            }
+        } catch (Exception x) {
+            fail("An error occurred during schema comparison: " + x.getMessage());
+        }
+    }
+
     public static boolean compareDocuments(Document ctrlDoc, Document testDoc) {
         return new XMLComparer().isNodeEqual(ctrlDoc, testDoc);
     }
     
+    public static String getFileAsText(String filename) {
+        return getFileAsText(new File(filename));
+    }
+    
+    public static String getFileAsText(File file) {
+        StringBuilder text = new StringBuilder();
+        String NL = System.getProperty("line.separator");
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(new FileInputStream(file));
+            while (scanner.hasNextLine()) {
+                text.append(scanner.nextLine() + NL);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            scanner.close();
+        }
+        return text.toString();
+    }
+    
     /**
-     * SchemaOutputResolver for writing out the generated schema.
+     * SchemaOutputResolver for writing out the generated schema.  Returns a StreamResult
+     * wrapping a File.
      *
      */
     public static class MySchemaOutputResolver extends SchemaOutputResolver {
@@ -512,6 +694,33 @@ public class ExternalizedMetadataTestCases extends TestCase {
         }
     }
     
+    /**
+     * SchemaOutputResolver for writing out the generated schema.  Returns a StreamResult
+     * wrapping a StringWriter.
+     *
+     */
+    public static class MyStreamSchemaOutputResolver extends SchemaOutputResolver {
+        // keep a list of processed schemas for the validation phase of the test(s)
+        public Map<String, Writer> schemaFiles;
+        
+        public MyStreamSchemaOutputResolver() {
+            schemaFiles = new HashMap<String, Writer>();
+        }
+        
+        public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
+            //return new StreamResult(System.out);
+            if (namespaceURI == null) {
+                namespaceURI = EMPTY_NAMESPACE;
+            }
+            
+            StringWriter sw = new StringWriter();
+            schemaFiles.put(namespaceURI, sw);
+            Result res = new StreamResult(sw);
+            res.setSystemId(suggestedFileName);
+            return res;
+        }
+    }
+
     /**
      * Convenience method that returns a newly created XMLContext based on an array of classes.
      * 
