@@ -37,6 +37,8 @@
  *       - 251554: ExcludeDefaultMapping annotation needed
  *     12/02/2010-2.2 Guy Pelletier 
  *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -679,6 +681,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             if (rawClass.isInterface() && 
                     ! rawClass.isMap() && 
                     ! rawClass.isCollection() &&
+                    ! rawClass.isSerializableInterface() &&
                     ! rawClass.extendsInterface(ValueHolderInterface.class) &&
                     classAccessor.getProject().hasEntityThatImplementsInterface(rawClass.getName())) {
                 getLogger().logConfigMessage(MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING, this);

@@ -17,6 +17,8 @@
  *       - 309373: Add parent class attribute to EclipseLink-ORM
  *     05/14/2010-2.1 Guy Pelletier 
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -477,6 +479,14 @@ public class MetadataClass extends MetadataAnnotatedElement {
             return true;
         }
         return extendsInterface(Serializable.class);
+    }
+    
+    /**
+     * INTENAL:
+     * Return true is this class is the Serializable.class interface.
+     */
+    public boolean isSerializableInterface() {
+        return getName().equals(Serializable.class.getName());
     }
     
     /**

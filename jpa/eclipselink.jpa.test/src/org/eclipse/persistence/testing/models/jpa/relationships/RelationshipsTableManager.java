@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     12/02/2010-2.2 Guy Pelletier 
  *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
@@ -412,6 +414,11 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldFACADE.setName("FACADE");
         fieldFACADE.setTypeName("BLOB");
         table.addField(fieldFACADE);
+        
+        FieldDefinition fieldTAG = new FieldDefinition();
+        fieldTAG.setName("TAG");
+        fieldTAG.setTypeName("BLOB");
+        table.addField(fieldTAG);
         
         return table;
     }
