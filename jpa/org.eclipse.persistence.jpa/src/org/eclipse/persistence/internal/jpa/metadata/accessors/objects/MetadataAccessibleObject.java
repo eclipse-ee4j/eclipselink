@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/08/2010-2.1 Guy Pelletier 
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -41,6 +43,12 @@ public abstract class MetadataAccessibleObject {
      * Return the attribute name of this accessible object.
      */
     public abstract String getAttributeName();
+    
+    /**
+     * INTERNAL:
+     * Return the name of this accessible object.
+     */
+    public abstract String getName();
     
     /**
      * INTERNAL:

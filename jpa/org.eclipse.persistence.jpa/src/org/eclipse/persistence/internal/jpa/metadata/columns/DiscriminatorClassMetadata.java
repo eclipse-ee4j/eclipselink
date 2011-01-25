@@ -14,6 +14,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -38,8 +40,8 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 public class DiscriminatorClassMetadata extends ORMetadata {
     // Note: Any metadata mapped from XML to this class must be compared in the equals method.
 
-    private MetadataClass m_value;
-    private String m_valueName;
+    private MetadataClass m_valueClass;
+    private String m_value;
     private String m_discriminator;
     
     /**
@@ -57,7 +59,7 @@ public class DiscriminatorClassMetadata extends ORMetadata {
         super(discriminatorClass, accessibleObject);
         
         setDiscriminator((String) discriminatorClass.getAttribute("discriminator"));
-        setValue(getMetadataClass((String) discriminatorClass.getAttribute("value")));
+        setValueClass(getMetadataClass((String) discriminatorClass.getAttribute("value")));
     }
     
     /**
@@ -68,7 +70,7 @@ public class DiscriminatorClassMetadata extends ORMetadata {
         if (objectToCompare instanceof DiscriminatorClassMetadata) {
             DiscriminatorClassMetadata discriminatorClass = (DiscriminatorClassMetadata) objectToCompare;
             
-            if (! valuesMatch(m_valueName, discriminatorClass.getValueName())) {
+            if (! valuesMatch(m_value, discriminatorClass.getValue())) {
                 return false;
             }
             
@@ -89,16 +91,16 @@ public class DiscriminatorClassMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public MetadataClass getValue() {
-        return m_value;
+    public MetadataClass getValueClass() {
+        return m_valueClass;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getValueName() {
-        return m_valueName;
+    public String getValue() {
+        return m_value;
     }
     
     /**
@@ -108,7 +110,7 @@ public class DiscriminatorClassMetadata extends ORMetadata {
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
     
-        m_value = initXMLClassName(m_valueName);
+        m_valueClass = initXMLClassName(m_value);
     }
     
     /**
@@ -120,7 +122,7 @@ public class DiscriminatorClassMetadata extends ORMetadata {
             throw ValidationException.multipleClassesForTheSameDiscriminator(m_discriminator, mapping.getAttributeName());
         }
         
-        mapping.addClassNameIndicator(m_value.getName(), m_discriminator);
+        mapping.addClassNameIndicator(m_valueClass.getName(), m_discriminator);
     }
     
     /**
@@ -134,16 +136,16 @@ public class DiscriminatorClassMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void setValue(MetadataClass value) {
-        m_value = value;
+    public void setValueClass(MetadataClass value) {
+        m_valueClass = value;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setValueName(String valueName) {
-        m_valueName = valueName;
+    public void setValue(String valueName) {
+        m_value = valueName;
     }    
 }
 

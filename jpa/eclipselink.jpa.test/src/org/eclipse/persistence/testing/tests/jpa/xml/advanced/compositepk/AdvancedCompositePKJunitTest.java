@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced.compositepk;
 
@@ -20,7 +22,15 @@ import javax.persistence.EntityManager;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk.*;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.derivedid.*;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
@@ -52,6 +62,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         TestSuite suite = new TestSuite("AdvancedCompositePKJunitTest - " + persistenceUnit);
         
         suite.addTest(new AdvancedCompositePKJunitTest("testSetup", persistenceUnit));
+        suite.addTest(new AdvancedCompositePKJunitTest("testOrderBySetting", persistenceUnit));
         suite.addTest(new AdvancedCompositePKJunitTest("testCreateDepartment", persistenceUnit));
         suite.addTest(new AdvancedCompositePKJunitTest("testCreateScientists", persistenceUnit));
         suite.addTest(new AdvancedCompositePKJunitTest("testReadDepartment", persistenceUnit));
@@ -69,6 +80,20 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession(m_persistenceUnit));
         new CompositePKTableCreator().replaceTables(JUnitTestCase.getServerSession(m_persistenceUnit));
         clearCache(m_persistenceUnit);
+    }
+    
+    /**
+     * Verifies that order-by metadata is correctly processed/defaulted.
+     */
+    public void testOrderBySetting() {
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        
+        ClassDescriptor departmentDescriptor = session.getDescriptor(Department.class);
+        assertNotNull("Department descriptor was not found.", departmentDescriptor);
+        
+        DatabaseMapping scientistMapping = departmentDescriptor.getMappingForAttributeName("scientists");
+        assertNotNull("Scientist mapping from Department descriptor was not found.", scientistMapping);
+        assertTrue("The scientist mapping from the Department descriptor did not have an order by setting.", ((OneToManyMapping) scientistMapping).hasOrderBy());
     }
     
     public void testCreateDepartment() {

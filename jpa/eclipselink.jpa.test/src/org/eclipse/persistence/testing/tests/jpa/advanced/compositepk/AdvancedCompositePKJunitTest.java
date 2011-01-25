@@ -17,6 +17,8 @@
  *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
  *     05/31/2010-2.1 Guy Pelletier 
  *       - 314941: multiple joinColumns without referenced column names defined, no error
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 
@@ -31,6 +33,10 @@ import javax.persistence.EntityManager;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Competency;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle;
@@ -96,6 +102,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.setName("AdvancedCompositePKJunitTest");
         
         suite.addTest(new AdvancedCompositePKJunitTest("testSetup"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testOrderBySetting"));
         suite.addTest(new AdvancedCompositePKJunitTest("testCreateDepartment"));
         suite.addTest(new AdvancedCompositePKJunitTest("testCreateScientists"));
         suite.addTest(new AdvancedCompositePKJunitTest("testReadDepartment"));
@@ -136,6 +143,20 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         new CompositePKTableCreator().replaceTables(JUnitTestCase.getServerSession());
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
+    }
+    
+    /**
+     * Verifies that order-by metadata is correctly processed/defaulted.
+     */
+    public void testOrderBySetting() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        ClassDescriptor departmentDescriptor = session.getDescriptor(Department.class);
+        assertNotNull("Department descriptor was not found.", departmentDescriptor);
+        
+        DatabaseMapping scientistMapping = departmentDescriptor.getMappingForAttributeName("scientists");
+        assertNotNull("Scientist mapping from Department descriptor was not found.", scientistMapping);
+        assertTrue("The scientist mapping from the Department descriptor did not have an order by setting.", ((OneToManyMapping) scientistMapping).hasOrderBy());
     }
     
     public void testCreateDepartment() {

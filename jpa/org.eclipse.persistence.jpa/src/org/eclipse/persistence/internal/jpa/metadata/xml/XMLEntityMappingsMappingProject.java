@@ -53,6 +53,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     10/28/2010-2.2 Guy Pelletier 
  *       - 3223850: Primary key metadata issues
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -117,6 +119,7 @@ import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMe
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.OrderByMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.ReturnInsertMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.HashPartitioningMetadata;
@@ -196,6 +199,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         addDescriptor(buildColumnDescriptor());
         addDescriptor(buildOrderColumnDescriptor());
+        addDescriptor(buildOrderByDescriptor());
         addDescriptor(buildJoinColumnDescriptor());
         addDescriptor(buildPrimaryKeyJoinColumnDescriptor());
         addDescriptor(buildAccessMethodsDescriptor());
@@ -1137,12 +1141,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         discriminatorMapping.setXPath("@discriminator");
         descriptor.addMapping(discriminatorMapping);
         
-        XMLDirectMapping valueMapping = new XMLDirectMapping();
-        valueMapping.setAttributeName("m_valueName");
-        valueMapping.setGetMethodName("getValueName");
-        valueMapping.setSetMethodName("setValueName");
-        valueMapping.setXPath("@value");
-        descriptor.addMapping(valueMapping);
+        descriptor.addMapping(getValueAttributeMapping());
         
         return descriptor;
     }
@@ -1650,7 +1649,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         return descriptor;
     }
-    
     
     /**
      * INTERNAL:
@@ -2218,6 +2216,17 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
     /**
      * INTERNAL:
+     * XSD: order-by
+     */
+    protected ClassDescriptor buildOrderByDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(OrderByMetadata.class);
+        descriptor.addMapping(getValueMapping());
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: order-column
      */
     protected ClassDescriptor buildOrderColumnDescriptor() {
@@ -2432,19 +2441,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(PropertyMetadata.class);
         
-        XMLDirectMapping nameMapping = new XMLDirectMapping();
-        nameMapping.setAttributeName("m_name");
-        nameMapping.setGetMethodName("getName");
-        nameMapping.setSetMethodName("setName");
-        nameMapping.setXPath("@name");
-        descriptor.addMapping(nameMapping);
-        
-        XMLDirectMapping valueMapping = new XMLDirectMapping();
-        valueMapping.setAttributeName("m_value");
-        valueMapping.setGetMethodName("getValue");
-        valueMapping.setSetMethodName("setValue");
-        valueMapping.setXPath("@value");
-        descriptor.addMapping(valueMapping);
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getValueAttributeMapping());
         
         XMLDirectMapping valueTypeMapping = new XMLDirectMapping();
         valueTypeMapping.setAttributeName("m_valueTypeName");
@@ -4123,12 +4121,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getOrderByMapping() {
-        XMLDirectMapping orderByMapping = new XMLDirectMapping();
+    protected XMLCompositeObjectMapping getOrderByMapping() {
+        XMLCompositeObjectMapping orderByMapping = new XMLCompositeObjectMapping();
         orderByMapping.setAttributeName("m_orderBy");
         orderByMapping.setGetMethodName("getOrderBy");
         orderByMapping.setSetMethodName("setOrderBy");
-        orderByMapping.setXPath("orm:order-by/text()");
+        orderByMapping.setReferenceClass(OrderByMetadata.class);
+        orderByMapping.setXPath("orm:order-by");
         return orderByMapping;
     }
     
@@ -4710,4 +4709,17 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         valueColumnMapping.setXPath("orm:value-column");
         return valueColumnMapping;
     }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getValueMapping() {
+        XMLDirectMapping valueMapping = new XMLDirectMapping();
+        valueMapping.setAttributeName("m_value");
+        valueMapping.setGetMethodName("getValue");
+        valueMapping.setSetMethodName("setValue");
+        valueMapping.setXPath("text()");
+        return valueMapping;
+    }
+    
 }

@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files  
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -46,7 +48,7 @@ public class MetadataFile extends MetadataAccessibleObject {
      * reflect the new dependency).
      */
     public String getAttributeName() {
-        return m_entityMappings.getMappingFileOrURL().toString();
+        return getName();
     }
     
     /**
@@ -62,5 +64,13 @@ public class MetadataFile extends MetadataAccessibleObject {
      */
     public Object getElement() {
         return "<entity-mappings>";
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the name/url of the metadata file.
+     */
+    public String getName() {
+        return m_entityMappings.getMappingFileOrURL().toString();
     }
 }

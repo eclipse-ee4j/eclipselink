@@ -22,6 +22,8 @@
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  *     08/04/2010-2.1.1 Guy Pelletier
  *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -131,6 +133,15 @@ public abstract class ORMetadata {
      */
     protected MetadataAccessibleObject getAccessibleObject() {
         return m_accessibleObject;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the name of the accessible object. If it is a field, it will 
+     * return the field name. For a method it will return the method name.
+     */
+    public String getAccessibleObjectName() {
+        return m_accessibleObject.getName();
     }
     
     /**

@@ -43,12 +43,13 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
@@ -83,6 +84,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.OrderByMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -102,10 +104,6 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
  */
 public abstract class CollectionAccessor extends RelationshipAccessor implements MappedKeyMapAccessor {
     // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
-    // Order by constants
-    private static final String ASCENDING = "ASC";
-    private static final String DESCENDING = "DESC";
     
     private ColumnMetadata m_mapKeyColumn;
     private EnumeratedMetadata m_mapKeyEnumerated;
@@ -116,11 +114,11 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     private MapKeyMetadata m_mapKey;
     private MetadataClass m_mapKeyClass;
+    private OrderByMetadata m_orderBy;
     private OrderColumnMetadata m_orderColumn;
     
     private String m_mapKeyConvert;
     private String m_mapKeyClassName;
-    private String m_orderBy;
     
     private TemporalMetadata m_mapKeyTemporal;
     
@@ -142,7 +140,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Set the order if one is present.
         if (isAnnotationPresent(OrderBy.class)) {
-            m_orderBy = (String) getAnnotation(OrderBy.class).getAttributeString("value");
+            m_orderBy = new OrderByMetadata(getAnnotation(OrderBy.class), accessibleObject);
         }
         
         // Set the map key if one is present.
@@ -286,6 +284,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
                 return false;
             }
             
+            if (! valuesMatch(m_orderBy, collectionAccessor.getOrderBy())) {
+                return false;
+            }
+            
             if (! valuesMatch(m_orderColumn, collectionAccessor.getOrderColumn())) {
                 return false;
             }
@@ -295,10 +297,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
             }
             
             if (! valuesMatch(m_mapKeyClassName, collectionAccessor.getMapKeyClassName())) {
-                return false;
-            }
-            
-            if (! valuesMatch(m_orderBy, collectionAccessor.getOrderBy())) {
                 return false;
             }
             
@@ -428,7 +426,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getOrderBy() {
+    public OrderByMetadata getOrderBy() {
         return m_orderBy; 
     }
     
@@ -552,6 +550,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // Initialize single ORMetadata objects.
         initXMLObject(m_mapKey, accessibleObject);
         initXMLObject(m_mapKeyColumn, accessibleObject);
+        initXMLObject(m_orderBy, accessibleObject);
         initXMLObject(m_orderColumn, accessibleObject);
         
         // Initialize the map key class name we read from XML.
@@ -580,7 +579,9 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         processRelationshipMapping(mapping);
         
         // Process an OrderBy if there is one.
-        processOrderBy(mapping);
+        if (m_orderBy != null) {
+            m_orderBy.process(mapping, getReferenceDescriptor(), getJavaClass());
+        }
         
         // Set the correct indirection on the collection mapping. Process the 
         // map metadata for a map key value to set on the indirection policy.
@@ -629,84 +630,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
             super.processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor);
         }
     }
-    
-    /**
-     * INTERNAL:
-     * Process an order by value (if specified) for the given collection 
-     * mapping. Order by specifies the ordering of the elements of a collection 
-     * valued association at the point when the association is retrieved.
-     * 
-     * The syntax of the value ordering element is an orderby_list, as follows:
-     * 
-     * orderby_list ::= orderby_item [, orderby_item]*
-     * orderby_item ::= property_or_field_name [ASC | DESC]
-     * 
-     * When ASC or DESC is not specified, ASC is assumed.
-     * 
-     * If the ordering element is not specified, ordering by the primary key
-     * of the associated entity is assumed.
-     * 
-     * The property or field name must correspond to that of a persistent
-     * property or field of the associated class. The properties or fields 
-     * used in the ordering must correspond to columns for which comparison
-     * operators are supported.
-     */
-    protected void processOrderBy(CollectionMapping mapping) {
-        if (m_orderBy != null) {
-            MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
-            
-            if (m_orderBy.equals("")) {
-                // Default to the primary key field name(s).
-                List<String> orderByAttributes = referenceDescriptor.getIdOrderByAttributeNames();
-            
-                if (referenceDescriptor.hasEmbeddedId()) {
-                    String embeddedIdAttributeName = referenceDescriptor.getEmbeddedIdAttributeName();
-                
-                    for (String orderByAttribute : orderByAttributes) {
-                        mapping.addAggregateOrderBy(embeddedIdAttributeName, orderByAttribute, false);
-                    }
-                } else {
-                    for (String orderByAttribute : orderByAttributes) {
-                        mapping.addOrderBy(orderByAttribute, false);
-                    }
-                }
-            } else {
-                StringTokenizer commaTokenizer = new StringTokenizer(m_orderBy, ",");
-            
-                while (commaTokenizer.hasMoreTokens()) {
-                    StringTokenizer spaceTokenizer = new StringTokenizer(commaTokenizer.nextToken());
-                    String propertyOrFieldName = spaceTokenizer.nextToken();
-                    MappingAccessor referenceAccessor = referenceDescriptor.getMappingAccessor(propertyOrFieldName);
-                
-                    if (referenceAccessor == null) {
-                        throw ValidationException.invalidOrderByValue(propertyOrFieldName, referenceDescriptor.getJavaClass(), getAccessibleObjectName(), getJavaClass());
-                    }
-
-                    String attributeName = referenceAccessor.getAttributeName();                    
-                    String ordering = (spaceTokenizer.hasMoreTokens()) ? spaceTokenizer.nextToken() : ASCENDING;
-
-                    if (referenceAccessor.isEmbedded()) {
-                        for (String orderByAttributeName : referenceDescriptor.getOrderByAttributeNames()) {
-                            mapping.addAggregateOrderBy(m_orderBy, orderByAttributeName, ordering.equals(DESCENDING));        
-                        }
-                    } else if (referenceAccessor.getClassAccessor().isEmbeddableAccessor()) {
-                        // We have a specific order by from an embeddable, we need to rip off 
-                        // the last bit of a dot notation if specified and pass in the chained 
-                        // string names of the nested embeddables only.
-                        String embeddableChain = m_orderBy;
-                        if (embeddableChain.contains(".")) {
-                            embeddableChain = embeddableChain.substring(0, embeddableChain.lastIndexOf("."));
-                        }
-                        
-                        mapping.addAggregateOrderBy(embeddableChain, attributeName, ordering.equals(DESCENDING)); 
-                    } else {
-                        mapping.addOrderBy(attributeName, ordering.equals(DESCENDING));    
-                    }
-                }
-            }
-        }
-    } 
-    
+        
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -790,7 +714,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setOrderBy(String orderBy) {
+    public void setOrderBy(OrderByMetadata orderBy) {
         m_orderBy = orderBy;
     }
     

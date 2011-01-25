@@ -47,6 +47,8 @@
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  *     01/04/2011-2.3 Guy Pelletier 
  *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -217,15 +219,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public MetadataAnnotatedElement getAccessibleObject() {
         return (MetadataAnnotatedElement) super.getAccessibleObject();
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns the name of the accessible object. If it is a field, it will 
-     * return the field name. For a method it will return the method name.
-     */
-    public String getAccessibleObjectName() {
-        return getAccessibleObject().getName();
     }
     
     /**

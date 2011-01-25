@@ -26,6 +26,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     01/25/2011-2.3 Guy Pelletier 
+ *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -115,7 +117,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         accessor.getDescriptor().getClassDescriptor().getInterfacePolicy().addParentInterfaceName(mapping.getReferenceClassName());
         
         for (DiscriminatorClassMetadata discriminatorClass : m_discriminatorClasses) {
-            if (discriminatorClass.getValue().equals(accessor.getJavaClass())) {
+            if (discriminatorClass.getValueClass().equals(accessor.getJavaClass())) {
                 // A discriminator class was configured for this entity, do
                 // nothing and return.
                 return;
