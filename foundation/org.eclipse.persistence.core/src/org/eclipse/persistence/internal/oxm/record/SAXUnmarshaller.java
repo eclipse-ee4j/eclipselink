@@ -30,6 +30,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
+import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -50,6 +51,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 
 import org.w3c.dom.Node;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -269,7 +271,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
             saxUnmarshallerHandler.setXMLReader(xmlReader);
             saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
-            xmlReader.setContentHandler(saxUnmarshallerHandler);
+            setContentHandler(xmlReader, saxUnmarshallerHandler);
             xmlReader.parse(inputSource);
 
             // resolve any mapping references
@@ -309,7 +311,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 saxUnmarshallerHandler.setXMLReader(xmlReader);
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
                 saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
-                xmlReader.setContentHandler(saxUnmarshallerHandler);
+                setContentHandler(xmlReader, saxUnmarshallerHandler);
                 xmlReader.parse(inputSource);
             
                 // resolve any mapping references
@@ -331,7 +333,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         try {
             unmarshalRecord.setXMLReader(xmlReader);
             unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
-            xmlReader.setContentHandler(unmarshalRecord);
+            setContentHandler(xmlReader, unmarshalRecord);
             xmlReader.setLexicalHandler(unmarshalRecord);
             xmlReader.parse(inputSource);
         } catch (IOException e) {
@@ -751,4 +753,20 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 	    ||ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(clazz)
 	    ||ClassConstants.DURATION.isAssignableFrom(clazz);
     }
+
+    /**
+     * If a Schema was set on the unmarshaller then wrap the ContentHandler in
+     * a ValidatorHandler. 
+     */
+    private void setContentHandler(XMLReader xmlReader, ContentHandler contentHandler) {
+        Schema schema = saxParserFactory.getSchema();
+        if(null == schema) {
+            xmlReader.setContentHandler(contentHandler);
+        } else {
+            ValidatorHandler validatorHandler = schema.newValidatorHandler();
+            validatorHandler.setContentHandler(contentHandler);
+            xmlReader.setContentHandler(validatorHandler);
+        }
+    }
+
 }

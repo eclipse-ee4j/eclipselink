@@ -21,10 +21,13 @@ import java.net.URL;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.UnmarshalException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -37,6 +40,7 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 public class UnmarshalSchemaValidationTestCases extends OXTestCase {
 
@@ -166,6 +170,70 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         try {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(source);
+        } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
+            assertTrue(true);
+            return;
+        }
+        fail("No Exceptions thrown.");
+    }
+
+    public void testFailOnSecondErrorSAXSource() throws Exception {
+        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        SAXParser sp = spf.newSAXParser();
+        XMLReader xr = sp.getXMLReader();
+        InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
+        Source source = new SAXSource(xr, new InputSource(stream));
+        try {
+            unmarshaller.setSchema(this.schema);
+            unmarshaller.unmarshal(source);
+        } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
+            assertTrue(true);
+            return;
+        }
+        fail("No Exceptions thrown.");
+    }
+
+    public void testFailOnSecondErrorSAXSourceWithClass() throws Exception {
+        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        SAXParser sp = spf.newSAXParser();
+        XMLReader xr = sp.getXMLReader();
+        InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
+        Source source = new SAXSource(xr, new InputSource(stream));
+        try {
+            unmarshaller.setSchema(this.schema);
+            unmarshaller.unmarshal(source, Employee.class);
+        } catch (UnmarshalException ex) {
+            assertTrue(true);
+            return;
+        } catch (UnsupportedOperationException uoe) {
+            // XDK does not support setSchema, so just pass in this case
+            assertTrue(true);
+            return;
+        }
+        fail("No Exceptions thrown.");
+    }
+
+    public void testFailOnSecondErrorSAXSourceWithType() throws Exception {
+        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        SAXParser sp = spf.newSAXParser();
+        XMLReader xr = sp.getXMLReader();
+        InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
+        Source source = new SAXSource(xr, new InputSource(stream));
+        try {
+            unmarshaller.setSchema(this.schema);
+            unmarshaller.unmarshal(source, (Type) Employee.class);
         } catch (UnmarshalException ex) {
             assertTrue(true);
             return;
