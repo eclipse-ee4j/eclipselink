@@ -83,6 +83,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         
         try {
             int dddPostLoadCountInitial = 0;
+            int dddListenerPostLoadCountInitial = 0;
             
             AAA aaa = new AAA();
             DDD ddd = new DDD();
@@ -98,7 +99,9 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
             DDD refreshedDDD = aaa.getDdds().iterator().next();
             
             int dddPostLoadCountRefresh = refreshedDDD.getCount();
+            int dddListenerPostLoadCountRefresh = refreshedDDD.getCount2();
             assertTrue("The PostLoad callback method on DDD was not called after the refresh.", (dddPostLoadCountRefresh - dddPostLoadCountInitial) == 1);
+            assertTrue("The PostLoad callback method on the DDD Listener was not called after the refresh.", (dddListenerPostLoadCountRefresh - dddListenerPostLoadCountInitial) == 1);
             
             commitTransaction(em);
             
@@ -110,7 +113,9 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
             // This should fire a postLoad event ...
             DDD findDDD = findAAA.getDdds().iterator().next();
             int dddPostLoadCountFind = findDDD.getCount();
+            int dddListenerPostLoadCountFind = findDDD.getCount2();
             assertTrue("The PostLoad callback method on DDD was not called afer the find.", (dddPostLoadCountFind - dddPostLoadCountRefresh) == 1);
+            assertTrue("The PostLoad callback method on the DDD Listener was not called afer the find.", (dddListenerPostLoadCountFind - dddListenerPostLoadCountRefresh) == 1);
             
         } catch (RuntimeException ex) {
             if (isTransactionActive(em)){

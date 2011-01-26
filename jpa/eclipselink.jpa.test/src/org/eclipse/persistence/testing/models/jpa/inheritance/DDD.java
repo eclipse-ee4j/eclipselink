@@ -17,12 +17,15 @@ import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.TypeConverter;
+import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.DDDListener;;
 
 @Entity
+@EntityListeners(DDDListener.class)
 @Table(name="CMP3_DDD")
 public class DDD {
     int id;
     int count;
+    int count2;
     AAA aaa;
     
     public DDD() {
@@ -35,7 +38,6 @@ public class DDD {
     @PostLoad
     public void postLoad() {
         count++;
-        //POST_LOAD_COUNT++;
     }
     
     @Id
@@ -65,5 +67,14 @@ public class DDD {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    @Column(name="EL_POST_LOAD_COUNT")
+    public int getCount2() {
+        return count2;
+    }
+
+    public void setCount2(int count2) {
+        this.count2 = count2;
     }
 }

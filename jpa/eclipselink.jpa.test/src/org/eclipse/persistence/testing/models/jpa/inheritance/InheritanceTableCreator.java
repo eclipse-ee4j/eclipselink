@@ -1016,6 +1016,17 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldPOSTLOADCOUNT.setShouldAllowNull(true);
         table.addField(fieldPOSTLOADCOUNT);
         
+        FieldDefinition fieldELPOSTLOADCOUNT = new FieldDefinition();
+        fieldELPOSTLOADCOUNT.setName("EL_POST_LOAD_COUNT");
+        fieldELPOSTLOADCOUNT.setTypeName("NUMBER");
+        fieldELPOSTLOADCOUNT.setSize(15);
+        fieldELPOSTLOADCOUNT.setSubSize(0);
+        fieldELPOSTLOADCOUNT.setIsPrimaryKey(false);
+        fieldELPOSTLOADCOUNT.setIsIdentity(false);
+        fieldELPOSTLOADCOUNT.setUnique(false);
+        fieldELPOSTLOADCOUNT.setShouldAllowNull(true);
+        table.addField(fieldELPOSTLOADCOUNT);
+        
         FieldDefinition aaaID = new FieldDefinition();
         aaaID.setName("AAA_ID");
         aaaID.setTypeName("NUMBER");
