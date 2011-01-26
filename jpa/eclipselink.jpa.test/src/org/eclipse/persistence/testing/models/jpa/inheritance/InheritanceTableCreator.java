@@ -13,6 +13,8 @@
  *       - 259829: TABLE_PER_CLASS with abstract classes does not work
  *     12/18/2009-2.1 Guy Pelletier 
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
+ *     01/26/2011-2.3 Guy Pelletier 
+ *       - 307664:  Lifecycle callbacks not called for object from IndirectSet
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
@@ -49,6 +51,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildAAATable());
         addTableDefinition(buildBBBTable());
         addTableDefinition(buildCCCTable());
+        addTableDefinition(buildDDDTable());
         addTableDefinition(buildCOMPUTERTable());
         addTableDefinition(buildDESKTOPTable());
         addTableDefinition(buildENGINEER_DESKTOPTable());
@@ -987,6 +990,47 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
+    public TableDefinition buildDDDTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_DDD");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldPOSTLOADCOUNT = new FieldDefinition();
+        fieldPOSTLOADCOUNT.setName("POST_LOAD_COUNT");
+        fieldPOSTLOADCOUNT.setTypeName("NUMBER");
+        fieldPOSTLOADCOUNT.setSize(15);
+        fieldPOSTLOADCOUNT.setSubSize(0);
+        fieldPOSTLOADCOUNT.setIsPrimaryKey(false);
+        fieldPOSTLOADCOUNT.setIsIdentity(false);
+        fieldPOSTLOADCOUNT.setUnique(false);
+        fieldPOSTLOADCOUNT.setShouldAllowNull(true);
+        table.addField(fieldPOSTLOADCOUNT);
+        
+        FieldDefinition aaaID = new FieldDefinition();
+        aaaID.setName("AAA_ID");
+        aaaID.setTypeName("NUMBER");
+        aaaID.setSize(15);
+        aaaID.setSubSize(0);
+        aaaID.setShouldAllowNull(true);
+        aaaID.setIsPrimaryKey(false);
+        aaaID.setUnique(false);
+        aaaID.setIsIdentity(false);
+        aaaID.setForeignKeyFieldName("CMP3_AAA.ID");
+        table.addField(aaaID);
+
+        return table;
+    }
+    
     public TableDefinition buildCOMPUTERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_COMPUTER");

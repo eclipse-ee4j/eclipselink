@@ -9,8 +9,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     01/26/2011-2.3 Guy Pelletier 
+ *       - 307664:  Lifecycle callbacks not called for object from IndirectSet
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inheritance;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -26,9 +31,14 @@ public  class AAA {
     String id;
     String foo;
     
-    AAA(){}
+    Set<DDD> ddds;
+    
+    public AAA() {
+        ddds = new HashSet<DDD>();
+    }
 
     AAA(String id) {
+        this();
         this.id = id;
     }
     
@@ -51,5 +61,14 @@ public  class AAA {
 
     public void setFoo(String foo) {
         this.foo = foo;
+    }
+
+    @OneToMany(mappedBy="aaa", cascade=CascadeType.ALL)
+    public Set<DDD> getDdds() {
+        return ddds;
+    }
+
+    public void setDdds(Set<DDD> ddds) {
+        this.ddds = ddds;
     }
 }

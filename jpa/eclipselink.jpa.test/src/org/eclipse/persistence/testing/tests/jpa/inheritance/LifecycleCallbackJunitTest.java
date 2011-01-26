@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     01/05/2010-2.1 Guy Pelletier 
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
+ *     01/26/2011-2.3 Guy Pelletier 
+ *       - 307664:  Lifecycle callbacks not called for object from IndirectSet
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
@@ -19,8 +21,10 @@ import javax.persistence.EntityManager;
 
 import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.inheritance.AAA;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
+import org.eclipse.persistence.testing.models.jpa.inheritance.DDD;
 import org.eclipse.persistence.testing.models.jpa.inheritance.MacBook;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.AbstractBus;
@@ -55,6 +59,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         suite.addTest(new LifecycleCallbackJunitTest("testPrePersistSportsCarOverride"));
         suite.addTest(new LifecycleCallbackJunitTest("testQueryInNativePreUpdateEvent"));
         suite.addTest(new LifecycleCallbackJunitTest("testDefaultListenerOnMacBook"));
+        suite.addTest(new LifecycleCallbackJunitTest("testPostLoadFromMembersOfSet"));
 
         return suite;
     }
@@ -67,6 +72,55 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         clearCache();
     }
 
+    /**
+     * Test added for bug 307664.
+     */
+    public void testPostLoadFromMembersOfSet() {
+        EntityManager em = createEntityManager();        
+        beginTransaction(em);
+        
+        String aaaId;
+        
+        try {
+            int dddPostLoadCountInitial = 0;
+            
+            AAA aaa = new AAA();
+            DDD ddd = new DDD();
+            ddd.setAaa(aaa);
+            aaa.getDdds().add(ddd);
+            
+            em.persist(aaa);
+            aaaId = aaa.getId();
+            em.flush();
+            
+            // This should fire a postLoad event ...
+            em.refresh(aaa);
+            DDD refreshedDDD = aaa.getDdds().iterator().next();
+            
+            int dddPostLoadCountRefresh = refreshedDDD.getCount();
+            assertTrue("The PostLoad callback method on DDD was not called after the refresh.", (dddPostLoadCountRefresh - dddPostLoadCountInitial) == 1);
+            
+            commitTransaction(em);
+            
+            // Clear the cache and all the works.
+            clearCache();
+            em.clear();
+            
+            AAA findAAA = em.find(AAA.class, aaa.getId());
+            // This should fire a postLoad event ...
+            DDD findDDD = findAAA.getDdds().iterator().next();
+            int dddPostLoadCountFind = findDDD.getCount();
+            assertTrue("The PostLoad callback method on DDD was not called afer the find.", (dddPostLoadCountFind - dddPostLoadCountRefresh) == 1);
+            
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw ex;
+        }
+    }
     
     public void testPostLoadBusInheritAndDefault() {
         int vehiclePostLoadCountBefore = VehicleListener.POST_LOAD_COUNT;
