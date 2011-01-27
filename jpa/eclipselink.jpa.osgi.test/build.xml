@@ -239,9 +239,9 @@
     </target>
 
     <target name="test-osgi-srg" depends="clean-run">
-        <antcall target="run-test" inheritRefs="true">
+        <!--antcall target="run-test" inheritRefs="true">
             <param name="test.class" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
-        </antcall>
+        </antcall-->
         <antcall target="run-test" inheritRefs="true">
             <param name="test.class" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
         </antcall>

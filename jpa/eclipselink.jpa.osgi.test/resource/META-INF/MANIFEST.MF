@@ -35,4 +35,5 @@ Import-Package: javax.persistence;version="1.99",
     org.eclipse.persistence.sessions,
     org.eclipse.persistence.tools.schemaframework
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+JPA-PersistenceUnits: fieldaccess
 Require-Bundle: org.eclipse.persistence.jpa;bundle-version="2.0.0"
