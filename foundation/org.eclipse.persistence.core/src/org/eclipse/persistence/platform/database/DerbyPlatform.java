@@ -47,6 +47,7 @@ public class DerbyPlatform extends DB2Platform {
      * INTERNAL:
      * TODO: Need to find out how can byte arrays be inlined in Derby
      */
+    @Override
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
             super.appendByteArray(bytes, writer);
     }
@@ -56,6 +57,7 @@ public class DerbyPlatform extends DB2Platform {
      * This method returns the query to select the timestamp from the server
      * for Derby.
      */
+    @Override
     public ValueReadQuery getTimestampQuery() {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
@@ -64,15 +66,20 @@ public class DerbyPlatform extends DB2Platform {
         return timestampQuery;
 
     }
-
-    //TODO: check with reviewer. This method should be made private in DB2platform
+    
+    /**
+     * INTERNAL:
+     * Not currently used.
+     */
+    @Override
     public Vector getNativeTableInfo(String table, String creator, AbstractSession session) {
-        throw new RuntimeException("Should never reach here");
+        throw new RuntimeException("Not supported");
     }
 
     /**
      * Used for stored procedure defs.
      */
+    @Override
     public String getProcedureEndString() {
         return getBatchEndString();
     }
@@ -80,6 +87,7 @@ public class DerbyPlatform extends DB2Platform {
     /**
      * Used for stored procedure defs.
      */
+    @Override
     public String getProcedureBeginString() {
         return getBatchBeginString();
     }
@@ -88,6 +96,7 @@ public class DerbyPlatform extends DB2Platform {
      * This method is used to print the output parameter token when stored
      * procedures are called
      */
+    @Override
     public String getInOutputProcedureToken() {
         return "INOUT";
     }
@@ -96,6 +105,7 @@ public class DerbyPlatform extends DB2Platform {
      * This is required in the construction of the stored procedures with
      * output parameters
      */
+    @Override
     public boolean shouldPrintOutputTokenAtStart() {
         //TODO: Check with the reviewer where this is used
         return false;
@@ -105,15 +115,18 @@ public class DerbyPlatform extends DB2Platform {
      * INTERNAL:
      * Answers whether platform is Derby
      */
+    @Override
     public boolean isDerby() {
         return true;
     }
 
+    @Override
     public boolean isDB2() {
-        //This class inhertits from DB2. But it is not DB2
+        //This class inherits from DB2. But it is not DB2
         return false;
     }
 
+    @Override
     public String getSelectForUpdateString() {
         return " FOR UPDATE WITH RS";
     }
@@ -122,6 +135,7 @@ public class DerbyPlatform extends DB2Platform {
     /**
      * Allow for the platform to ignore exceptions.
      */
+    @Override
     public boolean shouldIgnoreException(SQLException exception) {
         // Nothing is ignored.
         return false;
@@ -131,6 +145,7 @@ public class DerbyPlatform extends DB2Platform {
     /**
      * INTERNAL:
      */
+    @Override
     protected String getCreateTempTableSqlSuffix() {
         return " ON COMMIT DELETE ROWS NOT LOGGED";
     }
@@ -139,6 +154,7 @@ public class DerbyPlatform extends DB2Platform {
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
+    @Override
     public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         selectQuery.setSQLString("values IDENTITY_VAL_LOCAL()");
@@ -150,6 +166,7 @@ public class DerbyPlatform extends DB2Platform {
      * Indicates whether temporary table can specify primary keys (some platforms don't allow that).
      * Used by writeCreateTempTableSql method.
      */
+    @Override
     protected boolean shouldTempTableSpecifyPrimaryKeys() {
         return false;
     }
@@ -157,12 +174,13 @@ public class DerbyPlatform extends DB2Platform {
     /**
      * INTERNAL:
      */
-     protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
+    @Override
+    protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
         // returning null includes fields of the table in body
         // see javadoc of DatabasePlatform#getCreateTempTableSqlBodyForTable(DataBaseTable)
         // for details
         return null;
-     }
+    }
 
     /**
      * INTERNAL:
@@ -176,7 +194,8 @@ public class DerbyPlatform extends DB2Platform {
      * @parameter Collection pkFields - primary key fields for the original table.
      * @parameter Collection assignedFields - fields to be assigned a new value.
      */
-     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
+    @Override
+    public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
                                                      Collection pkFields,
                                                      Collection assignedFields) throws IOException 
     {
@@ -217,6 +236,7 @@ public class DerbyPlatform extends DB2Platform {
      * INTERNAL:
      * Append the receiver's field 'identity' constraint clause to a writer.
      */
+    @Override
     public void printFieldIdentityClause(Writer writer) throws ValidationException {
         try {
             writer.write(" GENERATED BY DEFAULT AS IDENTITY");
@@ -224,7 +244,8 @@ public class DerbyPlatform extends DB2Platform {
             throw ValidationException.fileError(ioException);
         }
     }
-    
+
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping = new Hashtable();
 
@@ -270,6 +291,7 @@ public class DerbyPlatform extends DB2Platform {
     /**
      * Initialize any platform-specific operators
      */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         // Derby does not support DECIMAL, but does have a DOUBLE function.
@@ -278,18 +300,77 @@ public class DerbyPlatform extends DB2Platform {
     
     /**
      * INTERNAL:
-     * Derby does not support the DB2 syntax, so perform the default.
+     * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
+     * limiting the results of a query in SQL.  These limits tend to be used in two ways.
+     * 
+     * 1. MaxRows is the index of the last row to be returned (like JDBC maxResults)
+     * 2. MaxRows is the number of rows to be returned
+     * 
+     * Derby uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex.
+     */
+    @Override
+    public int computeMaxRowsForSQL(int firstResultIndex, int maxResults) {
+        return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
+    }
+    
+    /**
+     * INTERNAL:
+     * Derby supports pagination through its "OFFSET n ROWS FETCH NEXT m ROWS" syntax.
      */
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
-        call.setFields(statement.printSQL(printer));
+        int max = 0;
+        int firstRow = 0;
+
+        if (statement.getQuery()!=null){
+            max = statement.getQuery().getMaxRows();
+            firstRow = statement.getQuery().getFirstResult();
+        }
+        
+        if ( !(this.shouldUseRownumFiltering()) || ( !(max>0) && !(firstRow>0) ) ){
+            super.printSQLSelectStatement(call, printer, statement);
+            return;
+        } else if ( max > 0 ) {
+            statement.setUseUniqueFieldAliases(true);
+            call.setFields(statement.printSQL(printer));
+            printer.printString(" OFFSET ");
+            printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+            printer.printString(" ROWS FETCH NEXT ");
+            printer.printParameter(DatabaseCall.MAXROW_FIELD);
+            printer.printString(" ROWS ONLY");
+        } else {
+            statement.setUseUniqueFieldAliases(true);
+            call.setFields(statement.printSQL(printer));
+            printer.printString(" OFFSET ");
+            printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+            printer.printString(" ROWS");
+        }
+        call.setIgnoreFirstRowSetting(true);
+        call.setIgnoreMaxResultsSetting(true);
     }
 
     /**
-     * INTERNAL: Derby does not support sequence objects as DB2 does.
+     * INTERNAL: Derby supports sequence objects as of 10.6.1.
      */
     @Override
     public boolean supportsSequenceObjects() {
+        return true;
+    }
+    
+    @Override
+    public boolean isAlterSequenceObjectSupported() {
         return false;
     }
+
+    /**
+     * INTERNAL: Derby supports sequence objects as of 10.6.1.
+     */
+    @Override
+    public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
+        writer.write("DROP SEQUENCE ");
+        writer.write(fullSeqName);
+        writer.write(" RESTRICT");
+        return writer;
+    }
+
 }

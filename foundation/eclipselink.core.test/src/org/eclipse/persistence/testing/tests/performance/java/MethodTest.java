@@ -152,6 +152,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
                     try {
                         method = getClass().getMethod("doTest", argTypes);
                     } catch (Exception ignore) {
+                        throw new RuntimeException(ignore);
                     }
                     args = new Object[0];
                 }
@@ -162,6 +163,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
                     try {
                         method.invoke(this, args);
                     } catch (Exception ignore) {
+                        throw new RuntimeException(ignore);
                     }
                 }
             }

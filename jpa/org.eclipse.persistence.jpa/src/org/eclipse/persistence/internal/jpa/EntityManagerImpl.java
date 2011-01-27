@@ -38,6 +38,7 @@ import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -2321,7 +2322,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 }
                 if (checkForTransaction(false) != null) { 
                     unitOfWork.beginEarlyTransaction();
-                    return (T) unitOfWork.getAccessor().getConnection();
+                    Accessor accessor = unitOfWork.getAccessor();
+                    // Ensure external connection is acquired.
+                    accessor.incrementCallCount(unitOfWork.getParent());
+                    accessor.decrementCallCount();
+                    return (T) accessor.getConnection();
                 }
                 return null;
             }

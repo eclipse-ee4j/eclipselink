@@ -566,6 +566,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                     accessor.rollbackTransaction(this);
                 }
             } catch (RuntimeException failure) {
+                // Ensure the transaction is rolledback on failure to commit.
+                try {
+                    accessor.rollbackTransaction(this);
+                } catch (Exception ingore) {}
                 exception = failure;
             }
         }
