@@ -928,4 +928,97 @@ public class XMLContext {
         } 
     } 
 
+    /**
+     * Create a new object instance for a given XML namespace and name.
+     *
+     * @param namespace
+     *      The namespace of the complex type to create a new Java instance of.
+     * @param typeName
+     *      The XML type name to create a new Java instance of.
+     * @param isGlobalType
+     *      True if the object to be created represents a global type, false if it 
+     *      represents a global element.
+     *
+     * @return
+     *      An instance of the Java class mapped to the indicated XML type, or null
+     *      if no result was found.
+     */
+    public Object createByQualifiedName(String namespace, String typeName, boolean isGlobalType) throws IllegalArgumentException {
+        QName qName = new QName(namespace, typeName);
+
+        XMLDescriptor d = null;
+        if (!isGlobalType) {
+            d = getDescriptor(qName);
+        } else {
+            XPathFragment frag = new XPathFragment();
+            frag.setNamespaceURI(namespace);
+            frag.setLocalName(typeName);
+
+            d = getDescriptorByGlobalType(frag);
+        }
+
+        if (d == null) {
+            return null;
+        }
+
+        return d.getInstantiationPolicy().buildNewInstance();
+    }
+
+    /**
+     * Create a new object instance for a given XPath, relative to the parentObject.
+     *
+     * @param <T>
+     *      The return type of this method corresponds to the returnType parameter.
+     * @param parentObject
+     *      The XPath will be executed relative to this object.
+     * @param xPath
+     *      The XPath statement.
+     * @param namespaceResolver
+     *      A NamespaceResolver containing the prefix/URI pairings from the XPath statement.
+     * @param returnType
+     *      The return type.
+     *
+     * @return
+     *      An instance of the Java class mapped to the supplied XML type, or null
+     *      if no result was found.
+     */
+    public <T> T createByXPath(Object parentObject, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
+        Session session = this.getSession(parentObject);
+        XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(parentObject);
+        StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/");
+        return createByXPath(parentObject, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, returnType);
+    }
+
+    private <T> T createByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Class<T> returnType) {
+        String xPath = "";
+        XMLField xmlField = new XMLField();
+        xmlField.setNamespaceResolver(namespaceResolver);
+        while (stringTokenizer.hasMoreElements()) {
+            String nextToken = stringTokenizer.nextToken();
+            xmlField.setXPath(xPath + nextToken);
+            xmlField.initialize();
+            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField);
+            if (null == mapping) {
+                XPathFragment xPathFragment = new XPathFragment(nextToken);
+                if (xPathFragment.getIndexValue() > 0) {
+                    xmlField.setXPath(xPath + nextToken.substring(0, nextToken.indexOf('[')));
+                    xmlField.initialize();
+                    mapping = objectBuilder.getMappingForField(xmlField);
+                    if (null != mapping) {
+                        return (T) mapping.getReferenceDescriptor().getInstantiationPolicy().buildNewInstance();
+                    }
+                }
+            } else {
+                if (stringTokenizer.hasMoreElements()) {
+                    Object childObject = mapping.getAttributeValueFromObject(object);
+                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
+                    return createByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType);
+                } else {
+                    return (T) mapping.getReferenceDescriptor().getInstantiationPolicy().buildNewInstance();
+                }
+            }
+        }
+        return null;
+    }
+
 }

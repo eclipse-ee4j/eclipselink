@@ -592,4 +592,44 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         this.xmlContext.setValueByXPath(object, xPath, namespaceResolver, value);
     }
 
+    /**
+     * Create a new object instance for a given XML namespace and name.
+     *
+     * @param namespace
+     *      The namespace of the complex type to create a new Java instance of.
+     * @param typeName
+     *      The XML type name to create a new Java instance of.
+     * @param isGlobalType
+     *      True if the object to be created represents a global type, false if it 
+     *      represents a global element.
+     *
+     * @return
+     *      An instance of the Java class mapped to the indicated XML type, or null
+     *      if no result was found.
+     */
+    public Object createByQualifiedName(String namespace, String typeName, boolean isGlobalType) {
+        return this.xmlContext.createByQualifiedName(namespace, typeName, isGlobalType);
+    }
+
+    /**
+     * Create a new object instance for a given XPath, relative to the parentObject.
+     *
+     * @param <T>
+     *      The return type of this method corresponds to the returnType parameter.
+     * @param parentObject
+     *      The XPath will be executed relative to this object.
+     * @param xPath
+     *      The XPath statement.
+     * @param namespaceResolver
+     *      A NamespaceResolver containing the prefix/URI pairings from the XPath statement.
+     * @param returnType
+     *      The return type.
+     *
+     * @return
+     *      An instance of the Java class mapped to the supplied XML type, or null
+     *      if no result was found.
+     */
+    public <T> T createByXPath(Object parentObject, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
+        return this.xmlContext.createByXPath(parentObject, xPath, namespaceResolver, returnType);
+    }
 }

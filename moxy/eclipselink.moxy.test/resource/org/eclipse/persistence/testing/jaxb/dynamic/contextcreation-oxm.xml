@@ -8,7 +8,7 @@
     </xml-schema>
 
     <java-types>
-        <java-type name="org.eclipse.persistence.testing.jaxb.dynamic.Person">
+        <java-type name="org.eclipse.persistence.testing.jaxb.dynamic.Person" xml-discriminator-node="@ptype" xml-discriminator-value="P">
             <xml-root-element name="person"/>
             <java-attributes>
                 <xml-attribute java-attribute="id" type="java.lang.Integer"/>
@@ -16,6 +16,19 @@
                 <xml-element java-attribute="salary" type="java.lang.Double"/>
             </java-attributes>
         </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.dynamic.Customer" super-type="org.eclipse.persistence.testing.jaxb.dynamic.Person" xml-discriminator-value="C">
+            <xml-root-element name="customer-data"/>
+            <java-attributes>
+                <xml-element java-attribute="custID" type="java.lang.Integer"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.dynamic.Employee" super-type="org.eclipse.persistence.testing.jaxb.dynamic.Customer" xml-discriminator-value="V">
+            <xml-root-element name="employee-data"/>
+            <java-attributes>
+                <xml-element java-attribute="empID" name="employee-id" type="java.lang.String"/>
+            </java-attributes>
+        </java-type>
     </java-types>
+
 
 </xml-bindings>
