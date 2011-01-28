@@ -41,7 +41,7 @@ BatchCommitTransactionExceptionTest extends ExceptionTest {
         DatabasePlatform plat = session.getPlatform();
         // Changes to AbstractSession from revision 8888 seem to cause this
         // test to fail on MYSQL. Tracking bug 335724
-        if (plat.isOracle() || plat.isSQLServer() || plat.isSybase() || plat.isSQLAnywhere() /*|| plat.isMySQL()*/ || plat.isSymfoware()) {
+        if (plat.isOracle() || plat.isSQLServer() || plat.isSybase() || plat.isSQLAnywhere() || plat.isMySQL() || plat.isSymfoware()) {
             DatabaseLogin login = session.getLogin();
             login.useBatchWriting();
             try {
