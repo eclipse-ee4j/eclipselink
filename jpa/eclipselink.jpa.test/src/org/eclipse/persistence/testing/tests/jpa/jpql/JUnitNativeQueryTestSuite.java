@@ -55,6 +55,7 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
         suite.addTest(new JUnitNativeQueryTestSuite("testNativeQueryWithMixedCaseFields"));
         suite.addTest(new JUnitNativeQueryTestSuite("testNativeQueryHint"));
         suite.addTest(new JUnitNativeQueryTestSuite("testCaseSensitivity_GoldBuyer1"));
+        suite.addTest(new JUnitNativeQueryTestSuite("testNativeQueryCacheHit"));
 
         //This suite uses the same setup as this one
         TestSuite NamedNativeQuerySuite = new TestSuite();
@@ -76,6 +77,32 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
         //Persist the examples in the database
         employeePopulator.persistExample(session);
         clearCache(PUName);
+    }
+
+    /**
+     * 334704 - native queries do not use the shared cache
+     */
+    public void testNativeQueryCacheHit() {
+        Address result = null;
+        
+        EntityManager em = createEntityManager(PUName);
+        Query query = em.createQuery("Select a from Address a");
+        Address a = (Address)query.getResultList().get(0);
+        closeEntityManager(em);
+
+        //test needs to use a new EM so that the object returned is from the shared cache.
+        em = createEntityManager(PUName);
+        try {
+            this.beginTransaction(em);
+            query = em.createNativeQuery("Select ADDRESS_ID from CMP3_ADDRESS where ADDRESS_ID="+a.getID(), Address.class);
+            result = (Address)query.getSingleResult();
+        } finally {
+            rollbackTransaction(em);
+            clearCache(PUName);
+            closeEntityManager(em);
+        }
+
+        this.assertTrue("Street from Address read using native query did not match the cache version", result.getStreet()!=null && result.getStreet().equals(a.getStreet()));
     }
 
     /* Removed for 299926 when the default changed to false.
@@ -142,8 +169,6 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
     /**tests the SQL used for a JPQL query against native sql query.  
      * It tests that the "Descrip" field name defined is sent to the database in JPQL (Will fail on case sensitive database if not)
      * And tests that the "Descrip" field is found and populated into GoldBuyer when using JPQL
-     * 
-     * 
      */
     public void testCaseSensitivity_GoldBuyer1() {
         EntityManager em = createEntityManager(PUName);
