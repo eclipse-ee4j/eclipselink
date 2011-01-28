@@ -25,6 +25,8 @@ public class SDODataObjectType extends SDOType implements Type {
     public SDODataObjectType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT, sdoTypeHelper);
         setInstanceClass(DataObject.class);
+        javaImplClass = DataObject.class;
+        xmlDescriptor.setJavaClass(javaImplClass);
         setAbstract(true);
     }
 

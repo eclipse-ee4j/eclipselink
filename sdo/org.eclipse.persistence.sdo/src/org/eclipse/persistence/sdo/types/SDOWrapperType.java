@@ -32,6 +32,7 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOClassLoader;
@@ -51,6 +52,7 @@ import commonj.sdo.Type;
  */
 public class SDOWrapperType extends SDOType implements Type {
 
+    private static final String PACKAGE_NAME = "org.eclipse.persistence.sdo.dataobjects.";
     private static final String ATTRIBUTE_NAME = "value";
     private static final String XPATH = "text()";
 
@@ -58,14 +60,22 @@ public class SDOWrapperType extends SDOType implements Type {
     private Map<QName, XMLDescriptor> descriptorsMap;
 
     public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper) {
-        this(aPropertyType, aTypeName, aSDOTypeHelper, (QName) null);
+        this(aPropertyType, aTypeName, aSDOTypeHelper, (QName) null, null);
     }
 
     public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName aSchemaType) {
-        this(aPropertyType, aTypeName, aSDOTypeHelper, new QName[] { aSchemaType });
+        this(aPropertyType, aTypeName, aSDOTypeHelper, new QName[] { aSchemaType }, null);
+    }
+
+    public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName aSchemaType, Class<? extends SDODataObject> implClass) {
+        this(aPropertyType, aTypeName, aSDOTypeHelper, new QName[] { aSchemaType }, new Class[] { implClass });
     }
 
     public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName[] schemaTypes) {
+        this(aPropertyType, aTypeName, aSDOTypeHelper, schemaTypes, null);
+    }
+
+    public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName[] schemaTypes, Class<? extends SDODataObject>[] implClasses) {
         super(SDOConstants.ORACLE_SDO_URL, aTypeName, aSDOTypeHelper);
         typeName = aTypeName;
 
@@ -75,12 +85,16 @@ public class SDOWrapperType extends SDOType implements Type {
         valueProperty.setXsdType(schemaTypes[0]);
         addDeclaredProperty(valueProperty);
 
-        // Remove any special characters from the type name to create the class name:
         String normalizedTypeName = SDOUtil.className(aTypeName, true, true, false);
-        String implClassName = "org.eclipse.persistence.sdo." + normalizedTypeName + "WrapperImpl" ;
-        setImplClassName(implClassName);
-
-        getImplClass();
+        if(null == implClasses || null == implClasses[0]) {
+            // Remove any special characters from the type name to create the class name:
+            String implClassName = PACKAGE_NAME + normalizedTypeName + "WrapperImpl" ;
+            setImplClassName(implClassName);
+            getImplClass();
+        } else {
+            this.javaImplClass = implClasses[0]; 
+            this.xmlDescriptor.setJavaClass(javaImplClass);
+        }
 
         // Add a new map to typehelperdelegate
         // interface --> sdotype
@@ -97,12 +111,16 @@ public class SDOWrapperType extends SDOType implements Type {
             for (int i = 1; i < schemaTypes.length; i++) {
                 XMLDescriptor d = new XMLDescriptor();
                 QName schemaType = schemaTypes[i];
-                String className = "org.eclipse.persistence.sdo." + normalizedTypeName + "_" + schemaType.getLocalPart() + "Wrapper";
+                String className = PACKAGE_NAME + normalizedTypeName + "_" + schemaType.getLocalPart() + "Wrapper";
 
                 // Now generate the class in memory
                 try {
-                    SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
-                    d.setJavaClass(loader.loadClass(className + "Impl", this));
+                    if(null == implClasses || null == implClasses[i]) {
+                        SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
+                        d.setJavaClass(loader.loadClass(className + "Impl", this));
+                    } else {
+                        d.setJavaClass(implClasses[i]);
+                    }
                 } catch (ClassNotFoundException e) {
                     throw SDOException.classNotFound(e, getURI(), getName());
                 } catch (SecurityException e) {
@@ -245,4 +263,41 @@ public class SDOWrapperType extends SDOType implements Type {
 
         return str.toString();
     }
+
+    public static class BooleanObjectWrapperImpl extends SDODataObject {}
+    public static class BooleanWrapperImpl extends SDODataObject {}
+    public static class ByteObjectWrapperImpl extends SDODataObject {}
+    public static class BytesWrapperImpl extends SDODataObject {}
+    public static class ByteWrapperImpl extends SDODataObject {}
+    public static class Bytes_hexBunaryWrapperImpl extends SDODataObject {};
+    public static class CharacterObjectWrapperImpl extends SDODataObject {}
+    public static class CharacterWrapperImpl extends SDODataObject {}
+    public static class DateTimeWrapperImpl extends SDODataObject {}
+    public static class DateWrapperImpl extends SDODataObject {}
+    public static class DayWrapperImpl extends SDODataObject {}
+    public static class DecimalWrapperImpl extends SDODataObject {}
+    public static class DoubleObjectWrapperImpl extends SDODataObject {}
+    public static class DoubleWrapperImpl extends SDODataObject {}
+    public static class DurationWrapperImpl extends SDODataObject {}
+    public static class FloatObjectWrapperImpl extends SDODataObject {}
+    public static class FloatWrapperImpl extends SDODataObject {}
+    public static class IntegerWrapperImpl extends SDODataObject {}
+    public static class IntObjectWrapperImpl extends SDODataObject {}
+    public static class IntWrapperImpl extends SDODataObject {}
+    public static class LongObjectWrapperImpl extends SDODataObject {}
+    public static class LongWrapperImpl extends SDODataObject {}
+    public static class MonthDayWrapperImpl extends SDODataObject {}
+    public static class MonthWrapperImpl extends SDODataObject {}
+    public static class ObjectWrapperImpl extends SDODataObject {}
+    public static class ShortObjectWrapperImpl extends SDODataObject {}
+    public static class ShortWrapperImpl extends SDODataObject {}
+    public static class StringsWrapperImpl extends SDODataObject {}
+    public static class StringWrapperImpl extends SDODataObject {}
+    public static class TimeWrapperImpl extends SDODataObject {}
+    public static class URIWrapperImpl extends SDODataObject {}
+    public static class URI_QNameWrapperImpl extends SDODataObject {}
+    public static class YearMonthDayWrapperImpl extends SDODataObject {}
+    public static class YearMonthWrapperImpl extends SDODataObject {}
+    public static class YearWrapperImpl extends SDODataObject {}
+
 }

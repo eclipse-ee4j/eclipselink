@@ -20,11 +20,10 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.dataobjects.OpenSequencedType;
+import org.eclipse.persistence.sdo.dataobjects.OpenSequencedTypeImpl;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
 public class SDOOpenSequencedType extends SDOType implements Type {
-
-    private static final String ORACLE_SDO_DO_URL = "org.eclipse.persistence.sdo.dataobjects";
 
     public SDOOpenSequencedType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.ORACLE_SDO_URL, "OpenSequencedType", sdoTypeHelper);
@@ -32,9 +31,8 @@ public class SDOOpenSequencedType extends SDOType implements Type {
         this.xmlDescriptor.setInstantiationPolicy(new TypeInstantiationPolicy(this));
 
         setInstanceClass(OpenSequencedType.class);
-        setImplClassName(ORACLE_SDO_DO_URL + ".OpenSequencedTypeImpl");
-        Class implClass = getImplClass();
-        xmlDescriptor.setJavaClass(implClass);
+        javaImplClass = OpenSequencedTypeImpl.class;
+        xmlDescriptor.setJavaClass(javaImplClass);
 
         setMixed(true);
         setSequenced(true);

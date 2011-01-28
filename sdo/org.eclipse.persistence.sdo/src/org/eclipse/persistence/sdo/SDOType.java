@@ -71,7 +71,7 @@ public class SDOType implements Type, Serializable {
     private Class javaClass;
     private String javaClassName;
     private String javaImplClassName;
-    private Class javaImplClass;
+    protected Class javaImplClass;
     private List nonFinalizedReferencingProps;
     private List nonFinalizedMappingURIs;
 

@@ -21,14 +21,13 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.metadata.TypeStringConverter;
 
 public class SDOPropertyType extends SDOType implements Type {
-
-    private static final String SDO_DO_URL = "org.eclipse.persistence.sdo.dataobjects";
 
     private boolean initialized = false;
     private SDOTypeHelper typeHelper;
@@ -37,10 +36,10 @@ public class SDOPropertyType extends SDOType implements Type {
         super(SDOConstants.SDO_URL, SDOConstants.PROPERTY, sdoTypeHelper);
         this.typeHelper = sdoTypeHelper;
 
-        setImplClassName(SDO_DO_URL + ".PropertyImpl");
-        Class implClass = getImplClass();
 
-        xmlDescriptor.setJavaClass(implClass);
+        this.javaImplClass = PropertyImpl.class;
+
+        xmlDescriptor.setJavaClass(javaImplClass);
         xmlDescriptor.setInstantiationPolicy(new TypeInstantiationPolicy(this));
 
         XMLSchemaReference schemaReference = new XMLSchemaClassPathReference();
@@ -157,5 +156,7 @@ public class SDOPropertyType extends SDOType implements Type {
     public boolean isInitialized() {
         return this.initialized;
     }
+
+    public static class PropertyImpl extends SDODataObject {}
 
 }
