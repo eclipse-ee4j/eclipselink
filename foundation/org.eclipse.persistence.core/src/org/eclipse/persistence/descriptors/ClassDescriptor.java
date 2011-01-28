@@ -2910,14 +2910,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
         // 3934266 move validation to the policy allowing for this to be done in the sub policies.
         getObjectChangePolicy().initialize(session, this);
         
-        // PERF: If using isolated cache, then default uow isolation to awalys (avoids merge/double build).
+        // PERF: If using isolated cache, then default uow isolation to always (avoids merge/double build).
         if (getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) {
             if (isIsolated()) {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_ALWAYS);
             }else if (isProtectedIsolation()) {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_FROM_CLIENT_SESSION);
             }else{
-                setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_AFTER_TRANSACTION);
+                setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
             }
         }
         // Setup default redirectors.  Any redirector that is not set will get assigned the
