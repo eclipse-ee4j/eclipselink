@@ -476,6 +476,10 @@ public abstract class JUnitTestCase extends TestCase {
         return getServerSession().getDatasourcePlatform();
     }
    
+    public static Platform getDbPlatform(String puName) {
+        return getServerSession(puName).getDatasourcePlatform();
+    }
+   
     public void setUp() {
     }
     
@@ -776,6 +780,24 @@ public abstract class JUnitTestCase extends TestCase {
         // PostgreSQL has some level of support for "stored functions", but output parameters do not work as of 8.2.
         // TODO: DB2 should be in this list.
         if (platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer() || platform.isSymfoware()) {
+            return true;
+        }
+        warning("This database does not support stored procedure creation.");
+        return false;
+    }
+
+    /**
+     * Return if stored functions are supported for the database platform for the test database.
+     */
+    public boolean supportsStoredFunctions(){
+        return supportsStoredFunctions("default");
+    }
+
+    public boolean supportsStoredFunctions(String puName) {
+        DatabasePlatform platform = getServerSession(puName).getPlatform();
+        // PostgreSQL has some level of support for "stored functions", but output parameters do not work as of 8.2.
+        // TODO: DB2 should be in this list.
+        if (platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSymfoware()) {
             return true;
         }
         warning("This database does not support stored procedure creation.");

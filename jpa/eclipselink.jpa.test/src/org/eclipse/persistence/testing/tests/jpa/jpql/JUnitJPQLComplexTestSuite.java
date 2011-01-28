@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,9 +22,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import junit.framework.Assert;
 import junit.framework.Test;
@@ -271,7 +273,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         new DataTypesTableCreator().replaceTables(session);
 
         //create stored function when database supports it
-        if (supportsStoredProcedures()){
+        if (supportsStoredFunctions()){
             SchemaManager schema = new SchemaManager(session);
             schema.replaceObject(buildStoredFunction());
         }
@@ -384,7 +386,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     {
         EntityManager em = createEntityManager();          
         
-        Assert.assertFalse("Warning SQL doesnot support LENGTH function",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isSQLServer());
+        Assert.assertFalse("Warning SQLServer does not support LENGTH function",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isSQLServer());
         
         Employee expectedResult = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
         clearCache();
@@ -561,7 +563,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
         EntityManager em = createEntityManager();          
         
-        Assert.assertFalse("Warning SQL doesnot support LENGTH function",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isSQLServer());
+        Assert.assertFalse("Warning SQLServer does not support LENGTH function",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isSQLServer());
         
         Employee expectedResult = (Employee) getServerSession().readAllObjects(Employee.class).firstElement();
         clearCache();
@@ -2869,6 +2871,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     // Bug 303540 - JPQL: query fails to compile if variable found only in function parameters 
     public void variableReferencedOnlyInParameterTest() {
+        // for debug
+        boolean shouldPrintJpql = false;
+        boolean shouldPrintStackTrace = false;
         EntityManager em = createEntityManager();
         String[] jpqlString = {
                 "SELECT (e.id + 1) FROM Employee e",
@@ -2893,14 +2898,39 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 "SELECT LOWER(e.firstName) FROM Employee e",
         };
         
-        try {
-            for(int i=0; i < jpqlString.length; i++) {
-                String jpql = jpqlString[i];
-                Query query = em.createQuery(jpql);
-                query.getResultList();
+        Set<String> jpqlStringExcluded = new HashSet();
+        if (getDbPlatform().isSQLServer()) {
+            jpqlStringExcluded.add("SELECT TRIM(LEADING 'A' FROM e.firstName) FROM Employee e");
+            jpqlStringExcluded.add("SELECT TRIM(TRAILING 'A' FROM e.firstName) FROM Employee e");
+        }
+        
+        String errorMsg = "";
+        String jpql = null;
+        for(int i=0; i < jpqlString.length; i++) {
+            try {
+                jpql = jpqlString[i];
+                if(jpqlStringExcluded.contains(jpql)) {
+                    warning("'" + jpql + "' is not supported on this database platform");
+                } else {
+                    Query query = em.createQuery(jpql);
+                    query.getResultList();
+                }
+            } catch (Exception ex) {
+                if(shouldPrintJpql) {
+                    System.out.println(jpql);
+                }
+                if(shouldPrintStackTrace) {
+                    ex.printStackTrace();
+                }
+                errorMsg += '\t' + jpql + '\n';
             }
-        } finally {
-            closeEntityManager(em);
+        }
+
+        closeEntityManager(em);
+        
+        if(errorMsg.length() > 0) {
+            errorMsg = "Failed:\n" + errorMsg;
+            fail(errorMsg);
         }
     }
 
@@ -3033,7 +3063,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     /* Test FUNC with stored function 'StoredFunction_In'*/
     public void testFuncWithStoredFunc(){
-        if (!supportsStoredProcedures())
+        if (!supportsStoredFunctions())
         {
             warning("this test is not suitable for running on dbs that don't support stored function");
             return;
