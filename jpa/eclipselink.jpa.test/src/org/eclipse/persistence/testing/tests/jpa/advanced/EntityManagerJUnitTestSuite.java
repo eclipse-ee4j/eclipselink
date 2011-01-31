@@ -351,6 +351,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testUpdateAllProjects");
         tests.add("testUpdateUsingTempStorage");
         tests.add("testWeaving");
+        tests.add("testRefreshForFlush");
+        tests.add("testRefreshForCommit");
+        tests.add("testChangeFlushChangeRefresh");
+
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -10310,5 +10314,86 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         rollbackTransaction(em);
     }
+
+    
+    // Bug 335322
+    public void testRefreshForFlush(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("Al");
+        em.persist(emp);
+        em.flush();
+        em.clear();
+        
+        clearCache();
+        emp = em.find(Employee.class, emp.getId());
+        emp.setFirstName("Joe");
+        em.refresh(emp);
+        emp.setLastName("Joseph");
+        em.flush();
+        
+        em.refresh(emp);
+        assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
+        rollbackTransaction(em);
+    }
+    
+    // Bug 335322
+    public void testRefreshForCommit(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("Al");
+        em.persist(emp);
+        commitTransaction(em);
+        em.clear();
+        
+        clearCache();
+        beginTransaction(em);
+        emp = em.find(Employee.class, emp.getId());
+        emp.setFirstName("Joe");
+        em.refresh(emp);
+        emp.setLastName("Joseph");
+        commitTransaction(em);
+        
+        em.refresh(emp);
+        assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
+
+        beginTransaction(em);
+        em.remove(emp);
+        commitTransaction(em);
+    }
+    
+    // Bug 335322
+    public void testChangeFlushChangeRefresh(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("Al");
+        em.persist(emp);
+        commitTransaction(em);
+        em.clear();     
+        clearCache();
+        
+        beginTransaction(em);
+        emp = em.find(Employee.class, emp.getId());
+        emp.setFirstName("Joe");
+        em.flush();
+
+        emp.setLastName("Joseph");
+        em.refresh(emp);
+        commitTransaction(em);
+
+        em.clear();     
+        clearCache();
+        
+        emp = em.find(Employee.class, emp.getId());
+        assertTrue("The first name was reverted even though it was written.", emp.getFirstName().equals("Joe"));
+
+        beginTransaction(em);
+        em.remove(emp);
+        commitTransaction(em);
+    }
+
 }
 

@@ -117,15 +117,15 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * Clear the change set in the change event listener.
      */
     public void updateWithChanges(Object object, ObjectChangeSet changeSet, UnitOfWorkImpl uow, ClassDescriptor descriptor) {
-        clearChanges(object, uow, descriptor);
+        clearChanges(object, uow, descriptor, false);
     }
 
     /**
      * INTERNAL:
      * Clear the change set in the change event listener.
      */
-    public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping) {
-        clearChanges(clone, uow, descriptor);        
+    public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping, boolean forRefresh) {
+        clearChanges(clone, uow, descriptor, forRefresh);
         cloneMapping.put(clone, clone);
     }
 

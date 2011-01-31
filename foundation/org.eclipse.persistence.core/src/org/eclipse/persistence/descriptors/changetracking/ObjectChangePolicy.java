@@ -102,13 +102,13 @@ public interface ObjectChangePolicy extends Serializable {
      * INTERNAL:
      * This method is used to revert an object within the unit of work
      */
-    void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping);
+    void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping, boolean forRefresh);
 
     /**
      * INTERNAL:
      * This is a place holder for reseting the listener on one of the subclasses
      */
-    void clearChanges(Object object, UnitOfWorkImpl uow, ClassDescriptor descriptor);
+    void clearChanges(Object object, UnitOfWorkImpl uow, ClassDescriptor descriptor, boolean forRefresh);
     
     /**
      * INTERNAL:
