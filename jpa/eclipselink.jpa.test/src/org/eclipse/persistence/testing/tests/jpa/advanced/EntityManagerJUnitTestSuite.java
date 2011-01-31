@@ -163,6 +163,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.setName("EntityManagerJUnitTestSuite");
         
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
+
         suite.addTest(new EntityManagerJUnitTestSuite("testWeaving"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContext"));
         suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllProjects"));
@@ -347,6 +348,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEmployee_with_status_enum_collection_instantiated"));
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteMan"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNestedBatchQueryHint"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRefreshForFlush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRefreshForCommit"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testChangeFlushChangeRefresh"));
         if (!isJPA10()) {
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachNull"));
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachRemovedObject"));
@@ -10081,6 +10085,85 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             pool.releaseConnection(accessor);
             fail("Exclusive connection has not been released after the EntityManager has been closed.");
         }
-    }        
+    }       
+    
+    // Bug 335322
+    public void testRefreshForFlush(){
+    	EntityManager em = createEntityManager();
+    	beginTransaction(em);
+    	Employee emp = new Employee();
+    	emp.setFirstName("Al");
+    	em.persist(emp);
+    	em.flush();
+    	em.clear();
+    	
+    	clearCache();
+    	emp = em.find(Employee.class, emp.getId());
+    	emp.setFirstName("Joe");
+    	em.refresh(emp);
+    	emp.setLastName("Joseph");
+    	em.flush();
+    	
+    	em.refresh(emp);
+    	assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
+    	rollbackTransaction(em);
+    }
+    
+    // Bug 335322
+    public void testRefreshForCommit(){
+    	EntityManager em = createEntityManager();
+    	beginTransaction(em);
+    	Employee emp = new Employee();
+    	emp.setFirstName("Al");
+    	em.persist(emp);
+    	commitTransaction(em);
+    	em.clear();
+    	
+    	clearCache();
+    	beginTransaction(em);
+    	emp = em.find(Employee.class, emp.getId());
+    	emp.setFirstName("Joe");
+    	em.refresh(emp);
+    	emp.setLastName("Joseph");
+    	commitTransaction(em);
+    	
+    	em.refresh(emp);
+    	assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
+
+    	beginTransaction(em);
+    	em.remove(emp);
+    	commitTransaction(em);
+    }
+    
+    // Bug 335322
+    public void testChangeFlushChangeRefresh(){
+    	EntityManager em = createEntityManager();
+    	beginTransaction(em);
+    	Employee emp = new Employee();
+    	emp.setFirstName("Al");
+    	em.persist(emp);
+    	commitTransaction(em);
+    	em.clear(); 	
+    	clearCache();
+    	
+    	beginTransaction(em);
+    	emp = em.find(Employee.class, emp.getId());
+    	emp.setFirstName("Joe");
+    	em.flush();
+
+    	emp.setLastName("Joseph");
+    	em.refresh(emp);
+    	commitTransaction(em);
+
+    	em.clear(); 	
+    	clearCache();
+    	
+    	emp = em.find(Employee.class, emp.getId());
+    	assertTrue("The first name was reverted even though it was written.", emp.getFirstName().equals("Joe"));
+
+    	beginTransaction(em);
+    	em.remove(emp);
+    	commitTransaction(em);
+    }
 }
 

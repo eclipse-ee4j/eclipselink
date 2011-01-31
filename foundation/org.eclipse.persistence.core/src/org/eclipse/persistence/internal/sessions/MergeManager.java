@@ -569,7 +569,7 @@ public class MergeManager {
             descriptor.getObjectChangePolicy().enableEventProcessing(clone);
         }
         //update the change policies with the refresh
-        descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, (UnitOfWorkImpl)this.session, ((UnitOfWorkImpl)this.session).getCloneMapping());
+        descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, (UnitOfWorkImpl)this.session, ((UnitOfWorkImpl)this.session).getCloneMapping(), true);
         if (primaryKey == null) {
             return clone;
         }
@@ -853,7 +853,7 @@ public class MergeManager {
     }
 
     /**
-     * This is used to revert changes to objects, or during refreshes.
+     * This is used to revert changes to objects
      */
     public void mergeOriginalIntoWorkingCopy() {
         setMergePolicy(ORIGINAL_INTO_WORKING_COPY);
@@ -1078,7 +1078,7 @@ public class MergeManager {
     }
 
     /**
-     * This is used to revert changes to objects, or during refreshes.
+     * This is used to revert changes to objects.
      */
     public boolean shouldMergeOriginalIntoWorkingCopy() {
         return getMergePolicy() == ORIGINAL_INTO_WORKING_COPY;

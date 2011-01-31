@@ -1567,7 +1567,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     
             // If it was a clone the change listener must be cleared.
             if (wasAClone) {
-                policy.clearChanges(workingClone, unitOfWork, descriptor);
+                policy.clearChanges(workingClone, unitOfWork, descriptor, isARefresh);
             }
             policy.enableEventProcessing(workingClone);
             unitOfWork.getCloneMapping().put(workingClone, backupClone);
