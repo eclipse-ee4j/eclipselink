@@ -24,6 +24,8 @@ public class JPAPerformanceTestModel extends TestModel {
         addTest(new JPAPerformanceRegressionModel());
         addTest(new JPAPerformanceComparisonModel());
         addTest(new JPAIsolatedPerformanceRegressionModel());
+        addTest(new JPAEmulatedPerformanceRegressionModel());
+        addTest(new JPAEmulatedIsolatedPerformanceRegressionModel());
         addTest(new JPAConcurrencyComparisonModel());
         addTest(new HibernateJPAPerformanceRegressionModel());
         addTest(new HibernateJPAConcurrencyComparisonModel());

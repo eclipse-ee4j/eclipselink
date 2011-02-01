@@ -3107,8 +3107,17 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
     
     /**
+     * INTERNAL:
      * Used by some platforms during reading of ResultSet to free temporary objects.
      */
     public void freeTemporaryObject(Object value) throws SQLException {
+    }
+
+    
+    /**
+     * INTERNAL:
+     * Allow initialization from the connection.
+     */
+    public void initializeConnectionData(Connection connection) throws SQLException {
     }
 }

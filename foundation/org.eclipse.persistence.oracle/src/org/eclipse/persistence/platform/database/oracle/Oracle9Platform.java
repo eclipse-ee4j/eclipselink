@@ -199,7 +199,7 @@ public class Oracle9Platform extends Oracle8Platform {
             //It has been fixed in the next version for both streams
             Timestamp timestampToWrap = tsTZ.timestampValue(connection);
             TimeZone timezoneToWrap = TIMESTAMPHelper.extractTimeZone(tsTZ.toBytes());
-            return new TIMESTAMPTZWrapper(timestampToWrap, timezoneToWrap, isTimestampInGmt(connection));
+            return new TIMESTAMPTZWrapper(timestampToWrap, timezoneToWrap, this.isTimestampInGmt);
         }
         return null;
     }
@@ -218,7 +218,7 @@ public class Oracle9Platform extends Oracle8Platform {
             Timestamp timestampToWrap = TIMESTAMPLTZ.toTimestamp(connection, tsLTZ.toBytes());
             String sessionTimeZone = ((OracleConnection)connection).getSessionTimeZone();
             //Bug#4364359  Add a separate wrapper for TIMESTAMPLTZ.  
-            return new TIMESTAMPLTZWrapper(timestampToWrap, sessionTimeZone, isLtzTimestampInGmt(connection));
+            return new TIMESTAMPLTZWrapper(timestampToWrap, sessionTimeZone, this.isLtzTimestampInGmt);
         }
         return null;
     }
@@ -407,71 +407,31 @@ public class Oracle9Platform extends Oracle8Platform {
     /**
      * INTERNAL:
      */
-    protected synchronized void initializeConnectionData(Connection conn) throws SQLException {
-        if(isConnectionDataInitialized) {
+    @Override
+    public void initializeConnectionData(Connection connection) throws SQLException {
+        if (this.isConnectionDataInitialized || (connection == null) || (connection.getMetaData() == null)) {
             return;
         }
-        driverVersion = conn.getMetaData().getDriverVersion();
+        this.driverVersion = connection.getMetaData().getDriverVersion();
         // printCalendar for versions greater or equal 9 and less than 10.2.0.4
-        shouldPrintCalendar = Helper.compareVersions("9", driverVersion) <= 0 && Helper.compareVersions(driverVersion, "10.2.0.4") < 0;
-        if(Helper.compareVersions(driverVersion, "11.1.0.7") < 0) {
-            isTimestampInGmt = false;
+        this.shouldPrintCalendar = Helper.compareVersions("9", this.driverVersion) <= 0 && Helper.compareVersions(this.driverVersion, "10.2.0.4") < 0;
+        if(Helper.compareVersions(this.driverVersion, "11.1.0.7") < 0) {
+            this.isTimestampInGmt = false;
         } else {
-            if(conn instanceof OracleConnection) {
-                String timestampTzInGmtPropStr = ((OracleConnection)conn).getProperties().getProperty("oracle.jdbc.timestampTzInGmt", "true");
-                isTimestampInGmt = timestampTzInGmtPropStr.equalsIgnoreCase("true");
+            if(connection instanceof OracleConnection) {
+                String timestampTzInGmtPropStr = ((OracleConnection)connection).getProperties().getProperty("oracle.jdbc.timestampTzInGmt", "true");
+                this.isTimestampInGmt = timestampTzInGmtPropStr.equalsIgnoreCase("true");
             } else {
-                isTimestampInGmt = true;
+                this.isTimestampInGmt = true;
             }
-            isLtzTimestampInGmt = Helper.compareVersions(driverVersion, "11.2.0.2") >= 0;
+            this.isLtzTimestampInGmt = Helper.compareVersions(this.driverVersion, "11.2.0.2") >= 0;
         }
-        isConnectionDataInitialized = true;
+        this.isConnectionDataInitialized = true;
     }
     
     public synchronized void clearConnectionData() {
-        driverVersion = null;
-        isConnectionDataInitialized = false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return driverVersion.
-     */
-    public String getDriverVersion(Connection conn) throws SQLException {
-        if(!isConnectionDataInitialized) {
-            initializeConnectionData(conn);
-        }
-        return driverVersion;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean shouldPrintCalendar(Connection conn) throws SQLException {
-        if(!isConnectionDataInitialized) {
-            initializeConnectionData(conn);
-        }
-        return shouldPrintCalendar;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean isTimestampInGmt(Connection conn) throws SQLException {
-        if(!isConnectionDataInitialized) {
-            initializeConnectionData(conn);
-        }
-        return isTimestampInGmt;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean isLtzTimestampInGmt(Connection conn) throws SQLException {
-        if(!isConnectionDataInitialized) {
-            initializeConnectionData(conn);
-        }
-        return isLtzTimestampInGmt;
+        this.driverVersion = null;
+        this.isConnectionDataInitialized = false;
     }
     
     /**
@@ -508,7 +468,7 @@ public class Oracle9Platform extends Oracle8Platform {
         if (parameter instanceof Calendar) {
             Calendar calendar = (Calendar)parameter;
             Connection conn = getConnection(session, statement.getConnection());
-            TIMESTAMPTZ tsTZ = TIMESTAMPHelper.buildTIMESTAMPTZ(calendar, conn, shouldPrintCalendar(conn));
+            TIMESTAMPTZ tsTZ = TIMESTAMPHelper.buildTIMESTAMPTZ(calendar, conn, this.shouldPrintCalendar);
             statement.setObject(index, tsTZ);
         } else {
             super.setParameterValueInDatabaseCall(parameter, statement, index, session);

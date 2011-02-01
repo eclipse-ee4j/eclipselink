@@ -169,6 +169,8 @@ public class CommitManager {
                     this.session.deleteObject(objects.get(index));
                 }
             }
+            
+            this.session.commitTransaction();
         } catch (RuntimeException exception) {
             this.session.rollbackTransaction();
             throw exception;
@@ -176,8 +178,6 @@ public class CommitManager {
             reinitialize();
             this.isActive = false;
         }
-
-        this.session.commitTransaction();
     }
 
     /**
@@ -288,6 +288,8 @@ public class CommitManager {
                     deleteAllObjects(theClass, objects, session);
                 }
             }
+
+            session.commitTransaction();
         } catch (RuntimeException exception) {
             try {
                 session.rollbackTransaction();
@@ -298,8 +300,6 @@ public class CommitManager {
             reinitialize();
             this.isActive = false;
         }
-
-        session.commitTransaction();
     }
 
     /**

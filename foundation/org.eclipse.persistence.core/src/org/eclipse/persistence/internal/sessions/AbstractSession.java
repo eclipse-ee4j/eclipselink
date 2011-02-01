@@ -556,20 +556,12 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (accessors == null) {
             return;
         }
-        RuntimeException exception = null;
-        for (Accessor accessor : accessors) {
         try {
-                // 2 stage commit.
-                if (exception == null) {
-                    accessor.commitTransaction(this);                    
-                } else {
-                    accessor.rollbackTransaction(this);
-                }
-            } catch (RuntimeException failure) {
-                exception = failure;
+            for (Accessor accessor : accessors) {
+                accessor.commitTransaction(this);
             }
-        }
-        if (exception != null) {
+        } catch (RuntimeException exception) {
+            // Leave transaction uncommitted as rollback should be called.
             handleException(exception);
         }
     }

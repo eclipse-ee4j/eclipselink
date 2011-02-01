@@ -1416,34 +1416,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // do not lock objects unless we are at the commit stage
             if (commitTransaction) {
                 try {
-                    // If everything is isolated, can bypass merge entirely.
-                    if (this.project.hasNonIsolatedUOWClasses() || (this.modifyAllQueries != null)) {
-                        // if we should be acquiring locks before commit let's do that here 
-                        if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase()) {
-                            writesCompleted();//flush Batch Statements
-                            setMergeManager(new MergeManager(this));
-                            //If we are merging into the shared cache acquire all required locks before merging.
-                            this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
-                        }
-                    }
+                    acquireWriteLocks();
                     commitTransaction();
                 } catch (RuntimeException throwable) {
-                    if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getMergeManager() != null)) {
-                        // 272022: If the current thread and the active thread on the mutex do not match - switch them
-                        verifyMutexThreadIntegrityBeforeRelease();
-                        // exception occurred during the commit.
-                        this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
-                        this.setMergeManager(null);
-                    }
+                    releaseWriteLocks();
                     throw throwable;
                 } catch (Error throwable) {
-                    if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getMergeManager() != null)) {
-                        // 272022: If the current thread and the active thread on the mutex do not match - switch them
-                        verifyMutexThreadIntegrityBeforeRelease();
-                        // exception occurred during the commit.
-                        this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
-                        this.setMergeManager(null);
-                    }
+                    releaseWriteLocks();
                     throw throwable;
                 }
             } else {
@@ -1513,10 +1492,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             // Must be set to false for release to know not to rollback.
                             setWasTransactionBegunPrematurely(false);
                             setWasNonObjectLevelModifyQueryExecuted(false);
-                            commitTransaction();
+                            try {
+                                commitTransaction();
+                            } catch (RuntimeException commitFailed) {
+                                rollbackTransaction();
+                                throw commitFailed;
+                            } catch (Error error) {
+                                rollbackTransaction();
+                                throw error;
+                            }
                         }
                     }
-                } catch( RuntimeException exception){
+                } catch (RuntimeException exception) {
                     // The number of SQL statements been prepared need be stored into UOW 
                     // before any exception being thrown.
                     copyStatementsCountIntoProperties();
@@ -1571,40 +1558,52 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
              try{
                 //gf934: ensuring release doesn't cause an extra rollback call if acquireRequiredLocks throws an exception
                 setWasTransactionBegunPrematurely(false);
-                // If everything is isolated, can bypass merge entirely.
-                if (this.project.hasNonIsolatedUOWClasses() || (this.modifyAllQueries != null)) {
-                    // if we should be acquiring locks before commit let's do that here 
-                    if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getUnitOfWorkChangeSet() != null)) {
-                        writesCompleted();//flush Batch Statements
-                        setMergeManager(new MergeManager(this));
-                        //If we are merging into the shared cache acquire all required locks before merging.
-                        this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
-                    }
-                }
+                acquireWriteLocks();
                 commitTransaction();
             } catch (RuntimeException exception) {
-                if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getMergeManager() != null)) {
-                    // 272022: If the current thread and the active thread on the mutex do not match - switch them
-                    verifyMutexThreadIntegrityBeforeRelease();
-                    // exception occurred during the commit.
-                    this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
-                    setMergeManager(null);
-                }
-                release();
+                releaseWriteLocks();
+                rollbackTransaction(false);
+                setLifecycle(WriteChangesFailed);
                 handleException(exception);
             } catch (Error throwable) {
-                if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getMergeManager() != null)) {
-                    // 272022: If the current thread and the active thread on the mutex do not match - switch them
-                    verifyMutexThreadIntegrityBeforeRelease();
-                    // exception occurred during the commit.
-                    this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
-                    setMergeManager(null);
-                }
+                releaseWriteLocks();
+                rollbackTransaction();
                 throw throwable;
             }
         }
     }
+        
+    /**
+     * INTERNAL:
+     * Acquire the unit of work cache write locks, if required.
+     */
+    protected void acquireWriteLocks() {
+        // If everything is isolated, can bypass merge entirely.
+        if (this.project.hasNonIsolatedUOWClasses() || (this.modifyAllQueries != null)) {
+            // if we should be acquiring locks before commit let's do that here 
+            if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (this.unitOfWorkChangeSet != null)) {
+                writesCompleted();//flush Batch Statements
+                this.lastUsedMergeManager = new MergeManager(this);
+                //If we are merging into the shared cache acquire all required locks before merging.
+                this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(this.lastUsedMergeManager, this.unitOfWorkChangeSet);
+            }
+        }
+    }
 
+    /**
+     * INTERNAL:
+     * Release the unit of work cache write locks, if acquired.
+     */
+    public void releaseWriteLocks() {
+        if (this.lastUsedMergeManager != null) {
+            // 272022: If the current thread and the active thread on the mutex do not match - switch them
+            verifyMutexThreadIntegrityBeforeRelease();
+            // exception occurred during the commit.
+            this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(this.lastUsedMergeManager);
+            this.lastUsedMergeManager = null;
+        }
+    }
+        
     /**
      * INTERNAL:
      * Copy the read only classes from the unit of work.
@@ -4363,15 +4362,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             rollbackTransaction();
             setWasTransactionBegunPrematurely(false);
         }
-        MergeManager mergeManager = getMergeManager();
-        if ((mergeManager != null) && (mergeManager.getAcquiredLocks() != null) && (!mergeManager.getAcquiredLocks().isEmpty())) {
-            // 272022: If the current thread and the active thread on the mutex do not match - switch them
-            verifyMutexThreadIntegrityBeforeRelease();
-            //may have unreleased cache locks because of a rollback...  As some 
-            //locks may be acquired during commit.
-            this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(mergeManager);
-            setMergeManager(null);
-        }
+        releaseWriteLocks();
         setDead();
         if (shouldClearForCloseOnRelease()) {
             //uow still could be used for instantiating of ValueHolders after it's released.
@@ -4691,6 +4682,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
+     * INTERNAL:
      * A reference to the last used merge manager.  This is used to track locked
      * objects.
      */
@@ -5806,26 +5798,26 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return true if threads were switched
      */
     public boolean verifyMutexThreadIntegrityBeforeRelease() {        
-        if(null != this.getMergeManager()) { // mergeManager may be null in a com.ibm.tx.jta.RegisteredSyncs.coreDistributeAfter() afterCompletion() callback
+        if (this.lastUsedMergeManager != null) { // mergeManager may be null in a com.ibm.tx.jta.RegisteredSyncs.coreDistributeAfter() afterCompletion() callback
             Thread currentThread = Thread.currentThread();
-            Thread lockThread = this.getMergeManager().getLockThread();
-            if(currentThread != lockThread) {
-                if(ConcurrencyManager.getDeferredLockManager(lockThread) != null){
+            Thread lockThread = this.lastUsedMergeManager.getLockThread();
+            if (currentThread != lockThread) {
+                if (ConcurrencyManager.getDeferredLockManager(lockThread) != null){
                     // check for transitioned old deferred lock manager and switch to the new thread.
                     ConcurrencyManager.deferredLockManagers.put(
                         currentThread, ConcurrencyManager.deferredLockManagers.remove(lockThread));
                 }
                 ArrayList<CacheKey> locks = this.getMergeManager().getAcquiredLocks();        
-                if(null != locks) {                
+                if (null != locks) {                
                     Iterator<CacheKey> locksIterator = locks.iterator();
                     AbstractSessionLog.getLog().log(SessionLog.FINER, "active_thread_is_different_from_current_thread", 
                             lockThread, this.getMergeManager(), currentThread);
-                    while(locksIterator.hasNext()) {
+                    while (locksIterator.hasNext()) {
                         ConcurrencyManager lockMutex = locksIterator.next().getMutex();
-                        if(null != lockMutex) {
+                        if (null != lockMutex) {
                             Thread activeThread = lockMutex.getActiveThread();
                             // check for different acquire and release threads
-                            if(currentThread != activeThread) {
+                            if (currentThread != activeThread) {
                                 // Switch activeThread to currentThread - we will release the lock later
                                 lockMutex.setActiveThread(currentThread);
                             }

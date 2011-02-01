@@ -181,9 +181,6 @@ public class ConnectionWrapper implements Connection {
     }
 
     public DatabaseMetaData getMetaData() throws SQLException {
-        if(broken) {
-            throw new SQLException(getExceptionString());
-        }
         return conn.getMetaData();
     }
 

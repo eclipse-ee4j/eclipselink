@@ -291,6 +291,13 @@ public class DatabaseAccessor extends DatasourceAccessor {
     protected void connectInternal(Login login, AbstractSession session) throws DatabaseException {
         super.connectInternal(login, session);
         checkTransactionIsolation(session);
+        try {
+            session.getPlatform().initializeConnectionData(getConnection());
+        } catch (java.sql.SQLException sqlEx) {
+            DatabaseException commException = processExceptionForCommError(session, sqlEx, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(sqlEx, this, session, false);
+        }
     }
 
     /**

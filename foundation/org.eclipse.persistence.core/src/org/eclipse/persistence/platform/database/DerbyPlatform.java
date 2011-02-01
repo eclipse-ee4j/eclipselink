@@ -19,6 +19,7 @@ import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -26,6 +27,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 import java.util.Vector;
 import java.io.Writer;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -43,6 +45,10 @@ public class DerbyPlatform extends DB2Platform {
     public static final int MAX_CLOB = 2147483647;  //The maximum clob/blob size is 2 gigs in Derby.
     public static final int MAX_BLOB = MAX_CLOB;
 
+    /** Allow sequence support to be disabled for Derby < 10.6.1. */
+    protected boolean isSequenceSupported;
+    protected boolean isConnectionDataInitialized;
+    
     /**
      * INTERNAL:
      * TODO: Need to find out how can byte arrays be inlined in Derby
@@ -354,7 +360,7 @@ public class DerbyPlatform extends DB2Platform {
      */
     @Override
     public boolean supportsSequenceObjects() {
-        return true;
+        return this.isSequenceSupported;
     }
     
     @Override
@@ -372,5 +378,21 @@ public class DerbyPlatform extends DB2Platform {
         writer.write(" RESTRICT");
         return writer;
     }
-
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initializeConnectionData(Connection connection) throws SQLException {
+        if (this.isConnectionDataInitialized) {
+            return;
+        }
+        String databaseVersion = connection.getMetaData().getDatabaseProductVersion();
+        if (Helper.compareVersions(databaseVersion, "10.6.1") < 0) {
+            this.isSequenceSupported = false;
+        } else {
+            this.isSequenceSupported = true;            
+        }
+        this.isConnectionDataInitialized = true;
+    }
 }
