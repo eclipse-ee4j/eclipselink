@@ -237,10 +237,30 @@
     </target>
 
     <!-- Package rename targets -->
-    <target name="update-package-names" depends="wait-if-unix, update-sax-package, update-deploymentxml-package, update-docpres-package" description="modify package names to avoid duplicates"/>
+    <target name="update-package-names" depends="update-sax-package, update-deploymentxml-package, update-docpres-package" description="modify package names to avoid duplicates"/>
     <target name="wait-if-unix" if="_Unix">
         <echo message="Forcing sync to disk..."/>
         <exec executable="sync"/>
+    </target>
+    <target name="update-sax-package" depends="wait-if-unix">
+        <replace dir="${report.dir}/oxm/default" value='"org.eclipse.persistence.testing.oxm.sax'
+            token='"org.eclipse.persistence.testing.oxm'>
+                <include name="**/*.xml"/>
+        </replace>
+    </target>
+    <target name="update-deploymentxml-package" depends="wait-if-unix">
+        <replace dir="${report.dir}/oxm/deploymentxml" value='"org.eclipse.persistence.testing.oxm.deploymentxml'
+            token='"org.eclipse.persistence.testing.oxm'>
+                <include name="**/*.xml"/>
+        </replace>
+    </target>
+    <target name="update-deploymentxml-tl-package" depends="wait-if-unix">
+         <replace dir="${report.dir}/oxm/deploymentxml-tl" value='"org.eclipse.persistence.testing.oxm.deploymentxml.tl'
+            token='"org.eclipse.persistence.testing.oxm'>
+                <include name="**/*.xml"/>
+        </replace>
+    </target>
+    <target name="wait-for-docpres" if="_Unix">
         <echo message="waiting for docpres to complete..."/>
         <waitfor maxwait="15" maxwaitunit="minute" checkevery="1" checkeveryunit="minute">
             <isset property="docpres.complete"/>
@@ -248,26 +268,7 @@
         <echo message="Forcing sync to disk..."/>
         <exec executable="sync"/>
     </target>
-    <target name="update-sax-package">
-        <replace dir="${report.dir}/oxm/default" value='"org.eclipse.persistence.testing.oxm.sax'
-            token='"org.eclipse.persistence.testing.oxm'>
-                <include name="**/*.xml"/>
-        </replace>
-    </target>
-    <target name="update-deploymentxml-package">
-        <replace dir="${report.dir}/oxm/deploymentxml" value='"org.eclipse.persistence.testing.oxm.deploymentxml'
-            token='"org.eclipse.persistence.testing.oxm'>
-                <include name="**/*.xml"/>
-        </replace>
-    </target>
-    <target name="update-deploymentxml-tl-package">
-        <replace dir="${report.dir}/oxm/deploymentxml-tl" value='"org.eclipse.persistence.testing.oxm.deploymentxml.tl'
-            token='"org.eclipse.persistence.testing.oxm'>
-                <include name="**/*.xml"/>
-        </replace>
-    </target>
-    <target name="update-docpres-package" if="docpres.complete">
-        <antcall target="wait-if-unix"/>
+    <target name="update-docpres-package" if="docpres.complete" depends="wait-if-unix, wait-for-docpres">
         <replace dir="${report.dir}/oxm/docpres" value='"org.eclipse.persistence.testing.oxm.docpres'
             token='"org.eclipse.persistence.testing.oxm'>
                 <include name="**/*.xml"/>
