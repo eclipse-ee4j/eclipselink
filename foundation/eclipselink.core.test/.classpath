@@ -7,8 +7,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.resource 1.5.0"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.transaction 1.1.0"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.xml.bind"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.jms 1.1.0"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.0.0"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.bind-2.1.12"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
