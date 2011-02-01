@@ -49,7 +49,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     private String description;
 
     /** The test collection that contains this test */
-    private TestEntity container;
+    protected TestEntity container;
 
     /** This is used only for printing test results with proper indentation */
     private int nestedCounter;

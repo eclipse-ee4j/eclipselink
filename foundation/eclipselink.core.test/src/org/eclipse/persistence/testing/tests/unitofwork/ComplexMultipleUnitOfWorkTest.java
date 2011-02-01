@@ -25,6 +25,7 @@ import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.tests.remote.RemoteModel;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestEntity;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
@@ -282,6 +283,13 @@ public class ComplexMultipleUnitOfWorkTest extends AutoVerifyTestCase {
     }
 
     public void setup() {
+    	StringBuffer containerName = new StringBuffer();
+    	TestEntity myContainer = container;
+    	while (myContainer != null){
+    		containerName.append(" - " + myContainer.getName());
+    		myContainer = myContainer.getContainer();
+    	}
+    	setName("ComplexMultipleUnitOfWorkTest" + containerName.toString());
         if (getSession().isClientSession()) {
             listener = checkTransactionIsolation();
         }
