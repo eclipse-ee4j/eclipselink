@@ -241,9 +241,9 @@
     <target name="wait-if-unix" if="_Unix">
         <echo message="Forcing sync to disk..."/>
         <exec executable="sync"/>
-        <echo message="waiting 2 minutes..."/>
-        <waitfor maxwait="2" maxwaitunit="minute" checkevery="1" checkeveryunit="minute">
-            <available file="nonexistantfile.txt"/>
+        <echo message="waiting for docpres to complete..."/>
+        <waitfor maxwait="15" maxwaitunit="minute" checkevery="1" checkeveryunit="minute">
+            <isset property="docpres.complete"/>
         </waitfor>
         <echo message="Forcing sync to disk..."/>
         <exec executable="sync"/>
@@ -266,7 +266,7 @@
                 <include name="**/*.xml"/>
         </replace>
     </target>
-    <target name="update-docpres-package">
+    <target name="update-docpres-package" if="docpres.complete">
         <antcall target="wait-if-unix"/>
         <replace dir="${report.dir}/oxm/docpres" value='"org.eclipse.persistence.testing.oxm.docpres'
             token='"org.eclipse.persistence.testing.oxm'>
@@ -641,6 +641,7 @@
                     <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
+            <property name="docpres.complete" value="true"/>
         </sequential>
     </macrodef>
 
