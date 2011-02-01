@@ -241,6 +241,12 @@
     <target name="wait-if-unix" if="_Unix">
         <echo message="Forcing sync to disk..."/>
         <exec executable="sync"/>
+        <echo message="waiting 2 minutes..."/>
+        <waitfor maxwait="2" maxwaitunit="minute" checkevery="1" checkeveryunit="minute">
+            <available file="nonexistantfile.txt"/>
+        </waitfor>
+        <echo message="Forcing sync to disk..."/>
+        <exec executable="sync"/>
     </target>
     <target name="update-sax-package">
         <replace dir="${report.dir}/oxm/default" value='"org.eclipse.persistence.testing.oxm.sax'
