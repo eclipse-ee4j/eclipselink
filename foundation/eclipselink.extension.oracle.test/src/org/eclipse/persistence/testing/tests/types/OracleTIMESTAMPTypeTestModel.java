@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.types;
 
-
-import java.sql.Connection;
 import java.util.Enumeration;
 import java.util.TimeZone;
 
@@ -53,54 +51,49 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
 
     public void addTests() {
         if (getSession().getPlatform() instanceof Oracle9Platform) {
-            try {
-                Oracle9Platform platform = (Oracle9Platform)getSession().getPlatform();
-                ((AbstractSession)getSession()).getAccessor().incrementCallCount((AbstractSession)getSession());
-                // unwrap connection if it's wrapped
-                Connection conn = platform.getConnection((AbstractSession)getSession(), ((AbstractSession)getSession()).getAccessor().getConnection());
-                String driverVersion= platform.getDriverVersion(conn);
-                // isTimestampInGmt==true if driverVersion is 11.1.0.7 or later and
-                // oracleConnection's property "oracle.jdbc.timestampTzInGmt" is set to "true".
-                TIMESTAMPTester.isTimestampInGmt = platform.isTimestampInGmt(conn);
-                TIMESTAMPTester.isLtzTimestampInGmt = platform.isLtzTimestampInGmt(conn);
-                ((AbstractSession)getSession()).getAccessor().decrementCallCount();
-                //The combination of driver version of 9.2.0.4 or lower and JDK14 or up would cause
-                //an exception, and therefore is not tested
-                if (driverVersion.indexOf("9.2.0.4") == -1) {
-                    //Oracle 9.2.0.x OCI driver causes an exception, and therefore is not tested. Bug 4483904
+            Oracle9Platform platform = (Oracle9Platform)getSession().getPlatform();
+            ((AbstractSession)getSession()).getAccessor().incrementCallCount((AbstractSession)getSession());
+            // unwrap connection if it's wrapped
+            String driverVersion= platform.getDriverVersion();
+            // isTimestampInGmt==true if driverVersion is 11.1.0.7 or later and
+            // oracleConnection's property "oracle.jdbc.timestampTzInGmt" is set to "true".
+            TIMESTAMPTester.isTimestampInGmt = platform.isTimestampInGmt();
+            TIMESTAMPTester.isLtzTimestampInGmt = platform.isLtzTimestampInGmt();
+            ((AbstractSession)getSession()).getAccessor().decrementCallCount();
+            //The combination of driver version of 9.2.0.4 or lower and JDK14 or up would cause
+            //an exception, and therefore is not tested
+            if (driverVersion.indexOf("9.2.0.4") == -1) {
+                //Oracle 9.2.0.x OCI driver causes an exception, and therefore is not tested. Bug 4483904
 
-                    if (driverVersion.indexOf("9.2") == -1 || 
-                        getSession().getLogin().getDatabaseURL().indexOf("oci") == -1) {
-                        // set default time zone as a session time zone
-                        addTest(getTIMESTAMPTestSuite(true));
-                        addTest(getTIMESTAMPWithBindingTestSuite(true));
-                        addTest(getTIMESTAMPUsingNativeSQLTestSuite(true));
-                        addTest(getTIMESTAMPTestSuite(false));
-                        addTest(getTIMESTAMPWithBindingTestSuite(false));
-                        addTest(getTIMESTAMPUsingNativeSQLTestSuite(false));
-                        // Known to pass with Oracle jdbc 11.2.0.0.2, fail with 11.1.0.7, 11.1.0.6
-                        // Even with ojdbc 11.2.0.0.2 fails on db 9.2.0.1, but passes on 10.2.0.4, 11.1.0.6.0, 11.1.0.7.
-                        if(Helper.compareVersions(driverVersion, "11.2.0.0.2") >= 0) {
-                            addTest(getCalToTSTZWithBindingAndNoCalendarPrintingTestSuite());
-                        }
-                        addTest(getCalendarDaylightSavingsTestSuite());
+                if (driverVersion.indexOf("9.2") == -1 || 
+                    getSession().getLogin().getDatabaseURL().indexOf("oci") == -1) {
+                    // set default time zone as a session time zone
+                    addTest(getTIMESTAMPTestSuite(true));
+                    addTest(getTIMESTAMPWithBindingTestSuite(true));
+                    addTest(getTIMESTAMPUsingNativeSQLTestSuite(true));
+                    addTest(getTIMESTAMPTestSuite(false));
+                    addTest(getTIMESTAMPWithBindingTestSuite(false));
+                    addTest(getTIMESTAMPUsingNativeSQLTestSuite(false));
+                    // Known to pass with Oracle jdbc 11.2.0.0.2, fail with 11.1.0.7, 11.1.0.6
+                    // Even with ojdbc 11.2.0.0.2 fails on db 9.2.0.1, but passes on 10.2.0.4, 11.1.0.6.0, 11.1.0.7.
+                    if(Helper.compareVersions(driverVersion, "11.2.0.0.2") >= 0) {
+                        addTest(getCalToTSTZWithBindingAndNoCalendarPrintingTestSuite());
                     }
-                    if (!useAccessors) {
-                        //Oracle 9.2.0.x OCI driver causes an exception, and therefore is not tested. Bug 4483904
-                        if (driverVersion.indexOf("9.2") == 
-                            -1 || getSession().getLogin().getDatabaseURL().indexOf("oci") == -1) {
-                            addTest(getTIMESTAMPTCTestSuite(true));
-                            addTest(getTIMESTAMPTCWithBindingTestSuite(true));
-                            addTest(getTIMESTAMPTCUsingNativeSQLTestSuite(true));
-                            addTest(getTIMESTAMPTCTestSuite(false));
-                            addTest(getTIMESTAMPTCWithBindingTestSuite(false));
-                            addTest(getTIMESTAMPTCUsingNativeSQLTestSuite(false));
-                        }
-                        addTest(new SerializationOfValueHolderWithTIMESTAMPTZTest());
-                    }
+                    addTest(getCalendarDaylightSavingsTestSuite());
                 }
-            } catch (java.sql.SQLException e) {
-
+                if (!useAccessors) {
+                    //Oracle 9.2.0.x OCI driver causes an exception, and therefore is not tested. Bug 4483904
+                    if (driverVersion.indexOf("9.2") == 
+                        -1 || getSession().getLogin().getDatabaseURL().indexOf("oci") == -1) {
+                        addTest(getTIMESTAMPTCTestSuite(true));
+                        addTest(getTIMESTAMPTCWithBindingTestSuite(true));
+                        addTest(getTIMESTAMPTCUsingNativeSQLTestSuite(true));
+                        addTest(getTIMESTAMPTCTestSuite(false));
+                        addTest(getTIMESTAMPTCWithBindingTestSuite(false));
+                        addTest(getTIMESTAMPTCUsingNativeSQLTestSuite(false));
+                    }
+                    addTest(new SerializationOfValueHolderWithTIMESTAMPTZTest());
+                }
             }
             if (!useAccessors) {
                 addTest(getCalToTSTZTestSuite());
