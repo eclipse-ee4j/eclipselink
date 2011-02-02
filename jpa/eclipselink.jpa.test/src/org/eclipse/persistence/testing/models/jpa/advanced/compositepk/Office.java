@@ -9,8 +9,12 @@
  *
  * Contributors:
  *     tware - test for bug 280436
+ *     02/02/2011-2.3 Chris Delahunt 
+ *       - 336122: ValidationException thrown for JoinColumns on OneToMany with composite primary key
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
+
+import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -18,6 +22,7 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -39,6 +44,13 @@ public class Office {
         })
     private Department department;
     
+    //added for bug 336122
+    @OneToMany
+    @JoinColumns({
+        @JoinColumn(name="OFFICE_ID", referencedColumnName="ID"),
+        @JoinColumn(name="OFFICE_LOC", referencedColumnName="LOCATION")
+    })
+    private Collection<Cubicle> cubicles;
 
     public int getId() {
         return id;
@@ -62,6 +74,14 @@ public class Office {
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public Collection<Cubicle> getCubicles() {
+        return cubicles;
+    }
+
+    public void setCubicles(Collection<Cubicle> cubicles) {
+        this.cubicles = cubicles;
     }
 }
 

@@ -241,7 +241,7 @@ public class OneToManyAccessor extends CollectionAccessor {
         process(mapping);
         
         // Process the JoinColumn metadata.
-        processUnidirectionalOneToManyTargetForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getReferenceDescriptor()), getOwningDescriptor());
+        processUnidirectionalOneToManyTargetForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getOwningDescriptor()), getOwningDescriptor());
     }
     
     /**

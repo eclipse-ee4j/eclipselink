@@ -19,6 +19,8 @@
  *       - 314941: multiple joinColumns without referenced column names defined, no error
  *     08/13/2010-2.2 Guy Pelletier 
  *       - 296078: JPA 2.0 with @MapsId, em.persist generates Internal Exception IllegalArgumentException
+ *     02/02/2011-2.3 Chris Delahunt 
+ *       - 336122: ValidationException thrown for JoinColumns on OneToMany with composite primary key
  ******************************************************************************/  
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
@@ -283,7 +285,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         
         return table;
     }
-    
+
     public static TableDefinition buildCUBICLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CUBICLE");
@@ -297,7 +299,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         ID_field.setUnique(false);
         ID_field.setIsIdentity(true);
         table.addField(ID_field);
-    
+
         FieldDefinition CODE_field = new FieldDefinition();
         CODE_field.setName("CODE");
         CODE_field.setTypeName("VARCHAR");
@@ -307,7 +309,27 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         CODE_field.setUnique(false);
         CODE_field.setIsIdentity(true);
         table.addField(CODE_field);
-    
+
+        FieldDefinition OFFICE_ID_field = new FieldDefinition();
+        OFFICE_ID_field.setName("OFFICE_ID");
+        OFFICE_ID_field.setTypeName("NUMERIC");
+        OFFICE_ID_field.setSize(15);
+        OFFICE_ID_field.setShouldAllowNull(true);
+        OFFICE_ID_field.setIsPrimaryKey(false);
+        OFFICE_ID_field.setUnique(false);
+        OFFICE_ID_field.setIsIdentity(true);
+        table.addField(OFFICE_ID_field);
+
+        FieldDefinition LOCATION_field = new FieldDefinition();
+        LOCATION_field.setName("OFFICE_LOC");
+        LOCATION_field.setTypeName("VARCHAR");
+        LOCATION_field.setSize(40);
+        LOCATION_field.setShouldAllowNull(true);
+        LOCATION_field.setIsPrimaryKey(false);
+        LOCATION_field.setUnique(false);
+        LOCATION_field.setIsIdentity(true);
+        table.addField(LOCATION_field);
+
         return table;
     }
     
