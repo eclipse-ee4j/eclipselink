@@ -278,7 +278,7 @@ public class AnnotationsProcessor {
                     } else {
                         qname = getUserDefinedSchemaTypes().get(nextClassName);
                         if (qname == null) {
-                            if (nextClassName.equals(ClassConstants.ABYTE.getName()) || nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(Image.class.getName()) || nextClassName.equals(Source.class.getName()) || nextClassName.equals("javax.activation.DataHandler")) {
+                            if (nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(Image.class.getName()) || nextClassName.equals(Source.class.getName()) || nextClassName.equals("javax.activation.DataHandler")) {
                                 if (xmlAttachmentRef) {
                                     qname = XMLConstants.SWA_REF_QNAME;
                                 } else {
@@ -872,7 +872,7 @@ public class AnnotationsProcessor {
                 }
             }
 
-            if (areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, Image.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
+            if (areEquals(javaClass, byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, Image.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
                 if (tmi == null || tmi.getXmlTagName() == null) {
                     ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
                     declaration.setTypeMappingInfo(tmi);
@@ -1445,7 +1445,7 @@ public class AnnotationsProcessor {
         }
         if (javaClass.isArray()) {
             String javaClassName = javaClass.getName();
-            if (!(javaClassName.equals(ClassConstants.ABYTE.getName()) || javaClassName.equals(ClassConstants.APBYTE.getName()))) {
+            if (!(javaClassName.equals(ClassConstants.APBYTE.getName()))) {
                 return true;
             }
         }
@@ -2563,9 +2563,9 @@ public class AnnotationsProcessor {
         //Add a non-named element declaration for each enumeration to trigger class generation
         ElementDeclaration elem = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false);
 
-        if(this.javaClassToTypeMappingInfos.get(javaClass) != null) {
-            elem.setTypeMappingInfo(this.javaClassToTypeMappingInfos.get(javaClass));
-        }
+        //if(this.javaClassToTypeMappingInfos.get(javaClass) != null) {
+            //elem.setTypeMappingInfo(this.javaClassToTypeMappingInfos.get(javaClass));
+        //}
         this.getLocalElements().add(elem);
     }
 
@@ -4039,6 +4039,6 @@ public class AnnotationsProcessor {
      */
     public boolean isMtomAttachment(Property property) {
         JavaClass ptype = property.getActualType();
-        return (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART));
+        return (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART));
     }
 }

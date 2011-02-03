@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModel;
@@ -70,12 +71,13 @@ public class XJCJavaModelImpl implements JavaModel {
             componentName = className.replace("[]", "");
         }
 
+        boolean isPrimitive = XMLConversionManager.getPrimitiveClass(componentName) != null;
         try {
-            JavaClass jc = new XJCJavaClassImpl(jCodeModel._class(componentName), jCodeModel, dynamicClassLoader, isArray);
+            JavaClass jc = new XJCJavaClassImpl(jCodeModel._class(componentName), jCodeModel, dynamicClassLoader, isArray, isPrimitive);
             this.javaModelClasses.put(className, jc);
             return jc;
         } catch (JClassAlreadyExistsException ex) {
-            JavaClass jc = new XJCJavaClassImpl(jCodeModel._getClass(componentName), jCodeModel, dynamicClassLoader, isArray);
+            JavaClass jc = new XJCJavaClassImpl(jCodeModel._getClass(componentName), jCodeModel, dynamicClassLoader, isArray, isPrimitive);
             this.javaModelClasses.put(className, jc);
             return jc;
         }

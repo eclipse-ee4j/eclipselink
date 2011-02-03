@@ -451,7 +451,7 @@ public class MappingsGenerator {
         
         JavaClass referenceClass = property.getType();
         String referenceClassName = referenceClass.getRawName();
-        if (referenceClass.isArray()  && !referenceClassName.equals("byte[]")  && !referenceClassName.equals("java.lang.Byte[]")){
+        if (referenceClass.isArray()  && !referenceClassName.equals("byte[]")){
             JavaClass componentType = referenceClass.getComponentType();
             TypeInfo reference = typeInfo.get(componentType.getName());
             if (reference != null || componentType.isArray()){
@@ -785,7 +785,7 @@ public class MappingsGenerator {
         for (ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
             JavaClass pType = element.getJavaType();
-            boolean isBinaryType = (areEquals(pType, AnnotationsProcessor.JAVAX_ACTIVATION_DATAHANDLER) || areEquals(pType, byte[].class) || areEquals(pType, Byte[].class) || areEquals(pType, Image.class) || areEquals(pType, Source.class) || areEquals(pType, AnnotationsProcessor.JAVAX_MAIL_INTERNET_MIMEMULTIPART));        
+            boolean isBinaryType = (areEquals(pType, AnnotationsProcessor.JAVAX_ACTIVATION_DATAHANDLER) || areEquals(pType, byte[].class) || areEquals(pType, Image.class) || areEquals(pType, Source.class) || areEquals(pType, AnnotationsProcessor.JAVAX_MAIL_INTERNET_MIMEMULTIPART));        
             boolean isText = !isBinaryType && !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME));
             String xPath = "";
 
@@ -1256,7 +1256,7 @@ public class MappingsGenerator {
             ccMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
             return ccMapping;
         }
-        if (areEquals(javaClass, ClassConstants.ABYTE) || areEquals(javaClass, ClassConstants.APBYTE) ||areEquals(javaClass, "javax.activation.DataHandler") || areEquals(javaClass, "java.awt.Image") || areEquals(javaClass, "java.xml.transform.Source") || areEquals(javaClass, "javax.mail.internet.MimeMultipart")) {
+        if (areEquals(javaClass, ClassConstants.APBYTE) ||areEquals(javaClass, "javax.activation.DataHandler") || areEquals(javaClass, "java.awt.Image") || areEquals(javaClass, "java.xml.transform.Source") || areEquals(javaClass, "javax.mail.internet.MimeMultipart")) {
         	return generateBinaryDataCollectionMapping(property, descriptor, namespaceInfo);
         }
         return generateDirectCollectionMapping(property, descriptor, namespaceInfo);
@@ -2373,7 +2373,7 @@ public class MappingsGenerator {
                 }
 
                 if(next == null){
-            		if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE) ||areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") || areEquals(nextElement.getJavaType(), "java.awt.Image") || areEquals(nextElement.getJavaType(), "java.xml.transform.Source") || areEquals(nextElement.getJavaType(), "javax.mail.internet.MimeMultipart")) {
+            		if(areEquals(nextElement.getJavaType(), ClassConstants.APBYTE) ||areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") || areEquals(nextElement.getJavaType(), "java.awt.Image") || areEquals(nextElement.getJavaType(), "java.xml.transform.Source") || areEquals(nextElement.getJavaType(), "javax.mail.internet.MimeMultipart")) {
             			Class generatedClass = addByteArrayWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement,nextClassName, attributeTypeName);
             			 this.qNamesToGeneratedClasses.put(next, generatedClass);
                          if(nextElement.getTypeMappingInfo() != null) {
@@ -2523,7 +2523,7 @@ public class MappingsGenerator {
 	                  ((XMLField)mapping.getField()).setIsTypedTextField(true);
 	                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
 	                  desc.addMapping(mapping);
-	              }else if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE)|| areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") || areEquals(nextElement.getJavaType(), "java.awt.Image") || areEquals(nextElement.getJavaType(), "javax.xml.transform.Source")){
+	              }else if(areEquals(nextElement.getJavaType(), ClassConstants.APBYTE)|| areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") || areEquals(nextElement.getJavaType(), "java.awt.Image") || areEquals(nextElement.getJavaType(), "javax.xml.transform.Source")){
 	              	  XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
 	              	  mapping.setAttributeName("value");
 	              	  mapping.setXPath(".");

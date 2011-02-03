@@ -22,6 +22,8 @@ import java.util.Map;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -49,6 +51,7 @@ public class XJCJavaClassImpl implements JavaClass {
     private JCodeModel jCodeModel;
     private JavaModel javaModel;
     private boolean isArray;
+    private boolean isPrimitive;
 
     private DynamicClassLoader dynamicClassLoader;
 
@@ -79,14 +82,15 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     public XJCJavaClassImpl(JDefinedClass jDefinedClass, JCodeModel codeModel, DynamicClassLoader loader) {
-        this(jDefinedClass, codeModel, loader, false);
+        this(jDefinedClass, codeModel, loader, false, false);
     }
 
-    public XJCJavaClassImpl(JDefinedClass jDefinedClass, JCodeModel codeModel, DynamicClassLoader loader, boolean isArray) {
+    public XJCJavaClassImpl(JDefinedClass jDefinedClass, JCodeModel codeModel, DynamicClassLoader loader, boolean isArray, boolean isPrimitive) {
         this.xjcClass = jDefinedClass;
         this.jCodeModel = codeModel;
         this.dynamicClassLoader = loader;
         this.isArray = isArray;
+        this.isPrimitive = isPrimitive;
     }
 
     // ========================================================================
@@ -295,11 +299,49 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     public String getQualifiedName() {
+        if(isArray) {
+            if(this.isPrimitive) {
+                return getPrimitiveArrayNameFor(xjcClass.fullName());
+            }
+            return "[L" + xjcClass.fullName();
+        }
         return xjcClass.fullName();
     }
 
+    private String getPrimitiveArrayNameFor(String fullName) {
+        Class componentClass = ConversionManager.getPrimitiveClass(fullName);
+        if(componentClass != null) {
+            if(componentClass == ClassConstants.PBYTE) {
+                return ClassConstants.APBYTE.getName();
+            }
+            if(componentClass == ClassConstants.PCHAR) {
+                return ClassConstants.APCHAR.getName();
+            }
+            if(componentClass == ClassConstants.PBOOLEAN) {
+                return boolean[].class.getName();
+            }
+            if(componentClass == ClassConstants.PDOUBLE) {
+                return double[].class.getName();
+            }
+            if(componentClass == ClassConstants.PFLOAT) {
+                return float[].class.getName();
+            }
+            if(componentClass == ClassConstants.PINT) {
+                return int[].class.getName();
+            }
+            if(componentClass == ClassConstants.PLONG) {
+                return long[].class.getName();
+            }
+            if(componentClass == ClassConstants.PSHORT) {
+                return short[].class.getName();
+            }
+        }
+
+        return fullName;
+    }
+
     public String getRawName() {
-        if (isArray) {
+        if(isArray) {
             return xjcClass.fullName() + "[]";
         }
         return xjcClass.fullName();

@@ -56,7 +56,7 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(IntegerArrayTestCases.class);
         suite.addTestSuite(ListOfDataHandlerTestCases.class);
         suite.addTestSuite(ListOfByteArrayTestCases.class);
-        suite.addTestSuite(ListOfByteObjectArrayTestCases.class);
+        suite.addTestSuite(ByteArrayTestCases.class);
         suite.addTestSuite(EmployeeTestCases.class);
 
         suite.addTestSuite(RootFromAnnotationTestCases.class);

@@ -119,6 +119,7 @@ public class XJCJavaFieldImpl implements JavaField {
         JType type = xjcField.type();
         JType basis = null;
         boolean isArray = false;
+        boolean isPrimitive = false;
 
         try {
             // Check to see if this type has a 'basis' field.
@@ -141,8 +142,7 @@ public class XJCJavaFieldImpl implements JavaField {
             try {
                 JType componentType = (JType) PrivilegedAccessHelper.getValueFromField(JARRAYCLASS_COMPONENTTYPE, type);
                 if (componentType.isPrimitive()) {
-                    componentType = componentType.boxify();
-                    classToReturn = (JClass) componentType;
+                    isPrimitive = true;
                 }
             } catch (Exception e) {
                 throw JAXBException.errorCreatingDynamicJAXBContext(e);
@@ -176,7 +176,7 @@ public class XJCJavaFieldImpl implements JavaField {
         if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
             return ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(className);
         }
-        return new XJCJavaClassImpl((JDefinedClass) classToReturn, jCodeModel, dynamicClassLoader, isArray);
+        return new XJCJavaClassImpl((JDefinedClass) classToReturn, jCodeModel, dynamicClassLoader, isArray, isPrimitive);
     }
 
     public boolean isFinal() {
