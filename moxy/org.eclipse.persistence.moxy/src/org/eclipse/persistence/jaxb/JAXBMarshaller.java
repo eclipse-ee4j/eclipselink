@@ -461,7 +461,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlroot.setLocalName(qname.getLocalPart());
         xmlroot.setNamespaceURI(qname.getNamespaceURI());
         xmlroot.setDeclaredType(wrapperElement.getDeclaredType());
-
+        if (value.getClass() == ClassConstants.ABYTE || value.getClass() == ClassConstants.APBYTE || 
+                value.getClass().getCanonicalName().equals("javax.activation.DataHandler")) {
+            xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);    
+            
+        }
         return xmlroot;
     }
 
