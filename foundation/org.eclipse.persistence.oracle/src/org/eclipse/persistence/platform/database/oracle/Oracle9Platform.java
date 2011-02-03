@@ -839,4 +839,25 @@ public class Oracle9Platform extends Oracle8Platform {
             return new OracleJDBC_10_1_0_2ProxyConnectionCustomizer(accessor, session);
         }
     }
+    
+    /**
+     * INTERNAL: Return the driver version.
+     */
+    public String getDriverVersion() {
+        return driverVersion;
+    }
+    
+    /**
+     * INTERNAL: Return if timestamps are returned in GMT by the driver.
+     */
+    public boolean isTimestampInGmt() {
+        return isTimestampInGmt;
+    }
+    
+    /**
+     * INTERNAL: Return if ltz timestamps are returned in GMT by the driver.
+     */
+    public boolean isLtzTimestampInGmt() {
+        return isLtzTimestampInGmt;
+    }
 }
