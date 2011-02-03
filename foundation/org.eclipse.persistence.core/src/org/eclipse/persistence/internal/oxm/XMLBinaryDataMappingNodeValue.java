@@ -30,6 +30,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -75,6 +76,11 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     }
     
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
+        XPathFragment xmlRootFrag = null;
+        if(objectValue instanceof XMLRoot) {
+            xmlRootFrag = ((XMLRoot)objectValue).getRootFragment();
+        }
+        
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         if (xmlBinaryDataMapping.getConverter() != null) {
             Converter converter = xmlBinaryDataMapping.getConverter();
@@ -110,6 +116,9 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             }
         } else if (marshalRecord.isXOPPackage() && !xmlBinaryDataMapping.shouldInlineBinaryData()) {
             XPathFragment lastFrag = ((XMLField) xmlBinaryDataMapping.getField()).getLastXPathFragment();
+            if(xmlRootFrag != null) {
+                lastFrag = xmlRootFrag;
+            }
             String localName = null;
             String namespaceUri = null;
             if(rootFragment != null) {
@@ -151,7 +160,9 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         }
         
         marshalRecord.closeStartGroupingElements(groupingFragment);
-        
+        if(xmlRootFrag != null) {
+            xPathFragment = xmlRootFrag;
+        }
         if(!xPathFragment.isSelfFragment){
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);
             marshalRecord.closeStartElement();

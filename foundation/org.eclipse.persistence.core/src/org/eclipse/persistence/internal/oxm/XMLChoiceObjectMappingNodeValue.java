@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.util.List;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
@@ -91,26 +92,39 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        Class valueClass = null;
         if (value instanceof XMLRoot) {
             XMLRoot root = (XMLRoot)value;
-            XPathFragment fragment = this.xmlField.getXPathFragment();
-            while(fragment != null && !fragment.nameIsText) {
-                if(fragment.getNextFragment() == null || fragment.getHasText()) {
-                    if(fragment.getLocalName().equals(root.getLocalName())) {
-                        String fragUri = fragment.getNamespaceURI();
-                        String namespaceUri = root.getNamespaceURI();
-                        if((namespaceUri == null && fragUri == null) || (namespaceUri != null && fragUri != null && namespaceUri.equals(fragUri))) {
-                            return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
+            for(DatabaseField next:this.xmlChoiceMapping.getFields()) {
+                XPathFragment fragment = ((XMLField)next).getXPathFragment();
+                while(fragment != null && !fragment.nameIsText) {
+                    if(fragment.getNextFragment() == null || fragment.getHasText()) {
+                        if(fragment.getLocalName().equals(root.getLocalName())) {
+                            String fragUri = fragment.getNamespaceURI();
+                            String namespaceUri = root.getNamespaceURI();
+                            if((namespaceUri == null && fragUri == null) || (namespaceUri != null && fragUri != null && namespaceUri.equals(fragUri))) {
+                                if(next == this.xmlField) {
+                                    return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
+                                } else {
+                                    //If this root is associated with another field, then return and let that NodeValue handle it
+                                    return false;
+                                }
+                            }
                         }
                     }
+                    fragment = fragment.getNextFragment();
                 }
-                fragment = fragment.getNextFragment();
             }
-        } else if (value != null) {
-            if (xmlChoiceMapping.getClassToFieldMappings().get(value.getClass()) == this.xmlField) {
+            valueClass = root.getObject().getClass();
+        } 
+        if (value != null) {
+            if(valueClass == null) {
+                valueClass = value.getClass();
+            }
+            if (xmlChoiceMapping.getClassToFieldMappings().get(valueClass) == this.xmlField) {
                 return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
             }
-            List<XMLField> sourceFields = xmlChoiceMapping.getClassToSourceFieldsMappings().get(value.getClass());
+            List<XMLField> sourceFields = xmlChoiceMapping.getClassToSourceFieldsMappings().get(valueClass);
             if (sourceFields != null && sourceFields.contains(this.xmlField)) {
                 return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
             }
