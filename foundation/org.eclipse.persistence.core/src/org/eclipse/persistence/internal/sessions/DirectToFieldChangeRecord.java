@@ -19,6 +19,7 @@ package org.eclipse.persistence.internal.sessions;
  */
 public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclipse.persistence.sessions.changesets.DirectToFieldChangeRecord {
     protected Object newValue;
+    protected transient Object oldValue;
 
     /**
      * This default constructor.
@@ -71,5 +72,21 @@ public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclip
      * This method will be used to update the objectsChangeSets references
      */
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
+    }
+
+    /**
+     * ADVANCED:
+     * Return the old value of the attribute represented by this ChangeRecord.
+     */
+    public Object getOldValue() {
+        return oldValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the old value of the attribute represented by this ChangeRecord.
+     */
+    public void setOldValue(Object oldValue) {
+        this.oldValue = oldValue;
     }
 }

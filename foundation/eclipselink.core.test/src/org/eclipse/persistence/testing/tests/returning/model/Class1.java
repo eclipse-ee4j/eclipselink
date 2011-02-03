@@ -93,10 +93,8 @@ public class Class1 extends BaseClass {
     }
 
     public Object clone() {
-        Class1 clone = new Class1();
+        Class1 clone = (Class1)super.clone();
         clone.id = id;
-        clone.setAB(getA(), getB());
-        clone.setC(getC());
         if (aggregate != null) {
             clone.aggregate = (Class2)aggregate.clone();
         }
@@ -121,5 +119,9 @@ public class Class1 extends BaseClass {
             str = str + " Aggregate: " + aggregate;
         }
         return str;
+    }
+    
+    public boolean equals(Object other) {
+        return super.equals(other) && this.id.equals(((Class1)other).id);
     }
 }

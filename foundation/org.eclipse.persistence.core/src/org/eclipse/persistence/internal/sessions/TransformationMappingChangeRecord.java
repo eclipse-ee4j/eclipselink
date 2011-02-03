@@ -22,6 +22,7 @@ import org.eclipse.persistence.sessions.Record;
  */
 public class TransformationMappingChangeRecord extends ChangeRecord implements org.eclipse.persistence.sessions.changesets.TransformationMappingChangeRecord {
     protected AbstractRecord rowCollection;
+    protected transient Object oldValue;
 
     /**
      * This default constructor.
@@ -74,5 +75,21 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
      * references
      */
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
+    }
+
+    /**
+     * ADVANCED:
+     * Return the old value of the attribute represented by this ChangeRecord.
+     */
+    public Object getOldValue() {
+        return this.oldValue;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the old value of the attribute represented by this ChangeRecord.
+     */
+    public void setOldValue(Object oldValue) {
+        this.oldValue = oldValue;
     }
 }

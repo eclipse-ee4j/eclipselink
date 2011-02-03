@@ -16,7 +16,6 @@ import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 
 /**
@@ -498,72 +497,71 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         return currentIndexes;
     }
     
-    /**
-     * Recreates the original state of the collection.
-     */
-   public void recreateOriginalCollection(Object currentCollection, ContainerPolicy cp, AbstractSession session) {
-        if(currentCollection == null) {
-            this.setOriginalCollection(null);
-            return;
-        }
-        if(currentCollection instanceof IndirectCollection) {
-            // to avoid raising event when we add/remove elements from this collection later in this method.
-            this.setOriginalCollection(((IndirectCollection)currentCollection).getDelegateObject());
-        } else {
-            this.setOriginalCollection(currentCollection);
-        }
-        if(orderedChangeObjectList == null || orderedChangeObjectList.isEmpty()) {
-            if(this.removeObjectList != null) {
-                Iterator it = this.removeObjectList.keySet().iterator();
-                while(it.hasNext()) {
-                    cp.addInto(((ObjectChangeSet)it.next()).getUnitOfWorkClone(), this.getOriginalCollection(), session);
-                }
-                this.removeObjectList.clear();
-            }
-            if(this.addObjectList != null) {
-                Iterator it = this.addObjectList.keySet().iterator();
-                while(it.hasNext()) {
-                    cp.removeFrom(((ObjectChangeSet)it.next()).getUnitOfWorkClone(), this.getOriginalCollection(), session);
-                }
-                this.addObjectList.clear();
-            }
-        } else {
-            List originalList = (List)this.getOriginalCollection();
-            for (int i = this.orderedChangeObjectList.size() - 1; i>=0; i--) {
-                OrderedChangeObject  orderedChange = (OrderedChangeObject)orderedChangeObjectList.get(i);
-                Object obj = orderedChange.getAddedOrRemovedObject();
-                Integer index = orderedChange.getIndex();
-                int changeType = orderedChange.getChangeType();
-                if(changeType == CollectionChangeEvent.ADD) {
-                    // the object was added - remove the corresponding index
-                    if(index == null) {
-                        originalList.remove(originalList.size()-1);
-                    } else {
-                        originalList.remove(index.intValue());
-                    }
-                } else if(changeType == CollectionChangeEvent.REMOVE) {
-                    // the object was removed - add its index in the new list 
-                    if(index == null) {
-                        throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
-                    } else {
-                        originalList.add(index.intValue(), obj);
-                    }
-                }
-            }
-            this.orderedChangeObjectList.clear();
-            if(this.removeObjectList != null) {
-                this.removeObjectList.clear();
-            }
-            if(this.addObjectList != null) {
-                this.addObjectList.clear();
-            }
-        }
-    }
-   
+   /**
+    * Recreates the original state of currentCollection.
+    */
+   public void internalRecreateOriginalCollection(Object currentCollection, AbstractSession session) {
+       ContainerPolicy cp = this.mapping.getContainerPolicy();
+       if(orderedChangeObjectList == null || orderedChangeObjectList.isEmpty()) {
+           if(this.removeObjectList != null) {
+               Iterator it = this.removeObjectList.keySet().iterator();
+               while(it.hasNext()) {
+                   ObjectChangeSet changeSet = (ObjectChangeSet)it.next(); 
+                   cp.addInto(changeSet.getUnitOfWorkClone(), currentCollection, session);
+               }
+           }
+           if(this.addObjectList != null) {
+               Iterator it = this.addObjectList.keySet().iterator();
+               while(it.hasNext()) {
+                   ObjectChangeSet changeSet = (ObjectChangeSet)it.next(); 
+                   cp.removeFrom(changeSet.getUnitOfWorkClone(), currentCollection, session);
+               }
+           }
+       } else {
+           List originalList = (List)currentCollection;
+           for (int i = this.orderedChangeObjectList.size() - 1; i>=0; i--) {
+               OrderedChangeObject  orderedChange = (OrderedChangeObject)orderedChangeObjectList.get(i);
+               Object obj = orderedChange.getAddedOrRemovedObject();
+               Integer index = orderedChange.getIndex();
+               int changeType = orderedChange.getChangeType();
+               if(changeType == CollectionChangeEvent.ADD) {
+                   // the object was added - remove the corresponding index
+                   if(index == null) {
+                       originalList.remove(originalList.size()-1);
+                   } else {
+                       originalList.remove(index.intValue());
+                   }
+               } else if(changeType == CollectionChangeEvent.REMOVE) {
+                   // the object was removed - add its index in the new list 
+                   if(index == null) {
+                       throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
+                   } else {
+                       originalList.add(index.intValue(), obj);
+                   }
+               }
+           }
+       }
+   }
+  
    public void setOrderHasBeenRepaired(boolean hasBeenRepaired) {
        this.orderHasBeenRepaired = hasBeenRepaired;
    }
    public boolean orderHasBeenRepaired() {
        return this.orderHasBeenRepaired;
+   }
+
+   /**
+    * Clears info about added / removed objects set by change tracker.
+    */
+   public void clearChanges() {
+       if(orderedChangeObjectList != null) {
+           this.orderedChangeObjectList.clear();
+       }
+       if(this.removeObjectList != null) {
+           this.removeObjectList.clear();
+       }
+       if(this.addObjectList != null) {
+           this.addObjectList.clear();
+       }
    }
 }

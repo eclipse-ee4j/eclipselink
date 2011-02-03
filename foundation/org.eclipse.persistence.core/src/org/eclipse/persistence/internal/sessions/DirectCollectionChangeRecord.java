@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
+
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 
 /**
@@ -402,43 +403,60 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         return this.newSize;
     }
 
-    /**
-     * Recreates the original state of the collection.
-     */
-   public void recreateOriginalCollection(Object currentCollection, ContainerPolicy cp, AbstractSession session) {
-        this.setOriginalCollection(currentCollection);
-        if(currentCollection == null) {
-            return;
-        }
-        if(this.removeObjectMap != null) {
-            Iterator it = this.removeObjectMap.entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry entry = (Map.Entry)it.next();
-                Object obj = entry.getKey();
-                int n = (Integer)entry.getValue();
-                for(int i=0; i < n; i++) {
-                    cp.addInto(obj, currentCollection, session);
-                }
-            }
-            this.removeObjectMap.clear();
-        }
-        if(this.addObjectMap != null) {
-            Iterator it = this.addObjectMap.entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry entry = (Map.Entry)it.next();
-                Object obj = entry.getKey();
-                int n = (Integer)entry.getValue();
-                for(int i=0; i < n; i++) {
-                    cp.removeFrom(obj, currentCollection, session);
-                }
-            }
-            this.addObjectMap.clear();
-        }
-    }
-   public void setOrderHasBeenRepaired(boolean hasBeenRepaired) {
+   /**
+    * Recreates the original state of the collection.
+    */
+  public void internalRecreateOriginalCollection(Object currentCollection, AbstractSession session) {
+      ContainerPolicy cp = this.mapping.getContainerPolicy();
+       if(this.removeObjectMap != null) {
+           Iterator it = this.removeObjectMap.entrySet().iterator();
+           while(it.hasNext()) {
+               Map.Entry entry = (Map.Entry)it.next();
+               Object obj = entry.getKey();
+               int n = (Integer)entry.getValue();
+               for(int i=0; i < n; i++) {
+                   cp.addInto(obj, currentCollection, session);
+               }
+           }
+       }
+       if(this.addObjectMap != null) {
+           Iterator it = this.addObjectMap.entrySet().iterator();
+           while(it.hasNext()) {
+               Map.Entry entry = (Map.Entry)it.next();
+               Object obj = entry.getKey();
+               int n = (Integer)entry.getValue();
+               for(int i=0; i < n; i++) {
+                   cp.removeFrom(obj, currentCollection, session);
+               }
+           }
+       }
+   }
+   
+  public void setOrderHasBeenRepaired(boolean hasBeenRepaired) {
        this.orderHasBeenRepaired = hasBeenRepaired;
    }
    public boolean orderHasBeenRepaired() {
        return this.orderHasBeenRepaired;
+   }
+   
+   /**
+    * Clears info about added / removed objects set by change tracker.
+    */
+   public void clearChanges() {
+       if(this.removeObjectMap != null) {
+           this.removeObjectMap.clear();
+       }
+       if(this.addObjectMap != null) {
+           this.addObjectMap.clear();
+       }
+       if(this.addObjectMap != null) {
+           this.addObjectMap.clear();
+       }
+       if(this.removeObjectMap != null) {
+           this.removeObjectMap.clear();
+       }
+       if(this.commitAddMap != null) {
+           this.commitAddMap.clear();
+       }
    }
 }

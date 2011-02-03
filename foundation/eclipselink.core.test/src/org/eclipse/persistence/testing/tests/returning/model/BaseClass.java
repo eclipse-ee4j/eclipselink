@@ -76,6 +76,7 @@ public abstract class BaseClass implements Cloneable {
     }
 
     public BigDecimal[] build_a_plus_minus_b_BigDecimal(Record row, Session session) {
+        BigDecimal[] a_plus_minus_b_BigDecimal = new BigDecimal[2];
         BigDecimal a = (BigDecimal)session.getDatasourcePlatform().convertObject(row.get(getFieldAName()), BigDecimal.class);
         BigDecimal b = (BigDecimal)session.getDatasourcePlatform().convertObject(row.get(getFieldBName()), BigDecimal.class);
         if (a == null || b == null) {
@@ -244,5 +245,32 @@ public abstract class BaseClass implements Cloneable {
             }
         }
         return true;
+    }
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(other == null) {
+            return false;
+        }
+        if(getClass() == other.getClass()) {
+            return this.compareWithoutId((BaseClass)other);
+        } else {
+            return false;
+        }
+    }
+
+    public Object clone() {
+        try {
+            BaseClass clone = (BaseClass)super.clone();
+            clone.a_plus_minus_b_BigDecimal = new BigDecimal[2];
+            for(int i=0; i < a_plus_minus_b_BigDecimal.length; i++) {
+                clone.a_plus_minus_b_BigDecimal[i] = a_plus_minus_b_BigDecimal[i]; 
+            }
+            return clone;
+        } catch (CloneNotSupportedException ex) {
+            throw new InternalError();
+        }
     }
 }

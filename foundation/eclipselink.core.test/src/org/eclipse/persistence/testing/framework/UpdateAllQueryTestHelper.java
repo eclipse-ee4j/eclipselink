@@ -156,7 +156,7 @@ public class UpdateAllQueryTestHelper {
                     DatabaseField field = new DatabaseField(name);
                     row.add(field, null);
                 }
-                rq.getDescriptor().getObjectBuilder().assignReturnRow(obj, null, (AbstractSession)uow, row);
+                rq.getDescriptor().getObjectBuilder().assignReturnRow(obj, (AbstractSession)uow, row, null);
             }
             // uow committed - objects updated.
             uow.commit();

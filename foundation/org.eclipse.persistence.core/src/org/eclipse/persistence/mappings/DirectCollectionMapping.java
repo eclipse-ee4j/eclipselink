@@ -573,6 +573,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (cloneKeyValues.isEmpty() && originalKeyValues.isEmpty() && (numberOfNewNulls == 0) && (!changeRecord.getOwner().isNew())) {
             return;
         }
+        ((DirectCollectionChangeRecord)changeRecord).clearChanges();
         ((DirectCollectionChangeRecord)changeRecord).addAdditionChange(cloneKeyValues, databaseCount);
         ((DirectCollectionChangeRecord)changeRecord).addRemoveChange(originalKeyValues, databaseCount);
         //For CR#2258, produce a changeRecord which reflects the addition and removal of null values.
@@ -715,6 +716,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
         compareCollectionsForChange(backUpCollection, cloneObjectCollection, changeRecord, session);
         if (changeRecord.hasChanges()) {
+            changeRecord.setOriginalCollection(backUpCollection);
             return changeRecord;
         }
         return null;
@@ -2963,7 +2965,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         collectionChangeRecord.setIsDeferred(true);
         objectChangeSet.deferredDetectionRequiredOn(getAttributeName());
         if (collectionChangeRecord.getOriginalCollection() == null) {
-            collectionChangeRecord.recreateOriginalCollection(oldValue, getContainerPolicy(), uow);
+            collectionChangeRecord.recreateOriginalCollection(oldValue, uow);
         }
         collectionChangeRecord.setLatestCollection(newValue);
     }

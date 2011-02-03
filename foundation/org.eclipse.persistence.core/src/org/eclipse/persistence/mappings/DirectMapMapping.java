@@ -245,12 +245,13 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         HashMap originalKeyValues = new HashMap(10);
         HashMap cloneKeyValues = new HashMap(10);
 
+        Map backUpCollection = null;
         if (!owner.isNew()) {
             backUpAttribute = getAttributeValueFromObject(backUp);
             if ((backUpAttribute == null) && (cloneAttribute == null)) {
                 return null;
             }
-            Map backUpCollection = (Map)getRealCollectionAttributeValueFromObject(backUp, session);
+            backUpCollection = (Map)getRealCollectionAttributeValueFromObject(backUp, session);
             Object backUpIter = containerPolicy.iteratorFor(backUpCollection);
             while (containerPolicy.hasNext(backUpIter)) {// Make a lookup of the objects
                 Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(backUpIter, session);
@@ -279,6 +280,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         changeRecord.setMapping(this);
         changeRecord.addAdditionChange(cloneKeyValues);
         changeRecord.addRemoveChange(originalKeyValues);
+        changeRecord.setOriginalCollection(backUpCollection);
         return changeRecord;
     }
 
@@ -830,7 +832,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             objectChangeSet.addChange(collectionChangeRecord);
         }
         if (collectionChangeRecord.getOriginalCollection() == null) {
-            collectionChangeRecord.setOriginalCollection(oldValue);
+            collectionChangeRecord.recreateOriginalCollection(oldValue, uow);
         }
         collectionChangeRecord.setLatestCollection(newValue);
         collectionChangeRecord.setIsDeferred(true);

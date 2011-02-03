@@ -529,6 +529,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         changeRecord.setMapping(this);
         compareCollectionsForChange(backUpObjectCollection, cloneObjectCollection, changeRecord, session);
         if (changeRecord.hasChanges()) {
+            changeRecord.setOriginalCollection(backUpObjectCollection);
             return changeRecord;
         }
         return null;
@@ -1903,7 +1904,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         collectionChangeRecord.setIsDeferred(true);
         objectChangeSet.deferredDetectionRequiredOn(getAttributeName());
         if (collectionChangeRecord.getOriginalCollection() == null) {
-            collectionChangeRecord.recreateOriginalCollection(oldValue, this.containerPolicy, uow);
+            collectionChangeRecord.recreateOriginalCollection(oldValue, uow);
         }
         collectionChangeRecord.setLatestCollection(newValue);        
     }

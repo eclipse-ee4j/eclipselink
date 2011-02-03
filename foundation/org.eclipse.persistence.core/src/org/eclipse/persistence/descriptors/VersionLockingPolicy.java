@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DirectToFieldChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -627,10 +628,22 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
         }
         // PERF:  handle normal case faster.
         if (this.lockMapping != null) {
-            this.lockMapping.setAttributeValueInObject(object, this.lockMapping.getAttributeValue(lockValue, session));
-            if (objectChangeSet != null) {
+            // converted to the correct (for the mapping) type lock value.
+            Object convertedLockValue = this.lockMapping.getAttributeValue(lockValue, session); 
+            if (objectChangeSet != null && (!objectChangeSet.isNew() || query.getDescriptor().shouldUseFullChangeSetsForNewObjects())) {
+                Object oldValue = oldValue = this.lockMapping.getAttributeValueFromObject(object);
+                this.lockMapping.setAttributeValueInObject(object, convertedLockValue);
                 objectChangeSet.setWriteLockValue(lockValue);
-                objectChangeSet.updateChangeRecordForAttribute(this.lockMapping, lockValue, session);
+                // Don't use ObjectChangeSet.updateChangeRecordForAttributeWithMappedObject to avoid unnecessary conversion - convertedLockValue is already converted.
+                DirectToFieldChangeRecord changeRecord = new DirectToFieldChangeRecord(objectChangeSet);
+                changeRecord.setAttribute(this.lockMapping.getAttributeName());
+                changeRecord.setMapping(this.lockMapping);
+                changeRecord.setNewValue(convertedLockValue);
+                changeRecord.setOldValue(oldValue);
+                objectChangeSet.addChange(changeRecord);
+
+            } else {
+                this.lockMapping.setAttributeValueInObject(object, convertedLockValue);
             }
         } else {
             // CR#3173211
@@ -641,11 +654,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             ObjectBuilder objectBuilder = this.descriptor.getObjectBuilder();
             AbstractRecord record = objectBuilder.createRecord(1, session);
             record.put(this.writeLockField, lockValue);
-            objectBuilder.assignReturnRow(object, null, session, record);            
             if (objectChangeSet != null) {
                 objectChangeSet.setWriteLockValue(lockValue);
-                query.getQueryMechanism().updateChangeSet(this.descriptor, objectChangeSet, record, object);
             }
+            objectBuilder.assignReturnRow(object, session, record, objectChangeSet);            
         }
     }
 

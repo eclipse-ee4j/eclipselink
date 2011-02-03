@@ -31,13 +31,16 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.Iterator;
 
 import java.sql.Date;
+import java.sql.Time;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -62,7 +65,9 @@ import junit.framework.*;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
+import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.indirection.BatchValueHolder;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
@@ -81,6 +86,9 @@ import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.changesets.ChangeRecord;
+import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
+import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
 import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
@@ -89,6 +97,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
@@ -97,6 +106,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.Connector;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.DefaultConnector;
@@ -107,6 +117,7 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
@@ -354,7 +365,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testRefreshForFlush");
         tests.add("testRefreshForCommit");
         tests.add("testChangeFlushChangeRefresh");
-
+        tests.add("testChangeRecordKeepOldValue_Simple");
+        tests.add("testChangeRecordKeepOldValue_TwoStep");
+        tests.add("testSetNewAggregate");
+        tests.add("testSetNewNestedAggregate");
+        tests.add("setStartTime");
+        tests.add("testObjectReferencedInBothEmAndSharedCache_AggregateObjectMapping");
+        tests.add("testObjectReferencedInBothEmAndSharedCache_ObjectReferenceMappingVH");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -9179,13 +9196,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * Tests that queries will be re-executed if a query fails from a dead connection. 
      */
     public void testDeadConnectionFailover(){
-        if (JUnitTestCase.getServerSession().getPlatform().isSymfoware() || JUnitTestCase.getServerSession().getPlatform().isSybase()) {
-            warning("Test testDeadConnectionFailover skipped for this platform, Sybase, Symfoware platform doesn't support failover.");
+        if (isOnServer()) {
+            // Uses DefaultConnector.
             return;
         }
         
-        if (isOnServer()) {
-            // Uses DefaultConnector.
+        if (JUnitTestCase.getServerSession().getPlatform().isSymfoware() || JUnitTestCase.getServerSession().getPlatform().isSybase()) {
+            warning("Test testDeadConnectionFailover skipped for this platform, Sybase, Symfoware platform doesn't support failover.");
             return;
         }
         
@@ -9270,13 +9287,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * Tests that a dead connection pool can fail over. 
      */
     public void testDeadPoolFailover(){
-        if (JUnitTestCase.getServerSession().getPlatform().isSymfoware() || JUnitTestCase.getServerSession().getPlatform().isSybase()) {
-            warning("Test testDeadConnectionFailover skipped for this platform, Sybase, Symfoware platform doesn't support failover.");
+        if (isOnServer()) {
+            // Uses DefaultConnector.
             return;
         }
         
-        if (isOnServer()) {
-            // Uses DefaultConnector.
+        if (JUnitTestCase.getServerSession().getPlatform().isSymfoware() || JUnitTestCase.getServerSession().getPlatform().isSybase()) {
+            warning("Test testDeadConnectionFailover skipped for this platform, Sybase, Symfoware platform doesn't support failover.");
             return;
         }
         
@@ -10309,10 +10326,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         clearCache("customizeAddTarget");
         
         emp = em.find(Employee.class, emp.getId());
-        
-        assertTrue("The add Target Query was not correctly customized", emp.getFirstName() == null);
-        
         rollbackTransaction(em);
+        
+        assertTrue("The add Target Query was not correctly customized", emp.getFirstName() == null);        
     }
     
     // Bug 335322
@@ -10400,6 +10416,533 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 	    	em.remove(emp);
 	    	commitTransaction(em);
     	}
+    }
+    
+    //  Bug 307433 - Regression in Auditing Support when using defaults.
+    static class ChangeRecordKeepOldValueListener extends SessionEventAdapter {
+        public UnitOfWorkChangeSet uowChangeSet;
+        public void postCalculateUnitOfWorkChangeSet(SessionEvent event) {
+            uowChangeSet = (UnitOfWorkChangeSet)event.getProperty("UnitOfWorkChangeSet");
+        }
+    }
+    public void testChangeRecordKeepOldValue_Simple() {
+        internalTestChangeRecordKeepOldValue(false);
+    }
+    public void testChangeRecordKeepOldValue_TwoStep() {
+        internalTestChangeRecordKeepOldValue(true);
+    }
+    public void internalTestChangeRecordKeepOldValue(boolean addSecondStep) {
+        ServerSession ss = null;
+        boolean isEmInjected = isOnServer() && isJTA();
+        if(isEmInjected) {
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            ss = getServerSession();
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        } else {
+            ss = getServerSession();
+        }        
+        ChangeRecordKeepOldValueListener listener = new ChangeRecordKeepOldValueListener();
+        ss.getEventManager().addListener(listener);
+        
+        EntityManager em = createEntityManager();        
+        try {
+            // setup
+            // create original object and referenced objects
+            Employee emp = new Employee();
+            emp.setFirstName("TestChangeRecordKeepOldValue");
+            emp.setLastName("Manager_OriginalName");
+            emp.setMale();
+            emp.setSalary(35000);
+            emp.setPeriod(new EmploymentPeriod(Helper.dateFromYearMonthDate(1993, 0, 1), Helper.dateFromYearMonthDate(1996, 11, 31)));
+            emp.setFormerEmployment(new FormerEmployment("Original", new EmploymentPeriod(Helper.dateFromYearMonthDate(1990, 0, 1), Helper.dateFromYearMonthDate(1993, 11, 31))));
+            Address address = new Address();
+            address.setCountry("Original");
+            address.setProvince("Original");
+            address.setCity("Original");
+            address.setStreet("Original");
+            address.setPostalCode("Original");
+            emp.setAddress(address);
+            Department dep = new Department();
+            dep.setName("Original");
+            emp.setDepartment(dep);
+            emp.addResponsibility("Original_1");
+            emp.addResponsibility("Original_2");
+            PhoneNumber phone1 = new PhoneNumber("Original_1", "111", "1111111"); 
+            emp.addPhoneNumber(phone1);
+            PhoneNumber phone2 = new PhoneNumber("Original_2", "222", "2222222"); 
+            emp.addPhoneNumber(phone2);
+            emp.setNormalHours(new Time[]{Helper.timeFromHourMinuteSecond(9, 0, 0), Helper.timeFromHourMinuteSecond(17, 0, 0)});
+            Employee emp1 = new Employee();
+            emp1.setFirstName("TestChangeRecordKeepOldValue");
+            emp1.setLastName("Original_1");
+            emp.addManagedEmployee(emp1);
+            Employee emp2 = new Employee();
+            emp2.setFirstName("TestChangeRecordKeepOldValue");
+            emp2.setLastName("Original_2");
+            emp.addManagedEmployee(emp2);
+            Project proj1 = new SmallProject();
+            proj1.setName("Original_1");
+            emp.addProject(proj1);
+            Project proj2 = new LargeProject();
+            proj2.setName("Original_2");
+            emp.addProject(proj2);
+            Project proj3 = new LargeProject();
+            proj3.setName("Original_3");
+            proj3.setTeamLeader(emp);
+            emp1.addProject(proj3);
+            emp2.addProject(proj3);
+
+            // persist original object and all referenced objects
+            beginTransaction(em);
+            Equipment equipment1 = new Equipment();
+            equipment1.setDescription("Original_1");
+            // persist is not cascaded for department.equipment - have to explicitly persist it.
+            em.persist(equipment1);
+            dep.addEquipment(equipment1);
+            Equipment equipment2 = new Equipment();
+            equipment2.setDescription("Original_2");
+            // persist is not cascaded for department.equipment - have to explicitly persist it.
+            // moreover, equipment.id is used as a key in dep.equipment Map, therefore equipmet 
+            // should be persisted before been added to dep.
+            em.persist(equipment2);
+            dep.addEquipment(equipment2);
+            // persist is not cascaded for employee.department - have to explicitly persist it.
+            // moreover, equipment.id is used as a key in dep.equipment Map, therefore equipmet 
+            // should be persisted before been added to dep.
+            em.persist(dep);
+            em.persist(emp);
+            commitTransaction(em);
+            
+            // backup original object and all referenced objects
+            CopyGroup copyGroupBackup = new CopyGroup();
+            copyGroupBackup.cascadeAllParts();
+            ss.copy(emp, copyGroupBackup);
+            // emp references (directly or through other objects) all the created objects, therefore all of them are copied.
+            Map backupMap = copyGroupBackup.getCopies();
+            
+            // verify that backup objects are identical to originals
+            Iterator<Map.Entry> it = backupMap.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry entry = it.next();
+                Object original = entry.getKey();
+                ClassDescriptor descriptor = ss.getDescriptor(original);
+                if(!descriptor.isAggregateDescriptor()) {
+                    Object backup = entry.getValue();
+                    if(original == backup) {
+                        fail("Test problem: backup failed: original == backup: " + original);
+                    }
+                    if(!ss.compareObjects(original, backup)) {
+                        fail("Test problem: backup failed: compareObjects(original, backup) == false: " + original + "; " + backup);
+                    }
+                }
+            }
+            
+            // change original object
+            beginTransaction(em);
+            // DirectToField
+            emp.setLastName("Manager_NewName");
+            // DirectToField
+            emp.setSalary(100);
+            // Aggregate
+            emp.getPeriod().setStartDate(Helper.dateFromYearMonthDate(2000, 0, 1));
+            emp.getPeriod().setEndDate(Helper.dateFromYearMonthDate(2002, 0, 1));
+            // Aggregate
+//            emp.setFormerEmployment(new FormerEmployment("New", new EmploymentPeriod(Helper.dateFromYearMonthDate(1989, 0, 1), Helper.dateFromYearMonthDate(1992, 11, 31))));
+            emp.getFormerEmployment().setFormerCompany("New");
+            emp.getFormerEmployment().getPeriod().setStartDate(Helper.dateFromYearMonthDate(1989, 0, 1));
+            emp.getFormerEmployment().getPeriod().setStartDate(Helper.dateFromYearMonthDate(1992, 11, 31));
+            // Transformation
+            emp.setStartTime(Helper.timeFromHourMinuteSecond(10, 0, 0));
+            // DirectCollection
+            emp.removeResponsibility("Original_1");
+            emp.addResponsibility("New_1");
+            // Private Collection 1 to many
+            PhoneNumber phone1New = new PhoneNumber("New_1", "111", "1111111"); 
+            emp.addPhoneNumber(phone1New);
+            emp.removePhoneNumber(phone1);
+            // Collection 1 to many
+            emp.removeManagedEmployee(emp1);
+            emp1.setManager(null);
+            em.remove(emp1);
+            Employee emp1New = new Employee();
+            emp1New.setFirstName("TestChangeRecordKeepOldValue");
+            emp1New.setLastName("New_1");
+            emp1New.addProject(proj3);
+            emp.addManagedEmployee(emp1New);
+            // Collection many to many
+            emp.removeProject(proj1);
+            em.remove(proj1);
+            Project proj1New = new LargeProject();
+            proj1New.setName("New_1");
+            emp.addProject(proj1New);
+            // ObjectReference
+            proj3.setTeamLeader(null);
+            // ObjectReference
+            Address addressNew = new Address();
+            addressNew.setCountry("New");
+            addressNew.setProvince("New");
+            addressNew.setCity("New");
+            addressNew.setStreet("New");
+            addressNew.setPostalCode("New");
+            emp.setAddress(addressNew);
+            em.remove(address);
+            // Map 1 to many
+            dep.getEquipment().remove(equipment1.getId());
+            Equipment equipment1New = new Equipment();
+            equipment1New.setDescription("New_1");
+            em.persist(equipment1New);
+            dep.addEquipment(equipment1New);
+            
+            // additional change typically overrides existing aggregate or collection with the new one, then alters aggregate or adds to collection. 
+            if(addSecondStep) {
+                // Aggregate
+                emp.setPeriod(new EmploymentPeriod());
+                emp.getPeriod().setStartDate(Helper.dateFromYearMonthDate(2001, 0, 1));
+                emp.getPeriod().setEndDate(Helper.dateFromYearMonthDate(2003, 0, 1));
+                // Aggregate
+                emp.setFormerEmployment(new FormerEmployment("New_New", new EmploymentPeriod(Helper.dateFromYearMonthDate(1988, 0, 1), Helper.dateFromYearMonthDate(1991, 11, 31))));
+                emp.getFormerEmployment().setPeriod(new EmploymentPeriod());
+                emp.getFormerEmployment().getPeriod().setStartDate(Helper.dateFromYearMonthDate(1987, 0, 1));
+                emp.getFormerEmployment().getPeriod().setEndDate(Helper.dateFromYearMonthDate(1990, 0, 1));
+                // Transformation
+                emp.setEndTime(Helper.timeFromHourMinuteSecond(18, 0, 0));
+                // DirectCollection
+                emp.setResponsibilities(new ArrayList());
+                emp.addResponsibility("New_New_1");
+                // Private Collection 1 to many
+                emp.setPhoneNumbers(new HashSet());
+                PhoneNumber phone1NewNew = new PhoneNumber("New_New_1", "111", "1111111"); 
+                emp.addPhoneNumber(phone1NewNew);
+                // Collection 1 to many
+                emp1New.setManager(null);
+                emp2.setManager(null);
+                emp.setManagedEmployees(new Vector());
+                Employee emp1NewNew = new Employee();
+                emp1NewNew.setFirstName("TestChangeRecordKeepOldValue");
+                emp1NewNew.setLastName("New_New_1");
+                emp1NewNew.addProject(proj3);
+                emp.addManagedEmployee(emp1NewNew);
+                em.remove(emp1New);
+                em.remove(emp2);
+                // Collection many to many
+                emp.setProjects(new ArrayList());
+                Project proj1NewNew = new LargeProject();
+                proj1NewNew.setName("New_New_1");
+                emp.addProject(proj1NewNew);
+                em.remove(proj1New);
+                em.remove(proj2);
+                // ObjectReference
+                Address addressNewNew = new Address();
+                addressNewNew.setCountry("New_New");
+                addressNewNew.setProvince("New_New");
+                addressNewNew.setCity("New_New");
+                addressNewNew.setStreet("New_New");
+                addressNewNew.setPostalCode("New_New");
+                emp.setAddress(addressNewNew);
+                em.remove(addressNew);
+                // Map 1 to many
+                // We are about to override equipment map.
+                // It's a private OneToMany mapping so normally all the 
+                // members would be removed automatically.
+                // However in theis case we have explicitly persisted the the new member added in thhe current transaction
+                // (because Equipment's id is used as its key in the Department.equipment Map)
+                // therefore we have to explicitly em.remove it.
+                em.remove(equipment1New);
+                dep.setEquipment(new HashMap());
+                Equipment equipment1NewNew = new Equipment();
+                equipment1NewNew.setDescription("New_New_1");
+                em.persist(equipment1NewNew);
+                dep.addEquipment(equipment1NewNew);
+            }
+            commitTransaction(em);
+            
+            // backup updated objects 
+            CopyGroup copyGroupUpdated = new CopyGroup();
+            copyGroupUpdated.cascadeAllParts();
+            ss.copy(emp, copyGroupUpdated);
+            // copies of the updated objects will be altered to contain old values.
+            // if altering the test, make sure that emp still references (directly or through other objects) all the updated objects, so that all of them are copied.
+            Map oldValueMap = copyGroupUpdated.getCopies();
+            // using ChangeRecords bring back the original state of the object
+            Iterator itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
+            while(itChangeSets.hasNext()) {
+                Map.Entry entry = (Map.Entry)itChangeSets.next();
+                Object object = entry.getKey();
+                ClassDescriptor descriptor = ss.getDescriptor(object);
+                if(!descriptor.isAggregateDescriptor()) {
+                    ObjectChangeSet changeSet = (ObjectChangeSet)entry.getValue();
+                    if(!((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeSet).shouldBeDeleted() && !changeSet.isNew()) {
+                        List<ChangeRecord> changes = changeSet.getChanges(); 
+                        if(changes != null && !changes.isEmpty()) {
+                            Object oldValueObject = oldValueMap.get(object);
+                            for(ChangeRecord changeRecord : changeSet.getChanges()) {
+                                Object oldValue = changeRecord.getOldValue();
+                                DatabaseMapping mapping = ((org.eclipse.persistence.internal.sessions.ChangeRecord)changeRecord).getMapping(); 
+                                mapping.setRealAttributeValueInObject(oldValueObject, oldValue);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            String errorMsgOldValues = "";
+            // now compare oldValue objects with corresponding backup objects
+            itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
+            while(itChangeSets.hasNext()) {
+                Map.Entry entry = (Map.Entry)itChangeSets.next();
+                Object object = entry.getKey();
+                ClassDescriptor descriptor = ss.getDescriptor(object);
+                if(!descriptor.isAggregateDescriptor()) {
+                    ObjectChangeSet changeSet = (ObjectChangeSet)entry.getValue();
+                    if(!((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeSet).shouldBeDeleted() && !changeSet.isNew()) {
+                        List<ChangeRecord> changes = changeSet.getChanges(); 
+                        if(changes != null && !changes.isEmpty()) {
+                            Object oldValueObject = oldValueMap.get(object);
+                            Object backupObject = backupMap.get(object);
+                            // compare oldValue with backup object
+                            if(!ss.compareObjects(oldValueObject, backupObject)) {
+                                errorMsgOldValues += '\t' + object.toString() + '\n';
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // set of attached to em objects
+            Set updatedObjects = new HashSet();
+            for(Object object : oldValueMap.keySet()) {
+                ClassDescriptor descriptor = ss.getDescriptor(object);
+                if(!descriptor.isAggregateDescriptor()) {
+                    updatedObjects.add(object);
+                }
+            }
+            
+            // verify that the objects were correctly written to the db
+            String errorMsgDb = "";
+            clearCache();
+            Map updatedToReadBack = new HashMap();
+            EntityManager em2 = createEntityManager();
+            beginTransaction(em2);
+            UnitOfWork uow2 = ((EntityManagerImpl)em2.getDelegate()).getActivePersistenceContext(null);
+            // read back from the db all the attached to em objects.
+            // before comparison clear all read-only mappings that we didn't set in the attached to em objects.
+            for(Object object : updatedObjects) {
+                Object readBack = uow2.readObject(object);
+                if(readBack instanceof Project) {
+                    ((Project)readBack).getTeamMembers().clear();
+                } else if(readBack instanceof Address) {
+                    ((Address)readBack).getEmployees().clear();
+                } else if(readBack instanceof PhoneNumber) {
+                    ((PhoneNumber)readBack).setId(null);
+                } else if(readBack instanceof Department) {
+                    ((Department)readBack).getEmployees().clear();
+                }
+                updatedToReadBack.put(object, readBack);
+            }
+            // now compare object attached to em with the object read from the db
+            for(Object entryObject : updatedToReadBack.entrySet()) {
+                Map.Entry entry = (Map.Entry)entryObject;
+                Object object = entry.getKey();
+                Object readBack = entry.getValue();
+                if(!ss.compareObjects(object, readBack)) {
+                    errorMsgDb += '\t' + object.toString() + '\n';
+                }
+            }
+            rollbackTransaction(em2);
+            
+            // clean up
+            beginTransaction(em);
+            Set objectsToRemove = new HashSet();
+            // remove all dependencies and add cache objects to be directly removed.
+            for(Object object : updatedObjects) {
+                if(object instanceof Employee) {
+                    ((Employee)object).getManagedEmployees().clear();
+                    ((Employee)object).setManager(null);
+                    ((Employee)object).setAddress((Address)null);
+                    ((Employee)object).getProjects().clear();
+                    ((Employee)object).setDepartment(null);
+                    objectsToRemove.add(object);
+                } else if(object instanceof Project) {
+                    ((Project)object).setTeamLeader(null);
+                    objectsToRemove.add(object);
+                } else if(object instanceof Address || object instanceof Department) {
+                    objectsToRemove.add(object);
+                }
+            }
+            // remove objects that should be removed directly.
+            for(Object object : objectsToRemove) {
+                em.remove(object);
+            }
+            commitTransaction(em);
+            
+            String errorMsg = "";
+            if(errorMsgOldValues.length() > 0) {
+                errorMsgOldValues = "Some old values and back up objects are not equal:\n" + errorMsgOldValues;
+                errorMsg += errorMsgOldValues; 
+            }
+            if(errorMsgDb.length() > 0) {
+                errorMsgDb = "\nSome values were incorrectly written into the db:\n" + errorMsgDb;
+                errorMsg += errorMsgDb; 
+            }
+            if(errorMsg.length() > 0) {
+                fail(errorMsg);
+            }
+        } finally {
+            if(isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            ss.getEventManager().removeListener(listener);
+        }
+    }
+
+    //  Bug 307433 - Regression in Auditing Support when using defaults.
+    public void testSetNewAggregate() {
+        // setup
+        EntityManager em = createEntityManager();
+        Employee emp = new Employee();
+        emp.setPeriod(new EmploymentPeriod(Helper.dateFromYearMonthDate(1988, 0, 1), Helper.dateFromYearMonthDate(1991, 11, 31)));
+        beginTransaction(em);
+        em.persist(emp);
+        commitTransaction(em);
+        int id = emp.getId();
+        
+        // test
+        emp.getPeriod().setStartDate(Helper.dateFromYearMonthDate(1989, 0, 1));
+        emp.getPeriod().setEndDate(Helper.dateFromYearMonthDate(1992, 0, 1));
+        emp.setPeriod(new EmploymentPeriod(Helper.dateFromYearMonthDate(1989, 0, 1), Helper.dateFromYearMonthDate(1992, 11, 31)));
+        beginTransaction(em);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        // verify
+        clearCache();
+        em = createEntityManager();
+        beginTransaction(em);
+        Employee empRead = em.find(Employee.class, id);
+        //clean-up
+        em.remove(empRead);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        assertTrue("", emp.getPeriod().equals(empRead.getPeriod()));
+    }
+    
+    //  Bug 307433 - Regression in Auditing Support when using defaults.
+    public void testSetNewNestedAggregate() {
+        // setup
+        EntityManager em = createEntityManager();
+        Employee emp = new Employee();
+        emp.setFormerEmployment(new FormerEmployment("A", new EmploymentPeriod(Helper.dateFromYearMonthDate(1988, 0, 1), Helper.dateFromYearMonthDate(1991, 11, 31))));
+        beginTransaction(em);
+        em.persist(emp);
+        commitTransaction(em);
+        int id = emp.getId();
+        
+        // test
+        emp.setFormerEmployment(new FormerEmployment("B", new EmploymentPeriod(Helper.dateFromYearMonthDate(1987, 0, 1), Helper.dateFromYearMonthDate(1990, 11, 31))));
+        beginTransaction(em);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        // verify
+        clearCache();
+        em = createEntityManager();
+        beginTransaction(em);
+        Employee empRead = em.find(Employee.class, id);
+        //clean-up
+        em.remove(empRead);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        assertTrue("", emp.getFormerEmployment().getPeriod().equals(empRead.getFormerEmployment().getPeriod()));
+    }
+    
+    //  Bug 307433 - Regression in Auditing Support when using defaults.
+    public void setStartTime() {
+        // setup
+        EntityManager em = createEntityManager();
+        Employee emp = new Employee();
+        emp.setNormalHours(new Time[]{Helper.timeFromHourMinuteSecond(0, 0, 0), Helper.timeFromHourMinuteSecond(8, 0, 0)});
+        beginTransaction(em);
+        em.persist(emp);
+        commitTransaction(em);
+        int id = emp.getId();
+        
+        // test
+        emp.setStartTime(Helper.timeFromHourMinuteSecond(15, 0, 0));
+        beginTransaction(em);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        // verify
+        clearCache();
+        em = createEntityManager();
+        beginTransaction(em);
+        Employee empRead = em.find(Employee.class, id);
+        //clean-up
+        em.remove(empRead);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        assertTrue("inserted startTime: " + emp.getStartTime() + " != read back startTime: " + empRead.getStartTime(), emp.getStartTime().equals(empRead.getStartTime()));
+    }
+    public void testObjectReferencedInBothEmAndSharedCache_ObjectReferenceMappingVH() {
+        EntityManager em = createEntityManager();
+        
+        Employee emp = new Employee();
+        emp.setFirstName("Manager");
+        
+        Employee emp1 = new Employee();
+        emp1.setFirstName("1");
+        emp.addManagedEmployee(emp1);
+        Employee emp2 = new Employee();
+        emp2.setFirstName("2");
+        emp.addManagedEmployee(emp2);
+        
+        ServerSession ss = null;
+        beginTransaction(em);
+        em.persist(emp);
+        // in JTA case transaction required to obtain ServerSession through getServersession method.
+        ss = getServerSession();
+        commitTransaction(em);
+        
+        CopyGroup copyGroup = new CopyGroup();
+        copyGroup.cascadeAllParts();
+        ss.copy(emp, copyGroup);
+        
+        Set originalObjects = copyGroup.getCopies().keySet();
+        // copyGroup cascades through all mappings.
+        // originalObjects should consist of just three objects: emp, emp1, emp2.
+        // However if manager_vh is wrapped around manager instance from the shared cache (empShared),
+        // the size will be 6: emp, emp1, emp2 and empShared, emp1Shared, emp2Shared.
+        assertTrue(originalObjects.size() == 3);
+    }
+    
+    public void testObjectReferencedInBothEmAndSharedCache_AggregateObjectMapping() {
+        EntityManager em = createEntityManager();
+        
+        ServerSession ss = null;
+        // persist a new Employee object
+        Employee emp = new Employee();
+        emp.setFirstName("A");
+        EmploymentPeriod period = new EmploymentPeriod(Helper.dateFromYearMonthDate(1993, 0, 1), Helper.dateFromYearMonthDate(1996, 11, 31));
+        emp.setPeriod(period);
+        beginTransaction(em);
+        em.persist(emp);
+        // in JTA case transaction required to obtain ServerSession through getServersession method.
+        ss = getServerSession();
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        // using query by example read empShared corresponding to emp in ghe share cache
+        Employee empShared = (Employee)ss.readObject(emp);
+        // these are really to distinct objects
+        assertTrue(emp != empShared);
+        // they should not share the aggragate
+        assertTrue(emp.getPeriod() != empShared.getPeriod());
     }
 }
 

@@ -492,8 +492,14 @@ public class Helper implements Serializable {
         }
         for (int index = 0; index < array1.length; index++) {
             //Related to Bug#3128838 fix.  ! is added to correct the logic.
-            if (!array1[index].equals(array2[index])) {
-                return false;
+            if(array1[index] != null) {
+                if (!array1[index].equals(array2[index])) {
+                    return false;
+                }
+            } else {
+                if(array2[index] != null) {
+                    return false;
+                }
             }
         }
         return true;

@@ -40,4 +40,11 @@ public interface ChangeRecord {
      * @return org.eclipse.persistence.sessions.changesets.ObjectChangeSet
      */
     public ObjectChangeSet getOwner();
+
+    /**
+     * ADVANCED:
+     * If the owning UnitOfWork has shouldChangeRecordKeepOldValue set to true,
+     * then return the old value of the attribute represented by this ChangeRecord.
+     */
+    public Object getOldValue();
 }

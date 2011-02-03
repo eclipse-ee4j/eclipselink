@@ -36,6 +36,7 @@ import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -1363,28 +1364,38 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * in the specified target object.
      * Return row is merged into object after execution of insert or update call
      * according to ReturningPolicy.
+     * If not null changeSet must correspond to targetObject. changeSet is updated with all of the field values in the row.
      */
-    public Object readFromReturnRowIntoObject(AbstractRecord row, Object targetObject, CacheKey parentCacheKey, ReadObjectQuery query, Collection handledMappings) throws DatabaseException {
+    public Object readFromReturnRowIntoObject(AbstractRecord row, Object targetObject, ReadObjectQuery query, Collection handledMappings, ObjectChangeSet changeSet) throws DatabaseException {
         Object aggregate = getAttributeValueFromObject(targetObject);
+        ObjectChangeSet aggregateChangeSet = null;
+
         if (aggregate == null) {
-            aggregate = readFromRowIntoObject(row, null, targetObject, parentCacheKey, query, query.getSession(), true);
-            if (handledMappings != null) {
-                handledMappings.add(this);
+            aggregate = readFromRowIntoObject(row, null, targetObject, null, query, query.getSession(), true);
+        } else {
+            if(changeSet != null) {
+                aggregateChangeSet = getReferenceDescriptor(aggregate, query.getSession()).getObjectBuilder().createObjectChangeSet(aggregate, (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet(), true, query.getSession());
             }
-            return aggregate;
+            AbstractRecord aggregateRow = new DatabaseRecord();
+            int size = row.size();
+            List fields = row.getFields();
+            List values = row.getValues();
+            List aggregateFields = getReferenceFields(); 
+            for(int i=0; i < size; i++) {
+                DatabaseField field = (DatabaseField)fields.get(i);
+                if(aggregateFields.contains(field)) {
+                    aggregateRow.add(field, values.get(i));
+                }
+            }
+
+            getObjectBuilder(aggregate, query.getSession()).assignReturnRow(aggregate, query.getSession(), aggregateRow, aggregateChangeSet);
         }
 
-        for (int i = 0; i < getReferenceFields().size(); i++) {
-            DatabaseField field = getReferenceFields().elementAt(i);
-            if (row.containsKey(field)) {
-                getObjectBuilder(aggregate, query.getSession()).assignReturnValueForField(aggregate, parentCacheKey, query, row, field, handledMappings);
-            }
-        }
-
-        if (isNullAllowed()) {
+        if (aggregate != null && isNullAllowed()) {
             boolean allAttributesNull = true;
-            for (int i = 0; (i < getReferenceFields().size()) && allAttributesNull; i++) {
-                DatabaseField field = fields.elementAt(i);
+            int nAggregateFields = this.fields.size();
+            for (int i = 0; (i < nAggregateFields) && allAttributesNull; i++) {
+                DatabaseField field = this.fields.elementAt(i);
                 if (row.containsKey(field)) {
                     allAttributesNull = row.get(field) == null;
                 } else {
@@ -1413,6 +1424,27 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             if (allAttributesNull) {
                 aggregate = null;
                 setAttributeValueInObject(targetObject, aggregate);
+            }
+        }
+        
+        if(changeSet != null) {
+            AggregateChangeRecord record = (AggregateChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
+            if(aggregate == null) {
+                if(record != null) {
+                    record.setChangedObject(null);
+                }
+            } else {
+                if (record == null) {
+                    record = new AggregateChangeRecord(changeSet);
+                    record.setAttribute(getAttributeName());
+                    record.setMapping(this);
+                    changeSet.addChange(record);
+                }
+                if (aggregateChangeSet == null) {
+                    // the old aggregate value was null
+                    aggregateChangeSet = getReferenceDescriptor(aggregate, query.getSession()).getObjectBuilder().createObjectChangeSet(aggregate, (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet(), true, query.getSession());
+                }
+                record.setChangedObject(aggregateChangeSet);
             }
         }
         if (handledMappings != null) {

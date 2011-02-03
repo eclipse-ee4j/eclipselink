@@ -208,8 +208,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Assign the fields in the row back into the object.
      * This is used by returning, as well as events and version locking.
+     * If not null changeSet must correspond to object. changeSet is updated with all of the field values in the row.
      */
-    public void assignReturnRow(Object object, CacheKey cacheKey, AbstractSession writeSession, AbstractRecord row) throws DatabaseException {
+    public void assignReturnRow(Object object, AbstractSession writeSession, AbstractRecord row, ObjectChangeSet changeSet) throws DatabaseException {
         writeSession.log(SessionLog.FINEST, SessionLog.QUERY, "assign_return_row", row);
 
         // Require a query context to read into an object.
@@ -226,24 +227,25 @@ public class ObjectBuilder implements Cloneable, Serializable {
         List fields = row.getFields();
         for (int index = 0; index < size; index++) {
             DatabaseField field = (DatabaseField)fields.get(index);
-            assignReturnValueForField(object, cacheKey, query, row, field, handledMappings);
+            assignReturnValueForField(object, query, row, field, handledMappings, changeSet);
         }
     }
 
     /**
      * Assign the field value from the row to the object for all the mappings using field (read or write).
+     * If not null changeSet must correspond to object. changeSet is updated with all of the field values in the row.
      */
-    public void assignReturnValueForField(Object object, CacheKey cacheKey, ReadObjectQuery query, AbstractRecord row, DatabaseField field, Collection handledMappings) {
+    public void assignReturnValueForField(Object object, ReadObjectQuery query, AbstractRecord row, DatabaseField field, Collection handledMappings, ObjectChangeSet changeSet) {
         DatabaseMapping mapping = getMappingForField(field);
         if (mapping != null) {
-            assignReturnValueToMapping(object, cacheKey, query, row, field, mapping, handledMappings);
+            assignReturnValueToMapping(object,  query, row, field, mapping, handledMappings, changeSet);
         }
         List readOnlyMappings = getReadOnlyMappingsForField(field);
         if (readOnlyMappings != null) {
             int size = readOnlyMappings.size();
             for (int index = 0; index < size; index++) {
                 mapping = (DatabaseMapping)readOnlyMappings.get(index);
-                assignReturnValueToMapping(object, cacheKey, query, row, field, mapping, handledMappings);
+                assignReturnValueToMapping(object, query, row, field, mapping, handledMappings, changeSet);
             }
         }
     }
@@ -251,18 +253,37 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Assign values from objectRow to the object through the mapping.
+     * If not null changeSet must correspond to object. changeSet is updated with all of the field values in the row.
      */
-    protected void assignReturnValueToMapping(Object object, CacheKey cacheKey, ReadObjectQuery query, AbstractRecord row, DatabaseField field, DatabaseMapping mapping, Collection handledMappings) {
+    protected void assignReturnValueToMapping(Object object, ReadObjectQuery query, AbstractRecord row, DatabaseField field, DatabaseMapping mapping, Collection handledMappings, ObjectChangeSet changeSet) {
         if ((handledMappings != null) && handledMappings.contains(mapping)) {
             return;
         }
         if (mapping.isDirectToFieldMapping()) {
-            //use null cachekey to ensure we build directly into the attribute
-            mapping.readFromRowIntoObject(row, null, object, null, query, query.getSession(), true);
+            if(changeSet != null) {
+                DirectToFieldChangeRecord changeRecord = (DirectToFieldChangeRecord)changeSet.getChangesForAttributeNamed(mapping.getAttributeName());
+                Object oldAttributeValue = null;
+                if (changeRecord == null) {
+                    oldAttributeValue = mapping.getAttributeValueFromObject(object);
+                }
+                
+                //use null cachekey to ensure we build directly into the attribute
+                Object attributeValue = mapping.readFromRowIntoObject(row, null, object, null, query, query.getSession(), true);
+
+                if (changeRecord == null) {
+                    // Don't use ObjectChangeSet.updateChangeRecordForAttributeWithMappedObject to avoid unnecessary conversion - attributeValue is already converted.
+                    changeRecord = (DirectToFieldChangeRecord)((DirectToFieldMapping)mapping).internalBuildChangeRecord(attributeValue, oldAttributeValue, changeSet);
+                    changeSet.addChange(changeRecord);
+                } else {
+                    changeRecord.setNewValue(attributeValue);
+                }
+            } else {
+                mapping.readFromRowIntoObject(row, null, object, null, query, query.getSession(), true);
+            }
         } else if (mapping.isAggregateObjectMapping()) {
-            ((AggregateObjectMapping)mapping).readFromReturnRowIntoObject(row, object, null, query, handledMappings);
+            ((AggregateObjectMapping)mapping).readFromReturnRowIntoObject(row, object, query, handledMappings, changeSet);
         } else if (mapping.isTransformationMapping()) {
-            ((AbstractTransformationMapping)mapping).readFromReturnRowIntoObject(row, object, null, query, handledMappings);
+            ((AbstractTransformationMapping)mapping).readFromReturnRowIntoObject(row, object, query, handledMappings, changeSet);
         } else {
             query.getSession().log(SessionLog.FINEST, SessionLog.QUERY, "field_for_unsupported_mapping_returned", field, this.descriptor);
         }
@@ -276,6 +297,34 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * @exception  DatabaseException - an error has occurred on the database.
      */
     public Object assignSequenceNumber(Object object, AbstractSession writeSession) throws DatabaseException {
+        return assignSequenceNumber(object, writeSession, null);
+    }
+
+    /**
+     * INTERNAL:
+     * Update the writeQuery's object primary key by fetching a new sequence number from the accessor.
+     * This assume the uses sequence numbers check has already been done.
+     * Adds the assigned sequence value to writeQuery's modify row.
+     * If object has a changeSet then sets sequence value into change set as an Id
+     * adds it also to object's change set in a ChangeRecord if required.
+     * @return the sequence value or null if not assigned.
+     * @exception  DatabaseException - an error has occurred on the database.
+     */
+    public Object assignSequenceNumber(WriteObjectQuery writeQuery) throws DatabaseException {
+        return assignSequenceNumber(writeQuery.getObject(), writeQuery.getSession(), writeQuery);
+    }
+    
+    /**
+     * INTERNAL:
+     * Update the object primary key by fetching a new sequence number from the accessor.
+     * This assume the uses sequence numbers check has already been done.
+     * Adds the assigned sequence value to writeQuery's modify row.
+     * If object has a changeSet then sets sequence value into change set as an Id
+     * adds it also to object's change set in a ChangeRecord if required.
+     * @return the sequence value or null if not assigned.
+     * @exception  DatabaseException - an error has occurred on the database.
+     */
+    protected Object assignSequenceNumber(Object object, AbstractSession writeSession, WriteObjectQuery writeQuery) throws DatabaseException {
         DatabaseField sequenceNumberField = this.descriptor.getSequenceNumberField();
         Object existingValue = null;
         if (this.sequenceMapping != null) {
@@ -322,6 +371,51 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key has changed.
         clearPrimaryKey(object);
 
+        if (writeQuery != null) {
+            Object primaryKey = extractPrimaryKeyFromObject(object, writeSession);
+            writeQuery.setPrimaryKey(primaryKey);
+            AbstractRecord modifyRow = writeQuery.getModifyRow();
+            // Update the row.
+            modifyRow.put(sequenceNumberField, sequenceValue);
+            if (descriptor.hasMultipleTables()) {
+                addPrimaryKeyForNonDefaultTable(modifyRow, object, writeSession);
+            }
+            // Update the changeSet if there is one.
+            if (writeSession.isUnitOfWork()) {
+                ObjectChangeSet objectChangeSet = writeQuery.getObjectChangeSet();
+                if ((objectChangeSet == null) && (((UnitOfWorkImpl)writeSession).getUnitOfWorkChangeSet() != null)) {
+                    objectChangeSet = (ObjectChangeSet)((UnitOfWorkImpl)writeSession).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object);
+                }
+                if (objectChangeSet != null) {
+                    // objectChangeSet.isNew() == true
+                    if (writeQuery.getDescriptor().shouldUseFullChangeSetsForNewObjects()) {
+                        if (this.sequenceMapping != null) {
+                            // Don't use ObjectChangeSet.updateChangeRecordForAttribute to avoid unnecessary conversion - convertedSequenceValue is already converted. 
+                            String attributeName = this.sequenceMapping.getAttributeName(); 
+                            DirectToFieldChangeRecord changeRecord = (DirectToFieldChangeRecord)objectChangeSet.getChangesForAttributeNamed(attributeName);
+                            if (changeRecord == null) {
+                                changeRecord = new DirectToFieldChangeRecord(objectChangeSet);
+                                changeRecord.setAttribute(attributeName);
+                                changeRecord.setMapping(this.sequenceMapping);
+                                objectChangeSet.addChange(changeRecord);
+                            }
+                            changeRecord.setNewValue(convertedSequenceValue);
+                        } else {
+                            ChangeRecord changeRecord = getBaseChangeRecordForField(objectChangeSet, object, sequenceNumberField, writeSession);
+                            if (changeRecord.getMapping().isDirectCollectionMapping()) {
+                                // assign converted value to the attribute
+                                ((DirectToFieldChangeRecord)changeRecord).setNewValue(convertedSequenceValue);
+                            } else if (changeRecord.getMapping().isTransformationMapping()) {
+                                // put original (not converted) value into the record.
+                                ((TransformationMappingChangeRecord)changeRecord).getRecord().put(sequenceNumberField, sequenceValue);
+                            }
+                        }
+                    }
+                    objectChangeSet.setId(primaryKey);
+                }
+            }
+        }
+        
         return convertedSequenceValue;
     }
 
@@ -2457,6 +2551,64 @@ public class ObjectBuilder implements Cloneable, Serializable {
             for (int index = 0; index < mappings.size(); index++) {
                 mappings.get(index).fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
             }
+        }
+    }
+
+    /**
+     * Return the base ChangeRecord for the given DatabaseField.
+     * The object and all its relevant aggregates must exist.
+     * The returned ChangeRecord is 
+     * either DirectToFieldChangeRecord or TransformationMappingChangeRecord,
+     * or null.
+     */
+    public ChangeRecord getBaseChangeRecordForField(ObjectChangeSet objectChangeSet, Object object, DatabaseField databaseField, AbstractSession session) {
+        DatabaseMapping mapping = getMappingForField(databaseField);
+
+        // Drill down through the mappings until we get the direct mapping to the databaseField.    
+        while (mapping.isAggregateObjectMapping()) {
+            String attributeName = mapping.getAttributeName();
+            Object aggregate = mapping.getAttributeValueFromObject(object);
+            ClassDescriptor referenceDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+            AggregateChangeRecord aggregateChangeRecord = (AggregateChangeRecord)objectChangeSet.getChangesForAttributeNamed(attributeName);
+            if (aggregateChangeRecord == null) {
+                aggregateChangeRecord = new AggregateChangeRecord(objectChangeSet);
+                aggregateChangeRecord.setAttribute(attributeName);
+                aggregateChangeRecord.setMapping(mapping);
+                objectChangeSet.addChange(aggregateChangeRecord);
+            }
+            ObjectChangeSet aggregateChangeSet = (ObjectChangeSet)aggregateChangeRecord.getChangedObject();
+            if (aggregateChangeSet == null) {
+                aggregateChangeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(aggregate, (UnitOfWorkChangeSet)objectChangeSet.getUOWChangeSet(), session);
+                aggregateChangeRecord.setChangedObject(aggregateChangeSet);
+            }
+
+            mapping = referenceDescriptor.getObjectBuilder().getMappingForField(databaseField);
+            objectChangeSet = aggregateChangeSet;
+            object = aggregate;
+        }
+        
+        String attributeName = mapping.getAttributeName();
+        if (mapping.isDirectToFieldMapping()) {
+            DirectToFieldChangeRecord changeRecord = (DirectToFieldChangeRecord)objectChangeSet.getChangesForAttributeNamed(attributeName);
+            if (changeRecord == null) {
+                changeRecord = new DirectToFieldChangeRecord(objectChangeSet);
+                changeRecord.setAttribute(attributeName);
+                changeRecord.setMapping(mapping);
+                objectChangeSet.addChange(changeRecord);
+            }
+            return changeRecord;
+        } else if (mapping.isTransformationMapping()) {
+            TransformationMappingChangeRecord changeRecord = (TransformationMappingChangeRecord)objectChangeSet.getChangesForAttributeNamed(attributeName);
+            if (changeRecord == null) {
+                changeRecord = new TransformationMappingChangeRecord(objectChangeSet);
+                changeRecord.setAttribute(attributeName);
+                changeRecord.setMapping(mapping);
+                objectChangeSet.addChange(changeRecord);
+            }
+            return changeRecord;
+        } else {
+            session.log(SessionLog.FINEST, SessionLog.QUERY, "field_for_unsupported_mapping_returned", databaseField, getDescriptor());
+            return null;
         }
     }
 

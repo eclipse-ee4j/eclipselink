@@ -387,8 +387,14 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     @Override
     public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
         // same code as write from object into row for update
-        if ((owner.isNew()) || (!compareObjects(backUp, clone, session))) {
-            return buildChangeRecord(clone, owner, session);
+        if (owner.isNew()) {
+            return internalBuildChangeRecord(getAttributeValueFromObject(clone), null, owner);
+        } else if (!compareObjects(backUp, clone, session)) {
+            Object oldValue = null;
+            if (backUp != null && clone != backUp) {
+                oldValue = getAttributeValueFromObject(backUp);
+            }
+            return internalBuildChangeRecord(getAttributeValueFromObject(clone), oldValue, owner);
         }
         return null;
     }
@@ -409,18 +415,19 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     @Override
     public ChangeRecord buildChangeRecord(Object clone, ObjectChangeSet owner, AbstractSession session) {
-        return internalBuildChangeRecord(getAttributeValueFromObject(clone), owner);
+        return internalBuildChangeRecord(getAttributeValueFromObject(clone), null, owner);
     }
 
     /**
      * INTERNAL:
      * Build a change record.
      */
-    public ChangeRecord internalBuildChangeRecord(Object newValue, ObjectChangeSet owner) {
+    public ChangeRecord internalBuildChangeRecord(Object newValue, Object oldValue, ObjectChangeSet owner) {
         DirectToFieldChangeRecord changeRecord = new DirectToFieldChangeRecord(owner);
         changeRecord.setAttribute(getAttributeName());
         changeRecord.setMapping(this);
         changeRecord.setNewValue(newValue);
+        changeRecord.setOldValue(oldValue);
         return changeRecord;
     }
 
@@ -1166,7 +1173,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     public void updateChangeRecord(Object clone, Object newValue, Object oldValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) {
         DirectToFieldChangeRecord changeRecord = (DirectToFieldChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (changeRecord == null) {
-            objectChangeSet.addChange(internalBuildChangeRecord(newValue, objectChangeSet));
+            objectChangeSet.addChange(internalBuildChangeRecord(newValue, oldValue, objectChangeSet));
         } else {
             changeRecord.setNewValue(newValue);
         }

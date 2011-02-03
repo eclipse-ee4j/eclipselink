@@ -18,6 +18,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.mappings.*;
@@ -346,6 +347,45 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         return this.id;
     }
 
+    public Object getOldValue() {
+        AbstractSession session = null;
+        if(this.unitOfWorkChangeSet != null) {
+            session = this.unitOfWorkChangeSet.getSession(); 
+        }
+        return getOldValue(session);
+    }
+    public Object getOldValue(AbstractSession session) {
+        if (this.isNew) {
+            return null;
+        }
+        if (this.changes == null || this.changes.isEmpty()) {
+            // object has not changed
+            return this.cloneObject; 
+        } else {
+            if(this.cloneObject != null && session != null) {
+                Object oldValue = this.descriptor.getObjectBuilder().buildNewInstance();
+                FetchGroup fetchGroup = null;
+                FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager(); 
+                if(fetchGroupManager != null) {
+                    fetchGroup = fetchGroupManager.getObjectFetchGroup(this.cloneObject);
+                }
+                for(DatabaseMapping mapping : this.descriptor.getMappings()) {
+                    String attributeName = mapping.getAttributeName();
+                    if(fetchGroup == null || fetchGroup.containsAttributeInternal(attributeName)) {
+                        ChangeRecord changeRecord = (ChangeRecord)getChangesForAttributeNamed(attributeName);
+                        if(changeRecord != null) {
+                            mapping.setRealAttributeValueInObject(oldValue, changeRecord.getOldValue());
+                        } else {
+                            mapping.setAttributeValueInObject(oldValue, mapping.getAttributeValueFromObject(this.cloneObject));
+                        }
+                    }
+                }
+                return oldValue;
+            }
+        }
+        return null;
+    }
+    
     public int getSynchronizationType() {
         return cacheSynchronizationType;
     }
@@ -908,7 +948,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * INTERNAL:
      * Used to update a changeRecord that is stored in the CHangeSet with a new value.
      */
-    public void updateChangeRecordForAttribute(DatabaseMapping mapping, Object value, AbstractSession session) {
+    public void updateChangeRecordForAttribute(DatabaseMapping mapping, Object value, AbstractSession session, Object oldValue) {
         String attributeName = mapping.getAttributeName();
         ChangeRecord changeRecord = (ChangeRecord)getChangesForAttributeNamed(attributeName);
 
@@ -925,6 +965,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             changeRecord.setAttribute(attributeName);
             changeRecord.setMapping(mapping);
             ((DirectToFieldChangeRecord)changeRecord).setNewValue(value);
+            ((DirectToFieldChangeRecord)changeRecord).setOldValue(oldValue);
             this.addChange(changeRecord);
         }
     }

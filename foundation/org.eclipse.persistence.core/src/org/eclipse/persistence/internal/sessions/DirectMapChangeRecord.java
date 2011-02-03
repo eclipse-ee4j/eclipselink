@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+
 /**
  * Change record used by DirectMapMapping.
  * Only needs to track unique keys added/removed.
@@ -175,4 +177,37 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         // Nothing for this record type to do as it does not reference any changesets.
     }
+
+   /**
+    * Recreates the original state of the collection.
+    */
+  public void internalRecreateOriginalCollection(Object currentMap, AbstractSession session) {
+      ContainerPolicy cp = this.mapping.getContainerPolicy();
+       if(this.removeObjectsList != null) {
+           Iterator it = this.removeObjectsList.entrySet().iterator();
+           while(it.hasNext()) {
+               Map.Entry entry = (Map.Entry)it.next();
+               cp.addInto(entry.getKey(), entry.getValue(), currentMap, session);
+           }
+       }
+       if(this.addObjectsList != null) {
+           Iterator it = this.addObjectsList.entrySet().iterator();
+           while(it.hasNext()) {
+               Map.Entry entry = (Map.Entry)it.next();
+               cp.removeFrom(entry.getKey(), entry.getValue(), currentMap, session);
+           }
+       }
+   }
+
+  /**
+   * Clears info about added / removed objects set by change tracker.
+   */
+  public void clearChanges() {
+      if(this.removeObjectsList != null) {
+          this.removeObjectsList.clear();
+      }
+      if(this.addObjectsList != null) {
+          this.addObjectsList.clear();
+      }
+  }
 }

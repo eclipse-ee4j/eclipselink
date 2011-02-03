@@ -36,11 +36,4 @@ public class Class2 extends BaseClass {
     public String getFieldBName() {
         return "B2";
     }
-
-    public Object clone() {
-        Class2 clone = new Class2();
-        clone.setAB(getA(), getB());
-        clone.setC(getC());
-        return clone;
-    }
 }

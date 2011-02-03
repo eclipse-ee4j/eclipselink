@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.queries;
 import java.util.*;
 import java.io.*;
 
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -30,10 +29,7 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -786,7 +782,14 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             cacheKey = changeSet.getActiveCacheKey();
         }
 
-        getDescriptor().getObjectBuilder().assignReturnRow(object, cacheKey, writeQuery.getSession(), row);
+        ObjectChangeSet objectChangeSet = null;
+        if (getSession().isUnitOfWork()) {
+            objectChangeSet = writeQuery.getObjectChangeSet();
+            if ((objectChangeSet == null) && (((UnitOfWorkImpl)getSession()).getUnitOfWorkChangeSet() != null)) {
+                objectChangeSet = (ObjectChangeSet)((UnitOfWorkImpl)getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object);
+            }
+        }
+        getDescriptor().getObjectBuilder().assignReturnRow(object, writeQuery.getSession(), row, objectChangeSet);
 
         Object primaryKey = null;
         if (isFirstCallForInsert) {
@@ -807,119 +810,10 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             }
         }
 
-        // update the changeSet if there is one
-        if (getSession().isUnitOfWork()) {
-            ObjectChangeSet objectChangeSet = writeQuery.getObjectChangeSet();
-            if ((objectChangeSet == null) && (((UnitOfWorkImpl)getSession()).getUnitOfWorkChangeSet() != null)) {
-                objectChangeSet = (ObjectChangeSet)((UnitOfWorkImpl)getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object);
+        if (objectChangeSet != null) {
+            if (primaryKey != null) {
+                objectChangeSet.setId(primaryKey);
             }
-            if (objectChangeSet != null) {
-                updateChangeSet(getDescriptor(), objectChangeSet, row, object);
-                if (primaryKey != null) {
-                    objectChangeSet.setId(primaryKey);
-                }
-            }
-        }
-    }
-
-    /**
-     * Update the change set with all of the field values in the row.
-     * This handles writable and read-only mappings, direct and nested aggregates.
-     * It is used from ReturningPolicy and VersionLockingPolicy.
-     */
-    public void updateChangeSet(ClassDescriptor desc, ObjectChangeSet objectChangeSet, AbstractRecord row, Object object) {
-        int size = row.size();
-        HashSet handledMappings = null;
-        if (size > 1) {
-            // PERF: Only create set if more than one fields, used to avoid duplicate in transformation mappings.
-            handledMappings = new HashSet(size);
-        }
-        for (int i = 0; i < size; i++) {
-            DatabaseField field = (DatabaseField)row.getFields().get(i);
-            updateChangeSet(desc, objectChangeSet, field, object, handledMappings);
-        }
-    }
-    
-    /**
-     * Update the change set with the field value.
-     * This handles writable and read-only mappings, direct and nested aggregates.
-     * It is used from ReturningPolicy and VersionLockingPolicy.
-     */
-    protected void updateChangeSet(ClassDescriptor desc, ObjectChangeSet objectChangeSet, DatabaseField field, Object object) {
-        updateChangeSet(desc, objectChangeSet, field, object, null);
-    }
-    
-    /**
-     * Update the change set with the field value.
-     * This handles writable and read-only mappings, direct and nested aggregates.
-     * It is used from ReturningPolicy and VersionLockingPolicy.
-     */
-    protected void updateChangeSet(ClassDescriptor desc, ObjectChangeSet objectChangeSet, DatabaseField field, Object object, Collection handledMappings) {
-        DatabaseMapping mapping;
-        List readOnlyMappings = desc.getObjectBuilder().getReadOnlyMappingsForField(field);
-        if (readOnlyMappings != null) {
-            int size = readOnlyMappings.size();
-            for (int index = 0; index < size; index++) {
-                mapping = (DatabaseMapping)readOnlyMappings.get(index);
-                updateChangeSet(mapping, objectChangeSet, field, object, handledMappings);
-            }
-        }
-        mapping = desc.getObjectBuilder().getMappingForField(field);
-        if (mapping != null) {
-            updateChangeSet(mapping, objectChangeSet, field, object, handledMappings);
-        }
-    }
-
-    protected void updateChangeSet(DatabaseMapping mapping, ObjectChangeSet objectChangeSet, DatabaseField field, Object object, Collection handledMappings) {
-        if ((handledMappings != null) && handledMappings.contains(mapping)) {
-            return;
-        }
-        if (mapping.isDirectToFieldMapping()) {
-            Object attributeValue = mapping.getAttributeValueFromObject(object);
-            objectChangeSet.updateChangeRecordForAttribute(mapping, attributeValue, getSession());
-        } else if (mapping.isAggregateObjectMapping()) {
-            Object aggregate = mapping.getAttributeValueFromObject(object);
-            AggregateChangeRecord record = (AggregateChangeRecord)objectChangeSet.getChangesForAttributeNamed(mapping.getAttributeName());
-            if (aggregate != null) {
-                if (record == null) {
-                    record = new AggregateChangeRecord(objectChangeSet);
-                    record.setAttribute(mapping.getAttributeName());
-                    record.setMapping(mapping);
-                    objectChangeSet.addChange(record);
-                }
-                ObjectChangeSet aggregateChangeSet = (ObjectChangeSet)record.getChangedObject();
-                ClassDescriptor aggregateDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
-                if (aggregateChangeSet == null) {
-                    aggregateChangeSet = aggregateDescriptor.getObjectBuilder().createObjectChangeSet(aggregate, (UnitOfWorkChangeSet)((UnitOfWorkImpl)getSession()).getUnitOfWorkChangeSet(), getSession());
-                    record.setChangedObject(aggregateChangeSet);
-                }
-                updateChangeSet(aggregateDescriptor, aggregateChangeSet, field, aggregate, handledMappings);
-            } else {
-                if (record != null) {
-                    record.setChangedObject(null);
-                }
-            }
-        } else if (mapping.isTransformationMapping()) {
-            TransformationMappingChangeRecord record = (TransformationMappingChangeRecord)objectChangeSet.getChangesForAttributeNamed(mapping.getAttributeName());
-            if (record == null) {
-                record = new TransformationMappingChangeRecord(objectChangeSet);
-                record.setAttribute(mapping.getAttributeName());
-                record.setMapping(mapping);
-                objectChangeSet.addChange(record);
-            }
-            AbstractRecord transformationRow = new DatabaseRecord(mapping.getFields().size());
-            int size = mapping.getFields().size();
-            for (int i = 0; i < size; i++) {
-                DatabaseField fieldToAdd = mapping.getFields().get(i);
-                Object value = ((AbstractTransformationMapping)mapping).valueFromObject(object, fieldToAdd, getSession());
-                transformationRow.add(fieldToAdd, value);
-            }
-            record.setRow(transformationRow);
-            if (handledMappings != null) {
-                handledMappings.add(mapping);
-            }
-        } else {
-            getSession().log(SessionLog.FINEST, SessionLog.QUERY, "field_for_unsupported_mapping_returned", field, getDescriptor());
         }
     }
 
@@ -928,34 +822,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      */
     protected void updateObjectAndRowWithSequenceNumber() throws DatabaseException {
         WriteObjectQuery writeQuery = getWriteObjectQuery();
-        Object object = writeQuery.getObject();
-        ClassDescriptor descriptor = writeQuery.getDescriptor();
-        ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-        AbstractSession session = writeQuery.getSession();
-        Object sequenceValue = objectBuilder.assignSequenceNumber(object, session);
-        if (sequenceValue == null) {
-            return;
-        }
-        Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(object, getSession());
-        writeQuery.setPrimaryKey(primaryKey);
-        DatabaseField sequenceNumberField = descriptor.getSequenceNumberField();
-        AbstractRecord modifyRow = getModifyRow();
-        // Update the row.
-        modifyRow.put(sequenceNumberField, sequenceValue);
-        if (descriptor.hasMultipleTables()) {
-            objectBuilder.addPrimaryKeyForNonDefaultTable(modifyRow, object, session);
-        }
-        // Update the changeSet if there is one.
-        if (session.isUnitOfWork()) {
-            ObjectChangeSet objectChangeSet = writeQuery.getObjectChangeSet();
-            if ((objectChangeSet == null) && (((UnitOfWorkImpl)session).getUnitOfWorkChangeSet() != null)) {
-                objectChangeSet = (ObjectChangeSet)((UnitOfWorkImpl)session).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object);
-            }
-            if (objectChangeSet != null) {
-                updateChangeSet(descriptor, objectChangeSet, sequenceNumberField, object);
-                objectChangeSet.setId(primaryKey);
-            }
-        }
+        writeQuery.getDescriptor().getObjectBuilder().assignSequenceNumber(writeQuery);
     }
 
     /**

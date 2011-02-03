@@ -553,6 +553,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             collectObjectForNewCollection(originalKeyValues, cloneKeyValues, newCollection, changeRecord, session, referenceDescriptor);
         }
         createChangeSetForKeys(originalKeyValues, changeRecord, session, referenceDescriptor);
+        changeRecord.clearChanges();
         changeRecord.addAdditionChange(cloneKeyValues, this, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
         changeRecord.addRemoveChange(originalKeyValues, this, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
     }

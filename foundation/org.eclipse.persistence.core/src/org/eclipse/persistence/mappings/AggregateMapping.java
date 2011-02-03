@@ -298,6 +298,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         AggregateChangeRecord changeRecord = new AggregateChangeRecord(owner);
         changeRecord.setAttribute(getAttributeName());
         changeRecord.setMapping(this);
+        changeRecord.setOldValue(backupAttribute);
 
         if (cloneAttribute == null) {// the attribute was set to null
             changeRecord.setChangedObject(null);
@@ -574,7 +575,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         ObjectBuilder objectBuilder = getObjectBuilderForClass(aggregateChangeSet.getClassType(mergeManager.getSession()), mergeManager.getSession());
         //Bug#4719341  Always obtain aggregate attribute value from the target object regardless of new or not
         Object targetAggregate = getAttributeValueFromObject(target);
-        if (targetAggregate == null) {
+        if (targetAggregate == null || targetAggregate == sourceAggregate) {
             targetAggregate = objectBuilder.buildNewInstance();
         } else {
         	//bug 205939 - use the type from the changeset to determine if a new aggregate instance
@@ -601,7 +602,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         }
 
         Object targetAttributeValue = getAttributeValueFromObject(target);
-        if (targetAttributeValue == null || !targetAttributeValue.getClass().equals(sourceAttributeValue.getClass())) {
+        if (targetAttributeValue == null || targetAttributeValue == sourceAttributeValue || !targetAttributeValue.getClass().equals(sourceAttributeValue.getClass())) {
             // avoid null-pointer/nothing to merge to - create a new instance
             // (a new clone cannot be used as all changes must be merged)
             targetAttributeValue = buildNewMergeInstanceOf(sourceAttributeValue, mergeManager.getSession());
@@ -880,23 +881,29 @@ public abstract class AggregateMapping extends DatabaseMapping {
         //This method will be called when either the referenced aggregate has 
         //been changed or a component of the referenced aggregate has been changed
         //this case is determined by the value of the sourceClone 
-        
+        boolean isNewRecord = false;
         AggregateChangeRecord changeRecord = (AggregateChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (changeRecord == null){
             changeRecord = new AggregateChangeRecord(objectChangeSet);
             changeRecord.setAttribute(this.getAttributeName());
             changeRecord.setMapping(this);
             objectChangeSet.addChange(changeRecord);
+            isNewRecord = true;
         }
         
         if ( sourceClone.getClass().equals(objectChangeSet.getClassType(uow)) ) {
+            if (isNewRecord) {
+                changeRecord.setOldValue(oldValue);
+            }
             // event was fired on the parent to the aggregate, the attribute value changed.
             ClassDescriptor referenceDescriptor = getReferenceDescriptor(newValue, uow);
             if ( newValue == null ) { // attribute set to null
                 changeRecord.setChangedObject(null);
                 if (referenceDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()){
-                    //need to detach listener
-                    ((AggregateAttributeChangeListener)((ChangeTracker)oldValue)._persistence_getPropertyChangeListener()).setParentListener(null);
+                    if(((ChangeTracker)oldValue)._persistence_getPropertyChangeListener() != null) {
+                        //need to detach listener
+                        ((AggregateAttributeChangeListener)((ChangeTracker)oldValue)._persistence_getPropertyChangeListener()).setParentListener(null);
+                    }
                 }
                 return;
             }else{ // attribute set to new aggregate
@@ -908,7 +915,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
                 }
                 //make sure the listener is initialized
                 if (referenceDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()){
-                    if(oldValue != null) {
+                    if(oldValue != null && ((ChangeTracker)oldValue)._persistence_getPropertyChangeListener() != null) {
                         //need to detach listener
                         ((AggregateAttributeChangeListener)((ChangeTracker)oldValue)._persistence_getPropertyChangeListener()).setParentListener(null);
                     }
@@ -919,9 +926,30 @@ public abstract class AggregateMapping extends DatabaseMapping {
                         ((ChangeTracker)newValue)._persistence_setPropertyChangeListener(newListener);
                     }
                     newListener.setParentListener((AttributeChangeListener)((ChangeTracker)sourceClone)._persistence_getPropertyChangeListener());
+                    if (changeRecord.getChangedObject() != null && changeRecord.getChangedObject().hasChanges()) {
+                        // the oldValue has been already changed - get the original oldValue.
+                        oldValue = changeRecord.getOldValue();
+                    }
+                    if (oldValue != null) {
+                        if(referenceDescriptor != getReferenceDescriptor(oldValue, uow)) {
+                            // oldValue and newValue belong to different types - have to start from scratch.
+                            oldValue = null;
+                        }
+                    }
                 }
                 //force comparison change detection to build changeset.
                 changeRecord.setChangedObject(referenceDescriptor.getObjectChangePolicy().createObjectChangeSetThroughComparison(newValue,oldValue, uowChangeSet, (oldValue == null), uow, referenceDescriptor));
+                // process nested aggregates
+                for(DatabaseMapping mapping : referenceDescriptor.getMappings()) {
+                    if(mapping.isAggregateObjectMapping()) {
+                        Object nestedNewValue = mapping.getAttributeValueFromObject(newValue);
+                        Object nestedOldValue = null;
+                        if(oldValue != null) {
+                            nestedOldValue = mapping.getAttributeValueFromObject(oldValue);
+                        }
+                        mapping.updateChangeRecord(newValue, nestedNewValue, nestedOldValue, (org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeRecord.getChangedObject(), uow);
+                    }
+                }
                 referenceDescriptor.getObjectChangePolicy().setChangeSetOnListener((ObjectChangeSet)changeRecord.getChangedObject(), newValue);
             }
         } else {

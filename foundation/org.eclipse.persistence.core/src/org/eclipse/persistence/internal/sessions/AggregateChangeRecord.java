@@ -17,6 +17,9 @@ package org.eclipse.persistence.internal.sessions;
  */
 public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.persistence.sessions.changesets.AggregateChangeRecord {
     protected org.eclipse.persistence.sessions.changesets.ObjectChangeSet changedObject;
+    protected transient Object oldValue;
+    // assign NULL to oldValue to indicate that it has been set to null.
+    protected static String NULL = "NULL";
 
     /**
      * This default constructor.
@@ -64,6 +67,9 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
      */
     public void setChangedObject(org.eclipse.persistence.sessions.changesets.ObjectChangeSet newValue) {
         changedObject = newValue;
+        if(this.oldValue == null) {
+            this.oldValue = newValue;
+        }
     }
 
     /**
@@ -78,6 +84,34 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
         Object localChangeSet = mergeToChangeSet.getUOWCloneForObjectChangeSet(this.changedObject);
         if (localChangeSet == null) {
             mergeToChangeSet.addObjectChangeSetForIdentity((ObjectChangeSet)this.changedObject, mergeFromChangeSet.getUOWCloneForObjectChangeSet(this.changedObject));
+        }
+    }
+
+    /**
+     * ADVANCED:
+     * If the owning UnitOfWork has shouldChangeRecordKeepOldValue set to true,
+     * then return the old value of the attribute represented by this ChangeRecord.
+     */
+    public Object getOldValue() {
+        if (oldValue == NULL) {
+            return null;
+        } else if (oldValue instanceof ObjectChangeSet) {
+            ObjectChangeSet changeSet = (ObjectChangeSet)oldValue;
+            return changeSet.getOldValue();
+        } else {
+            return this.oldValue;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the old value of the attribute represented by this ChangeRecord.
+     */
+    public void setOldValue(Object oldValue) {
+        if (oldValue == null) {
+            this.oldValue = NULL;
+        } else {
+            this.oldValue = oldValue;
         }
     }
 }

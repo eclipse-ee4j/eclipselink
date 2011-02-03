@@ -403,6 +403,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         }
 
         targetValueOfSource = getReferenceDescriptor().getObjectBuilder().wrapObject(targetValueOfSource, targetSession);
+        // if value holder is used, then the value holder shared with original substituted for a new ValueHolder.
+        getIndirectionPolicy().reset(target);
         setRealAttributeValueInObject(target, targetValueOfSource);
     }
 

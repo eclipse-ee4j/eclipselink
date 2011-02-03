@@ -382,10 +382,10 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             return null;
         }
         boolean difference = false;
+        Object backupValue = null;
         if (owner.isNew()) {
             difference = true;
         } else {
-            Object backupValue = null;
             if (backUp != null) {
                 backUpAttribute = getAttributeValueFromObject(backUp);
                 backupValue = this.indirectionPolicy.getRealAttributeValueFromObject(backUp, backUpAttribute);
@@ -431,7 +431,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             }
         }
         if (difference) {
-            return buildChangeRecord(clone, owner, session);
+            return internalBuildChangeRecord(clone, backupValue, owner, session);
         }
         return null;
     }
@@ -442,10 +442,19 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      */
     @Override
     public ChangeRecord buildChangeRecord(Object clone, ObjectChangeSet owner, AbstractSession session) {
+        return internalBuildChangeRecord(clone, null, owner, session);
+    }
+ 
+    /**
+     * INTERNAL:
+     * Build a change record.
+     */
+    public ChangeRecord internalBuildChangeRecord(Object clone, Object oldValue, ObjectChangeSet owner, AbstractSession session) {
         TransformationMappingChangeRecord changeRecord = new TransformationMappingChangeRecord(owner);
         changeRecord.setRow(buildPhantomRowFrom(clone, session));
         changeRecord.setAttribute(getAttributeName());
         changeRecord.setMapping(this);
+        changeRecord.setOldValue(oldValue);
         return changeRecord;
     }
  
@@ -1018,7 +1027,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Return row is merged into object after execution of insert or update call
      * according to ReturningPolicy.
      */
-    public Object readFromReturnRowIntoObject(AbstractRecord row, Object object, CacheKey parentCacheKey, ReadObjectQuery query, Collection handledMappings) throws DatabaseException {
+    public Object readFromReturnRowIntoObject(AbstractRecord row, Object object, ReadObjectQuery query, Collection handledMappings, ObjectChangeSet changeSet) throws DatabaseException {
         int size = this.fields.size();
         AbstractRecord transformationRow = new DatabaseRecord(size);
         for (int i = 0; i < size; i++) {
@@ -1031,7 +1040,20 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             }
             transformationRow.add(field, value);
         }
-        Object attributeValue = readFromRowIntoObject(transformationRow, null, object, parentCacheKey, query, query.getSession(), true);
+        
+        if(changeSet != null) {
+            TransformationMappingChangeRecord record = (TransformationMappingChangeRecord)changeSet.getChangesForAttributeNamed(attributeName);
+            if (record == null) {
+                record = new TransformationMappingChangeRecord(changeSet);
+                record.setAttribute(attributeName);
+                record.setMapping(this);
+                record.setOldValue(getAttributeValueFromObject(object));
+                changeSet.addChange(record);
+            }
+            record.setRow(transformationRow);
+        }
+        
+        Object attributeValue = readFromRowIntoObject(transformationRow, null, object, null, query, query.getSession(), true);
         if (handledMappings != null) {
             handledMappings.add(this);
         }
@@ -1246,11 +1268,13 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     @Override
     public void updateChangeRecord(Object clone, Object newValue, Object oldValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) {
         TransformationMappingChangeRecord changeRecord = (TransformationMappingChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
+        Object updatedObject = descriptor.getInstantiationPolicy().buildNewInstance();
+        this.setAttributeValueInObject(updatedObject, newValue);
         if (!isWriteOnly()) {
             if (changeRecord == null) {
-                objectChangeSet.addChange(buildChangeRecord(clone, objectChangeSet, uow));
+                objectChangeSet.addChange(internalBuildChangeRecord(updatedObject, oldValue, objectChangeSet, uow));
             } else {
-                changeRecord.setRow(this.buildPhantomRowFrom(clone, uow));
+                changeRecord.setRow(this.buildPhantomRowFrom(updatedObject, uow));
             }
         }
     }

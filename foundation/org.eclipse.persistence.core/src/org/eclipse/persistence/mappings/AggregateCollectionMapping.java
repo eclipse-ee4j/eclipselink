@@ -1005,6 +1005,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         changeRecord.setAttribute(getAttributeName());
         changeRecord.setMapping(this);
         changeRecord.setChangedValues(collectionChanges);
+        changeRecord.setOriginalCollection(backupCollection);
         
         getContainerPolicy().compareCollectionsForChange(backupCollection, cloneCollection, changeRecord, session, remoteReferenceDescriptor);
         
