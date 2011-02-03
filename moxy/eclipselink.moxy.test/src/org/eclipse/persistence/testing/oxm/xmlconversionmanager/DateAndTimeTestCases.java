@@ -3030,7 +3030,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
         calendar.clear(Calendar.ZONE_OFFSET);
-        String control = "--02";
+        String control = "--02--";
         String test = (String)xcm.convertObject(calendar, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);
     }

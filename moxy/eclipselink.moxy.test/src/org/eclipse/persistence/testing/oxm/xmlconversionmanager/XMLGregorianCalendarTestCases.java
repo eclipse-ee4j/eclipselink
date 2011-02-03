@@ -155,7 +155,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         String testString;
         
         String gDayString       = "---17+03:00";
-        String gMonthString     = "--02+03:00";
+        String gMonthString     = "--02--+03:00";
         String gMonthDayString  = "--02-17+03:00";
         String gYearString      = "2009+03:00";
         String gYearMonthString = "2009-02+03:00";
