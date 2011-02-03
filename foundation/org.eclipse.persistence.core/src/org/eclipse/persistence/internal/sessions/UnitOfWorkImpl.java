@@ -4463,7 +4463,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             ClassDescriptor descriptor = getDescriptor(clone);
 
             //revert the tracking policy
-            descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, this, getCloneMapping(), false);
+            descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, this, getCloneMapping(), true);
         }
 
         // PERF: Avoid initialization of new objects if none.
