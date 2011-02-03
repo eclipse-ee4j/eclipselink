@@ -317,7 +317,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         OFFICE_ID_field.setShouldAllowNull(true);
         OFFICE_ID_field.setIsPrimaryKey(false);
         OFFICE_ID_field.setUnique(false);
-        OFFICE_ID_field.setIsIdentity(true);
+        OFFICE_ID_field.setIsIdentity(false);
         table.addField(OFFICE_ID_field);
 
         FieldDefinition LOCATION_field = new FieldDefinition();
@@ -327,7 +327,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         LOCATION_field.setShouldAllowNull(true);
         LOCATION_field.setIsPrimaryKey(false);
         LOCATION_field.setUnique(false);
-        LOCATION_field.setIsIdentity(true);
+        LOCATION_field.setIsIdentity(false);
         table.addField(LOCATION_field);
 
         return table;
