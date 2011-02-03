@@ -1985,7 +1985,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
+        if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
             Employee emp = null;
             LargeProject largeProject = null;
 
@@ -2043,7 +2043,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 Thread t2 = new Thread(runnable);
                 t2.start();
                 
-                Thread.sleep(2000);
+                Thread.sleep(3000);
                 
                 // t2 should have failed to get a lock with NOWAIT and hence should have finished by now
                 boolean hanging = t2.isAlive();
@@ -2065,6 +2065,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 closeEntityManager(em);
             }
             
+        } else {
+            warning("Can't run this test because SELECT FOR UPDATE NO WAIT is not supported on this platform");
         }
     }
     
