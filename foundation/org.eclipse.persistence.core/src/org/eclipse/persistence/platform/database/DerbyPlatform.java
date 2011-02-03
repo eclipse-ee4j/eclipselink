@@ -316,6 +316,9 @@ public class DerbyPlatform extends DB2Platform {
      */
     @Override
     public int computeMaxRowsForSQL(int firstResultIndex, int maxResults) {
+        if (!isSequenceSupported) {
+            return maxResults;
+        }
         return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
     }
     
@@ -325,18 +328,22 @@ public class DerbyPlatform extends DB2Platform {
      */
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        if (!this.isSequenceSupported) {
+            call.setFields(statement.printSQL(printer));
+            return;
+        }
         int max = 0;
         int firstRow = 0;
 
-        if (statement.getQuery()!=null){
+        if (statement.getQuery()!=null) {
             max = statement.getQuery().getMaxRows();
             firstRow = statement.getQuery().getFirstResult();
         }
         
-        if ( !(this.shouldUseRownumFiltering()) || ( !(max>0) && !(firstRow>0) ) ){
-            super.printSQLSelectStatement(call, printer, statement);
+        if (!(this.shouldUseRownumFiltering()) || (!(max>0) && !(firstRow>0))) {
+            call.setFields(statement.printSQL(printer));
             return;
-        } else if ( max > 0 ) {
+        } else if (max > 0) {
             statement.setUseUniqueFieldAliases(true);
             call.setFields(statement.printSQL(printer));
             printer.printString(" OFFSET ");
