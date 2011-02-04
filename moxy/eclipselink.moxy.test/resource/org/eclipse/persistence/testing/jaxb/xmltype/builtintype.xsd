@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="test" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="test">
+   <xsd:complexType name="employmentPeriod">
+      <xsd:sequence>
+         <xsd:element name="startDate" type="xsd:date" minOccurs="0"/>
+         <xsd:element name="endDate" type="xsd:date" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

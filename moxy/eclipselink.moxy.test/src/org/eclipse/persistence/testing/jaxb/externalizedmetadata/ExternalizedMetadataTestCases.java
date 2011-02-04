@@ -512,8 +512,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
         public ResourceResolver(MyStreamSchemaOutputResolver resolver) {
             oResolver = resolver;
         }
-        
-        @Override
         public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseUri) {
             return new MyLSInput(namespaceURI, oResolver);
         }

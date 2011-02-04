@@ -153,7 +153,7 @@ public class SchemaGenerator {
         String myClassName = myClass.getQualifiedName();
         Element rootElement = null;
         TypeInfo info = (TypeInfo) typeInfo.get(myClassName);
-        if (info.isTransient()) {
+        if (info.isTransient() || info.getClassNamespace().equals(XMLConstants.SCHEMA_URL)) {
             return;
         }
         SchemaTypeInfo schemaTypeInfo = new SchemaTypeInfo();
@@ -831,7 +831,7 @@ public class SchemaGenerator {
     }
 
     private boolean addImportIfRequired(Schema sourceSchema, Schema importSchema, String importNamespace) {
-        if (importSchema != sourceSchema) {
+        if (importSchema != sourceSchema && !(importNamespace != null && importNamespace.equals(XMLConstants.SCHEMA_URL))) {
             String schemaName = null;
             if (importSchema != null) {
                 schemaName = importSchema.getName();
@@ -2012,7 +2012,12 @@ public class SchemaGenerator {
             }
             // may need to qualify the type
             if (typeName != null && !typeName.contains(COLON)) {
-                String prefix = getPrefixForNamespace(info.getSchema().getTargetNamespace(), schema.getNamespaceResolver());
+                String prefix;
+                if (info.getClassNamespace().equals(XMLConstants.SCHEMA_URL)) {
+                    prefix = XMLConstants.SCHEMA_PREFIX;
+                } else {
+                    prefix = getPrefixForNamespace(info.getSchema().getTargetNamespace(), schema.getNamespaceResolver());
+                }
                 if (prefix != null) {
                     typeName = prefix + COLON + typeName;
                 }
