@@ -5983,7 +5983,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         //create an Employee
         Employee emp = new Employee();
         emp.setFirstName("testDetachRemovedObjectEmployee");
-        emp.setId(71);
     
         //persist the Employee
         EntityManager em = createEntityManager();
