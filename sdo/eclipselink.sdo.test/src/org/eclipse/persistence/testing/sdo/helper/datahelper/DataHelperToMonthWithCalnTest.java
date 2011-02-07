@@ -24,14 +24,14 @@ public class DataHelperToMonthWithCalnTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 10);
         String tm = dataHelper.toMonth(controlCalendar);
-        this.assertEquals("--11", tm);
+        this.assertEquals("--11--", tm);
     }
 
     public void testToMonthWithDefault() {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         String tm = dataHelper.toMonth(controlCalendar);
-        this.assertEquals("--01", tm);
+        this.assertEquals("--01--", tm);
     }
 
     public void testToMonthWithNullInput() {
