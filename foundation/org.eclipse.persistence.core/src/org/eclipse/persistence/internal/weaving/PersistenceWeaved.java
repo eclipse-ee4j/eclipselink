@@ -14,7 +14,7 @@ package org.eclipse.persistence.internal.weaving;
 
 /**
  * INTERNAL:
- * Marker interface used to identify classes modified by the TopLink weaver.
+ * Marker interface used to identify classes modified by the EclipseLink weaver.
  */
 public interface PersistenceWeaved {
 }

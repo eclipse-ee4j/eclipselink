@@ -178,6 +178,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      */
     @Override
     public MBeanServer getMBeanServer() {
+        //super.getMBeanServer(); keep commented except for generic registration testing
         // 328006: This function overrides the generic version used for WebSphere, JBoss and Glassfish
         // Get a possible cached MBeanServer from the superclass first
         if(null == mBeanServer) {
@@ -300,7 +301,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                 // weblogic.work.ExecuteThreadRuntime.<getMethodName>
                 Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), getMethodName, new Class[] {}, false);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, executeThread, (Object[]) null));                    
+                    classLoaderOrString = AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, executeThread, (Object[]) null));                    
                 } else {
                     classLoaderOrString = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
                 }

@@ -20,10 +20,17 @@
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>        
  *     01/01/2011-2.2 Michael O'Brien 
  *       - 333160: ModuleName string extraction code does not handle -1 not found index in 3 of 5 cases 
+ *     11/01/2011-2.2 Michael O'Brien 
+ *       - 333336: findMBeanServer() requires security API AccessController.doPrivileged() 
+ *         private run method security block. 
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.List;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -34,6 +41,12 @@ import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -71,6 +84,17 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * @since EclipseLink 2.1.1
  */
 public abstract class JMXServerPlatformBase extends ServerPlatformBase {
+    /** This JNDI address is for JMX MBean registration */
+    private static final String JMX_JNDI_RUNTIME_REGISTER = "java:comp/env/jmx/runtime";
+    /* 
+     * If the cached MBeanServer is not used, then the unregister jndi address must be used to create a context
+     * Note: the context must be explicitly closed after use or we may cache the user and get a
+     * weblogic.management.NoAccessRuntimeException when trying to use the associated MBeanServer
+     * see http://bugs.eclipse.org/238343
+     * see http://e-docs.bea.com/wls/docs100/jndi/jndi.html#wp467275  
+     */
+    /** This JNDI address is for JMX MBean unregistration */    
+    private static final String JMX_JNDI_RUNTIME_UNREGISTER = "java:comp/jmx/runtime";
 
     /** This is the prefix for all MBeans that are registered with their specific session name appended */
     public static final String JMX_REGISTRATION_PREFIX = "TopLink:Name=";
@@ -161,24 +185,58 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * @return the JMX specification MBeanServer
      */
     public MBeanServer getMBeanServer() {
-        // lazy initialize the MBeanServer reference
+    	/**
+    	 * This function will attempt to get the MBeanServer via the findMBeanServer spec call.
+    	 * 1) If the return list is null we attempt to retrieve the PlatformMBeanServer 
+    	 * (if it exists or is enabled in this security context).
+    	 * 2) If the list of MBeanServers returned is more than one 
+    	 * we get the lowest indexed MBeanServer that does not on a null default domain.
+    	 * 3) 333336: we need to wrap JMX calls in doPrivileged blocks
+    	 * 4) fail-fast: if there are any issues with JMX - continue - don't block the deploy() 
+    	 */
+    	// lazy initialize the MBeanServer reference
         if(null == mBeanServer) {
+        	List<MBeanServer> mBeanServerList = null;
             try {
+            	if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            		try {
+            			mBeanServerList = (List<MBeanServer>) AccessController.doPrivileged(
+            				new PrivilegedExceptionAction() {
+                				public List<MBeanServer> run() {
+                					return MBeanServerFactory.findMBeanServer(null);
+                				}
+                			}
+               			);
+            		} catch (PrivilegedActionException pae) {
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                                "failed_to_find_mbean_server", "null or empty List returned from privileged MBeanServerFactory.findMBeanServer(null)");
+                        Context initialContext = null;
+            			try {
+            				initialContext = new InitialContext(); // the context should be cached
+            				mBeanServer = (MBeanServer) initialContext.lookup(JMX_JNDI_RUNTIME_REGISTER);
+                        } catch (NamingException ne) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "failed_to_find_mbean_server", ne);
+                        }            			
+            		}
+                } else {
+                    mBeanServerList = MBeanServerFactory.findMBeanServer(null);
+                }
                 // Attempt to get the first MBeanServer we find - usually there is only one - when agentId == null we return a List of them
-                List<MBeanServer> mBeanServerList = MBeanServerFactory.findMBeanServer(null);                
-                if(null == mBeanServerList || mBeanServerList.isEmpty()) {
+                if(null == mBeanServer && (null == mBeanServerList || mBeanServerList.isEmpty())) {
                     // Unable to acquire a JMX specification List of MBeanServer instances
                     getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
                             "failed_to_find_mbean_server", "null or empty List returned from MBeanServerFactory.findMBeanServer(null)");
                     // Try alternate static method
-                    mBeanServer = ManagementFactory.getPlatformMBeanServer();
-                    if(null == mBeanServer) {
-                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                    if (!PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        mBeanServer = ManagementFactory.getPlatformMBeanServer();
+                        if(null == mBeanServer) {
+                            getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
                                 "failed_to_find_mbean_server", "null returned from ManagementFactory.getPlatformMBeanServer()");
-                    } else {
-                        getAbstractSession().log(SessionLog.FINER, SessionLog.SERVER, 
-                            "jmx_mbean_runtime_services_registration_mbeanserver_print",
-                            new Object[]{mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0});
+                        } else {
+                            getAbstractSession().log(SessionLog.FINER, SessionLog.SERVER, 
+                                    "jmx_mbean_runtime_services_registration_mbeanserver_print",
+                                    new Object[]{mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0});
+                        }
                     }
                 } else {
                     // Use the first MBeanServer by default - there may be multiple domains each with their own MBeanServer
@@ -252,8 +310,17 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     // Currently the to be deprecated development MBean is generic to all server platforms
                     MBeanDevelopmentServices developmentMBean = new MBeanDevelopmentServices(getDatabaseSession());
                     ObjectInstance info = null;
+                    Object[] args = new Object[2];
+                    args[0] = developmentMBean;
+                    args[1] = name;
                     try {
-                        info = mBeanServerRuntime.registerMBean(developmentMBean, name);
+                        Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class, 
+                                "registerMBean", new Class[] {Object.class, ObjectName.class}, false);
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                            info = (ObjectInstance) AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, mBeanServerRuntime, args));
+                        } else {
+                            info = mBeanServerRuntime.registerMBean(developmentMBean, name);
+                        }
                     } catch(InstanceAlreadyExistsException iaee) {
                         getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", iaee);
                     } catch (MBeanRegistrationException registrationProblem) {
@@ -276,7 +343,16 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     ObjectInstance runtimeInstance = null;
                     try {
                         // The cached runtimeServicesMBean is a server platform specific instance
-                        runtimeInstance = mBeanServerRuntime.registerMBean(runtimeServicesMBean, name);
+                        Object[] args = new Object[2];
+                        args[0] = runtimeServicesMBean;
+                        args[1] = name;
+                        Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class, 
+                                "registerMBean", new Class[] {Object.class, ObjectName.class}, false);
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                           runtimeInstance = (ObjectInstance) AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, mBeanServerRuntime, args));
+                        } else {
+                            runtimeInstance = mBeanServerRuntime.registerMBean(runtimeServicesMBean, name);
+                        }                        
                         setRuntimeServicesMBean(runtimeServicesMBean);
                     } catch(InstanceAlreadyExistsException iaee) {
                         getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_registering_mbean", iaee);
@@ -319,8 +395,16 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                         }
 
                         getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "unregistering_mbean", name, mBeanServerRuntime);
+                        Object[] args = new Object[1];
+                        args[0] = name;
                         try {
-                            mBeanServerRuntime.unregisterMBean(name);
+                            Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class, 
+                                    "unregisterMBean", new Class[] {ObjectName.class}, false);
+                            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                                AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, mBeanServerRuntime, args));
+                            } else {
+                                mBeanServerRuntime.unregisterMBean(name);
+                            }                            
                             getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "jmx_unregistered_mbean", name, mBeanServerRuntime);
                         } catch(InstanceNotFoundException inf) {
                             getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", inf);
@@ -339,8 +423,16 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                         }
                         
                         getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "unregistering_mbean", name, mBeanServerRuntime);
+                        Object[] args = new Object[1];
+                        args[0] = name;
                         try {
-                            mBeanServerRuntime.unregisterMBean(name);
+                            Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class, 
+                                    "unregisterMBean", new Class[] {ObjectName.class}, false);
+                            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                                AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, mBeanServerRuntime, args));
+                            } else {
+                                mBeanServerRuntime.unregisterMBean(name);
+                            }                            
                             getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "jmx_unregistered_mbean", name, mBeanServerRuntime);                            
                         } catch(InstanceNotFoundException inf) {
                             getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "problem_unregistering_mbean", inf);
