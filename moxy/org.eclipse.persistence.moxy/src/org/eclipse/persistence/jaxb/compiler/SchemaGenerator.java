@@ -709,7 +709,7 @@ public class SchemaGenerator {
                     String namespaceURI = next.getNamespaceURI();
                     Schema targetSchema = getSchemaForNamespace(namespaceURI);
                     if (targetSchema == null) {
-                        break;
+                        continue;
                     }
 
                     if (targetSchema.getTopLevelElements().get(next.getLocalPart()) == null) {
@@ -2016,7 +2016,7 @@ public class SchemaGenerator {
                 if (info.getClassNamespace().equals(XMLConstants.SCHEMA_URL)) {
                     prefix = XMLConstants.SCHEMA_PREFIX;
                 } else {
-                    prefix = getPrefixForNamespace(info.getSchema().getTargetNamespace(), schema.getNamespaceResolver());
+                    prefix = getPrefixForNamespace(info.getClassNamespace(), schema.getNamespaceResolver());
                 }
                 if (prefix != null) {
                     typeName = prefix + COLON + typeName;
