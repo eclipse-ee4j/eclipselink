@@ -4882,17 +4882,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalTestChangeRecordKeepOldValue(true);
     }
     public void internalTestChangeRecordKeepOldValue(boolean addSecondStep) {
-        ServerSession ss = null;
-        boolean isEmInjected = isOnServer() && isJTA();
-        if(isEmInjected) {
-            EntityManager em = createEntityManager("fieldaccess");
-            beginTransaction(em);
-            ss = getServerSession("fieldaccess");
-            rollbackTransaction(em);
-            closeEntityManager(em);
-        } else {
-            ss = getServerSession("fieldaccess");
-        }        
+        if(isOnServer()) {
+            // the test relies upon keeping attached objects between transactions.
+            return;
+        }
+        
+        ServerSession ss = getServerSession("fieldaccess");
         ChangeRecordKeepOldValueListener listener = new ChangeRecordKeepOldValueListener();
         ss.getEventManager().addListener(listener);
         
@@ -5259,10 +5254,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int id = emp.getId();
         
         // test
+        beginTransaction(em);
+        if(isOnServer() && isJTA()) {
+            emp = em.find(Employee.class, id);
+        }
         emp.getPeriod().setStartDate(Helper.dateFromYearMonthDate(1989, 0, 1));
         emp.getPeriod().setEndDate(Helper.dateFromYearMonthDate(1992, 0, 1));
         emp.setPeriod(new EmploymentPeriod(Helper.dateFromYearMonthDate(1989, 0, 1), Helper.dateFromYearMonthDate(1992, 11, 31)));
-        beginTransaction(em);
         commitTransaction(em);
         closeEntityManager(em);
         
@@ -5276,7 +5274,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
         
-        assertTrue("", emp.getPeriod().equals(empRead.getPeriod()));
+        assertTrue("Wrong emp.getPeriod() inserted into db", emp.getPeriod().equals(empRead.getPeriod()));
     }
     
     //  Bug 307433 - Regression in Auditing Support when using defaults.
@@ -5291,8 +5289,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int id = emp.getId();
         
         // test
-        emp.setFormerEmployment(new FormerEmployment("B", new EmploymentPeriod(Helper.dateFromYearMonthDate(1987, 0, 1), Helper.dateFromYearMonthDate(1990, 11, 31))));
         beginTransaction(em);
+        if(isOnServer() && isJTA()) {
+            emp = em.find(Employee.class, id);
+        }
+        emp.setFormerEmployment(new FormerEmployment("B", new EmploymentPeriod(Helper.dateFromYearMonthDate(1987, 0, 1), Helper.dateFromYearMonthDate(1990, 11, 31))));
         commitTransaction(em);
         closeEntityManager(em);
         
@@ -5306,9 +5307,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
         
-        assertTrue("", emp.getFormerEmployment().getPeriod().equals(empRead.getFormerEmployment().getPeriod()));
+        assertTrue("Wrong emp.getFormerEmployment().getPeriod() inserted into db", emp.getFormerEmployment().getPeriod().equals(empRead.getFormerEmployment().getPeriod()));
     }
     
+    //  Bug 336280 - Same object referenced from both EM cache and shared cache
     public void testObjectReferencedInBothEmAndSharedCache_ObjectReferenceMappingVH() {
         EntityManager em = createEntityManager("fieldaccess");
         
@@ -5341,6 +5343,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue(originalObjects.size() == 3);
     }
     
+    //  Bug 336280 - Same object referenced from both EM cache and shared cache
     public void testObjectReferencedInBothEmAndSharedCache_AggregateObjectMapping() {
         EntityManager em = createEntityManager("fieldaccess");
         
