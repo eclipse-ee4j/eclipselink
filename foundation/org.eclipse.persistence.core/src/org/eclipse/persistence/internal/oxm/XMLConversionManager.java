@@ -72,6 +72,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     protected DatatypeFactory datatypeFactory;
 
+    private boolean trimGMonth = false;
+    
     public XMLConversionManager() {
         super();
         timeZoneQualified = false;
@@ -736,15 +738,36 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      */
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString) {
         XMLGregorianCalendar calToReturn = null;
-
         try {
             calToReturn = getDatatypeFactory().newXMLGregorianCalendar(sourceString);
         } catch (IllegalArgumentException e1) {
             try {
-                // GMonths have different representations depending on JDK version:
+                // GMonths may have different representations:
                 // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
-                // If we caught an IllegalArgument, try the 1.5 syntax
-                calToReturn = getDatatypeFactory().newXMLGregorianCalendar(sourceString + "--");
+                // If we caught an IllegalArgumentException, try the other syntax
+
+                int length = sourceString.length();
+                String retryString = null;
+                if (length >= 6 && (sourceString.charAt(4) == '-') && (sourceString.charAt(5) == '-')) {
+                    // Try to omit the trailing dashes if any (--MM--),
+                    // but preserve time zone specifier, if any.
+                    retryString = new StringBuilder(
+                            sourceString.substring(0, 4)).append(
+                            length > 6 ? sourceString.substring(6) : "")
+                            .toString();
+                } else if (length >= 4) {
+                    // For "--MM" add the trailing dashes, preserving
+                    // any trailing time zone specifier.
+                    retryString = new StringBuilder(
+                            sourceString.substring(0, 4)).append("--").append(
+                            length > 4 ? sourceString.substring(4) : "")
+                            .toString();
+                }
+                if (retryString != null) {
+                    calToReturn = getDatatypeFactory().newXMLGregorianCalendar(retryString);
+                } else {
+                    throw e1;
+                }
             } catch (IllegalArgumentException e2) {
                 throw e1;
             }
@@ -907,112 +930,124 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     public String stringFromCalendar(Calendar sourceCalendar, QName schemaTypeQName) {
         Calendar cal = (Calendar) sourceCalendar.clone();
-            XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
-            // use the timezone info on source calendar, if any
-            if (sourceCalendar.isSet(Calendar.ZONE_OFFSET)) {
-                if(sourceCalendar.isSet(Calendar.DST_OFFSET)) {
-                    xgc.setTimezone((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 60000);
-                } else {
-                    xgc.setTimezone((cal.get(Calendar.ZONE_OFFSET)) / 60000);
-                }
+        XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
+        // use the timezone info on source calendar, if any
+        if (sourceCalendar.isSet(Calendar.ZONE_OFFSET)) {
+            if(sourceCalendar.isSet(Calendar.DST_OFFSET)) {
+                xgc.setTimezone((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 60000);
+            } else {
+                xgc.setTimezone((cal.get(Calendar.ZONE_OFFSET)) / 60000);
             }
-            // gDay
-            if (XMLConstants.G_DAY_QNAME.equals(schemaTypeQName)) {
-                xgc.setDay(cal.get(Calendar.DATE));
-                return xgc.toXMLFormat();
-            }
-            // gMonth
-            if (XMLConstants.G_MONTH_QNAME.equals(schemaTypeQName)) {
-                xgc.setMonth(cal.get(Calendar.MONTH) + 1);
-                // Note: 'XML Schema:  Datatypes' indicates that the lexical representation is "--MM--"
-                // but the truncated representation as described in 5.2.1.3 of ISO 8601:1988 is "--MM".
-                // We always want to return the 1.5 syntax ("--MM--") to comply with the JAXB RI.
-                String xmlFormat = xgc.toXMLFormat();
-                String pre  = xmlFormat.substring(0, 4); // will always be --MM
-                String post = XMLConstants.EMPTY_STRING;
+        }
+        // gDay
+        if (XMLConstants.G_DAY_QNAME.equals(schemaTypeQName)) {
+            xgc.setDay(cal.get(Calendar.DATE));
+            return xgc.toXMLFormat();
+        }
+        // gMonth
+        if (XMLConstants.G_MONTH_QNAME.equals(schemaTypeQName)) {
+            xgc.setMonth(cal.get(Calendar.MONTH) + 1);
+            // Note: 'XML Schema:  Datatypes' indicates that the lexical representation is "--MM--"
+            // but the truncated representation as described in 5.2.1.3 of ISO 8601:1988 is "--MM".
+            // We always want to return the 1.5 syntax ("--MM--") to comply with the JAXB RI.
+            String xmlFormat = xgc.toXMLFormat();
+            String pre  = xmlFormat.substring(0, 4); // will always be --MM
+            String post = XMLConstants.EMPTY_STRING;
 
-                // --MM--
-                if (xmlFormat.length() == 6) {
-                    return xmlFormat;
-                }
+            // --MM--
+            if (xmlFormat.length() == 6) {
+            	if (trimGMonth()) {
+            		return pre;
+            	}
+                return xmlFormat;
+            }
 
-                // --MM--Z or --MM--+03:00
-                if (xmlFormat.length() == 7 || xmlFormat.length() == 12) {
-                    return xmlFormat;
-                }
+            // --MM--Z or --MM--+03:00
+            if (xmlFormat.length() == 7 || xmlFormat.length() == 12) {
+            	if (trimGMonth()) {
+            		return pre + xmlFormat.substring(6);
+            	}
+                return xmlFormat;
+            }
 
-                // --MM
-                if (xmlFormat.length() == 4) {
-                    post = "--";
-                }
+            // --MM
+            if (xmlFormat.length() == 4) {
+            	if (trimGMonth()) {
+            		return xmlFormat;
+            	}
+                post = "--";
+            }
 
-                // --MMZ or --MM+03:00
-                if (xmlFormat.length() == 5 || xmlFormat.length() == 10) {
-                    post = "--" + xmlFormat.substring(4);
-                }
+            // --MMZ or --MM+03:00
+            if (xmlFormat.length() == 5 || xmlFormat.length() == 10) {
+            	if (trimGMonth()) {
+            		return xmlFormat;
+            	}
+            	post = "--" + xmlFormat.substring(4);
+            }
 
-                return pre + post;
-            }
-            // gMonthDay
-            if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
-                xgc.setMonth(cal.get(Calendar.MONTH) + 1);
-                xgc.setDay(cal.get(Calendar.DATE));
-                return xgc.toXMLFormat();
-            }
-            // gYear
-            if (XMLConstants.G_YEAR_QNAME.equals(schemaTypeQName)) {
-                if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
-                    xgc.setYear(-cal.get(Calendar.YEAR));
-                }else{
-                    xgc.setYear(cal.get(Calendar.YEAR));
-                }
-                return xgc.toXMLFormat();
-            }
-            // gYearMonth
-            if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
-                if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
-                    xgc.setYear(-cal.get(Calendar.YEAR));
-                }else{
-                    xgc.setYear(cal.get(Calendar.YEAR));
-                }
-                xgc.setMonth(cal.get(Calendar.MONTH) + 1);
-                return xgc.toXMLFormat();
-            }
-            // Date
-            if (XMLConstants.DATE_QNAME.equals(schemaTypeQName)) {
-                if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
-                    xgc.setYear(-cal.get(Calendar.YEAR));
-                }else{
-                    xgc.setYear(cal.get(Calendar.YEAR));
-                }
-                xgc.setMonth(cal.get(Calendar.MONTH) + 1);
-                xgc.setDay(cal.get(Calendar.DATE));
-                return xgc.toXMLFormat();
-            }
-            // Time
-            if (XMLConstants.TIME_QNAME.equals(schemaTypeQName)) {
-                xgc.setTime(
-                        cal.get(Calendar.HOUR_OF_DAY),
-                        cal.get(Calendar.MINUTE),
-                        cal.get(Calendar.SECOND),
-                        cal.get(Calendar.MILLISECOND));
-                return truncateMillis(xgc.toXMLFormat());
-            }
-            // DateTime
-            if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
+            return pre + post;
+        }
+        // gMonthDay
+        if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
+            xgc.setMonth(cal.get(Calendar.MONTH) + 1);
+            xgc.setDay(cal.get(Calendar.DATE));
+            return xgc.toXMLFormat();
+        }
+        // gYear
+        if (XMLConstants.G_YEAR_QNAME.equals(schemaTypeQName)) {
+            if (cal.get(Calendar.ERA) == GregorianCalendar.BC){
                 xgc.setYear(-cal.get(Calendar.YEAR));
-            }else{
+            } else {
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            return xgc.toXMLFormat();
+        }
+        // gYearMonth
+        if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
+            if (cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            } else {
+                xgc.setYear(cal.get(Calendar.YEAR));
+            }
+            xgc.setMonth(cal.get(Calendar.MONTH) + 1);
+            return xgc.toXMLFormat();
+        }
+        // Date
+        if (XMLConstants.DATE_QNAME.equals(schemaTypeQName)) {
+            if (cal.get(Calendar.ERA) == GregorianCalendar.BC){
+                xgc.setYear(-cal.get(Calendar.YEAR));
+            } else {
                 xgc.setYear(cal.get(Calendar.YEAR));
             }
             xgc.setMonth(cal.get(Calendar.MONTH) + 1);
             xgc.setDay(cal.get(Calendar.DATE));
+            return xgc.toXMLFormat();
+        }
+        // Time
+        if (XMLConstants.TIME_QNAME.equals(schemaTypeQName)) {
             xgc.setTime(
                     cal.get(Calendar.HOUR_OF_DAY),
                     cal.get(Calendar.MINUTE),
                     cal.get(Calendar.SECOND),
                     cal.get(Calendar.MILLISECOND));
-
             return truncateMillis(xgc.toXMLFormat());
+        }
+        // DateTime
+        if (cal.get(Calendar.ERA) == GregorianCalendar.BC){
+            xgc.setYear(-cal.get(Calendar.YEAR));
+        } else {
+            xgc.setYear(cal.get(Calendar.YEAR));
+        }
+        xgc.setMonth(cal.get(Calendar.MONTH) + 1);
+        xgc.setDay(cal.get(Calendar.DATE));
+        xgc.setTime(
+                cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE),
+                cal.get(Calendar.SECOND),
+                cal.get(Calendar.MILLISECOND));
+
+        return truncateMillis(xgc.toXMLFormat());
     }
 
     /**
@@ -1205,7 +1240,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             // GMonths have different representations depending on JDK version:
             // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
             // Default support is for 1.6, so if string length == 6, chop off the last two characters
-            if (xmlFormat.length() == 6) {
+            if (trimGMonth() && xmlFormat.length() == 6) {
                 xmlFormat = xmlFormat.substring(0, 4);
             }
 
@@ -1333,7 +1368,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             // GMonths have different representations depending on JDK version:
             // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
             // Default support is for 1.6, so if string length == 6, chop off the last two characters
-            if (xmlFormat.length() == 6) {
+            if (trimGMonth() && xmlFormat.length() == 6) {
                 xmlFormat = xmlFormat.substring(0, 4);
             }
 
@@ -1454,7 +1489,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             // GMonths have different representations depending on JDK version:
             // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
             // Default support is for 1.6, so if string length == 6, chop off the last two characters
-            if (xmlFormat.length() == 6) {
+            if (trimGMonth() && xmlFormat.length() == 6) {
                 xmlFormat = xmlFormat.substring(0, 4);
             }
 
@@ -1604,7 +1639,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             // GMonths have different representations depending on JDK version:
             // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
             // Default support is for 1.6, so if string length == 6, chop off the last two characters
-            if (xmlFormat.length() == 6) {
+            if (trimGMonth() && xmlFormat.length() == 6) {
                 xmlFormat = xmlFormat.substring(0, 4);
             }
 
@@ -1973,6 +2008,14 @@ cal, QName schemaTypeQName) {
         }
         strBldr.append(msns==0 ? ".0" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(msns, TOTAL_MS_DIGITS)).toString();
         return strBldr.toString();
+    }
+
+    public void setTrimGMonth(boolean value) {
+        this.trimGMonth = value;
+    }
+
+    public boolean trimGMonth() {
+        return this.trimGMonth;
     }
 
 }
