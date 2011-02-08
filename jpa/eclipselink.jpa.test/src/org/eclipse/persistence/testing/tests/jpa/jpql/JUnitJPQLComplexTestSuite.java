@@ -3304,27 +3304,29 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void testEnumNullNotNull(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        Employee emp = new Employee();
-        emp.setFirstName("Ellen");
-        emp.setPayScale(SalaryRate.MANAGER);
-        em.persist(emp);
-        em.flush();
-        em.clear();
-        clearCache();
-        
-        List results = em.createQuery("select e from Employee e where (e.payScale = :payScale and not :payScale IS NULL) " +
-                "or (:payScale IS NULL AND e.payScale IS NULL)").setParameter("payScale", SalaryRate.MANAGER).getResultList();
-        assertTrue(results.size() == 1);
-        assertTrue(((Employee)results.get(0)).getFirstName().equals("Ellen"));
-        
-        results = em.createQuery("select e from Employee e where (e.payScale = :payScale and not :payScale IS NULL) " +
-        "or (:payScale IS NULL AND e.payScale IS NULL)").setParameter("payScale", null).getResultList();
-        assertTrue(results.size() == 15);
-        
-        results = em.createQuery("select e from Employee e where (e.payScale = :payScale and not :payScale IS NULL) " +
-        "or (:payScale = org.eclipse.persistence.testing.models.jpa.advanced.Employee.SalaryRate.MANAGER)").setParameter("payScale", SalaryRate.MANAGER).getResultList();
-        assertTrue(results.size() == 16);
-        
-        rollbackTransaction(em);
+        try {
+            Employee emp = new Employee();
+            emp.setFirstName("Ellen");
+            emp.setPayScale(SalaryRate.MANAGER);
+            em.persist(emp);
+            em.flush();
+            em.clear();
+            clearCache();
+            
+            List results = em.createQuery("select e from Employee e where (e.payScale = :payScale and not :payScale IS NULL) " +
+                    "or (:payScale IS NULL AND e.payScale IS NULL)").setParameter("payScale", SalaryRate.MANAGER).getResultList();
+            assertTrue(results.size() == 1);
+            assertTrue(((Employee)results.get(0)).getFirstName().equals("Ellen"));
+            
+            results = em.createQuery("select e from Employee e where (e.payScale = :payScale and not :payScale IS NULL) " +
+            "or (:payScale IS NULL AND e.payScale IS NULL)").setParameter("payScale", null).getResultList();
+            assertTrue(results.size() == 15);
+            
+            results = em.createQuery("select e from Employee e where (e.payScale = :payScale and not :payScale IS NULL) " +
+            "or (:payScale = org.eclipse.persistence.testing.models.jpa.advanced.Employee.SalaryRate.MANAGER)").setParameter("payScale", SalaryRate.MANAGER).getResultList();
+            assertTrue(results.size() == 16);
+        } finally {
+            rollbackTransaction(em);
+        }
     }
 }
