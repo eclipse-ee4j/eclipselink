@@ -154,8 +154,8 @@ echo "      <p> Automated builds and the corresponding Javadocs are created ever
 echo "    </description>                                                           " >> $tmp/index.xml
 echo "  <section class=\"main\" name=\"Nightly Builds\">                           " >> $tmp/index.xml
 echo "    <description>                                                            " >> $tmp/index.xml
+echo "      <p><a href=\"http://download.eclipse.org/rt/eclipselink/nightly-updates\">Nightly Build P2 Update Site</a></p>" >> $tmp/index.xml
 echo "      <p>                                                                    " >> $tmp/index.xml
-echo "      <a href=\"http://download.eclipse.org/rt/eclipselink/nightly-updates\">Nightly Build P2 Update Site</a><p>" >> $tmp/index.xml
 echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
 echo "          <tr>                                                               " >> $tmp/index.xml
 echo "            <th colspan=\"5\" align=\"middle\"> Symbol Key </th>            " >> $tmp/index.xml
