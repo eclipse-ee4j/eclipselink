@@ -32,6 +32,8 @@ public class Vegetable implements Serializable {
     private VegetablePK id;       
     private double cost;
     private String[] tags;
+    @Column (columnDefinition="char(1)")
+    private char type;
     
     public Vegetable() {}
 
@@ -71,6 +73,14 @@ public class Vegetable implements Serializable {
 
     public void setTags(String[] tags) {
         this.tags = tags;
+    }
+    
+    public char getType() {
+        return type;
+    }
+    
+    public void setType(char aType) {
+        this.type = aType;
     }
     
     public String toString() {

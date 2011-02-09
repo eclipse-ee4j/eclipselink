@@ -26,6 +26,7 @@ public class Vegetable implements Serializable {
     private VegetablePK id;       
     private double cost;
     private String[] tags;
+    private char type;
     
     public Vegetable() {}
 
@@ -48,6 +49,15 @@ public class Vegetable implements Serializable {
     })
     public VegetablePK getId() {
         return id;
+    }
+    
+    @Column(columnDefinition="char(1)")
+    public char getType() {
+        return type;
+    }
+    
+    public void setType(char aType) {
+        this.type = aType;
     }
     
     public int hashCode() {

@@ -236,6 +236,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testSetNewNestedAggregate");
         tests.add("testObjectReferencedInBothEmAndSharedCache_AggregateObjectMapping");
         tests.add("testObjectReferencedInBothEmAndSharedCache_ObjectReferenceMappingVH");
+        tests.add("testCharFieldDefaultNullValue");
         Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new EntityManagerJUnitTestSuite(test));
@@ -5366,5 +5367,63 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue(emp != empShared);
         // they should not share the aggragate
         assertTrue(emp.getPeriod() != empShared.getPeriod());
+    }
+
+    public void testCharFieldDefaultNullValue() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+
+        Vegetable vegetable;
+        Vegetable vegetable2;
+        VegetablePK pk = new VegetablePK("Eggplant", "Purple");
+        VegetablePK pk2 = new VegetablePK("Capsicum", "Green");
+        String[] tags = {"California", "DE"};
+        String[] tags2 = {"Florida", "FD"};
+
+        try {
+            // Usecase for char with value ' ' (space)
+            vegetable = new Vegetable();
+            vegetable.setId(pk);
+            vegetable.setCost(2.09);
+            vegetable.setTags(tags);
+            vegetable.setType(' ');
+            em.persist(vegetable);
+
+            // Usecase for char with value null 
+            vegetable2 = new Vegetable();
+            vegetable2.setId(pk2);
+            vegetable2.setCost(1.35);
+            vegetable2.setTags(tags2);
+            em.persist(vegetable2);
+
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+
+        em = createEntityManager("fieldaccess");
+        em.clear();
+        clearCache("fieldaccess");
+
+        beginTransaction(em);
+        try {
+            vegetable = em.find(Vegetable.class, pk);
+            vegetable2 = em.find(Vegetable.class, pk2);
+            commitTransaction(em);
+            assertNotNull(vegetable);
+            assertNotNull(vegetable2);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
     }
 }

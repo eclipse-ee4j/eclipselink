@@ -52,7 +52,7 @@ public class JPAConversionManager extends ConversionManager {
             }  else if(Long.TYPE.equals(theClass)) {
                 return Long.valueOf(0L);
             } else if(Character.TYPE.equals(theClass)){
-                return Character.digit(0, 10);
+                return (char)Character.digit(0, 10);
             } else if(Float.TYPE.equals(theClass)){
                 return Float.valueOf(0F); 
             } else if(Short.TYPE.equals(theClass)){

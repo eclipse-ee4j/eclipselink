@@ -1091,6 +1091,13 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldTAGS.setTypeName("BLOB");
         table.addField(fieldTAGS);
         
+        FieldDefinition fieldTYPE = new FieldDefinition();
+        fieldTYPE.setName("TYPE");
+        fieldTYPE.setTypeName("CHAR");
+        fieldTYPE.setSize(1);
+        fieldTYPE.setShouldAllowNull(true);
+        table.addField(fieldTYPE);
+        
         return table;
     }
 

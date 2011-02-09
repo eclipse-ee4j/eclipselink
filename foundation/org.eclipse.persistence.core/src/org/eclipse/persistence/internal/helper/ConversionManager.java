@@ -377,7 +377,8 @@ public class ConversionManager implements Serializable, Cloneable {
     protected Character convertObjectToChar(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof String) {
             if (((String)sourceObject).length() < 1) {
-                return null;
+                // ELBug336192 - Return default null value of char instead of returning null.
+                return (Character)getDefaultNullValue(ClassConstants.PCHAR);
             }
             return Character.valueOf(((String)sourceObject).charAt(0));
         }
