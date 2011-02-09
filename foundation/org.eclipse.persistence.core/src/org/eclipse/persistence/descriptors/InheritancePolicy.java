@@ -936,7 +936,6 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
         if (isChildDescriptor()) {
             getDescriptor().setMappings(Helper.concatenateVectors(getParentDescriptor().getMappings(), getDescriptor().getMappings()));
-            getDescriptor().getPreDeleteMappings().addAll(getParentDescriptor().getPreDeleteMappings());
             getDescriptor().setQueryKeys(Helper.concatenateMaps(getParentDescriptor().getQueryKeys(), getDescriptor().getQueryKeys()));
             addFieldsToParent(getDescriptor().getFields());
             // Parents fields must be first for indexing to work.
@@ -1118,10 +1117,19 @@ public class InheritancePolicy implements Serializable, Cloneable {
     public void postInitialize(AbstractSession session) {
         if (isChildDescriptor()) {
             ClassDescriptor parent = getParentDescriptor();
-            if (descriptor.shouldAcquireCascadedLocks()){
+            if (parent.hasPreDeleteMappings()) {
+                getDescriptor().getPreDeleteMappings().addAll(parent.getPreDeleteMappings());
+            }
+            if (parent.hasMappingsPostCalculateChanges()) {
+                getDescriptor().getMappingsPostCalculateChanges().addAll(parent.getMappingsPostCalculateChanges());
+            }
+            if (parent.hasMappingsPostCalculateChangesOnDeleted()) {
+                getDescriptor().getMappingsPostCalculateChangesOnDeleted().addAll(parent.getMappingsPostCalculateChangesOnDeleted());
+            }
+            if (getDescriptor().shouldAcquireCascadedLocks()){
                 parent.setShouldAcquireCascadedLocks(true);
             }
-            if (descriptor.hasRelationships()){
+            if (getDescriptor().hasRelationships()){
                 parent.setHasRelationships(true);
             }
             while (parent != null) {

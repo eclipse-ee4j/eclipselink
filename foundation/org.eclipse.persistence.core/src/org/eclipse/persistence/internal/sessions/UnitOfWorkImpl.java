@@ -281,6 +281,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Set<Object> cascadeDeleteObjects;
 
     /**
+     * Used to store deleted objects that have reference to other deleted objects.
+     * This is need to delete cycles of objects in the correct order.
+     */
+    protected Map<Object, Set<Object>> deletionDependencies;
+
+    /**
      * INTERNAL:
      * Create and return a new unit of work with the session as its parent.
      */
@@ -1341,20 +1347,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 beginTransaction();
             }
 
-            if(commitTransaction) {
+            if (commitTransaction) {
                 setWasNonObjectLevelModifyQueryExecuted(false);
             }
             this.preDeleteComplete = false;
             
-            Vector deletedObjects = null;// PERF: Avoid deletion if nothing to delete.
+            List deletedObjects = null;// PERF: Avoid deletion if nothing to delete.
             if (hasDeletedObjects()) {
-                deletedObjects = new Vector(getDeletedObjects().size());
-                for (Iterator objects = getDeletedObjects().keySet().iterator(); objects.hasNext();) {
-                    Object objectToDelete = objects.next();
+                deletedObjects = new ArrayList(this.deletedObjects.size());
+                for (Object objectToDelete : this.deletedObjects.keySet()) {
                     ClassDescriptor descriptor = getDescriptor(objectToDelete);
-                    if (descriptor.hasPreDeleteMappings()){
-                        for (Iterator iterator = descriptor.getPreDeleteMappings().iterator(); iterator.hasNext(); ){
-                            DatabaseMapping mapping = (DatabaseMapping)iterator.next();
+                    if (descriptor.hasPreDeleteMappings()) {
+                        for (DatabaseMapping mapping : descriptor.getPreDeleteMappings()) {
                             DeleteObjectQuery deleteQuery = descriptor.getQueryManager().getDeleteQuery();
                             if (deleteQuery == null) {
                                 deleteQuery = new DeleteObjectQuery();
@@ -1371,13 +1375,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             mapping.earlyPreDelete(deleteQuery);
                         }
                     }
-                    deletedObjects.addElement(objectToDelete);
+                    deletedObjects.add(objectToDelete);
                 }
                 this.preDeleteComplete = true;
             }
 
-            if (shouldPerformDeletesFirst) {
-                if (hasDeletedObjects()) {
+            if (this.shouldPerformDeletesFirst) {
+                if (deletedObjects != null) {
                     // This must go to the commit manager because uow overrides to do normal deletion.
                     getCommitManager().deleteAllObjects(deletedObjects);
 
@@ -1398,7 +1402,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             } else {
                 // Let the commit manager figure out how to write the objects
                 super.writeAllObjectsWithChangeSet(this.unitOfWorkChangeSet);
-                if (hasDeletedObjects()) {
+                if (deletedObjects != null) {
                     // This must go to the commit manager because uow overrides to do normal deletion.
                     getCommitManager().deleteAllObjects(deletedObjects);
                 }
@@ -5855,6 +5859,47 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     @Override
     public DatabaseValueHolder createCloneTransformationValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
         return new UnitOfWorkTransformerValueHolder(attributeValue, original, clone, mapping, this);
+    }
+
+    /**
+     * INTERNAL:
+     * Return deleted objects that have reference to other deleted objects.
+     * This is need to delete cycles of objects in the correct order.
+     */
+    public Map<Object, Set<Object>> getDeletionDependencies() {
+        if (this.deletionDependencies == null) {
+            this.deletionDependencies = new HashMap<Object, Set<Object>>();
+        }
+        return this.deletionDependencies;
+    }
+
+    /**
+     * INTERNAL:
+     * Record deleted objects that have reference to other deleted objects.
+     * This is need to delete cycles of objects in the correct order.
+     */
+    public void addDeletionDependency(Object target, Object source) {
+        if (this.deletionDependencies == null) {
+            this.deletionDependencies = new HashMap<Object, Set<Object>>();
+        }
+        Set<Object> dependencies = this.deletionDependencies.get(target);
+        if (dependencies == null) {
+            dependencies = new HashSet<Object>();
+            this.deletionDependencies.put(target, dependencies);
+        }
+        dependencies.add(source);
+    }
+
+    /**
+     * INTERNAL:
+     * Return references to other deleted objects for this deleted object.
+     * This is need to delete cycles of objects in the correct order.
+     */
+    public Set<Object> getDeletionDependencies(Object deletedObject) {
+        if (this.deletionDependencies == null) {
+            return null;
+        }
+        return this.deletionDependencies.get(deletedObject);
     }
 
 }

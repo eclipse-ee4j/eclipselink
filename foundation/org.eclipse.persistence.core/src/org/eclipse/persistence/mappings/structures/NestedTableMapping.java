@@ -240,23 +240,23 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Update the privately owned parts
      */
-    public void preUpdate(WriteObjectQuery writeQuery) throws DatabaseException, OptimisticLockException {
-        if (!shouldObjectModifyCascadeToParts(writeQuery)) {
+    public void preUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {        
+        if (!shouldObjectModifyCascadeToParts(query)) {
             return;
         }
 
         // If objects are not instantiated that means they are not changed.
-        if (!isAttributeValueInstantiatedOrChanged(writeQuery.getObject())) {
+        if (!isAttributeValueInstantiatedOrChanged(query.getObject())) {
             return;
         }
 
-        // Manage objects added and removed from the collection.
-        Object objectsInMemoryModel = getRealCollectionAttributeValueFromObject(writeQuery.getObject(), writeQuery.getSession());
-        Object currentObjectsInDB = readPrivateOwnedForObject(writeQuery);
-        if (currentObjectsInDB == null) {
-            currentObjectsInDB = getContainerPolicy().containerInstance(1);
+        if (query.getObjectChangeSet() != null) {
+            // UnitOfWork
+            writeChanges(query.getObjectChangeSet(), query);
+        } else {
+            // OLD COMMIT
+            compareObjectsAndWrite(query);
         }
-        compareObjectsAndWrite(currentObjectsInDB, objectsInMemoryModel, writeQuery);
     }
 
     /**

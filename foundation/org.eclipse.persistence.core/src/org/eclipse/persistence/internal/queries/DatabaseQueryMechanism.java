@@ -758,6 +758,15 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      */
     protected abstract void updateForeignKeyFieldAfterInsert(WriteObjectQuery writeQuery);
 
+    /**
+     * Update the foreign key fields to null when resolving a deletion cycle.
+     * This must always be dynamic as it is called within an delete query and is really part of the delete
+     * and does not fire update events or worry about locking.
+     */
+    public void updateForeignKeyFieldBeforeDelete() {
+        // Nothing by default.
+    }
+    
     protected void updateObjectAndRowWithReturnRow(Collection returnFields, boolean isFirstCallForInsert) {
         WriteObjectQuery writeQuery = getWriteObjectQuery();
         AbstractRecord outputRow = (AbstractRecord)writeQuery.getProperties().get("output");

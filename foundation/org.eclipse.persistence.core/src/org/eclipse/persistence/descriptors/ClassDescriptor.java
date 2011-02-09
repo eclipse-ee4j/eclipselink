@@ -1160,12 +1160,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
             mappingsVector.addElement(mapping);
         }
         clonedDescriptor.setMappings(mappingsVector);
-
-        for (DatabaseMapping origMapping : this.getPreDeleteMappings()) {
-            DatabaseMapping mapping = (DatabaseMapping)origMapping.clone();
-            mapping.setDescriptor(clonedDescriptor);
-            clonedDescriptor.getPreDeleteMappings().add(mapping);
-        }
         
         Map queryKeyVector = new HashMap(getQueryKeys().size() + 2);
 
@@ -2279,11 +2273,27 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
-     * @return the preDeleteMappings
+     * INTERNAL:
+     * Set of mappings that require early delete behavior.
+     * This is used to handle deletion constraints.
      */
     public List<DatabaseMapping> getPreDeleteMappings() {
-        if (preDeleteMappings == null) preDeleteMappings = new ArrayList<DatabaseMapping>();
-        return preDeleteMappings;
+        if (this.preDeleteMappings == null) {
+            this.preDeleteMappings = new ArrayList<DatabaseMapping>();
+        }
+        return this.preDeleteMappings;
+    }
+
+    /**
+     * INTERNAL:
+     * Add the mapping to be notified before deletion.
+     * Must also be added to child descriptors.
+     */
+    public void addPreDeleteMapping(DatabaseMapping mapping) {
+        if (mapping.getAttributeName() == null) {
+            System.out.println(mapping);
+        }
+        getPreDeleteMappings().add(mapping);
     }
 
     /**
@@ -6003,6 +6013,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Mappings that require postCalculateChanges method to be called 
      */
     public List<DatabaseMapping> getMappingsPostCalculateChanges() {
+        if(mappingsPostCalculateChanges == null) {
+            mappingsPostCalculateChanges = new ArrayList<DatabaseMapping>();
+        }
         return mappingsPostCalculateChanges;
     }
 
@@ -6017,16 +6030,16 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Add a mapping to the list of mappings that require postCalculateChanges method to be called. 
      */
     public void addMappingsPostCalculateChanges(DatabaseMapping mapping) {
-        if(mappingsPostCalculateChanges == null) {
-            mappingsPostCalculateChanges = new ArrayList<DatabaseMapping>();
-        }
-        mappingsPostCalculateChanges.add(mapping);
+        getMappingsPostCalculateChanges().add(mapping);
     }
 
     /** 
      * Mappings that require mappingsPostCalculateChangesOnDeleted method to be called 
      */
     public List<DatabaseMapping> getMappingsPostCalculateChangesOnDeleted() {
+        if (mappingsPostCalculateChangesOnDeleted == null) {
+            mappingsPostCalculateChangesOnDeleted = new ArrayList<DatabaseMapping>();
+        }
         return mappingsPostCalculateChangesOnDeleted;
     }
 
@@ -6041,10 +6054,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Add a mapping to the list of mappings that require mappingsPostCalculateChangesOnDeleted method to be called. 
      */
     public void addMappingsPostCalculateChangesOnDeleted(DatabaseMapping mapping) {
-        if(mappingsPostCalculateChangesOnDeleted == null) {
-            mappingsPostCalculateChangesOnDeleted = new ArrayList<DatabaseMapping>();
-        }
-        mappingsPostCalculateChangesOnDeleted.add(mapping);
+        getMappingsPostCalculateChangesOnDeleted().add(mapping);
     }
 
     /**

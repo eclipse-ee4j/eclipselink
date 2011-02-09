@@ -14,9 +14,12 @@ package org.eclipse.persistence.internal.queries;
 
 import java.util.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.expressions.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 
@@ -353,19 +356,41 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
      * and does not fire update events or worry about locking.
      */
     protected void updateForeignKeyFieldAfterInsert(WriteObjectQuery writeQuery) {
-        for (Enumeration tablesEnum = getDescriptor().getTables().elements();
-                 tablesEnum.hasMoreElements();) {
-            DatabaseTable table = (DatabaseTable)tablesEnum.nextElement();
+        ClassDescriptor descriptor = getDescriptor();
+        for (DatabaseTable table : descriptor.getTables()) {
             SQLUpdateStatement updateStatement = new SQLUpdateStatement();
-            updateStatement.setModifyRow(getDescriptor().getObjectBuilder().buildRowForUpdate(writeQuery));
+            updateStatement.setModifyRow(descriptor.getObjectBuilder().buildRowForUpdate(writeQuery));
             updateStatement.setTranslationRow(getTranslationRow());
             updateStatement.setTable(table);
-            updateStatement.setWhereClause(getDescriptor().getObjectBuilder().buildPrimaryKeyExpression(table));// Must not check version, ok as just inserted it.
+            updateStatement.setWhereClause(descriptor.getObjectBuilder().buildPrimaryKeyExpression(table));// Must not check version, ok as just inserted it.
             // Bug 2996585
             StatementQueryMechanism updateMechanism = new StatementQueryMechanism(writeQuery, updateStatement);
             writeQuery.setModifyRow(updateStatement.getModifyRow());
             updateMechanism.updateObject();
+        }
+    }
 
+    /**
+     * Update the foreign key fields to null when resolving a deletion cycle.
+     * This must always be dynamic as it is called within an delete query and is really part of the delete
+     * and does not fire update events or worry about locking.
+     */
+    @Override
+    public void updateForeignKeyFieldBeforeDelete() {
+        ClassDescriptor descriptor = getDescriptor();
+        for (DatabaseTable table : descriptor.getTables()) {
+            SQLUpdateStatement updateStatement = new SQLUpdateStatement();
+            AbstractRecord row = descriptor.getObjectBuilder().createRecord(getSession());
+            for (DatabaseMapping mapping : descriptor.getPreDeleteMappings()) {
+                mapping.writeUpdateFieldsIntoRow(row, getSession());
+            }
+            updateStatement.setModifyRow(row);
+            updateStatement.setTranslationRow(getTranslationRow());
+            updateStatement.setTable(table);
+            updateStatement.setWhereClause(descriptor.getObjectBuilder().buildPrimaryKeyExpression(table));// Must not check version, ok as delete will.
+            StatementQueryMechanism updateMechanism = new StatementQueryMechanism(getQuery(), updateStatement);
+            ((DeleteObjectQuery)getQuery()).setModifyRow(row);
+            updateMechanism.updateObject();
         }
     }
 }

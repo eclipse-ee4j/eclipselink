@@ -430,20 +430,22 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             return;
         }
 
-        if (!this.shouldObjectModifyCascadeToParts(query)) {
+        if (!shouldObjectModifyCascadeToParts(query)) {
             return;
         }
 
         // if the target objects are not instantiated, they could not have been changed....
-        if (!this.isAttributeValueInstantiatedOrChanged(query.getObject())) {
+        if (!isAttributeValueInstantiatedOrChanged(query.getObject())) {
             return;
         }
 
-        // manage objects added and removed from the collection
-        Object objectsInMemory = this.getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-        Object objectsInDB = this.readPrivateOwnedForObject(query);
-
-        this.compareObjectsAndWrite(objectsInDB, objectsInMemory, query);
+        if (query.getObjectChangeSet() != null) {
+            // UnitOfWork
+            writeChanges(query.getObjectChangeSet(), query);
+        } else {
+            // OLD COMMIT    
+            compareObjectsAndWrite(query);
+        }
     }
 
     /**
@@ -580,24 +582,26 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      */
     @Override
     public void preUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
-        if (!this.isForeignKeyRelationship()) {
+        if (!isForeignKeyRelationship()) {
             return;
         }
 
-        if (!this.shouldObjectModifyCascadeToParts(query)) {
+        if (!shouldObjectModifyCascadeToParts(query)) {
             return;
         }
 
         // if the target objects are not instantiated, they could not have been changed....
-        if (!this.isAttributeValueInstantiatedOrChanged(query.getObject())) {
+        if (!isAttributeValueInstantiatedOrChanged(query.getObject())) {
             return;
         }
 
-        // manage objects added and removed from the collection
-        Object objectsInMemory = this.getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-        Object objectsInDB = this.readPrivateOwnedForObject(query);
-
-        this.compareObjectsAndWrite(objectsInDB, objectsInMemory, query);
+        if (query.getObjectChangeSet() != null) {
+            // UnitOfWork
+            writeChanges(query.getObjectChangeSet(), query);
+        } else {
+            // OLD COMMIT    
+            compareObjectsAndWrite(query);
+        }
     }
 
     /**
@@ -857,12 +861,11 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection
-                Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null) {
                     //this will just clone the indirection.
                     //the indirection object is responsible for cloning the value.
-                    return this.getAttributeValueFromObject(cached);
+                    return getAttributeValueFromObject(cached);
                 }
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));

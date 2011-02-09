@@ -112,6 +112,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         this.setCascadeAll(true);
         this.isListOrderFieldSupported = true;
         this.isListOrderFieldUpdatable = true;
+        this.isPrivateOwned = true;        
     }
 
     /**
@@ -1300,11 +1301,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         super.initialize(session);
         if (getDescriptor() != null) { // descriptor will only be null in special case where the mapping has not been added to a descriptor prior to initialization.
             getDescriptor().addMappingsPostCalculateChanges(this); // always equivalent to Private Owned
-            if (getDescriptor().hasInheritance()) {
-                for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
-                    descriptor.addMappingsPostCalculateChanges(this);
-                }
-            }
         }
         if (!getReferenceDescriptor().isAggregateCollectionDescriptor()) {
             session.getIntegrityChecker().handleError(DescriptorException.referenceDescriptorIsNotAggregateCollection(getReferenceClass().getName(), this));
@@ -1859,13 +1855,6 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     }
 
     /**
-     * INTERNAL:
-     */
-    public boolean isPrivateOwned() {
-        return true;
-    }
-
-    /**
      * Checks if source key is specified or not.
      */
     protected boolean isSourceKeySpecified() {
@@ -2118,7 +2107,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Update the privately owned parts
      */
     public void postUpdate(WriteObjectQuery writeQuery) throws DatabaseException, OptimisticLockException {
-        if (isReadOnly()) {
+        if (this.isReadOnly) {
             return;
         }
 
@@ -2126,14 +2115,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (!isAttributeValueInstantiatedOrChanged(writeQuery.getObject())) {
             return;
         }
-
-        // Manage objects added and removed from the collection.
-        Object objects = getRealCollectionAttributeValueFromObject(writeQuery.getObject(), writeQuery.getSession());
-        Object currentObjectsInDB = readPrivateOwnedForObject(writeQuery);
-        if (currentObjectsInDB == null) {
-            currentObjectsInDB = getContainerPolicy().containerInstance(1);
-        }
-        compareObjectsAndWrite(currentObjectsInDB, objects, writeQuery);
+        // OLD COMMIT - TODO This should not be used.
+        compareObjectsAndWrite(writeQuery);
     }
 
     /**

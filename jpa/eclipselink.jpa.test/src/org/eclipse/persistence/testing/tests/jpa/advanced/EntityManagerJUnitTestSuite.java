@@ -404,6 +404,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if (!isJPA10()) {
             suite.addTest(new EntityManagerJUnitTestSuite("testCascadeDetach"));
         }
+        // Test must be last as clears database.
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEverything"));
         return suite;
     }
 
@@ -2794,6 +2796,57 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
             beginTransaction(em);    
             verifyDelete(employee);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+
+    // Test deletion does not violate constraints.
+    public void testDeleteEverything() {
+        EntityManager em = createEntityManager();
+        try {
+            EmployeePopulator employeePopulator = new EmployeePopulator();
+            employeePopulator.buildExamples();
+            employeePopulator.employeeExample1().setManager(employeePopulator.employeeExample1());
+            employeePopulator.employeeExample2().setManager(employeePopulator.employeeExample3());
+            employeePopulator.employeeExample3().setManager(employeePopulator.employeeExample2());
+            employeePopulator.persistExample(getDatabaseSession());
+            
+            beginTransaction(em);
+            em.setFlushMode(FlushModeType.COMMIT);
+            for (Object each : em.createQuery("Select e from Employee e").getResultList()) {
+                em.remove(each);
+            }
+            for (Object each : em.createQuery("Select p from Project p").getResultList()) {
+                em.remove(each);
+            }
+            for (Object each : em.createQuery("Select d from ADV_DEPT d").getResultList()) {
+                em.remove(each);
+            }
+            commitTransaction(em);
+            closeEntityManager(em);
+            
+            // This time clear the cache first.
+            employeePopulator = new EmployeePopulator();
+            employeePopulator.buildExamples();
+            employeePopulator.persistExample(getDatabaseSession());
+            clearCache();
+            em = createEntityManager();            
+            beginTransaction(em);
+            em.setFlushMode(FlushModeType.COMMIT);
+            for (Object each : em.createQuery("Select e from Employee e").getResultList()) {
+                em.remove(each);
+            }
+            for (Object each : em.createQuery("Select p from Project p").getResultList()) {
+                em.remove(each);
+            }
+            for (Object each : em.createQuery("Select d from ADV_DEPT d").getResultList()) {
+                em.remove(each);
+            }
             commitTransaction(em);
         } finally {
             if (isTransactionActive(em)) {

@@ -1149,13 +1149,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        if (this.isPrivateOwned){
-            getDescriptor().addMappingsPostCalculateChanges(this);
-            if (getDescriptor().hasInheritance()){
-                for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
-                    descriptor.addMappingsPostCalculateChanges(this);
-                }
-            }
+        if (this.isPrivateOwned && (this.descriptor != null)) {
+            this.descriptor.addMappingsPostCalculateChanges(this);
         }
         initializeReferenceDescriptor(session);
         initializeSelectionQuery(session);
@@ -1711,7 +1706,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Usually used by write, insert, update and delete.
      */
     protected boolean shouldObjectModifyCascadeToParts(ObjectLevelModifyQuery query) {
-        if (isReadOnly()) {
+        if (this.isReadOnly) {
             return false;
         }
 
@@ -1720,7 +1715,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             return hasConstraintDependency();
         }
 
-        if (isPrivateOwned()) {
+        if (this.isPrivateOwned) {
             return true;
         }
 
@@ -1926,12 +1921,11 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection
-                Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null) {
                     //this will just clone the indirection.
                     //the indirection object is responsible for cloning the value.
-                    return this.getAttributeValueFromObject(cached);
+                    return getAttributeValueFromObject(cached);
                 }
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));

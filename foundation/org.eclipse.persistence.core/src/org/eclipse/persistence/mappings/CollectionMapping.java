@@ -549,98 +549,106 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * The memory objects are compared and only the changes are written to the database.
+     * Write the changes defined in the change set for the mapping.
+     * Mapping added or removed events are raised to allow the mapping to write the changes as required.
      */
-    protected void compareObjectsAndWrite(Object previousObjects, Object currentObjects, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
-        // If it is for an aggregate collection let it continue so that all of the correct values are deleted
-        // and then re-added  This could be changed to make AggregateCollection changes smarter.
-        if ((query.getObjectChangeSet() != null) && !this.isAggregateCollectionMapping()) {
-            ObjectChangeSet changeSet = query.getObjectChangeSet();
-            CollectionChangeRecord record = (CollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
-            if (record != null) {
-                ObjectChangeSet removedChangeSet = null;
-                ObjectChangeSet addedChangeSet = null;
-                Iterator removedObjects = record.getRemoveObjectList().values().iterator();
-                while (removedObjects.hasNext()) {
-                    removedChangeSet = (ObjectChangeSet)removedObjects.next();
-                    objectRemovedDuringUpdate(query, this.containerPolicy.getCloneDataFromChangeSet(removedChangeSet), null);
-                    if (removedChangeSet.getOldKey() != null){
-                        containerPolicy.propogatePostUpdate(query, removedChangeSet.getOldKey());
-                    }
-                }
-                Iterator addedObjects = record.getAddObjectList().values().iterator();
-                Map extraData = null;
-                while (addedObjects.hasNext()) {
-                    addedChangeSet = (ObjectChangeSet)addedObjects.next();
-                    if(this.listOrderField != null) {
-                        extraData = new HashMap(1);
-                        Integer addedIndexInList = (Integer)record.getOrderedAddObjectIndices().get(addedChangeSet);
-                        if(addedIndexInList == null) {
-                            addedIndexInList = ((List)currentObjects).indexOf(addedChangeSet.getUnitOfWorkClone());
-                        }
-                        extraData.put(listOrderField, addedIndexInList);
-                    }
-                    objectAddedDuringUpdate(query, this.containerPolicy.getCloneDataFromChangeSet(addedChangeSet), addedChangeSet, extraData);
-                    if (addedChangeSet.getNewKey() != null){
-                        containerPolicy.propogatePostUpdate(query, addedChangeSet.getNewKey());
-                    }
-                }
-                if (listOrderField != null) {
-                    List previousList = (List)previousObjects;
-                    int previousSize = previousList.size();
-                    List currentList = (List)currentObjects;
-                    int currentSize = currentList.size();
-                    boolean shouldRepairOrder = false;
-                    if(currentList instanceof IndirectList) {
-                        shouldRepairOrder = ((IndirectList)currentList).isListOrderBrokenInDb();
-                    }
-                    if(previousList == currentList) {
-                        // previousList is not available
-                        
-                        // The same size as previous list,
-                        // at the i-th position holds the index of the i-th original object in the current list (-1 if the object was removed): 
-                        // for example: {0, -1, 1, -1, 3} means that:
-                        //   previous(0) == current(0);
-                        //   previous(1) was removed;
-                        //   previous(2) == current(1);
-                        //   previous(3) was removed;
-                        //   previous(4) == current(3);
-                        // current(1) and current(3) were also on previous list, but with different indexes: they are the ones that should have their index changed. 
-                        List<Integer> currentIndexes = record.getCurrentIndexesOfOriginalObjects(currentList);
-                        for(int i=0; i < currentIndexes.size(); i++) {
-                            int currentIndex = currentIndexes.get(i);
-                            if((currentIndex >= 0) && (currentIndex != i || shouldRepairOrder)) {
-                                objectOrderChangedDuringUpdate(query, currentList.get(currentIndex), currentIndex);
-                            }
-                        }
-                    } else {
-                        for (int i=0; i < previousSize; i++) {
-                            // TODO: should we check for previousObject != null? 
-                            Object prevObject = previousList.get(i);
-                            Object currentObject = null;
-                            if(i < currentSize) {
-                                currentObject = currentList.get(i);
-                            }
-                            if(prevObject != currentObject || shouldRepairOrder) {
-                                // object has either been removed or its index in the List has changed
-                                int newIndex = currentList.indexOf(prevObject);
-                                if(newIndex >= 0) {
-                                    objectOrderChangedDuringUpdate(query, prevObject, newIndex);
-                                }
-                            }
-                        }
-                    }
-                    if (shouldRepairOrder) {
-                        ((IndirectList)currentList).setIsListOrderBrokenInDb(false);
-                        record.setOrderHasBeenRepaired(true);
-                    }
+    public void writeChanges(ObjectChangeSet changeSet, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
+        CollectionChangeRecord record = (CollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
+        if (record != null) {
+            for (ObjectChangeSet removedChangeSet : record.getRemoveObjectList().values()) {
+                objectRemovedDuringUpdate(query, this.containerPolicy.getCloneDataFromChangeSet(removedChangeSet), null);
+                if (removedChangeSet.getOldKey() != null){
+                    this.containerPolicy.propogatePostUpdate(query, removedChangeSet.getOldKey());
                 }
             }
-            return;
+            Map extraData = null;
+            Object currentObjects = null;
+            for (ObjectChangeSet addedChangeSet : record.getAddObjectList().values()) {
+                if (this.listOrderField != null) {
+                    extraData = new HashMap(1);
+                    Integer addedIndexInList = record.getOrderedAddObjectIndices().get(addedChangeSet);
+                    if (addedIndexInList == null) {
+                        if (currentObjects == null) {
+                            currentObjects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
+                        }
+                        addedIndexInList = ((List)currentObjects).indexOf(addedChangeSet.getUnitOfWorkClone());
+                    }
+                    extraData.put(this.listOrderField, addedIndexInList);
+                }
+                objectAddedDuringUpdate(query, this.containerPolicy.getCloneDataFromChangeSet(addedChangeSet), addedChangeSet, extraData);
+                if (addedChangeSet.getNewKey() != null){
+                    this.containerPolicy.propogatePostUpdate(query, addedChangeSet.getNewKey());
+                }
+            }
+            if (this.listOrderField != null) {
+                // This is a hacky check for attribute change tracking, if the backup clone is different, then is using deferred.
+                List previousList = (List)getRealCollectionAttributeValueFromObject(query.getBackupClone(), query.getSession());;
+                int previousSize = previousList.size();
+                if (currentObjects == null) {
+                    currentObjects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
+                }
+                List currentList = (List)currentObjects;
+                int currentSize = currentList.size();
+                boolean shouldRepairOrder = false;
+                if(currentList instanceof IndirectList) {
+                    shouldRepairOrder = ((IndirectList)currentList).isListOrderBrokenInDb();
+                }
+                if(previousList == currentList) {
+                    // previousList is not available
+                    
+                    // The same size as previous list,
+                    // at the i-th position holds the index of the i-th original object in the current list (-1 if the object was removed): 
+                    // for example: {0, -1, 1, -1, 3} means that:
+                    //   previous(0) == current(0);
+                    //   previous(1) was removed;
+                    //   previous(2) == current(1);
+                    //   previous(3) was removed;
+                    //   previous(4) == current(3);
+                    // current(1) and current(3) were also on previous list, but with different indexes: they are the ones that should have their index changed. 
+                    List<Integer> currentIndexes = record.getCurrentIndexesOfOriginalObjects(currentList);
+                    for(int i=0; i < currentIndexes.size(); i++) {
+                        int currentIndex = currentIndexes.get(i);
+                        if((currentIndex >= 0) && (currentIndex != i || shouldRepairOrder)) {
+                            objectOrderChangedDuringUpdate(query, currentList.get(currentIndex), currentIndex);
+                        }
+                    }
+                } else {
+                    for (int i=0; i < previousSize; i++) {
+                        // TODO: should we check for previousObject != null? 
+                        Object prevObject = previousList.get(i);
+                        Object currentObject = null;
+                        if(i < currentSize) {
+                            currentObject = currentList.get(i);
+                        }
+                        if(prevObject != currentObject || shouldRepairOrder) {
+                            // object has either been removed or its index in the List has changed
+                            int newIndex = currentList.indexOf(prevObject);
+                            if(newIndex >= 0) {
+                                objectOrderChangedDuringUpdate(query, prevObject, newIndex);
+                            }
+                        }
+                    }
+                }
+                if (shouldRepairOrder) {
+                    ((IndirectList)currentList).setIsListOrderBrokenInDb(false);
+                    record.setOrderHasBeenRepaired(true);
+                }
+            }
         }
-        
+    }
+    
+    /**
+     * INTERNAL:
+     * The memory objects are compared and only the changes are written to the database.
+     */
+    protected void compareObjectsAndWrite(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
+        Object currentObjects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
+        Object previousObjects = readPrivateOwnedForObject(query);
+        if (previousObjects == null) {
+            previousObjects = getContainerPolicy().containerInstance(1);
+        }        
         if (this.listOrderField != null && this.isAggregateCollectionMapping()) {
-            this.compareListsAndWrite((List)previousObjects, (List)currentObjects, query);
+            compareListsAndWrite((List)previousObjects, (List)currentObjects, query);
             return;
         }
         
@@ -1371,7 +1379,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             if (!isAttributeValueInstantiated(target)) {
                 // We must clone and set the value holder from the source to the target.
                 Object attributeValue = getAttributeValueFromObject(source);
-                Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, null, target, (UnitOfWorkImpl) mergeManager.getSession(), false); // building clone from an original not a row. 
+                Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, null, target, mergeManager.getSession(), false); // building clone from an original not a row. 
                 setAttributeValueInObject(target, clonedAttributeValue);
                 
                 // This will occur when the clone's value has not been instantiated yet and we do not need

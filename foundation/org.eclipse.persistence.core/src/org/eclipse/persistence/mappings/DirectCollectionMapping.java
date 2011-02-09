@@ -125,7 +125,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         this.referenceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.selectionQuery = new DirectReadQuery();
         this.hasCustomInsertQuery = false;
-        this.isPrivateOwned = true;        
+        this.isPrivateOwned = true;
         this.isListOrderFieldSupported = true;
     }
 
@@ -1791,15 +1791,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public boolean isOwned(){
-        return true;
-    }
-
-    /**
-     * INTERNAL:
-     * Direct collection is always private owned.
-     */
-    @Override
-    public boolean isPrivateOwned() {
         return true;
     }
 

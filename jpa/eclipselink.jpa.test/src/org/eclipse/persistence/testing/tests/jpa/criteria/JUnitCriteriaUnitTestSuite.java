@@ -717,6 +717,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
     public void testIsNullAndIsNotNull(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
         Employee emp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'John' and e.lastName = 'Way'").getSingleResult();
         emp.setFirstName(null);
         emp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'Charles' and e.lastName = 'Chanley'").getSingleResult();
@@ -739,7 +740,9 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         emp = (Employee)results.get(0);
         assertTrue(emp.getFirstName() == null);
         assertTrue(emp.getLastName() != null);
+        } finally {
         rollbackTransaction(em);
+        }
     }
     
     public void testIsNullOrIsNull(){

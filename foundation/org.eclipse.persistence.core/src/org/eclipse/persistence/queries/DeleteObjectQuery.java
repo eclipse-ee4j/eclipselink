@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
+import java.util.Set;
+
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CommitManager;
@@ -133,15 +135,27 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
         Object object = getObject();
         boolean isUnitOfWork = session.isUnitOfWork();
         try {
-            // Check if the object has already been committed, then no work is required
-            if (commitManager.isProcessedCommit(object)) {
+            // Check if the object has already been deleted, then no work is required.
+            if (commitManager.isCommitCompletedOrInPost(object)) {
+                return object;
+            }
+            ClassDescriptor descriptor = this.descriptor;
+            // Check whether the object is already being deleted,
+            // if it is, then there is a cycle, and the foreign keys must be nulled.
+            if (commitManager.isCommitInPreModify(object)) {
+                if (!commitManager.isShallowCommitted(object)) {
+                    getQueryMechanism().updateForeignKeyFieldBeforeDelete();
+                    if ((descriptor.getHistoryPolicy() != null) && descriptor.getHistoryPolicy().shouldHandleWrites()) {
+                        descriptor.getHistoryPolicy().postUpdate(this);
+                    }
+                    commitManager.markShallowCommit(object);
+                }
                 return object;
             }
             commitManager.markPreModifyCommitInProgress(getObject());
             if (!isUnitOfWork) {
                 session.beginTransaction();
             }
-            ClassDescriptor descriptor = this.descriptor;
             DescriptorEventManager eventManager = descriptor.getEventManager();
             // PERF: Avoid events if no listeners.
             if (eventManager.hasAnyEventListeners()) {
@@ -154,6 +168,31 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
                 descriptor.getQueryManager().preDelete(this);
             }
 
+            // Check for deletion dependencies.
+            if (isUnitOfWork) {
+                Set dependencies = ((UnitOfWorkImpl)session).getDeletionDependencies(object);
+                if (dependencies != null) {
+                    for (Object dependency : dependencies) {
+                        if (!commitManager.isCommitCompletedOrInPost(dependency)) {
+                            ClassDescriptor dependencyDescriptor = session.getDescriptor(dependency);
+                            // PERF: Get the descriptor query, to avoid extra query creation.
+                            DeleteObjectQuery deleteQuery = dependencyDescriptor.getQueryManager().getDeleteQuery();
+                            if (deleteQuery == null) {
+                                deleteQuery = new DeleteObjectQuery();
+                                deleteQuery.setDescriptor(dependencyDescriptor);
+                            } else {
+                                // Ensure original query has been prepared.
+                                deleteQuery.checkPrepare(session, deleteQuery.getTranslationRow());
+                                deleteQuery = (DeleteObjectQuery)deleteQuery.clone();
+                            }
+                            deleteQuery.setIsExecutionClone(true);
+                            deleteQuery.setObject(dependency);
+                            session.executeQuery(deleteQuery);
+                        }
+                    }
+                }
+            }
+            
             // CR#2660080 missing aboutToDelete event.		
             // PERF: Avoid events if no listeners.
             if (eventManager.hasAnyEventListeners()) {

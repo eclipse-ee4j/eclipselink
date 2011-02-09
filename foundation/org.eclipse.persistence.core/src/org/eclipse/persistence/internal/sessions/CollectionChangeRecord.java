@@ -12,7 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.IdentityHashMap;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -31,44 +37,44 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * Contains the added values to the collection and their corresponding ChangeSets.
      */
-    protected Map addObjectList;
+    protected Map<ObjectChangeSet, ObjectChangeSet> addObjectList;
     
     /** 
      * Contains the added values to the collection and their corresponding ChangeSets in order.
      */
-    protected transient Vector orderedAddObjects;
+    protected transient List<ObjectChangeSet> orderedAddObjects;
     
     /**
      * Contains the added values index to the collection. 
      */
-    protected Map orderedAddObjectIndices;
+    protected Map<ObjectChangeSet, Integer> orderedAddObjectIndices;
     
     /**
      * Contains OrderedChangeObjects representing each change made to the collection. 
      */
-    protected Vector orderedChangeObjectList;
+    protected List<OrderedChangeObject> orderedChangeObjectList;
     
     /** 
      * Contains the removed values to the collection and their corresponding ChangeSets.
      */
-    protected Hashtable orderedRemoveObjects;
+    protected Map<Integer, ObjectChangeSet> orderedRemoveObjects;
     
     /**
      * Contains the removed values index to the collection. 
      */
-    protected transient Vector orderedRemoveObjectIndices;
+    protected transient List<Integer> orderedRemoveObjectIndices;
     
     /**
      * Contains a list of extra adds.  These extra adds are used by attribute change tracking
      * to replicate behavior when someone adds the same object to a list and removes it once.
      * In this case the object should still appear once in the change set.
      */
-     protected transient List addOverFlow;
+     protected transient List<ObjectChangeSet> addOverFlow;
 
     /**
      * Contains the removed values from the collection and their corresponding ChangeSets.
      */
-    protected Map removeObjectList;
+    protected Map<ObjectChangeSet, ObjectChangeSet> removeObjectList;
         
     /**
      * Indicates whether IndirectList's order has been repaired.
@@ -114,38 +120,31 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     }
     
     /**
-     * This method takes a Vector of objects and converts them into 
+     * This method takes a list of objects and converts them into 
      * ObjectChangeSets. This method should only be called from a 
      * ListContainerPolicy. Additions to the list are made by index, hence,
      * the second Map of objectChangesIndices.
      */
-    public void addOrderedAdditionChange(Vector objectChanges, Map objectChangesIndices, UnitOfWorkChangeSet changeSet, AbstractSession session) {
-        Enumeration e = objectChanges.elements();
-        
-        while (e.hasMoreElements()) {
-            Object object = e.nextElement();
+    public void addOrderedAdditionChange(List<Object> orderedObjectsToAdd, Map<Object, Integer> objectChangesIndices, UnitOfWorkChangeSet changeSet, AbstractSession session) {
+        for (Object object : orderedObjectsToAdd) {
             ObjectChangeSet change = session.getDescriptor(object.getClass()).getObjectBuilder().createObjectChangeSet(object, changeSet, session);
-            
             getOrderedAddObjects().add(change);
             getOrderedAddObjectIndices().put(change, objectChangesIndices.get(object));
         }
     }
     
     /**
-     * This method takes a Hashtable of objects and converts them into 
+     * This method takes a map of objects and converts them into 
      * ObjectChangeSets. This method should only be called from a
      * ListContainerPolicy. Deletions from the list is made by index, hence,
      * the second Vector of indicesToRemove.
      */
-    public void addOrderedRemoveChange(Vector indicesToRemove, Hashtable objectChanges, UnitOfWorkChangeSet changeSet, AbstractSession session) {
-        orderedRemoveObjectIndices = indicesToRemove;
-        Enumeration e = orderedRemoveObjectIndices.elements();
+    public void addOrderedRemoveChange(List<Integer> indicesToRemove, Map objectChanges, UnitOfWorkChangeSet changeSet, AbstractSession session) {
+        this.orderedRemoveObjectIndices = indicesToRemove;
         
-        while (e.hasMoreElements()) {
-            Integer index = (Integer) e.nextElement();
+        for (Integer index : indicesToRemove) {
             Object object = objectChanges.get(index);
             ObjectChangeSet change = session.getDescriptor(object.getClass()).getObjectBuilder().createObjectChangeSet(object, changeSet, session);
-
             getOrderedRemoveObjects().put(index, change);
         }
     }
@@ -187,7 +186,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * ADVANCED:
      * This method returns the collection of ChangeSets that were added to the collection.
      */
-    public Map getAddObjectList() {
+    public Map<ObjectChangeSet, ObjectChangeSet> getAddObjectList() {
         if (addObjectList == null) {
             addObjectList = new IdentityHashMap(10);
         }
@@ -200,7 +199,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * to replicate behavior when someone adds the same object to a list and removes it once.
      * In this case the object should still appear once in the change set.
      */
-    public List getAddOverFlow() {
+    public List<ObjectChangeSet> getAddOverFlow() {
         if (addOverFlow == null) {
             addOverFlow = new ArrayList();
         }
@@ -219,9 +218,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * This method returns the Map that contains the removed values from the collection
      * and their corresponding ChangeSets.
      */
-    public Map getRemoveObjectList() {
+    public Map<ObjectChangeSet, ObjectChangeSet> getRemoveObjectList() {
         if (removeObjectList == null) {
-            removeObjectList = new IdentityHashMap(10);
+            removeObjectList = new IdentityHashMap();
         }
         return removeObjectList;
     }
@@ -278,14 +277,14 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * Sets the Added objects list.
      */
-    public void setAddObjectList(Map objectChangesList) {
+    public void setAddObjectList(Map<ObjectChangeSet, ObjectChangeSet> objectChangesList) {
         this.addObjectList = objectChangesList;
     }
 
     /**
      * Sets the removed objects list.
      */
-    public void setRemoveObjectList(Map objectChangesList) {
+    public void setRemoveObjectList(Map<ObjectChangeSet, ObjectChangeSet> objectChangesList) {
         this.removeObjectList = objectChangesList;
     }
 
@@ -298,11 +297,11 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         // If we have ordered lists we need to iterate through those.
         if (getOrderedAddObjects().size() > 0 || getOrderedRemoveObjectIndices().size() > 0) {
             // Do the ordered adds first ...
-            Vector orderedAddList = new Vector(getOrderedAddObjects().size());
+            List<ObjectChangeSet> orderedAddList = new ArrayList(getOrderedAddObjects().size());
             Map orderedAddListIndices = new IdentityHashMap(getOrderedAddObjectIndices().size());
             
             for (int i = 0; i < getOrderedAddObjects().size(); i++) {
-                ObjectChangeSet changeSet = (ObjectChangeSet) getOrderedAddObjects().elementAt(i);
+                ObjectChangeSet changeSet = getOrderedAddObjects().get(i);
                 ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(changeSet, mergeFromChangeSet);
                 
                 orderedAddList.add(localChangeSet);
@@ -318,12 +317,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             setOrderedAddObjectIndices(orderedAddListIndices);
             
             // Do the ordered removes now ...
-            Hashtable orderedRemoveList = new Hashtable(getOrderedRemoveObjects().size());
-            Enumeration changes = getOrderedRemoveObjects().keys();
-            
-            while (changes.hasMoreElements()) {
-                Object index = changes.nextElement();
-                ObjectChangeSet changeSet = (ObjectChangeSet) getOrderedRemoveObjects().get(index);
+            Map orderedRemoveList = new HashMap(getOrderedRemoveObjects().size());
+            for (Object index : getOrderedRemoveObjects().keySet()) {
+                ObjectChangeSet changeSet = getOrderedRemoveObjects().get(index);
                 ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(changeSet, mergeFromChangeSet);
                 
                 orderedRemoveList.put(index, localChangeSet);
@@ -359,9 +355,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * added to the collection. This list includes those objects that were 
      * moved within the collection.
      */
-    public Vector getOrderedAddObjects() {
+    public List<ObjectChangeSet> getOrderedAddObjects() {
         if (orderedAddObjects == null) {
-            orderedAddObjects = new Vector();
+            orderedAddObjects = new ArrayList();
         }
         
         return orderedAddObjects;
@@ -371,14 +367,14 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * This method returns the index of an object added to the collection.
      */
     public Integer getOrderedAddObjectIndex(ObjectChangeSet changes) {
-        return (Integer) getOrderedAddObjectIndices().get(changes);
+        return getOrderedAddObjectIndices().get(changes);
     }
     
     /**
      * This method returns the collection of ChangeSets that they were 
      * added to the collection.
      */
-    public Map getOrderedAddObjectIndices() {
+    public Map<ObjectChangeSet, Integer> getOrderedAddObjectIndices() {
         if (orderedAddObjectIndices == null) {
             orderedAddObjectIndices = new IdentityHashMap();
         }
@@ -391,9 +387,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * all changes made to the collection, and their order in the vector represents the order
      * they were performed.  
      */
-    public Vector getOrderedChangeObjectList() {
+    public List<OrderedChangeObject> getOrderedChangeObjectList() {
         if (orderedChangeObjectList == null) {
-            orderedChangeObjectList = new Vector();
+            orderedChangeObjectList = new ArrayList();
         }
         
         return orderedChangeObjectList;
@@ -402,12 +398,12 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * This method returns the ordered list of indices to remove from the collection.
      */
-    public Vector getOrderedRemoveObjectIndices() {
-        if (orderedRemoveObjectIndices == null) {
-            orderedRemoveObjectIndices = new Vector();
+    public List<Integer> getOrderedRemoveObjectIndices() {
+        if (this.orderedRemoveObjectIndices == null) {
+            this.orderedRemoveObjectIndices = new ArrayList();
         }
         
-        return orderedRemoveObjectIndices;
+        return this.orderedRemoveObjectIndices;
     }
     
     /**
@@ -421,37 +417,37 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * This method returns the collection of ChangeSets of objects removed from
      * the collection.
      */
-    public Hashtable getOrderedRemoveObjects() {
-        if (orderedRemoveObjects == null) {
-            orderedRemoveObjects = new Hashtable();
+    public Map<Integer, ObjectChangeSet> getOrderedRemoveObjects() {
+        if (this.orderedRemoveObjects == null) {
+            this.orderedRemoveObjects = new HashMap();
         }
         
-        return orderedRemoveObjects;
+        return this.orderedRemoveObjects;
     }
     
     /**
      * Sets collection of ChangeSets (and their respective index) that they 
      * were added to the collection.
      */
-    public void setOrderedAddObjectIndices(Map orderedAddObjectIndices) {
+    public void setOrderedAddObjectIndices(Map<ObjectChangeSet, Integer> orderedAddObjectIndices) {
         this.orderedAddObjectIndices = orderedAddObjectIndices;
     }
     
     /**
      * Sets collection of ChangeSets that they were added to the collection.
      */
-    public void setOrderedAddObjects(Vector orderedAddObjects) {
+    public void setOrderedAddObjects(List<ObjectChangeSet> orderedAddObjects) {
         this.orderedAddObjects = orderedAddObjects;
     }
     
-    public void setOrderedChangeObjectList(Vector orderedChangeObjectList) {
+    public void setOrderedChangeObjectList(List<OrderedChangeObject> orderedChangeObjectList) {
         this.orderedChangeObjectList = orderedChangeObjectList;
     }
     
     /**
      * Sets collection of ChangeSets that they were removed from the collection.
      */
-    public void setOrderedRemoveObjects(Hashtable orderedRemoveObjects) {
+    public void setOrderedRemoveObjects(Map<Integer, ObjectChangeSet> orderedRemoveObjects) {
         this.orderedRemoveObjects = orderedRemoveObjects;
     }
     
@@ -473,7 +469,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         }
         if(orderedChangeObjectList != null) {
             for (int i = this.orderedChangeObjectList.size() - 1; i>=0; i--) {
-                OrderedChangeObject  orderedChange = (OrderedChangeObject)orderedChangeObjectList.get(i);
+                OrderedChangeObject  orderedChange = orderedChangeObjectList.get(i);
                 Object obj = orderedChange.getAddedOrRemovedObject();
                 Integer index = orderedChange.getIndex();
                 int changeType = orderedChange.getChangeType();

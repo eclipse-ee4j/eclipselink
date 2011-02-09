@@ -141,7 +141,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     /**
      * INTERNAL:
-     * This method is called to update collection tables prior to commit.
+     * Delete join tables before the start of the deletion process to avoid constraint errors.
      */
     @Override
     public void earlyPreDelete(DeleteObjectQuery query) {
@@ -448,7 +448,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        getDescriptor().getPreDeleteMappings().add(this);
+        getDescriptor().addPreDeleteMapping(this);
 
         if(this.mechanism != null) {
             this.mechanism.initialize(session, this);
@@ -869,7 +869,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     @Override
     public void postUpdate(WriteObjectQuery query) throws DatabaseException {
-        if (isReadOnly()) {
+        if (this.isReadOnly) {
             return;
         }
 
@@ -877,15 +877,13 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         if (!isAttributeValueInstantiatedOrChanged(query.getObject())) {
             return;
         }
-
-        Object objectsInMemoryModel = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-
-        // This accesses the backup in uow otherwise goes to database (may be better of to delete all in non uow case).
-        Object currentObjectsInDB = readPrivateOwnedForObject(query);
-        if (currentObjectsInDB == null) {
-            currentObjectsInDB = getContainerPolicy().containerInstance(1);
+        if (query.getObjectChangeSet() != null) {
+            // UnitOfWork
+            writeChanges(query.getObjectChangeSet(), query);
+        } else {
+            // OLD COMMIT
+            compareObjectsAndWrite(query);
         }
-        compareObjectsAndWrite(currentObjectsInDB, objectsInMemoryModel, query);
     }
 
     /**
@@ -927,11 +925,14 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                     Object wrappedObject = containerPolicy.nextEntry(objectsIterator, session);
                     Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
                     if (cascade){
-                        DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
-                        deleteQuery.setIsExecutionClone(true);
-                        deleteQuery.setObject(object);
-                        deleteQuery.setCascadePolicy(query.getCascadePolicy());
-                        session.executeQuery(deleteQuery);
+                        // PERF: Avoid query execution if already deleted.
+                        if (!session.getCommitManager().isCommitCompletedOrInPost(object)) {
+                            DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
+                            deleteQuery.setIsExecutionClone(true);
+                            deleteQuery.setObject(object);
+                            deleteQuery.setCascadePolicy(query.getCascadePolicy());
+                            session.executeQuery(deleteQuery);
+                        }
                     }
                     containerPolicy.propogatePreDelete(query, wrappedObject);
                 }

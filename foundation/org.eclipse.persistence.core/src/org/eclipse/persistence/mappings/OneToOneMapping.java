@@ -1014,7 +1014,10 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-
+        if (isForeignKeyRelationship() && !isMapKeyMapping()) {
+            getDescriptor().addPreDeleteMapping(this);
+        }
+        
         if (this.mechanism != null) {
             if (this.mechanism.hasRelationTable()) {
                 if(!this.foreignKeyFields.isEmpty() || !this.sourceToTargetKeyFields.isEmpty() || !this.targetToSourceKeyFields.isEmpty()) {

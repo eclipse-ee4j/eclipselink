@@ -15,13 +15,11 @@
 package org.eclipse.persistence.internal.queries;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-import java.util.Hashtable;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.IdentityHashMap;
 import java.util.ListIterator;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -106,7 +104,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         if(this.listOrderField == null) {
             return super.addAll(elements, container, session, dbRows, query, parentCacheKey, isTargetProtected);
         } else {
-            return addAll(elements, container, session, dbRows, (ReadQuery)query, parentCacheKey);
+            return addAll(elements, container, session, dbRows, query, parentCacheKey);
         }
     }
     
@@ -123,7 +121,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         if(this.listOrderField == null) {
             return super.addAll(elements, container, session, dbRows, query, parentCacheKey, isTargetProtected);
         } else {
-            return addAll(elements, container, session, dbRows, (ReadQuery)query, parentCacheKey);
+            return addAll(elements, container, session, dbRows, query, parentCacheKey);
         }
     }
 
@@ -242,12 +240,12 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      */
     @Override
     public void compareCollectionsForChange(Object oldList, Object newList, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor) {    
-        Vector orderedObjectsToAdd = new Vector();
-        Hashtable indicesToRemove = new Hashtable();
-        Hashtable oldListIndexValue = new Hashtable();
+        List orderedObjectsToAdd = new ArrayList();
+        Map indicesToRemove = new HashMap();
+        Map oldListIndexValue = new HashMap();
         IdentityHashMap oldListValueIndex = new IdentityHashMap();
         IdentityHashMap objectsToAdd = new IdentityHashMap();
-        Map newListValueIndex = new IdentityHashMap();
+        Map<Object, Integer> newListValueIndex = new IdentityHashMap();
         
         // Step 1 - Go through the old list.
         if (oldList != null) {
@@ -321,7 +319,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                                     Object oldObject = oldListIndexValue.get(Integer.valueOf(index));
                                 
                                     if (newListValueIndex.containsKey(oldObject)) {
-                                        if ((((Integer) newListValueIndex.get(oldObject)).intValue() - index) > 1) {
+                                        if (((newListValueIndex.get(oldObject)).intValue() - index) > 1) {
                                             moved = false; // Assume the old object moved up.
                                             --offset; 
                                         }
@@ -351,7 +349,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         
         // Sort the remove indices that are left and set the data on the collection change 
         // record to be processed on the merge.
-        Vector orderedIndicesToRemove = new Vector(indicesToRemove.values());
+        List orderedIndicesToRemove = new ArrayList(indicesToRemove.values());
         Collections.sort(orderedIndicesToRemove);
         changeRecord.addAdditionChange(objectsToAdd, this, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
         changeRecord.addRemoveChange(oldListValueIndex, this, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
@@ -523,7 +521,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             } else {
                 //Deferred change tracking merge behavior
                 // Step 1 - iterate over the removed changes and remove them from the container.
-                Vector removedIndices = changeRecord.getOrderedRemoveObjectIndices();
+                List<Integer> removedIndices = changeRecord.getOrderedRemoveObjectIndices();
     
                 if (removedIndices.isEmpty()) {
                     // Check if we have removed objects via a 
@@ -537,7 +535,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                     }
                 } else {
                     for (int i = removedIndices.size() - 1; i >= 0; i--) {
-                        Integer index = ((Integer) removedIndices.elementAt(i)).intValue();
+                        Integer index = removedIndices.get(i);
                         objectChanges = (ObjectChangeSet) changeRecord.getOrderedRemoveObject(index);
                         Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
                         if ( (objectToRemove!=null) && 
@@ -559,9 +557,8 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                 }
                 
                 // Step 2 - iterate over the added changes and add them to the container.
-                Enumeration addObjects = changeRecord.getOrderedAddObjects().elements();
-                while (addObjects.hasMoreElements()) {
-                    objectChanges =  (ObjectChangeSet) addObjects.nextElement();
+                for (ObjectChangeSet addChangeSet : changeRecord.getOrderedAddObjects()) {
+                    objectChanges =  addChangeSet;
                     boolean objectAdded = changeRecord.getAddObjectList().containsKey(objectChanges);
                     Object object = null;
                     

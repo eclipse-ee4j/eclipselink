@@ -15,7 +15,6 @@ package org.eclipse.persistence.mappings;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -149,22 +148,12 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        if(getReferenceDescriptor().getOptimisticLockingPolicy() != null) {
-            if(shouldIncrementTargetLockValueOnAddOrRemoveTarget) {
-                descriptor.addMappingsPostCalculateChanges(this);
-                if (getDescriptor().hasInheritance()){
-                    for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
-                        descriptor.addMappingsPostCalculateChanges(this);
-                    }
-                }
+        if (getReferenceDescriptor().getOptimisticLockingPolicy() != null) {
+            if (this.shouldIncrementTargetLockValueOnAddOrRemoveTarget) {
+                this.descriptor.addMappingsPostCalculateChanges(this);
             }
-            if(shouldIncrementTargetLockValueOnDeleteSource && !isPrivateOwned) {
-                descriptor.addMappingsPostCalculateChangesOnDeleted(this);
-                if (getDescriptor().hasInheritance()){
-                    for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
-                        descriptor.addMappingsPostCalculateChangesOnDeleted(this);
-                    }
-                }
+            if (this.shouldIncrementTargetLockValueOnDeleteSource && !this.isPrivateOwned) {
+                this.descriptor.addMappingsPostCalculateChangesOnDeleted(this);
             }
         }
     }

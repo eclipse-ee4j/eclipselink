@@ -957,7 +957,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     @Override
     public void postUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
-        if (isReadOnly()) {
+        if (this.isReadOnly) {
             return;
         }
         
@@ -969,12 +969,14 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         if (!isAttributeValueInstantiatedOrChanged(query.getObject())) {
             return;
         }
-    
-        // manage objects added and removed from the collection
-        Object objectsInMemory = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-        Object objectsInDB = readPrivateOwnedForObject(query);
-    
-        compareObjectsAndWrite(objectsInDB, objectsInMemory, query);
+        
+        if (query.getObjectChangeSet() != null) {
+            // UnitOfWork
+            writeChanges(query.getObjectChangeSet(), query);
+        } else {
+            // OLD COMMIT            
+            compareObjectsAndWrite(query);
+        }
     }
     
     /**
@@ -1028,12 +1030,15 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             for (Object iterator = cp.iteratorFor(objects); cp.hasNext(iterator);) {
                 Object wrappedObject = cp.nextEntry(iterator, session);
                 Object object = cp.unwrapIteratorResult(wrappedObject);
-                DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
-                deleteQuery.setIsExecutionClone(true);
-                deleteQuery.setObject(object);
-                deleteQuery.setCascadePolicy(cascade);
-                session.executeQuery(deleteQuery);
-                this.containerPolicy.propogatePreDelete(deleteQuery, wrappedObject);
+                // PERF: Avoid query execution if already deleted.
+                if (!session.getCommitManager().isCommitCompletedOrInPost(object) || this.containerPolicy.propagatesEventsToCollection()) {
+                    DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
+                    deleteQuery.setIsExecutionClone(true);
+                    deleteQuery.setObject(object);
+                    deleteQuery.setCascadePolicy(cascade);
+                    session.executeQuery(deleteQuery);
+                    this.containerPolicy.propogatePreDelete(deleteQuery, wrappedObject);
+                }
             }
             if (!session.isUnitOfWork()) {
                 // This deletes any objects on the database, as the collection in memory may have been changed.

@@ -630,28 +630,31 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         }
 
         Object object = query.getProperty(this);
-
         // The object is stored in the query by preDeleteForObjectUsing(...).
         if (isForeignKeyRelationship()) {
             if (object != null) {
                 query.removeProperty(this);
-
+                AbstractSession session = query.getSession();
                 //if the query is being passed from an aggregate collection descriptor then 
                 // The delete will have been cascaded at update time.  This will cause sub objects
                 // to be ignored, and real only classes to throw exceptions.
                 // If it is an aggregate Collection then delay deletes until they should be deleted
                 //CR 2811	
                 if (query.isCascadeOfAggregateDelete()) {
-                    query.getSession().getCommitManager().addObjectToDelete(object);
+                    session.getCommitManager().addObjectToDelete(object);
                 } else {
-                    if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && query.getSession().isUnitOfWork()) {
-                        ((UnitOfWorkImpl)query.getSession()).getCascadeDeleteObjects().add(object);
+                    // PERF: Avoid query execution if already deleted.
+                    if (session.getCommitManager().isCommitCompletedOrInPost(object)) {
+                        return;
+                    }
+                    if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && session.isUnitOfWork()) {
+                        ((UnitOfWorkImpl)session).getCascadeDeleteObjects().add(object);
                     }
                     DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                     deleteQuery.setIsExecutionClone(true);
                     deleteQuery.setObject(object);
                     deleteQuery.setCascadePolicy(query.getCascadePolicy());
-                    query.getSession().executeQuery(deleteQuery);
+                    session.executeQuery(deleteQuery);
                 }
             }
         }
@@ -727,8 +730,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             return;
         }
 
+        AbstractSession session = query.getSession();
         // Get the privately owned parts.
-        Object objectInMemory = getRealAttributeValueFromObject(query.getObject(), query.getSession());
+        Object objectInMemory = getRealAttributeValueFromObject(query.getObject(), session);
         Object objectFromDatabase = null;
 
         // Because the value in memory may have been changed we check the previous value or database value.
@@ -738,35 +742,39 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if ((objectFromDatabase != null) && (objectFromDatabase != objectInMemory)) {
             // Also check pk as may not be maintaining identity.	
             Object keyForObjectInMemory = null;
-            Object keyForObjectInDatabase = getPrimaryKeyForObject(objectFromDatabase, query.getSession());
+            Object keyForObjectInDatabase = getPrimaryKeyForObject(objectFromDatabase, session);
 
             if (objectInMemory != null) {
-                keyForObjectInMemory = getPrimaryKeyForObject(objectInMemory, query.getSession());
+                keyForObjectInMemory = getPrimaryKeyForObject(objectInMemory, session);
             }
             if ((keyForObjectInMemory == null) || !keyForObjectInDatabase.equals(keyForObjectInMemory)) {
                 if (objectFromDatabase != null) {
-                    if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && query.getSession().isUnitOfWork()) {
-                        ((UnitOfWorkImpl)query.getSession()).getCascadeDeleteObjects().add(objectFromDatabase);
+                    if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && session.isUnitOfWork()) {
+                        ((UnitOfWorkImpl)session).getCascadeDeleteObjects().add(objectFromDatabase);
                     }
                     DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                     deleteQuery.setIsExecutionClone(true);
                     deleteQuery.setObject(objectFromDatabase);
                     deleteQuery.setCascadePolicy(query.getCascadePolicy());
-                    query.getSession().executeQuery(deleteQuery);
+                    session.executeQuery(deleteQuery);
                 }
             }
         }
 
         if (!isForeignKeyRelationship()) {
             if (objectInMemory != null) {
-                if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && query.getSession().isUnitOfWork()) {
-                    ((UnitOfWorkImpl)query.getSession()).getCascadeDeleteObjects().add(objectFromDatabase);
+                if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && session.isUnitOfWork()) {
+                    ((UnitOfWorkImpl)session).getCascadeDeleteObjects().add(objectInMemory);
+                }
+                // PERF: Avoid query execution if already deleted.
+                if (session.getCommitManager().isCommitCompletedOrInPost(objectInMemory)) {
+                    return;
                 }
                 DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                 deleteQuery.setIsExecutionClone(true);
                 deleteQuery.setObject(objectInMemory);
                 deleteQuery.setCascadePolicy(query.getCascadePolicy());
-                query.getSession().executeQuery(deleteQuery);
+                session.executeQuery(deleteQuery);
             }
         } else {
             // The actual deletion of part takes place in postDeleteForObjectUsing(...).
@@ -776,6 +784,31 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         }
     }
 
+
+    /**
+     * INTERNAL:
+     * Record deletion dependencies for foreign key constraints.
+     * This is used during deletion to resolve deletion cycles.
+     */
+    @Override
+    public void earlyPreDelete(DeleteObjectQuery query) {
+        Object object = query.getObject();
+        AbstractSession session = query.getSession();
+        // Avoid instantiating objects.
+        Object attributeValue = getAttributeValueFromObject(object);
+        Object targetObject = null;
+        if (!this.indirectionPolicy.objectIsInstantiated(attributeValue) && !this.indirectionPolicy.objectIsEasilyInstantiated(attributeValue)) {
+            AbstractRecord referenceRow = this.indirectionPolicy.extractReferenceRow(attributeValue);
+            targetObject = this.selectionQuery.checkEarlyReturn(session, referenceRow);
+        } else {
+            targetObject = getRealAttributeValueFromAttribute(attributeValue, object, session);
+        }
+        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
+        if ((targetObject != null) && unitOfWork.getDeletedObjects().containsKey(targetObject)) {
+            unitOfWork.addDeletionDependency(targetObject, object);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -1032,23 +1065,27 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (object == null) {
             return;
         }
+        AbstractSession session = query.getSession();
+        // PERF: Avoid query execution if already written.
+        if (session.getCommitManager().isCommitCompletedOrInPost(object)) {
+            return;
+        }
         ObjectChangeSet changeSet = null;
-        UnitOfWorkChangeSet uowChangeSet = null;
         // Get changeSet for referenced object.  Change record may not exist for new objects, so always lookup.
-        if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
-            uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
+        if (session.isUnitOfWork() && (((UnitOfWorkImpl)session).getUnitOfWorkChangeSet() != null)) {
+            UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)session).getUnitOfWorkChangeSet();
             changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(object);
             // PERF: If the changeSet is null it must be existing, if it is not new, then cascading is not required.
             if (changeSet == null || !changeSet.isNew()) {
                 return;
             }
         }
-
+        
         WriteObjectQuery writeQuery = null;
         // If private owned, the dependent objects should also be new.
         // However a bug was logged was put in to allow dependent objects to be existing in a unit of work,
         // so this allows existing dependent objects in the unit of work.
-        if (isPrivateOwned() && ((changeSet == null) || (changeSet.isNew()))) {
+        if (this.isPrivateOwned && ((changeSet == null) || (changeSet.isNew()))) {
             // no identity check needed for private owned
             writeQuery = new InsertObjectQuery();
         } else {
@@ -1058,7 +1095,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         writeQuery.setObject(object);
         writeQuery.setObjectChangeSet(changeSet);
         writeQuery.setCascadePolicy(query.getCascadePolicy());
-        query.getSession().executeQuery(writeQuery);
+        session.executeQuery(writeQuery);
     }
 
     /**
@@ -1069,14 +1106,16 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (!shouldObjectModifyCascadeToParts(query)) {
             return;
         }
-
+        Object sourceObject = query.getObject();
+        Object attributeValue = getAttributeValueFromObject(sourceObject);
         // If objects are not instantiated that means they are not changed.
-        if (!isAttributeValueInstantiated(query.getObject())) {
+        if (!this.indirectionPolicy.objectIsInstantiated(attributeValue)) {
             return;
         }
 
         // Get the privately owned parts in the memory
-        Object object = getRealAttributeValueFromObject(query.getObject(), query.getSession());
+        AbstractSession session = query.getSession();
+        Object object = getRealAttributeValueFromAttribute(attributeValue, sourceObject, session);
         if (object != null) {
             ObjectChangeSet changeSet = query.getObjectChangeSet();
             if (changeSet != null) {
@@ -1094,8 +1133,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             } else {
                 UnitOfWorkChangeSet uowChangeSet = null;
                 // Get changeSet for referenced object.
-                if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
-                    uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
+                if (session.isUnitOfWork() && (((UnitOfWorkImpl)session).getUnitOfWorkChangeSet() != null)) {
+                    uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)session).getUnitOfWorkChangeSet();
                     changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(object);
                     // PERF: If the changeSet is null it must be existing, if it is not new, then cascading is not required.
                     if (changeSet == null || !changeSet.isNew()) {
@@ -1105,12 +1144,16 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
             // PERF: Only write dependent object if they are new.
             if ((!query.shouldCascadeOnlyDependentParts()) || (changeSet == null) || changeSet.isNew()) {
+                // PERF: Avoid query execution if already written.
+                if (session.getCommitManager().isCommitCompletedOrInPost(object)) {
+                    return;
+                }
                 WriteObjectQuery writeQuery = new WriteObjectQuery();
                 writeQuery.setIsExecutionClone(true);
                 writeQuery.setObject(object);
                 writeQuery.setObjectChangeSet(changeSet);
                 writeQuery.setCascadePolicy(query.getCascadePolicy());
-                query.getSession().executeQuery(writeQuery);
+                session.executeQuery(writeQuery);
             }
         }
     }
