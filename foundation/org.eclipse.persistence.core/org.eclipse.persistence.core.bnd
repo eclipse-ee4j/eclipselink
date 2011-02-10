@@ -1,4 +1,4 @@
-Export-Package: xsd, org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core
@@ -17,7 +17,18 @@ Include-Resource:\
  ${core.2.base.dir}/about.html,\
  ${core.2.base.dir}/readme.html,\
  ${core.2.base.dir}/license.html,\
- xsd=resource/xsd,\
+ org/eclipse/persistence/eclipselink_persistence_map_1.0.xsd=resource/org/eclipse/persistence/eclipselink_persistence_map_1.0.xsd,\
+ org/eclipse/persistence/eclipselink_persistence_map_1.1.xsd=resource/org/eclipse/persistence/eclipselink_persistence_map_1.1.xsd,\
+ org/eclipse/persistence/eclipselink_persistence_map_1.2.xsd=resource/org/eclipse/persistence/eclipselink_persistence_map_1.2.xsd,\
+ org/eclipse/persistence/eclipselink_persistence_map_2.0.xsd=resource/org/eclipse/persistence/eclipselink_persistence_map_2.0.xsd,\
+ org/eclipse/persistence/eclipselink_sessions_1.0.xsd=resource/org/eclipse/persistence/eclipselink_sessions_1.0.xsd,\
+ org/eclipse/persistence/eclipselink_sessions_1.1.xsd=resource/org/eclipse/persistence/eclipselink_sessions_1.1.xsd,\
+ org/eclipse/persistence/eclipselink_sessions_1.2.xsd=resource/org/eclipse/persistence/eclipselink_sessions_1.2.xsd,\
+ org/eclipse/persistence/eclipselink_sessions_2.0.xsd=resource/org/eclipse/persistence/eclipselink_sessions_2.0.xsd,\
+ org/eclipse/persistence/eclipselink_sessions_2.1.xsd=resource/org/eclipse/persistence/eclipselink_sessions_2.1.xsd,\
+ org/eclipse/persistence/object-persistence_1_0.xsd=resource/org/eclipse/persistence/object-persistence_1_0.xsd,\
+ org/eclipse/persistence/toplink-object-persistence_10_1_3.xsd=resource/org/eclipse/persistence/toplink-object-persistence_10_1_3.xsd,\
+ org/eclipse/persistence/toplink-object-persistence_11_1_1.xsd=resource/org/eclipse/persistence/toplink-object-persistence_11_1_1.xsd,\
  org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties=resource/org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties
 Import-Package:                                                           \
  javax.activation.*;resolution:=optional,                                 \

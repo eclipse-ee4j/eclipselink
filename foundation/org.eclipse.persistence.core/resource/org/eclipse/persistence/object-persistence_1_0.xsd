@@ -1,0 +1,515 @@
+<?xml version="1.0"?>
+<!--
+******************************************************************************
+ Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ This program and the accompanying materials are made available under the 
+ terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ which accompanies this distribution. 
+ The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ and the Eclipse Distribution License is available at 
+ http://www.eclipse.org/org/documents/edl-v10.php.
+
+ Contributors:
+     Oracle - initial API and implementation from Oracle TopLink
+*****************************************************************************/
+-->
+<!-- Object Persistence Mapping meta-data standard XML schema (Oracle Corporation) -->
+<xsd:schema targetNamespace="http://xmlns.oracle.com/ias/xsds/opm" xmlns:opm="http://xmlns.oracle.com/ias/xsds/opm" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xsd:element name="object-persistence" type="opm:object-persistence"/>
+	<xsd:complexType name="object-persistence">
+		<xsd:annotation>
+			<xsd:documentation>An object-persistence mapping module, a set of class-mapping-descriptors.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="name" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>A name for the model being mapped.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="class-mapping-descriptors" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The list of class mapping descriptors.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="class-mapping-descriptor" type="opm:class-mapping-descriptor" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Information of how a class is persisted to its data-store.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="class-mapping-descriptor">
+		<xsd:annotation>
+			<xsd:documentation>Information of how a class is persisted to its data-store.</xsd:documentation>
+			<xsd:documentation>This is an abstract definition to allow flexibility in the types of classes and datastores persisted, i.e. interfaces, abstract classes, aggregates, non-relational persistence.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="class" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>The name of the implementation class being persisted.  The class name must be full qualified with its package.</xsd:documentation>
+					<xsd:documentation>Example: <class>example.employee.implementation.Employee</class>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="alias" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Optionally an alias name can be given for the class.  The alias is a string that can be used to refer to the class in place of its implementation name, such as in querying.</xsd:documentation>
+					<xsd:documentation>Example: <alias>Employee</alias>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="primary-key" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The list of fields/columns that make up the primary key or unique identifier of the class.</xsd:documentation>
+					<xsd:documentation>This is used for caching, relationships, and for database operations.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="field" type="opm:field" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>The primary key field.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="read-only" type="xsd:boolean" default="false" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Defines if the class is read-only.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="properties" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Allow for user defined properties to be defined.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="property" type="opm:property" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>A user defined property.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="inheritance" type="opm:inheritance-policy" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Defines how the class is related in inheritance and how this inheritance is persisted.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="events" type="opm:event-policy" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Defines the persistent events for this class.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="querying" type="opm:query-policy" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The list of defined queries for the class.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="attribute-mappings" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The list of mappings that define how the class' attributes are persisted.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="attribute-mapping" type="opm:attribute-mapping" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Defines how a attribute is persisted. The attribute mapping definition is extendable to allow for different types of mappings.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="property">
+		<xsd:annotation>
+			<xsd:documentation>A user defined property.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="value" type="xsd:anyType"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string"/>
+	</xsd:complexType>
+	<xsd:complexType name="relational-class-mapping-descriptor">
+		<xsd:annotation>
+			<xsd:documentation>Defines a class mapping to a relational database table(s).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="opm:class-mapping-descriptor">
+				<xsd:sequence>
+					<xsd:element name="tables" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>The list of the tables the class is persisted to.  Typically a class is persisted to a single table, but multiple tables can be defined.</xsd:documentation>
+						</xsd:annotation>
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="table" type="opm:table" maxOccurs="unbounded">
+									<xsd:annotation>
+										<xsd:documentation>The list of tables that the class is persisted to.  This is typically a single table but can be multiple, or empty for inheritance or aggregated classes.</xsd:documentation>
+									</xsd:annotation>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="table">
+		<xsd:annotation>
+			<xsd:documentation>The list of tables that the class is persisted to.  This is typically a single table but can be multiple, or empty for inheritance or aggregated classes.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="name" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the table.  The name can be fully qualified with the schema, tablespace or link.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="inheritance-policy">
+		<xsd:annotation>
+			<xsd:documentation>Defines how the class is related in inheritance and how this inheritance is persisted.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="parent-class" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The name of the parent/superclass of the class being persisted.  The class name must be full qualified with its package.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="event-policy">
+		<xsd:annotation>
+			<xsd:documentation>Defines the persistent events for this class.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="event-listeners" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="event-listener" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>The fully qualified name of an event listener class that implements the descriptor event listener interface.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="query-policy">
+		<xsd:annotation>
+			<xsd:documentation>The list of defined queries and query properties for the class.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="queries" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="query" type="opm:query" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>A query definition for the class' instances.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="attribute-mapping">
+		<xsd:annotation>
+			<xsd:documentation>Defines how a attribute is persisted. The attribute mapping definition is extendable to allow for different types of mappings.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="attribute-name" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The name of the attribute.  This is the implementation class attribute name.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="read-only" type="xsd:boolean" default="false" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Specify if the attribute is read-only.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="get-method" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The name of the get method for the attribute.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="set-method" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The name of the set method for the attribute.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="properties" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Allow for user defined properties to be defined.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="property" type="opm:property" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>A user defined property.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="direct-mapping">
+		<xsd:annotation>
+			<xsd:documentation>Defines how a simple attribute is persisted.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="opm:attribute-mapping">
+				<xsd:sequence>
+					<xsd:element name="field" type="opm:field">
+						<xsd:annotation>
+							<xsd:documentation>The name and optionally the table of the field/column that the attribute is stored into.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="null-value" type="xsd:anySimpleType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optionally specify a value that null data values should be converted to.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="converter" type="opm:value-converter" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optionally specify how the data value should be converted to the object value.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="value-converter">
+		<xsd:annotation>
+			<xsd:documentation>Specifies how the data value should be converted to the object value.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:complexType>
+	<xsd:complexType name="relationship-mapping">
+		<xsd:annotation>
+			<xsd:documentation>Defines how a relationship between two classes is persisted.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="opm:attribute-mapping">
+				<xsd:sequence>
+					<xsd:element name="reference-class" type="xsd:string">
+						<xsd:annotation>
+							<xsd:documentation>The fully qualified class name of the target class of the relationship.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="private-owned" type="xsd:boolean" default="false" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Specify if the target objects are privately owned dependent objects.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+                                        <xsd:element name="cascade-persist" type="xsd:boolean" default="false" minOccurs="0">
+                                                <xsd:annotation>
+                                                        <xsd:documentation>Specify if the create operation should be cascaded to the referenced object.</xsd:documentation>
+                                                </xsd:annotation>
+                                        </xsd:element>
+                                        <xsd:element name="cascade-merge" type="xsd:boolean" default="false" minOccurs="0">
+                                                <xsd:annotation>
+                                                        <xsd:documentation>Specify if the create operation should be cascaded to the referenced object.</xsd:documentation>
+                                                </xsd:annotation>
+                                        </xsd:element>
+                                        <xsd:element name="cascade-refresh" type="xsd:boolean" default="false" minOccurs="0">
+                                                <xsd:annotation>
+                                                        <xsd:documentation>Specify if the refresh operation should be cascaded to the referenced object.</xsd:documentation>
+                                                </xsd:annotation>
+                                        </xsd:element>
+                                        <xsd:element name="cascade-remove" type="xsd:boolean" default="false" minOccurs="0">
+                                                <xsd:annotation>
+                                                        <xsd:documentation>Specify if the remove operation should be cascaded to the referenced object.</xsd:documentation>
+                                                </xsd:annotation>
+                                        </xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="one-to-one-mapping">
+		<xsd:annotation>
+			<xsd:documentation>Defines a 1-1 relationship from the source instance to the target instance.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="opm:relationship-mapping">
+				<xsd:sequence>
+					<xsd:element name="foreign-key" type="opm:foreign-key"  minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>The foreign key in the source class' table that defines the relationship.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="foreign-key-fields" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>The set of foreign key fields populated by this relationship in the source class' table.</xsd:documentation>
+						</xsd:annotation>
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="field" type="opm:field" minOccurs="0" maxOccurs="unbounded">
+									<xsd:annotation>
+										<xsd:documentation>The set of foreign key fields populated by this relationship in the source class' table.</xsd:documentation>
+									</xsd:annotation>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="one-to-many-mapping">
+		<xsd:annotation>
+			<xsd:documentation>Defines a 1-m relationship from the source instance to the target instances.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="opm:relationship-mapping">
+				<xsd:sequence>
+					<xsd:element name="target-foreign-key" type="opm:foreign-key">
+						<xsd:annotation>
+							<xsd:documentation>The foreign key in the target class' table that defines the relationship.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="many-to-many-mapping">
+		<xsd:annotation>
+			<xsd:documentation>Defines a m-m relationship from the source instance to the target instances.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="opm:relationship-mapping">
+				<xsd:sequence>
+					<xsd:element name="relation-table" type="xsd:string">
+						<xsd:annotation>
+							<xsd:documentation>The name of the relation table that stores the source/target primary keys.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="source-relation-foreign-key" type="opm:foreign-key">
+						<xsd:annotation>
+							<xsd:documentation>The foreign key from the relational table to the source class' table.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="target-relation-foreign-key" type="opm:foreign-key">
+						<xsd:annotation>
+							<xsd:documentation>The foreign key from the relational table to the target class' table.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="field">
+		<xsd:annotation>
+			<xsd:documentation>Defines a generic field concept, such as a database column.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="name" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the field.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="column">
+		<xsd:annotation>
+			<xsd:documentation>Defines a column in a relational database table.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="opm:field">
+				<xsd:attribute name="table" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>The name of the column's table. This table must be listed in the class' tables. If not specified the first table of the class will be used.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="foreign-key">
+		<xsd:annotation>
+			<xsd:documentation>The list of source/target field/column references relating a foreign key in one table to the primary or unique key in another table.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="field-reference" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The reference of a source table foreign key and a target table primary key.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="source-field" type="opm:field">
+							<xsd:annotation>
+								<xsd:documentation>The foreign key field/column name in the source table.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="target-field" type="opm:field">
+							<xsd:annotation>
+								<xsd:documentation>The primary or unique key field/column name in the target table.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="query">
+		<xsd:annotation>
+			<xsd:documentation>Defines a query specification for querying instances of the class.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="criteria" type="opm:criteria" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The selection criteria of the query.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="arguments" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The list of query arguments. The order of the argument must match the order of the argument value passed to the query.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="argument" type="opm:query-argument" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>The query argument.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the query.  This name can be used to reference and execute the query.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="criteria">
+		<xsd:annotation>
+			<xsd:documentation>Defines the filtering clause of a query.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:complexType>
+	<xsd:complexType name="query-argument">
+		<xsd:annotation>
+			<xsd:documentation>Defines a query argument.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="type" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The fully qualified class type name of the argument may be provided.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="value" type="xsd:anySimpleType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Optional constant value for the argument.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>The name of the query argument.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>

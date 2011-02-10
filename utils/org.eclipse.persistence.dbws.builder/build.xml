@@ -233,7 +233,7 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
         </jar>
     </target>
@@ -249,7 +249,7 @@
                 <include name="**/*.class"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
             <fileset dir="${src.dir}">
                 <include name="META-INF/services/**/*.*"/>

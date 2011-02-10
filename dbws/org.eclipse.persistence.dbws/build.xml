@@ -203,7 +203,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
         </jar>
         <jar jarfile="${dbws.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
@@ -228,7 +228,7 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
         </jar>
     </target>
@@ -265,7 +265,7 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
         </jar>
     </target>

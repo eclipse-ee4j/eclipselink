@@ -60,7 +60,7 @@ public class XMLProjectReader {
 
     /** Cache the creation and initialization of the EclipseLink XML mapping project. */
     protected static Project project;
-    public static final String SCHEMA_DIR = "xsd/";
+    public static final String SCHEMA_DIR = "org/eclipse/persistence/";
     public static final String OPM_SCHEMA = "object-persistence_1_0.xsd";
     public static final String ECLIPSELINK_SCHEMA = "eclipselink_persistence_map_2.0.xsd";
     public static final String ECLIPSELINK_1_0_SCHEMA = "eclipselink_persistence_map_1.0.xsd";    

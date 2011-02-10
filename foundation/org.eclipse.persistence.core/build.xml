@@ -243,7 +243,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
         </jar>
@@ -273,7 +273,7 @@
                 <exclude name="org/eclipse/persistence/Version.java"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
         </jar>
@@ -316,7 +316,7 @@
                 <exclude name="org/eclipse/persistence/Version.java"/>
             </fileset>
             <fileset dir="${resource.dir}">
-                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
         </jar>

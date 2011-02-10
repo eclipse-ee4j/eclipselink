@@ -1,5 +1,4 @@
-Export-Package: xsd;version="${version.string}";-noimport:=true,       \
- _dbws*;version="${version.string}";-noimport:=true,                   \
+Export-Package: _dbws*;version="${version.string}";-noimport:=true,\
  org.eclipse.persistence*;version="${version.string}";-noimport:=true,
 Bundle-ClassPath: .
 Implementation-Version: ${version.string}
@@ -7,22 +6,23 @@ Specification-Vendor: ${specification.vendor}
 Bundle-Name: ${specification.title}
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
-Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";visibility:=reexport, \
- org.eclipse.persistence.asm;bundle-version="${version.string}";visibility:=reexport, \
- org.eclipse.persistence.dbws;bundle-version="${version.string}";visibility:=reexport
+Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}",\
+ org.eclipse.persistence.dbws;bundle-version="${version.string}"
 Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}
 Bundle-Version: ${version.string}
-Include-Resource:                     \
- ${dbwsbldr.2.base.dir}/about.html,   \
- ${dbwsbldr.2.base.dir}/readme.html,  \
- ${dbwsbldr.2.base.dir}/license.html, \
- xsd=resource/xsd,                    \
+Include-Resource:\
+ ${dbwsbldr.2.base.dir}/about.html,\
+ ${dbwsbldr.2.base.dir}/readme.html,\
+ ${dbwsbldr.2.base.dir}/license.html,\
+ org/eclipse/persistence/tools/dbws=resource/org/eclipse/persistence/tools/dbws,\
  META-INF/services=src/META-INF/services
-Import-Package:                                                         \
- javax.*;resolution:=optional,                                          \
- org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
- org.eclipse.persistence.*;version="${version.string}",                 \
+Import-Package:\
+ javax.servlet;version="2.4",\
+ javax.wsdl.*;version="1.6.2",\
+ javax.*;resolution:=optional,\
+ org.eclipse.persistence.internal.libraries.antlr.*;resolution:=optional,\
+ org.eclipse.persistence.*;version="${version.string}",\
  org.w3c.*;resolution:=optional, *
 Specification-Version: ${release.version}
 

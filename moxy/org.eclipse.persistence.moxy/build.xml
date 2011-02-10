@@ -204,7 +204,7 @@
             </fileset>
             <fileset dir="${resource.dir}">
                 <include name="META-INF/services/*"/>
-                <include name="xsd/*"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
         </jar>
         <jar jarfile="${moxy.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
@@ -228,8 +228,8 @@
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
-            <fileset dir="${resource.dir}/xsd">
-                <include name="*"/>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
         </jar>
     </target>
@@ -265,8 +265,8 @@
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
-            <fileset dir="${resource.dir}/xsd">
-                <include name="*"/>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
         </jar>
     </target>

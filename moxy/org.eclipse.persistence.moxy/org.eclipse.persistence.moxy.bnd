@@ -13,7 +13,7 @@ Include-Resource:\
  ${moxy.2.base.dir}/about.html,\
  ${moxy.2.base.dir}/readme.html,\
  ${moxy.2.base.dir}/license.html,\
- xsd=resource/xsd
+  org/eclipse/persistence/jaxb=resource/org/eclipse/persistence/jaxb
 Import-Package:                                                         \
  javax.activation;resolution:=optional;version="1.1.0",                 \
  javax.mail.*;resolution:=optional,                                     \

@@ -90,7 +90,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
         InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_1.xsd");
         if(bindingsFileXSDInputStream == null){
-            bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("xsd/eclipselink_oxm_2_1.xsd");
+            bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/jaxb/eclipselink_oxm_2_1.xsd");
         }
         if(bindingsFileXSDInputStream == null){
             fail("ERROR LOADING eclipselink_oxm_2_1.xsd");
@@ -620,7 +620,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         try {
             InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_2.xsd");
             if (bindingsFileXSDInputStream == null){
-                bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("xsd/eclipselink_oxm_2_2.xsd");
+                bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/jaxb/eclipselink_oxm_2_2.xsd");
             }
             if (bindingsFileXSDInputStream == null){
                 fail("ERROR LOADING eclipselink_oxm_2_2.xsd");

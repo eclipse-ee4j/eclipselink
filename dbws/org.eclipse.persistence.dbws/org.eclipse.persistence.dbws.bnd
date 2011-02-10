@@ -10,10 +10,11 @@ Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";
 Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}
 Bundle-Version: ${version.string}
-Include-Resource:                \
- ${dbws.2.base.dir}/about.html,  \
- ${dbws.2.base.dir}/readme.html, \
- ${dbws.2.base.dir}/license.html
+Include-Resource:\
+ ${dbws.2.base.dir}/about.html,\
+ ${dbws.2.base.dir}/readme.html,\
+ ${dbws.2.base.dir}/license.html,\
+ org/eclipse/persistence/dbws=resource/org/eclipse/persistence/dbws
 Import-Package:                                                         \
  javax.activation.*;resolution:=optional,                               \
  javax.servlet.*,                                                       \
