@@ -168,7 +168,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
      */
     public boolean isEasilyInstantiated() {
         return this.isInstantiated || ((this.wrappedValueHolder != null)
-                && (!(this.wrappedValueHolder instanceof DatabaseValueHolder)) || ((DatabaseValueHolder)this.wrappedValueHolder).isEasilyInstantiated());
+                && (!(this.wrappedValueHolder instanceof DatabaseValueHolder) || ((DatabaseValueHolder)this.wrappedValueHolder).isEasilyInstantiated()));
     }
 
     /**
