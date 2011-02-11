@@ -146,9 +146,7 @@
             <fileset dir="${eclipselink.jpa.osgi.test}/${classes.dir}">
                 <include name="org/eclipse/persistence/testing/**"/>
             </fileset>
-            <fileset dir="${eclipselink.jpa.test}">
-                    <include name="*.jar"/>
-            </fileset>
+            <fileset dir="${eclipselink.jpa.test}" includes="eclipselink-advanced-field-access-model.jar,eclipselink-tests.jar"/>
             <fileset file="${junit.lib}"/>
             <fileset file="${jdbc.driver.jar}"/>
         </copy>
@@ -203,9 +201,6 @@
 
     <!-- Repackages JPA persistent unit test jars. -->
     <target name="repackage">
-        <ant antfile="${eclipselink.jpa.test}/build.xml" dir="${eclipselink.jpa.test}" target="package-annotation">
-            <property name="is.osgi" value="true"/>
-        </ant>
         <ant antfile="${eclipselink.jpa.test}/build.xml" dir="${eclipselink.jpa.test}" target="package-jpa-advanced-field-access">
             <property name="is.osgi" value="true"/>
         </ant>
@@ -240,10 +235,7 @@
 
     <target name="test-osgi-srg" depends="clean-run">
         <antcall target="run-test" inheritRefs="true">
-            <param name="test.class" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
-        </antcall>
-        <antcall target="run-test" inheritRefs="true">
-            <param name="test.class" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
+            <param name="test.class" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.OSGiTestSuite"/>
         </antcall>
         <junitreport todir="${eclipselink.jpa.osgi.test}/${report.dir}">
             <fileset dir="${eclipselink.jpa.osgi.test}/${report.dir}">
