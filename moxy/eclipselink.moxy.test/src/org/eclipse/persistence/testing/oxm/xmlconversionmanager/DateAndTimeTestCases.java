@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -2803,6 +2804,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_0MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975-02-21T07:47:15.0";
         String test = (String)xcm.convertObject(calendar, String.class);
         this.assertEquals(control, test);
@@ -2812,6 +2814,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_1MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975-02-21T07:47:15.001";
         String test = (String)xcm.convertObject(calendar, String.class);
         this.assertEquals(control, test);
@@ -2821,6 +2824,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_10MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975-02-21T07:47:15.01";
         String test = (String)xcm.convertObject(calendar, String.class);
         this.assertEquals(control, test);
@@ -2830,6 +2834,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.setTimeInMillis(CONTROL_DATE_TIME_100MS);
+        calendar.clear(Calendar.ZONE_OFFSET);
         String control = "1975-02-21T07:47:15.1";
         String test = (String)xcm.convertObject(calendar, String.class);
         this.assertEquals(control, test);
@@ -3578,6 +3583,23 @@ public class DateAndTimeTestCases extends OXTestCase {
         Calendar cal = xcm.convertStringToCalendar(controlString, XMLConstants.DATE_QNAME);
         String s = xcm.convertObject(cal, String.class).toString();
         assertEquals(controlString, s);
+    }
+
+    public void testMultiConversion() throws Exception {
+        // Test XMLGregorianCalendar -> xml -> Calendar -> xml -> XMLGregorianCalendar
+        DatatypeFactory factory = DatatypeFactory.newInstance();
+
+        XMLGregorianCalendar xgc1 = factory.newXMLGregorianCalendar(6, 5, 1, 10, 0, 0, 0, 0);
+
+        String xml1 = xcm.convertObject(xgc1, String.class).toString();
+
+        Calendar c = (Calendar) xcm.convertObject(xml1, Calendar.class);
+
+        String xml2 = xcm.convertObject(c, String.class).toString();
+
+        XMLGregorianCalendar xgc2 = (XMLGregorianCalendar) xcm.convertObject(xml2, XMLGregorianCalendar.class);
+
+        assertTrue(xgc1.compare(xgc2) == DatatypeConstants.EQUAL);
     }
 
 }

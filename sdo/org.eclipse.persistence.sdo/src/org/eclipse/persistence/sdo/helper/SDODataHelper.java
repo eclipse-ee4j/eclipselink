@@ -186,7 +186,14 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.DATE_TIME_QNAME);
+
+        // Temporarily turn off TZ qualification
+        boolean wasTimezoneQualified = getXMLConversionManager().isTimeZoneQualified();
+        getXMLConversionManager().setTimeZoneQualified(false);
+        String s = getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.DATE_TIME_QNAME);
+        getXMLConversionManager().setTimeZoneQualified(wasTimezoneQualified);
+
+        return s;
     }
 
     /**
@@ -212,7 +219,14 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_DAY_QNAME);
+
+        // Temporarily turn off TZ qualification
+        boolean wasTimezoneQualified = getXMLConversionManager().isTimeZoneQualified();
+        getXMLConversionManager().setTimeZoneQualified(false);
+        String s = getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_DAY_QNAME);
+        getXMLConversionManager().setTimeZoneQualified(wasTimezoneQualified);
+
+        return s;
     }
 
     /**
@@ -282,7 +296,13 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_MONTH_QNAME);
+
+        // Temporarily turn off TZ qualification
+        boolean wasTimezoneQualified = getXMLConversionManager().isTimeZoneQualified();
+        getXMLConversionManager().setTimeZoneQualified(false);
+        String s = getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_MONTH_QNAME);
+        getXMLConversionManager().setTimeZoneQualified(wasTimezoneQualified);
+        return s;
     }
 
     /**
@@ -386,7 +406,13 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.TIME_QNAME);
+
+        // Temporarily turn off TZ qualification
+        boolean wasTimezoneQualified = getXMLConversionManager().isTimeZoneQualified();
+        getXMLConversionManager().setTimeZoneQualified(false);
+        String s = getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.TIME_QNAME);
+        getXMLConversionManager().setTimeZoneQualified(wasTimezoneQualified);
+        return s;
     }
 
     /**
@@ -412,7 +438,13 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_YEAR_QNAME);
+
+        // Temporarily turn off TZ qualification
+        boolean wasTimezoneQualified = getXMLConversionManager().isTimeZoneQualified();
+        getXMLConversionManager().setTimeZoneQualified(false);
+        String s = getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_YEAR_QNAME);
+        getXMLConversionManager().setTimeZoneQualified(wasTimezoneQualified);
+        return s;
     }
 
     /**
@@ -464,7 +496,13 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_YEAR_MONTH_QNAME);
+
+        // Temporarily turn off TZ qualification
+        boolean wasTimezoneQualified = getXMLConversionManager().isTimeZoneQualified();
+        getXMLConversionManager().setTimeZoneQualified(false);
+        String s = getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_YEAR_MONTH_QNAME);
+        getXMLConversionManager().setTimeZoneQualified(wasTimezoneQualified);
+        return s;
     }
 
     /**
@@ -478,7 +516,13 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.DATE_QNAME);
+
+        // Temporarily turn off TZ qualification
+        boolean wasTimezoneQualified = getXMLConversionManager().isTimeZoneQualified();
+        getXMLConversionManager().setTimeZoneQualified(false);
+        String s = getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.DATE_QNAME);
+        getXMLConversionManager().setTimeZoneQualified(wasTimezoneQualified);
+        return s;
     }
 
     /**

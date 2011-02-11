@@ -489,6 +489,16 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return super.convertObjectToCalendar(sourceObject);
     }
 
+    @Override
+    protected java.sql.Date convertObjectToDate(Object sourceObject) throws ConversionException {
+        Object o = sourceObject;
+        if (sourceObject instanceof Calendar) {
+            // Clone the calendar, because calling get() methods
+            // later on will alter the original calendar
+            o = ((Calendar) sourceObject).clone();
+        }
+        return super.convertObjectToDate(o);
+    }
 
     /**
      * Convert the object to an instance of Double.
@@ -929,16 +939,20 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     public String stringFromCalendar(Calendar sourceCalendar, QName schemaTypeQName) {
+        // Clone the calendar, because calling get() methods will
+        // alter the original calendar
         Calendar cal = (Calendar) sourceCalendar.clone();
+
         XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
         // use the timezone info on source calendar, if any
-        if (sourceCalendar.isSet(Calendar.ZONE_OFFSET)) {
+        if (sourceCalendar.isSet(Calendar.ZONE_OFFSET) || isTimeZoneQualified()) {
             if(sourceCalendar.isSet(Calendar.DST_OFFSET)) {
                 xgc.setTimezone((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 60000);
             } else {
                 xgc.setTimezone((cal.get(Calendar.ZONE_OFFSET)) / 60000);
             }
         }
+
         // gDay
         if (XMLConstants.G_DAY_QNAME.equals(schemaTypeQName)) {
             xgc.setDay(cal.get(Calendar.DATE));
@@ -956,34 +970,34 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             // --MM--
             if (xmlFormat.length() == 6) {
-            	if (trimGMonth()) {
-            		return pre;
-            	}
+                if (trimGMonth()) {
+                    return pre;
+                }
                 return xmlFormat;
             }
 
             // --MM--Z or --MM--+03:00
             if (xmlFormat.length() == 7 || xmlFormat.length() == 12) {
-            	if (trimGMonth()) {
-            		return pre + xmlFormat.substring(6);
-            	}
+                if (trimGMonth()) {
+                    return pre + xmlFormat.substring(6);
+                }
                 return xmlFormat;
             }
 
             // --MM
             if (xmlFormat.length() == 4) {
-            	if (trimGMonth()) {
-            		return xmlFormat;
-            	}
+                if (trimGMonth()) {
+                    return xmlFormat;
+                }
                 post = "--";
             }
 
             // --MMZ or --MM+03:00
             if (xmlFormat.length() == 5 || xmlFormat.length() == 10) {
-            	if (trimGMonth()) {
-            		return xmlFormat;
-            	}
-            	post = "--" + xmlFormat.substring(4);
+                if (trimGMonth()) {
+                    return xmlFormat;
+                }
+                post = "--" + xmlFormat.substring(4);
             }
 
             return pre + post;
@@ -1091,7 +1105,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         } else if (!(sourceCalendar.isSet(Calendar.YEAR) || sourceCalendar.isSet(Calendar.MONTH) || sourceCalendar.isSet(Calendar.DATE))) {
             return stringFromCalendar(sourceCalendar, XMLConstants.TIME_QNAME);
         } else {
-            return stringFromDate(sourceCalendar.getTime());
+            return stringFromCalendar(sourceCalendar, XMLConstants.DATE_TIME_QNAME);
         }
     }
 
@@ -1113,8 +1127,13 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             tz = xgc.getTimeZone(xgc.getTimezone());
         }
 
+
         Calendar cal = Calendar.getInstance(tz, Locale.getDefault());
         cal.clear();
+
+        if (xgc.getTimezone() != DatatypeConstants.FIELD_UNDEFINED) {
+            cal.set(Calendar.ZONE_OFFSET, xgc.getTimezone() * 60000);
+        }
 
         BigInteger year = xgc.getEonAndYear();
         if (year != null) {
@@ -1293,7 +1312,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     private String stringFromSQLDate(java.sql.Date sourceDate) {
-
         XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
 
         GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1710,8 +1728,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return appendTimeZone(string, sourceDate);
     }
 
-private String stringFromXMLGregorianCalendar(XMLGregorianCalendar
-cal, QName schemaTypeQName) {
+    private String stringFromXMLGregorianCalendar(XMLGregorianCalendar cal, QName schemaTypeQName) {
         GregorianCalendar gCal = cal.toGregorianCalendar();
         if(cal.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
             gCal.clear(Calendar.ZONE_OFFSET);
