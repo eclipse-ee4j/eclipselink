@@ -489,7 +489,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return super.convertObjectToCalendar(sourceObject);
     }
 
-    @Override
     protected java.sql.Date convertObjectToDate(Object sourceObject) throws ConversionException {
         Object o = sourceObject;
         if (sourceObject instanceof Calendar) {
