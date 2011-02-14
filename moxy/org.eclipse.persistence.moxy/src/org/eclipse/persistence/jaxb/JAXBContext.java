@@ -632,4 +632,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public <T> T createByXPath(Object parentObject, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
         return this.xmlContext.createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }
+    
+    /**
+     * Returns true if any Object in this context contains a property annotated with an XmlAttachmentRef
+     * annotation.
+     * @return
+     */
+    public boolean hasSwaRef() {
+        return this.generator.getAnnotationsProcessor().hasSwaRef();
+    }
 }

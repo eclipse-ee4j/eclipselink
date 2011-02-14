@@ -208,10 +208,13 @@ public class AnnotationsProcessor {
     private JAXBMetadataLogger logger;
 
     private boolean isDefaultNamespaceAllowed;
+    
+    private boolean hasSwaRef;
 
     public AnnotationsProcessor(Helper helper) {
         this.helper = helper;
         isDefaultNamespaceAllowed = true;
+        hasSwaRef = false;
     }
 
     /**
@@ -252,6 +255,9 @@ public class AnnotationsProcessor {
                                     xmlMimeType = javaAnnotation.value();
                                 } else if (nextAnnotation instanceof XmlAttachmentRef) {
                                     xmlAttachmentRef = true;
+                                    if(!this.hasSwaRef) {
+                                        this.hasSwaRef = true;
+                                    }
                                 }
                             }
                         }
@@ -672,6 +678,9 @@ public class AnnotationsProcessor {
                     if (!property.isXmlValue() && !property.isAttribute() && !property.isInverseReference() && !property.isTransient()) {
                         throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
                     }
+                }
+                if(property.isSwaAttachmentRef() && !this.hasSwaRef) {
+                    this.hasSwaRef = true;
                 }
                 // validate XmlIDREF
                 if (property.isXmlIdRef()) {
@@ -1309,7 +1318,7 @@ public class AnnotationsProcessor {
             XmlElement element = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
             property.setIsRequired(element.required());
             property.setNillable(element.nillable());
-            if (element.type() != XmlElement.DEFAULT.class) {
+            if (element.type() != XmlElement.DEFAULT.class && !(property.isSwaAttachmentRef())) {
                 property.setOriginalType(property.getType());
                 if (isCollectionType(property.getType())) {
                     property.setGenericType(helper.getJavaClass(element.type()));
@@ -2000,13 +2009,14 @@ public class AnnotationsProcessor {
         }
         
         processXmlJavaTypeAdapter(property, info, cls);
-        processXmlElement(property, info);
-
-        JavaClass ptype = property.getActualType();
-        if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER)) {
+        if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(property.getActualType(), JAVAX_ACTIVATION_DATAHANDLER)) {
             property.setIsSwaAttachmentRef(true);
             property.setSchemaType(XMLConstants.SWA_REF_QNAME);
-        } else if (isMtomAttachment(property)) {
+        }
+        processXmlElement(property, info);
+
+        //JavaClass ptype = property.getActualType();
+        if (!(property.isSwaAttachmentRef()) && isMtomAttachment(property)) {
             property.setIsMtomAttachment(true);
             property.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
         }
@@ -4040,5 +4050,13 @@ public class AnnotationsProcessor {
     public boolean isMtomAttachment(Property property) {
         JavaClass ptype = property.getActualType();
         return (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART));
+    }
+    
+    public boolean hasSwaRef() {
+        return this.hasSwaRef;
+    }
+    
+    public void setHasSwaRef(boolean swaRef) {
+        this.hasSwaRef = swaRef;
     }
 }
