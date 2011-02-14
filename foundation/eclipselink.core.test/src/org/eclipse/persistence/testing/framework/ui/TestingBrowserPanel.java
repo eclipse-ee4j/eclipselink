@@ -98,15 +98,6 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             getTestsTree().invalidate();
             getTestsTree().validate();
             getTestsTree().repaint();
-        } else {
-            if (getSelectedEntity() instanceof TestModel) {
-                Thread thread = new Thread() {
-                        public void run() {
-                            saveLoadBuild();
-                        }
-                    };
-                thread.start();
-            }
         }
         // Reset the session inspectors session as test model reset builds clean session.
         getSessionInspectorPanel().setSession(getExecutor().getSession());
@@ -1242,18 +1233,9 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             return;
         }
         showBusyCursor();
-        LoadBuildSystem.loadBuild.userName = getSelectedEntity().getName();
-        if (getExecutor().getSession().getDatasourceLogin() instanceof DatabaseLogin) {
-            if(getExecutor().getSession().getLogin().getConnector() instanceof DefaultConnector) {
-                LoadBuildSystem.loadBuild.loginChoice = getExecutor().getSession().getLogin().getConnectionString();
-            }
-            LoadBuildSystem.loadBuild.databaseLogin = getSessionInspectorPanel().getSession().getProject().getLogin();
-        }
-     /** TODO: Save these results to a DB available to Eclipse
         LoadBuildSystem loadBuildSystem = new LoadBuildSystem();
         loadBuildSystem.saveLoadBuild();
         showNormalCursor();
-        */
     }
 
     /**

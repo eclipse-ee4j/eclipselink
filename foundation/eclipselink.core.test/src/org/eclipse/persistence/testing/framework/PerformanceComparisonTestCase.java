@@ -170,9 +170,9 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
             for (int index = 0; index < REPEATS; index++) {
                 long startTime, endTime;
                 try {
-                    performanceTest.startTest();
                     System.gc();
                     Thread.sleep(1000);
+                    performanceTest.startTest();
                     performanceTest.resetIterations();
                     startTime = System.currentTimeMillis();
                     endTime = startTime;

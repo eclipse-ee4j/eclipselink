@@ -20,9 +20,13 @@ import org.eclipse.persistence.testing.framework.*;
  */
 public class HashMapPutConcurrentTest extends ConcurrentPerformanceComparisonTest {
     protected HashMap map;
+    protected Integer[] keys = new Integer[100];
     
     public HashMapPutConcurrentTest() {
         setDescription("Measure the concurrency of HashMap.");
+        for (int index = 0; index < 100; index ++) {
+            this.keys[index] = new Integer(index);
+        }
     }
     
     public void setup() {
@@ -34,6 +38,8 @@ public class HashMapPutConcurrentTest extends ConcurrentPerformanceComparisonTes
     }
     
     public void runTask() throws Exception {
-        Integer value = (Integer)this.map.put(new Integer(5), new Integer(5));
+        for (int index = 0; index < 100; index ++) {
+            Integer value = (Integer)this.map.put(this.keys[index],this.keys[index]);
+        }
     }
 }

@@ -193,8 +193,8 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
      * until it is suspended.
      */
     protected class WorkerThread extends Thread {
-        protected boolean isSuspended = true;
-        protected boolean isDead = false;
+        protected volatile boolean isSuspended = true;
+        protected volatile boolean isDead = false;
 
         /**
          * After the next completion of the run method, suspend execution.

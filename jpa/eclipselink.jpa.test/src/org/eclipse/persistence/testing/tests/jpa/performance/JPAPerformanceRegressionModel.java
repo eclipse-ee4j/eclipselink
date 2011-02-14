@@ -281,6 +281,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
             } catch (Exception ignore) {}
             properties.put("eclipselink.jdbc.driver", "org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver");
             properties.put("eclipselink.jdbc.url", "emulate:" + getSession().getLogin().getConnectionString());
+            LoadBuildSystem.loadBuild.loginChoice = "emulate:" + getSession().getLogin().getConnectionString();
         }
 
         //properties.put("eclipselink.jdbc.batch-writing", "JDBC");
