@@ -812,7 +812,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             Date date = convertStringToDate((String) sourceObject, schemaTypeQName);
             return new java.sql.Date((date.getTime() / 1000) * 1000);
         }
-        return super.convertObjectToDate(sourceObject);
+        return convertObjectToDate(sourceObject);
     }
 
     protected Time convertObjectToSQLTime(Object sourceObject, QName schemaTypeQName) {

@@ -43,16 +43,20 @@ public class MultipleMappingPerFieldTestCases extends ExternalizedMetadataTestCa
     private final static int DAY = 12;
     private final static int MONTH = 4;
     private final static int YEAR = 1997;
-    private static Calendar CALENDAR = new GregorianCalendar(YEAR, MONTH, DAY);
     private JAXBContext jCtx;
-    
+
+    private Calendar calendar;
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public MultipleMappingPerFieldTestCases(String name) {
         super(name);
+
+        calendar = new GregorianCalendar(YEAR, MONTH, DAY);
+        calendar.clear(Calendar.ZONE_OFFSET);
     }
 
     /**
@@ -62,7 +66,7 @@ public class MultipleMappingPerFieldTestCases extends ExternalizedMetadataTestCa
         CustomQuoteRequest ctrlObj = new CustomQuoteRequest();
         ctrlObj.requestId = "100";
         ctrlObj.currencyPairCode = "CAD";
-        ctrlObj.date = CALENDAR;
+        ctrlObj.date = calendar;
         return ctrlObj;
     }
     
