@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink Hermes Parser
+Bundle-SymbolicName: org.eclipse.persistence.utils.jpa.query
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: javax.persistence;version="2.0.3",
+ org.eclipse.persistence.expressions;version="2.3.0.qualifier",
+ org.eclipse.persistence.internal.expressions;version="2.3.0.qualifier",
+ org.eclipse.persistence.queries;version="2.3.0.qualifier"
