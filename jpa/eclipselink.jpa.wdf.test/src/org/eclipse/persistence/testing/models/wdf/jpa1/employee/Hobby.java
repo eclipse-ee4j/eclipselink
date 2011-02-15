@@ -20,11 +20,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "TMP_HOBBY", uniqueConstraints = @UniqueConstraint(columnNames = "Hutzliputz"))
-// intentionally broken unique constraint
+@Table(name = "TMP_HOBBY")
 @TableGenerator(name = "StringIdGenerator", table = "TMP_STRING_GEN", pkColumnName = "BEAN_NAME", valueColumnName = "MAX_ID")
 public class Hobby {
     private String id;
