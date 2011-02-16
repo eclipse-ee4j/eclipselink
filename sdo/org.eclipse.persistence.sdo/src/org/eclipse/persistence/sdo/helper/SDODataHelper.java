@@ -315,7 +315,13 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return getXMLConversionManager().stringFromDate(date, XMLConstants.G_MONTH_QNAME);
+        
+        // Temporarily turn off TZ qualification
+        boolean wasTimezoneQualified = getXMLConversionManager().isTimeZoneQualified();
+        getXMLConversionManager().setTimeZoneQualified(false);
+        String s = getXMLConversionManager().stringFromDate(date, XMLConstants.G_MONTH_QNAME);
+        getXMLConversionManager().setTimeZoneQualified(wasTimezoneQualified);
+        return s;
     }
 
     /**

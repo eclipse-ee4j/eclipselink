@@ -1254,15 +1254,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
 
-            String xmlFormat = xgc.toXMLFormat();
-            // GMonths have different representations depending on JDK version:
-            // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
-            // Default support is for 1.6, so if string length == 6, chop off the last two characters
-            if (trimGMonth() && xmlFormat.length() == 6) {
-                xmlFormat = xmlFormat.substring(0, 4);
-            }
-
-            return xmlFormat;
+            return stringFromXMLGregorianCalendar(xgc, schemaType);
         }
         if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1381,16 +1373,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
 
-            String xmlFormat = xgc.toXMLFormat();
-            // GMonths have different representations depending on JDK version:
-            // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
-            // Default support is for 1.6, so if string length == 6, chop off the last two characters
-            if (trimGMonth() && xmlFormat.length() == 6) {
-                xmlFormat = xmlFormat.substring(0, 4);
-            }
-
-            return xmlFormat;
-
+            return stringFromXMLGregorianCalendar(xgc, schemaType);
         } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1501,17 +1484,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
 
-
-            String xmlFormat = xgc.toXMLFormat();
-            // GMonths have different representations depending on JDK version:
-            // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
-            // Default support is for 1.6, so if string length == 6, chop off the last two characters
-            if (trimGMonth() && xmlFormat.length() == 6) {
-                xmlFormat = xmlFormat.substring(0, 4);
-            }
-
-            return xmlFormat;
-
+            return stringFromXMLGregorianCalendar(xgc, schemaType);
         } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1652,15 +1625,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
 
-            String xmlFormat = xgc.toXMLFormat();
-            // GMonths have different representations depending on JDK version:
-            // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
-            // Default support is for 1.6, so if string length == 6, chop off the last two characters
-            if (trimGMonth() && xmlFormat.length() == 6) {
-                xmlFormat = xmlFormat.substring(0, 4);
-            }
-
-            return xmlFormat;
+            return stringFromXMLGregorianCalendar(xgc, schemaType);
         }
         if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
 

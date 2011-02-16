@@ -316,7 +316,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testUtilDateToString_gMonth() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_0MS);
-        String control = "--02";
+        String control = "--02--";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);
     }
@@ -957,7 +957,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlDateToString_gMonth() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_0MS);
-        String control = "--02";
+        String control = "--02--";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);
     }
@@ -1564,7 +1564,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlTimeToString_gMonth() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "--02";
+        String control = "--02--";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);
     }
@@ -2256,7 +2256,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testTimestampToString_gMonth() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
-        String control = "--02";
+        String control = "--02--";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.G_MONTH_QNAME);
         this.assertEquals(control, test);
     }
@@ -3600,6 +3600,13 @@ public class DateAndTimeTestCases extends OXTestCase {
         XMLGregorianCalendar xgc2 = (XMLGregorianCalendar) xcm.convertObject(xml2, XMLGregorianCalendar.class);
 
         assertTrue(xgc1.compare(xgc2) == DatatypeConstants.EQUAL);
+    }
+
+    public void testGMonthTimeZone() throws Exception {
+        String controlString = "--05--Z";
+        XMLGregorianCalendar cal = xcm.convertStringToXMLGregorianCalendar(controlString, XMLConstants.G_MONTH_QNAME);
+        String s = xcm.convertObject(cal, String.class, XMLConstants.G_MONTH_QNAME).toString();
+        assertEquals(controlString, s);
     }
 
 }
