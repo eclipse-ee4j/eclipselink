@@ -30,6 +30,10 @@ public class CacheableTableCreator extends TableCreator {
         addTableDefinition(buildCACHEABLE_PROTECTED_ENTITYTable());
         addTableDefinition(buildCACHEABLE_FORCE_PROTECTED_ENTITYTable());
         addTableDefinition(buildCACHEABLE_FORCE_PROTECTED_ENTITY_WITH_COMPOSITTable());
+        addTableDefinition(buildCACHEABLE_RELATIONSHIPS_ENTITYTable());
+        addTableDefinition(buildCACHEABLEREL_PROTECTEDTable());
+        addTableDefinition(buildCACHEABLEREL_FALSEDETAILTable());
+        addTableDefinition(buildCACHEABLEREL_PROTECTEMBEDDABLETable());
     }
     
     public static TableDefinition buildCACHEABLE_FALSE_ENTITYTable() {
@@ -55,6 +59,15 @@ public class CacheableTableCreator extends TableCreator {
         protectedFK.setUnique(false);
         protectedFK.setIsIdentity(false);
         table.addField(protectedFK);
+        FieldDefinition cacheableFSFK = new FieldDefinition();
+        cacheableFSFK.setName("SHARED_ISOLATED_REL_ID");
+        cacheableFSFK.setTypeName("NUMERIC");
+        cacheableFSFK.setSize(15);
+        cacheableFSFK.setShouldAllowNull(true);
+        cacheableFSFK.setIsPrimaryKey(false);
+        cacheableFSFK.setUnique(false);
+        cacheableFSFK.setIsIdentity(false);
+        table.addField(cacheableFSFK);
     
         return table;
     }
@@ -343,6 +356,145 @@ public class CacheableTableCreator extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
+    
+        return table;
+    }
+	public static TableDefinition buildCACHEABLE_RELATIONSHIPS_ENTITYTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CACHEREL");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(true);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(75);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("FORCE_PROTECTED_FK");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false );
+        field.setIsPrimaryKey(true );
+        field.setUnique(false );
+        field.setIsIdentity(false );
+        field.setForeignKeyFieldName("JPA_CACHEABLE_FORCE_PROTECTED.ID");
+        table.addField(field);
+    
+        return table;
+    }
+
+    public TableDefinition buildCACHEABLEREL_PROTECTEDTable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("SHARED_PROTECTED_REL");
+
+        // SECTION: FIELD
+        FieldDefinition field = new FieldDefinition();
+        field.setName("CACHBLE_REL_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false );
+        field.setIsPrimaryKey(true );
+        field.setUnique(false);
+        field.setIsIdentity(false );
+        field.setForeignKeyFieldName("JPA_CACHEREL.ID");
+        table.addField(field);
+    
+        // SECTION: FIELD
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("CACHBLE_PRT_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false );
+        field1.setIsPrimaryKey(true );
+        field1.setUnique(false );
+        field1.setIsIdentity(false );
+        field1.setForeignKeyFieldName("JPA_CACHEABLE_PROTECTED.ID");
+        table.addField(field1);
+
+        return table;
+    }
+
+    public TableDefinition buildCACHEABLEREL_FALSEDETAILTable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("SHARED_FALSEDETAIL_REL");
+
+        // SECTION: FIELD
+        FieldDefinition field = new FieldDefinition();
+        field.setName("CACHBLE_REL_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false );
+        field.setIsPrimaryKey(true );
+        field.setUnique(false);
+        field.setIsIdentity(false );
+        field.setForeignKeyFieldName("JPA_CACHEREL.ID");
+        table.addField(field);
+    
+        // SECTION: FIELD
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("CACHBLE_FLDETAIL_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false );
+        field1.setIsPrimaryKey(true );
+        field1.setUnique(false );
+        field1.setIsIdentity(false );
+        field1.setForeignKeyFieldName("JPA_CACHEABLE_FALSE_DETAIL.ID");
+        table.addField(field1);
+
+        return table;
+    }
+
+    public static TableDefinition buildCACHEABLEREL_PROTECTEMBEDDABLETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CACHREL_PROTECTEMB");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("JPA_CACHEREL.ID");
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("EMB_NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(75);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+
+        FieldDefinition falseFK = new FieldDefinition();
+        falseFK.setName("PROTECTED_FK");
+        falseFK.setTypeName("NUMERIC");
+        falseFK.setSize(15);
+        falseFK.setShouldAllowNull(true);
+        falseFK.setIsPrimaryKey(false);
+        falseFK.setUnique(false);
+        falseFK.setIsIdentity(false);
+        table.addField(falseFK);
     
         return table;
     }
