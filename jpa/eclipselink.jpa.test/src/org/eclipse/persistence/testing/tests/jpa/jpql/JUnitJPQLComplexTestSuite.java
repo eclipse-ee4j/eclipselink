@@ -3246,7 +3246,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e where e.firstName in (UPPER('L'), LOWER('Z'))");
         query.getResultList();
-        query = em.createQuery("Select e from Employee e where e.firstName in ((Select e2.firstName from Employee e2 where e = e2), (Select e2.firstName from Employee e3 where e = e3))");
+        query = em.createQuery("Select e from Employee e where e.firstName in ((Select e2.firstName from Employee e2 where e = e2), (Select e3.firstName from Employee e3 where e = e3))");
         query.getResultList();
         query = em.createQuery("Select e from Employee e where e.firstName in :arg");
         query.setParameter("arg", Arrays.asList(new int[]{1,2}));
