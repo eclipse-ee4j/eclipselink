@@ -336,6 +336,8 @@ public class OrderListTestModel extends TestModel {
                         addTest(new BreakOrderExceptionTest_AggregateCollection());
                     }
                 } else if(orderCorrectionType == OrderCorrectionType.READ_WRITE) {
+                    addTest(new BreakOrderCorrectionAndRemoveTest(false));
+                    addTest(new BreakOrderCorrectionAndRemoveTest(true));
                     addTest(new BreakOrderCorrectionTest(false));
                     addTest(new BreakOrderCorrectionTest(true));
                 }
@@ -1884,6 +1886,58 @@ public class OrderListTestModel extends TestModel {
         }
         public void test() {
             breakPhonesOrder();
+        }
+    }
+
+    /*
+     * bug 331144: Removing from a collection that is broken results in an 
+     * ArrayIndexOutOfBoundsException when the collection is fixed.
+     */
+    class BreakOrderCorrectionAndRemoveTest extends BreakOrderCorrectionTest {
+        BreakOrderCorrectionAndRemoveTest(boolean shoulReadManagerThroughUow) {
+            super(shoulReadManagerThroughUow);
+        }
+        public void test() {
+            breakOrder();
+
+            // clear cache to force reading back the objects
+            getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            if(!shoulReadManagerThroughUow) {
+                // read in the object with broken order in the db
+                manager = (Employee)getSession().readObject(manager);
+                if(isInstantiated(manager)) {
+                    // verify that all attribute values are marked as having broken order
+                    errorMsg = this.verifyIsListOrderBrokenInDb(manager, true);
+                    if(errorMsg.length() > 0) {
+                        errorMsg = "manager in test: " + errorMsg;
+                        throw new TestErrorException(errorMsg);
+                    }
+                }
+            }
+
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            if(shoulReadManagerThroughUow) {
+                managerClone = (Employee)uow.readObject(manager);            
+            } else {
+                managerClone = (Employee)uow.registerObject(manager);
+            }
+            // remove element 1
+            List list1 = removeFrom(managerClone, 1);
+            
+            // verify that all attribute values are marked as having broken order,
+            // at this point they should be instantiated
+            errorMsg = this.verifyIsListOrderBrokenInDb(managerClone, true);
+            if(errorMsg.length() > 0) {
+                errorMsg = "managerClone in test: " + errorMsg;
+                uow.release();
+                throw new TestErrorException(errorMsg);
+            }
+
+            try {
+                uow.commit();
+            } catch (ArrayIndexOutOfBoundsException exception){
+                throw new TestErrorException("Test received exception commit when fixing a broken collection", exception);
+            }
         }
     }
 

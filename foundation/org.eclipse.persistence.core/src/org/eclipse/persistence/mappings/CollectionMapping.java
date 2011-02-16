@@ -553,7 +553,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         List<Integer> currentIndexes = record.getCurrentIndexesOfOriginalObjects(currentList);
                         for(int i=0; i < currentIndexes.size(); i++) {
                             int currentIndex = currentIndexes.get(i);
-                            if(currentIndex != i && currentIndex >= 0 || shouldRepairOrder) {
+                            if((currentIndex >= 0) && (currentIndex != i || shouldRepairOrder)) {
                                 objectOrderChangedDuringUpdate(query, currentList.get(currentIndex), currentIndex);
                             }
                         }
