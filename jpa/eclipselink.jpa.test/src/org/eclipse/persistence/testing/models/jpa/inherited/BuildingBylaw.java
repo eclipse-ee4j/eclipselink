@@ -17,6 +17,10 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -27,6 +31,9 @@ public class BuildingBylaw extends Bylaw {
     @Column(name="DESCRIP")
     public String description;
 
+    protected Bylaw relatedByLaw;
+    protected CityNumberPair reference; 
+
     // The access type is FIELD. If we map this map instead of its associated
     // methods marked as access PROPERTY, we will map the wrong column name
     // and tests from InheritedModelJunitTest.
@@ -36,5 +43,31 @@ public class BuildingBylaw extends Bylaw {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @ManyToOne(fetch=FetchType.LAZY, targetEntity=BuildingBylaw.class)
+    @JoinColumns({
+        @JoinColumn(name="RELATED_ID", referencedColumnName="NUMB"), 
+        @JoinColumn(name="RELATED_CITY", referencedColumnName="CITY")
+    })
+    public Bylaw getRelatedByLaw() {
+        return relatedByLaw;
+    }
+
+    public void setRelatedByLaw(Bylaw relatedByLaw) {
+        this.relatedByLaw = relatedByLaw;
+    }
+
+    @ManyToOne(fetch=FetchType.LAZY, targetEntity=BuildingBylaw.class)
+    @JoinColumns({
+        @JoinColumn(name="REF_ID", referencedColumnName="NUMB"), 
+        @JoinColumn(name="REF_CITY", referencedColumnName="CITY")
+    })
+    public CityNumberPair getReference() {
+        return reference;
+    }
+
+    public void setReference(CityNumberPair reference) {
+        this.reference = reference;
     }
 }

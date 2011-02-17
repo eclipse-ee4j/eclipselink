@@ -48,6 +48,9 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
     /** indicates whether the mapping has originally used method access */
     protected boolean hasUsedMethodAccess;
     
+    /** Stores the actual type of the mapping if different from the reference type.  Used for set method invocation*/
+    protected String actualTypeClassName = null;
+    
     public WeavedObjectBasicIndirectionPolicy(String getMethodName, String setMethodName, boolean hasUsedMethodAccess) {
         super();
         this.setMethodName = setMethodName;
@@ -55,6 +58,14 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         this.hasUsedMethodAccess = hasUsedMethodAccess;
     }    
     
+    public String getActualTypeClassName() {
+        return actualTypeClassName;
+    }
+
+    public void setActualTypeClassName(String actualTypeClassName) {
+        this.actualTypeClassName = actualTypeClassName;
+    }
+
     /**
      * Return the "real" attribute value, as opposed to any wrapper.
      * This will trigger the wrapper to instantiate the value. In a weaved policy, this will
@@ -85,6 +96,17 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
             try {
                 setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
             } catch (NoSuchMethodException e) {
+                if (actualTypeClassName != null){
+                    try{
+                        // try the actual class of the field or property
+                        parameterTypes[0] = Helper.getClassFromClasseName(actualTypeClassName, sourceMapping.getReferenceClass().getClassLoader());
+                        setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
+                    } catch (NoSuchMethodException nsme) {}
+                    if (setMethod != null){
+                        return setMethod;
+                    }
+             }
+
                 // As a last ditch effort, change the parameter type to Object.class. 
                 // If the model uses generics:
                 //   public T getStuntDouble()
@@ -99,6 +121,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
                     // Throw the original exception.
                     throw DescriptorException.errorAccessingSetMethodOfEntity(sourceMapping.getDescriptor().getJavaClass(), setMethodName, sourceMapping.getDescriptor(), e);
                 }
+            //	}
             }
         }
         return setMethod;

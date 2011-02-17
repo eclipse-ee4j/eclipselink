@@ -24,6 +24,7 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
@@ -406,6 +407,9 @@ public class TransformerFactory {
             if (typeClass != null) {
                 attributeDetails.setReferenceClassName(typeClass.getName());
                 attributeDetails.setReferenceClassType(Type.getType(typeClass.getTypeName()));
+                if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()){
+                    ((WeavedObjectBasicIndirectionPolicy)((ForeignReferenceMapping)mapping).getIndirectionPolicy()).setActualTypeClassName(typeClass.getName());
+                }
             }
             attributesMap.put(attribute, attributeDetails);    
         }
