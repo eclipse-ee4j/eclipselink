@@ -741,7 +741,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
             verifyOpen();
             try {
+                try {
                 getActivePersistenceContext(checkForTransaction(true)).writeChanges();
+                } catch (org.eclipse.persistence.exceptions.OptimisticLockException eclipselinkOLE) {
+                    throw new OptimisticLockException(eclipselinkOLE);
+                }
             } catch (RuntimeException e) {
                 if (EclipseLinkException.class.isAssignableFrom(e.getClass())) {
                     throw new PersistenceException(e);

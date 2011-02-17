@@ -24,7 +24,7 @@ import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackin
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DatabaseException; 
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -268,8 +268,14 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             setUnitOfWorkChangeSet(this.cumulativeUOWChangeSet);
         }
 
-        commitTransactionAfterWriteChanges(); // this method will commit the transaction
-                                              // and set the transaction flags appropriately
+        try {
+            commitTransactionAfterWriteChanges(); // this method will commit the
+                                                  // transaction
+                                                  // and set the transaction
+                                                  // flags appropriately
+        } catch (org.eclipse.persistence.exceptions.OptimisticLockException eclipselinkOLE) {
+            throw new javax.persistence.OptimisticLockException(eclipselinkOLE);
+        }
 
         // Merge after commit	
         mergeChangesIntoParent();
