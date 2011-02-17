@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
@@ -143,7 +144,10 @@ public class TestDeleteQuery extends JPA1Base {
             emplyoeeDelete.executeUpdate(); // del emp before dep caused by FK
             Query query = em.createQuery("delete from Department d where d.id is not null");
             int count = query.executeUpdate();
-            verify(count == 2, "wrong update count: " + count);
+			if (!"JDBC".equals(em.getEntityManagerFactory().getProperties()
+					.get(PersistenceUnitProperties.BATCH_WRITING))) {
+				verify(count == 2, "wrong update count: " + count);
+			}
             getEnvironment().commitTransaction(em);
             verifyCountOnDatabase(0, "TMP_DEP");
             init();
@@ -152,7 +156,10 @@ public class TestDeleteQuery extends JPA1Base {
             emplyoeeDelete.executeUpdate();
             query = em.createQuery("delete from Department d where d.id = 10");
             count = query.executeUpdate();
-            verify(count == 1, "wrong update count: " + count);
+			if (!"JDBC".equals(em.getEntityManagerFactory().getProperties()
+					.get(PersistenceUnitProperties.BATCH_WRITING))) {
+				verify(count == 1, "wrong update count: " + count);
+			}
             getEnvironment().commitTransaction(em);
             verifyCountOnDatabase(1, "TMP_DEP");
         } finally {
@@ -183,6 +190,7 @@ public class TestDeleteQuery extends JPA1Base {
         int count = query.executeUpdate();
         verify(count == 1, "wrong update count: " + count);
         getEnvironment().commitTransaction(em);
+        getEnvironment().getEntityManagerFactory().getCache().evict(Employee.class);
         verify(null == em.find(Employee.class, Integer.valueOf(1)), "employee found");
     }
 
@@ -192,13 +200,17 @@ public class TestDeleteQuery extends JPA1Base {
         try {
             init();
             getEnvironment().beginTransaction(em);
-            // OS/390 doesnt get the update count right (returns -1), if there is no where clause.
+            // OS/390 doesn't get the update count right (returns -1), if there is no where clause.
             // Workaround is to supply a dummy where clause.
             Query emplyoeeDelete = em.createQuery("delete from Employee e");
             emplyoeeDelete.executeUpdate(); // del emp before dep caused by FK
             Query query = em.createNativeQuery("delete from TMP_DEP where ID is not null");
             int count = query.executeUpdate();
-            verify(count == 2, "wrong update count: " + count);
+            
+			if (!"JDBC".equals(em.getEntityManagerFactory().getProperties()
+					.get(PersistenceUnitProperties.BATCH_WRITING))) {
+				verify(count == 2, "wrong update count: " + count);
+			}
             getEnvironment().commitTransaction(em);
             verifyCountOnDatabase(0, "TMP_DEP");
             init();
@@ -207,7 +219,10 @@ public class TestDeleteQuery extends JPA1Base {
             emplyoeeDelete.executeUpdate();
             query = em.createNativeQuery("delete from TMP_DEP where TMP_DEP.ID = 10");
             count = query.executeUpdate();
-            verify(count == 1, "wrong update count: " + count);
+			if (!"JDBC".equals(em.getEntityManagerFactory().getProperties()
+					.get(PersistenceUnitProperties.BATCH_WRITING))) {
+				verify(count == 1, "wrong update count: " + count);
+			}
             getEnvironment().commitTransaction(em);
             verifyCountOnDatabase(1, "TMP_DEP");
         } finally {

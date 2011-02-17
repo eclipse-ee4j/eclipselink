@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="1.0"
+<persistence version="2.0"
 	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 	<persistence-unit name="jpa1testmodel" transaction-type="RESOURCE_LOCAL">
 		<description>ATS Test Persistence Unit</description>
 	        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -83,13 +83,15 @@
                 <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Plant</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+<!--        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode> --> 
 		<properties>
 		           %%server-platform-property%%
                    <property name="eclipselink.target-database" value="%%database-platform%%"/>
-                   <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-                   <property name="eclipselink.cache.shared.default" value="false"/>
+                   <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/> 
+                   <property name="eclipselink.cache.shared.default" value="false"/>    
                    <property name="eclipselink.temporal.mutable" value="true"/> 
                    <property name="eclipselink.weaving" value="false"/>
+                   <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
 		</properties>
 	</persistence-unit>
 	<!--

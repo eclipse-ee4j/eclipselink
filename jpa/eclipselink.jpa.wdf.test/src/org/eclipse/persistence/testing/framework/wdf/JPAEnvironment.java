@@ -13,12 +13,18 @@
 
 package org.eclipse.persistence.testing.framework.wdf;
 
+import java.util.Map;
+
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 public interface JPAEnvironment {
+    
+    
+    public EntityManagerFactory createNewEntityManagerFactory(Map<String, Object> properties) throws NamingException; 
+
 
     public EntityManagerFactory getEntityManagerFactory();
 

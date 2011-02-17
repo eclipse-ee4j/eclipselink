@@ -195,6 +195,16 @@ public abstract class AbstractBaseTest {
             return AbstractBaseTest.this.getDataSource();
         }
 
+        @Override
+        public EntityManagerFactory createNewEntityManagerFactory(Map properties) throws NamingException {
+            Map mergedProperties = new HashMap(); 
+            mergedProperties.putAll(EMF_PROPERTIES); 
+            mergedProperties.putAll(properties); 
+            
+            AbstractBaseTest.closeEntityManagerFactory(puName); 
+            return Persistence.createEntityManagerFactory(puName, mergedProperties); 
+        }
+
     }
 
     final class JTATxScopedEnvironment implements JPAEnvironment {
@@ -273,6 +283,11 @@ public abstract class AbstractBaseTest {
             return AbstractBaseTest.this.getDataSource();
         }
 
+        @Override
+        public EntityManagerFactory createNewEntityManagerFactory(Map<String, Object> properties) throws NamingException {
+            throw new UnsupportedOperationException();
+        }
+
     }
 
     public DataSource getDataSource() {
@@ -311,7 +326,7 @@ public abstract class AbstractBaseTest {
     @Before
     public void clearAllTablesAndSetup() throws SQLException {
         clearAllTables();
-
+        
         setup();
     }
 
@@ -357,6 +372,8 @@ public abstract class AbstractBaseTest {
         } finally {
             conn.close();
         }
+        
+        getEnvironment().getEntityManagerFactory().getCache().evictAll();
     }
 
     /**
