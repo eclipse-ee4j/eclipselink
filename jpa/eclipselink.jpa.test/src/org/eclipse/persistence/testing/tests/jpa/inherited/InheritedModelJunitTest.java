@@ -146,6 +146,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testColumnUpdatableAndInsertableThroughQuery"));
         suite.addTest(new InheritedModelJunitTest("testElementCollectionMapEmbeddable"));
         suite.addTest(new InheritedModelJunitTest("testMultipleIdButNonIdClassEntity"));
+        suite.addTest(new InheritedModelJunitTest("testRelatedBylawWrite"));
+        suite.addTest(new InheritedModelJunitTest("testInterfaceBylawWrite"));
         
         return suite;
     }
@@ -1719,4 +1721,69 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             rollbackTransaction(em);
         }
     }
+    
+    // Bug 282523
+    public void testRelatedBylawWrite(){
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            BuildingBylaw law = new BuildingBylaw();
+            law.setCity("EastTown");
+            law.setDescription("No west facing property.");
+            
+            BuildingBylaw relatedLaw = new BuildingBylaw();
+            relatedLaw.setCity("EastTown");
+            relatedLaw.setDescription("No square houses");
+            
+            law.setRelatedByLaw(relatedLaw);
+            
+            em.persist(law);
+            em.persist(relatedLaw);
+            
+            em.flush();
+            em.clear();
+            
+            String jpqlString = "SELECT b FROM BuildingBylaw b WHERE b.number =" + law.getNumber();
+            law = (BuildingBylaw) em.createQuery(jpqlString).getSingleResult();
+            
+            assertNotNull("BuildingBylaw not properly written.", law);
+            assertNotNull("ManyToOne with target type != actual type not properly written.", law.getRelatedByLaw());
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+    
+    // Bug 282523
+    public void testInterfaceBylawWrite(){
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            BuildingBylaw law = new BuildingBylaw();
+            law.setCity("EastTown");
+            law.setDescription("No west facing property.");
+            
+            BuildingBylaw relatedLaw = new BuildingBylaw();
+            relatedLaw.setCity("EastTown");
+            relatedLaw.setDescription("No square houses");
+            
+            law.setReference(relatedLaw);
+            
+            em.persist(law);
+            em.persist(relatedLaw);
+            
+            em.flush();
+            em.clear();
+            
+            String jpqlString = "SELECT b FROM BuildingBylaw b WHERE b.number =" + law.getNumber();
+            law = (BuildingBylaw) em.createQuery(jpqlString).getSingleResult();
+            
+            assertNotNull("BuildingBylaw not properly written.", law);
+            assertNotNull("ManyToOne with target type != actual type not properly written.", law.getReference());
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+
 }

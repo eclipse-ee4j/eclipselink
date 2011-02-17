@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -965,6 +965,46 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DESCRIP_field.setIsIdentity(false);
         DESCRIP_field.setShouldAllowNull(true);
         table.addField(DESCRIP_field);
+        
+        FieldDefinition RELATED_ID_field = new FieldDefinition();
+        RELATED_ID_field.setName("RELATED_ID");
+        RELATED_ID_field.setTypeName("NUMERIC");
+        RELATED_ID_field.setSize(15);
+        RELATED_ID_field.setIsPrimaryKey(false);
+        RELATED_ID_field.setUnique(false);
+        RELATED_ID_field.setIsIdentity(false);
+        RELATED_ID_field.setShouldAllowNull(true);
+        table.addField(RELATED_ID_field);
+        
+        FieldDefinition RELATED_CITY_field = new FieldDefinition();
+        RELATED_CITY_field.setName("RELATED_CITY");
+        RELATED_CITY_field.setTypeName("VARCHAR");
+        RELATED_CITY_field.setSize(25);
+        RELATED_CITY_field.setIsPrimaryKey(false);
+        RELATED_CITY_field.setUnique(false);
+        RELATED_CITY_field.setIsIdentity(false);
+        RELATED_CITY_field.setShouldAllowNull(true);
+        table.addField(RELATED_CITY_field);
+        
+        FieldDefinition REF_ID_field = new FieldDefinition();
+        REF_ID_field.setName("REF_ID");
+        REF_ID_field.setTypeName("NUMERIC");
+        REF_ID_field.setSize(15);
+        REF_ID_field.setIsPrimaryKey(false);
+        REF_ID_field.setUnique(false);
+        REF_ID_field.setIsIdentity(false);
+        REF_ID_field.setShouldAllowNull(true);
+        table.addField(REF_ID_field);
+        
+        FieldDefinition REF_CITY_field = new FieldDefinition();
+        REF_CITY_field.setName("REF_CITY");
+        REF_CITY_field.setTypeName("VARCHAR");
+        REF_CITY_field.setSize(25);
+        REF_CITY_field.setIsPrimaryKey(false);
+        REF_CITY_field.setUnique(false);
+        REF_CITY_field.setIsIdentity(false);
+        REF_CITY_field.setShouldAllowNull(true);
+        table.addField(REF_CITY_field);
         
         return table;
     }
