@@ -92,6 +92,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         addTableDefinition(build_LOCATION_Table());
         
         addTableDefinition(build_BC_LOOKUP_Table());
+        addTableDefinition(build_BUILDING_BYLAW_Table());
     }
     
     public static TableDefinition build_ALPINE_Table() {
@@ -833,6 +834,83 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         COUNTRY_field.setUnique(false);
         COUNTRY_field.setIsIdentity(false);
         table.addField(COUNTRY_field);
+        
+        return table;
+    }
+    
+    public static TableDefinition build_BUILDING_BYLAW_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_BUILDING");
+        
+        FieldDefinition CITY_field = new FieldDefinition();
+        CITY_field.setName("CITY");
+        CITY_field.setTypeName("VARCHAR");
+        CITY_field.setSize(25);
+        CITY_field.setIsPrimaryKey(true);
+        CITY_field.setUnique(false);
+        CITY_field.setIsIdentity(false);
+        CITY_field.setShouldAllowNull(false);
+        table.addField(CITY_field);
+        
+        FieldDefinition NUMB_field = new FieldDefinition();
+        NUMB_field.setName("NUMB");
+        NUMB_field.setTypeName("NUMERIC");
+        NUMB_field.setSize(15);
+        NUMB_field.setIsPrimaryKey(true);
+        NUMB_field.setUnique(false);
+        NUMB_field.setIsIdentity(false);
+        NUMB_field.setShouldAllowNull(false);
+        table.addField(NUMB_field);
+        
+        FieldDefinition DESCRIP_field = new FieldDefinition();
+        DESCRIP_field.setName("DESCRIP");
+        DESCRIP_field.setTypeName("VARCHAR");
+        DESCRIP_field.setSize(100);
+        DESCRIP_field.setIsPrimaryKey(false);
+        DESCRIP_field.setUnique(false);
+        DESCRIP_field.setIsIdentity(false);
+        DESCRIP_field.setShouldAllowNull(true);
+        table.addField(DESCRIP_field);
+        
+        FieldDefinition RELATED_ID_field = new FieldDefinition();
+        RELATED_ID_field.setName("RELATED_ID");
+        RELATED_ID_field.setTypeName("NUMERIC");
+        RELATED_ID_field.setSize(15);
+        RELATED_ID_field.setIsPrimaryKey(false);
+        RELATED_ID_field.setUnique(false);
+        RELATED_ID_field.setIsIdentity(false);
+        RELATED_ID_field.setShouldAllowNull(true);
+        table.addField(RELATED_ID_field);
+        
+        FieldDefinition RELATED_CITY_field = new FieldDefinition();
+        RELATED_CITY_field.setName("RELATED_CITY");
+        RELATED_CITY_field.setTypeName("VARCHAR");
+        RELATED_CITY_field.setSize(25);
+        RELATED_CITY_field.setIsPrimaryKey(false);
+        RELATED_CITY_field.setUnique(false);
+        RELATED_CITY_field.setIsIdentity(false);
+        RELATED_CITY_field.setShouldAllowNull(true);
+        table.addField(RELATED_CITY_field);
+        
+        FieldDefinition REF_ID_field = new FieldDefinition();
+        REF_ID_field.setName("REF_ID");
+        REF_ID_field.setTypeName("NUMERIC");
+        REF_ID_field.setSize(15);
+        REF_ID_field.setIsPrimaryKey(false);
+        REF_ID_field.setUnique(false);
+        REF_ID_field.setIsIdentity(false);
+        REF_ID_field.setShouldAllowNull(true);
+        table.addField(REF_ID_field);
+        
+        FieldDefinition REF_CITY_field = new FieldDefinition();
+        REF_CITY_field.setName("REF_CITY");
+        REF_CITY_field.setTypeName("VARCHAR");
+        REF_CITY_field.setSize(25);
+        REF_CITY_field.setIsPrimaryKey(false);
+        REF_CITY_field.setUnique(false);
+        REF_CITY_field.setIsIdentity(false);
+        REF_CITY_field.setShouldAllowNull(true);
+        table.addField(REF_CITY_field);
         
         return table;
     }
