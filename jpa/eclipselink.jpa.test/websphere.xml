@@ -39,6 +39,8 @@
     <property file="${user.home}/websphere.properties"/>
     <property file="./websphere.properties"/>
 
+	<property name="suffix" value="sh"/>
+
     <condition property="is.as">
         <contains string="${server.version}" substring="as"/>
     </condition>
