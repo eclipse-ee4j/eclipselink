@@ -345,7 +345,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setRealAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
         Object targetValueOfSource = null;
@@ -1302,17 +1302,12 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     @Override
     public Object valueFromPKList(Object[] pks, AbstractSession session) {
-        Object pk = null;
         if (pks[0] == null) return null;
-        if (getReferenceDescriptor().hasCMPPolicy()) {
-            pk = getReferenceDescriptor().getCMPPolicy().createPrimaryKeyFromId(pks[0], session);
-        } else {
-            pk = pks[0];
-        }
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(getReferenceClass());
-        query.setSelectionId(pk);
+        query.setSelectionId(pks[0]);
         query.setIsExecutionClone(true);
+        query.setSession(session);
         return session.executeQuery(query);
     }
 

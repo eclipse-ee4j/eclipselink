@@ -479,12 +479,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Creates the Array of simple types used to recreate this map.  
      */
     public Object createSerializableMapKeyInfo(Object key, AbstractSession session){
-            CMPPolicy policy = referenceDescriptor.getCMPPolicy();
-            if (policy != null && policy.isCMP3Policy()){
-                return policy.createPrimaryKeyInstance(key, session);
-            }else{
-                return referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(key, session);
-            }
+        return referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(key, session);
     }
 
     /**
@@ -492,18 +487,56 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Create an instance of the Key object from the key information extracted from the map.  
      * This may return the value directly in case of a simple key or will be used as the FK to load a related entity.
      */
-    public Object createMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session){
-        ReadObjectQuery query = (ReadObjectQuery) this.getSelectionQuery();
-        query = (ReadObjectQuery) query.clone();
-        query.setIsExecutionClone(true);
-        if (referenceDescriptor.hasCMPPolicy()){
-            query.setSelectionId(referenceDescriptor.getCMPPolicy().createPrimaryKeyFromId(keyInfo, session));
-        }else{
-            query.setSelectionId(keyInfo);
+    public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session){
+        List<Object> orderedResult = new ArrayList<Object>(keyInfo.length);
+        Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(keyInfo, referenceDescriptor);
+        DatabaseRecord translationRow = new DatabaseRecord();
+        List foreignKeyValues = new ArrayList(keyInfo.length - fromCache.size());
+        
+        CacheKeyType cacheKeyType = referenceDescriptor.getCacheKeyType();
+        for (int index = 0; index < keyInfo.length; ++index){
+            Object pk = keyInfo[index];
+            if (!fromCache.containsKey(pk)){
+                if (cacheKeyType == CacheKeyType.CACHE_ID){
+                    foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
+                }else{
+                    foreignKeyValues.add(pk);
+                }
+            }
         }
-        return session.executeQuery(query);
+        if (!foreignKeyValues.isEmpty()){
+            translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
+            ReadAllQuery query = new ReadAllQuery(referenceDescriptor.getJavaClass());
+            query.setIsExecutionClone(true);
+            query.setTranslationRow(translationRow);
+            query.setSession(session);
+            query.setSelectionCriteria(referenceDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
+            Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
+            for (Object element: temp){
+                Object pk = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(element, session);
+                fromCache.put(pk, element);
+            }
+        }
+        for(Object key : keyInfo){
+            orderedResult.add(fromCache.get(key));
+        }
+        return orderedResult;
     }
 
+    /**
+     * INTERNAL:
+     * Create an instance of the Key object from the key information extracted from the map.  
+     * This key object may be a shallow stub of the actual object if the key is an Entity type.
+     */
+    public Object createStubbedMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session) {
+        ObjectBuilder builder = this.referenceDescriptor.getObjectBuilder();
+        ObjectBuildingQuery clonedQuery = (ObjectBuildingQuery) getSelectionQuery().clone();
+        clonedQuery.setSession(session);
+        Object newObject = referenceDescriptor.getInstantiationPolicy().buildNewInstance();
+        builder.buildPrimaryKeyAttributesIntoObject(newObject, builder.buildRowFromPrimaryKeyValues(keyInfo, session), clonedQuery, session);
+        return newObject;
+    }
+    
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
@@ -709,11 +742,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                 for (DatabaseField targetForeignKeyField : this.sourceToTargetKeyFields.values()) {
                     fields.add(builder.getField(targetForeignKeyField));
                 }
-                return builder.value(fields).in(
-                        builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+                return query.getSession().getPlatform().buildBatchCriteriaForComplexId(builder, fields);
             } else {
-                return builder.getField(this.sourceToTargetKeyFields.values().iterator().next()).in(
-                        builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+                return query.getSession().getPlatform().buildBatchCriteria(builder, builder.getField(this.sourceToTargetKeyFields.values().iterator().next()));
             }
         } else {
             return this.mechanism.buildBatchCriteria(builder, query);

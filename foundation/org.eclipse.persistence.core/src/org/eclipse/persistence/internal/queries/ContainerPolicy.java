@@ -16,6 +16,7 @@ import java.util.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
@@ -24,6 +25,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
@@ -31,13 +33,17 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
@@ -45,6 +51,7 @@ import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
  * <p><b>Purpose</b>:
@@ -285,12 +292,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         while(iterator.hasNext()){
             Object target = iterator.next();
             if (target != null){
-                CMPPolicy policy = elementDescriptor.getCMPPolicy();
-                if (policy != null && policy.isCMP3Policy()){
-                    result[index] = policy.createPrimaryKeyInstance(target, session);
-                }else{
-                    result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);
-                }
+                result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);
                 ++index;
             }
         }
@@ -1525,23 +1527,40 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * This method is used to load a relationship from a list of PKs. This list
      * may be available if the relationship has been cached.
      */
-    public Object valueFromPKList(Object[] pks, AbstractSession session){
+    public Object valueFromPKList(Object[] pks, ForeignReferenceMapping mapping, AbstractSession session){
+        
         Object result = containerInstance(pks.length);
+        Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(pks, elementDescriptor);
+        for (Object entity: fromCache.values()){
+            addInto(null, entity, result, session);
+        }
+        DatabaseRecord translationRow = new DatabaseRecord();
+        List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
         for (int index = 0; index < pks.length; ++index){
-            Object pk = null;
-            if (elementDescriptor.hasCMPPolicy()){
-                pk = elementDescriptor.getCMPPolicy().createPrimaryKeyFromId(pks[index], session);
-            }else{
-                pk = pks[index];
+            Object pk = pks[index];
+            if (!fromCache.containsKey(pk)){
+                if (elementDescriptor.getCacheKeyType() == CacheKeyType.CACHE_ID){
+                    foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
+                }else{
+                    foreignKeyValues.add(pk);
+                }
             }
-            ReadObjectQuery query = new ReadObjectQuery();
+        }
+        if (!foreignKeyValues.isEmpty()){
+            translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
+    
+            ReadAllQuery query = new ReadAllQuery();
             query.setReferenceClass(elementDescriptor.getJavaClass());
-            query.setSelectionId(pk);
             query.setIsExecutionClone(true);
-            addInto(session.executeQuery(query), result, session);
+            query.setTranslationRow(translationRow);
+            query.setSession(session);
+            query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
+            Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
+            for (Object element: temp){
+                addInto(null, element, result, session);
+            }
         }
         return result;
-
     }
     
     /**

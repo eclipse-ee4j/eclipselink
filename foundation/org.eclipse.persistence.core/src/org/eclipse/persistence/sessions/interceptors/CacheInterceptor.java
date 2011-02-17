@@ -14,8 +14,11 @@ package org.eclipse.persistence.sessions.interceptors;
 
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
@@ -161,6 +164,17 @@ public abstract class CacheInterceptor implements IdentityMap {
         return this.targetIdentityMap.get(primaryKey);
     }
     
+    /**
+     * ADVANCED:
+     * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
+     * In certain circumstances this can have large performance improvements over loading each item individually.
+     * @param pkList List of Entity PKs to extract from the cache
+     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @return Map of Entity PKs associated to the Entities that were retrieved
+     * @throws QueryException
+     */
+    public abstract Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session);
+
     /**
      * Get the cache key (with object) for the primary key.
      */

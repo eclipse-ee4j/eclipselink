@@ -234,15 +234,15 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
                 }
             }
         }
-        if (unitOfWorkIndirectionObject instanceof DatabaseValueHolder) {
+        if (unitOfWorkIndirectionObject instanceof WrappingValueHolder) {
             ValueHolderInterface valueHolder = null;
             if (session.isIsolatedClientSession()){
-                valueHolder =  ((DatabaseValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
+                valueHolder =  ((WrappingValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
             }
             if (!session.isProtectedSession()){
-                valueHolder = ((DatabaseValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
-                while (valueHolder instanceof DatabaseValueHolder && ((DatabaseValueHolder)valueHolder).getWrappedValueHolder() != null){
-                    valueHolder = ((DatabaseValueHolder)valueHolder).getWrappedValueHolder();
+                valueHolder = ((WrappingValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
+                while (valueHolder instanceof WrappingValueHolder && ((WrappingValueHolder)valueHolder).getWrappedValueHolder() != null){
+                    valueHolder = ((WrappingValueHolder)valueHolder).getWrappedValueHolder();
                 }
             }
             if ((valueHolder != null) && (valueHolder instanceof DatabaseValueHolder)) {

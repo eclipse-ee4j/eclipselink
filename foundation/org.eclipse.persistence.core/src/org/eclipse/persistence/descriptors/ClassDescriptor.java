@@ -36,6 +36,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.QueryRedirector;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.expressions.*;
@@ -693,6 +694,25 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
     }
     
+    /**
+     * INTERNAL:
+     * Return the selection criteria used to IN batch fetching.
+     */
+    public Expression buildBatchCriteriaByPK(ExpressionBuilder builder, ObjectLevelReadQuery query) {
+        Expression selectionCriteria = null;
+        int size = getPrimaryKeyFields().size();
+        if (size > 1) {
+            // Support composite keys using nested IN.
+            List<Expression> fields = new ArrayList<Expression>(size);
+            for (DatabaseField targetForeignKeyField : primaryKeyFields) {
+                fields.add(builder.getField(targetForeignKeyField));
+            }
+            return query.getSession().getPlatform().buildBatchCriteriaForComplexId(builder, fields);
+        } else {
+            return query.getSession().getPlatform().buildBatchCriteria(builder, builder.getField(primaryKeyFields.get(0)));
+        }
+
+    }
     /**
      * INTERNAL:
      * Return a call built from a statement. Subclasses may throw an exception

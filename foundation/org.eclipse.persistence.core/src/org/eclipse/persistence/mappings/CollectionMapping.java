@@ -1297,7 +1297,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord chgRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setRealAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
         Object valueOfTarget = null;
@@ -2331,7 +2331,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public Object valueFromPKList(Object[] pks, AbstractSession session){
         ContainerPolicy cp = this.containerPolicy;
-        return cp.valueFromPKList(pks, session);
+        return cp.valueFromPKList(pks, this, session);
     }
 
     /**

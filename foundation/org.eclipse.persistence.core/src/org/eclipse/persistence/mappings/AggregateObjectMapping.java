@@ -799,10 +799,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Create an instance of the Key object from the key information extracted from the map.  
      * This may return the value directly in case of a simple key or will be used as the FK to load a related entity.
      */
-    public Object createMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session){
-        return keyInfo; // Embeddables have no identity so they are not reduced to PK.
+    public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session){
+        return Arrays.asList(keyInfo); // Embeddables have no identity so they are not reduced to PK.
     }
 
+    /**
+     * INTERNAL:
+     * Create an instance of the Key object from the key information extracted from the map.  
+     * This key object may be a shallow stub of the actual object if the key is an Entity type.
+     */
+    public Object createStubbedMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session){
+        return keyInfo;
+    }
+    
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection and a join query is executed.  Returns the key.

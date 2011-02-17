@@ -15,8 +15,11 @@ package org.eclipse.persistence.internal.identitymaps;
 import java.util.*;
 import java.io.*;
 
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p><b>Purpose</b>: Caches objects, and allows their retrieval  by their primary key.
@@ -275,6 +278,28 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
             return null;
         }
         return cacheKey.getObject();
+    }
+
+    /**
+     * ADVANCED:
+     * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
+     * In certain circumstances this can have large performance improvements over loading each item individually.
+     * @param pkList List of Entity PKs to extract from the cache
+     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @return Map of Entity PKs associated to the Entities that were retrieved
+     * @throws QueryException
+     */
+    public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
+        HashMap<Object, Object> map = new HashMap<Object, Object>();
+        CacheKey cachedObject = null;
+        long currentTime = System.currentTimeMillis();
+        for (Object pk : pkList){
+            cachedObject = getCacheKey(pk);
+            if ((cachedObject != null && cachedObject.getObject() != null && !descriptor.getCacheInvalidationPolicy().isInvalidated(cachedObject, currentTime))){
+                map.put(pk, cachedObject.getObject());
+            }
+        }
+        return map;
     }
 
     /**

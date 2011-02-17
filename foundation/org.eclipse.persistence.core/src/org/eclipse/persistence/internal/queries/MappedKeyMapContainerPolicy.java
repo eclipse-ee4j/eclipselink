@@ -13,20 +13,26 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -46,14 +52,18 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
+import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * A MappedKeyMapContainerPolicy should be used for mappings to implementers of Map.
@@ -274,12 +284,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
             Map.Entry entry = (Entry) iterator.next();
             result[index] = keyMapping.createSerializableMapKeyInfo(entry.getKey(), session);
             ++index;
-            CMPPolicy policy = elementDescriptor.getCMPPolicy();
-            if (policy != null && policy.isCMP3Policy()){
-                result[index] = policy.createPrimaryKeyInstance(entry.getValue(), session);
-            }else{
-                result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(entry.getValue(), session);
-            }
+            result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(entry.getValue(), session);
             ++index;
         }
         return result;
@@ -871,22 +876,51 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * may be available if the relationship has been cached.
      */
     @Override
-    public Object valueFromPKList(Object[] pks, AbstractSession session){
-        Object result = containerInstance(pks.length);
+    public Object valueFromPKList(Object[] pks, ForeignReferenceMapping mapping, AbstractSession session){
+        Object result = containerInstance(pks.length/2);
+        Object[] keys = new Object[pks.length /2];
+        Object[] values = new Object[pks.length /2];
         for (int index = 0; index < pks.length; ++index){
-            Object key = keyMapping.createMapComponentFromSerializableKeyInfo(pks[index], session);
+            keys[index/2] = pks[index];
             ++index;
-            Object pk = null;
-            if (elementDescriptor.hasCMPPolicy()){
-                pk = elementDescriptor.getCMPPolicy().createPrimaryKeyFromId(pks[index], session);
-            }else{
-                pk = pks[index];
+            values[index/2] = pks[index];
+        }
+        
+        List<Object> keyObjects = keyMapping.createMapComponentsFromSerializableKeyInfo(keys, session);
+        
+
+        Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(values, elementDescriptor);
+        DatabaseRecord translationRow = new DatabaseRecord();
+        List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
+        
+        CacheKeyType cacheKeyType = elementDescriptor.getCacheKeyType();
+        for (int index = 0; index < pks.length; ++index){
+            Object pk = pks[index];
+            if (!fromCache.containsKey(pk)){
+                if (cacheKeyType == CacheKeyType.CACHE_ID){
+                    foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
+                }else{
+                    foreignKeyValues.add(pk);
+                }
             }
-            ReadObjectQuery query = new ReadObjectQuery();
-            query.setReferenceClass(elementDescriptor.getJavaClass());
-            query.setSelectionId(pk);
+        }
+        if (!foreignKeyValues.isEmpty()){
+            translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
+            ReadAllQuery query = new ReadAllQuery(elementDescriptor.getJavaClass());
             query.setIsExecutionClone(true);
-            addInto(key, session.executeQuery(query), result, session);
+            query.setTranslationRow(translationRow);
+            query.setSession(session);
+            query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
+            Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
+            for (Object element: temp){
+                Object pk = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(element, session);
+                fromCache.put(pk, element);
+            }
+        }
+    
+        Iterator keyIterator = keyObjects.iterator();
+        for(Object key : values){
+            addInto(keyIterator.next(), fromCache.get(key), result, session);
         }
         return result;
     }

@@ -36,11 +36,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -48,6 +50,8 @@ import java.util.Vector;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -61,6 +65,7 @@ import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.platform.database.AccessPlatform;
 import org.eclipse.persistence.platform.database.DB2Platform;
@@ -70,6 +75,7 @@ import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
@@ -587,6 +593,25 @@ public class DatabasePlatform extends DatasourcePlatform {
                 statement.close();
             }
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Return the selection criteria used to IN batch fetching.
+     */
+    public Expression buildBatchCriteria(ExpressionBuilder builder,Expression field) {
+        
+        return field.in(
+                builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+    }
+
+    /**
+     * INTERNAL:
+     * Return the selection criteria used to IN batch fetching.
+     */
+    public Expression buildBatchCriteriaForComplexId(ExpressionBuilder builder,List<Expression> fields) {
+        return builder.value(fields).in(
+                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
     }
 
     /**

@@ -334,15 +334,15 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
             return new ValueHolder();
         }
         IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
-        if (container.getValueHolder() instanceof DatabaseValueHolder) {
-            ValueHolderInterface valueHolder = ((DatabaseValueHolder)container.getValueHolder()).getWrappedValueHolder();
+        if (container.getValueHolder() instanceof WrappingValueHolder) {
+            ValueHolderInterface valueHolder = ((WrappingValueHolder)container.getValueHolder()).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
                 RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
                 valueHolder = (ValueHolderInterface)controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolderRemoteID());
             }
             if (!session.isProtectedSession()){
-                while (valueHolder instanceof DatabaseValueHolder && ((DatabaseValueHolder)valueHolder).getWrappedValueHolder() != null){
-                    valueHolder = ((DatabaseValueHolder)valueHolder).getWrappedValueHolder();
+                while (valueHolder instanceof WrappingValueHolder && ((WrappingValueHolder)valueHolder).getWrappedValueHolder() != null){
+                    valueHolder = ((WrappingValueHolder)valueHolder).getWrappedValueHolder();
                 }
             }
             return valueHolder;

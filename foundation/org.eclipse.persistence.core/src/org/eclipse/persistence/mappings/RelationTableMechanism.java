@@ -322,7 +322,7 @@ public class RelationTableMechanism  implements Cloneable {
      * INTERNAL:
      * Return the selection criteria used to IN batch fetching.
      */
-    public Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
+    protected Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
         Expression linkTable = builder.getTable(this.relationTable);
         Expression criteria = null;
         int size = this.targetRelationKeyFields.size();
@@ -338,11 +338,9 @@ public class RelationTableMechanism  implements Cloneable {
             for (DatabaseField sourceRelationKeyField : this.sourceRelationKeyFields) {
                 fields.add(linkTable.getField(sourceRelationKeyField));
             }            
-            return criteria.and(builder.value(fields).in(
-                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER)));
+            return criteria.and(query.getSession().getPlatform().buildBatchCriteriaForComplexId(builder, fields));
         } else {
-            return criteria.and(linkTable.getField(this.sourceRelationKeyFields.get(0)).in(
-                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER)));
+            return criteria.and(query.getSession().getPlatform().buildBatchCriteria(builder, linkTable.getField(this.sourceRelationKeyFields.get(0))));
         }
     }
 

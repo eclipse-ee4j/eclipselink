@@ -22,9 +22,12 @@ import java.lang.reflect.*;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
@@ -35,6 +38,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
@@ -42,6 +46,7 @@ import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
@@ -200,14 +205,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         int index = 0;
         while(iterator.hasNext()){
             Map.Entry entry = (Entry) iterator.next();
-            result[index] = entry.getKey();
+            result[index] = entry.getKey(); // record key for cases where it will be needed
             ++index;
-            CMPPolicy policy = elementDescriptor.getCMPPolicy();
-            if (policy != null && policy.isCMP3Policy()){
-                result[index] = policy.createPrimaryKeyInstance(entry.getValue(), session);
-            }else{
-                result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(entry.getValue(), session);
-            }
+            result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(entry.getValue(), session);
             ++index;
         }
         return result;
@@ -831,33 +831,48 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         return ((Map)container).size();
     }
     
-    public Object valueFromIterator(Object iterator){
-        return ((MapContainerPolicyIterator)iterator).getCurrentValue();
-    }
-    
     /**
      * INTERNAL:
      * This method is used to load a relationship from a list of PKs. This list
      * may be available if the relationship has been cached.
      */
-    @Override
-    public Object valueFromPKList(Object[] pks, AbstractSession session){
-        Object result = containerInstance(pks.length);
-        for (int index = 0; index < pks.length; ++index){
-            Object key = pks[index];
-            ++index;
-            Object pk = null;
-            if (elementDescriptor.hasCMPPolicy()){
-                pk = elementDescriptor.getCMPPolicy().createPrimaryKeyFromId(pks[index], session);
-            }else{
-                pk = pks[index];
+    public Object valueFromPKList(Object[] pks, ForeignReferenceMapping mapping, AbstractSession session){
+        
+        Object result = containerInstance(pks.length/2);
+        Object[] values = new Object[pks.length /2];
+        for (int index = 1; index < pks.length; index += 2){
+            values[index/2] = pks[index];
+        }
+        Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(values, elementDescriptor);
+        for (Object entity: fromCache.values()){
+            addInto(null, entity, result, session);
+        }
+        DatabaseRecord translationRow = new DatabaseRecord();
+        List foreignKeyValues = new ArrayList(values.length - fromCache.size());
+        for (int index = 0; index < values.length; ++index){
+            //it is a map so the keys are in the list but we do not need them in this case
+            Object pk = values[index];
+            if (!fromCache.containsKey(pk)){
+                if (elementDescriptor.getCacheKeyType() == CacheKeyType.CACHE_ID){
+                    foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
+                }else{
+                    foreignKeyValues.add(pk);
+                }
             }
-            ReadObjectQuery query = new ReadObjectQuery();
+        }
+        if (!foreignKeyValues.isEmpty()){
+            translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
+    
+            ReadAllQuery query = new ReadAllQuery();
             query.setReferenceClass(elementDescriptor.getJavaClass());
-            query.setSelectionId(pk);
             query.setIsExecutionClone(true);
-            Object element = session.executeQuery(query);
-            addInto(key, element, result, session);
+            query.setTranslationRow(translationRow);
+            query.setSession(session);
+            query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
+            Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
+            for (Object element: temp){
+                addInto(null, element, result, session);
+            }
         }
         return result;
     }

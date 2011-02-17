@@ -969,7 +969,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Return the selection criteria used to IN batch fetching.
      */
     @Override
-    public Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
+    protected Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
         int size = this.referenceKeyFields.size();
         Expression table = builder.getTable(this.referenceTable);
         if (size > 1) {
@@ -978,11 +978,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             for (DatabaseField referenceKeyField : this.referenceKeyFields) {
                 fields.add(table.getField(referenceKeyField));
             }
-            return builder.value(fields).in(
-                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+            return query.getSession().getPlatform().buildBatchCriteriaForComplexId(builder, fields);
         } else {
-            return table.getField(this.referenceKeyFields.get(0)).in(
-                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+            return query.getSession().getPlatform().buildBatchCriteria(builder, table.getField(this.referenceKeyFields.get(0)));
         }
     }
     
@@ -1825,7 +1823,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setRealAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
         ContainerPolicy containerPolicy = getContainerPolicy();

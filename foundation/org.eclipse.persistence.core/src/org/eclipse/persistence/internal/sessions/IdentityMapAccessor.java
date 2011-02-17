@@ -307,6 +307,19 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     
     /**
      * ADVANCED:
+     * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
+     * In certain circumstances this can have large performance improvements over loading each item individually.
+     * @param pkList List of Entity PKs to extract from the cache
+     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @return Map of Entity PKs associated to the Entities that were retrieved
+     * @throws QueryException
+     */
+    public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor){
+        return getIdentityMapManager().getAllFromIdentityMapWithEntityPK(pkList, descriptor, getSession());
+    }
+
+    /**
+     * ADVANCED:
      * Return the object from the identity with primary and class of the given object.
      */
     public Object getFromIdentityMap(Object object) {

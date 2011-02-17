@@ -32,7 +32,7 @@ import org.eclipse.persistence.logging.SessionLog;
  *
  * @author    Sati
  */
-public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
+public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implements WrappingValueHolder{
 
     /** The value holder in the original object. */
     protected transient ValueHolderInterface wrappedValueHolder;

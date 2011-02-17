@@ -135,7 +135,14 @@ public interface MapKeyMapping extends MapComponentMapping {
      * Create an instance of the Key object from the key information extracted from the map.  
      * This may return the value directly in case of a simple key or will be used as the FK to load a related entity.
      */
-    public Object createMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session);
+    public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session);
+    
+    /**
+     * INTERNAL:
+     * Create an instance of the Key object from the key information extracted from the map.  
+     * This key object may be a shallow stub of the actual object if the key is an Entity type.
+     */
+    public Object createStubbedMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session);
     
     /**
      * INTERNAL:

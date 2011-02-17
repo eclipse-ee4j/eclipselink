@@ -14,11 +14,20 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.persistence.annotations.CacheKeyType;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <p><b>Purpose</b>: A ListContainerPolicy is ContainerPolicy whose container class
@@ -157,5 +166,50 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
         } else {
             collectionChangeRecord.getRemoveObjectList().put(changeSetToRemove, changeSetToRemove);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * This method is used to load a relationship from a list of PKs. This list
+     * may be available if the relationship has been cached.
+     */
+    public Object valueFromPKList(Object[] pks, ForeignReferenceMapping mapping, AbstractSession session){
+        
+        Object result = containerInstance(pks.length);
+        Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(pks, elementDescriptor);
+
+        
+        DatabaseRecord translationRow = new DatabaseRecord();
+        List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
+        for (int index = 0; index < pks.length; ++index){
+            //it is a map so the keys are in the list but we do not need them in this case
+            Object pk = pks[index];
+            if (!fromCache.containsKey(pk)){
+                if (elementDescriptor.getCacheKeyType() == CacheKeyType.CACHE_ID){
+                    foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
+                }else{
+                    foreignKeyValues.add(pk);
+                }
+            }
+        }
+        if (!foreignKeyValues.isEmpty()){
+            translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
+    
+            ReadAllQuery query = new ReadAllQuery();
+            query.setReferenceClass(elementDescriptor.getJavaClass());
+            query.setIsExecutionClone(true);
+            query.setTranslationRow(translationRow);
+            query.setSession(session);
+            query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
+            Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
+            for (Object element: temp){
+                Object pk = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(element, session);
+                fromCache.put(pk, element);
+            }
+        }
+        for(Object key : pks){
+            addInto(fromCache.get(key), result, session);
+        }
+        return result;
     }
 }

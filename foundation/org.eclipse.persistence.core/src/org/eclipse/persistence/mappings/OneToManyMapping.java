@@ -992,11 +992,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             for (DatabaseField targetForeignKeyField : this.targetForeignKeyFields) {
                 fields.add(builder.getField(targetForeignKeyField));
             }
-            return builder.value(fields).in(
-                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+            return query.getSession().getPlatform().buildBatchCriteriaForComplexId(builder, fields);
         } else {
-            return builder.getField(this.targetForeignKeyFields.get(0)).in(
-                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+            return query.getSession().getPlatform().buildBatchCriteria(builder, builder.getField(this.targetForeignKeyFields.get(0)));
         }
     }
 

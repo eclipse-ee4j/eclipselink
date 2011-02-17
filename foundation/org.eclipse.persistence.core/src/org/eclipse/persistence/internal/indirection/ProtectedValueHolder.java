@@ -26,7 +26,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @author Gordon Yorke
  * @since EclipseLink 2.2
  */
-public class ProtectedValueHolder extends DatabaseValueHolder {
+public class ProtectedValueHolder extends DatabaseValueHolder implements WrappingValueHolder{
     
     protected transient ValueHolderInterface wrappedValueHolder;
     protected transient DatabaseMapping mapping;
@@ -57,7 +57,6 @@ public class ProtectedValueHolder extends DatabaseValueHolder {
         return false;
     }
     
-    @Override
     public ValueHolderInterface getWrappedValueHolder() {
         return wrappedValueHolder;
     }
