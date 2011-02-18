@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -51,6 +52,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         suite.addTest(new LifecycleCallbackJunitTest("testPrePersistSportsCarInheritAndExcludeDefault"));
         suite.addTest(new LifecycleCallbackJunitTest("testPostPersistSportsCarInheritAndExcludeDefault"));
         suite.addTest(new LifecycleCallbackJunitTest("testPrePersistSportsCarOverride"));
+        suite.addTest(new LifecycleCallbackJunitTest("testQueryInNativePreUpdateEvent"));
 
         return suite;
     }
@@ -268,5 +270,29 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         
         assertTrue("The PrePersist callback method on Car was called.", carPrePersistCountBefore == carPrePersistCountAfter);
         assertFalse("The PrePersist callback method on Sports car was not called.", sportsCarPrePersistCountBefore == sportsCarPrePersistCountAfter);
+    }
+
+    /**
+     * bug: 243993 - RepeatableWriteUnitOfWork's usage of UnitOfWorkImpl can cause ConcurrentModificationException
+     *  - will occur if a native EclipseLink preUpdate event reads entities into the UOW, as it occurs while
+     *  the uow is iterating over its clone list.
+     */
+    public void testQueryInNativePreUpdateEvent(){
+        clearCache();
+
+        EntityManager em = createEntityManager();
+        List<Bus> results = em.createQuery("Select e from Bus e").getResultList();
+        for (Bus bus:results){
+            bus.setDescription("QueryInNativePreUpdateEvent");
+        }
+        beginTransaction(em);
+        try{
+            em.flush();
+        } finally {
+            if(this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
 }
