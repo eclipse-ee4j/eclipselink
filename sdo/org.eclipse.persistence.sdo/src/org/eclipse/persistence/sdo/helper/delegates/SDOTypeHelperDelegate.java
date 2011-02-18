@@ -69,13 +69,13 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private final Map commonjJavaHashMap = new HashMap();
 
     /** Map containing built-in types for SDO Types keyed on Java class */
-    private static final Map sdoTypeForSimpleJavaType = new HashMap();
+    private static final Map sdoTypeForSimpleJavaType = new HashMap(22);
 
     /** a HashMap having SDO object as key and corresponding XSD Qname Object as value */
-    private final Map sdoToXSDTypes = new HashMap();
+    private final Map sdoToXSDTypes = new HashMap(34);
 
     /** a HashMap having XSD Qname Object as Key and corresponding SDO Object as value */
-    private final Map xsdToSDOType = new HashMap();
+    private final Map xsdToSDOType = new HashMap(46);
 
     /** a HashMap keyed on Qname of defined open content properties */
     private Map openContentProperties;
