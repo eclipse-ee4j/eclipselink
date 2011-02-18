@@ -383,15 +383,23 @@ public class MethodWeaver extends CodeAdapter implements Constants {
                             cv.visitVarInsn(ASTORE, 3);
                         } else {
                             // store the result
-                            cv.visitVarInsn(ASTORE, 2);
+                            cv.visitVarInsn(ASTORE, 3);
                         }
 
                         // makes use of the value stored in weaveBeginningOfMethodIfRequired to call property change method
                         // _persistence_propertyChange("attributeName", oldAttribute, argument);
                         cv.visitVarInsn(ALOAD, 0);
                         cv.visitLdcInsn(attributeDetails.getAttributeName());
-                        cv.visitVarInsn(ALOAD, 2);
-                        cv.visitVarInsn(ALOAD, 1);
+                        cv.visitVarInsn(ALOAD, 3);
+                        if (wrapper != null) {
+                            cv.visitTypeInsn(NEW, wrapper);
+                            cv.visitInsn(DUP);
+                        }
+                        int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.ILOAD);
+                        cv.visitVarInsn(opcode, 1);
+                        if (wrapper != null) {
+                        	cv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                        }
                         cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
                     }
                 } else {
