@@ -16,6 +16,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -87,40 +88,40 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private NamespaceResolver namespaceResolver;
 
     // SDO Data Types
-    private SDOWrapperType SDO_BOOLEAN_WRAPPER;
-    private SDOWrapperType SDO_BYTE_WRAPPER;
-    private SDOWrapperType SDO_BYTES_WRAPPER;
-    private SDOWrapperType SDO_CHARACTER_WRAPPER;
-    private SDOWrapperType SDO_DATE_WRAPPER;
-    private SDOWrapperType SDO_DATETIME_WRAPPER;
-    private SDOWrapperType SDO_DAY_WRAPPER;
-    private SDOWrapperType SDO_DECIMAL_WRAPPER;
-    private SDOWrapperType SDO_DOUBLE_WRAPPER;
-    private SDOWrapperType SDO_DURATION_WRAPPER;
-    private SDOWrapperType SDO_FLOAT_WRAPPER;
-    private SDOWrapperType SDO_INT_WRAPPER;
-    private SDOWrapperType SDO_INTEGER_WRAPPER;
-    private SDOWrapperType SDO_LONG_WRAPPER;
-    private SDOWrapperType SDO_MONTH_WRAPPER;
-    private SDOWrapperType SDO_MONTHDAY_WRAPPER;
-    private SDOWrapperType SDO_OBJECT_WRAPPER;
-    private SDOWrapperType SDO_SHORT_WRAPPER;
-    private SDOWrapperType SDO_STRING_WRAPPER;
-    private SDOWrapperType SDO_STRINGS_WRAPPER;
-    private SDOWrapperType SDO_TIME_WRAPPER;
-    private SDOWrapperType SDO_URI_WRAPPER;
-    private SDOWrapperType SDO_YEAR_WRAPPER;
-    private SDOWrapperType SDO_YEARMONTH_WRAPPER;
-    private SDOWrapperType SDO_YEARMONTHDAY_WRAPPER;
+    private static SDOWrapperType SDO_BOOLEAN_WRAPPER;
+    private static SDOWrapperType SDO_BYTE_WRAPPER;
+    private static SDOWrapperType SDO_BYTES_WRAPPER;
+    private static SDOWrapperType SDO_CHARACTER_WRAPPER;
+    private static SDOWrapperType SDO_DATE_WRAPPER;
+    private static SDOWrapperType SDO_DATETIME_WRAPPER;
+    private static SDOWrapperType SDO_DAY_WRAPPER;
+    private static SDOWrapperType SDO_DECIMAL_WRAPPER;
+    private static SDOWrapperType SDO_DOUBLE_WRAPPER;
+    private static SDOWrapperType SDO_DURATION_WRAPPER;
+    private static SDOWrapperType SDO_FLOAT_WRAPPER;
+    private static SDOWrapperType SDO_INT_WRAPPER;
+    private static SDOWrapperType SDO_INTEGER_WRAPPER;
+    private static SDOWrapperType SDO_LONG_WRAPPER;
+    private static SDOWrapperType SDO_MONTH_WRAPPER;
+    private static SDOWrapperType SDO_MONTHDAY_WRAPPER;
+    private static SDOWrapperType SDO_OBJECT_WRAPPER;
+    private static SDOWrapperType SDO_SHORT_WRAPPER;
+    private static SDOWrapperType SDO_STRING_WRAPPER;
+    private static SDOWrapperType SDO_STRINGS_WRAPPER;
+    private static SDOWrapperType SDO_TIME_WRAPPER;
+    private static SDOWrapperType SDO_URI_WRAPPER;
+    private static SDOWrapperType SDO_YEAR_WRAPPER;
+    private static SDOWrapperType SDO_YEARMONTH_WRAPPER;
+    private static SDOWrapperType SDO_YEARMONTHDAY_WRAPPER;
 
-    private SDOWrapperType SDO_BOOLEANOBJECT_WRAPPER;
-    private SDOWrapperType SDO_BYTEOBJECT_WRAPPER;
-    private SDOWrapperType SDO_CHARACTEROBJECT_WRAPPER;
-    private SDOWrapperType SDO_DOUBLEOBJECT_WRAPPER;
-    private SDOWrapperType SDO_FLOATOBJECT_WRAPPER;
-    private SDOWrapperType SDO_INTOBJECT_WRAPPER;
-    private SDOWrapperType SDO_LONGOBJECT_WRAPPER;
-    private SDOWrapperType SDO_SHORTOBJECT_WRAPPER;
+    private static SDOWrapperType SDO_BOOLEANOBJECT_WRAPPER;
+    private static SDOWrapperType SDO_BYTEOBJECT_WRAPPER;
+    private static SDOWrapperType SDO_CHARACTEROBJECT_WRAPPER;
+    private static SDOWrapperType SDO_DOUBLEOBJECT_WRAPPER;
+    private static SDOWrapperType SDO_FLOATOBJECT_WRAPPER;
+    private static SDOWrapperType SDO_INTOBJECT_WRAPPER;
+    private static SDOWrapperType SDO_LONGOBJECT_WRAPPER;
+    private static SDOWrapperType SDO_SHORTOBJECT_WRAPPER;
 
     // create these maps once to avoid threading issues
     static {
@@ -140,40 +141,41 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     public void initWrapperTypes() {
         // List of SDO Types and mappings to XSD Types taken from:
         // http://www.osoa.org/download/attachments/36/Java-SDO-Spec-v2.1.0-FINAL.pdf?version=1
-        SDO_BOOLEAN_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BOOLEAN, SDOConstants.BOOLEAN, this, XMLConstants.BOOLEAN_QNAME, SDOWrapperType.BooleanWrapperImpl.class);
-        SDO_BYTE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTE, SDOConstants.BYTE, this, XMLConstants.BYTE_QNAME, SDOWrapperType.ByteWrapperImpl.class);
-        SDO_BYTES_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTES, SDOConstants.BYTES, this, new QName[] { XMLConstants.BASE_64_BINARY_QNAME, XMLConstants.HEX_BINARY_QNAME }, new Class[] {SDOWrapperType.BytesWrapperImpl.class, SDOWrapperType.Bytes_hexBunaryWrapperImpl.class});
-        SDO_CHARACTER_WRAPPER = new SDOWrapperType(SDOConstants.SDO_CHARACTER, SDOConstants.CHARACTER, this, XMLConstants.STRING_QNAME, SDOWrapperType.CharacterWrapperImpl.class);
-        SDO_DATE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DATE, SDOConstants.DATE, this, XMLConstants.DATE_QNAME, SDOWrapperType.DateWrapperImpl.class);
-        SDO_DATETIME_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DATETIME, SDOConstants.DATETIME, this, XMLConstants.DATE_TIME_QNAME, SDOWrapperType.DateTimeWrapperImpl.class);
-        SDO_DAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DAY, SDOConstants.DAY, this, XMLConstants.G_DAY_QNAME, SDOWrapperType.DayWrapperImpl.class);
-        SDO_DECIMAL_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DECIMAL, SDOConstants.DECIMAL, this, XMLConstants.DECIMAL_QNAME, SDOWrapperType.DecimalWrapperImpl.class);
-        SDO_DOUBLE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DOUBLE, SDOConstants.DOUBLE, this, XMLConstants.DOUBLE_QNAME, SDOWrapperType.DoubleWrapperImpl.class);
-        SDO_DURATION_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DURATION, SDOConstants.DURATION, this, XMLConstants.DURATION_QNAME, SDOWrapperType.DurationWrapperImpl.class);
-        SDO_FLOAT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_FLOAT, SDOConstants.FLOAT, this, XMLConstants.FLOAT_QNAME, SDOWrapperType.FloatWrapperImpl.class);
-        SDO_INT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INT, SDOConstants.INT, this, XMLConstants.INT_QNAME, SDOWrapperType.IntWrapperImpl.class);
-        SDO_INTEGER_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INTEGER, SDOConstants.INTEGER, this, XMLConstants.INTEGER_QNAME, SDOWrapperType.IntegerWrapperImpl.class);
-        SDO_LONG_WRAPPER = new SDOWrapperType(SDOConstants.SDO_LONG, SDOConstants.LONG, this, XMLConstants.LONG_QNAME, SDOWrapperType.LongWrapperImpl.class);
-        SDO_MONTH_WRAPPER = new SDOWrapperType(SDOConstants.SDO_MONTH, SDOConstants.MONTH, this, XMLConstants.G_MONTH_QNAME, SDOWrapperType.MonthWrapperImpl.class);
-        SDO_MONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_MONTHDAY, SDOConstants.MONTHDAY, this, XMLConstants.G_MONTH_DAY_QNAME, SDOWrapperType.MonthDayWrapperImpl.class);
-        SDO_OBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_OBJECT, SDOConstants.OBJECT, this, XMLConstants.ANY_SIMPLE_TYPE_QNAME, SDOWrapperType.ObjectWrapperImpl.class);
-        SDO_SHORT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_SHORT, SDOConstants.SHORT, this, XMLConstants.SHORT_QNAME, SDOWrapperType.ShortWrapperImpl.class);
-        SDO_STRING_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRING, SDOConstants.STRING, this, XMLConstants.STRING_QNAME, SDOWrapperType.StringWrapperImpl.class);
-        SDO_STRINGS_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRINGS, SDOConstants.STRINGS, this, XMLConstants.STRING_QNAME, SDOWrapperType.StringsWrapperImpl.class);
-        SDO_TIME_WRAPPER = new SDOWrapperType(SDOConstants.SDO_TIME, SDOConstants.TIME, this, XMLConstants.TIME_QNAME, SDOWrapperType.TimeWrapperImpl.class);
-        SDO_URI_WRAPPER = new SDOWrapperType(SDOConstants.SDO_URI, SDOConstants.URI, this, new QName[] {XMLConstants.ANY_URI_QNAME, XMLConstants.QNAME_QNAME}, new Class[] {SDOWrapperType.URIWrapperImpl.class, SDOWrapperType.URI_QNameWrapperImpl.class});
-        SDO_YEAR_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEAR, SDOConstants.YEAR, this, XMLConstants.G_YEAR_QNAME, SDOWrapperType.YearWrapperImpl.class);
-        SDO_YEARMONTH_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTH, SDOConstants.YEARMONTH, this, XMLConstants.G_YEAR_MONTH_QNAME, SDOWrapperType.YearMonthWrapperImpl.class);
-        SDO_YEARMONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTHDAY, SDOConstants.YEARMONTHDAY, this, XMLConstants.DATE_QNAME, SDOWrapperType.YearMonthDayWrapperImpl.class);
-
-        SDO_BOOLEANOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BOOLEANOBJECT, SDOConstants.BOOLEANOBJECT, this, XMLConstants.BOOLEAN_QNAME, SDOWrapperType.BooleanObjectWrapperImpl.class);
-        SDO_BYTEOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTEOBJECT, SDOConstants.BYTEOBJECT, this, XMLConstants.BYTE_QNAME, SDOWrapperType.ByteObjectWrapperImpl.class);
-        SDO_CHARACTEROBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_CHARACTEROBJECT, SDOConstants.CHARACTEROBJECT, this, XMLConstants.STRING_QNAME, SDOWrapperType.CharacterObjectWrapperImpl.class);
-        SDO_DOUBLEOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DOUBLEOBJECT, SDOConstants.DOUBLEOBJECT, this, XMLConstants.DOUBLE_QNAME, SDOWrapperType.DoubleObjectWrapperImpl.class);
-        SDO_FLOATOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_FLOATOBJECT, SDOConstants.FLOATOBJECT, this, XMLConstants.FLOAT_QNAME, SDOWrapperType.FloatObjectWrapperImpl.class);
-        SDO_INTOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INTOBJECT, SDOConstants.INTOBJECT, this, XMLConstants.INT_QNAME, SDOWrapperType.IntObjectWrapperImpl.class);
-        SDO_LONGOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_LONGOBJECT, SDOConstants.LONGOBJECT, this, XMLConstants.LONG_QNAME, SDOWrapperType.LongObjectWrapperImpl.class);
-        SDO_SHORTOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_SHORTOBJECT, SDOConstants.SHORTOBJECT, this, XMLConstants.SHORT_QNAME, SDOWrapperType.ShortObjectWrapperImpl.class);
+        if (null == SDO_BOOLEAN_WRAPPER) {
+            SDO_BOOLEAN_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BOOLEAN, SDOConstants.BOOLEAN, this, XMLConstants.BOOLEAN_QNAME, SDOWrapperType.BooleanWrapperImpl.class);
+            SDO_BYTE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTE, SDOConstants.BYTE, this, XMLConstants.BYTE_QNAME, SDOWrapperType.ByteWrapperImpl.class);
+            SDO_BYTES_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTES, SDOConstants.BYTES, this, new QName[] { XMLConstants.BASE_64_BINARY_QNAME, XMLConstants.HEX_BINARY_QNAME }, new Class[] {SDOWrapperType.BytesWrapperImpl.class, SDOWrapperType.Bytes_hexBunaryWrapperImpl.class});
+            SDO_CHARACTER_WRAPPER = new SDOWrapperType(SDOConstants.SDO_CHARACTER, SDOConstants.CHARACTER, this, XMLConstants.STRING_QNAME, SDOWrapperType.CharacterWrapperImpl.class);
+            SDO_DATE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DATE, SDOConstants.DATE, this, XMLConstants.DATE_QNAME, SDOWrapperType.DateWrapperImpl.class);
+            SDO_DATETIME_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DATETIME, SDOConstants.DATETIME, this, XMLConstants.DATE_TIME_QNAME, SDOWrapperType.DateTimeWrapperImpl.class);
+            SDO_DAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DAY, SDOConstants.DAY, this, XMLConstants.G_DAY_QNAME, SDOWrapperType.DayWrapperImpl.class);
+            SDO_DECIMAL_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DECIMAL, SDOConstants.DECIMAL, this, XMLConstants.DECIMAL_QNAME, SDOWrapperType.DecimalWrapperImpl.class);
+            SDO_DOUBLE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DOUBLE, SDOConstants.DOUBLE, this, XMLConstants.DOUBLE_QNAME, SDOWrapperType.DoubleWrapperImpl.class);
+            SDO_DURATION_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DURATION, SDOConstants.DURATION, this, XMLConstants.DURATION_QNAME, SDOWrapperType.DurationWrapperImpl.class);
+            SDO_FLOAT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_FLOAT, SDOConstants.FLOAT, this, XMLConstants.FLOAT_QNAME, SDOWrapperType.FloatWrapperImpl.class);
+            SDO_INT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INT, SDOConstants.INT, this, XMLConstants.INT_QNAME, SDOWrapperType.IntWrapperImpl.class);
+            SDO_INTEGER_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INTEGER, SDOConstants.INTEGER, this, XMLConstants.INTEGER_QNAME, SDOWrapperType.IntegerWrapperImpl.class);
+            SDO_LONG_WRAPPER = new SDOWrapperType(SDOConstants.SDO_LONG, SDOConstants.LONG, this, XMLConstants.LONG_QNAME, SDOWrapperType.LongWrapperImpl.class);
+            SDO_MONTH_WRAPPER = new SDOWrapperType(SDOConstants.SDO_MONTH, SDOConstants.MONTH, this, XMLConstants.G_MONTH_QNAME, SDOWrapperType.MonthWrapperImpl.class);
+            SDO_MONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_MONTHDAY, SDOConstants.MONTHDAY, this, XMLConstants.G_MONTH_DAY_QNAME, SDOWrapperType.MonthDayWrapperImpl.class);
+            SDO_OBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_OBJECT, SDOConstants.OBJECT, this, XMLConstants.ANY_SIMPLE_TYPE_QNAME, SDOWrapperType.ObjectWrapperImpl.class);
+            SDO_SHORT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_SHORT, SDOConstants.SHORT, this, XMLConstants.SHORT_QNAME, SDOWrapperType.ShortWrapperImpl.class);
+            SDO_STRING_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRING, SDOConstants.STRING, this, XMLConstants.STRING_QNAME, SDOWrapperType.StringWrapperImpl.class);
+            SDO_STRINGS_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRINGS, SDOConstants.STRINGS, this, XMLConstants.STRING_QNAME, SDOWrapperType.StringsWrapperImpl.class);
+            SDO_TIME_WRAPPER = new SDOWrapperType(SDOConstants.SDO_TIME, SDOConstants.TIME, this, XMLConstants.TIME_QNAME, SDOWrapperType.TimeWrapperImpl.class);
+            SDO_URI_WRAPPER = new SDOWrapperType(SDOConstants.SDO_URI, SDOConstants.URI, this, new QName[] {XMLConstants.ANY_URI_QNAME, XMLConstants.QNAME_QNAME}, new Class[] {SDOWrapperType.URIWrapperImpl.class, SDOWrapperType.URI_QNameWrapperImpl.class});
+            SDO_YEAR_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEAR, SDOConstants.YEAR, this, XMLConstants.G_YEAR_QNAME, SDOWrapperType.YearWrapperImpl.class);
+            SDO_YEARMONTH_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTH, SDOConstants.YEARMONTH, this, XMLConstants.G_YEAR_MONTH_QNAME, SDOWrapperType.YearMonthWrapperImpl.class);
+            SDO_YEARMONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTHDAY, SDOConstants.YEARMONTHDAY, this, XMLConstants.DATE_QNAME, SDOWrapperType.YearMonthDayWrapperImpl.class);
+            SDO_BOOLEANOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BOOLEANOBJECT, SDOConstants.BOOLEANOBJECT, this, XMLConstants.BOOLEAN_QNAME, SDOWrapperType.BooleanObjectWrapperImpl.class);
+            SDO_BYTEOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTEOBJECT, SDOConstants.BYTEOBJECT, this, XMLConstants.BYTE_QNAME, SDOWrapperType.ByteObjectWrapperImpl.class);
+            SDO_CHARACTEROBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_CHARACTEROBJECT, SDOConstants.CHARACTEROBJECT, this, XMLConstants.STRING_QNAME, SDOWrapperType.CharacterObjectWrapperImpl.class);
+            SDO_DOUBLEOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DOUBLEOBJECT, SDOConstants.DOUBLEOBJECT, this, XMLConstants.DOUBLE_QNAME, SDOWrapperType.DoubleObjectWrapperImpl.class);
+            SDO_FLOATOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_FLOATOBJECT, SDOConstants.FLOATOBJECT, this, XMLConstants.FLOAT_QNAME, SDOWrapperType.FloatObjectWrapperImpl.class);
+            SDO_INTOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_INTOBJECT, SDOConstants.INTOBJECT, this, XMLConstants.INT_QNAME, SDOWrapperType.IntObjectWrapperImpl.class);
+            SDO_LONGOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_LONGOBJECT, SDOConstants.LONGOBJECT, this, XMLConstants.LONG_QNAME, SDOWrapperType.LongObjectWrapperImpl.class);
+            SDO_SHORTOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_SHORTOBJECT, SDOConstants.SHORTOBJECT, this, XMLConstants.SHORT_QNAME, SDOWrapperType.ShortObjectWrapperImpl.class);
+        }
     }
 
     public void addWrappersToProject(Project project) {
