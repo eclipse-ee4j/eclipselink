@@ -118,7 +118,18 @@ public class SAXDocumentBuilder implements ContentHandler {
             while (namespacePrefixes.hasNext()) {
                 prefix = (String)namespacePrefixes.next();
                 uri = (String)namespaceDeclarations.get(prefix);
-                addNamespaceDeclaration(element, prefix, uri);
+
+                boolean prefixEmpty = prefix.length() == 0;
+                String elemNamespaceURI = element.getNamespaceURI();
+                boolean elementNamespaceNull = elemNamespaceURI == null;
+                boolean elementNamespaceEmpty = elemNamespaceURI != null && elemNamespaceURI.length() == 0;
+                boolean isRootElement = element.getParentNode().getNodeType() == Node.DOCUMENT_NODE;
+
+                if (prefixEmpty && isRootElement && (elementNamespaceEmpty || elementNamespaceNull)) {
+                     // Don't add namespace
+                } else {
+                    addNamespaceDeclaration(element, prefix, uri);
+                }
             }
             namespaceDeclarations = null;
         }
