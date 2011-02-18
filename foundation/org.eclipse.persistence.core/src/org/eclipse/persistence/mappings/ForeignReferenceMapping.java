@@ -2007,6 +2007,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 targetQuery.setIsExecutionClone(true);
             }
             targetQuery.setQueryId(sourceQuery.getQueryId());
+            ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
         }
 
         // If the source query is cascading then the target query must use the same settings.
@@ -2054,7 +2055,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     executionSession.executeQuery(dedicatedQuery, row);
                 }
             }
-            ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
         }
         targetQuery = prepareHistoricalQuery(targetQuery, sourceQuery, executionSession);
 
