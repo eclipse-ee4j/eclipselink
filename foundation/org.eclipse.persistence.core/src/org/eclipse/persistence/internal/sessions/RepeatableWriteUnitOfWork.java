@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -411,7 +411,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
         UnitOfWorkChangeSet changeSet = this.unitOfWorkChangeSet;
         // This also discovers unregistered new objects, (which persists them and assign sequence, so no need to assign sequence twice).
-        calculateChanges(getCloneMapping(), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist);
+        calculateChanges(cloneMap(getCloneMapping()), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist);
         
         boolean changeSetHasChanges = (changeSet.hasChanges() || changeSet.hasForcedChanges() || this.hasDeletedObjects() || this.hasModifyAllQueries());
         try {

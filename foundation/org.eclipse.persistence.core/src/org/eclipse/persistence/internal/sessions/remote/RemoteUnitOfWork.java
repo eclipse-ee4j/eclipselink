@@ -199,7 +199,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
             //may be using the old commit process usesOldCommit()
             setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
             uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
-            calculateChanges(new IdentityHashMap(this.cloneMapping), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
+            calculateChanges(cloneMap(getCloneMapping()), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
             this.allClones = null;
         }
         for (Map newList : uowChangeSet.getNewObjectChangeSets().values()) {
