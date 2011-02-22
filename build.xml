@@ -726,8 +726,8 @@
             <!-- core XSD files -->
             <zipfileset dir="./${eclipselink.core.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- jpa XSD files -->
-            <zipfileset dir="./${eclipselink.jpa.xsds}" includes="*1_0.xsd" prefix="eclipselink/xsds"/>
-            <zipfileset dir="./${jpa.prototype.xsds}" includes="*2_0.xsd" prefix="eclipselink/xsds"/>
+            <zipfileset dir="./${eclipselink.jpa.xsds}" includes="eclipselink*.xsd" prefix="eclipselink/xsds"/>
+            <zipfileset dir="./${jpa.prototype.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- moxy XSD files -->
             <zipfileset dir="./${eclipselink.moxy.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- dbws XSD files -->

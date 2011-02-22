@@ -51,6 +51,7 @@
     <property name="jpa.2.common.plugins.dir" value="${jpa.2.base.dir}/plugins"/>
     <property name="jpa.2.buildsys.dir" value="${jpa.2.base.dir}/buildsystem"/>
     <property name="jpa.2.jpa.plugins.dir" value="../plugins"/>
+    <property name="jpa.2.javax.persistence.xsds.dir" value="${jpa.2.jpa.plugins.dir}/javax.persistence/src/javax/persistence"/>
 
     <!-- local property overrides -->
     <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
@@ -198,7 +199,40 @@
     </target>
 
     <!-- package -->
-    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+    <target name="package-src" depends="init">
+        <jar jarfile="${jpa.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink JPA Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${jpa.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <zipfileset dir="${jpa.2.javax.persistence.xsds.dir}" prefix="org/eclipse/persistence/jpa">
+                <include name="*.xsd"/>
+            </zipfileset>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/jpa/eclipselink*.xsd"/>
+                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+                <include name="META-INF/services/javax.annotation.processing.Processor"/>
+            </fileset>
+        </jar>
+    </target>
+        
+    <target name="package" if="nobnd" depends="init, package-src" description="jar OSGI bundle">
         <jar jarfile="${jpa.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" duplicate="preserve" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
             <fileset dir="${jpa.2.base.dir}">
                 <include name="about.html"/>
@@ -208,41 +242,17 @@
             <fileset dir="${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
+            <zipfileset dir="${jpa.2.javax.persistence.xsds.dir}" prefix="org/eclipse/persistence/jpa">
+                <include name="*.xsd"/>
+            </zipfileset>
             <fileset dir="${resource.dir}">
-                <include name="org/eclipse/persistence/jpa/*.xsd"/>
+                <include name="org/eclipse/persistence/jpa/eclipselink*.xsd"/>
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${jpa.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink JPA Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${version.string}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
-            </manifest>
-            <fileset dir="${jpa.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-            <fileset dir="${resource.dir}">
-                <include name="org/eclipse/persistence/jpa/*.xsd"/>
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-                <include name="META-INF/services/javax.annotation.processing.Processor"/>
             </fileset>
         </jar>
     </target>
 
-    <target name="bnd-package" if="bnd.bld" depends="init">
+    <target name="bnd-package" if="bnd.bld" depends="init, package-src">
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
             classpath="${classes.dir}"
@@ -252,32 +262,5 @@
             exceptions="true"
             files="./org.eclipse.persistence.jpa.bnd"
             output="${jpa.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
-        <jar jarfile="${jpa.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink JPA Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${version.string}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
-            </manifest>
-            <fileset dir="${jpa.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-            <fileset dir="${resource.dir}">
-                <include name="org/eclipse/persistence/jpa/*.xsd"/>
-                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-                <include name="META-INF/services/javax.annotation.processing.Processor"/>
-            </fileset>
-        </jar>
     </target>
 </project>

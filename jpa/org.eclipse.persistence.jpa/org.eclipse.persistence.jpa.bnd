@@ -13,7 +13,8 @@ Include-Resource:\
  ${jpa.2.base.dir}/about.html,\
  ${jpa.2.base.dir}/readme.html,\
  ${jpa.2.base.dir}/license.html,\
- org/eclipse/persistence/jpa=resource/org/eclipse/persistence/jpa,\
+ org/eclipse/persistence/jpa=${jpa.2.javax.persistence.xsds.dir},\
+ org/eclipse/persistence/jpa/eclipselink_orm_2_2.xsd=resource/org/eclipse/persistence/jpa/eclipselink_orm_2_2.xsd,\
  META-INF/services/javax.persistence.spi.PersistenceProvider=resource/META-INF/services/javax.persistence.spi.PersistenceProvider
 Import-Package:                                                         \
  javax.persistence.*;version="[1.1.0, 2.1)";jpa="2.0",                           \
