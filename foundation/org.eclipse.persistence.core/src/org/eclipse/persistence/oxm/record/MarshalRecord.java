@@ -341,5 +341,21 @@ public abstract class MarshalRecord extends XMLRecord {
         }
         setOwningObject(parent);
     }
+    
+    /**
+     * INTERNAL:
+     * Returns the list of grouping elements currently stored on the MarshalRecord
+     */
+    public ArrayList<XPathNode> getGroupingElements() {
+        return this.groupingElements;
+    }
+    
+    /**
+     * INTERNAL:
+     * Sets the list of grouping elements to be marshalled on this record. 
+     */
+    public void setGroupingElement(ArrayList<XPathNode> elements) {
+        this.groupingElements = elements;
+    }
 
 }

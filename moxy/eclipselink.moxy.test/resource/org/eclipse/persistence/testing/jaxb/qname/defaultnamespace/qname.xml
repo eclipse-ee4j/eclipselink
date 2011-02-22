@@ -1,0 +1,6 @@
+<root xmlns="myns">
+   <ns0:qname xmlns:ns0="myns" xmlns="">localPart1</ns0:qname>
+   <listOfNames xmlns:ns1="myns1">ns1:localPart2</listOfNames>
+   <ns0:listOfNames xmlns:ns0="myns" xmlns="">localPart3</ns0:listOfNames>
+   <listOfNames>localPart4</listOfNames>
+</root>

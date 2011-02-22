@@ -12,11 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.ArrayList;
+
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -64,8 +67,18 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             // Perform marshal operations based on the null policy
             return xmlDirectMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         } else {
-            XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             QName schemaType = getSchemaType((XMLField) xmlDirectMapping.getField(), fieldValue, session);
+            XPathFragment groupingFragment = null;    
+            boolean isQName = false;
+            if(XMLConstants.QNAME_QNAME.equals(schemaType)) {
+                //if marshalling a QName, handle grouping elements here in case namespace adjustments need 
+                //to happen
+                groupingFragment = openGroupingElementsForQName((QName)fieldValue, marshalRecord);
+                isQName = true;
+            } 
+            if(groupingFragment == null) {
+                groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+            }
             String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             if (xPathFragment.isAttribute()) {
                 marshalRecord.attribute(xPathFragment, namespaceResolver, stringValue);
@@ -78,8 +91,59 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
                     marshalRecord.characters(stringValue);
                 }
             }
+            if(isQName) {
+                //check to see if the last grouping fragment was swapped
+                XPathFragment fragment = getLastGroupingFragment();
+                if(fragment != groupingFragment) {
+                    marshalRecord.endElement(groupingFragment, namespaceResolver);
+                    return false;
+                }
+            }
             return true;
         }
+    }
+
+    private XPathFragment getLastGroupingFragment() {
+        XPathFragment fragment = ((XMLField)this.getMapping().getField()).getXPathFragment();
+        if(fragment.isAttribute() || fragment.nameIsText()) {
+            return null;
+        }
+        while(fragment.getNextFragment() != null) {
+            if(fragment.getNextFragment().nameIsText() || fragment.getNextFragment().isAttribute()) {
+                return fragment;
+            }
+            fragment = fragment.getNextFragment();
+        }
+        return fragment;
+    }
+    private XPathFragment openGroupingElementsForQName(QName fieldValue, MarshalRecord marshalRecord) {
+        XPathFragment xPathFragment = null;
+        ArrayList<XPathNode> groupingElements = marshalRecord.getGroupingElements();
+        NamespaceResolver namespaceResolver = marshalRecord.getNamespaceResolver();
+        if((fieldValue.getNamespaceURI() == null || fieldValue.getNamespaceURI().equals("")) && marshalRecord.getNamespaceResolver().getDefaultNamespaceURI() != null) {
+            //In this case, the last grouping element may need to have a new prefix generated. 
+            for (int x = 0, groupingElementsSize = groupingElements.size(); x < groupingElementsSize; x++) {
+                XPathNode xPathNode = groupingElements.get(x);
+                xPathFragment = xPathNode.getXPathFragment();
+                if(x == (groupingElements.size() - 1) && namespaceResolver.getDefaultNamespaceURI().equals(xPathFragment.getNamespaceURI()) && xPathFragment.getPrefix() == null) {
+                    String prefix = namespaceResolver.generatePrefix();
+                    String xPath = prefix + ":" + xPathFragment.getShortName(); 
+                    XPathFragment newFragment = new XPathFragment(xPath);
+                    newFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
+                    marshalRecord.openStartElement(newFragment, namespaceResolver);
+                    marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + ":" + prefix, namespaceResolver.getDefaultNamespaceURI());
+                    xPathFragment = newFragment;
+                } else {
+                    marshalRecord.openStartElement(xPathFragment, namespaceResolver);
+                    marshalRecord.closeStartElement();
+                }
+            }
+            marshalRecord.setGroupingElement(null);
+            
+        }
+        return xPathFragment;
+        
+        
     }
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {

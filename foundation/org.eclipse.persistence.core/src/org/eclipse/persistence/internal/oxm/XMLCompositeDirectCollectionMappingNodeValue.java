@@ -263,8 +263,29 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         }
         XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
         if (null != value) {
-            marshalRecord.openStartElement(xPathFragment, namespaceResolver);
             QName schemaType = getSchemaType(xmlField, value, session);
+            boolean isElementOpen = false;
+            if(XMLConstants.QNAME_QNAME.equals(schemaType)) {
+                QName fieldValue = (QName)value;
+                if(fieldValue.getNamespaceURI() == null || fieldValue.getNamespaceURI().equals("") && marshalRecord.getNamespaceResolver().getDefaultNamespaceURI() != null) {
+                    //In this case, an extra xmlns="" declaration is going to be added. This may 
+                    //require adjusting the namespace of the current fragment.
+                    if(namespaceResolver.getDefaultNamespaceURI().equals(xPathFragment.getNamespaceURI()) && xPathFragment.getPrefix() == null) {
+                        String prefix = namespaceResolver.generatePrefix();
+                        String xPath = prefix + ":" + xPathFragment.getShortName(); 
+                        XPathFragment newFragment = new XPathFragment(xPath);
+                        newFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
+                        newFragment.setNextFragment(xPathFragment.getNextFragment());
+                        marshalRecord.openStartElement(newFragment, namespaceResolver);
+                        isElementOpen = true;
+                        marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + ":" + prefix, namespaceResolver.getDefaultNamespaceURI());
+                        xPathFragment = newFragment;
+                    } 
+                }
+            }
+            if(!isElementOpen) {
+                marshalRecord.openStartElement(xPathFragment, namespaceResolver);
+            }
             String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             XPathFragment nextFragment = xPathFragment.getNextFragment();
             if (nextFragment.isAttribute()) {
