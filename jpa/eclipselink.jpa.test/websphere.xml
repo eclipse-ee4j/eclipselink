@@ -158,7 +158,8 @@
 		<replace file="${was.home}/bin/installApps.py" token="%%nodeName%%" value="${nodeName}"/>
 		<replace file="${was.home}/bin/installApps.py" token="%%serverName%%" value="${serverName}"/>
         <replace file="${was.home}/bin/installApps.py" token="%%appName%%" value="${application.name}"/>
-        <replace file="${was.home}/bin/installApps.py" token="%%ear%%" value="${application.name}.ear"/>
+		<property name="ear.name" value="${application.name}.ear"/>
+        <replace file="${was.home}/bin/installApps.py" token="%%ear%%" value="${ear.name}"/>
         <sleep seconds="20"/>
         <exec executable="${was.home}/bin/wsadmin.${suffix}">
             <arg line="-lang jython -user ${server.user} -password ${server.pwd} -f ${was.home}/bin/installApps.py"/>
