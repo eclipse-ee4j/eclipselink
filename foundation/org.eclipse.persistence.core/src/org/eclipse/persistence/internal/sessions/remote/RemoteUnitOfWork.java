@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -199,7 +199,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
             //may be using the old commit process usesOldCommit()
             setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
             uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
-            calculateChanges(new IdentityHashMap(this.cloneMapping), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
+            calculateChanges(cloneMap(getCloneMapping()), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
             this.allClones = null;
         }
         for (Map newList : uowChangeSet.getNewObjectChangeSets().values()) {

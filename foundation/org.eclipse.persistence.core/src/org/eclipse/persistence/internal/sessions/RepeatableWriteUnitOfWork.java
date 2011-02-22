@@ -349,7 +349,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
         UnitOfWorkChangeSet changeSet = this.unitOfWorkChangeSet;
         // This also discovers unregistered new objects, (which persists them and assign sequence, so no need to assign sequence twice).
-        calculateChanges(getCloneMapping(), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist);
+        calculateChanges(cloneMap(getCloneMapping()), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist);
         
         // Write those changes to the database.
         if (!changeSet.hasChanges() && !changeSet.hasForcedChanges() && ! this.hasDeletedObjects() && ! this.hasModifyAllQueries()) {
