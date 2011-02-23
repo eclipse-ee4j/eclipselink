@@ -31,6 +31,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Employee</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ContactInfo</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Lobtest</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.LobtestPK</class>
         <properties>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>

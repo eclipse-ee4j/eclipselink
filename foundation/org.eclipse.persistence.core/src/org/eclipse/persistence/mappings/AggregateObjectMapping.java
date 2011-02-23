@@ -344,12 +344,27 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                 joinManager = nestedObjectQuery.getJoinedAttributeManager();
             }
             if (objectQuery.isAttributeBatchRead(this.descriptor, attributeName)) {
-                // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-                nestedObjectQuery = (ObjectLevelReadQuery)nestedObjectQuery.clone();
+                if(nestedObjectQuery == objectQuery) {
+                    // A nested query must be built to pass to the descriptor that looks like the real query execution would.
+                    nestedObjectQuery = (ObjectLevelReadQuery)nestedObjectQuery.clone();
+                }
                 // Must carry over properties for batching to work.
                 nestedObjectQuery.setProperties(objectQuery.getProperties());
                 // Computed nested batch attribute expressions.
                 nestedObjectQuery.getBatchFetchPolicy().setAttributeExpressions(extractNestedExpressions(objectQuery.getBatchReadAttributeExpressions(), nestedObjectQuery.getExpressionBuilder(), false));
+            }
+            FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup();
+            if (sourceFG != null) {
+                // Currently FetchGroups for Aggregates not supported because EntityFetchGroup (kept on the entity) is just a list of attributes.
+                // Therefore clone the query (if not already cloned) and clear the fetch group.
+                if(nestedObjectQuery == objectQuery) {
+                    // A nested query must be built to pass to the descriptor that looks like the real query execution would.
+                    nestedObjectQuery = (ObjectLevelReadQuery)nestedObjectQuery.clone();
+                }
+                nestedObjectQuery.setFetchGroup(null);
+                nestedObjectQuery.setFetchGroupName(null);
+                nestedObjectQuery.setShouldUseDefaultFetchGroup(false);
+                nestedObjectQuery.prepareFetchGroup();
             }
             nestedQuery = nestedObjectQuery;
         }

@@ -25,6 +25,8 @@
  *       - 214519: Allow appending strings to CREATE TABLE statements
  *     11/23/2010-2.2 Frank Schwarz 
  *       - 328774: TABLE_PER_CLASS-mapped key of a java.util.Map does not work for querying
+ *     01/11/2011-2.1.3 Guy Pelletier  
+ *       - 277079: EmbeddedId's fields are null when using LOB with fetchtype LAZY
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
@@ -39,6 +41,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -1297,6 +1300,50 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             assertEquals("Unexpected number of design patterns returned", 1, resultList.size());
             closeEntityManager(em);
         }
+    }
+
+	// Test for bug 277079
+    public void testLAZYLOBWithEmbeddedId() {
+        EntityManager em = createEntityManager(DDL_PU);
+            
+        LobtestPK pk = new LobtestPK();
+        
+        try {
+            beginTransaction(em);
+                
+            Lobtest lobtest = new Lobtest();
+            Byte b1 = new Byte("1");
+            Byte b2 = new Byte("2");
+            lobtest.setContentdata(new byte[]{b1, b2});
+
+            lobtest.setUuid("123456789");
+                
+            pk.setDocid("blah");
+            pk.setVersionid(new BigInteger(new Long(System.currentTimeMillis()).toString()));
+            lobtest.setLobtestPK(pk);
+                
+            getServerSession(DDL_PU).setLogLevel(0);
+            em.persist(lobtest);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+    
+            fail("Error persisting the lobtest : " + e);
+        } finally {
+            closeEntityManager(em);
+        }
+            
+        clearCache(DDL_PU);
+        em = createEntityManager(DDL_PU);
+        
+        Lobtest refreshedLobtest = em.find(Lobtest.class, pk);
+        assertNotNull("The query returned nothing: ", refreshedLobtest);
+        assertNotNull("Doc id from Lobtest was null", refreshedLobtest.getLobtestPK().getDocid());
+        assertNotNull("Version id from Lobtest was null", refreshedLobtest.getLobtestPK().getVersionid());
+        
+        closeEntityManager(em);
     }
 
     public static void main(String[] args) {
