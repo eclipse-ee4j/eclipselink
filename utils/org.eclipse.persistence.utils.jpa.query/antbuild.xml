@@ -205,7 +205,7 @@
                 <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
                 <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink Utils JPA Query (Hermes) Source"/>
+                <attribute name="Bundle-Name"            value="EclipseLink Hermes Parser Source"/>
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
                 <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
                 <attribute name="Bundle-Version"         value="${version.string}"/>

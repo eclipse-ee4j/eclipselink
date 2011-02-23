@@ -1,11 +1,22 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
+Export-Package: org.eclipse.persistence.utils.jpa.query;version="2.3.0.qualifier";uses:="org.eclipse.persistence.utils.jpa.query.spi,org.eclipse.persistence.utils.jpa.query.parser,org.eclipse.persistence.queries",
+ org.eclipse.persistence.utils.jpa.query.parser;version="2.3.0.qualifier";uses:="org.eclipse.persistence.utils.jpa.query.spi,org.eclipse.persistence.utils.jpa.query",
+ org.eclipse.persistence.utils.jpa.query.spi;version="2.3.0.qualifier"
+Implementation-Version: 2.3.0.qualifier
+Specification-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Name: EclipseLink Hermes Parser
-Bundle-SymbolicName: org.eclipse.persistence.utils.jpa.query
-Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.utils
+ .jpa.query
+Require-Bundle: org.eclipse.persistence.core;bundle-version="2.3.0.qua
+ lifier"
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.3.0.qualifier
+Bundle-ManifestVersion: 2
 Import-Package: javax.persistence;version="2.0.3",
  org.eclipse.persistence.expressions;version="2.3.0.qualifier",
  org.eclipse.persistence.internal.expressions;version="2.3.0.qualifier",
  org.eclipse.persistence.queries;version="2.3.0.qualifier"
+Specification-Version: 2.3.0
+Bundle-SymbolicName: org.eclipse.persistence.utils.jpa.query
