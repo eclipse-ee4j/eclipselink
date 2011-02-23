@@ -28,6 +28,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyInfo</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Address</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Zipcode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Lobtest</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.LobtestPK</class>
         <properties>
             <property name="eclipselink.session=name" value="mergeinherited-session"/>
             <property name="eclipselink.jdbc.read-connections.shared" value="true"/>

@@ -17,12 +17,15 @@
  *     07/17/2009 - tware -  added tests for DDL generation of maps
  *     01/22/2010-2.0.1 Guy Pelletier 
  *       - 294361: incorrect generated table for element collection attribute overrides
+ *     01/11/2011-2.1.3 Guy Pelletier  
+ *       - 277079: EmbeddedId's fields are null when using LOB with fetchtype LAZY
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -1074,6 +1077,50 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    // Test for bug 277079
+    public void testLAZYLOBWithEmbeddedId() {
+        EntityManager em = createEntityManager(DDL_PU);
+            
+        LobtestPK pk = new LobtestPK();
+        
+        try {
+            beginTransaction(em);
+                
+            Lobtest lobtest = new Lobtest();
+            Byte b1 = new Byte("1");
+            Byte b2 = new Byte("2");
+            lobtest.setContentdata(new byte[]{b1, b2});
+
+            lobtest.setUuid("123456789");
+                
+            pk.setDocid("blah");
+            pk.setVersionid(new BigInteger(new Long(System.currentTimeMillis()).toString()));
+            lobtest.setLobtestPK(pk);
+                
+            getServerSession(DDL_PU).setLogLevel(0);
+            em.persist(lobtest);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+    
+            fail("Error persisting the lobtest : " + e);
+        } finally {
+            closeEntityManager(em);
+        }
+            
+        clearCache(DDL_PU);
+        em = createEntityManager(DDL_PU);
+        
+        Lobtest refreshedLobtest = em.find(Lobtest.class, pk);
+        assertNotNull("The query returned nothing: ", refreshedLobtest);
+        assertNotNull("Doc id from Lobtest was null", refreshedLobtest.getLobtestPK().getDocid());
+        assertNotNull("Version id from Lobtest was null", refreshedLobtest.getLobtestPK().getVersionid());
+        
+        closeEntityManager(em);
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
