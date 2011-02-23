@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -29,8 +29,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ComparisonExpressionBNF extends AbstractCompoundBNF
-{
+final class ComparisonExpressionBNF extends JPQLQueryBNF {
+
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
@@ -39,8 +39,7 @@ final class ComparisonExpressionBNF extends AbstractCompoundBNF
 	/**
 	 * Creates a new <code>ComparisonExpressionBNF</code>.
 	 */
-	ComparisonExpressionBNF()
-	{
+	ComparisonExpressionBNF() {
 		super(ID);
 	}
 
@@ -48,8 +47,7 @@ final class ComparisonExpressionBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackBNFId()
-	{
+	String getFallbackBNFId() {
 		return ID;
 	}
 
@@ -57,8 +55,7 @@ final class ComparisonExpressionBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackExpressionFactoryId()
-	{
+	String getFallbackExpressionFactoryId() {
 		return PreLiteralExpressionFactory.ID;
 	}
 
@@ -66,8 +63,7 @@ final class ComparisonExpressionBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	void initialize()
-	{
+	void initialize() {
 		super.initialize();
 
 		registerExpressionFactory(ComparisonExpressionFactory.ID);
@@ -80,5 +76,13 @@ final class ComparisonExpressionBNF extends AbstractCompoundBNF
 		registerChild(EntityTypeExpressionBNF.ID);
 		registerChild(EnumExpressionBNF.ID);
 		registerChild(StringExpressionBNF.ID);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	boolean isCompound() {
+		return true;
 	}
 }

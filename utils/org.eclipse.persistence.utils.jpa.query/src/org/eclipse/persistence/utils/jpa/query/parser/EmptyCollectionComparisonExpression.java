@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -17,8 +17,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * This expression tests whether or not the collection designated by the
- * collection-valued path expression is empty (i.e, has no elements).
+ * This expression tests whether or not the collection designated by the collection-valued path
+ * expression is empty (i.e, has no elements).
  * <p>
  * <div nowrap><b>BNF:</b> <code>empty_collection_comparison_expression ::= collection_valued_path_expression IS [NOT] EMPTY</code><p>
  *
@@ -26,11 +26,11 @@ import java.util.List;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class EmptyCollectionComparisonExpression extends AbstractExpression
-{
+@SuppressWarnings("nls")
+public final class EmptyCollectionComparisonExpression extends AbstractExpression {
+
 	/**
-	 * The {@link Expression} that represents the collection-valued path
-	 * expression.
+	 * The {@link Expression} that represents the collection-valued path expression.
 	 */
 	private AbstractExpression expression;
 
@@ -53,12 +53,9 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * Creates a new <code>NullComparisonExpression</code>.
 	 *
 	 * @param parent The parent of this expression
-	 * @param expression The {@link Expression} that represents the collection-
-	 * valued path expression
+	 * @param expression The {@link Expression} that represents the collection-valued path expression
 	 */
-	EmptyCollectionComparisonExpression(AbstractExpression parent,
-	                                    AbstractExpression expression)
-	{
+	EmptyCollectionComparisonExpression(AbstractExpression parent, AbstractExpression expression) {
 		super(parent);
 		updateExpression(expression);
 	}
@@ -69,13 +66,12 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * @param parent The parent of this expression
 	 * @param identifier The actual identifier, which is either {@link Expression#IS_EMPTY IS_EMPTY}
 	 * or {@link Expression#IS_NOT_EMPTY IS_NOT_EMPTY}
-	 * @param expression The {@link Expression} that represents the collection-
-	 * valued path expression
+	 * @param expression The {@link Expression} that represents the collection-valued path expression
 	 */
 	EmptyCollectionComparisonExpression(AbstractExpression parent,
 	                                    String identifier,
-	                                    AbstractExpression expression)
-	{
+	                                    AbstractExpression expression) {
+
 		super(parent, identifier);
 		updateExpression(expression);
 	}
@@ -83,18 +79,22 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getExpression().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	void addChildrenTo(Collection<Expression> children) {
 		children.add(getExpression());
 	}
 
@@ -102,30 +102,26 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedChildrenTo(List<StringExpression> children)
-	{
+	void addOrderedChildrenTo(List<StringExpression> children) {
+
 		// Expression
-		if (expression != null)
-		{
+		if (expression != null) {
 			children.add(expression);
 		}
 
-		if (hasExpression())
-		{
+		if (hasExpression()) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'IS'
 		children.add(buildStringExpression(IS));
 
-		if (hasSpaceAfterIs)
-		{
+		if (hasSpaceAfterIs) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'NOT'
-		if (hasNot)
-		{
+		if (hasNot) {
 			children.add(buildStringExpression(NOT));
 		}
 
@@ -135,73 +131,51 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 		children.add(buildStringExpression(EMPTY));
 	}
 
-	private StateFieldPathToCollectionValuedPathConverter buildConverter(AbstractExpression expression)
-	{
+	private StateFieldPathToCollectionValuedPathConverter buildConverter(AbstractExpression expression) {
 		return new StateFieldPathToCollectionValuedPathConverter(this, expression);
 	}
 
 	/**
-	 * Returns the {@link Expression} that represents the collection-valued path
-	 * expression if it was parsed.
+	 * Returns the {@link Expression} that represents the collection-valued path expression if it was
+	 * parsed.
 	 *
-	 * @return The expression that was parsed representing the collection valued
-	 * path expression
+	 * @return The expression that was parsed representing the collection valued path expression
 	 */
-	public Expression getExpression()
-	{
-		if (expression == null)
-		{
+	public Expression getExpression() {
+		if (expression == null) {
 			expression = buildNullExpression();
 		}
-
 		return expression;
 	}
 
 	/**
-	 * Returns the identifier for this expression that may include <b>NOT</b> if
-	 * it was parsed. The identifier <b>IS</b> should always be part of the
-	 * identifier but this expression an invalid query.
+	 * Returns the identifier for this expression that may include <b>NOT</b> if it was parsed. The
+	 * identifier <b>IS</b> should always be part of the identifier but it is possible it is not
+	 * present when this expression is invalid.
 	 *
-	 * @return Either <b>IS NOT EMPTY</b>, <b>NOT EPTY</b>, <b>IS EMPTY</b> or
-	 * <b>EMPTY</b>
+	 * @return Either <b>IS NOT EMPTY</b>, <b>NOT EMPTY</b>, <b>IS EMPTY</b> or <b>EMPTY</b>
 	 */
-	public Type getIdentifier()
-	{
-		if (hasIs && hasNot)
-		{
-			return Type.IS_NOT_EMPTY;
-		}
-
-		if (hasNot)
-		{
-			return Type.NOT_EMPTY;
-		}
-
-		if (hasIs)
-		{
-			return Type.IS_EMPTY;
-		}
-
-		return Type.EMPTY;
+	public String getIdentifier() {
+		if ( hasIs && hasNot) return IS_NOT_EMPTY;
+		if (!hasIs && hasNot) return "NOT_EMPTY";
+		if ( hasIs)           return IS_EMPTY;
+		return EMPTY;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(EmptyCollectionComparisonExpressionBNF.ID);
 	}
 
 	/**
 	 * Determines whether the expression was parsed.
 	 *
-	 * @return <code>true</code> if the expression was parsed; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if the expression was parsed; <code>false</code> otherwise
 	 */
-	public boolean hasExpression()
-	{
+	public boolean hasExpression() {
 		return expression != null &&
 		      !expression.isNull();
 	}
@@ -209,22 +183,19 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	/**
 	 * Determines whether the identifier <b>NOT</b> was part of the query.
 	 *
-	 * @return <code>true</code> if the identifier <b>NOT</b> was parsed;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the identifier <b>NOT</b> was parsed; <code>false</code> otherwise
 	 */
-	public boolean hasNot()
-	{
+	public boolean hasNot() {
 		return hasNot;
 	}
 
 	/**
 	 * Determines whether a whitespace was found after <b>IS</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>IS</b>;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>IS</b>; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasSpaceAfterIs()
-	{
+	public boolean hasSpaceAfterIs() {
 		return hasSpaceAfterIs;
 	}
 
@@ -232,22 +203,19 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parse(WordParser wordParser, boolean tolerant)
-	{
+	void parse(WordParser wordParser, boolean tolerant) {
+
 		String identifier = getText();
 
-		if (identifier != null)
-		{
+		if (identifier != null) {
 			wordParser.moveForward(identifier);
 			hasIs = true;
 			hasSpaceAfterIs = true;
 			hasNot = (identifier == IS_NOT_EMPTY);
 		}
-		else
-		{
+		else {
 			// Parse 'IS'
-			if (wordParser.startsWithIdentifier(IS))
-			{
+			if (wordParser.startsWithIdentifier(IS)) {
 				hasIs = true;
 				wordParser.moveForward(IS);
 				hasSpaceAfterIs = wordParser.skipLeadingWhitespace() > 0;
@@ -257,8 +225,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 			hasNot = wordParser.startsWithIdentifier(NOT);
 
 			// Remove 'NOT'
-			if (hasNot)
-			{
+			if (hasNot) {
 				wordParser.moveForward(NOT);
 				wordParser.skipLeadingWhitespace();
 			}
@@ -272,11 +239,10 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer)
-	{
+	void toParsedText(StringBuilder writer) {
+
 		// Expression
-		if (expression != null)
-		{
+		if (expression != null) {
 			expression.toParsedText(writer);
 			writer.append(SPACE);
 		}
@@ -285,12 +251,11 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 		writer.append(getIdentifier().toString());
 	}
 
-	private void updateExpression(AbstractExpression expression)
-	{
+	private void updateExpression(AbstractExpression expression) {
+
 		// Make sure a StateFieldPathExpression is converted into a
 		// CollectionValuedPathExpression
-		if (expression != null)
-		{
+		if (expression != null) {
 			StateFieldPathToCollectionValuedPathConverter converter = buildConverter(expression);
 			expression.accept(converter);
 
@@ -304,13 +269,12 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	}
 
 	/**
-	 * This visitor converts a {@link StateFieldPathExpression} into a
-	 * {@link CollectionValuedPathExpression}. The parser only creates state
-	 * field path expressions but this expression only supports a collection
-	 * valued path expression.
+	 * This visitor converts a {@link StateFieldPathExpression} into a {@link CollectionValuedPathExpression}.
+	 * The parser only creates state field path expressions but this expression only supports a
+	 * collection valued path expression.
 	 */
-	private static class StateFieldPathToCollectionValuedPathConverter extends AbstractExpressionVisitor
-	{
+	private static class StateFieldPathToCollectionValuedPathConverter extends AbstractExpressionVisitor {
+
 		private AbstractExpression expression;
 		private AbstractExpression parent;
 
@@ -321,8 +285,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 		 * @param expression The expression that might need to be converted
 		 */
 		StateFieldPathToCollectionValuedPathConverter(AbstractExpression parent,
-		                                              AbstractExpression expression)
-		{
+		                                              AbstractExpression expression) {
 			super();
 
 			this.parent     = parent;
@@ -333,51 +296,8 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(StateFieldPathExpression expression)
-		{
-			this.expression = new CollectionValuedPathExpression
-			(
-				parent,
-				expression.getText()
-			);
-		}
-	}
-
-	/**
-	 * This enumeration lists all the possible choices when using a empty
-	 * collection comparison expression.
-	 */
-	public enum Type
-	{
-		/**
-		 * The constant for 'EMPTY', which is not valid because it's missing 'IS',
-		 * it's only used when the query is malformed.
-		 */
-		EMPTY,
-
-		/**
-		 * The constant for 'IS EMPTY'.
-		 */
-		IS_EMPTY,
-
-		/**
-		 * The constant for 'IS NOT EMPTY'.
-		 */
-		IS_NOT_EMPTY,
-
-		/**
-		 * The constant for 'NOT EMPTY', which is not valid because it's missing
-		 * 'IS', it's only used when the query is malformed.
-		 */
-		NOT_EMPTY;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public String toString()
-		{
-			return name().replace(UNDERSCORE, SPACE);
+		public void visit(StateFieldPathExpression expression) {
+			this.expression = new CollectionValuedPathExpression(parent, expression.getText());
 		}
 	}
 }

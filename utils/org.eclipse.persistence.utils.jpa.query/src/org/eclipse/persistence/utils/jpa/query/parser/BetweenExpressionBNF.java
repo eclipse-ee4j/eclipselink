@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -25,8 +25,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class BetweenExpressionBNF extends AbstractCompoundBNF
-{
+final class BetweenExpressionBNF extends JPQLQueryBNF {
+
 	/**
 	 * The unique identifier of this {@link BetweenExpressionBNF}.
 	 */
@@ -35,8 +35,7 @@ final class BetweenExpressionBNF extends AbstractCompoundBNF
 	/**
 	 * Creates a new <code>BetweenExpressionBNF</code>.
 	 */
-	BetweenExpressionBNF()
-	{
+	BetweenExpressionBNF() {
 		super(ID);
 	}
 
@@ -44,8 +43,7 @@ final class BetweenExpressionBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	void initialize()
-	{
+	void initialize() {
 		super.initialize();
 
 		registerExpressionFactory(BetweenExpressionFactory.ID);
@@ -53,5 +51,13 @@ final class BetweenExpressionBNF extends AbstractCompoundBNF
 		registerChild(ArithmeticExpressionBNF.ID);
 		registerChild(StringExpressionBNF.ID);
 		registerChild(DatetimeExpressionBNF.ID);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	boolean isCompound() {
+		return true;
 	}
 }

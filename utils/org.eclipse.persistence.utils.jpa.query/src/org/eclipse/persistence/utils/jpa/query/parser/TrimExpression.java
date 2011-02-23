@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -16,14 +16,15 @@ package org.eclipse.persistence.utils.jpa.query.parser;
 import java.util.List;
 
 /**
- * The <b>TRIM</b> function trims the specified character from a string. If the
- * character to be trimmed is not specified, it is assumed to be space (or
- * blank). The optional <code>trim_character</code> is a single-character string
- * literal or a character-valued input parameter (i.e., char or Character). If a
- * trim specification is not provided, <b>BOTH</b> is assumed. The <b>TRIM</b>
+ * The <b>TRIM</b> function trims the specified character from a string. If the character to be
+ * trimmed is not specified, it is assumed to be space (or blank). The optional <code>trim_character</code>
+ * is a single-character string literal or a character-valued input parameter (i.e., char or
+ * Character). If a trim specification is not provided, <b>BOTH</b> is assumed. The <b>TRIM</b>
  * function returns the trimmed string.
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code><p>
+ * <p>
+ * <div nowrap><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code><p>
  * <p>
  * <div norwrap>Example: <code><b>UPDATE</b> Student st <b>SET</b> st.sname=TRIM(st.sname)</code><p>
  *
@@ -31,8 +32,8 @@ import java.util.List;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class TrimExpression extends AbstractSingleEncapsulatedExpression
-{
+public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
+
 	/**
 	 * Determines whether the identifier <b>FROM</b> was part of the query.
 	 */
@@ -68,17 +69,14 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression
 	 *
 	 * @param parent The parent of this expression
 	 */
-	TrimExpression(AbstractExpression parent)
-	{
+	TrimExpression(AbstractExpression parent) {
 		super(parent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
@@ -86,54 +84,53 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedEncapsulatedExpressionTo(List<StringExpression> children)
-	{
-		// Trim specification
-		if (hasSpecification())
-		{
-			children.add(buildStringExpression(specification.name()));
-		}
-
-		if (hasSpaceAfterSpecification)
-		{
-			children.add(buildStringExpression(SPACE));
-		}
-
-		// Trim character
-		if (hasTrimCharacter())
-		{
-			children.add(trimCharacter);
-		}
-
-		if (hasSpaceAfterTrimCharacter)
-		{
-			children.add(buildStringExpression(SPACE));
-		}
-
-		// 'FROM'
-		if (hasFrom)
-		{
-			children.add(buildStringExpression(FROM));
-		}
-
-		if (hasSpaceAfterFrom)
-		{
-			children.add(buildStringExpression(SPACE));
-		}
-
-		// String primary
-		if (hasExpression())
-		{
-			children.add(getExpression());
-		}
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getTrimCharacter().accept(visitor);
+		super.acceptChildren(visitor);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF()
-	{
+	void addOrderedEncapsulatedExpressionTo(List<StringExpression> children) {
+
+		// Trim specification
+		if (hasSpecification()) {
+			children.add(buildStringExpression(specification.name()));
+		}
+
+		if (hasSpaceAfterSpecification) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// Trim character
+		if (hasTrimCharacter()) {
+			children.add(trimCharacter);
+		}
+
+		if (hasSpaceAfterTrimCharacter) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// 'FROM'
+		if (hasFrom) {
+			children.add(buildStringExpression(FROM));
+		}
+
+		if (hasSpaceAfterFrom) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// String primary
+		super.addOrderedEncapsulatedExpressionTo(children);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	JPQLQueryBNF encapsulatedExpressionBNF() {
 		return queryBNF(StringPrimaryBNF.ID);
 	}
 
@@ -141,8 +138,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(FunctionsReturningStringsBNF.ID);
 	}
 
@@ -151,24 +147,20 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression
 	 *
 	 * @return One of the available choices for trimming the string
 	 */
-	public Specification getSpecification()
-	{
+	public Specification getSpecification() {
 		return specification;
 	}
 
 	/**
 	 * Returns the character used for trimming the string.
 	 *
-	 * @return The character, if one was parsed, that will be used to trim the
-	 * string. If the character was not specified, then '\0' is the character
+	 * @return The character, if one was parsed, that will be used to trim the string. If the
+	 * character was not specified, then '\0' is the character
 	 */
-	public Expression getTrimCharacter()
-	{
-		if (trimCharacter == null)
-		{
+	public Expression getTrimCharacter() {
+		if (trimCharacter == null) {
 			trimCharacter = buildNullExpression();
 		}
-
 		return trimCharacter;
 	}
 
@@ -176,54 +168,45 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean hasEncapsulatedExpression()
-	{
+	boolean hasEncapsulatedExpression() {
 		return hasSpecification() || hasTrimCharacter() || hasFrom || hasExpression();
 	}
 
 	/**
 	 * Determines whether the identifier <b>FROM</b> was part of the query.
 	 *
-	 * @return <code>true</code> if the identifier <b>FROM</b> was parsed;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the identifier <b>FROM</b> was parsed; <code>false</code> otherwise
 	 */
-	public boolean hasFrom()
-	{
+	public boolean hasFrom() {
 		return hasFrom;
 	}
 
 	/**
 	 * Determines whether a whitespace was found after <b>FROM</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>FROM</b>;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>FROM</b>; <code>false</code> otherwise
 	 */
-	public boolean hasSpaceAfterFrom()
-	{
+	public boolean hasSpaceAfterFrom() {
 		return hasSpaceAfterFrom;
 	}
 
 	/**
-	 * Determines whether a whitespace was found after the way the string is
-	 * trimmed.
+	 * Determines whether a whitespace was found after the way the string is trimmed.
 	 *
-	 * @return <code>true</code> if there was a whitespace after the trim
-	 * specification; <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after the trim specification;
+	 * <code>false</code> otherwise
 	 */
-	public boolean hasSpaceAfterSpecification()
-	{
+	public boolean hasSpaceAfterSpecification() {
 		return hasSpaceAfterSpecification;
 	}
 
 	/**
-	 * Determines whether a whitespace was found after the character used to trim
-	 * the string.
+	 * Determines whether a whitespace was found after the character used to trim the string.
 	 *
-	 * @return <code>true</code> if there was a whitespace after the trim
-	 * character; <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after the trim character;
+	 * <code>false</code> otherwise
 	 */
-	public boolean hasSpaceAfterTrimCharacter()
-	{
+	public boolean hasSpaceAfterTrimCharacter() {
 		return hasSpaceAfterTrimCharacter;
 	}
 
@@ -233,19 +216,17 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression
 	 * @return <code>true</code> if the query contained the way the trim needs to
 	 * be trimmed; <code>false</code> otherwise
 	 */
-	public boolean hasSpecification()
-	{
+	public boolean hasSpecification() {
 		return (specification != Specification.DEFAULT);
 	}
 
 	/**
 	 * Determines whether the character used to trim the string was specified.
 	 *
-	 * @return <code>true</code> if the character used for trimming was specified;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the character used for trimming was specified; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasTrimCharacter()
-	{
+	public boolean hasTrimCharacter() {
 		return trimCharacter != null &&
 		      !trimCharacter.isNull();
 	}
@@ -254,38 +235,33 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant)
-	{
+	void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
+
 		// Parse the trim specification
 		specification = parseTrimSpecification(wordParser);
 
-		if (specification != Specification.DEFAULT)
-		{
+		if (specification != Specification.DEFAULT) {
 			wordParser.moveForward(specification.name().length());
 			hasSpaceAfterSpecification = wordParser.skipLeadingWhitespace() > 0;
 		}
 
 		// Parse the trim character
-		if (!wordParser.startsWithIdentifier(FROM))
-		{
-			trimCharacter = parse
-			(
+		if (!wordParser.startsWithIdentifier(FROM)) {
+			trimCharacter = parse(
 				wordParser,
 				queryBNF(PreLiteralExpressionBNF.ID),
 				tolerant
 			);
 		}
 
-		if (hasTrimCharacter())
-		{
+		if (hasTrimCharacter()) {
 			hasSpaceAfterTrimCharacter = wordParser.skipLeadingWhitespace() > 0;
 		}
 
 		// Parse 'FROM'
 		hasFrom = wordParser.startsWithIdentifier(FROM);
 
-		if (hasFrom)
-		{
+		if (hasFrom) {
 			wordParser.moveForward(FROM);
 			hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -294,13 +270,14 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression
 		super.parseEncapsulatedExpression(wordParser, tolerant);
 
 		// The trim character is actually the string primary
-		if (!hasFrom && !hasExpression() && hasTrimCharacter())
-		{
+		if (!hasFrom         &&
+		    !hasExpression() &&
+		     hasTrimCharacter()) {
+
 			setExpression(trimCharacter);
 			trimCharacter = null;
 
-			if (hasSpaceAfterTrimCharacter)
-			{
+			if (hasSpaceAfterTrimCharacter) {
 				hasSpaceAfterTrimCharacter = false;
 				wordParser.moveBackward(1);
 			}
@@ -311,25 +288,21 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	String parseIdentifier(WordParser wordParser)
-	{
+	String parseIdentifier(WordParser wordParser) {
 		return TRIM;
 	}
 
-	private Specification parseTrimSpecification(WordParser wordParser)
-	{
-		if (wordParser.startsWithIdentifier(BOTH))
-		{
+	private Specification parseTrimSpecification(WordParser wordParser) {
+
+		if (wordParser.startsWithIdentifier(BOTH)) {
 			return Specification.BOTH;
 		}
 
-		if (wordParser.startsWithIdentifier(LEADING))
-		{
+		if (wordParser.startsWithIdentifier(LEADING)) {
 			return Specification.LEADING;
 		}
 
-		if (wordParser.startsWithIdentifier(TRAILING))
-		{
+		if (wordParser.startsWithIdentifier(TRAILING)) {
 			return Specification.TRAILING;
 		}
 
@@ -340,61 +313,52 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedTextEncapsulatedExpression(StringBuilder writer)
-	{
+	void toParsedTextEncapsulatedExpression(StringBuilder writer) {
+
 		// Trim specification
-		if (hasSpecification())
-		{
+		if (hasSpecification()) {
 			writer.append(specification);
 		}
 
-		if (hasSpaceAfterSpecification)
-		{
+		if (hasSpaceAfterSpecification) {
 			writer.append(SPACE);
 		}
 
 		// Trim character
-		if (hasTrimCharacter())
-		{
+		if (hasTrimCharacter()) {
 			trimCharacter.toParsedText(writer);
 		}
 
-		if (hasSpaceAfterTrimCharacter)
-		{
+		if (hasSpaceAfterTrimCharacter) {
 			writer.append(SPACE);
 		}
 
 		// 'FROM'
-		if (hasFrom)
-		{
+		if (hasFrom) {
 			writer.append(FROM);
 		}
 
-		if (hasSpaceAfterFrom)
-		{
+		if (hasSpaceAfterFrom) {
 			writer.append(SPACE);
 		}
 
 		// String primary
-		if (hasExpression())
-		{
-			getExpression().toParsedText(writer);
-		}
+		super.toParsedTextEncapsulatedExpression(writer);
 	}
 
 	/**
 	 * The possible ways to trim the string.
 	 */
-	public enum Specification
-	{
+	public enum Specification {
+
 		/**
 		 * The leading and trailing parts of the string will be trimmed.
 		 */
 		BOTH,
 
 		/**
-		 * Used when the trim specification is not specified, by default it means
-		 * the leading and trailing parts of the string will be trimmed.
+		 * Used when the trim specification is not specified, by default it means the leading and
+		 * trailing parts of the string will be trimmed.
 		 */
 		DEFAULT,
 

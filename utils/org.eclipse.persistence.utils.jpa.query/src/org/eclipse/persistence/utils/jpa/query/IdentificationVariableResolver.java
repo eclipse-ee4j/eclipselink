@@ -3,17 +3,18 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query;
 
 import org.eclipse.persistence.utils.jpa.query.spi.IManagedType;
+import org.eclipse.persistence.utils.jpa.query.spi.IMapping;
 import org.eclipse.persistence.utils.jpa.query.spi.IType;
 import org.eclipse.persistence.utils.jpa.query.spi.ITypeDeclaration;
 
@@ -24,11 +25,10 @@ import org.eclipse.persistence.utils.jpa.query.spi.ITypeDeclaration;
  * @since 11.2.0
  * @author Pascal Filion
  */
-final class IdentificationVariableResolver extends AbstractTypeResolver
-{
+final class IdentificationVariableResolver extends AbstractTypeResolver {
+
 	/**
-	 * The name of the identification variable, which is never <code>null</code>
-	 * or an empty string.
+	 * The name of the identification variable, which is never <code>null</code> or an empty string.
 	 */
 	private final String variableName;
 
@@ -39,8 +39,7 @@ final class IdentificationVariableResolver extends AbstractTypeResolver
 	 * @param variableName The name of the identification variable, which should never be
 	 * <code>null</code> and it should not be an empty string
 	 */
-	IdentificationVariableResolver(TypeResolver parent, String variableName)
-	{
+	IdentificationVariableResolver(TypeResolver parent, String variableName) {
 		super(parent);
 
 		// Always make the identification variable be lower case since it's
@@ -52,8 +51,7 @@ final class IdentificationVariableResolver extends AbstractTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType getManagedType()
-	{
+	public IManagedType getManagedType() {
 		return resolveManagedType(variableName);
 	}
 
@@ -61,8 +59,14 @@ final class IdentificationVariableResolver extends AbstractTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IType getType()
-	{
+	public IMapping getMapping() {
+		return resolveMapping(variableName);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IType getType() {
 		return resolveType(variableName);
 	}
 
@@ -70,8 +74,7 @@ final class IdentificationVariableResolver extends AbstractTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ITypeDeclaration getTypeDeclaration()
-	{
+	public ITypeDeclaration getTypeDeclaration() {
 		return resolveTypeDeclaration(variableName);
 	}
 }

@@ -3,26 +3,25 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * The interface is used to traverse the JPQL parsed tree. It follows the
- * Visitor pattern.
+ * The interface is used to traverse the JPQL parsed tree. It follows the Visitor pattern.
  *
  * @version 11.2.0
  * @since 11.2.0
  * @author Pascal Filion
  */
-public interface ExpressionVisitor
-{
+public interface ExpressionVisitor {
+
 	/**
 	 * Visits the {@link AbsExpression} expression.
 	 *
@@ -514,11 +513,11 @@ public interface ExpressionVisitor
 	void visit(SubExpression expression);
 
 	/**
-	 * Visits the {@link SubstractionExpression} expression.
+	 * Visits the {@link SubtractionExpression} expression.
 	 *
 	 * @param expression The {@link Expression} to visit
 	 */
-	void visit(SubstractionExpression expression);
+	void visit(SubtractionExpression expression);
 
 	/**
 	 * Visits the {@link SubstringExpression} expression.
@@ -533,6 +532,13 @@ public interface ExpressionVisitor
 	 * @param expression The {@link Expression} to visit
 	 */
 	void visit(SumFunction expression);
+
+	/**
+	 * Visits the {@link TreatExpression} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(TreatExpression expression);
 
 	/**
 	 * Visits the {@link TrimExpression} expression.

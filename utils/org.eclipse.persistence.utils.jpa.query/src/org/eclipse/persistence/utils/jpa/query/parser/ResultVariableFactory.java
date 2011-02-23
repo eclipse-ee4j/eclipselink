@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -26,8 +26,8 @@ import org.eclipse.persistence.utils.jpa.query.spi.IJPAVersion;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ResultVariableFactory extends ExpressionFactory
-{
+final class ResultVariableFactory extends ExpressionFactory {
+
 	/**
 	 * The unique identifier of this {@link ResultVariableFactory}.
 	 */
@@ -36,8 +36,7 @@ final class ResultVariableFactory extends ExpressionFactory
 	/**
 	 * Creates a new <code>ResultVariableFactory</code>.
 	 */
-	ResultVariableFactory()
-	{
+	ResultVariableFactory() {
 		super(ID, Expression.AS);
 	}
 
@@ -50,8 +49,8 @@ final class ResultVariableFactory extends ExpressionFactory
 	                                   String word,
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
+	                                   boolean tolerant) {
+
 		// There was already an expression parsed, we'll assume it's a valid
 		// expression and it will have an identification variable
 		if (((expression != null) || word.equalsIgnoreCase(Expression.AS)) &&
@@ -72,16 +71,14 @@ final class ResultVariableFactory extends ExpressionFactory
 	 * {@inheritDoc}
 	 */
 	@Override
-	IJPAVersion getVersion()
-	{
+	IJPAVersion getVersion() {
 		// We return JPA 1.0 because the check will be done in the build method
 		// otherwise identification variable, state field path expression won't
 		// be parsed
 		return IJPAVersion.VERSION_1_0;
 	}
 
-	private boolean isSupported(AbstractExpression parent)
-	{
+	private boolean isSupported(AbstractExpression parent) {
 		return parent.getJPAVersion().isNewerThanOrEqual(IJPAVersion.VERSION_2_0);
 	}
 }

@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -26,8 +26,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class SubSelectIdentificationVariableDeclarationBNF extends AbstractCompoundBNF
-{
+final class SubSelectIdentificationVariableDeclarationBNF extends JPQLQueryBNF {
+
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
@@ -36,8 +36,7 @@ final class SubSelectIdentificationVariableDeclarationBNF extends AbstractCompou
 	/**
 	 * Creates a new <code>SubSelectIdentificationVariableDeclarationBNF</code>.
 	 */
-	SubSelectIdentificationVariableDeclarationBNF()
-	{
+	SubSelectIdentificationVariableDeclarationBNF() {
 		super(ID);
 	}
 
@@ -45,8 +44,7 @@ final class SubSelectIdentificationVariableDeclarationBNF extends AbstractCompou
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackBNFId()
-	{
+	String getFallbackBNFId() {
 		return ID;
 	}
 
@@ -54,8 +52,7 @@ final class SubSelectIdentificationVariableDeclarationBNF extends AbstractCompou
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackExpressionFactoryId()
-	{
+	String getFallbackExpressionFactoryId() {
 		return IdentificationVariableDeclarationFactory.ID;
 	}
 
@@ -63,8 +60,7 @@ final class SubSelectIdentificationVariableDeclarationBNF extends AbstractCompou
 	 * {@inheritDoc}
 	 */
 	@Override
-	void initialize()
-	{
+	void initialize() {
 		super.initialize();
 
 		registerChild(IdentificationVariableDeclarationBNF.ID);

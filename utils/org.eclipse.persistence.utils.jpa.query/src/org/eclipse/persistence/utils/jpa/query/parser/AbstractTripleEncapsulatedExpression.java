@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -29,8 +29,8 @@ import java.util.List;
  * @since 11.2.0
  * @author Pascal Filion
  */
-public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncapsulatedExpression
-{
+public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncapsulatedExpression {
+
 	/**
 	 * The {@link Expression} that represents the first expression.
 	 */
@@ -73,17 +73,24 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 *
 	 * @param parent The parent of this expression
 	 */
-	AbstractTripleEncapsulatedExpression(AbstractExpression parent)
-	{
+	AbstractTripleEncapsulatedExpression(AbstractExpression parent) {
 		super(parent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getFirstExpression().accept(visitor);
+		getSecondExpression().accept(visitor);
+		getThirdExpression().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	void addChildrenTo(Collection<Expression> children) {
 		children.add(getFirstExpression());
 		children.add(getSecondExpression());
 		children.add(getThirdExpression());
@@ -93,45 +100,37 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedEncapsulatedExpressionTo(List<StringExpression> children)
-	{
+	void addOrderedEncapsulatedExpressionTo(List<StringExpression> children) {
 		// Fist expression
-		if (firstExpression != null)
-		{
+		if (firstExpression != null) {
 			children.add(firstExpression);
 		}
 
 		// ','
-		if (hasFirstComma)
-		{
+		if (hasFirstComma) {
 			children.add(buildStringExpression(COMMA));
 		}
 
-		if (hasSpaceAfterFirstComma)
-		{
+		if (hasSpaceAfterFirstComma) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// Second expression
-		if (secondExpression != null)
-		{
+		if (secondExpression != null) {
 			children.add(secondExpression);
 		}
 
 		// ','
-		if (hasSecondComma)
-		{
+		if (hasSecondComma) {
 			children.add(buildStringExpression(COMMA));
 		}
 
-		if (hasSpaceAfterSecondComma)
-		{
+		if (hasSpaceAfterSecondComma) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// Third expression
-		if (thirdExpression != null)
-		{
+		if (thirdExpression != null) {
 			children.add(thirdExpression);
 		}
 	}
@@ -141,10 +140,8 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 *
 	 * @return The expression that was parsed representing the first expression
 	 */
-	public final Expression getFirstExpression()
-	{
-		if (firstExpression == null)
-		{
+	public final Expression getFirstExpression() {
+		if (firstExpression == null) {
 			firstExpression = buildNullExpression();
 		}
 
@@ -156,10 +153,8 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 *
 	 * @return The expression that was parsed representing the second expression
 	 */
-	public final Expression getSecondExpression()
-	{
-		if (secondExpression == null)
-		{
+	public final Expression getSecondExpression() {
+		if (secondExpression == null) {
 			secondExpression = buildNullExpression();
 		}
 
@@ -171,10 +166,8 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 *
 	 * @return The expression that was parsed representing the first expression
 	 */
-	public final Expression getThirdExpression()
-	{
-		if (thirdExpression == null)
-		{
+	public final Expression getThirdExpression() {
+		if (thirdExpression == null) {
 			thirdExpression = buildNullExpression();
 		}
 
@@ -185,8 +178,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean hasEncapsulatedExpression()
-	{
+	boolean hasEncapsulatedExpression() {
 		return hasFirstExpression()  || hasFirstComma  ||
 		       hasSecondExpression() || hasSecondComma ||
 		       hasThirdExpression();
@@ -198,8 +190,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * @return <code>true</code> if a comma was parsed after the first expression;
 	 * <code>false</code> otherwise
 	 */
-	public final boolean hasFirstComma()
-	{
+	public final boolean hasFirstComma() {
 		return hasFirstComma;
 	}
 
@@ -209,8 +200,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * @return <code>true</code> if the first expression was parsed;
 	 * <code>false</code> if it was not parsed
 	 */
-	public final boolean hasFirstExpression()
-	{
+	public final boolean hasFirstExpression() {
 		return firstExpression != null &&
 		      !firstExpression.isNull();
 	}
@@ -221,8 +211,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * @return <code>true</code> if a comma was parsed after the second expression;
 	 * <code>false</code> otherwise
 	 */
-	public final boolean hasSecondComma()
-	{
+	public final boolean hasSecondComma() {
 		return hasSecondComma;
 	}
 
@@ -232,8 +221,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * @return <code>true</code> if the second expression was parsed;
 	 * <code>false</code> if it was not parsed
 	 */
-	public final boolean hasSecondExpression()
-	{
+	public final boolean hasSecondExpression() {
 		return secondExpression != null &&
 		      !secondExpression.isNull();
 	}
@@ -244,8 +232,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * @return <code>true</code> if there was a whitespace after the first comma;
 	 * <code>false</code> otherwise
 	 */
-	public final boolean hasSpaceAfterFirstComma()
-	{
+	public final boolean hasSpaceAfterFirstComma() {
 		return hasSpaceAfterFirstComma;
 	}
 
@@ -255,8 +242,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * @return <code>true</code> if there was a whitespace after the second comma;
 	 * <code>false</code> otherwise
 	 */
-	public final boolean hasSpaceAfterSecondComma()
-	{
+	public final boolean hasSpaceAfterSecondComma() {
 		return hasSpaceAfterSecondComma;
 	}
 
@@ -266,8 +252,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * @return <code>true</code> if the third expression was parsed;
 	 * <code>false</code> if it was not parsed
 	 */
-	public final boolean hasThirdExpression()
-	{
+	public final boolean hasThirdExpression() {
 		return thirdExpression != null &&
 		      !thirdExpression.isNull();
 	}
@@ -294,43 +279,37 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant)
-	{
+	void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
 		int count = 0;
 
 		// Parse the first expression
-		firstExpression = parse
-		(
+		firstExpression = parse(
 			wordParser,
 			parameterExpressionBNF(1),
 			tolerant
 		);
 
-		if (hasFirstExpression())
-		{
+		if (hasFirstExpression()) {
 			count = wordParser.skipLeadingWhitespace();
 		}
 
 		// Parse ','
 		hasFirstComma = wordParser.startsWith(COMMA);
 
-		if (hasFirstComma)
-		{
+		if (hasFirstComma) {
 			count = 0;
 			wordParser.moveForward(1);
 			hasSpaceAfterFirstComma = wordParser.skipLeadingWhitespace() > 0;
 		}
 
 		// Parse the second expression
-		secondExpression = parse
-		(
+		secondExpression = parse(
 			wordParser,
 			parameterExpressionBNF(2),
 			tolerant
 		);
 
-		if (!hasFirstComma)
-		{
+		if (!hasFirstComma) {
 			hasSpaceAfterFirstComma = (count > 0);
 		}
 
@@ -339,23 +318,20 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		// Parse ','
 		hasSecondComma = wordParser.startsWith(COMMA);
 
-		if (hasSecondComma)
-		{
+		if (hasSecondComma) {
 			count = 0;
 			wordParser.moveForward(1);
 			hasSpaceAfterSecondComma = wordParser.skipLeadingWhitespace() > 0;
 		}
 
 		// Parse the third expression
-		thirdExpression = parse
-		(
+		thirdExpression = parse(
 			wordParser,
 			parameterExpressionBNF(3),
 			tolerant
 		);
 
-		if (!hasSecondComma && (!isThirdExpressionOptional() || hasThirdExpression()))
-		{
+		if (!hasSecondComma && (!isThirdExpressionOptional() || hasThirdExpression())) {
 			hasSpaceAfterSecondComma = (count > 0);
 		}
 	}
@@ -364,45 +340,37 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	final void toParsedTextEncapsulatedExpression(StringBuilder writer)
-	{
+	final void toParsedTextEncapsulatedExpression(StringBuilder writer) {
 		// First expression
-		if (firstExpression != null)
-		{
+		if (firstExpression != null) {
 			firstExpression.toParsedText(writer);
 		}
 
 		// ','
-		if (hasFirstComma)
-		{
+		if (hasFirstComma) {
 			writer.append(COMMA);
 		}
 
-		if (hasSpaceAfterFirstComma)
-		{
+		if (hasSpaceAfterFirstComma) {
 			writer.append(SPACE);
 		}
 
 		// Second expression
-		if (secondExpression != null)
-		{
+		if (secondExpression != null) {
 			secondExpression.toParsedText(writer);
 		}
 
 		// ','
-		if (hasSecondComma)
-		{
+		if (hasSecondComma) {
 			writer.append(COMMA);
 		}
 
-		if (hasSpaceAfterSecondComma)
-		{
+		if (hasSpaceAfterSecondComma) {
 			writer.append(SPACE);
 		}
 
 		// Third expression
-		if (thirdExpression != null)
-		{
+		if (thirdExpression != null) {
 			thirdExpression.toParsedText(writer);
 		}
 	}

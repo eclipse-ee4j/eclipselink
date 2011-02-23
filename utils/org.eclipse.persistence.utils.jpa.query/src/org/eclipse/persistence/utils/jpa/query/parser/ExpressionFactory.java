@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -25,8 +25,8 @@ import org.eclipse.persistence.utils.jpa.query.spi.IJPAVersion;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-abstract class ExpressionFactory implements Comparable<ExpressionFactory>
-{
+abstract class ExpressionFactory implements Comparable<ExpressionFactory> {
+
 	/**
 	 * The unique identifier of this {@link ExpressionFactory}.
 	 */
@@ -43,8 +43,7 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 * @param id The unique identifier of this <code>ExpressionFactory</code>
 	 * @param identifiers The JPQL identifiers handled by this factory
 	 */
-	ExpressionFactory(String id, String... identifiers)
-	{
+	ExpressionFactory(String id, String... identifiers) {
 		super();
 
 		this.id = id;
@@ -71,14 +70,12 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	                                            String word,
 	                                            JPQLQueryBNF queryBNF,
 	                                            AbstractExpression expression,
-	                                   boolean tolerant);
+	                                            boolean tolerant);
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public final int compareTo(ExpressionFactory expressionFactory)
-	{
+	public final int compareTo(ExpressionFactory expressionFactory) {
 		return id.compareTo(expressionFactory.getId());
 	}
 
@@ -86,15 +83,12 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final boolean equals(Object object)
-	{
-		if (this == object)
-		{
+	public final boolean equals(Object object) {
+		if (this == object) {
 			return true;
 		}
 
-		if (object instanceof ExpressionFactory)
-		{
+		if (object instanceof ExpressionFactory) {
 			ExpressionFactory factory = (ExpressionFactory) object;
 			return id.equals(factory.id);
 		}
@@ -108,8 +102,7 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 * @return The identifier used to register this <code>ExpressionFactory</code>
 	 * with <code>AbstractExpression</code>
 	 */
-	final String getId()
-	{
+	final String getId() {
 		return id;
 	}
 
@@ -118,8 +111,7 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 *
 	 * @return The version for which this factory can support
 	 */
-	IJPAVersion getVersion()
-	{
+	IJPAVersion getVersion() {
 		return IJPAVersion.VERSION_1_0;
 	}
 
@@ -127,8 +119,7 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final int hashCode()
-	{
+	public final int hashCode() {
 		return id.hashCode();
 	}
 
@@ -137,8 +128,7 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 *
 	 * @return The list of JPQL identifiers this factory knows how to parse
 	 */
-	final String[] identifiers()
-	{
+	final String[] identifiers() {
 		return identifiers;
 	}
 
@@ -146,8 +136,7 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final String toString()
-	{
+	public final String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getSimpleName());
 		sb.append("(id=");

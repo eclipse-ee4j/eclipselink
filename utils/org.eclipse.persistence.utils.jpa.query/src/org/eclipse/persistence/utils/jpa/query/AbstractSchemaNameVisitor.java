@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2006, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query;
@@ -25,8 +25,8 @@ import org.eclipse.persistence.utils.jpa.query.parser.RangeVariableDeclaration;
  * @since 11.2.0
  * @author Pascal Filion
  */
-final class AbstractSchemaNameVisitor extends AbstractExpressionVisitor
-{
+final class AbstractSchemaNameVisitor extends AbstractExpressionVisitor {
+
 	/**
 	 * Either the abstract schema name that was retrieved by visiting the query
 	 * or <code>null</code> if it never got discovered.
@@ -39,8 +39,7 @@ final class AbstractSchemaNameVisitor extends AbstractExpressionVisitor
 	 * @return Either the abstract schema name that was retrieved by visiting the
 	 * query or <code>null</code> if it never got discovered
 	 */
-	String getAbstractSchemaName()
-	{
+	String getAbstractSchemaName() {
 		return abstractSchemaName;
 	}
 
@@ -48,8 +47,7 @@ final class AbstractSchemaNameVisitor extends AbstractExpressionVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AbstractSchemaName expression)
-	{
+	public void visit(AbstractSchemaName expression) {
 		abstractSchemaName = expression.getText();
 	}
 
@@ -57,8 +55,7 @@ final class AbstractSchemaNameVisitor extends AbstractExpressionVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(RangeVariableDeclaration expression)
-	{
+	public void visit(RangeVariableDeclaration expression) {
 		expression.getAbstractSchemaName().accept(this);
 	}
 }

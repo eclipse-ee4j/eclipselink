@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -18,19 +18,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
-public final class ConditionalExpressionTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
+public final class ConditionalExpressionTest extends AbstractJPQLTest {
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
 		String query = "SELECT e FROM Employee e WHERE e.name NOT LIKE 'Pascal'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -65,10 +57,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_02()
-	{
+	public void testBuildExpression_02() {
 		String query = "SELECT e FROM Employee e WHERE e.name > 'Pascal' AND e.name <> e.lastName";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -101,10 +92,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_03()
-	{
+	public void testBuildExpression_03() {
 		String query = "SELECT e FROM Employee e WHERE e.name > 'Pascal' OR e.name <> e.lastName";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -137,10 +127,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_04()
-	{
+	public void testBuildExpression_04() {
 		String query = "SELECT e FROM Employee e WHERE e.name > 'Pascal' OR e.name <> e.lastName AND e.age = 26";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -185,13 +174,12 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
 		String query = "SELECT e FROM Employee e WHERE " +
 		               "e.name > 'Pascal' AND e.manager >= 'code' OR " +
 		               "e.name <> e.lastName AND e.age = 26";
 
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -248,86 +236,45 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_06()
-	{
-		String query = "SELECT e FROM Employee e WHERE " +
-		               "e.name > 'Pascal' AND e.manager >= 'code' OR " +
-		               "e.age < 21 OR " +
-		               "e.name <> e.lastName AND e.age = 26";
+	public void testBuildExpression_06() {
+		String query = "SELECT e " +
+		               "FROM Employee e " +
+		               "WHERE     e.name > 'Pascal' " +
+		               "      AND    e.manager >= 'code' " +
+		               "          OR " +
+		               "             e.age < 21 " +
+		               "          OR " +
+		               "             e.name <> e.lastName " +
+		               "      AND " +
+		               "          e.age = 26";
 
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					path("e.name").greaterThan(string("'Pascal'"))
+				.and(
+						path("e.manager").greaterThanOrEqual(string("'code'"))
+				)
+				.or(
+					path("e.age").lowerThan(numeric(21))
+				)
+				.or(
+						path("e.name").different(path("e.lastName"))
+					.and(
+						path("e.age").equal(numeric(26))
+					)
+				)
+			)
+		);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
-
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// OrExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof OrExpression);
-		OrExpression orExpression = (OrExpression) expression;
-
-		// AndExpression - e.name > 'Pascal' AND e.manager >= 'code'
-		expression = orExpression.getLeftExpression();
-		assertTrue(expression instanceof AndExpression);
-		AndExpression andExpression = (AndExpression) expression;
-
-			// ComparisonExpression - e.name > 'Pascal'
-			expression = andExpression.getLeftExpression();
-			assertTrue(expression instanceof ComparisonExpression);
-			ComparisonExpression comparisonExpression = (ComparisonExpression) expression;
-
-			assertEquals("e.name > 'Pascal'", comparisonExpression.toParsedText());
-
-			// ComparisonExpression - e.manager >= 'code'
-			expression = andExpression.getRightExpression();
-			assertTrue(expression instanceof ComparisonExpression);
-			comparisonExpression = (ComparisonExpression) expression;
-
-			assertEquals("e.manager >= 'code'", comparisonExpression.toParsedText());
-
-		// OrExpression - e.age < 21 OR e.name <> e.lastName AND e.age = 26
-		expression = orExpression.getRightExpression();
-		assertTrue(expression instanceof OrExpression);
-		orExpression = (OrExpression) expression;
-
-			// ComparisonExpression - e.age < 21
-			expression = orExpression.getLeftExpression();
-			assertTrue(expression instanceof ComparisonExpression);
-			comparisonExpression = (ComparisonExpression) expression;
-
-			assertEquals("e.age < 21", comparisonExpression.toParsedText());
-
-			// AndExpression - e.name <> e.lastName AND e.age = 26
-			expression = orExpression.getRightExpression();
-			assertTrue(expression instanceof AndExpression);
-			andExpression = (AndExpression) expression;
-
-				// ComparisonExpression - e.name <> e.lastName
-				expression = andExpression.getLeftExpression();
-				assertTrue(expression instanceof ComparisonExpression);
-				comparisonExpression = (ComparisonExpression) expression;
-
-				assertEquals("e.name <> e.lastName", comparisonExpression.toParsedText());
-
-				// ComparisonExpression - e.age = 26
-				expression = andExpression.getRightExpression();
-				assertTrue(expression instanceof ComparisonExpression);
-				comparisonExpression = (ComparisonExpression) expression;
-
-				assertEquals("e.age = 26", comparisonExpression.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_07()
-	{
+	public void testBuildExpression_07() {
 		String query = "SELECT e FROM Employee e WHERE AVG(e.age)/mag.salary";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -362,10 +309,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_08()
-	{
+	public void testBuildExpression_08() {
 		String query = "SELECT e FROM Employee e WHERE AVG(e.age)*mag.salary";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -400,11 +346,10 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_09()
-	{
+	public void testBuildExpression_09() {
 		String query = "SELECT e FROM Employee e WHERE AVG(e.age)+mag.salary";
-		query = JPQLQueries.formatPlusSign(query);
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		query = JPQLQueryBuilder.formatPlusSign(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -439,11 +384,10 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_10()
-	{
+	public void testBuildExpression_10() {
 		String query = "SELECT e FROM Employee e WHERE AVG(e.age)-mag.salary";
-		query = JPQLQueries.formatMinusSign(query);
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		query = JPQLQueryBuilder.formatMinusSign(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -455,12 +399,12 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 		assertTrue(expression instanceof WhereClause);
 		WhereClause whereClause = (WhereClause) expression;
 
-		// SubstractionExpression
+		// SubtractionExpression
 		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof SubstractionExpression);
-		SubstractionExpression substractionExpression = (SubstractionExpression) expression;
+		assertTrue(expression instanceof SubtractionExpression);
+		SubtractionExpression substractionExpression = (SubtractionExpression) expression;
 
-		assertSame(SubstractionExpression.MINUS, substractionExpression.getText());
+		assertSame(SubtractionExpression.MINUS, substractionExpression.getText());
 
 		// AvgFuntion
 		expression = substractionExpression.getLeftExpression();
@@ -478,10 +422,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_11()
-	{
+	public void testBuildExpression_11() {
 		String query = "SELECT e FROM Employee e WHERE AVG(e.age)*mag.salary";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -516,10 +459,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_12()
-	{
+	public void testBuildExpression_12() {
 		String query = "SELECT e FROM Employee e WHERE AVG(e.age) / mag.salary";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -554,10 +496,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_13()
-	{
+	public void testBuildExpression_13() {
 		String query = "SELECT e FROM Employee e WHERE -AVG(e.age) / mag.salary";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -581,7 +522,7 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 		assertTrue(expression instanceof ArithmeticFactor);
 		ArithmeticFactor arithmeticFactor = (ArithmeticFactor) expression;
 
-		assertEquals(SubstractionExpression.MINUS, arithmeticFactor.getText());
+		assertEquals(SubtractionExpression.MINUS, arithmeticFactor.getText());
 
 		// AvgFuntion
 		expression = arithmeticFactor.getExpression();
@@ -599,10 +540,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_14()
-	{
+	public void testBuildExpression_14() {
 		String query = "SELECT e FROM Employee e WHERE +AVG(e.age) / mag.salary";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -644,10 +584,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_15()
-	{
+	public void testBuildExpression_15() {
 		String query = "SELECT e FROM Employee e WHERE +AVG(e.age) / -mag.salary";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -685,7 +624,7 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 		assertTrue(expression instanceof ArithmeticFactor);
 		arithmeticFactor = (ArithmeticFactor) expression;
 
-		assertEquals(SubstractionExpression.MINUS, arithmeticFactor.getText());
+		assertEquals(SubtractionExpression.MINUS, arithmeticFactor.getText());
 
 		// StateFieldPathExpression
 		expression = arithmeticFactor.getExpression();
@@ -696,10 +635,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_16()
-	{
+	public void testBuildExpression_16() {
 		String query = "SELECT e FROM Employee e WHERE +AVG(e.age) - -mag.salary";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -711,12 +649,12 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 		assertTrue(expression instanceof WhereClause);
 		WhereClause whereClause = (WhereClause) expression;
 
-		// SubstractionExpression
+		// SubtractionExpression
 		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof SubstractionExpression);
-		SubstractionExpression substractionExpression = (SubstractionExpression) expression;
+		assertTrue(expression instanceof SubtractionExpression);
+		SubtractionExpression substractionExpression = (SubtractionExpression) expression;
 
-		assertSame(SubstractionExpression.MINUS, substractionExpression.getText());
+		assertSame(SubtractionExpression.MINUS, substractionExpression.getText());
 
 		// ArithmeticFactor
 		expression = substractionExpression.getLeftExpression();
@@ -737,7 +675,7 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 		assertTrue(expression instanceof ArithmeticFactor);
 		arithmeticFactor = (ArithmeticFactor) expression;
 
-		assertEquals(SubstractionExpression.MINUS, arithmeticFactor.getText());
+		assertEquals(SubtractionExpression.MINUS, arithmeticFactor.getText());
 
 		// StateFieldPathExpression
 		expression = arithmeticFactor.getExpression();
@@ -748,10 +686,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_17()
-	{
+	public void testBuildExpression_17() {
 		String query = "SELECT e FROM Employee e WHERE +AVG(e.age) = 2 AND -mag.salary";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -801,7 +738,7 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 		assertTrue(expression instanceof ArithmeticFactor);
 		arithmeticFactor = (ArithmeticFactor) expression;
 
-		assertEquals(SubstractionExpression.MINUS, arithmeticFactor.getText());
+		assertEquals(SubtractionExpression.MINUS, arithmeticFactor.getText());
 
 		// StateFieldPathExpression
 		expression = arithmeticFactor.getExpression();
@@ -812,10 +749,9 @@ public final class ConditionalExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_18()
-	{
+	public void testBuildExpression_18() {
 		String query = "SELECT e FROM Employee e WHERE +(SQRT(e.age) + e.age) >= -21";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();

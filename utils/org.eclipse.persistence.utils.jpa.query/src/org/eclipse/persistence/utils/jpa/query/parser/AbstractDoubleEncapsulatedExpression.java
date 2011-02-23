@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -17,8 +17,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * This {@link Expression} takes care of parsing an expression that encapsulates
- * two expressions separated by a comma.
+ * This {@link Expression} takes care of parsing an expression that encapsulates two expressions
+ * separated by a comma.
  *
  * <div nowrap><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression)</code><p>
  *
@@ -30,16 +30,15 @@ import java.util.List;
  * @since 11.2.0
  * @author Pascal Filion
  */
-public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncapsulatedExpression
-{
+public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncapsulatedExpression {
+
 	/**
 	 * The {@link Expression} that represents the first expression.
 	 */
 	private AbstractExpression firstExpression;
 
 	/**
-	 * Determines whether the comma separating the first and second expression
-	 * was parsed.
+	 * Determines whether the comma separating the first and second expression was parsed.
 	 */
 	private boolean hasComma;
 
@@ -58,17 +57,23 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 *
 	 * @param parent The parent of this expression
 	 */
-	AbstractDoubleEncapsulatedExpression(AbstractExpression parent)
-	{
+	AbstractDoubleEncapsulatedExpression(AbstractExpression parent) {
 		super(parent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getFirstExpression().accept(visitor);
+		getSecondExpression().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	void addChildrenTo(Collection<Expression> children) {
 		children.add(getFirstExpression());
 		children.add(getSecondExpression());
 	}
@@ -77,28 +82,24 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedEncapsulatedExpressionTo(List<StringExpression> children)
-	{
+	void addOrderedEncapsulatedExpressionTo(List<StringExpression> children) {
+
 		// Fist expression
-		if (firstExpression != null)
-		{
+		if (firstExpression != null) {
 			children.add(firstExpression);
 		}
 
 		// ','
-		if (hasComma)
-		{
+		if (hasComma) {
 			children.add(buildStringExpression(COMMA));
 		}
 
-		if (hasSpaceAfterComma)
-		{
+		if (hasSpaceAfterComma) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// Second expression
-		if (secondExpression != null)
-		{
+		if (secondExpression != null) {
 			children.add(secondExpression);
 		}
 	}
@@ -108,13 +109,10 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 *
 	 * @return The expression that was parsed representing the first expression
 	 */
-	public final Expression getFirstExpression()
-	{
-		if (firstExpression == null)
-		{
+	public final Expression getFirstExpression() {
+		if (firstExpression == null) {
 			firstExpression = buildNullExpression();
 		}
-
 		return firstExpression;
 	}
 
@@ -123,24 +121,20 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 *
 	 * @return The expression that was parsed representing the second expression
 	 */
-	public final Expression getSecondExpression()
-	{
-		if (secondExpression == null)
-		{
+	public final Expression getSecondExpression() {
+		if (secondExpression == null) {
 			secondExpression = buildNullExpression();
 		}
-
 		return secondExpression;
 	}
 
 	/**
 	 * Determines whether the comma was parsed after the first expression.
 	 *
-	 * @return <code>true</code> if a comma was parsed after the first expression;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if a comma was parsed after the first expression; <code>false</code>
+	 * otherwise
 	 */
-	public final boolean hasComma()
-	{
+	public final boolean hasComma() {
 		return hasComma;
 	}
 
@@ -148,19 +142,17 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean hasEncapsulatedExpression()
-	{
+	boolean hasEncapsulatedExpression() {
 		return hasFirstExpression() || hasComma || hasSecondExpression();
 	}
 
 	/**
 	 * Determines whether the first expression of the query was parsed.
 	 *
-	 * @return <code>true</code> if the first expression was parsed;
-	 * <code>false</code> if it was not parsed
+	 * @return <code>true</code> if the first expression was parsed; <code>false</code> if it was
+	 * not parsed
 	 */
-	public final boolean hasFirstExpression()
-	{
+	public final boolean hasFirstExpression() {
 		return firstExpression != null &&
 		      !firstExpression.isNull();
 	}
@@ -168,11 +160,10 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	/**
 	 * Determines whether the second expression of the query was parsed.
 	 *
-	 * @return <code>true</code> if the second expression was parsed;
-	 * <code>false</code> if it was not parsed
+	 * @return <code>true</code> if the second expression was parsed; <code>false</code> if it was
+	 * not parsed
 	 */
-	public final boolean hasSecondExpression()
-	{
+	public final boolean hasSecondExpression() {
 		return secondExpression != null &&
 		      !secondExpression.isNull();
 	}
@@ -180,11 +171,10 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	/**
 	 * Determines whether a whitespace was parsed after the comma.
 	 *
-	 * @return <code>true</code> if there was a whitespace after the comma;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after the comma; <code>false</code>
+	 * otherwise
 	 */
-	public final boolean hasSpaceAfterComma()
-	{
+	public final boolean hasSpaceAfterComma() {
 		return hasSpaceAfterComma;
 	}
 
@@ -192,20 +182,21 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
+	boolean isParsingComplete(WordParser wordParser, String word) {
 		char character = wordParser.character();
 
 		return character == COMMA             ||
 		       character == RIGHT_PARENTHESIS ||
+		       word.equalsIgnoreCase(AND)     ||
+		       word.equalsIgnoreCase(OR)      ||
 		       super.isParsingComplete(wordParser, word);
 	}
 
 	/**
 	 * Returns the BNF to be used to parse one of the encapsulated expression.
 	 *
-	 * @param index The position of the encapsulated {@link Expression} that
-	 * needs to be parsed within the parenthesis
+	 * @param index The position of the encapsulated {@link Expression} that needs to be parsed
+	 * within the parenthesis
 	 * @return The BNF to be used to parse one of the encapsulated expression
 	 */
 	abstract JPQLQueryBNF parameterExpressionBNF(int index);
@@ -214,48 +205,42 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant)
-	{
+	void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
+
 		int count = 0;
 
 		// Parse the first expression
-		firstExpression = parse
-		(
+		firstExpression = parse(
 			wordParser,
 			parameterExpressionBNF(1),
 			tolerant
 		);
 
-		if (hasFirstExpression())
-		{
+		if (hasFirstExpression()) {
 			count = wordParser.skipLeadingWhitespace();
 		}
 
 		// Parse ','
 		hasComma = wordParser.startsWith(COMMA);
 
-		if (hasComma)
-		{
+		if (hasComma) {
 			count = 0;
 			wordParser.moveForward(1);
 			hasSpaceAfterComma = wordParser.skipLeadingWhitespace() > 0;
 		}
-		else if (hasFirstExpression())
-		{
+		else if (hasFirstExpression()) {
 			hasSpaceAfterComma = (count > 0);
 			count = 0;
 		}
 
 		// Parse the second expression
-		secondExpression = parse
-		(
+		secondExpression = parse(
 			wordParser,
 			parameterExpressionBNF(2),
 			tolerant
 		);
 
-		if (!hasSecondExpression())
-		{
+		if (!hasSecondExpression()) {
 			wordParser.moveBackward(count);
 		}
 	}
@@ -264,28 +249,24 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedTextEncapsulatedExpression(StringBuilder writer)
-	{
+	void toParsedTextEncapsulatedExpression(StringBuilder writer) {
+
 		// First expression
-		if (firstExpression != null)
-		{
+		if (firstExpression != null) {
 			firstExpression.toParsedText(writer);
 		}
 
 		// ','
-		if (hasComma)
-		{
+		if (hasComma) {
 			writer.append(COMMA);
 		}
 
-		if (hasSpaceAfterComma)
-		{
+		if (hasSpaceAfterComma) {
 			writer.append(SPACE);
 		}
 
 		// Second expression
-		if (secondExpression != null)
-		{
+		if (secondExpression != null) {
 			secondExpression.toParsedText(writer);
 		}
 	}

@@ -3,7 +3,7 @@ package jpql.query;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public final class ZipCode
+public class ZipCode
 {
 	private int mainCode;
 	private int code;

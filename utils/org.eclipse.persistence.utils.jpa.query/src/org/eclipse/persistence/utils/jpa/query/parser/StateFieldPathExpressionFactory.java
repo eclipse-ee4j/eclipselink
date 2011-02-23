@@ -3,19 +3,19 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * This {@link StateFieldPathExpressionFactory} is meant to handle the parsing
- * of a portion of the query when it's expected to be a state field path.
+ * This {@link StateFieldPathExpressionFactory} is meant to handle the parsing of a portion of the
+ * query when it's expected to be a state field path.
  *
  * @see StateFieldPathExpression
  *
@@ -24,8 +24,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class StateFieldPathExpressionFactory extends AbstractLiteralExpressionFactory
-{
+final class StateFieldPathExpressionFactory extends AbstractLiteralExpressionFactory {
+
 	/**
 	 * The unique identifier of this {@link StateFieldPathExpressionFactory}.
 	 */
@@ -34,8 +34,7 @@ final class StateFieldPathExpressionFactory extends AbstractLiteralExpressionFac
 	/**
 	 * Creates a new <code>StateFieldPathExpressionFactory</code>.
 	 */
-	StateFieldPathExpressionFactory()
-	{
+	StateFieldPathExpressionFactory() {
 		super(ID);
 	}
 
@@ -47,10 +46,9 @@ final class StateFieldPathExpressionFactory extends AbstractLiteralExpressionFac
 	                                   WordParser wordParser,
 	                                   String word,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
-		if (tolerant && AbstractExpression.isIdentifier(word))
-		{
+	                                   boolean tolerant) {
+
+		if (tolerant && AbstractExpression.isIdentifier(word)) {
 			return null;
 		}
 
@@ -63,8 +61,7 @@ final class StateFieldPathExpressionFactory extends AbstractLiteralExpressionFac
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean shouldSkip(AbstractExpression expression)
-	{
+	boolean shouldSkip(AbstractExpression expression) {
 		return false;
 	}
 }

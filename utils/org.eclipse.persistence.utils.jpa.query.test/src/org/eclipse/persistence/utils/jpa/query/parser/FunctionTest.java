@@ -3,219 +3,128 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 @SuppressWarnings("nls")
-public abstract class FunctionTest extends AbstractJPQLTest
-{
+public abstract class FunctionTest extends AbstractJPQLTest {
+
 	abstract Class<? extends AggregateFunction> functionClass();
 
 	abstract String identifier();
 
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
 	@Test
-	public final void testBuildExpression_01()
-	{
+	public final void testBuildExpression_01() {
 		String query = String.format("SELECT %s(e) FROM Employee e", identifier());
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(aggregateFunctionTester(variable("e"))),
+			from("Employee", "e")
+		);
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
-
-		// AbstractFunction
-		expression = selectClause.getSelectExpression();
-		assertTrue(functionClass().isAssignableFrom(expression.getClass()));
-		AggregateFunction function = (AggregateFunction) expression;
-
-		assertFalse (function.hasDistinct());
-		assertTrue  (function.hasLeftParenthesis());
-		assertTrue  (function.hasRightParenthesis());
-		assertEquals(identifier() + "(e)", function.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
+	abstract AggregateFunctionTester aggregateFunctionTester(ExpressionTester expression);
+
 	@Test
-	public final void testBuildExpression_02()
-	{
+	public final void testBuildExpression_02() {
 		String query = String.format("SELECT %s(DISTINCT e) FROM Employee e", identifier());
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AggregateFunctionTester aggregateFunctionTester = aggregateFunctionTester(variable("e"));
+		aggregateFunctionTester.hasDistinct = true;
+		aggregateFunctionTester.hasSpaceAfterDistinct = true;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(aggregateFunctionTester),
+			from("Employee", "e")
+		);
 
-		// AbstractFunction
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof AggregateFunction);
-		AggregateFunction function = (AggregateFunction) expression;
-
-		assertTrue  (function.hasDistinct());
-		assertTrue  (function.hasLeftParenthesis());
-		assertTrue  (function.hasRightParenthesis());
-		assertEquals(identifier() + "(DISTINCT e)", function.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public final void testBuildExpression_03()
-	{
+	public final void testBuildExpression_03() {
 		String query = String.format("SELECT %s FROM Employee e", identifier());
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AggregateFunctionTester aggregateFunctionTester = aggregateFunctionTester(nullExpression());
+		aggregateFunctionTester.hasLeftParenthesis  = false;
+		aggregateFunctionTester.hasRightParenthesis = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(aggregateFunctionTester),
+			from("Employee", "e")
+		);
 
-		// AbstractFunction
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof AggregateFunction);
-		AggregateFunction function = (AggregateFunction) expression;
-
-		assertFalse (function.hasDistinct());
-		assertFalse (function.hasLeftParenthesis());
-		assertFalse (function.hasRightParenthesis());
-		assertEquals(identifier(), function.toParsedText());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public final void testBuildExpression_04()
-	{
+	public final void testBuildExpression_04() {
 		String query = String.format("SELECT %s( FROM Employee e", identifier());
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AggregateFunctionTester aggregateFunctionTester = aggregateFunctionTester(nullExpression());
+		aggregateFunctionTester.hasRightParenthesis = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(aggregateFunctionTester),
+			from("Employee", "e")
+		);
 
-		// AbstractFunction
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof AggregateFunction);
-		AggregateFunction function = (AggregateFunction) expression;
-
-		assertFalse (function.hasDistinct());
-		assertTrue  (function.hasLeftParenthesis());
-		assertFalse (function.hasRightParenthesis());
-		assertEquals(identifier() + "(", function.toParsedText());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public final void testBuildExpression_05()
-	{
+	public final void testBuildExpression_05() {
 		String query = String.format("SELECT %s() FROM Employee e", identifier());
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(aggregateFunctionTester(nullExpression())),
+			from("Employee", "e")
+		);
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
-
-		// AbstractFunction
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof AggregateFunction);
-		AggregateFunction function = (AggregateFunction) expression;
-
-		assertFalse (function.hasDistinct());
-		assertTrue  (function.hasLeftParenthesis());
-		assertTrue  (function.hasRightParenthesis());
-		assertEquals(identifier() + "()", function.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public final void testBuildExpression_06()
-	{
+	public final void testBuildExpression_06() {
 		String query = String.format("SELECT %s (DISTINCT) FROM Employee e", identifier());
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AggregateFunctionTester aggregateFunctionTester = aggregateFunctionTester(nullExpression());
+		aggregateFunctionTester.hasDistinct = true;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(aggregateFunctionTester),
+			from("Employee", "e")
+		);
 
-		// AbstractFunction
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof AggregateFunction);
-		AggregateFunction function = (AggregateFunction) expression;
-
-		assertTrue  (function.hasDistinct());
-		assertTrue  (function.hasLeftParenthesis());
-		assertTrue  (function.hasRightParenthesis());
-		assertEquals(identifier() + "(DISTINCT)", function.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public final void testBuildExpression_07()
-	{
+	public final void testBuildExpression_07() {
 		String query = String.format("SELECT %s (DISTINCT FROM Employee e", identifier());
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AggregateFunctionTester aggregateFunctionTester = aggregateFunctionTester(nullExpression());
+		aggregateFunctionTester.hasDistinct = true;
+		aggregateFunctionTester.hasSpaceAfterDistinct = true;
+		aggregateFunctionTester.hasRightParenthesis = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		SelectStatementTester selectStatement = selectStatement(
+			select(aggregateFunctionTester),
+			from("Employee", "e")
+		);
 
-		// AbstractFunction
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof AggregateFunction);
-		AggregateFunction function = (AggregateFunction) expression;
-
-		assertTrue  (function.hasDistinct());
-		assertTrue  (function.hasLeftParenthesis());
-		assertFalse (function.hasRightParenthesis());
-		assertEquals(identifier() + "(DISTINCT ", function.toParsedText());
+		selectStatement.hasSpaceAfterSelect = false;
+		testInvalidQuery(query, selectStatement);
 	}
 }

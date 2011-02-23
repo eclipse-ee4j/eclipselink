@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -18,19 +18,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
-public final class ExistsExpressionTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
+public final class ExistsExpressionTest extends AbstractJPQLTest {
 	@Test
-	public void testBuildExpression_1()
-	{
+	public void testBuildExpression_1() {
 		String query = "SELECT e FROM Employee e WHERE EXISTS (SELECT e FROM Employee e)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -78,10 +70,9 @@ public final class ExistsExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_2()
-	{
+	public void testBuildExpression_2() {
 		String query = "SELECT e FROM Employee e WHERE NOT EXISTS (SELECT e FROM Employee e)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -131,10 +122,9 @@ public final class ExistsExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_3()
-	{
+	public void testBuildExpression_3() {
 		String query = "SELECT e FROM Employee e WHERE EXISTS";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -161,10 +151,9 @@ public final class ExistsExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_4()
-	{
+	public void testBuildExpression_4() {
 		String query = "SELECT e FROM Employee e WHERE EXISTS(";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -191,10 +180,9 @@ public final class ExistsExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_5()
-	{
+	public void testBuildExpression_5() {
 		String query = "SELECT e FROM Employee e WHERE EXISTS()";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -221,10 +209,9 @@ public final class ExistsExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_6()
-	{
+	public void testBuildExpression_6() {
 		String query = "SELECT e FROM Employee e WHERE EXISTS GROUP BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -253,10 +240,9 @@ public final class ExistsExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_7()
-	{
+	public void testBuildExpression_7() {
 		String query = "SELECT e FROM Employee e WHERE EXISTS( GROUP BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -285,10 +271,9 @@ public final class ExistsExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_8()
-	{
+	public void testBuildExpression_8() {
 		String query = "SELECT e FROM Employee e WHERE EXISTS (SELECT e FROM Employee e WHERE e.name = 'Pascal' GROUP BY e.name HAVING e.age > 21)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();

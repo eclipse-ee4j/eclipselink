@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -25,15 +25,14 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.2.0
  * @author Pascal Filion
  */
-public abstract class EncapsulatedIdentificationVariableExpression extends AbstractSingleEncapsulatedExpression
-{
+public abstract class EncapsulatedIdentificationVariableExpression extends AbstractSingleEncapsulatedExpression {
+
 	/**
 	 * Creates a new <code>MapEntryIdentificationVariableExpression</code>.
 	 *
 	 * @param parent The parent of this expression
 	 */
-	EncapsulatedIdentificationVariableExpression(AbstractExpression parent)
-	{
+	EncapsulatedIdentificationVariableExpression(AbstractExpression parent) {
 		super(parent);
 	}
 
@@ -41,33 +40,15 @@ public abstract class EncapsulatedIdentificationVariableExpression extends Abstr
 	 * {@inheritDoc}
 	 */
 	@Override
-	final JPQLQueryBNF encapsulatedExpressionBNF()
-	{
+	final JPQLQueryBNF encapsulatedExpressionBNF() {
 		return queryBNF(PreLiteralExpressionBNF.ID);
 	}
 
 	/**
-	 * Returns the identifier this expression represents.
-	 *
-	 * @return Either <b>KEY</b>, <b>VALUE</b>, or <b>MAP</b>
-	 */
-	public abstract String getIdentifier();
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	final JPQLQueryBNF getQueryBNF()
-	{
+	final JPQLQueryBNF getQueryBNF() {
 		return queryBNF(GeneralIdentificationVariableBNF.ID);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	final String parseIdentifier(WordParser wordParser)
-	{
-		return getIdentifier();
 	}
 }

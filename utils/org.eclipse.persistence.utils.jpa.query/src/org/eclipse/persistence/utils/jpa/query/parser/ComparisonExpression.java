@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -52,35 +52,30 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class ComparisonExpression extends CompoundExpression
-{
+public final class ComparisonExpression extends CompoundExpression {
+
 	/**
 	 * Creates a new <code>ComparisonExpression</code>.
 	 *
 	 * @param parent The parent of this expression
 	 */
-	ComparisonExpression(AbstractExpression parent)
-	{
+	ComparisonExpression(AbstractExpression parent) {
 		super(parent, EMPTY_STRING);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	/**
-	 * Returns the comparison operator, which is either '=', '>', '>=', '<', '<='
-	 * or '<>'.
+	 * Returns the comparison operator, which is either '=', '>', '>=', '<', '<=' or '<>'.
 	 *
 	 * @return The operator comparing the two expressions
 	 */
-	public String getComparisonOperator()
-	{
+	public String getComparisonOperator() {
 		return getText();
 	}
 
@@ -88,8 +83,7 @@ public final class ComparisonExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(ComparisonExpressionBNF.ID);
 	}
 
@@ -97,9 +91,10 @@ public final class ComparisonExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
+	boolean isParsingComplete(WordParser wordParser, String word) {
 		return wordParser.character() == RIGHT_PARENTHESIS ||
+		       word.equalsIgnoreCase(OR)                   ||
+		       word.equalsIgnoreCase(AND)                  ||
 		       super.isParsingComplete(wordParser, word);
 	}
 
@@ -107,32 +102,25 @@ public final class ComparisonExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	String parseIdentifier(WordParser wordParser)
-	{
-		switch (wordParser.character())
-		{
-			case '<':
-			{
-				switch (wordParser.character(wordParser.position() + 1))
-				{
+	String parseIdentifier(WordParser wordParser) {
+		switch (wordParser.character()) {
+			case '<': {
+				switch (wordParser.character(wordParser.position() + 1)) {
 					case '=': return LOWER_THAN_OR_EQUAL;
 					case '>': return DIFFERENT;
 					default:  return LOWER_THAN;
 				}
 			}
 
-			case '>':
-			{
-				switch (wordParser.character(wordParser.position() + 1))
-				{
+			case '>': {
+				switch (wordParser.character(wordParser.position() + 1)) {
 					case '=': return GREATER_THAN_OR_EQUAL;
 					default:  return GREATER_THAN;
 				}
 			}
 
 			// =
-			default:
-			{
+			default: {
 				return EQUAL;
 			}
 		}
@@ -142,8 +130,7 @@ public final class ComparisonExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF rightExpressionBNF()
-	{
+	JPQLQueryBNF rightExpressionBNF() {
 		return getQueryBNF();
 	}
 }

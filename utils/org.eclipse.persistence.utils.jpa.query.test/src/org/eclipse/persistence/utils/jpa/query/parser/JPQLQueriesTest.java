@@ -3,78 +3,70 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 import java.lang.reflect.Method;
-import org.eclipse.persistence.utils.jpa.query.parser.JPQLTests.QueryStringFormatter;
 import org.junit.Assert;
 import org.junit.Test;
 
 import static org.eclipse.persistence.utils.jpa.query.parser.JPQLQueries.*;
 
+/**
+ * This unit-tests tests the parsed tree representation of a JPQL query.
+ *
+ * @version 11.2.0
+ * @since 11.0.0
+ * @author Pascal Filion
+ */
 @SuppressWarnings("nls")
-public abstract class JPQLQueriesTest extends AbstractJPQLTest
-{
-	private QueryStringFormatter buildQueryStringFormatter_042()
-	{
-		return new QueryStringFormatter()
-		{
-			@Override
-			public String format(String query)
-			{
+public final class JPQLQueriesTest extends AbstractJPQLTest {
+
+	private JPQLQueryStringFormatter buildQueryStringFormatter_042() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
 				return query.replace("'NEW", "'New");
 			}
 		};
 	}
 
-	private QueryStringFormatter buildQueryStringFormatter_191()
-	{
-		return new QueryStringFormatter()
-		{
-			@Override
-			public String format(String query)
-			{
+	private JPQLQueryStringFormatter buildQueryStringFormatter_191() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
 				return query.replace("1,3,5,7", "1, 3, 5, 7");
 			}
 		};
 	}
 
 	@Test
-	public void test_AllQueriesAreTested() throws Exception
-	{
+	public void test_AllQueriesAreTested() throws Exception {
 		Method[] queryMethods = JPQLQueries    .class.getDeclaredMethods();
 		Method[] testMethods  = JPQLQueriesTest.class.getDeclaredMethods();
 		int queryMethodCount  = 0;
 		int testMethodCount   = 0;
 
 		// Count the number of queries
-		for (Method method : queryMethods)
-		{
-			if (method.getName().startsWith("query_"))
-			{
+		for (Method method : queryMethods) {
+			if (method.getName().startsWith("query_")) {
 				queryMethodCount++;
 			}
 		}
 
 		// Count the number of methods that test the queries
-		for (Method method : testMethods)
-		{
-			if (method.getName().startsWith("test_Query_"))
-			{
+		for (Method method : testMethods) {
+			if (method.getName().startsWith("test_Query_")) {
 				testMethodCount++;
 			}
 		}
 
-		Assert.assertEquals
-		(
+		Assert.assertEquals(
 			"The number of queries and unit-tests don't match",
 			queryMethodCount,
 			testMethodCount
@@ -82,12 +74,11 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_001()
-	{
+	public void test_Query_001() {
+
 		// SELECT e FROM Employee e
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e")
 		);
@@ -96,12 +87,11 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_002()
-	{
+	public void test_Query_002() {
+
 		// SELECT e\nFROM Employee e
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e")
 		);
@@ -110,15 +100,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_003()
-	{
+	public void test_Query_003() {
+
 		// SELECT e
       // FROM Employee e
       // WHERE e.department.name = 'NA42' AND
       //       e.address.state IN ('NY', 'CA')
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(
@@ -133,24 +122,24 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_004()
-	{
+	public void test_Query_004() {
+
 		// SELECT p.number
 		// FROM Employee e, Phone p
 		// WHERE     e = p.employee
 		//       AND e.department.name = 'NA42'
 		//       AND p.type = 'Cell'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("p.number")),
 			from("Employee", "e", "Phone", "p"),
 			where(
 					variable("e").equal(path("p.employee"))
 				.and(
 					path("e.department.name").equal(string("'NA42'"))
+				)
 				.and(
-					path("p.type").equal(string("'Cell'")))
+					path("p.type").equal(string("'Cell'"))
 				)
 			)
 		);
@@ -159,15 +148,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_005()
-	{
+	public void test_Query_005() {
+
 		// SELECT d, COUNT(e), MAX(e.salary), AVG(e.salary)
 		// FROM Department d JOIN d.employees e
 		// GROUP BY d
 		// HAVING COUNT(e) >= 5
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(
 				variable("d"),
 				count(variable("e")),
@@ -184,8 +172,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_006()
-	{
+	public void test_Query_006() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE     e.department = ?1
@@ -196,8 +184,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 			.and(
 				path("e.salary").greaterThan(inputParameter("?2")));
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(andExpression)
@@ -207,8 +194,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_007()
-	{
+	public void test_Query_007() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE     e.department = :dept
@@ -219,8 +206,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 			.and(
 				path("e.salary").greaterThan(inputParameter(":base")));
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(andExpression)
@@ -230,8 +216,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_008()
-	{
+	public void test_Query_008() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE     e.department = 'NA65'
@@ -242,8 +228,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 			.and(
 				path("e.name").equal(string("'UNKNOWN'' OR e.name = ''Roberts'")));
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(andExpression)
@@ -253,14 +238,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_009()
-	{
+	public void test_Query_009() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE e.startDate BETWEEN ?1 AND ?2
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.startDate").between(inputParameter("?1"), inputParameter("?2")))
@@ -270,8 +254,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_010()
-	{
+	public void test_Query_010() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE e.department = :dept AND
@@ -279,8 +263,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 		//                  FROM Employee e
 		//                  WHERE e.department = :dept)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(max("e.salary")),
 			subFrom("Employee", "e"),
 			where(path("e.department").equal(inputParameter(":dept")))
@@ -291,8 +274,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 			.and(
 				path("e.salary").equal(subExpression(subquery)));
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(andExpression)
@@ -302,15 +284,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_011()
-	{
+	public void test_Query_011() {
+
 		// SELECT e
 		// FROM Project p JOIN p.employees e
 		// WHERE p.name = ?1
 		// ORDER BY e.name
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Project", "p", join("p.employees", "e")),
 			where(path("p.name").equal(inputParameter("?1"))),
@@ -323,14 +304,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_012()
-	{
+	public void test_Query_012() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE e.projects IS EMPTY";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(isEmpty("e.projects"))
@@ -340,14 +320,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_013()
-	{
+	public void test_Query_013() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE e.projects IS NOT EMPTY";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(isNotEmpty("e.projects"))
@@ -357,14 +336,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_014()
-	{
+	public void test_Query_014() {
+
 		// UPDATE Employee e
 		// SET e.manager = ?1
 		// WHERE e.department = ?2
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update("Employee", "e", set("e.manager", inputParameter("?1"))),
 			where(path("e.department").equal(inputParameter("?2")))
 		);
@@ -373,13 +351,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_015()
-	{
+	public void test_Query_015() {
+
 		// DELETE FROM Project p
       // WHERE p.employees IS EMPTY
 
-		ExpressionTester deleteStatement = deleteStatement
-		(
+		ExpressionTester deleteStatement = deleteStatement(
 			"Project",
 			"p",
 			where(isEmpty("p.employees"))
@@ -389,21 +366,19 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_016()
-	{
+	public void test_Query_016() {
+
 		// DELETE FROM Department d
 		// WHERE d.name IN ('CA13', 'CA19', 'NY30')
 
-		ExpressionTester inExpression = in
-		(
+		ExpressionTester inExpression = in(
 			"d.name",
 			string("'CA13'"),
 			string("'CA19'"),
 			string("'NY30'")
 		);
 
-		ExpressionTester deleteStatement = deleteStatement
-		(
+		ExpressionTester deleteStatement = deleteStatement(
 			"Department",
 			"d",
 			where(inExpression)
@@ -413,14 +388,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_017()
-	{
+	public void test_Query_017() {
+
 		// UPDATE Employee e
 		// SET e.department = null
 		// WHERE e.department.name IN ('CA13', 'CA19', 'NY30')
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update("Employee", "e", set("e.department", NULL())),
 			where(path("e.department.name").in(string("'CA13'"), string("'CA19'"), string("'NY30'")))
 		);
@@ -429,21 +403,19 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_018()
-	{
+	public void test_Query_018() {
+
 		// SELECT d
 		// FROM Department d
 		// WHERE d.name LIKE 'QA\\_%' ESCAPE '\\'
 
-		ExpressionTester likeExpression = like
-		(
+		ExpressionTester likeExpression = like(
 			path("d.name"),
 			string("'QA\\_%'"),
 			'\\'
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("d")),
 			from("Department", "d"),
 			where(likeExpression)
@@ -453,26 +425,23 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_019()
-	{
+	public void test_Query_019() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE e.salary = (SELECT MAX(e2.salary) FROM Employee e2)
 
-		ExpressionTester subQuery = subquery
-		(
+		ExpressionTester subQuery = subquery(
 			subSelect(max("e2.salary")),
 			subFrom("Employee", "e2")
 		);
 
-		ExpressionTester comparisonExpression = equal
-		(
+		ExpressionTester comparisonExpression = equal(
 			path("e.salary"),
 			subExpression(subQuery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(comparisonExpression)
@@ -482,33 +451,29 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_020()
-	{
+	public void test_Query_020() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE EXISTS (SELECT p FROM Phone p WHERE p.employee = e AND p.type = 'Cell')
 
-		ExpressionTester comparisonExpression1 = equal
-		(
+		ExpressionTester comparisonExpression1 = equal(
 			path("p.employee"),
 			variable("e")
 		);
 
-		ExpressionTester comparisonExpression2 = equal
-		(
+		ExpressionTester comparisonExpression2 = equal(
 			path("p.type"),
 			string("'Cell'")
 		);
 
-		ExpressionTester subQuery = subquery
-		(
+		ExpressionTester subQuery = subquery(
 			subSelect(variable("p")),
 			subFrom("Phone", "p"),
 			where(and(comparisonExpression1, comparisonExpression2))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(exists(subQuery))
@@ -518,14 +483,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_021()
-	{
+	public void test_Query_021() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE EXISTS (SELECT p FROM e.phones p WHERE p.type = 'Cell')
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(
@@ -543,23 +507,21 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_022()
-	{
+	public void test_Query_022() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE e.department IN (SELECT DISTINCT d
 		//                        FROM Department d JOIN d.employees de JOIN de.projects p
 		//                        WHERE p.name LIKE 'QA%')
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelectDistinct(variable("d")),
 			subFrom("Department", "d", join("d.employees", "de"), join("de.projects", "p")),
 			where(like(path("p.name"), string("'QA%'")))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(in("e.department", subquery))
@@ -569,21 +531,19 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_023()
-	{
+	public void test_Query_023() {
+
 		// SELECT p
 		// FROM Phone p
 		// WHERE p.type NOT IN ('Office', 'Home')
 
-		ExpressionTester notInExpression = notIn
-		(
+		ExpressionTester notInExpression = notIn(
 			"p.type",
 			string("'Office'"),
 			string("'Home'")
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("p")),
 			from("Phone", "p"),
 			where(notInExpression)
@@ -593,35 +553,31 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_024()
-	{
+	public void test_Query_024() {
+
 		// SELECT m
 		// FROM Employee m
 		// WHERE (SELECT COUNT(e)
 		//        FROM Employee e
 		//        WHERE e.manager = m) > 0
 
-		ExpressionTester comparisonExpression1 = equal
-		(
+		ExpressionTester comparisonExpression1 = equal(
 			path("e.manager"),
 			variable("m")
 		);
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(count(variable("e"))),
 			subFrom("Employee", "e"),
 			where(comparisonExpression1)
 		);
 
-		ExpressionTester comparisonExpression2 = greaterThan
-		(
+		ExpressionTester comparisonExpression2 = greaterThan(
 			subExpression(subquery),
 			numeric(0L)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("m")),
 			from("Employee", "m"),
 			where(comparisonExpression2)
@@ -631,14 +587,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_025()
-	{
+	public void test_Query_025() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE e MEMBER OF e.directs
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(memberOf("e", "e.directs"))
@@ -648,29 +603,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_026()
-	{
+	public void test_Query_026() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE NOT EXISTS (SELECT p
 		//                   FROM e.phones p
 		//                   WHERE p.type = 'Cell')
 
-		ExpressionTester comparisonExpression = equal
-		(
+		ExpressionTester comparisonExpression = equal(
 			path("p.type"),
 			string("'Cell'")
 		);
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(variable("p")),
 			subFrom(fromCollection("e.phones", "p")),
 			where(comparisonExpression)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(notExists(subquery))
@@ -680,33 +632,29 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_027()
-	{
+	public void test_Query_027() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE e.directs IS NOT EMPTY AND
 		//       e.salary < ALL (SELECT d.salary FROM e.directs d)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(path("d.salary")),
 			subFrom(fromCollection("e.directs", "d"))
 		);
 
-		ExpressionTester comparisonExpression = lowerThan
-		(
+		ExpressionTester comparisonExpression = lowerThan(
 			path("e.salary"),
 			all(subquery)
 		);
 
-		ExpressionTester andExpression = and
-		(
+		ExpressionTester andExpression = and(
 			isNotEmpty("e.directs"),
 			comparisonExpression
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(andExpression)
@@ -716,28 +664,25 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_028()
-	{
+	public void test_Query_028() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE e.department = ANY (SELECT DISTINCT d FROM Department d JOIN d.employees de JOIN de.projects p
 		//                           WHERE p.name LIKE 'QA%')
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelectDistinct(variable("d")),
 			subFrom("Department", "d", join("d.employees", "de"), join("de.projects", "p")),
 			where(like(path("p.name"), string("'QA%'")))
 		);
 
-		ExpressionTester comparisonExpression = equal
-		(
+		ExpressionTester comparisonExpression = equal(
 			path("e.department"),
 			anyExpression(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(comparisonExpression)
@@ -747,14 +692,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_029()
-	{
+	public void test_Query_029() {
+
 		// SELECT d
 		// FROM Department d
 		// WHERE SIZE(d.employees) = 2
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("d")),
 			from("Department", "d"),
 			where(equal(size("d.employees"), numeric(2L)))
@@ -764,21 +708,19 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_030()
-	{
+	public void test_Query_030() {
+
 		// SELECT d
       // FROM Department d
       // WHERE (SELECT COUNT(e)
       //        FROM d.employees e) = 2
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(count(variable("e"))),
 			subFrom(fromCollection("d.employees", "e"))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("d")),
 			from("Department", "d"),
 			where(equal(subExpression(subquery), numeric(2)))
@@ -788,14 +730,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_031()
-	{
+	public void test_Query_031() {
+
 		// SELECT e
 		// FROM Employee e
 		// ORDER BY e.name DESC
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			nullExpression(),
@@ -808,14 +749,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_032()
-	{
+	public void test_Query_032() {
+
 		// SELECT e
       // FROM Employee e JOIN e.department d
       // ORDER BY d.name, e.name DESC
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e", join("e.department", "d")),
 			nullExpression(),
@@ -831,11 +771,10 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_033()
-	{
+	public void test_Query_033() {
+
 		// SELECT AVG(e.salary) FROM Employee e
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(avg("e.salary")),
 			from("Employee", "e")
 		);
@@ -844,14 +783,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_034()
-	{
+	public void test_Query_034() {
+
 		// SELECT d.name, AVG(e.salary)
 		// FROM Department d JOIN d.employees e
 		// GROUP BY d.name
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("d.name"), avg("e.salary")),
 			from("Department", "d", join("d.employees", "e")),
 			nullExpression(),
@@ -864,15 +802,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_035()
-	{
+	public void test_Query_035() {
+
 		// SELECT d.name, AVG(e.salary)
       // FROM Department d JOIN d.employees e
       // WHERE e.directs IS EMPTY
       // GROUP BY d.name
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("d.name"), avg("e.salary")),
 			from("Department", "d", join("d.employees", "e")),
 			where(isEmpty("e.directs")),
@@ -885,16 +822,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_036()
-	{
+	public void test_Query_036() {
+
 		// SELECT d.name, AVG(e.salary)
       // FROM Department d JOIN d.employees e
       // WHERE e.directs IS EMPTY
       // GROUP BY d.name
       // HAVING AVG(e.salary) > 50000
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("d.name"), avg("e.salary")),
 			from("Department", "d", join("d.employees", "e")),
 			where(isEmpty("e.directs")),
@@ -907,14 +843,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_037()
-	{
+	public void test_Query_037() {
+
 		// SELECT e, COUNT(p), COUNT(DISTINCT p.type)
 		// FROM Employee e JOIN e.phones p
 		// GROUP BY e
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e"),
 			       count(variable("p")),
 			       countDistinct(path("p.type"))),
@@ -929,14 +864,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_038()
-	{
+	public void test_Query_038() {
+
 		// SELECT d.name, e.salary, COUNT(p)
 		// FROM Department d JOIN d.employees e JOIN e.projects p
 		// GROUP BY d.name, e.salary
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("d.name"),
 			       path("e.salary"),
 			       count(variable("p"))),
@@ -952,15 +886,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_039()
-	{
+	public void test_Query_039() {
+
 		// SELECT e, COUNT(p)
 		// FROM Employee e JOIN e.projects p
 		// GROUP BY e
 		// HAVING COUNT(p) >= 2
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e"), count(variable("p"))),
 			from("Employee", "e", join("e.projects", "p")),
 			nullExpression(),
@@ -973,14 +906,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_040()
-	{
+	public void test_Query_040() {
+
 		// UPDATE Employee e
 		// SET e.salary = 60000
 		// WHERE e.salary = 55000
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update("Employee", "e", set("e.salary", numeric(60000))),
 			where(equal(path("e.salary"), numeric(55000)))
 		);
@@ -989,29 +921,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_041()
-	{
+	public void test_Query_041() {
+
 		// UPDATE Employee e
 		// SET e.salary = e.salary + 5000
 		// WHERE EXISTS (SELECT p
 		//               FROM e.projects p
 		//               WHERE p.name = 'Release1')
 
-		ExpressionTester additionExpression = add
-		(
+		ExpressionTester additionExpression = add(
 			path("e.salary"),
 			numeric(5000)
 		);
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(variable("p")),
 			subFrom(fromCollection("e.projects", "p")),
 			where(equal(path("p.name"), string("'Release1'")))
 		);
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update("Employee", "e", set("e.salary", additionExpression)),
 			where(exists(subquery))
 		);
@@ -1020,34 +949,29 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_042()
-	{
+	public void test_Query_042() {
+
 		// UPDATE Phone p
 		// SET p.number = CONCAT('288', SUBSTRING(p.number, LOCATE(p.number, '-'), 4)),
 		//     p.type = 'Business'
 		// WHERE p.employee.address.city = 'New York' AND p.type = 'Office'
 
-		ExpressionTester concatExpression = concat
-		(
+		ExpressionTester concatExpression = concat(
 			string("'288'"),
-			substring
-			(
+			substring(
 				path("p.number"),
 				locate(path("p.number"), string("'-'")),
 				numeric(4L)
 			)
 		);
 
-		ExpressionTester andExpression = and
-		(
+		ExpressionTester andExpression = and(
 			equal(path("p.employee.address.city"), string("'New York'")),
 			equal(path("p.type"), string("'Office'"))
 		);
 
-		ExpressionTester updateStatement = updateStatement
-		(
-			update
-			(
+		ExpressionTester updateStatement = updateStatement(
+			update(
 				"Phone", "p",
 				set("p.number", concatExpression),
 				set("p.type", string("'Business'"))
@@ -1059,13 +983,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_043()
-	{
+	public void test_Query_043() {
+
 		// DELETE FROM Employee e
 		// WHERE e.department IS NULL";
 
-		ExpressionTester deleteStatement = deleteStatement
-		(
+		ExpressionTester deleteStatement = deleteStatement(
 			"Employee", "e",
 			where(isNull(path("e.department")))
 		);
@@ -1074,29 +997,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_044()
-	{
+	public void test_Query_044() {
+
 		// Select Distinct object(c)
 		// From Customer c, In(c.orders) co
 		// Where co.totalPrice >= Some (Select o.totalPrice
 		//                              From Order o, In(o.lineItems) l
 		//                              Where l.quantity = 3)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(path("o.totalPrice")),
 			subFrom(fromEntity("Order", "o"), fromIn("o.lineItems", "l")),
 			where(equal(path("l.quantity"), numeric(3L)))
 		);
 
-		ExpressionTester comparisonExpression = greaterThanOrEqual
-		(
+		ExpressionTester comparisonExpression = greaterThanOrEqual(
 			path("co.totalPrice"),
 			some(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(comparisonExpression)
@@ -1106,29 +1026,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_045()
-	{
+	public void test_Query_045() {
+
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
 		// WHERE co.totalPrice <= SOME (Select o.totalPrice
 		//                              FROM Order o, IN(o.lineItems) l
 		//                              WHERE l.quantity = 3)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(path("o.totalPrice")),
 			subFrom(fromEntity("Order", "o"), fromIn("o.lineItems", "l")),
 			where(equal(path("l.quantity"), numeric(3L)))
 		);
 
-		ExpressionTester comparisonExpression = lowerThanOrEqual
-		(
+		ExpressionTester comparisonExpression = lowerThanOrEqual(
 			path("co.totalPrice"),
 			some(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(comparisonExpression)
@@ -1138,26 +1055,23 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_046()
-	{
+	public void test_Query_046() {
+
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
 		// WHERE co.totalPrice = ANY (Select MAX(o.totalPrice) FROM Order o)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(max("o.totalPrice")),
 			subFrom("Order", "o")
 		);
 
-		ExpressionTester comparisonExpression = equal
-		(
+		ExpressionTester comparisonExpression = equal(
 			path("co.totalPrice"),
 			any(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(comparisonExpression)
@@ -1167,29 +1081,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_047()
-	{
+	public void test_Query_047() {
+
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
 		// WHERE co.totalPrice < ANY (Select o.totalPrice
 		//                            FROM Order o, IN(o.lineItems) l
 		//                            WHERE l.quantity = 3)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(path("o.totalPrice")),
 			subFrom(fromEntity("Order", "o"), fromIn("o.lineItems", "l")),
 			where(equal(path("l.quantity"), numeric(3L)))
 		);
 
-		ExpressionTester comparisonExpression = lowerThan
-		(
+		ExpressionTester comparisonExpression = lowerThan(
 			path("co.totalPrice"),
 			any(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(comparisonExpression)
@@ -1199,16 +1110,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_048()
-	{
+	public void test_Query_048() {
+
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
 		// WHERE co.totalPrice > ANY (Select o.totalPrice
 		//                            FROM Order o, IN(o.lineItems) l
 		//                            WHERE l.quantity = 3)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(
@@ -1227,26 +1137,23 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_049()
-	{
+	public void test_Query_049() {
+
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
 		// WHERE co.totalPrice <> ALL (Select MIN(o.totalPrice) FROM Order o)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(min("o.totalPrice")),
 			subFrom("Order", "o")
 		);
 
-		ExpressionTester comparisonExpression = different
-		(
+		ExpressionTester comparisonExpression = different(
 			path("co.totalPrice"),
 			all(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(comparisonExpression)
@@ -1256,29 +1163,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_050()
-	{
+	public void test_Query_050() {
+
 		// SELECT Distinct object(c)
       // FROM Customer c, IN(c.orders) co
       // WHERE co.totalPrice >= ALL (Select o.totalPrice
 		//                             FROM Order o, IN(o.lineItems) l
 		//                             WHERE l.quantity >= 3)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(path("o.totalPrice")),
 			subFrom(fromEntity("Order", "o"), fromIn("o.lineItems", "l")),
 			where(greaterThanOrEqual(path("l.quantity"), numeric(3L)))
 		);
 
-		ExpressionTester comparisonExpression = greaterThanOrEqual
-		(
+		ExpressionTester comparisonExpression = greaterThanOrEqual(
 			path("co.totalPrice"),
 			all(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(comparisonExpression)
@@ -1288,29 +1192,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_051()
-	{
+	public void test_Query_051() {
+
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
 		// WHERE co.totalPrice <= ALL (Select o.totalPrice
 		//                             FROM Order o, IN(o.lineItems) l
 		//                             WHERE l.quantity > 3)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(path("o.totalPrice")),
 			subFrom(fromEntity("Order", "o"), fromIn("o.lineItems", "l")),
 			where(greaterThan(path("l.quantity"), numeric(3L)))
 		);
 
-		ExpressionTester comparisonExpression = lowerThanOrEqual
-		(
+		ExpressionTester comparisonExpression = lowerThanOrEqual(
 			path("co.totalPrice"),
 			all(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(comparisonExpression)
@@ -1320,26 +1221,23 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_052()
-	{
+	public void test_Query_052() {
+
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
 		// WHERE co.totalPrice = ALL (Select MIN(o.totalPrice) FROM Order o)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(min("o.totalPrice")),
 			subFrom("Order", "o")
 		);
 
-		ExpressionTester comparisonExpression = equal
-		(
+		ExpressionTester comparisonExpression = equal(
 			path("co.totalPrice"),
 			all(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(comparisonExpression)
@@ -1349,29 +1247,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_053()
-	{
+	public void test_Query_053() {
+
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
 		// WHERE co.totalPrice < ALL (Select o.totalPrice
 		//                            FROM Order o, IN(o.lineItems) l
 		//                            WHERE l.quantity > 3)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(path("o.totalPrice")),
 			subFrom(fromEntity("Order", "o"), fromIn("o.lineItems", "l")),
 			where(greaterThan(path("l.quantity"), numeric(3L)))
 		);
 
-		ExpressionTester comparisonExpression = lowerThan
-		(
+		ExpressionTester comparisonExpression = lowerThan(
 			path("co.totalPrice"),
 			all(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(comparisonExpression)
@@ -1381,29 +1276,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_054()
-	{
+	public void test_Query_054() {
+
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
 		// WHERE co.totalPrice > ALL (Select o.totalPrice
 		//                            FROM Order o, IN(o.lineItems) l
 		//                            WHERE l.quantity > 3)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(path("o.totalPrice")),
 			subFrom(fromEntity("Order", "o"), fromIn("o.lineItems", "l")),
 			where(greaterThan(path("l.quantity"), numeric(3L)))
 		);
 
-		ExpressionTester comparisonExpression = greaterThan
-		(
+		ExpressionTester comparisonExpression = greaterThan(
 			path("co.totalPrice"),
 			all(subquery)
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.orders", "co")),
 			where(comparisonExpression)
@@ -1413,16 +1305,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_055()
-	{
+	public void test_Query_055() {
+
 		// SELECT DISTINCT c
 		// FROM Customer c JOIN c.orders o
 		// WHERE EXISTS (SELECT l
 		//               FROM o.lineItems l
 		//               where l.quantity > 3)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c", join("c.orders", "o")),
 			where(
@@ -1440,23 +1331,21 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_056()
-	{
+	public void test_Query_056() {
+
 		// SELECT DISTINCT c
 		// FROM Customer c JOIN c.orders o
 		// WHERE EXISTS (SELECT o
 		//               FROM c.orders o
 		//               where o.totalPrice BETWEEN 1000 AND 1200)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(variable("o")),
 			subFrom(fromCollection("c.orders", "o")),
 			where(between(path("o.totalPrice"), numeric(1000L), numeric(1200L)))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c", join("c.orders", "o")),
 			where(exists(subquery))
@@ -1466,16 +1355,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_057()
-	{
+	public void test_Query_057() {
+
 		// SELECT DISTINCT c
 		// from Customer c
 		// WHERE c.home.state IN(Select distinct w.state
 		//                       from c.work w
 		//                       where w.state = :state)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c"),
 			where(
@@ -1494,23 +1382,21 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_058()
-	{
+	public void test_Query_058() {
+
 		// Select Object(o)
 		// from Order o
 		// WHERE EXISTS (Select c
 		//               From o.customer c
 		//               WHERE c.name LIKE '%Caruso')
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(variable("c")),
 			subFrom(fromCollection("o.customer", "c")),
 			where(like(path("c.name"), string("'%Caruso'")))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("o")),
 			from("Order", "o"),
 			where(exists(subquery))
@@ -1520,23 +1406,21 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_059()
-	{
+	public void test_Query_059() {
+
 		// SELECT DISTINCT c
 		// FROM Customer c
 		// WHERE EXISTS (SELECT o
 		//               FROM c.orders o
 		//               where o.totalPrice > 1500)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(variable("o")),
 			subFrom(fromCollection("c.orders", "o")),
 			where(greaterThan(path("o.totalPrice"), numeric(1500)))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c"),
 			where(exists(subquery))
@@ -1546,20 +1430,18 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_060()
-	{
+	public void test_Query_060() {
+
 		// SELECT c
 		// FROM Customer c
 		// WHERE NOT EXISTS (SELECT o1 FROM c.orders o1)
 
-		ExpressionTester subquery = subquery
-		(
+		ExpressionTester subquery = subquery(
 			subSelect(variable("o1")),
 			subFrom(fromCollection("c.orders", "o1"))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c"),
 			where(notExists(subquery))
@@ -1569,14 +1451,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_061()
-	{
+	public void test_Query_061() {
+
 		// select object(o)
 		// FROM Order o
 		// Where SQRT(o.totalPrice) > :doubleValue
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("o")),
 			from("Order", "o"),
 			where(greaterThan(sqrt(path("o.totalPrice")), inputParameter(":doubleValue")))
@@ -1586,15 +1467,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_062()
-	{
+	public void test_Query_062() {
+
 		// select sum(o.totalPrice)
 		// FROM Order o
 		// GROUP BY o.totalPrice
 		// HAVING ABS(o.totalPrice) = :doubleValue
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(sum("o.totalPrice")),
 			from("Order", "o"),
 			nullExpression(),
@@ -1607,15 +1487,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_063()
-	{
+	public void test_Query_063() {
+
 		// select c.name
 		// FROM Customer c
 		// Group By c.name
 		// HAVING trim(TRAILING from c.name) = ' David R. Vincent'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.name")),
 			from("Customer", "c"),
 			nullExpression(),
@@ -1628,15 +1507,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_064()
-	{
+	public void test_Query_064() {
+
 		// select c.name
 		// FROM  Customer c
 		// Group By c.name
 		// Having trim(LEADING from c.name) = 'David R. Vincent '
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.name")),
 			from("Customer", "c"),
 			nullExpression(),
@@ -1649,15 +1527,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_065()
-	{
+	public void test_Query_065() {
+
 		// select c.name
 		// FROM  Customer c
 		// Group by c.name
 		// HAVING trim(BOTH from c.name) = 'David R. Vincent'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.name")),
 			from("Customer", "c"),
 			nullExpression(),
@@ -1670,15 +1547,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_066()
-	{
+	public void test_Query_066() {
+
 		// select c.name
 		// FROM  Customer c
 		// GROUP BY c.name
 		// HAVING LOCATE('Frechette', c.name) > 0
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.name")),
 			from("Customer", "c"),
 			nullExpression(),
@@ -1691,15 +1567,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_067()
-	{
+	public void test_Query_067() {
+
 		// select a.city
 		// FROM  Customer c JOIN c.home a
 		// GROUP BY a.city
 		// HAVING LENGTH(a.city) = 10
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("a.city")),
 			from("Customer", "c", join("c.home", "a")),
 			nullExpression(),
@@ -1712,15 +1587,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_068()
-	{
+	public void test_Query_068() {
+
 		// select count(cc.country)
 		// FROM  Customer c JOIN c.country cc
 		// GROUP BY cc.country
 		// HAVING UPPER(cc.country) = 'ENGLAND'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(count("cc.country")),
 			from("Customer", "c", join("c.country", "cc")),
 			nullExpression(),
@@ -1733,15 +1607,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_069()
-	{
+	public void test_Query_069() {
+
 		// select count(cc.country)
 		// FROM  Customer c JOIN c.country cc
 		// GROUP BY cc.code
 		// HAVING LOWER(cc.code) = 'gbr'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(count("cc.country")),
 			from("Customer", "c", join("c.country", "cc")),
 			nullExpression(),
@@ -1754,15 +1627,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_070()
-	{
+	public void test_Query_070() {
+
 		// select c.name
 		// FROM  Customer c
 		// Group By c.name
 		// HAVING c.name = concat(:fmname, :lname)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.name")),
 			from("Customer", "c"),
 			nullExpression(),
@@ -1775,21 +1647,19 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_071()
-	{
+	public void test_Query_071() {
+
 		// select count(c)
 		// FROM  Customer c JOIN c.aliases a
 		// GROUP BY a.alias
 		// HAVING a.alias = SUBSTRING(:string1, :int1, :int2)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(count(variable("c"))),
 			from("Customer", "c", join("c.aliases", "a")),
 			nullExpression(),
 			groupBy(path("a.alias")),
-			having(equal
-			(
+			having(equal(
 				path("a.alias"),
 				substring(inputParameter(":string1"), inputParameter(":int1"), inputParameter(":int2"))
 			)),
@@ -1800,14 +1670,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_072()
-	{
+	public void test_Query_072() {
+
 		// select c.country.country
 		// FROM  Customer c
 		// GROUP BY c.country.country
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.country.country")),
 			from("Customer", "c"),
 			nullExpression(),
@@ -1820,15 +1689,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_073()
-	{
+	public void test_Query_073() {
+
 		// select Count(c)
 		// FROM  Customer c JOIN c.country cc
 		// GROUP BY cc.code
 		// HAVING cc.code IN ('GBR', 'CHA')
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(count(variable("c"))),
 			from("Customer", "c", join("c.country", "cc")),
 			nullExpression(),
@@ -1841,15 +1709,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_074()
-	{
+	public void test_Query_074() {
+
 		// select c.name
 		// FROM  Customer c JOIN c.orders o
 		// WHERE o.totalPrice BETWEEN 90 AND 160
 		// GROUP BY c.name
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.name")),
 			from("Customer", "c", join("c.orders", "o")),
 			where(between(path("o.totalPrice"), numeric(90), numeric(160))),
@@ -1862,20 +1729,18 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_075()
-	{
+	public void test_Query_075() {
+
 		// select Object(o)
 		// FROM Order AS o
 		// WHERE o.customer.id = '1001' OR o.totalPrice > 10000
 
-		ExpressionTester orExpression = or
-		(
+		ExpressionTester orExpression = or(
 			equal(path("o.customer.id"), string("'1001'")),
 			greaterThan(path("o.totalPrice"), numeric(10000))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("o")),
 			fromAs("Order", "o"),
 			where(orExpression)
@@ -1885,20 +1750,18 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_076()
-	{
+	public void test_Query_076() {
+
 		// select Distinct Object(o)
 		// FROM Order AS o
 		// WHERE o.customer.id = '1001' OR o.totalPrice < 1000
 
-		ExpressionTester orExpression = or
-		(
+		ExpressionTester orExpression = or(
 			equal(path("o.customer.id"), string("'1001'")),
 			lowerThan(path("o.totalPrice"), numeric(1000))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			fromAs("Order", "o"),
 			where(orExpression)
@@ -1908,20 +1771,18 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_077()
-	{
+	public void test_Query_077() {
+
 		// select Object(o)
 		// FROM Order AS o
 		// WHERE o.customer.name = 'Karen R. Tegan' OR o.totalPrice > 10000
 
-		ExpressionTester orExpression = or
-		(
+		ExpressionTester orExpression = or(
 			equal(path("o.customer.name"), string("'Karen R. Tegan'")),
 			greaterThan(path("o.totalPrice"), numeric(10000))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("o")),
 			fromAs("Order", "o"),
 			where(orExpression)
@@ -1931,20 +1792,18 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_078()
-	{
+	public void test_Query_078() {
+
 		// select DISTINCT o
 		// FROM Order AS o
 		// WHERE o.customer.name = 'Karen R. Tegan' OR o.totalPrice > 5000
 
-		ExpressionTester orExpression = or
-		(
+		ExpressionTester orExpression = or(
 			equal(path("o.customer.name"), string("'Karen R. Tegan'")),
 			greaterThan(path("o.totalPrice"), numeric(5000))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("o")),
 			fromAs("Order", "o"),
 			where(orExpression)
@@ -1954,20 +1813,18 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_079()
-	{
+	public void test_Query_079() {
+
 		// select Object(o)
 		// FROM Order AS o
 		// WHERE o.customer.id = '1001' AND o.totalPrice > 10000
 
-		ExpressionTester andExpression = and
-		(
+		ExpressionTester andExpression = and(
 			equal(path("o.customer.id"), string("'1001'")),
 			greaterThan(path("o.totalPrice"), numeric(10000))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("o")),
 			fromAs("Order", "o"),
 			where(andExpression)
@@ -1977,20 +1834,18 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_080()
-	{
+	public void test_Query_080() {
+
 		// select Object(o)
 		// FROM Order AS o
 		// WHERE o.customer.id = '1001' AND o.totalPrice < 1000
 
-		ExpressionTester andExpression = and
-		(
+		ExpressionTester andExpression = and(
 			equal(path("o.customer.id"), string("'1001'")),
 			lowerThan(path("o.totalPrice"), numeric(1000))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("o")),
 			fromAs("Order", "o"),
 			where(andExpression)
@@ -2000,20 +1855,18 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_081()
-	{
+	public void test_Query_081() {
+
 		// select Object(o)
 		// FROM Order AS o
 		// WHERE o.customer.name = 'Karen R. Tegan' AND o.totalPrice > 10000
 
-		ExpressionTester andExpression = and
-		(
+		ExpressionTester andExpression = and(
 			equal(path("o.customer.name"), string("'Karen R. Tegan'")),
 			greaterThan(path("o.totalPrice"), numeric(10000))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("o")),
 			fromAs("Order", "o"),
 			where(andExpression)
@@ -2023,20 +1876,18 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_082()
-	{
+	public void test_Query_082() {
+
 		// select Object(o)
 		// FROM Order AS o
 		// WHERE o.customer.name = 'Karen R. Tegan' AND o.totalPrice > 500
 
-		ExpressionTester andExpression = and
-		(
+		ExpressionTester andExpression = and(
 			equal(path("o.customer.name"), string("'Karen R. Tegan'")),
 			greaterThan(path("o.totalPrice"), numeric(500))
 		);
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("o")),
 			fromAs("Order", "o"),
 			where(andExpression)
@@ -2046,14 +1897,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_083()
-	{
+	public void test_Query_083() {
+
 		// SELECT DISTINCT p
 		// From Product p
 		// where p.shelfLife.soldDate NOT BETWEEN :date1 AND :newdate
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("p")),
 			from("Product", "p"),
 			where(notBetween(path("p.shelfLife.soldDate"), inputParameter(":date1"), inputParameter(":newdate")))
@@ -2063,14 +1913,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_084()
-	{
+	public void test_Query_084() {
+
 		// SELECT DISTINCT o
 		// From Order o
 		// where o.totalPrice NOT BETWEEN 1000 AND 1200
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("o")),
 			from("Order", "o"),
 			where(notBetween(path("o.totalPrice"), numeric(1000), numeric(1200)))
@@ -2080,14 +1929,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_085()
-	{
+	public void test_Query_085() {
+
 		// SELECT DISTINCT p
 		// From Product p
 		// where p.shelfLife.soldDate BETWEEN :date1 AND :date6
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("p")),
 			from("Product", "p"),
 			where(between(path("p.shelfLife.soldDate"), inputParameter(":date1"), inputParameter(":date6")))
@@ -2097,14 +1945,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_086()
-	{
+	public void test_Query_086() {
+
 		// SELECT DISTINCT a
 		// from Alias a LEFT JOIN FETCH a.customers
 		// where a.alias LIKE 'a%'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("a")),
 			from("Alias", "a", leftJoinFetch("a.customers")),
 			where(like(path("a.alias"), string("'a%'")))
@@ -2114,14 +1961,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_087()
-	{
+	public void test_Query_087() {
+
 		// select Object(o)
 		// from Order o LEFT JOIN FETCH o.customer
 		// where o.customer.name LIKE '%Caruso'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("o")),
 			from("Order", "o", leftJoinFetch("o.customer")),
 			where(like(path("o.customer.name"), string("'%Caruso'")))
@@ -2131,14 +1977,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_088()
-	{
+	public void test_Query_088() {
+
 		// select o
 		// from Order o LEFT JOIN FETCH o.customer
 		// where o.customer.home.city='Lawrence'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("o")),
 			from("Order", "o", leftJoinFetch("o.customer")),
 			where(equal(path("o.customer.home.city"), string("'Lawrence'")))
@@ -2148,14 +1993,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_089()
-	{
+	public void test_Query_089() {
+
 		// SELECT DISTINCT c
 		// from Customer c LEFT JOIN FETCH c.orders
 		// where c.home.state IN('NY','RI')
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c", leftJoinFetch("c.orders")),
 			where(in(path("c.home.state"), string("'NY'"), string("'RI'")))
@@ -2165,13 +2009,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_090()
-	{
+	public void test_Query_090() {
+
 		// SELECT c
 		// from Customer c JOIN FETCH c.spouse
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c", joinFetch("c.spouse"))
 		);
@@ -2180,14 +2023,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_091()
-	{
+	public void test_Query_091() {
+
 		// SELECT Object(c)
 		// from Customer c INNER JOIN c.aliases a
 		// where a.alias = :aName
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("c")),
 			from("Customer", "c", innerJoin("c.aliases", "a")),
 			where(equal(path("a.alias"), inputParameter(":aName")))
@@ -2197,14 +2039,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_092()
-	{
+	public void test_Query_092() {
+
 		// SELECT Object(o)
 		// from Order o INNER JOIN o.customer cust
 		// where cust.name = ?1
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("o")),
 			from("Order", "o", innerJoin("o.customer", "cust")),
 			where(equal(path("cust.name"), inputParameter("?1")))
@@ -2214,14 +2055,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_093()
-	{
+	public void test_Query_093() {
+
 		// SELECT DISTINCT object(c)
 		// from Customer c INNER JOIN c.creditCards cc
 		// where cc.type='VISA'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c", innerJoin("c.creditCards", "cc")),
 			where(equal(path("cc.type"), string("'VISA'")))
@@ -2231,13 +2071,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_094()
-	{
+	public void test_Query_094() {
+
 		// SELECT c
 		// from Customer c INNER JOIN c.spouse s
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c", innerJoin("c.spouse", "s"))
 		);
@@ -2246,14 +2085,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_095()
-	{
+	public void test_Query_095() {
+
 		// select cc.type
 		// FROM CreditCard cc JOIN cc.customer cust
 		// GROUP BY cc.type
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("cc.type")),
 			from("CreditCard", "cc", join("cc.customer", "cust")),
 			nullExpression(),
@@ -2266,14 +2104,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_096()
-	{
+	public void test_Query_096() {
+
 		// select cc.code
 		// FROM Customer c JOIN c.country cc
 		// GROUP BY cc.code
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("cc.code")),
 			from("Customer", "c", join("c.country", "cc")),
 			nullExpression(),
@@ -2286,14 +2123,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_097()
-	{
+	public void test_Query_097() {
+
 		// select Object(c)
 		// FROM Customer c JOIN c.aliases a
 		// where LOWER(a.alias)='sjc'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("c")),
 			from("Customer", "c", join("c.aliases", "a")),
 			where(equal(lower(path("a.alias")), string("'sjc'"))),
@@ -2306,14 +2142,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_098()
-	{
+	public void test_Query_098() {
+
 		// select Object(c)
 		// FROM Customer c JOIN c.aliases a
 		// where UPPER(a.alias)='SJC'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("c")),
 			from("Customer", "c", join("c.aliases", "a")),
 			where(equal(upper(path("a.alias")), string("'SJC'"))),
@@ -2326,18 +2161,17 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_099()
-	{
+	public void test_Query_099() {
+
 		// SELECT c.id, a.alias
 		// from Customer c LEFT OUTER JOIN c.aliases a
 		// where c.name LIKE 'Ste%'
 		// ORDER BY a.alias, c.id
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.id"), path("a.alias")),
 			from("Customer", "c", leftOuterJoin("c.aliases", "a")),
-			where(like(path("c.name"), string("'Ste%'"))),
+			where(path("c.name").like(string("'Ste%'"))),
 			nullExpression(),
 			nullExpression(),
 			orderBy(
@@ -2350,18 +2184,17 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_100()
-	{
+	public void test_Query_100() {
+
 		// SELECT o.id, cust.id
 		// from Order o LEFT OUTER JOIN o.customer cust
 		// where cust.name=?1
 		// ORDER BY o.id
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("o.id"), path("cust.id")),
 			from("Order", "o", leftOuterJoin("o.customer", "cust")),
-			where(equal(path("cust.name"), inputParameter("?1"))),
+			where(path("cust.name").equal(inputParameter("?1"))),
 			nullExpression(),
 			nullExpression(),
 			orderBy("o.id")
@@ -2371,17 +2204,16 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_101()
-	{
+	public void test_Query_101() {
+
 		// SELECT DISTINCT c
 		// from Customer c LEFT OUTER JOIN c.creditCards cc
 		// where c.name LIKE '%Caruso'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c", leftOuterJoin("c.creditCards", "cc")),
-			where(like(path("c.name"), string("'%Caruso'"))),
+			where(path("c.name").like(string("'%Caruso'"))),
 			nullExpression(),
 			nullExpression(),
 			nullExpression()
@@ -2391,13 +2223,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_102()
-	{
+	public void test_Query_102() {
+
 		// SELECT Sum(p.quantity)
 		// FROM Product p
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(sum("p.quantity")),
 			from("Product", "p")
 		);
@@ -2406,13 +2237,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_103()
-	{
+	public void test_Query_103() {
+
 		// Select Count(c.home.city)
 		// from Customer c
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(count("c.home.city")),
 			from("Customer", "c")
 		);
@@ -2421,13 +2251,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_104()
-	{
+	public void test_Query_104() {
+
 		// SELECT Sum(p.price)
 		// FROM Product p
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(sum("p.price")),
 			from("Product", "p")
 		);
@@ -2436,13 +2265,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_105()
-	{
+	public void test_Query_105() {
+
 		// SELECT AVG(o.totalPrice)
 		// FROM Order o
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(avg("o.totalPrice")),
 			from("Order", "o")
 		);
@@ -2451,13 +2279,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_106()
-	{
+	public void test_Query_106() {
+
 		// SELECT DISTINCT MAX(l.quantity)
 		// FROM LineItem l
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(max("l.quantity")),
 			from("LineItem", "l")
 		);
@@ -2466,14 +2293,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_107()
-	{
+	public void test_Query_107() {
+
 		// SELECT DISTINCT MIN(o.id)
 		// FROM Order o
 		// where o.customer.name = 'Robert E. Bissett'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(min("o.id")),
 			from("Order", "o"),
 			where(path("o.customer.name").equal(string("'Robert E. Bissett'")))
@@ -2483,16 +2309,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_108()
-	{
+	public void test_Query_108() {
+
 		// SELECT NEW com.sun.ts.tests.ejb30.persistence.query.language.schema30.Customer(c.id, c.name)
 		// FROM Customer c
 		// where c.work.city = :workcity
 
-		ExpressionTester selectStatement = selectStatement
-		(
-			select(new_
-			(
+		ExpressionTester selectStatement = selectStatement(
+			select(new_(
 				"com.sun.ts.tests.ejb30.persistence.query.language.schema30.Customer",
 				path("c.id"),
 				path("c.name")
@@ -2505,14 +2329,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_109()
-	{
+	public void test_Query_109() {
+
 		// SELECT DISTINCT c
 		// FROM Customer c
 		// WHERE SIZE(c.orders) > 100
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c"),
 			where(size("c.orders").greaterThan(numeric(100)))
@@ -2522,14 +2345,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_110()
-	{
+	public void test_Query_110() {
+
 		// SELECT DISTINCT c
 		// FROM Customer c
 		// WHERE SIZE(c.orders) >= 2
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c"),
 			where(size("c.orders").greaterThanOrEqual(numeric(2)))
@@ -2539,14 +2361,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_111()
-	{
+	public void test_Query_111() {
+
 		// select Distinct c
 		// FROM Customer c LEFT OUTER JOIN c.work workAddress
 		// where workAddress.zip IS NULL
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c", leftOuterJoin("c.work", "workAddress")),
 			where(isNull(path("workAddress.zip")))
@@ -2556,13 +2377,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_112()
-	{
+	public void test_Query_112() {
+
 		// SELECT DISTINCT c
 		// FROM Customer c, IN(c.orders) o
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from(
 				fromEntity("Customer", "c"),
@@ -2573,14 +2393,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_113()
-	{
+	public void test_Query_113() {
+
 		// Select Distinct Object(c)
 		// from Customer c
 		// where c.name is null
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c"),
 			where(isNull(path("c.name")))
@@ -2590,14 +2409,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_114()
-	{
+	public void test_Query_114() {
+
 		// Select c.name
 		// from Customer c
 		// where c.home.street = '212 Edgewood Drive'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.name")),
 			from("Customer", "c"),
 			where(path("c.home.street").equal(string("'212 Edgewood Drive'")))
@@ -2607,14 +2425,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_115()
-	{
+	public void test_Query_115() {
+
 		// Select s.customer
 		// from Spouse s
 		// where s.id = '6'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("s.customer")),
 			from("Spouse", "s"),
 			where(path("s.id").equal(string("'6'")))
@@ -2624,13 +2441,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_116()
-	{
+	public void test_Query_116() {
+
 		// Select c.work.zip
 		// from Customer c
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.work.zip")),
 			from("Customer", "c")
 		);
@@ -2639,14 +2455,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_117()
-	{
+	public void test_Query_117() {
+
 		// SELECT Distinct Object(c)
 		// From Customer c, IN(c.home.phones) p
 		// where p.area LIKE :area
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(
 				fromEntity("Customer", "c"),
@@ -2663,14 +2478,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_118()
-	{
+	public void test_Query_118() {
+
 		// SELECT DISTINCT Object(c)
 		// from Customer c, in(c.aliases) a
 		// where NOT a.customerNoop IS NULL
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.aliases", "a")),
 			where(not(isNull(path("a.customerNoop"))))
@@ -2680,14 +2494,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_119()
-	{
+	public void test_Query_119() {
+
 		// select distinct object(c)
 		// fRoM Customer c, IN(c.aliases) a
 		// where c.name = :cName OR a.customerNoop IS NULL
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.aliases", "a")),
 			where(path("c.name").equal(inputParameter(":cName")).or(isNull(path("a.customerNoop"))))
@@ -2697,14 +2510,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_120()
-	{
+	public void test_Query_120() {
+
 		// select Distinct Object(c)
 		// from Customer c, in(c.aliases) a
 		// where c.name = :cName AND a.customerNoop IS NULL
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.aliases", "a")),
 			where(path("c.name").equal(inputParameter(":cName")).and(isNull(path("a.customerNoop"))))
@@ -2714,14 +2526,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_121()
-	{
+	public void test_Query_121() {
+
 		// sElEcT Distinct oBJeCt(c)
 		// FROM Customer c, IN(c.aliases) a
 		// WHERE a.customerNoop IS NOT NULL
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.aliases", "a")),
 			where(isNotNull(path("a.customerNoop")))
@@ -2731,31 +2542,29 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_122()
-	{
+	public void test_Query_122() {
+
 		// select distinct Object(c)
 		// FROM Customer c, in(c.aliases) a
 		// WHERE a.alias LIKE '%\\_%' escape '\\'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.aliases", "a")),
-			where(path("a.alias").like(string("'%\\_%'"), '\\'))
+			where(path("a.alias").like(string("'%\\_%'"), string('\\')))
 		);
 
 		testQuery(query_122(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_123()
-	{
+	public void test_Query_123() {
+
 		// Select Distinct Object(c)
 		// FROM Customer c, in(c.aliases) a
 		// WHERE a.customerNoop IS NULL
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.aliases", "a")),
 			where(isNull(path("a.customerNoop")))
@@ -2765,14 +2574,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_124()
-	{
+	public void test_Query_124() {
+
 		// Select Distinct o.creditCard.balance
 		// from Order o
 		// ORDER BY o.creditCard.balance ASC
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(path("o.creditCard.balance")),
 			from("Order", "o"),
 			nullExpression(),
@@ -2785,15 +2593,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_125()
-	{
+	public void test_Query_125() {
+
 		// Select c.work.zip
 		// from Customer c
 		// where c.work.zip IS NOT NULL
 		// ORDER BY c.work.zip ASC
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.work.zip")),
 			from("Customer", "c"),
 			where(isNotNull(path("c.work.zip"))),
@@ -2806,8 +2613,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_126()
-	{
+	public void test_Query_126() {
+
 		// SELECT a.alias
 		// FROM Alias AS a
 		// WHERE (a.alias IS NULL AND :param1 IS NULL) OR a.alias = :param1
@@ -2820,8 +2627,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 			.or(
 				path("a.alias").equal(inputParameter(":param1")));
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("a.alias")),
 			fromAs("Alias", "a"),
 			where(orExpression)
@@ -2831,8 +2637,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_127()
-	{
+	public void test_Query_127() {
+
 		// Select Object(c)
 		// from Customer c
 		// where c.aliasesNoop IS NOT EMPTY or c.id <> '1'
@@ -2842,8 +2648,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 			.or(
 				path("c.id").different(string("'1'")));
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("c")),
 			from("Customer", "c"),
 			where(orExpression)
@@ -2853,14 +2658,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_128()
-	{
+	public void test_Query_128() {
+
 		// Select Distinct Object(p)
 		// from Product p
 		// where p.name = ?1
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("p")),
 			from("Product", "p"),
 			where(path("p.name").equal(inputParameter("?1")))
@@ -2870,8 +2674,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_129()
-	{
+	public void test_Query_129() {
+
 		// Select Distinct Object(p)
 		// from Product p
 		// where (p.quantity > (500 + :int1)) AND (p.partNumber IS NULL)
@@ -2886,8 +2690,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 			.and(
 				subExpression(isNull(path("p.partNumber"))));
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("p")),
 			from("Product", "p"),
 			where(andExpression)
@@ -2897,14 +2700,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_130()
-	{
+	public void test_Query_130() {
+
 		// Select Distinct Object(o)
 		// from Order o
 		// where o.customer.name IS NOT NULL
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from("Order", "o"),
 			where(isNotNull(path("o.customer.name")))
@@ -2914,8 +2716,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_131()
-	{
+	public void test_Query_131() {
+
 		// Select DISTINCT Object(p)
 		// From Product p
 		// where (p.quantity < 10) OR (p.quantity > 20)
@@ -2925,8 +2727,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 			.or(
 				subExpression(path("p.quantity").greaterThan(numeric(20))));
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("p")),
 			from("Product", "p"),
 			where(orExpression)
@@ -2936,14 +2737,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_132()
-	{
+	public void test_Query_132() {
+
 		// Select DISTINCT Object(p)
 		// From Product p
 		// where p.quantity NOT BETWEEN 10 AND 20
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("p")),
 			from("Product", "p"),
 			where(path("p.quantity").notBetween(numeric(10), numeric(20)))
@@ -2953,8 +2753,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_133()
-	{
+	public void test_Query_133() {
+
 		// Select DISTINCT OBJECT(p)
 		// From Product p
 		// where (p.quantity >= 10) AND (p.quantity <= 20)
@@ -2964,8 +2764,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 			.and(
 				subExpression(path("p.quantity").lowerThanOrEqual(numeric(20))));
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("p")),
 			from("Product", "p"),
 			where(andExpression)
@@ -2975,14 +2774,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_134()
-	{
+	public void test_Query_134() {
+
 		// Select DISTINCT OBJECT(p)
 		// From Product p
 		// where p.quantity BETWEEN 10 AND 20
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("p")),
 			from("Product", "p"),
 			where(path("p.quantity").between(numeric(10), numeric(20)))
@@ -2992,14 +2790,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_135()
-	{
+	public void test_Query_135() {
+
 		// Select Distinct OBJECT(c)
 		// from Customer c, IN(c.creditCards) b
 		// where SQRT(b.balance) = :dbl
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.creditCards", "b")),
 			where(sqrt(path("b.balance")).equal(inputParameter(":dbl")))
@@ -3009,14 +2806,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_136()
-	{
+	public void test_Query_136() {
+
 		// Select Distinct OBJECT(c)
 		// From Product p
 		// where MOD(550, 100) = p.quantity
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Product", "p"),
 			where(mod(numeric(550), numeric(100)).equal(path("p.quantity")))
@@ -3026,8 +2822,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_137()
-	{
+	public void test_Query_137() {
+
 		// SELECT DISTINCT Object(c)
 		// from Customer c
 		// WHERE (c.home.state = 'NH') OR (c.home.state = 'RI')
@@ -3037,8 +2833,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 			.or(
 				subExpression(path("c.home.state").equal(string("'RI'"))));
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c"),
 			where(orExpression)
@@ -3048,14 +2843,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_138()
-	{
+	public void test_Query_138() {
+
 		// SELECT DISTINCT Object(c)
 		// from Customer c
 		// where c.home.state IN('NH', 'RI')
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c"),
 			where(path("c.home.state").in(string("'NH'"), string("'RI'")))
@@ -3065,14 +2859,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_139()
-	{
+	public void test_Query_139() {
+
 		// SELECT p
 		// FROM Employee e JOIN e.projects p
 		// WHERE e.id = :id AND INDEX(p) = 1
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("p")),
 			from("Employee", "e", join("e.projects", "p")),
 			where(path("e.id").equal(inputParameter(":id")).and(index("p").equal(numeric(1))))
@@ -3082,14 +2875,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_140()
-	{
+	public void test_Query_140() {
+
 		// SELECT c
 		// from Customer c
 		// where c.home.city IN(:city)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c"),
 			where(path("c.home.city").in(inputParameter(":city")))
@@ -3099,14 +2891,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_141()
-	{
+	public void test_Query_141() {
+
 		// Select Distinct Object(o)
 		// from Order o, in(o.lineItems) l
 		// where l.quantity NOT IN (1, 5)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from(fromEntity("Order", "o"), fromIn("o.lineItems", "l")),
 			where(path("l.quantity").notIn(numeric(1), numeric(5)))
@@ -3116,14 +2907,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_142()
-	{
+	public void test_Query_142() {
+
 		// Select Distinct Object(o)
 		// FROM Order o
 		// WHERE o.sampleLineItem MEMBER OF o.lineItems
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from("Order", "o"),
 			where(path("o.sampleLineItem").memberOf(collectionValuedPath("o.lineItems")))
@@ -3133,14 +2923,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_143()
-	{
+	public void test_Query_143() {
+
 		// Select Distinct Object(o)
 		// FROM Order o
 		// WHERE :param NOT MEMBER o.lineItems
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from("Order", "o"),
 			where(inputParameter(":param").notMember(collectionValuedPath("o.lineItems")))
@@ -3150,14 +2939,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_144()
-	{
+	public void test_Query_144() {
+
 		// Select Distinct Object(o)
 		// FROM Order o, LineItem l
 		// WHERE l MEMBER o.lineItems
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from("Order", "o", "LineItem", "l"),
 			where(variable("l").member(collectionValuedPath("o.lineItems")))
@@ -3167,31 +2955,29 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_145()
-	{
+	public void test_Query_145() {
+
 		// select distinct Object(c)
 		// FROM Customer c, in(c.aliases) a
 		// WHERE a.alias LIKE 'sh\\_ll' escape '\\'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.aliases", "a")),
-			where(path("a.alias").like(string("'sh\\_ll'"), '\\'))
+			where(path("a.alias").like(string("'sh\\_ll'"), string('\\')))
 		);
 
 		testQuery(query_145(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_146()
-	{
+	public void test_Query_146() {
+
 		// Select Distinct Object(a)
 		// FROM Alias a
 		// WHERE a.customerNoop NOT MEMBER OF a.customersNoop
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("a")),
 			from("Alias", "a"),
 			where(path("a.customerNoop").notMemberOf(collectionValuedPath("a.customersNoop")))
@@ -3201,14 +2987,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_147()
-	{
+	public void test_Query_147() {
+
 		// Select Distinct Object(a)
 		// FROM Alias a
 		// WHERE a.customerNoop MEMBER OF a.customersNoop
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("a")),
 			from("Alias", "a"),
 			where(path("a.customerNoop").memberOf(collectionValuedPath("a.customersNoop")))
@@ -3218,14 +3003,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_148()
-	{
+	public void test_Query_148() {
+
 		// Select Distinct Object(a)
 		// from Alias a
 		// where LOCATE('ev', a.alias) = 3
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("a")),
 			from("Alias", "a"),
 			where(locate(string("'ev'"), path("a.alias")).equal(numeric(3)))
@@ -3235,14 +3019,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_149()
-	{
+	public void test_Query_149() {
+
 		// Select DISTINCT Object(o)
 		// From Order o
 		// WHERE o.totalPrice > ABS(:dbl)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from("Order", "o"),
 			where(path("o.totalPrice").greaterThan(abs(inputParameter(":dbl"))))
@@ -3252,14 +3035,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_150()
-	{
+	public void test_Query_150() {
+
 		// Select Distinct OBjeCt(a)
 		// From Alias a
 		// WHERE LENGTH(a.alias) > 4
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("a")),
 			from("Alias", "a"),
 			where(length(path("a.alias")).greaterThan(numeric(4)))
@@ -3269,14 +3051,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_151()
-	{
+	public void test_Query_151() {
+
 		// Select Distinct Object(a)
 		// From Alias a
 		// WHERE a.alias = SUBSTRING(:string1, :int2, :int3)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("a")),
 			from("Alias", "a"),
 			where(
@@ -3289,14 +3070,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_152()
-	{
+	public void test_Query_152() {
+
 		// Select Distinct Object(a)
 		// From Alias a
 		// WHERE a.alias = CONCAT('ste', 'vie')
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("a")),
 			from("Alias", "a"),
 			where(
@@ -3309,14 +3089,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_153()
-	{
+	public void test_Query_153() {
+
 		// Select Distinct Object(c)
 		// FROM Customer c
 		// WHERE c.work.zip IS NOT NULL
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c"),
 			where(isNotNull(path("c.work.zip")))
@@ -3326,14 +3105,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_154()
-	{
+	public void test_Query_154() {
+
 		// sELEct dIsTiNcT oBjEcT(c)
 		// FROM Customer c
 		// WHERE c.work.zip IS NULL
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c"),
 			where(isNull(path("c.work.zip")))
@@ -3343,14 +3121,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_155()
-	{
+	public void test_Query_155() {
+
 		// Select Distinct Object(c)
 		// FROM Customer c
 		// WHERE c.aliases IS NOT EMPTY
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c"),
 			where(isNotEmpty("c.aliases"))
@@ -3360,14 +3137,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_156()
-	{
+	public void test_Query_156() {
+
 		// Select Distinct Object(c)
 		// FROM Customer c
 		// WHERE c.aliases IS EMPTY
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c"),
 			where(isEmpty("c.aliases"))
@@ -3377,14 +3153,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_157()
-	{
+	public void test_Query_157() {
+
 		// Select Distinct Object(c)
 		// FROM Customer c
 		// WHERE c.home.zip not like '%44_'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c"),
 			where(path("c.home.zip").notLike(string("'%44_'")))
@@ -3394,14 +3169,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_158()
-	{
+	public void test_Query_158() {
+
 		// Select Distinct Object(c)
 		// FROM Customer c
 		// WHERE c.home.zip LIKE '%77'"
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c"),
 			where(path("c.home.zip").like(string("'%77'")))
@@ -3411,14 +3185,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_159()
-	{
+	public void test_Query_159() {
+
 		// Select Distinct Object(c)
 		// FROM Customer c Left Outer Join c.home h
 		// WHERE h.city Not iN ('Swansea', 'Brookline')
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from("Customer", "c", leftOuterJoin("c.home", "h")),
 			where(path("h.city").notIn(string("'Swansea'"), string("'Brookline'")))
@@ -3428,14 +3201,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_160()
-	{
+	public void test_Query_160() {
+
 		// select distinct c
 		// FROM Customer c
 		// WHERE c.home.city IN ('Lexington')
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c"),
 			where(path("c.home.city").in(string("'Lexington'")))
@@ -3445,14 +3217,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_161()
-	{
+	public void test_Query_161() {
+
 		// sElEcT c
 		// FROM Customer c
 		// Where c.name = :cName
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c"),
 			where(path("c.name").equal(inputParameter(":cName")))
@@ -3462,14 +3233,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_162()
-	{
+	public void test_Query_162() {
+
 		// select distinct Object(o)
 		// From Order o
 		// WHERE o.creditCard.approved = FALSE
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from("Order", "o"),
 			where(path("o.creditCard.approved").equal(FALSE()))
@@ -3479,14 +3249,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_163()
-	{
+	public void test_Query_163() {
+
 		// SELECT DISTINCT Object(o)
 		// From Order o
 		// where o.totalPrice NOT bETwEeN 1000 AND 1200
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from("Order", "o"),
 			where(path("o.totalPrice").notBetween(numeric(1000), numeric(1200)))
@@ -3496,14 +3265,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_164()
-	{
+	public void test_Query_164() {
+
 		// SELECT DISTINCT Object(o)
 		// From Order o
 		// where o.totalPrice BETWEEN 1000 AND 1200
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from("Order", "o"),
 			where(path("o.totalPrice").between(numeric(1000), numeric(1200)))
@@ -3513,14 +3281,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_165()
-	{
+	public void test_Query_165() {
+
 		// SELECT DISTINCT Object(o)
 		// FROM Order o, in(o.lineItems) l
 		// WHERE l.quantity < 2 AND o.customer.name = 'Robert E. Bissett'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from(fromEntity("Order", "o"), fromIn("o.lineItems", "l")),
 			where(	path("l.quantity")
@@ -3536,15 +3303,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_166()
-	{
+	public void test_Query_166() {
+
 		// select distinct Object(o)
 		// FROM Order AS o, in(o.lineItems) l
 		// WHERE (l.quantity < 2) AND ((o.totalPrice < (3 + 54 * 2 + -8)) OR (o.customer.name = 'Robert E. Bissett'))
 
 		// TODO: Is the order correct in (3 + 54 * 2 + -8 )????
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from(fromEntityAs("Order", "o"), fromIn("o.lineItems", "l")),
 			where(
@@ -3573,14 +3339,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_167()
-	{
+	public void test_Query_167() {
+
 		// SeLeCt DiStInCt oBjEcT(o)
 		// FROM Order AS o
 		// WHERE o.customer.name = 'Karen R. Tegan' OR o.totalPrice < 100
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			fromAs("Order", "o"),
 			where(
@@ -3595,14 +3360,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_168()
-	{
+	public void test_Query_168() {
+
 		// Select Distinct Object(o)
 		// FROM Order o
 		// WHERE NOT o.totalPrice < 4500
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from("Order", "o"),
 			where(not(path("o.totalPrice").lowerThan(numeric(4500))))
@@ -3612,13 +3376,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_169()
-	{
+	public void test_Query_169() {
+
 		// Select DISTINCT Object(P)
 		// From Product p
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("P")),
 			from("Product", "p")
 		);
@@ -3627,25 +3390,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_170()
-	{
+	public void test_Query_170() {
+
 		// SELECT DISTINCT c
 		// from Customer c
 		// WHERE c.home.street = :street OR c.home.city = :city OR c.home.state = :state or c.home.zip = :zip
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("c")),
 			from("Customer", "c"),
 			where(
 					path("c.home.street").equal(inputParameter(":street"))
 				.or(
 					path("c.home.city").equal(inputParameter(":city"))
+				)
 				.or(
 					path("c.home.state").equal(inputParameter(":state"))
+				)
 				.or(
 					path("c.home.zip").equal(inputParameter(":zip"))
-				)))
+				)
 			)
 		);
 
@@ -3653,25 +3417,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_171()
-	{
+	public void test_Query_171() {
+
 		// SELECT c
 		// from Customer c
 		// WHERE c.home.street = :street AND c.home.city = :city AND c.home.state = :state and c.home.zip = :zip
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c"),
 			where(
 					path("c.home.street").equal(inputParameter(":street"))
 				.and(
 					path("c.home.city").equal(inputParameter(":city"))
+				)
 				.and(
 					path("c.home.state").equal(inputParameter(":state"))
+				)
 				.and(
 					path("c.home.zip").equal(inputParameter(":zip"))
-				)))
+				)
 			)
 		);
 
@@ -3679,25 +3444,26 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_172()
-	{
+	public void test_Query_172() {
+
 		// SELECT c
 		// from Customer c
       // WHERE c.home.street = :street AND c.home.city = :city AND c.home.state = :state and c.home.zip = :zip
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c"),
 			where(
 					path("c.home.street").equal(inputParameter(":street"))
 				.and(
 					path("c.home.city").equal(inputParameter(":city"))
+				)
 				.and(
 					path("c.home.state").equal(inputParameter(":state"))
+				)
 				.and(
 					path("c.home.zip").equal(inputParameter(":zip"))
-				)))
+				)
 			)
 		);
 
@@ -3705,14 +3471,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_173()
-	{
+	public void test_Query_173() {
+
 		// Select Distinct Object(c)
 		// FrOm Customer c, In(c.aliases) a
 		// WHERE a.alias = :aName
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			from(fromEntity("Customer", "c"), fromIn("c.aliases", "a")),
 			where(path("a.alias").equal(inputParameter(":aName")))
@@ -3722,13 +3487,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_174()
-	{
+	public void test_Query_174() {
+
 		// Select Distinct Object(c)
 		// FROM Customer AS c
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("c")),
 			fromAs("Customer", "c")
 		);
@@ -3737,14 +3501,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_175()
-	{
+	public void test_Query_175() {
+
 		// Select Distinct o
 		// from Order AS o
 		// WHERE o.customer.name = :name
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(variable("o")),
 			fromAs("Order", "o"),
 			where(path("o.customer.name").equal(inputParameter(":name")))
@@ -3754,13 +3517,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_176()
-	{
+	public void test_Query_176() {
+
 		// UPDATE Customer c SET c.name = 'CHANGED'
 		// WHERE c.orders IS NOT EMPTY
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update("Customer", "c", set(path("c.name"), string("'CHANGED'"))),
 			where(isNotEmpty("c.orders"))
 		);
@@ -3769,12 +3531,11 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_177()
-	{
+	public void test_Query_177() {
+
 		// UPDATE DateTime SET date = CURRENT_DATE
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update("DateTime", set("date", CURRENT_DATE()))
 		);
 
@@ -3782,15 +3543,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_178()
-	{
+	public void test_Query_178() {
+
 		// SELECT c
 		// FROM Customer c
 		// WHERE c.firstName = :first AND
 		//     c.lastName = :last
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c"),
 			where(
@@ -3805,12 +3565,11 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_179()
-	{
+	public void test_Query_179() {
+
 		// SELECT OBJECT ( c ) FROM Customer AS c
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(object("c")),
 			fromAs("Customer", "c")
 		);
@@ -3819,13 +3578,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_180()
-	{
+	public void test_Query_180() {
+
 		// SELECT c.firstName, c.lastName
 		// FROM Customer AS c
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.firstName"), path("c.lastName")),
 			fromAs("Customer", "c")
 		);
@@ -3834,13 +3592,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_181()
-	{
+	public void test_Query_181() {
+
 		// SELECT c.address.city
 		// FROM Customer AS c
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.address.city")),
 			fromAs("Customer", "c")
 		);
@@ -3849,13 +3606,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_182()
-	{
+	public void test_Query_182() {
+
 		// SELECT new com.titan.domain.Name(c.firstName, c.lastName)
 		// FROM Customer c
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(new_("com.titan.domain.Name", path("c.firstName"), path("c.lastName"))),
 			from("Customer", "c")
 		);
@@ -3864,13 +3620,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_183()
-	{
+	public void test_Query_183() {
+
 		// SELECT cbn.ship
 		// FROM Customer AS c, IN ( c.reservations ) r, IN ( r.cabins ) cbn
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("cbn.ship")),
 			from(
 				fromEntityAs("Customer", "c"),
@@ -3883,13 +3638,12 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_184()
-	{
+	public void test_Query_184() {
+
 		// Select c.firstName, c.lastName, p.number
 		// From Customer c Left Join c.phoneNumbers p
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("c.firstName"), path("c.lastName"), path("p.number")),
 			from("Customer", "c", leftJoin("c.phoneNumbers", "p"))
 		);
@@ -3898,14 +3652,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_185()
-	{
+	public void test_Query_185() {
+
 		// SELECT r
 		// FROM Reservation AS r
 		// WHERE (r.amountPaid * .01) > 300.00
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("r")),
 			fromAs("Reservation", "r"),
 			where(
@@ -3920,14 +3673,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_186()
-	{
+	public void test_Query_186() {
+
 		// SELECT s
 		// FROM Ship AS s
 		// WHERE s.tonnage >= 80000.00 AND s.tonnage <= 130000.00
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("s")),
 			fromAs("Ship", "s"),
 			where(
@@ -3942,14 +3694,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_187()
-	{
+	public void test_Query_187() {
+
 		// SELECT r
 		// FROM Reservation r, IN ( r.customers ) AS cust
 		// WHERE cust = :specificCustomer
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("r")),
 			from(fromEntity("Reservation", "r"), fromInAs("r.customers", "cust")),
 			where(variable("cust").equal(inputParameter(":specificCustomer")))
@@ -3959,14 +3710,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_188()
-	{
+	public void test_Query_188() {
+
 		// SELECT s
 		// FROM Ship AS s
 		// WHERE s.tonnage BETWEEN 80000.00 AND 130000.00
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("s")),
 			fromAs("Ship", "s"),
 			where(path("s.tonnage").between(numeric("80000.00"), numeric("130000.00")))
@@ -3976,14 +3726,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_189()
-	{
+	public void test_Query_189() {
+
 		// SELECT s
 		// FROM Ship AS s
 		// WHERE s.tonnage NOT BETWEEN 80000.00 AND 130000.00
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("s")),
 			fromAs("Ship", "s"),
 			where(path("s.tonnage").notBetween(numeric("80000.00"), numeric("130000.00")))
@@ -3993,14 +3742,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_190()
-	{
+	public void test_Query_190() {
+
 		// SELECT c
 		// FROM Customer AS c
 		//  WHERE c.address.state IN ('FL', 'TX', 'MI', 'WI', 'MN')
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			fromAs("Customer", "c"),
 			where(path("c.address.state").in(string("'FL'"), string("'TX'"), string("'MI'"), string("'WI'"), string("'MN'")))
@@ -4010,14 +3758,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_191()
-	{
+	public void test_Query_191() {
+
 		// SELECT cab
 		// FROM Cabin AS cab
 		// WHERE cab.deckLevel IN (1,3,5,7)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("cab")),
 			fromAs("Cabin", "cab"),
 			where(
@@ -4035,14 +3782,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_192()
-	{
+	public void test_Query_192() {
+
 		// SELECT c
 		// FROM Customer c
 		// WHERE c.address.state IN(?1, ?2, ?3, 'WI', 'MN')
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c"),
 			where(
@@ -4061,14 +3807,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_193()
-	{
+	public void test_Query_193() {
+
 		// SELECT c
 		// FROM Customer c
 		// WHERE c.address IS NULL
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c"),
 			where(isNull(path("c.address")))
@@ -4078,25 +3823,25 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_194()
-	{
+	public void test_Query_194() {
+
 		// SELECT c
 		// FROM Customer c
 		// WHERE c.address.state = 'TX' AND
 		//       c.lastName = 'Smith' AND
 		//       c.firstName = 'John'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			from("Customer", "c"),
 			where(
 					path("c.address.state").equal(string("'TX'"))
 				.and(
 					path("c.lastName").equal(string("'Smith'"))
+				)
 				.and(
 					path("c.firstName").equal(string("'John'"))
-				))
+				)
 			)
 		);
 
@@ -4104,8 +3849,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_195()
-	{
+	public void test_Query_195() {
+
 		// SELECT crs
 		// FROM Cruise AS crs, IN(crs.reservations) AS res, Customer AS cust
 		// WHERE
@@ -4113,8 +3858,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 		//  AND
 		//  cust MEMBER OF res.customers
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("crs")),
 			from(
 				fromEntityAs("Cruise", "crs"),
@@ -4133,16 +3877,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_196()
-	{
+	public void test_Query_196() {
+
 		// SELECT c
 		// FROM Customer AS c
 		// WHERE    LENGTH(c.lastName) > 6
 		//       AND
 		//          LOCATE( c.lastName, 'Monson' ) > -1
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			fromAs("Customer", "c"),
 			where(
@@ -4160,14 +3903,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_197()
-	{
+	public void test_Query_197() {
+
 		// SELECT c
 		// FROM Customer AS C
 		// ORDER BY c.lastName
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			fromAs("Customer", "C"),
 			nullExpression(),
@@ -4180,15 +3922,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_198()
-	{
+	public void test_Query_198() {
+
 		// SELECT c
 		// FROM Customer AS C
       // WHERE c.address.city = 'Boston' AND c.address.state = 'MA'
 		// ORDER BY c.lastName DESC
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			fromAs("Customer", "C"),
 			where(
@@ -4206,14 +3947,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_199()
-	{
+	public void test_Query_199() {
+
 		// SELECT cr.name, COUNT (res)
 		// FROM Cruise cr LEFT JOIN cr.reservations res
 		// GROUP BY cr.name
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("cr.name"), count(variable("res"))),
 			from("Cruise", "cr", leftJoin("cr.reservations", "res")),
 			nullExpression(),
@@ -4226,15 +3966,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_200()
-	{
+	public void test_Query_200() {
+
 		// SELECT cr.name, COUNT (res)
 		// FROM Cruise cr LEFT JOIN cr.reservations res
 		// GROUP BY cr.name
 		// HAVING count(res) > 10
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("cr.name"), count(variable("res"))),
 			from("Cruise", "cr", leftJoin("cr.reservations", "res")),
 			nullExpression(),
@@ -4247,15 +3986,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_201()
-	{
+	public void test_Query_201() {
+
 		// SELECT COUNT (res)
 		// FROM Reservation res
 		// WHERE res.amountPaid >
 		//       (SELECT avg(r.amountPaid) FROM Reservation r)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(count(variable("res"))),
 			from("Reservation", "res"),
 			where(
@@ -4275,16 +4013,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_202()
-	{
+	public void test_Query_202() {
+
 		// SELECT cr
 		// FROM Cruise cr
 		// WHERE 100000 < (
 		//    SELECT SUM(res.amountPaid) FROM cr.reservations res
 		// )
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("cr")),
 			from("Cruise", "cr"),
 			where(
@@ -4304,16 +4041,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_203()
-	{
+	public void test_Query_203() {
+
 		// SELECT cr
 		// FROM Cruise cr
 		// WHERE 0 < ALL (
 		//   SELECT res.amountPaid from cr.reservations res
 		// )
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("cr")),
 			from("Cruise", "cr"),
 			where(
@@ -4333,8 +4069,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_204()
-	{
+	public void test_Query_204() {
+
 		// UPDATE Reservation res
 		// SET res.name = 'Pascal'
 		// WHERE EXISTS (
@@ -4343,8 +4079,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 		//    WHERE c.firstName = 'Bill' AND c.lastName='Burke'
 		// )
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update("Reservation", "res", set(path("res.name"), string("'Pascal'"))),
 			where(
 				exists(
@@ -4366,8 +4101,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_205()
-	{
+	public void test_Query_205() {
+
 		// UPDATE Employee e
 		// SET e.salary =
 		//    CASE WHEN e.rating = 1 THEN e.salary * 1.1
@@ -4375,8 +4110,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 		//         ELSE e.salary * 1.01
 		//    END
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update("Employee", "e", set(
 				path("e.salary"),
 				case_(
@@ -4395,8 +4129,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_206()
-	{
+	public void test_Query_206() {
+
 		// SELECT e.name,
 		//        CASE TYPE(e) WHEN Exempt THEN 'Exempt'
 		//                     WHEN Contractor THEN 'Contractor'
@@ -4406,8 +4140,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 		// FROM Employee e
 		// WHERE e.dept.name = 'Engineering'
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(
 				path("e.name"),
 				case_(
@@ -4428,8 +4161,8 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_207()
-	{
+	public void test_Query_207() {
+
 		// SELECT e.name,
 		//        f.name,
 		//        CONCAT(CASE WHEN f.annualMiles > 50000 THEN 'Platinum '
@@ -4439,8 +4172,7 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 		//               'Frequent Flyer')
 		// FROM Employee e JOIN e.frequentFlierPlan f
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(
 				path("e.name"),
 				path("f.name"),
@@ -4462,31 +4194,29 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_208()
-	{
+	public void test_Query_208() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE TYPE(e) IN (Exempt, Contractor)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(type("e").in(variable("Exempt"), variable("Contractor")))
+			where(type("e").in(entity("Exempt"), entity("Contractor")))
 		);
 
 		testQuery(query_208(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_209()
-	{
+	public void test_Query_209() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE TYPE(e) IN (:empType1, :empType2)
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(type("e").in(inputParameter(":empType1"), inputParameter(":empType2")))
@@ -4496,23 +4226,22 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_210()
-	{
+	public void test_Query_210() {
+
 		// SELECT e
 		// FROM Employee e
 		// WHERE TYPE(e) IN :empTypes
 
-		InExpressionTester inExpression = in
-		(
+		InExpressionTester inExpression = in(
 			type("e"),
 			inputParameter(":empTypes")
 		);
 
+		inExpression.hasSpaceAfterIn     = true;
 		inExpression.hasLeftParenthesis  = false;
 		inExpression.hasRightParenthesis = false;
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(inExpression)
@@ -4522,14 +4251,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_211()
-	{
+	public void test_Query_211() {
+
 		// SELECT TYPE(e)
 		// FROM Employee e
 		// WHERE TYPE(e) <> Exempt
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(type("e")),
 			from("Employee", "e"),
 			where(type("e").different(variable("Exempt")))
@@ -4539,14 +4267,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_212()
-	{
+	public void test_Query_212() {
+
 		// SELECT t
 		// FROM CreditCard c JOIN c.transactionHistory t
 		// WHERE c.holder.name = 'John Doe' AND INDEX(t) BETWEEN 0 AND 9
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("t")),
 			from("CreditCard", "c", join("c.transactionHistory", "t")),
 			where(
@@ -4559,16 +4286,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_213()
-	{
+	public void test_Query_213() {
+
 		// SELECT w.name
 		// FROM Course c JOIN c.studentWaitlist w
 		// WHERE c.name = 'Calculus'
 		//       AND
 		//       INDEX(w) = 0
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("w.name")),
 			from("Course", "c", join("c.studentWaitlist", "w")),
 			where(
@@ -4581,16 +4307,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_214()
-	{
+	public void test_Query_214() {
+
 		// UPDATE Employee e
 		// SET e.salary = CASE e.rating WHEN 1 THEN e.salary * 1.1
 		//                              WHEN 2 THEN e.salary * 1.05
 		//                              ELSE e.salary * 1.01
 		//                END
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update(
 				"Employee", "e",
 				set("e.salary", case_(
@@ -4608,15 +4333,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_215()
-	{
+	public void test_Query_215() {
+
 		// SELECT o
 		// FROM Customer c JOIN c.orders o JOIN c.address a
 		// WHERE a.state = 'CA'
 		// ORDER BY o.quantity DESC, o.totalcost
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("o")),
 			from("Customer", "c", join("c.orders", "o"), join("c.address", "a")),
 			where(path("a.state").equal(string("'CA'"))),
@@ -4629,15 +4353,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_216()
-	{
+	public void test_Query_216() {
+
 		// SELECT o.quantity, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a
 		// WHERE a.state = 'CA'
 		// ORDER BY o.quantity, a.zipcode
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(path("o.quantity"), path("a.zipcode")),
 			from("Customer", "c", join("c.orders", "o"), join("c.address", "a")),
 			where(path("a.state").equal(string("'CA'"))),
@@ -4653,15 +4376,14 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_217()
-	{
+	public void test_Query_217() {
+
 		// SELECT o.quantity, o.cost*1.08 AS taxedCost, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a
 		// WHERE a.state = 'CA' AND a.county = 'Santa Clara'
 		// ORDER BY o.quantity, taxedCost, a.zipcode
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(
 				path("o.quantity"),
 				selectItemAs(path("o.cost").multiplication(numeric(1.08)), "taxedCost"),
@@ -4687,16 +4409,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_218()
-	{
+	public void test_Query_218() {
+
 		// SELECT AVG(o.quantity) as q, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a
 		// WHERE a.state = 'CA'
 		// GROUP BY a.zipcode
 		// ORDER BY q DESC";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(
 				selectItemAs(avg("o.quantity"), "q"),
 				path("a.zipcode")
@@ -4712,14 +4433,13 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_219()
-	{
+	public void test_Query_219() {
+
 		// DELETE
 		// FROM Customer c
 		// WHERE c.status = 'inactive'
 
-		ExpressionTester deleteStatement = deleteStatement
-		(
+		ExpressionTester deleteStatement = deleteStatement(
 			"Customer", "c",
 			where(path("c.status").equal(string("'inactive'")))
 		);
@@ -4728,16 +4448,15 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_220()
-	{
+	public void test_Query_220() {
+
 		// DELETE
 		// FROM Customer c
 		// WHERE c.status = 'inactive'
 		//       AND
 		//       c.orders IS EMPTY
 
-		ExpressionTester deleteStatement = deleteStatement
-		(
+		ExpressionTester deleteStatement = deleteStatement(
 			"Customer", "c",
 			where(
 					path("c.status").equal(string("'inactive'"))
@@ -4750,18 +4469,49 @@ public abstract class JPQLQueriesTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void test_Query_221()
-	{
+	public void test_Query_221() {
+
 		// UPDATE customer c
 		// SET c.status = 'outstanding'
 		// WHERE c.balance < 10000
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update("customer", "c", set("c.status", string("'outstanding'"))),
 			where(path("c.balance").lowerThan(numeric(10000)))
 		);
 
 		testQuery(query_221(), updateStatement);
+	}
+
+	@Test
+	public void test_Query_222() {
+
+		// SELECT e.salary / 1000D n
+		// From Employee e
+
+		ExpressionTester selectStatement = selectStatement(
+			select(selectItem(path("e.salary").division(numeric("1000D")), "n")),
+			from("Employee", "e")
+		);
+
+		testQuery(query_222(), selectStatement);
+	}
+
+	@Test
+	public void test_Query_223() {
+
+		// SELECT MOD(a.id, 2) AS m
+		// FROM Address a JOIN FETCH a.customerList ORDER BY m
+
+		ExpressionTester selectStatement = selectStatement(
+			select(selectItemAs(mod(path("a.id"), numeric(2)), "m")),
+			from("Address", "a", joinFetch("a.customerList")),
+			nullExpression(),
+			nullExpression(),
+			nullExpression(),
+			orderBy(orderByItem(variable("m")))
+		);
+
+		testQuery(query_223(), selectStatement);
 	}
 }

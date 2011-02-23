@@ -3,572 +3,256 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 @SuppressWarnings("nls")
-public final class BetweenExpressionTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
+public final class BetweenExpressionTest extends AbstractJPQLTest {
 
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN 20 AND 40";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(path("e.age").between(numeric(20), numeric(40)))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertFalse(betweenExpression.hasNot());
-		assertTrue (betweenExpression.hasAnd());
-		assertTrue (betweenExpression.hasSpaceAfterAnd());
-		assertTrue (betweenExpression.hasSpaceAfterBetween());
-		assertTrue (betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// StateFieldPathExpression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals(2, stateFieldPathExpression.pathSize());
-		assertEquals("e.age", stateFieldPathExpression.toParsedText());
-
-		// Lower Bound: NumericLiteral
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof NumericLiteral);
-		NumericLiteral numericLiteral = (NumericLiteral) expression;
-
-		assertEquals("20", numericLiteral.toParsedText());
-
-		// Upper Bound: NumericLiteral
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NumericLiteral);
-		numericLiteral = (NumericLiteral) expression;
-
-		assertEquals("40", numericLiteral.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_02()
-	{
-		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN (SELECT e.age FROM e) AND 40";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+	public void testBuildExpression_02() {
+		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN (SELECT e.age FROM Employee e) AND 40";
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester subquery = subquery(
+			subSelect(path("e.age")),
+			subFrom("Employee", "e")
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					path("e.age")
+				.between(
+					subExpression(subquery),
+					numeric(40)
+				)
+			)
+		);
 
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertFalse(betweenExpression.hasNot());
-		assertTrue (betweenExpression.hasAnd());
-		assertTrue (betweenExpression.hasSpaceAfterAnd());
-		assertTrue (betweenExpression.hasSpaceAfterBetween());
-		assertTrue (betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// StateFieldPathExpression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals(2, stateFieldPathExpression.pathSize());
-		assertEquals("e.age", stateFieldPathExpression.toParsedText());
-
-		// Lower Bound: SubExpression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof SubExpression);
-		SubExpression subExpression = (SubExpression) expression;
-
-		// SimpleSelectStatement
-		expression = subExpression.getExpression();
-		assertTrue(expression instanceof SimpleSelectStatement);
-		SimpleSelectStatement simpleSelectStatement = (SimpleSelectStatement) expression;
-
-		assertEquals("SELECT e.age FROM e", simpleSelectStatement.toParsedText());
-
-		// Upper Bound: NumericLiteral
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NumericLiteral);
-		NumericLiteral numericLiteral = (NumericLiteral) expression;
-
-		assertEquals("40", numericLiteral.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_03()
-	{
-		String query = "SELECT e, m FROM Employee e, Manager m WHERE e.age BETWEEN (SELECT e.age FROM e) AND (SELECT m.age FROM m)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+	public void testBuildExpression_03() {
+		String query = "SELECT e, m FROM Employee e, Manager m WHERE e.age BETWEEN (SELECT e.age FROM Employee e) AND (SELECT m.age FROM Manager m)";
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester subquery1 = subquery(
+			subSelect(path("e.age")),
+			subFrom("Employee", "e")
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester subquery2 = subquery(
+			subSelect(path("m.age")),
+			subFrom("Manager", "m")
+		);
 
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e"), variable("m")),
+			from("Employee", "e", "Manager", "m"),
+			where(
+					path("e.age")
+				.between(
+					subExpression(subquery1),
+					subExpression(subquery2)
+				)
+			)
+		);
 
-		assertFalse(betweenExpression.hasNot());
-		assertTrue (betweenExpression.hasAnd());
-		assertTrue (betweenExpression.hasSpaceAfterAnd());
-		assertTrue (betweenExpression.hasSpaceAfterBetween());
-		assertTrue (betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// StateFieldPathExpression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals(2, stateFieldPathExpression.pathSize());
-		assertEquals("e.age", stateFieldPathExpression.toParsedText());
-
-		// Lower Bound: SubExpression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof SubExpression);
-		SubExpression subExpression = (SubExpression) expression;
-
-		// SimpleSelectStatement
-		expression = subExpression.getExpression();
-		assertTrue(expression instanceof SimpleSelectStatement);
-		SimpleSelectStatement simpleSelectStatement = (SimpleSelectStatement) expression;
-
-		assertEquals("SELECT e.age FROM e", simpleSelectStatement.toParsedText());
-
-		// Upper Bound: IdentificationVariable
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof SubExpression);
-		subExpression = (SubExpression) expression;
-
-		// IdentificationVariable
-		expression = subExpression.getExpression();
-		assertTrue(expression instanceof SimpleSelectStatement);
-		simpleSelectStatement = (SimpleSelectStatement) expression;
-
-		assertEquals("SELECT m.age FROM m", simpleSelectStatement.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_04()
-	{
+	public void testBuildExpression_04() {
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		BetweenExpressionTester betweenExpression = path("e.age").between(nullExpression(), nullExpression());
+		betweenExpression.hasAnd = false;
+		betweenExpression.hasSpaceAfterAnd = false;
+		betweenExpression.hasSpaceAfterBetween = false;
+		betweenExpression.hasSpaceAfterLowerBound = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(betweenExpression)
+		);
 
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertFalse(betweenExpression.hasNot());
-		assertFalse(betweenExpression.hasAnd());
-		assertFalse(betweenExpression.hasSpaceAfterAnd());
-		assertFalse(betweenExpression.hasSpaceAfterBetween());
-		assertFalse(betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// StateFieldPathExpression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-
-		// Lower bound expression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof NullExpression);
-
-		// Upper bound expression
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NullExpression);
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN AND";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		BetweenExpressionTester betweenExpression = path("e.age").between(nullExpression(), nullExpression());
+		betweenExpression.hasSpaceAfterAnd = false;
+		betweenExpression.hasSpaceAfterLowerBound = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(betweenExpression)
+		);
 
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertFalse(betweenExpression.hasNot());
-		assertTrue (betweenExpression.hasAnd());
-		assertFalse(betweenExpression.hasSpaceAfterAnd());
-		assertTrue (betweenExpression.hasSpaceAfterBetween());
-		assertFalse(betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// StateFieldPathExpression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-
-		// Lower bound expression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof NullExpression);
-
-		// Upper bound expression
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_06()
-	{
+	public void testBuildExpression_06() {
 		String query = "SELECT e FROM Employee e WHERE BETWEEN ";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		BetweenExpressionTester betweenExpression = between(
+			nullExpression(),
+			nullExpression(),
+			nullExpression()
+		);
+		betweenExpression.hasAnd = false;
+		betweenExpression.hasSpaceAfterAnd = false;
+		betweenExpression.hasSpaceAfterLowerBound = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(betweenExpression)
+		);
 
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertFalse(betweenExpression.hasNot());
-		assertFalse(betweenExpression.hasAnd());
-		assertFalse(betweenExpression.hasSpaceAfterAnd());
-		assertTrue (betweenExpression.hasSpaceAfterBetween());
-		assertFalse(betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// Expression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
-
-		// Lower bound expression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof NullExpression);
-
-		// Upper bound expression
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NullExpression);
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_07()
-	{
+	public void testBuildExpression_07() {
 		String query = "SELECT e FROM Employee e WHERE BETWEEN 10 AND";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		BetweenExpressionTester betweenExpression = between(nullExpression(), numeric(10), nullExpression());
+		betweenExpression.hasSpaceAfterAnd = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(betweenExpression)
+		);
 
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertFalse(betweenExpression.hasNot());
-		assertTrue (betweenExpression.hasAnd());
-		assertFalse(betweenExpression.hasSpaceAfterAnd());
-		assertTrue (betweenExpression.hasSpaceAfterBetween());
-		assertTrue (betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// Expression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
-
-		// Lower bound expression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof NumericLiteral);
-
-		// Upper bound expression
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NullExpression);
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_08()
-	{
+	public void testBuildExpression_08() {
 		String query = "SELECT e FROM Employee e WHERE NOT BETWEEN 10 AND 20";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(notBetween(nullExpression(), numeric(10), numeric(20)))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertTrue(betweenExpression.hasNot());
-		assertTrue(betweenExpression.hasAnd());
-		assertTrue(betweenExpression.hasSpaceAfterAnd());
-		assertTrue(betweenExpression.hasSpaceAfterBetween());
-		assertTrue(betweenExpression.hasSpaceAfterLowerBound());
-		assertSame(BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// Expression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
-
-		// Lower bound expression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof NumericLiteral);
-
-		// Upper bound expression
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NumericLiteral);
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_09()
-	{
+	public void testBuildExpression_09() {
 		String query = "SELECT e FROM Employee e WHERE e.age NOT BETWEEN AND 20";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		BetweenExpressionTester betweenExpression = notBetween(
+			path("e.age"),
+			nullExpression(),
+			numeric(20)
+		);
+		betweenExpression.hasSpaceAfterLowerBound = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(betweenExpression)
+		);
 
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertTrue (betweenExpression.hasNot());
-		assertTrue (betweenExpression.hasAnd());
-		assertTrue (betweenExpression.hasSpaceAfterAnd());
-		assertTrue (betweenExpression.hasSpaceAfterBetween());
-		assertFalse(betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// Expression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-
-		// Lower bound expression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof NullExpression);
-
-		// Upper bound expression
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NumericLiteral);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_10()
-	{
+	public void testBuildExpression_10() {
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN ORDER BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		BetweenExpressionTester betweenExpression = between(
+			path("e.age"),
+			nullExpression(),
+			nullExpression()
+		);
+		betweenExpression.hasAnd = false;
+		betweenExpression.hasSpaceAfterAnd = false;
+		betweenExpression.hasSpaceAfterLowerBound = false;
 
-		// OrderByClause
-		assertTrue(selectStatement.hasOrderByClause());
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(betweenExpression),
+			nullExpression(),
+			nullExpression(),
+			orderBy(orderByItem("e.name"))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertFalse(betweenExpression.hasNot());
-		assertFalse(betweenExpression.hasAnd());
-		assertFalse(betweenExpression.hasSpaceAfterAnd());
-		assertTrue (betweenExpression.hasSpaceAfterBetween());
-		assertFalse(betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// Expression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-
-		// Lower bound expression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof NullExpression);
-
-		// Upper bound expression
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_11()
-	{
+	public void testBuildExpression_11() {
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN 10 AND ORDER BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(path("e.age").between(numeric(10), nullExpression())),
+			nullExpression(),
+			nullExpression(),
+			orderBy(orderByItem("e.name"))
+		);
 
-		// OrderByClause
-		assertTrue(selectStatement.hasOrderByClause());
-
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertFalse(betweenExpression.hasNot());
-		assertTrue (betweenExpression.hasAnd());
-		assertTrue (betweenExpression.hasSpaceAfterAnd());
-		assertTrue (betweenExpression.hasSpaceAfterBetween());
-		assertTrue (betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// Expression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-
-		// Lower bound expression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof NumericLiteral);
-
-		// Upper bound expression
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_12()
-	{
+	public void testBuildExpression_12() {
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN 10 ORDER BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		BetweenExpressionTester betweenExpression = between(
+			path("e.age"),
+			numeric(10),
+			nullExpression()
+		);
+		betweenExpression.hasAnd = false;
+		betweenExpression.hasSpaceAfterAnd = false;
 
-		// OrderByClause
-		assertTrue(selectStatement.hasOrderByClause());
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(betweenExpression),
+			nullExpression(),
+			nullExpression(),
+			orderBy(orderByItem("e.name"))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// BetweenExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof BetweenExpression);
-		BetweenExpression betweenExpression = (BetweenExpression) expression;
-
-		assertFalse(betweenExpression.hasNot());
-		assertFalse(betweenExpression.hasAnd());
-		assertFalse(betweenExpression.hasSpaceAfterAnd());
-		assertTrue (betweenExpression.hasSpaceAfterBetween());
-		assertTrue (betweenExpression.hasSpaceAfterLowerBound());
-		assertSame (BetweenExpression.BETWEEN, betweenExpression.getText());
-
-		// Expression
-		expression = betweenExpression.getExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-
-		// Lower bound expression
-		expression = betweenExpression.getLowerBoundExpression();
-		assertTrue(expression instanceof NumericLiteral);
-
-		// Upper bound expression
-		expression = betweenExpression.getUpperBoundExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 }

@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -22,8 +22,8 @@ import java.util.List;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class BadExpression extends AbstractExpression
-{
+public final class BadExpression extends AbstractExpression {
+
 	/**
 	 *
 	 */
@@ -34,8 +34,7 @@ public final class BadExpression extends AbstractExpression
 	 *
 	 * @param parent The parent of this expression
 	 */
-	BadExpression(AbstractExpression parent)
-	{
+	BadExpression(AbstractExpression parent) {
 		super(parent);
 	}
 
@@ -45,8 +44,7 @@ public final class BadExpression extends AbstractExpression
 	 * @param parent The parent of this expression
 	 * @param expression
 	 */
-	BadExpression(AbstractExpression parent, AbstractExpression expression)
-	{
+	BadExpression(AbstractExpression parent, AbstractExpression expression) {
 		super(parent);
 
 		this.expression = expression;
@@ -56,18 +54,22 @@ public final class BadExpression extends AbstractExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getExpression().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	void addChildrenTo(Collection<Expression> children) {
 		children.add(getExpression());
 	}
 
@@ -75,15 +77,20 @@ public final class BadExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedChildrenTo(List<StringExpression> children)
-	{
+	void addOrderedChildrenTo(List<StringExpression> children) {
 		children.add(expression);
 	}
 
-	public AbstractExpression getExpression()
-	{
-		if (expression == null)
-		{
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+		return getParent().findQueryBNF(expression);
+	}
+
+	public AbstractExpression getExpression() {
+		if (expression == null) {
 			expression = buildNullExpression();
 		}
 
@@ -94,8 +101,7 @@ public final class BadExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(BadExpressionBNF.ID);
 	}
 
@@ -103,8 +109,7 @@ public final class BadExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
+	boolean isParsingComplete(WordParser wordParser, String word) {
 		char character = wordParser.character();
 
 		return character == AbstractExpression.LEFT_PARENTHESIS  ||
@@ -117,10 +122,8 @@ public final class BadExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parse(WordParser wordParser, boolean tolerant)
-	{
-		expression = parse
-		(
+	void parse(WordParser wordParser, boolean tolerant) {
+		expression = parse(
 			wordParser,
 			getQueryBNF(),
 			tolerant
@@ -131,10 +134,8 @@ public final class BadExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer)
-	{
-		if (expression != null)
-		{
+	void toParsedText(StringBuilder writer) {
+		if (expression != null) {
 			expression.toParsedText(writer);
 		}
 	}

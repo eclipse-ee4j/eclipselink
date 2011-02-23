@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<entity-mappings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
-                 xmlns="http://java.sun.com/xml/ns/persistence/orm"
-                 version="2.0">
+<entity-mappings
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+			xmlns="http://java.sun.com/xml/ns/persistence/orm"
+			version="2.0">
 
   <entity class="jpql.query.Alias"/>
   <entity class="jpql.query.Dept"/>
@@ -19,10 +20,10 @@
   </entity>
   <entity class="jpql.query.Customer">
     <attributes>
-      <one-to-one name="home" target-entity="jpql.query.Home"/>
+      <many-to-one name="dept" target-entity="jpql.query.Dept"/>
       <one-to-many name="aliases" target-entity="jpql.query.Alias"/>
       <one-to-many name="phoneList" target-entity="jpql.query.Phone"/>
-      <many-to-one name="dept" target-entity="jpql.query.Dept"/>
+      <one-to-one name="home" target-entity="jpql.query.Home"/>
     </attributes>
   </entity>
 

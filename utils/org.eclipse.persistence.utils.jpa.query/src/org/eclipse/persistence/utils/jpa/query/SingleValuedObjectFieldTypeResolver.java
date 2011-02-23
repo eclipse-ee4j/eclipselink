@@ -1,19 +1,18 @@
 /*******************************************************************************
  * Copyright (c) 2006, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query;
 
-import java.util.Iterator;
 import org.eclipse.persistence.utils.jpa.query.spi.IManagedType;
 import org.eclipse.persistence.utils.jpa.query.spi.IMapping;
 import org.eclipse.persistence.utils.jpa.query.spi.IType;
@@ -27,16 +26,15 @@ import org.eclipse.persistence.utils.jpa.query.spi.ITypeDeclaration;
  * @since 11.2.0
  * @author Pascal Filion
  */
-final class SingleValuedObjectFieldTypeResolver extends AbstractPathTypeResolver
-{
+final class SingleValuedObjectFieldTypeResolver extends AbstractPathTypeResolver {
+
 	/**
 	 * Creates a new <code>SingleValuedObjectFieldTypeResolver</code>.
 	 *
 	 * @param parent The parent of this resolver, which is never <code>null</code>
 	 * @param path The singled value object path
 	 */
-	SingleValuedObjectFieldTypeResolver(TypeResolver parent, String path)
-	{
+	SingleValuedObjectFieldTypeResolver(TypeResolver parent, String path) {
 		super(parent, path);
 	}
 
@@ -44,8 +42,7 @@ final class SingleValuedObjectFieldTypeResolver extends AbstractPathTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType getManagedType()
-	{
+	public IManagedType getManagedType() {
 		return resolveManagedType(path);
 	}
 
@@ -53,21 +50,19 @@ final class SingleValuedObjectFieldTypeResolver extends AbstractPathTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType resolveManagedType(String abstractSchemaName)
-	{
+	public IManagedType resolveManagedType(String abstractSchemaName) {
+
 		// Retrieve the managed type that is the owner of the property
 		IManagedType managedType = getParentManagedType();
 
-		if (managedType == null)
-		{
+		if (managedType == null) {
 			return null;
 		}
 
 		// Retrieve the mapping for the property
 		IMapping mapping = managedType.getMappingNamed(abstractSchemaName);
 
-		if (mapping == null)
-		{
+		if (mapping == null) {
 			return null;
 		}
 
@@ -77,8 +72,7 @@ final class SingleValuedObjectFieldTypeResolver extends AbstractPathTypeResolver
 		// Collection type cannot be traversed
 		// Example: SELECT e.employees. FROM Employee e where employees is a collection,
 		// it cannot be traversed
-		if (isCollectionType(type))
-		{
+		if (TypeHelper.isCollectionType(type)) {
 			return null;
 		}
 
@@ -90,15 +84,14 @@ final class SingleValuedObjectFieldTypeResolver extends AbstractPathTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ITypeDeclaration resolveTypeDeclaration(String variableName)
-	{
+	public ITypeDeclaration resolveTypeDeclaration(String variableName) {
+
 		IManagedType managedType = getManagedType();
 
-		if (managedType != null)
-		{
+		if (managedType != null) {
 			return managedType.getType().getTypeDeclaration();
 		}
 
-		return objectTypeDeclaration();
+		return TypeHelper.unknownTypeDeclaration();
 	}
 }

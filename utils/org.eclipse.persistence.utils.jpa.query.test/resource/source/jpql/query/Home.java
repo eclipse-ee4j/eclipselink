@@ -1,20 +1,16 @@
 package jpql.query;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.Id;
 
 @Entity
-@NamedQueries
-({
-	@NamedQuery(name="home.bad1", query="SELECT FROM Home h"),
-	@NamedQuery(name="home.bad2", query="SELEC")
-})
-public final class Home
+public class Home implements Serializable
 {
 	private List<Phone> phones;
+	@Id
 	private String city;
 
 	public Home()

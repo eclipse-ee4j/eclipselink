@@ -21,7 +21,8 @@ import javax.persistence.NamedQuery;
    @NamedQuery(name="order.coalesce4",   query="SELECT COALESCE(o.price, o.number) FROM Order o"),
    @NamedQuery(name="order.abs",         query="SELECT ABS(o.totalPrice) FROM Order o")
 })
-public final class Order
+@SuppressWarnings("unused")
+public class Order
 {
 	private BigInteger price;
 	private BigDecimal realPrice;

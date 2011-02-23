@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -23,8 +23,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class AbstractSchemaNameFactory extends ExpressionFactory
-{
+final class AbstractSchemaNameFactory extends ExpressionFactory {
+
 	/**
 	 * The unique identifier of this {@link AbstractSchemaNameFactory}.
 	 */
@@ -33,8 +33,7 @@ final class AbstractSchemaNameFactory extends ExpressionFactory
 	/**
 	 * Creates a new <code>AbstractSchemaNameFactory</code>.
 	 */
-	AbstractSchemaNameFactory()
-	{
+	AbstractSchemaNameFactory() {
 		super(ID);
 	}
 
@@ -47,14 +46,12 @@ final class AbstractSchemaNameFactory extends ExpressionFactory
 	                                   String word,
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
-		if (word.indexOf(AbstractExpression.DOT) != -1)
-		{
+	                                   boolean tolerant) {
+
+		if (word.indexOf(AbstractExpression.DOT) != -1) {
 			expression = new CollectionValuedPathExpression(parent, word);
 		}
-		else
-		{
+		else {
 			expression = new AbstractSchemaName(parent, word);
 		}
 

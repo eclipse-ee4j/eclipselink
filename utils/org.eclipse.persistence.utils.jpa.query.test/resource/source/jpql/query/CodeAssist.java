@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 @Entity
 @NamedQueries
@@ -17,6 +17,7 @@ import javax.persistence.NamedQueries;
 	@NamedQuery(name="codeAssist.code_5", query="SELECT e. FROM CodeAssist c, IN c.employees e"),
 	@NamedQuery(name="codeAssist.code_6", query="SELECT a.alias FROM CodeAssist c, IN c.customerMap cust, IN(KEY(cust).aliases) a")
 })
+@SuppressWarnings("unused")
 public class CodeAssist
 {
 	private String name;

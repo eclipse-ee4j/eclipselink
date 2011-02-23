@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -16,8 +16,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
 import java.util.List;
 
 /**
- * This expression handles parsing the identifier followed by an expression
- * encapsulated within parenthesis.
+ * This expression handles parsing the identifier followed by an expression encapsulated within
+ * parenthesis.
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code><p>
  *
@@ -25,8 +25,8 @@ import java.util.List;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public abstract class AbstractEncapsulatedExpression extends AbstractExpression
-{
+public abstract class AbstractEncapsulatedExpression extends AbstractExpression {
+
 	/**
 	 * Flag used to determine if the closing parenthesis is present in the query.
 	 */
@@ -38,8 +38,8 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 	private boolean hasRightParenthesis;
 
 	/**
-	 * Special flag used to separate the identifier with the encapsulated
-	 * expression when the left parenthesis is missing.
+	 * Special flag used to separate the identifier with the encapsulated expression when the left
+	 * parenthesis is missing.
 	 */
 	private boolean hasSpaceAfterIdentifier;
 
@@ -48,8 +48,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 	 *
 	 * @param parent The parent of this expression
 	 */
-	AbstractEncapsulatedExpression(AbstractExpression parent)
-	{
+	AbstractEncapsulatedExpression(AbstractExpression parent) {
 		super(parent);
 	}
 
@@ -57,38 +56,48 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	final void addOrderedChildrenTo(List<StringExpression> children)
-	{
+	final void addOrderedChildrenTo(List<StringExpression> children) {
+
 		// Identifier
 		children.add(buildStringExpression(getText()));
 
 		// '('
-		if (hasLeftParenthesis)
-		{
+		if (hasLeftParenthesis) {
 			children.add(buildStringExpression(LEFT_PARENTHESIS));
 		}
-		else if (hasSpaceAfterIdentifier)
-		{
+		else if (hasSpaceAfterIdentifier) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		addOrderedEncapsulatedExpressionTo(children);
 
 		// ')'
-		if (hasRightParenthesis)
-		{
+		if (hasRightParenthesis) {
 			children.add(buildStringExpression(RIGHT_PARENTHESIS));
 		}
 	}
 
 	/**
-	 * Adds the {@link StringExpression StringExpressions} representing the
-	 * encapsulated {@link Expression}.
+	 * Adds the {@link StringExpression StringExpressions} representing the encapsulated {@link
+	 * Expression}.
 	 *
-	 * @param children The list used to store the string representation of the
-	 * encapsulated {@link Expression}
+	 * @param children The list used to store the string representation of the encapsulated {@link
+	 * Expression}
 	 */
 	abstract void addOrderedEncapsulatedExpressionTo(List<StringExpression> children);
+
+	boolean areLogicalIdentifiersSupported() {
+		return false;
+	}
+
+	/**
+	 * Returns the JPQL identifier of this expression.
+	 *
+	 * @return The JPQL identifier
+	 */
+	public final String getIdentifier() {
+		return getText();
+	}
 
 	/**
 	 * Determines whether something was parsed after the left parenthesis.
@@ -100,22 +109,20 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 	/**
 	 * Determines whether the open parenthesis was parsed or not.
 	 *
-	 * @return <code>true</code> if the open parenthesis was present in the
-	 * string version of the query; <code>false</code> otherwise
+	 * @return <code>true</code> if the open parenthesis was present in the string version of the
+	 * query; <code>false</code> otherwise
 	 */
-	public final boolean hasLeftParenthesis()
-	{
+	public final boolean hasLeftParenthesis() {
 		return hasLeftParenthesis;
 	}
 
 	/**
 	 * Determines whether the close parenthesis was parsed or not.
 	 *
-	 * @return <code>true</code> if the close parenthesis was present in the
-	 * string version of the query; <code>false</code> otherwise
+	 * @return <code>true</code> if the close parenthesis was present in the string version of the
+	 * query; <code>false</code> otherwise
 	 */
-	public final boolean hasRightParenthesis()
-	{
+	public final boolean hasRightParenthesis() {
 		return hasRightParenthesis;
 	}
 
@@ -123,18 +130,37 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
-		return wordParser.character() == RIGHT_PARENTHESIS ||
-		       super.isParsingComplete(wordParser, word);
+	boolean isParsingComplete(WordParser wordParser, String word) {
+
+		if (wordParser.startsWith(RIGHT_PARENTHESIS) ||
+		    word.equalsIgnoreCase(WHEN)              ||
+		    word.equalsIgnoreCase(SET)               ||
+		    word.equalsIgnoreCase(AS)                ||
+		    super.isParsingComplete(wordParser, word)) {
+
+			return true;
+		}
+
+		if (areLogicalIdentifiersSupported()) {
+			return false;
+		}
+
+		// This check for compound functions, such as AND, OR, <, <=, =, >=, >, BETWEEN
+		return word.equalsIgnoreCase(AND)          ||
+		       word.equalsIgnoreCase(OR)           ||
+		       word.equalsIgnoreCase(BETWEEN)      ||
+		       word.equalsIgnoreCase(NOT_BETWEEN)  ||
+		       wordParser.startsWith(LOWER_THAN)   ||
+		       wordParser.startsWith(GREATER_THAN) ||
+		       wordParser.startsWith(EQUAL);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	final void parse(WordParser wordParser, boolean tolerant)
-	{
+	final void parse(WordParser wordParser, boolean tolerant) {
+
 		// Parse the identifier
 		String identifier = parseIdentifier(wordParser);
 		wordParser.moveForward(identifier);
@@ -145,8 +171,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 		// Parse '('
 		hasLeftParenthesis = wordParser.startsWith(LEFT_PARENTHESIS);
 
-		if (hasLeftParenthesis)
-		{
+		if (hasLeftParenthesis) {
 			wordParser.moveForward(1);
 			count = wordParser.skipLeadingWhitespace();
 		}
@@ -154,8 +179,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 		// Parse the expression
 		parseEncapsulatedExpression(wordParser, tolerant);
 
-		if (hasEncapsulatedExpression())
-		{
+		if (hasEncapsulatedExpression()) {
 			// When having incomplete query of this form: ABS 4 + 5),
 			// a whitespace is required
 			hasSpaceAfterIdentifier = !hasLeftParenthesis && (count > 0);
@@ -165,24 +189,21 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 		// Parse ')'
 		hasRightParenthesis = wordParser.startsWith(RIGHT_PARENTHESIS);
 
-		if (hasRightParenthesis)
-		{
+		if (hasRightParenthesis) {
 			wordParser.moveForward(1);
 		}
-		else
-		{
+		else {
 			wordParser.moveBackward(count);
 		}
 	}
 
 	/**
-	 * Parses the encapsulated expression by starting at the current position,
-	 * which is part of the given {@link WordParser}.
+	 * Parses the encapsulated expression by starting at the current position, which is part of the
+	 * given {@link WordParser}.
 	 *
-	 * @param wordParser The text to parse based on the current position of the
-	 * cursor
-	 * @param tolerant Determines whether the parsing system should be tolerant,
-	 * meaning if it should try to parse invalid or incomplete queries
+	 * @param wordParser The text to parse based on the current position of the cursor
+	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
+	 * try to parse invalid or incomplete queries
 	 */
 	abstract void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant);
 
@@ -198,18 +219,16 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	final void toParsedText(StringBuilder writer)
-	{
+	final void toParsedText(StringBuilder writer) {
+
 		// Identifier
 		writer.append(getText());
 
 		// '('
-		if (hasLeftParenthesis)
-		{
+		if (hasLeftParenthesis) {
 			writer.append(LEFT_PARENTHESIS);
 		}
-		else if (hasSpaceAfterIdentifier)
-		{
+		else if (hasSpaceAfterIdentifier) {
 			writer.append(SPACE);
 		}
 
@@ -217,8 +236,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 		toParsedTextEncapsulatedExpression(writer);
 
 		// ')'
-		if (hasRightParenthesis)
-		{
+		if (hasRightParenthesis) {
 			writer.append(RIGHT_PARENTHESIS);
 		}
 	}
@@ -226,8 +244,8 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression
 	/**
 	 * Prints the string representation of the encapsulated {@link Expression}.
 	 *
-	 * @param writer The buffer used to append the encapsulated {@link Expression}'s
-	 * string representation
+	 * @param writer The buffer used to append the encapsulated {@link Expression}'s string
+	 * representation
 	 */
 	abstract void toParsedTextEncapsulatedExpression(StringBuilder writer);
 }

@@ -3,80 +3,195 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.utils.jpa.query.parser.ExpressionTools;
+import org.eclipse.persistence.utils.jpa.query.spi.IConstructor;
 import org.eclipse.persistence.utils.jpa.query.spi.IType;
 import org.eclipse.persistence.utils.jpa.query.spi.ITypeDeclaration;
+import org.eclipse.persistence.utils.jpa.query.spi.ITypeRepository;
 
 /**
- * The concrete implementation of {@link IType} that is wrapping the Java type.
+ * The concrete implementation of {@link IType} that is wrapping a Java type.
  *
- * @version 11.2.0
- * @since 11.2.0
+ * @version 2.3
+ * @since 2.3
  * @author Pascal Filion
  */
-final class JavaType implements IType
-{
+final class JavaType implements IType {
+
 	/**
-	 * The fully qualified name of the Java type.
+	 * The cached {@link IConstructor IConstructors}.
 	 */
-	private String className;
+	private Collection<IConstructor> constructors;
+
+	/**
+	 * The referenced descriptor that is used rather than the Java type.
+	 */
+	private ClassDescriptor descriptor;
+
+	/**
+	 * The list of names for the {@link Enum}'s constants otherwise an empty array.
+	 */
+	private String[] enumConstants;
 
 	/**
 	 * The actual Java type.
 	 */
-	private final Class<?> type;
+	private Class<?> type;
+
+	/**
+	 * The cached {@link ITypeDeclaration} for this {@link IType}.
+	 */
+	private ITypeDeclaration typeDeclaration;
+
+	/**
+	 * The fully qualified name of the Java type.
+	 */
+	private String typeName;
+
+	/**
+	 * The external form of a type repository.
+	 */
+	private ITypeRepository typeRepository;
 
 	/**
 	 * Creates a new <code>JavaType</code>.
 	 *
-	 * @param type The actual Java type
+	 * @param typeRepository The external form of a type repository
+	 * @param type The actual Java type wrapped by this class
 	 */
-	JavaType(Class<?> type)
-	{
+	JavaType(ITypeRepository typeRepository, Class<?> type) {
 		super();
-
-		this.type      = type;
-		this.className = type.getName();
+		this.type           = type;
+		this.typeName       = type.getName();
+		this.typeRepository = typeRepository;
 	}
 
 	/**
 	 * Creates a new <code>JavaType</code>.
 	 *
-	 * @param type The actual Java type
+	 * @param typeRepository The external form of a type repository
+	 * @param descriptor The referenced descriptor that is used rather than the Java type
 	 */
-	JavaType(String className)
-	{
-		super();
+	JavaType(ITypeRepository typeRepository, ClassDescriptor descriptor) {
+		this(typeRepository, descriptor.getJavaClass());
+		this.descriptor = descriptor;
+	}
 
-		this.type      = null;
-		this.className = className;
+	/**
+	 * Creates a new <code>JavaType</code>.
+	 *
+	 * @param typeRepository The external form of a type repository
+	 * @param typeName The fully qualified name of the Java type
+	 */
+	JavaType(ITypeRepository typeRepository, String typeName) {
+		super();
+		this.typeName       = typeName;
+		this.typeRepository = typeRepository;
+	}
+
+	private IConstructor buildConstructor(Constructor<?> constructor) {
+		return new JavaConstructor(this, constructor);
+	}
+
+	private Collection<IConstructor> buildConstructors() {
+
+		if (type == null) {
+			return Collections.emptyList();
+		}
+
+		Constructor<?>[] javaConstructors = type.getDeclaredConstructors();
+		Collection<IConstructor> constructors = new ArrayList<IConstructor>(javaConstructors.length);
+
+		for (Constructor<?> javaConstructor : javaConstructors) {
+			constructors.add(buildConstructor(javaConstructor));
+		}
+
+		return constructors;
+	}
+
+	private String[] buildEnumConstants() {
+
+		if ((type == null) || !type.isEnum()) {
+			return ExpressionTools.EMPTY_STRING_ARRAY;
+		}
+
+		Object[] enumConstants = type.getEnumConstants();
+		String[] names = new String[enumConstants.length];
+
+		for (int index = enumConstants.length; index >= 0; ) {
+			names[index] = ((Enum<?>) enumConstants[index]).name();
+		}
+
+		return names;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Iterator<IConstructor> constructors() {
+		if (constructors == null) {
+			constructors = buildConstructors();
+		}
+		return constructors.iterator();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean equals(IType type) {
+		return (this == type) ? true : typeName.equals(type.getName());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean equals(IType type)
-	{
-		return getName().equals(type.getName());
+	public boolean equals(Object object) {
+		return (this == object) || equals((IType) object);
+	}
+
+	/**
+	 * Returns the encapsulated {@link ClassDescriptor}.
+	 *
+	 * @return The referenced descriptor that is used rather than the Java type, the type is retrieved
+	 * from this descriptor
+	 */
+	ClassDescriptor getDescriptor() {
+		return descriptor;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public String getName()
-	{
-		return className;
+	public String[] getEnumConstants() {
+		if (enumConstants == null) {
+			enumConstants = buildEnumConstants();
+		}
+		return enumConstants;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getName() {
+		return typeName;
 	}
 
 	/**
@@ -84,41 +199,83 @@ final class JavaType implements IType
 	 *
 	 * @return The actual Java type, if <code>null</code> is returned; then the class could not be resolved
 	 */
-	Class<?> getType()
-	{
+	Class<?> getType() {
 		return type;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public ITypeDeclaration getTypeDeclaration()
-	{
-		return new JavaTypeDeclaration(this);
+	public ITypeDeclaration getTypeDeclaration() {
+		if (typeDeclaration == null) {
+			typeDeclaration = new JavaTypeDeclaration(typeRepository, this, null, (type != null) ? type.isArray() : false);
+		}
+		return typeDeclaration;
+	}
+
+	/**
+	 * Returns the type repository for the application.
+	 *
+	 * @return The repository of {@link IType ITypes}
+	 */
+	ITypeRepository getTypeRepository() {
+		return typeRepository;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
+		return (type == null) ? false : type.isAnnotationPresent(annotationType);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isAssignableTo(IType type)
-	{
-		if (this.type == null)
-		{
+	public int hashCode() {
+		return typeName.hashCode();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isAssignableTo(IType type) {
+
+		// TODO: Maybe should iterate through the type hierarchy if IType and check
+		//       if className is present
+		if (this.type == null) {
 			return false;
 		}
 
 		Class<?> otherType = ((JavaType) type).type;
+
+		if (otherType == null) {
+			return false;
+		}
+
 		return otherType.isAssignableFrom(this.type);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public boolean isResolvable()
-	{
+	public boolean isEnum() {
+		return (type != null) && type.isEnum();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isResolvable() {
 		return (type != null);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return typeName;
 	}
 }

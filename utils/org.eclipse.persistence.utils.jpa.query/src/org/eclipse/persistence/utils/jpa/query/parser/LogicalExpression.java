@@ -3,26 +3,26 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * This expression represents a logical expression, which means the first and
- * second expressions are aggregated with either <b>AND</b> or <b>OR</b>.
+ * This expression represents a logical expression, which means the first and second expressions are
+ * aggregated with either <b>AND</b> or <b>OR</b>.
  *
  * @version 11.2.0
  * @since 11.0.0
  * @author Pascal Filion
  */
-public abstract class LogicalExpression extends CompoundExpression
-{
+public abstract class LogicalExpression extends CompoundExpression {
+
 	/**
 	 * Creates a new <code>LogicalExpression</code>.
 	 *
@@ -30,8 +30,7 @@ public abstract class LogicalExpression extends CompoundExpression
 	 * @param identifier The identifier of this expression
 	 */
 	LogicalExpression(AbstractExpression parent,
-	                  String identifier)
-	{
+	                  String identifier) {
 		super(parent, identifier);
 	}
 
@@ -40,8 +39,7 @@ public abstract class LogicalExpression extends CompoundExpression
 	 *
 	 * @return Either <b>AND</b> or <b>OR</b>
 	 */
-	public final String getIdentifier()
-	{
+	public final String getIdentifier() {
 		return getText();
 	}
 
@@ -49,8 +47,7 @@ public abstract class LogicalExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	final JPQLQueryBNF getQueryBNF()
-	{
+	final JPQLQueryBNF getQueryBNF() {
 		return queryBNF(ConditionalExpressionBNF.ID);
 	}
 
@@ -58,9 +55,9 @@ public abstract class LogicalExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
+	boolean isParsingComplete(WordParser wordParser, String word) {
 		return wordParser.character() == RIGHT_PARENTHESIS ||
+		       word.equalsIgnoreCase(OR)  ||
 		       super.isParsingComplete(wordParser, word);
 	}
 
@@ -68,8 +65,7 @@ public abstract class LogicalExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	String parseIdentifier(WordParser wordParser)
-	{
+	String parseIdentifier(WordParser wordParser) {
 		return getText();
 	}
 }

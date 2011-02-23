@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -18,19 +18,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
-public final class SizeExpressionTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
+public final class SizeExpressionTest extends AbstractJPQLTest {
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
 		String query = "SELECT e FROM Employee e WHERE SIZE(e.age)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -56,10 +48,9 @@ public final class SizeExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_03()
-	{
+	public void testBuildExpression_03() {
 		String query = "SELECT e FROM Employee e WHERE SIZE";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -86,10 +77,9 @@ public final class SizeExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_04()
-	{
+	public void testBuildExpression_04() {
 		String query = "SELECT e FROM Employee e WHERE SIZE(";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -116,10 +106,9 @@ public final class SizeExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
 		String query = "SELECT e FROM Employee e WHERE SIZE()";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -146,10 +135,9 @@ public final class SizeExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_06()
-	{
+	public void testBuildExpression_06() {
 		String query = "SELECT e FROM Employee e WHERE SIZE GROUP BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -178,10 +166,9 @@ public final class SizeExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_07()
-	{
+	public void testBuildExpression_07() {
 		String query = "SELECT e FROM Employee e WHERE SIZE( GROUP BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();

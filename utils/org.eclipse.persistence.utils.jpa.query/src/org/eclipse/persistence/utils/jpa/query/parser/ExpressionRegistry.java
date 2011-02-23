@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -22,22 +22,20 @@ import java.util.Map;
 import org.eclipse.persistence.utils.jpa.query.spi.IJPAVersion;
 
 /**
- * This registry initializes the singleton instances of various API required for
- * parsing a Java Persistence query. It supports version 1.0 and 2.0 of the Java
- * Persistence query language as well as the EclipseLink's extension over the
- * language.
+ * This registry initializes the singleton instances of various API required for parsing a JPQL
+ * query. It supports version 1.0 and 2.0 of the JPQL language as well as the
+ * EclipseLink's extension over the language.
  *
  * @version 11.2.0
  * @since 11.2.0
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ExpressionRegistry
-{
+final class ExpressionRegistry {
+
 	/**
-	 * The map of {@link ExpressionFactory ExpressionFactories} that have been
-	 * registered and required for parsing a JPQL query, they are mapped with
-	 * their unique identifier.
+	 * The map of {@link ExpressionFactory ExpressionFactories} that have been registered and
+	 * required for parsing a JPQL query, they are mapped with their unique identifier.
 	 */
 	private Map<String, ExpressionFactory> expressionFactories;
 
@@ -52,54 +50,47 @@ final class ExpressionRegistry
 	private Map<String, IJPAVersion> identifiersVersions;
 
 	/**
-	 * The {@link JPQLQueryBNF} unique identifiers mapped to the only instance
-	 * of the BNF rule.
+	 * The {@link JPQLQueryBNF} unique identifiers mapped to the only instance of the BNF rule.
 	 */
 	private Map<String, JPQLQueryBNF> queryBNFs;
 
 	/**
 	 * Creates the only instance of <code>ExpressionRegistry</code>.
 	 */
-	ExpressionRegistry()
-	{
+	ExpressionRegistry() {
 		super();
 		initialize();
 	}
 
 	/**
-	 * Retrieves the registered {@link ExpressionFactory} that was registered for
-	 * the given unique identifier.
+	 * Retrieves the registered {@link ExpressionFactory} that was registered for the given unique
+	 * identifier.
 	 *
-	 * @param expressionFactoryId The unique identifier of the {@link ExpressionFactory}
-	 * to retrieve
+	 * @param expressionFactoryId The unique identifier of the {@link ExpressionFactory} to retrieve
 	 * @return The {@link ExpressionFactory} mapped with the given unique identifier
 	 */
-	ExpressionFactory expressionFactory(String expressionFactoryId)
-	{
+	ExpressionFactory expressionFactory(String expressionFactoryId) {
 		return expressionFactories.get(expressionFactoryId);
 	}
 
 	/**
-	 * Retrieves the {@link ExpressionFactory} that is responsible for creating
-	 * the {@link Expression} object that represents the given JPQL identifier.
+	 * Retrieves the {@link ExpressionFactory} that is responsible for creating the {@link Expression}
+	 * object that represents the given JPQL identifier.
 	 *
 	 * @param identifier The JPQL identifier for which its factory is searched
-	 * @return Either the {@link ExpressionFactory} that creates the {@link
-	 * Expression} or <code>null</code> if none was found
+	 * @return Either the {@link ExpressionFactory} that creates the {@link Expression} or
+	 * <code>null</code> if none was found
 	 */
-	ExpressionFactory expressionFactoryForIdentifier(String identifier)
-	{
-		if (Expression.SELECT.equalsIgnoreCase(identifier))
-		{
+	ExpressionFactory expressionFactoryForIdentifier(String identifier) {
+
+		if (Expression.SELECT.equalsIgnoreCase(identifier)) {
 			return expressionFactory(SimpleSelectStatementFactory.ID);
 		}
 
-		for (ExpressionFactory expressionFactory : expressionFactories.values())
-		{
+		for (ExpressionFactory expressionFactory : expressionFactories.values()) {
 			boolean found = Arrays.binarySearch(expressionFactory.identifiers(), identifier) > -1;
 
-			if (found)
-			{
+			if (found) {
 				return expressionFactory;
 			}
 		}
@@ -108,37 +99,33 @@ final class ExpressionRegistry
 	}
 
 	/**
-	 * Retrieves the role of the given identifier. A role helps to describe the
-	 * purpose of the identifier in a query.
+	 * Retrieves the role of the given identifier. A role helps to describe the purpose of the
+	 * identifier in a query.
 	 *
 	 * @param identifier The identifier for which its role is requested
 	 * @return The role of the given identifier
 	 */
-	IdentifierRole identifierRole(String identifier)
-	{
+	IdentifierRole identifierRole(String identifier) {
 		return identifiers.get(identifier);
 	}
 
 	/**
-	 * Returns the JPQL identifiers defined for Java Persistence Query version
-	 * 1.0 and 2.0.
+	 * Returns the JPQL identifiers defined for JPQL version 1.0 and 2.0.
 	 *
 	 * @return The set of identifiers
 	 */
-	Collection<String> identifiers()
-	{
+	Collection<String> identifiers() {
 		return identifiers.keySet();
 	}
 
 	/**
 	 * Retrieves the identifiers that are supported by the given BNF.
 	 *
-	 * @param queryBNFId The unique identifier of the BNF for which the supported
-	 * identifiers are requested
+	 * @param queryBNFId The unique identifier of the BNF for which the supported identifiers are
+	 * requested
 	 * @return The list of JPQL identifiers that can be used with the BNF
 	 */
-	Iterator<String> identifiers(String queryBNFId)
-	{
+	Iterator<String> identifiers(String queryBNFId) {
 		return queryBNF(queryBNFId).identifiers();
 	}
 
@@ -147,8 +134,7 @@ final class ExpressionRegistry
 	 *
 	 * @return The version in which the identifier was introduced
 	 */
-	IJPAVersion identifierVersion(String identifier)
-	{
+	IJPAVersion identifierVersion(String identifier) {
 		IJPAVersion version = identifiersVersions.get(identifier);
 		return (version != null) ? version : IJPAVersion.VERSION_1_0;
 	}
@@ -156,8 +142,7 @@ final class ExpressionRegistry
 	/**
 	 * Instantiates the only instance of various API used by the parser.
 	 */
-	private void initialize()
-	{
+	private void initialize() {
 		queryBNFs           = new HashMap<String, JPQLQueryBNF>();
 		identifiers         = new HashMap<String, IdentifierRole>();
 		expressionFactories = new HashMap<String, ExpressionFactory>();
@@ -171,11 +156,10 @@ final class ExpressionRegistry
 	}
 
 	/**
-	 * Creates a map where the key is a unique ID and the value is an
-	 * {@link JPQLQueryBNF} representing a portion of the JPQL grammar.
+	 * Creates a map where the key is a unique ID and the value is an {@link JPQLQueryBNF}
+	 * representing a portion of the JPQL grammar.
 	 */
-	private void initializeBNFs()
-	{
+	private void initializeBNFs() {
 		registerBNF(new AbstractSchemaNameBNF());
 		registerBNF(new AggregateExpressionBNF());
 		registerBNF(new AllOrAnyExpressionBNF());
@@ -213,6 +197,7 @@ final class ExpressionRegistry
 		registerBNF(new EntityExpressionBNF());
 		registerBNF(new EntityOrValueExpressionBNF());
 		registerBNF(new EntityTypeExpressionBNF());
+		registerBNF(new EntityTypeLiteralBNF());
 		registerBNF(new EnumExpressionBNF());
 		registerBNF(new EnumLiteralBNF());
 		registerBNF(new EnumPrimaryBNF());
@@ -229,10 +214,12 @@ final class ExpressionRegistry
 		registerBNF(new IdentificationVariableBNF());
 		registerBNF(new IdentificationVariableDeclarationBNF());
 		registerBNF(new InExpressionBNF());
+		registerBNF(new InExpressionExpressionBNF());
 		registerBNF(new InItemBNF());
 		registerBNF(new InputParameterBNF());
 		registerBNF(new InternalBetweenExpressionBNF());
 		registerBNF(new InternalCoalesceExpressionBNF());
+		registerBNF(new InternalConcatExpressionBNF());
 		registerBNF(new InternalCountBNF());
 		registerBNF(new InternalEntityTypeExpressionBNF());
 		registerBNF(new InternalFromClauseBNF());
@@ -247,6 +234,7 @@ final class ExpressionRegistry
 		registerBNF(new JoinFetchBNF());
 		registerBNF(new JPQLStatementBNF());
 		registerBNF(new LikeExpressionBNF());
+		registerBNF(new LiteralBNF());
 		registerBNF(new NewValueBNF());
 		registerBNF(new NullComparisonExpressionBNF());
 		registerBNF(new NullIfExpressionBNF());
@@ -277,11 +265,9 @@ final class ExpressionRegistry
 		registerBNF(new StringExpressionBNF());
 		registerBNF(new StringLiteralBNF());
 		registerBNF(new StringPrimaryBNF());
-		registerBNF(new SubConditionalExpressionBNF());
 		registerBNF(new SubQueryBNF());
 		registerBNF(new SubQueryFromClauseBNF());
 		registerBNF(new SubSelectIdentificationVariableDeclarationBNF());
-		registerBNF(new SubSimpleArithmeticExpressionBNF());
 		registerBNF(new TypeExpressionBNF());
 		registerBNF(new UpdateClauseBNF());
 		registerBNF(new UpdateItemBNF());
@@ -292,16 +278,16 @@ final class ExpressionRegistry
 
 		// EclipseLink's extension
 		registerBNF(new FuncExpressionBNF());
-		registerBNF(new InternalFuncExpressionBNF());
+		registerBNF(new FuncItemBNF());
+		registerBNF(new TreatExpressionBNF());
 	}
 
 	/**
-	 * Creates a map where the key is an identifier and the value is an
-	 * {@link ExpressionFactory} responsible to create the actual
-	 * {@link Expression}.
+	 * Creates a map where the key is an identifier and the value is an {@link ExpressionFactory}
+	 * responsible to create the actual {@link Expression}.
 	 */
-	private void initializeExpressionFactories()
-	{
+	private void initializeExpressionFactories() {
+
 		// JPA version 1.0
 		registerFactory(new AbsExpressionFactory());
 		registerFactory(new AbstractSchemaNameFactory());
@@ -384,18 +370,18 @@ final class ExpressionRegistry
 
 		// EclipseLink's extension
 		registerFactory(new FuncExpressionFactory());
+		registerFactory(new TreatExpressionFactory());
 	}
 
 	/**
-	 * Creates the list of JPQL identifiers, which cannot be used as
-	 * identification variables.
+	 * Creates the list of JPQL identifiers, which cannot be used as identification variables.
 	 */
-	private void initializeIdentifiers()
-	{
+	private void initializeIdentifiers() {
+
 		// JPA version 1.0
 		identifiers.put(Expression.ABS,                   IdentifierRole.FUNCTION);           // ABS(x)
 		identifiers.put(Expression.ALL,                   IdentifierRole.FUNCTION);           // ALL(x)
-		identifiers.put(Expression.AND,                   IdentifierRole.AGGREGATE);
+		identifiers.put(Expression.AND,                   IdentifierRole.AGGREGATE);          // x AND y
 		identifiers.put(Expression.ANY,                   IdentifierRole.FUNCTION);           // ANY(x)
 		identifiers.put(Expression.AS,                    IdentifierRole.COMPLETEMENT);
 		identifiers.put(Expression.ASC,                   IdentifierRole.COMPLETEMENT);
@@ -441,7 +427,7 @@ final class ExpressionRegistry
 		identifiers.put(Expression.NULL,                  IdentifierRole.FUNCTION);
 		identifiers.put(Expression.OBJECT,                IdentifierRole.FUNCTION);           // OBJECT(x)
 		identifiers.put(Expression.OF,                    IdentifierRole.COMPOUND_FUNCTION);  // Part of MEMBER [OF]
-		identifiers.put(Expression.OR,                    IdentifierRole.AGGREGATE);
+		identifiers.put(Expression.OR,                    IdentifierRole.AGGREGATE);          // x OR y
 		identifiers.put(Expression.OUTER,                 IdentifierRole.COMPLETEMENT);       // Part of JOIN
 		identifiers.put(Expression.POSITION,              IdentifierRole.UNUSED);
 		identifiers.put(Expression.SELECT,                IdentifierRole.CLAUSE);
@@ -494,9 +480,9 @@ final class ExpressionRegistry
 
 		// Partial Identifiers
 		identifiers.put("BY",                             IdentifierRole.CLAUSE);             // Part of GROUP BY, ORDER BY
-		identifiers.put("DELETE",                         IdentifierRole.CLAUSE);
-		identifiers.put("GROUP",                          IdentifierRole.CLAUSE);
-		identifiers.put("ORDER",                          IdentifierRole.CLAUSE);
+		identifiers.put("DELETE",                         IdentifierRole.CLAUSE);             // Part of DELETE FROM
+		identifiers.put("GROUP",                          IdentifierRole.CLAUSE);             // Part of GROUP BY
+		identifiers.put("ORDER",                          IdentifierRole.CLAUSE);             // Part of ORDERY BY
 
 		// JPA version 2.0
 		identifiers.put(Expression.CASE,                  IdentifierRole.FUNCTION);           // ???
@@ -524,67 +510,60 @@ final class ExpressionRegistry
 		identifiersVersions.put(Expression.VALUE,         IJPAVersion.VERSION_2_0);
 
 		// EclipseLink's extension
-		identifiers.put(Expression.FUNC,                  IdentifierRole.FUNCTION);
+		identifiers.put(Expression.FUNC,                  IdentifierRole.FUNCTION);          // FUNC(n, x1, ..., x2)
+		identifiers.put(Expression.TREAT,                 IdentifierRole.FUNCTION);          // TREAT(x TODO)
 
 		identifiersVersions.put(Expression.FUNC,          IJPAVersion.VERSION_2_0);
+		identifiersVersions.put(Expression.TREAT,         IJPAVersion.VERSION_2_0);
 	}
 
 	/**
-	 * Determines if the given word is a JPQL identifier. The check is case
-	 * insensitive.
+	 * Determines if the given word is a JPQL identifier. The check is case insensitive.
 	 *
 	 * @param word The word to test if it's a JPQL identifier
-	 * @return <code>true</code> if the word is an identifier, <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if the word is an identifier, <code>false</code> otherwise
 	 */
-	boolean isIdentifier(String word)
-	{
+	boolean isIdentifier(String word) {
 		return identifiers.containsKey(word.toUpperCase());
 	}
 
 	/**
 	 * Retrieves the BNF object that was registered for the given unique identifier.
 	 *
-	 * @param queryBNFID The unique identifier of the {@link JPQLQueryBNF} to
-	 * retrieve
+	 * @param queryBNFID The unique identifier of the {@link JPQLQueryBNF} to retrieve
 	 * @return The {@link JPQLQueryBNF} representing a section of the grammar
 	 */
 	@SuppressWarnings("unchecked")
-	<T extends JPQLQueryBNF> T queryBNF(String queryBNFID)
-	{
+	<T extends JPQLQueryBNF> T queryBNF(String queryBNFID) {
 		return (T) queryBNFs.get(queryBNFID);
 	}
 
 	/**
-	 * Registers the given {@link ExpressionFactory} by storing it for all its
-	 * identifiers.
+	 * Registers the given {@link ExpressionFactory} by storing it for all its identifiers.
 	 *
 	 * @param expressionFactory The {@link ExpressionFactory} to store
 	 */
-	private void registerBNF(JPQLQueryBNF queryBNF)
-	{
+	private void registerBNF(JPQLQueryBNF queryBNF) {
+
 		String id = queryBNF.getId();
 		queryBNF = queryBNFs.put(id, queryBNF);
 
-		if (queryBNF != null)
-		{
+		if (queryBNF != null) {
 			throw new IllegalArgumentException("A JPQLQueryBNF is already registered with the id " + id);
 		}
 	}
 
 	/**
-	 * Registers the given {@link ExpressionFactory} by storing it for all its
-	 * identifiers.
+	 * Registers the given {@link ExpressionFactory} by storing it for all its identifiers.
 	 *
 	 * @param expressionFactory The {@link ExpressionFactory} to store
 	 */
-	private void registerFactory(ExpressionFactory expressionFactory)
-	{
+	private void registerFactory(ExpressionFactory expressionFactory) {
+
 		String id = expressionFactory.getId();
 		expressionFactory = expressionFactories.put(id, expressionFactory);
 
-		if (expressionFactory != null)
-		{
+		if (expressionFactory != null) {
 			throw new IllegalArgumentException("An ExpressionFactory is already registered with the id " + id);
 		}
 	}

@@ -3,19 +3,18 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * This {@link LiteralExpressionFactory} is responsible to return the right
- * literal expression.
+ * This {@link LiteralExpressionFactory} is responsible to return the right literal expression.
  *
  * @see StringLiteral
  * @see InputParameter
@@ -28,15 +27,15 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.0.0
  * @author Pascal Filion
  */
-abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
-{
+@SuppressWarnings("nls")
+abstract class AbstractLiteralExpressionFactory extends ExpressionFactory {
+
 	/**
 	 * Creates a new <code>AbstractLiteralExpressionFactory</code>.
 	 *
 	 * @param id The unique identifier of this {@link ExpressionFactory}
 	 */
-	AbstractLiteralExpressionFactory(String id)
-	{
+	AbstractLiteralExpressionFactory(String id) {
 		super(id);
 	}
 
@@ -66,46 +65,47 @@ abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
 	                                   String word,
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
+	                                   boolean tolerant) {
+
 		// Empty word, simply return a null expression
 		// Check to see if we need to parse something
-		if ((word.length() == 0) || ((expression != null) && shouldSkip(expression)))
-		{
+		if ((word.length() == 0) || ((expression != null) && shouldSkip(expression))) {
 			return null;
 		}
 
 		char character = word.charAt(0);
 
 		// StringLiteral
-		if (character == '\'')
-		{
+		if (ExpressionTools.isQuote(character)) {
 			expression = new StringLiteral(parent);
 			expression.parse(wordParser, tolerant);
 			return expression;
 		}
 
 		// InputParameter
-		if (character == ':' ||
-		    character == '?')
-		{
+		if (ExpressionTools.isParameter(character)) {
 			expression = new InputParameter(parent, word);
 			expression.parse(wordParser, tolerant);
 			return expression;
 		}
 
 		// NumericLiteral
-		if (wordParser.startsWithDigit() == Boolean.TRUE)
-		{
+		if (wordParser.startsWithDigit() == Boolean.TRUE) {
 			expression = new NumericLiteral(parent, word);
 			expression.parse(wordParser, tolerant);
 			return expression;
 		}
 
 		// StateFieldPathExpression
-		if (word.indexOf(AbstractExpression.DOT) > -1)
-		{
-			expression = new StateFieldPathExpression(parent, word);
+		if (word.indexOf(AbstractExpression.DOT) > -1) {
+
+			if ((expression != null) && word.startsWith(".")) {
+				expression = new StateFieldPathExpression(parent, expression);
+			}
+			else {
+				expression = new StateFieldPathExpression(parent, word);
+			}
+
 			expression.parse(wordParser, tolerant);
 			return expression;
 		}
@@ -117,7 +117,7 @@ abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
 	 * Determines whether the creation of an {@link Expression} should be skipped or not when the
 	 * given expression is not <code>null</code>.
 	 *
-	 * @param expression
+	 * @param expression The {@link Expression} to test
 	 * @return <code>true</code> if the creation of the {@link Expression} should be skipped;
 	 * <code>false</code> to create it
 	 */

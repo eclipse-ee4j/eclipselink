@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -20,24 +20,21 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class OrExpression extends LogicalExpression
-{
+public final class OrExpression extends LogicalExpression {
+
 	/**
 	 * Creates a new <code>OrExpression</code>.
 	 *
 	 * @param parent The parent of this expression
 	 */
-	OrExpression(AbstractExpression parent)
-	{
+	OrExpression(AbstractExpression parent) {
 		super(parent, OR);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
@@ -45,8 +42,7 @@ public final class OrExpression extends LogicalExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF rightExpressionBNF()
-	{
+	JPQLQueryBNF rightExpressionBNF() {
 		return queryBNF(ConditionalTermBNF.ID);
 	}
 }

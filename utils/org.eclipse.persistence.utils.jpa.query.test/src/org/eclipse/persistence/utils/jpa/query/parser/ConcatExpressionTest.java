@@ -3,489 +3,302 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
-import org.eclipse.persistence.utils.jpa.query.parser.JPQLTests.QueryStringFormatter;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 @SuppressWarnings("nls")
-public final class ConcatExpressionTest extends AbstractJPQLTest
-{
-	private QueryStringFormatter buildQueryStringFormatter_11()
-	{
-		return new QueryStringFormatter()
-		{
-			@Override
-			public String format(String query)
-			{
+public final class ConcatExpressionTest extends AbstractJPQLTest {
+
+	private JPQLQueryStringFormatter buildQueryStringFormatter_04() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
 				return query.replace(",)", ", )");
 			}
 		};
 	}
 
-	private QueryStringFormatter buildQueryStringFormatter_12()
-	{
-		return new QueryStringFormatter()
-		{
-			@Override
-			public String format(String query)
-			{
+	private JPQLQueryStringFormatter buildQueryStringFormatter_11() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace(",)", ", )");
+			}
+		};
+	}
+
+	private JPQLQueryStringFormatter buildQueryStringFormatter_12() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
 				return query.replace("(AND", "( AND");
 			}
 		};
 	}
 
-	private QueryStringFormatter buildQueryStringFormatter_13()
-	{
-		return new QueryStringFormatter()
-		{
-			@Override
-			public String format(String query)
-			{
+	private JPQLQueryStringFormatter buildQueryStringFormatter_13() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
 				query = query.replace("(AND", "( AND");
-				query = query.replace("')", "' )");
+				query = query.replace("\')", "\' )");
 				return query;
 			}
 		};
 	}
 
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT(e.firstName, e.lastName)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concat(path("e.firstName"), path("e.lastName")))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
-
-		assertTrue(concatExpression.hasLeftParenthesis());
-		assertTrue(concatExpression.hasRightParenthesis());
-		assertTrue(concatExpression.hasFirstExpression());
-		assertTrue(concatExpression.hasSecondExpression());
-		assertTrue(concatExpression.hasComma());
-
-		// First expression: StateFieldPathExpression
-		expression = concatExpression.getFirstExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals("e.firstName", stateFieldPathExpression.toParsedText());
-
-		// Second expression: StateFieldPathExpression
-		expression = concatExpression.getSecondExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals("e.lastName", stateFieldPathExpression.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_02()
-	{
+	public void testBuildExpression_02() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT(AVG(e.firstName), e.lastName)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concat(avg("e.firstName"), path("e.lastName")))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
-
-		assertTrue(concatExpression.hasLeftParenthesis());
-		assertTrue(concatExpression.hasRightParenthesis());
-		assertTrue(concatExpression.hasFirstExpression());
-		assertTrue(concatExpression.hasSecondExpression());
-		assertTrue(concatExpression.hasComma());
-
-		// First expression: AvgFunction
-		expression = concatExpression.getFirstExpression();
-		assertTrue(expression instanceof AvgFunction);
-		AvgFunction avgFunction = (AvgFunction) expression;
-
-		assertEquals("AVG(e.firstName)", avgFunction.toParsedText());
-
-		// Second expression: StateFieldPathExpression
-		expression = concatExpression.getSecondExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals("e.lastName", stateFieldPathExpression.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_03()
-	{
+	public void testBuildExpression_03() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT(e.firstName,)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		CollectionExpressionTester collectionExpression = collection(
+			new ExpressionTester[] { path("e.firstName"), nullExpression() },
+			new Boolean[] { false },
+			new Boolean[] { true  }
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concat(collectionExpression))
+		);
 
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
-
-		assertTrue (concatExpression.hasLeftParenthesis());
-		assertTrue (concatExpression.hasRightParenthesis());
-		assertTrue (concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertTrue (concatExpression.hasComma());
-
-		// First expression: StateFieldPathExpression
-		expression = concatExpression.getFirstExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals("e.firstName", stateFieldPathExpression.toParsedText());
-
-		// Second expression: NullExpression
-		expression = concatExpression.getSecondExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_04()
-	{
-		String query = "SELECT e FROM Employee e WHERE CONCAT(e.firstName,)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+	public void testBuildExpression_04() {
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		String query = "SELECT e FROM Employee e WHERE CONCAT(e.firstName, )";
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		CollectionExpressionTester collectionExpression = collection(
+			new ExpressionTester[] { path("e.firstName"), nullExpression() },
+			new Boolean[] { true },
+			new Boolean[] { true  }
+		);
 
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concat(collectionExpression))
+		);
 
-		assertTrue (concatExpression.hasLeftParenthesis());
-		assertTrue (concatExpression.hasRightParenthesis());
-		assertTrue (concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertTrue (concatExpression.hasComma());
-
-		// First expression: StateFieldPathExpression
-		expression = concatExpression.getFirstExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals("e.firstName", stateFieldPathExpression.toParsedText());
-
-		// Second expression: NullExpression
-		expression = concatExpression.getSecondExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement, buildQueryStringFormatter_04());
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConcatExpressionTester concatExpression = concat(nullExpression());
+		concatExpression.hasLeftParenthesis  = false;
+		concatExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concatExpression)
+		);
 
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
-
-		assertFalse(concatExpression.hasLeftParenthesis());
-		assertFalse(concatExpression.hasRightParenthesis());
-		assertFalse(concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertFalse(concatExpression.hasComma());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_06()
-	{
+	public void testBuildExpression_06() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT(";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConcatExpressionTester concatExpression = concat(nullExpression());
+		concatExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concatExpression)
+		);
 
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
-
-		assertTrue (concatExpression.hasLeftParenthesis());
-		assertFalse(concatExpression.hasRightParenthesis());
-		assertFalse(concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertFalse(concatExpression.hasComma());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_07()
-	{
+	public void testBuildExpression_07() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT()";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concat(nullExpression()))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
-
-		assertTrue (concatExpression.hasLeftParenthesis());
-		assertTrue (concatExpression.hasRightParenthesis());
-		assertFalse(concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertFalse(concatExpression.hasComma());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_08()
-	{
+	public void testBuildExpression_08() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT(,)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		CollectionExpressionTester collectionExpression = collection(
+			new ExpressionTester[] { nullExpression(), nullExpression() },
+			new Boolean[] { false },
+			new Boolean[] { true  }
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concat(collectionExpression))
+		);
 
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
-
-		assertTrue (concatExpression.hasLeftParenthesis());
-		assertTrue (concatExpression.hasRightParenthesis());
-		assertFalse(concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertTrue (concatExpression.hasComma());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_09()
-	{
+	public void testBuildExpression_09() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT(e.name,";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		CollectionExpressionTester collectionExpression = collection(
+			new ExpressionTester[] { path("e.name"), nullExpression() },
+			new Boolean[] { false },
+			new Boolean[] { true  }
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ConcatExpressionTester concatExpression = concat(collectionExpression);
+		concatExpression.hasRightParenthesis = false;
 
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concatExpression)
+		);
 
-		assertTrue (concatExpression.hasLeftParenthesis());
-		assertFalse(concatExpression.hasRightParenthesis());
-		assertTrue (concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertTrue (concatExpression.hasComma());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_10()
-	{
+	public void testBuildExpression_10() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT(e.name, ";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		CollectionExpressionTester collectionExpression = collection(
+			new ExpressionTester[] { path("e.name"), nullExpression() },
+			new Boolean[] { true },
+			new Boolean[] { true  }
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ConcatExpressionTester concatExpression = concat(collectionExpression);
+		concatExpression.hasRightParenthesis = false;
 
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concatExpression)
+		);
 
-		assertTrue (concatExpression.hasLeftParenthesis());
-		assertFalse(concatExpression.hasRightParenthesis());
-		assertTrue (concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertTrue (concatExpression.hasComma());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_11()
-	{
+	public void testBuildExpression_11() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT(e.name, )";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query, buildQueryStringFormatter_11());
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		CollectionExpressionTester collectionExpression = collection(
+			new ExpressionTester[] { path("e.name"), nullExpression() },
+			new Boolean[] { true },
+			new Boolean[] { true  }
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(concat(collectionExpression))
+		);
 
-		// ConcatExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
-
-		assertTrue (concatExpression.hasLeftParenthesis());
-		assertTrue (concatExpression.hasRightParenthesis());
-		assertTrue (concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertTrue (concatExpression.hasComma());
+		testInvalidQuery(query, selectStatement, buildQueryStringFormatter_11());
 	}
 
 	@Test
-	public void testBuildExpression_12()
-	{
+	public void testBuildExpression_12() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT( AND e.name = 'Pascal'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query, buildQueryStringFormatter_12());
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConcatExpressionTester concatExpression = concat(nullExpression());
+		concatExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					concatExpression
+				.and(
+					path("e.name").equal(string("'Pascal'"))
+				)
+			)
+		);
 
-		// AndExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AndExpression);
-		AndExpression andExpression = (AndExpression) expression;
-
-		// ConcatExpression
-		expression = andExpression.getLeftExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
-
-		assertTrue (concatExpression.hasLeftParenthesis());
-		assertFalse(concatExpression.hasRightParenthesis());
-		assertFalse(concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertFalse(concatExpression.hasComma());
+		testInvalidQuery(query, selectStatement, buildQueryStringFormatter_12());
 	}
 
 	@Test
-	public void testBuildExpression_13()
-	{
+	public void testBuildExpression_13() {
+
 		String query = "SELECT e FROM Employee e WHERE CONCAT( AND e.name = 'Pascal' )";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query, buildQueryStringFormatter_13());
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConcatExpressionTester concatExpression = concat(nullExpression());
+		concatExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					concatExpression
+				.and(
+					path("e.name").equal(string("'Pascal'"))
+				)
+			)
+		);
 
-		// AndExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AndExpression);
-		AndExpression andExpression = (AndExpression) expression;
+		selectStatement.hasSpaceAfterWhere = true;
 
-		// ConcatExpression
-		expression = andExpression.getLeftExpression();
-		assertTrue(expression instanceof ConcatExpression);
-		ConcatExpression concatExpression = (ConcatExpression) expression;
-
-		assertTrue (concatExpression.hasLeftParenthesis());
-		assertFalse(concatExpression.hasRightParenthesis());
-		assertFalse(concatExpression.hasFirstExpression());
-		assertFalse(concatExpression.hasSecondExpression());
-		assertFalse(concatExpression.hasComma());
+		JPQLExpressionTester jpqlExpression = jpqlExpression(selectStatement, unknown(")"));
+		testInvalidQuery(query, jpqlExpression, buildQueryStringFormatter_13());
 	}
 }

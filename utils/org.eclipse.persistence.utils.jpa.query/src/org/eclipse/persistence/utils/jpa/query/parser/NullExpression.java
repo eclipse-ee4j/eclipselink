@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -22,33 +22,43 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class NullExpression extends AbstractExpression
-{
+public final class NullExpression extends AbstractExpression {
+
 	/**
 	 * Creates a new <code>NullExpression</code>.
 	 *
 	 * @param parent The parent of this <code>NullExpression</code>
 	 */
-	NullExpression(AbstractExpression parent)
-	{
+	NullExpression(AbstractExpression parent) {
 		super(parent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+		return getParent().findQueryBNF(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	JPQLQueryBNF getQueryBNF() {
 		return getParent().getQueryBNF();
 	}
 
@@ -56,8 +66,7 @@ public final class NullExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isNull()
-	{
+	boolean isNull() {
 		return true;
 	}
 
@@ -65,8 +74,7 @@ public final class NullExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parse(WordParser wordParser, boolean tolerant)
-	{
+	void parse(WordParser wordParser, boolean tolerant) {
 		throw new IllegalAccessError("This method shouln't be invoked, text passed" + wordParser);
 	}
 
@@ -74,7 +82,6 @@ public final class NullExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer)
-	{
+	void toParsedText(StringBuilder writer) {
 	}
 }

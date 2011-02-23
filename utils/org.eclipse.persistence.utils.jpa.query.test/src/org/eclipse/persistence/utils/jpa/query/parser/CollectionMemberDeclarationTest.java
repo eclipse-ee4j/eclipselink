@@ -3,31 +3,25 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
-import org.eclipse.persistence.utils.jpa.query.parser.JPQLTests.QueryStringFormatter;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
-public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
-{
-	private QueryStringFormatter buildFormatter()
-	{
-		return new QueryStringFormatter()
-		{
-			@Override
-			public String format(String query)
-			{
+public final class CollectionMemberDeclarationTest extends AbstractJPQLTest {
+	private JPQLQueryStringFormatter buildFormatter() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
 				query = query.replaceAll("\\(\\s", "(");
 				query = query.replaceAll("\\s\\)", ")");
 				return query;
@@ -35,29 +29,18 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 		};
 	}
 
-	private QueryStringFormatter buildQueryFormatter_09()
-	{
-		return new QueryStringFormatter()
-		{
-			@Override
-			public String format(String query)
-			{
+	private JPQLQueryStringFormatter buildQueryFormatter_09() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
 				return query.replace("IN(AS", "IN( AS");
 			}
 		};
 	}
 
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
 		String query = " SELECT e  FROM  IN ( e.address.street  )  AS emp ";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query, buildFormatter());
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query, buildFormatter());
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -97,10 +80,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_02()
-	{
+	public void testBuildExpression_02() {
 		String query = "SELECT e FROM IN(e.address.street) emp";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -140,10 +122,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_03()
-	{
+	public void testBuildExpression_03() {
 		String query = "SELECT e FROM IN(e.address.street) emp, IN(e.name) AS name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -218,10 +199,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_04()
-	{
+	public void testBuildExpression_04() {
 		String query = "SELECT e FROM IN";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -253,10 +233,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
 		String query = "SELECT e FROM IN(";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -288,10 +267,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_06()
-	{
+	public void testBuildExpression_06() {
 		String query = "SELECT e FROM IN()";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -323,10 +301,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_07()
-	{
+	public void testBuildExpression_07() {
 		String query = "SELECT e FROM IN() AS";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -358,10 +335,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_08()
-	{
+	public void testBuildExpression_08() {
 		String query = "SELECT e FROM IN AS";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -394,10 +370,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_09()
-	{
+	public void testBuildExpression_09() {
 		String query = "SELECT e FROM IN( AS";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query, buildQueryFormatter_09());
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query, buildQueryFormatter_09());
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -429,10 +404,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_10()
-	{
+	public void testBuildExpression_10() {
 		String query = "SELECT e FROM IN) AS";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -465,10 +439,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_11()
-	{
+	public void testBuildExpression_11() {
 		String query = "SELECT e FROM IN AS e.employees";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -504,10 +477,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_12()
-	{
+	public void testBuildExpression_12() {
 		String query = "SELECT e FROM IN() AS ";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -540,10 +512,9 @@ public final class CollectionMemberDeclarationTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_14()
-	{
+	public void testBuildExpression_14() {
 		String query = "SELECT a FROM Address a WHERE EXISTS (SELECT e FROM Employee e, IN a.customerList)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();

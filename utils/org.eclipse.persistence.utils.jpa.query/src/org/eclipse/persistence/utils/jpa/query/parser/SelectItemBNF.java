@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -23,8 +23,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class SelectItemBNF extends AbstractCompoundBNF
-{
+final class SelectItemBNF extends JPQLQueryBNF {
+
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
@@ -33,8 +33,7 @@ final class SelectItemBNF extends AbstractCompoundBNF
 	/**
 	 * Creates a new <code>SelectItemBNF</code>.
 	 */
-	SelectItemBNF()
-	{
+	SelectItemBNF() {
 		super(ID);
 	}
 
@@ -42,8 +41,7 @@ final class SelectItemBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackBNFId()
-	{
+	String getFallbackBNFId() {
 		// Because none of the child BNFs can identify how to parse the select
 		// expression, it will fall back into itself and will use
 		// LiteralExpressionFactory. It handles most of the text that does not
@@ -55,8 +53,7 @@ final class SelectItemBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackExpressionFactoryId()
-	{
+	String getFallbackExpressionFactoryId() {
 		return ResultVariableFactory.ID;
 	}
 
@@ -64,8 +61,7 @@ final class SelectItemBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection()
-	{
+	boolean handleCollection() {
 		// Technically, this BNF does not support collection but it's parent
 		// select_clause does. But this BNF is used by SelectClause directly
 		// to parse the query so the flag has to be turned on here
@@ -76,8 +72,7 @@ final class SelectItemBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	void initialize()
-	{
+	void initialize() {
 		super.initialize();
 
 		registerChild(ResultVariableBNF.ID);

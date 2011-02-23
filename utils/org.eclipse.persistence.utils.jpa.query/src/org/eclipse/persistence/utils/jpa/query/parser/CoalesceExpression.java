@@ -3,23 +3,22 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * A <b>COALESCE</b> expression returns <code>null</code> if all its arguments
- * evaluate to <code>null</code>, and the value of the first non-<code>null</code>
- * argument otherwise.
+ * A <b>COALESCE</b> expression returns <code>null</code> if all its arguments evaluate to
+ * <code>null</code>, and the value of the first non-<code>null</code> argument otherwise.
  * <p>
- * The return type is the type returned by the arguments if they are all of the
- * same type, otherwise it is undetermined.
+ * The return type is the type returned by the arguments if they are all of the same type, otherwise
+ * it is undetermined.
  *
  * <div nowrap><b>BNF:</b> <code>coalesce_expression::= COALESCE(scalar_expression {, scalar_expression}+)</code>
  *
@@ -27,24 +26,21 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.2.0
  * @author Pascal Filion
  */
-public final class CoalesceExpression extends AbstractSingleEncapsulatedExpression
-{
+public final class CoalesceExpression extends AbstractSingleEncapsulatedExpression {
+
 	/**
 	 * Creates a new <code>CoalesceExpression</code>.
 	 *
 	 * @param parent The parent of this expression
 	 */
-	CoalesceExpression(AbstractExpression parent)
-	{
+	CoalesceExpression(AbstractExpression parent) {
 		super(parent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
@@ -52,16 +48,14 @@ public final class CoalesceExpression extends AbstractSingleEncapsulatedExpressi
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF()
-	{
+	JPQLQueryBNF encapsulatedExpressionBNF() {
 		return queryBNF(InternalCoalesceExpressionBNF.ID);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(CoalesceExpressionBNF.ID);
 	}
 
@@ -69,8 +63,7 @@ public final class CoalesceExpression extends AbstractSingleEncapsulatedExpressi
 	 * {@inheritDoc}
 	 */
 	@Override
-	String parseIdentifier(WordParser wordParser)
-	{
+	String parseIdentifier(WordParser wordParser) {
 		return COALESCE;
 	}
 }

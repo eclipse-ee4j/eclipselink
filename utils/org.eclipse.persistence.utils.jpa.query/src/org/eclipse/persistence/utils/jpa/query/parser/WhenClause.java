@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -17,8 +17,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * A <b>WHEN</b> predicate is used to calculate a condition and when it's true,
- * its <b>THEN</b> will be executed.
+ * A <b>WHEN</b> predicate is used to calculate a condition and when it's true, its <b>THEN</b> will
+ * be executed.
  *
  * <div nowrap><b>BNF:</b> <code>when_clause ::= WHEN conditional_expression THEN scalar_expression</code><p>
  * or
@@ -28,8 +28,8 @@ import java.util.List;
  * @since 11.2.0
  * @author Pascal Filion
  */
-public final class WhenClause extends AbstractExpression
-{
+public final class WhenClause extends AbstractExpression {
+
 	/**
 	 * Determines whether a whitespace was parsed after the identifier <b>THEN</b>.
 	 */
@@ -66,26 +66,30 @@ public final class WhenClause extends AbstractExpression
 	 *
 	 * @param parent The parent of this expression
 	 */
-	WhenClause(AbstractExpression parent)
-	{
+	WhenClause(AbstractExpression parent) {
 		super(parent, WHEN);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getWhenExpression().accept(visitor);
+		getThenExpression().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	void addChildrenTo(Collection<Expression> children) {
 		children.add(getWhenExpression());
 		children.add(getThenExpression());
 	}
@@ -94,41 +98,35 @@ public final class WhenClause extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedChildrenTo(List<StringExpression> children)
-	{
+	void addOrderedChildrenTo(List<StringExpression> children) {
+
 		// WHEN
 		children.add(buildStringExpression(WHEN));
 
-		if (hasSpaceAfterWhen)
-		{
+		if (hasSpaceAfterWhen) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// WHEN Expression
-		if (whenExpression != null)
-		{
+		if (whenExpression != null) {
 			children.add(whenExpression);
 		}
 
-		if (hasSpaceAfterWhenExpression)
-		{
+		if (hasSpaceAfterWhenExpression) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// THEN
-		if (hasThen)
-		{
+		if (hasThen) {
 			children.add(buildStringExpression(THEN));
 		}
 
-		if (hasSpaceAfterThen)
-		{
+		if (hasSpaceAfterThen) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// THEN expression
-		if (thenExpression != null)
-		{
+		if (thenExpression != null) {
 			children.add(thenExpression);
 		}
 	}
@@ -137,38 +135,29 @@ public final class WhenClause extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(WhenClauseBNF.ID);
 	}
 
 	/**
-	 * Returns the {@link Expression} representing the expression following the
-	 * identifier <b>THEN</b>.
+	 * Returns the {@link Expression} representing the expression following the identifier <b>THEN</b>.
 	 *
-	 * @return The expression representing the expression executed if the
-	 * predicate is true
+	 * @return The expression representing the expression executed if the predicate is true
 	 */
-	public AbstractExpression getThenExpression()
-	{
-		if (thenExpression == null)
-		{
+	public AbstractExpression getThenExpression() {
+		if (thenExpression == null) {
 			thenExpression = buildNullExpression();
 		}
-
 		return thenExpression;
 	}
 
 	/**
-	 * Returns the {@link Expression} representing the conditional predicate of
-	 * the clause.
+	 * Returns the {@link Expression} representing the conditional predicate of the clause.
 	 *
 	 * @return The expression following the <b>WHEN</b> identifier
 	 */
-	public AbstractExpression getWhenExpression()
-	{
-		if (whenExpression == null)
-		{
+	public AbstractExpression getWhenExpression() {
+		if (whenExpression == null) {
 			whenExpression = buildNullExpression();
 		}
 
@@ -178,55 +167,50 @@ public final class WhenClause extends AbstractExpression
 	/**
 	 * Determines whether a whitespace was parsed after <b>THEN</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>THEN</b>;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>THEN</b>; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasSpaceAfterThen()
-	{
+	public boolean hasSpaceAfterThen() {
 		return hasSpaceAfterThen;
 	}
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>WHEN</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>WHEN</b>;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>WHEN</b>; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasSpaceAfterWhen()
-	{
+	public boolean hasSpaceAfterWhen() {
 		return hasSpaceAfterWhen;
 	}
 
 	/**
 	 * Determines whether a whitespace was parsed after the conditional expression.
 	 *
-	 * @return <code>true</code> if there was a whitespace after the conditional
-	 * expression; <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after the conditional expression;
+	 * <code>false</code> otherwise
 	 */
-	public boolean hasSpaceAfterWhenExpression()
-	{
+	public boolean hasSpaceAfterWhenExpression() {
 		return hasSpaceAfterWhenExpression;
 	}
 
 	/**
 	 * Determines whether the identifier <b>THEN</b> was part of the query.
 	 *
-	 * @return <code>true</code> if the identifier <b>THEN</b> was parsed;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the identifier <b>THEN</b> was parsed; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasThen()
-	{
+	public boolean hasThen() {
 		return hasThen;
 	}
 
 	/**
 	 * Determines whether the <b>THEN</b> expression of the query was parsed.
 	 *
-	 * @return <code>true</code> the <b>THEN</b> expression was parsed;
-	 * <code>false</code> if nothing was parsed
+	 * @return <code>true</code> the <b>THEN</b> expression was parsed; <code>false</code> if nothing
+	 * was parsed
 	 */
-	public boolean hasThenExpression()
-	{
+	public boolean hasThenExpression() {
 		return thenExpression != null &&
 		      !thenExpression.isNull();
 	}
@@ -234,11 +218,10 @@ public final class WhenClause extends AbstractExpression
 	/**
 	 * Determines whether the conditional expression of the query was parsed.
 	 *
-	 * @return <code>true</code> the conditional expression was parsed;
-	 * <code>false</code> if nothing was parsed
+	 * @return <code>true</code> the conditional expression was parsed; <code>false</code> if nothing
+	 * was parsed
 	 */
-	public boolean hasWhenExpression()
-	{
+	public boolean hasWhenExpression() {
 		return whenExpression != null &&
 		      !whenExpression.isNull();
 	}
@@ -247,8 +230,7 @@ public final class WhenClause extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
+	boolean isParsingComplete(WordParser wordParser, String word) {
 		return word.equalsIgnoreCase(WHEN) ||
 		       word.equalsIgnoreCase(THEN) ||
 		       word.equalsIgnoreCase(ELSE) ||
@@ -260,16 +242,15 @@ public final class WhenClause extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parse(WordParser wordParser, boolean tolerant)
-	{
+	void parse(WordParser wordParser, boolean tolerant) {
+
 		// Parse 'WHEN'
 		wordParser.moveForward(WHEN);
 
 		hasSpaceAfterWhen = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the expression
-		whenExpression = parse
-		(
+		whenExpression = parse(
 			wordParser,
 			queryBNF(InternalWhenClauseBNF.ID),
 			tolerant
@@ -280,16 +261,14 @@ public final class WhenClause extends AbstractExpression
 		// Parse 'THEN'
 		hasThen = wordParser.startsWithIdentifier(THEN);
 
-		if (hasThen)
-		{
+		if (hasThen) {
 			wordParser.moveForward(THEN);
 		}
 
 		hasSpaceAfterThen = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the then expression
-		thenExpression = parse
-		(
+		thenExpression = parse(
 			wordParser,
 			queryBNF(ScalarExpressionBNF.ID),
 			tolerant
@@ -300,41 +279,35 @@ public final class WhenClause extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer)
-	{
+	void toParsedText(StringBuilder writer) {
+
 		// 'WHEN'
 		writer.append(WHEN);
 
-		if (hasSpaceAfterWhen)
-		{
+		if (hasSpaceAfterWhen) {
 			writer.append(SPACE);
 		}
 
 		// Expression
-		if (whenExpression != null)
-		{
+		if (whenExpression != null) {
 			whenExpression.toParsedText(writer);
 		}
 
-		if (hasSpaceAfterWhenExpression)
-		{
+		if (hasSpaceAfterWhenExpression) {
 			writer.append(SPACE);
 		}
 
 		// 'THEN'
-		if (hasThen)
-		{
+		if (hasThen) {
 			writer.append(THEN);
 		}
 
-		if (hasSpaceAfterThen)
-		{
+		if (hasSpaceAfterThen) {
 			writer.append(SPACE);
 		}
 
 		// Then expression
-		if (thenExpression != null)
-		{
+		if (thenExpression != null) {
 			thenExpression.toParsedText(writer);
 		}
 	}

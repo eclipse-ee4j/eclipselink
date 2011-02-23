@@ -3,17 +3,16 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query;
 
-import java.util.Iterator;
 import org.eclipse.persistence.utils.jpa.query.spi.IManagedType;
 import org.eclipse.persistence.utils.jpa.query.spi.IType;
 import org.eclipse.persistence.utils.jpa.query.spi.ITypeDeclaration;
@@ -29,8 +28,8 @@ import org.eclipse.persistence.utils.jpa.query.spi.ITypeDeclaration;
  * @since 11.2.0
  * @author Pascal Filion
  */
-final class KeyTypeResolver extends AbstractTypeResolver
-{
+final class KeyTypeResolver extends AbstractTypeResolver {
+
 	/**
 	 * The resolver used to find the type of the identification variable.
 	 */
@@ -42,8 +41,7 @@ final class KeyTypeResolver extends AbstractTypeResolver
 	 * @param parent The parent of this resolver, which is never <code>null</code>
 	 * @param typeResolver The resolver used to find the type of the identification variable
 	 */
-	KeyTypeResolver(TypeResolver parent, TypeResolver typeResolver)
-	{
+	KeyTypeResolver(TypeResolver parent, TypeResolver typeResolver) {
 		super(parent);
 		this.typeResolver = typeResolver;
 	}
@@ -52,40 +50,32 @@ final class KeyTypeResolver extends AbstractTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType getManagedType()
-	{
+	public IManagedType getManagedType() {
 		return typeResolver.resolveManagedType(getType());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public IType getType()
-	{
-		// Retrieve the type declaration because the type alone will never be a collection type
+	public IType getType() {
+
 		ITypeDeclaration typeDeclaration = getTypeDeclaration();
 
-		if (isMapType(typeDeclaration.getType()))
-		{
-			Iterator<IType> types = typeDeclaration.parameterTypes();
-
-			// Return the first type, which is the key
-			if (types.hasNext())
-			{
-				return types.next();
+		if (TypeHelper.isMapType(typeDeclaration.getType())) {
+			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+			if (typeParameters.length > 0) {
+				return typeParameters[0].getType();
 			}
 		}
 
-		return objectType();
+		return TypeHelper.objectType();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ITypeDeclaration getTypeDeclaration()
-	{
+	public ITypeDeclaration getTypeDeclaration() {
 		return typeResolver.getTypeDeclaration();
 	}
 }

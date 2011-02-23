@@ -3,47 +3,34 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
-import org.eclipse.persistence.utils.jpa.query.parser.JPQLTests.QueryStringFormatter;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
-public final class ModExpressionTest extends AbstractJPQLTest
-{
-	private QueryStringFormatter buildQueryStringFormatter_11()
-	{
-		return new QueryStringFormatter()
-		{
-			@Override
-			public String format(String query)
-			{
+public final class ModExpressionTest extends AbstractJPQLTest {
+	private JPQLQueryStringFormatter buildQueryStringFormatter_11() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
 				return query.replace("MOD(AND", "MOD( AND");
 			}
 		};
 	}
 
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
 		String query = "SELECT e FROM Employee e WHERE MOD(e.name, e.age)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -80,10 +67,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_02()
-	{
+	public void testBuildExpression_02() {
 		String query = "SELECT e FROM Employee e WHERE MOD(AVG(e.name), e.age)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -120,10 +106,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_03()
-	{
+	public void testBuildExpression_03() {
 		String query = "SELECT e FROM Employee e WHERE MOD";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -146,10 +131,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_04()
-	{
+	public void testBuildExpression_04() {
 		String query = "SELECT e FROM Employee e WHERE MOD(";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -172,10 +156,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
 		String query = "SELECT e FROM Employee e WHERE MOD()";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -198,10 +181,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_06()
-	{
+	public void testBuildExpression_06() {
 		String query = "SELECT e FROM Employee e WHERE MOD(,)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -224,10 +206,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_07()
-	{
+	public void testBuildExpression_07() {
 		String query = "SELECT e FROM Employee e WHERE MOD(,";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -250,10 +231,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_08()
-	{
+	public void testBuildExpression_08() {
 		String query = "SELECT e FROM Employee e WHERE MOD(,";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -276,10 +256,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_09()
-	{
+	public void testBuildExpression_09() {
 		String query = "SELECT e FROM Employee e WHERE MOD(,)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -302,10 +281,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_10()
-	{
+	public void testBuildExpression_10() {
 		String query = "SELECT e FROM Employee e WHERE MOD AND e.name = 'Pascal'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -333,10 +311,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_11()
-	{
+	public void testBuildExpression_11() {
 		String query = "SELECT e FROM Employee e WHERE MOD( AND e.name = 'Pascal'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query, buildQueryStringFormatter_11());
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query, buildQueryStringFormatter_11());
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -364,10 +341,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_12()
-	{
+	public void testBuildExpression_12() {
 		String query = "SELECT e FROM Employee e WHERE MOD(, 2 + e.startDate";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -401,10 +377,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_13()
-	{
+	public void testBuildExpression_13() {
 		String query = "SELECT e FROM Employee e WHERE MOD(, e.age ";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -438,10 +413,9 @@ public final class ModExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_14()
-	{
+	public void testBuildExpression_14() {
 		String query = "SELECT e FROM Employee e WHERE MOD(, e.age ";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();

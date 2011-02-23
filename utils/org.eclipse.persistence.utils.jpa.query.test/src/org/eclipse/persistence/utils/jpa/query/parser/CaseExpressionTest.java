@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -16,17 +16,10 @@ package org.eclipse.persistence.utils.jpa.query.parser;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
-public final class CaseExpressionTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
+public final class CaseExpressionTest extends AbstractJPQLTest {
 
 	@Test
-	public void testBuildExpression_01() throws Exception
-	{
+	public void testBuildExpression_01() throws Exception {
 		String query = "UPDATE Employee e " +
 		               "SET e.salary = " +
 		               "    CASE WHEN e.rating = 1 THEN e.salary * 1.1 " +
@@ -34,8 +27,7 @@ public final class CaseExpressionTest extends AbstractJPQLTest
 		               "         ELSE e.salary * 1.01 " +
 		               "    END";
 
-		ExpressionTester updateStatement = updateStatement
-		(
+		ExpressionTester updateStatement = updateStatement(
 			update(
 				"Employee", "e",
 				set(
@@ -55,8 +47,7 @@ public final class CaseExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_02() throws Exception
-	{
+	public void testBuildExpression_02() throws Exception {
 		String query = "SELECT e.name, " +
 		               "       f.name, " +
 		               "       CONCAT(CASE WHEN f.annualMiles > 50000 THEN 'Platinum ' " +
@@ -66,8 +57,7 @@ public final class CaseExpressionTest extends AbstractJPQLTest
 		               "              'Frequent Flyer') " +
 		               "FROM Employee e JOIN e.frequentFlierPlan f";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(
 				path("e.name"),
 				path("f.name"),
@@ -89,16 +79,14 @@ public final class CaseExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_03() throws Exception
-	{
+	public void testBuildExpression_03() throws Exception {
 		String query = "SELECT CASE WHEN f.annualMiles > 50000 THEN 'Platinum ' " +
 		               "            WHEN f.annualMiles > 25000 THEN 'Gold ' " +
 		               "            ELSE '' " +
 		               "       END " +
 		               "FROM Employee e JOIN e.frequentFlierPlan f";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(
 				case_(
 					new ExpressionTester[] {
@@ -115,8 +103,7 @@ public final class CaseExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_04() throws Exception
-	{
+	public void testBuildExpression_04() throws Exception {
 		String query = "SELECT CASE WHEN e.age > 17 THEN 0 " +
 		               "            WHEN e.age > 39 THEN 1 " +
 		               "            WHEN e.age > 64 THEN 2 " +
@@ -125,8 +112,7 @@ public final class CaseExpressionTest extends AbstractJPQLTest
 		               "       + :input " +
 		               "FROM Employee e";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(
 					case_(
 						new ExpressionTester[] {
@@ -147,8 +133,7 @@ public final class CaseExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
 		String query = "SELECT e.name," +
 		               "       CASE TYPE(e) WHEN Exempt THEN 'Exempt'" +
 		               "                    WHEN Contractor THEN 'Contractor'" +
@@ -157,8 +142,7 @@ public final class CaseExpressionTest extends AbstractJPQLTest
 		               "       END " +
 		               "FROM Employee e";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(
 				path("e.name"),
 				case_(type("e"),

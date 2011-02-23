@@ -3,20 +3,20 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * This {@link ComparisonExpressionFactory} creates a new {@link ComparisonExpression}
- * when the portion of the query to parse starts with <b><</b>, <b>></b>, <b><></b>,
- * <b><=</b>, <b>>=</b> or <b>=</b>.
+ * This {@link ComparisonExpressionFactory} creates a new {@link ComparisonExpression} when the
+ * portion of the query to parse starts with <b><</b>, <b>></b>, <b><></b>, <b><=</b>, <b>>=</b>
+ * or <b>=</b>.
  *
  * @see ComparisonExpression
  *
@@ -25,8 +25,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ComparisonExpressionFactory extends ExpressionFactory
-{
+final class ComparisonExpressionFactory extends ExpressionFactory {
+
 	/**
 	 * The unique identifier of this {@link ComparisonExpressionFactory}.
 	 */
@@ -35,8 +35,7 @@ final class ComparisonExpressionFactory extends ExpressionFactory
 	/**
 	 * Creates a new <code>ComparisonExpressionFactory</code>.
 	 */
-	ComparisonExpressionFactory()
-	{
+	ComparisonExpressionFactory() {
 		super(ID, Expression.DIFFERENT,
 		          Expression.EQUAL,
 		          Expression.GREATER_THAN,
@@ -54,13 +53,12 @@ final class ComparisonExpressionFactory extends ExpressionFactory
 	                                   String word,
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
+	                                   boolean tolerant) {
+
 		ComparisonExpression comparisonExpression = new ComparisonExpression(parent);
 		comparisonExpression.parse(wordParser, tolerant);
 
-		if (expression != null)
-		{
+		if (expression != null) {
 			comparisonExpression.setLeftExpression(expression);
 		}
 

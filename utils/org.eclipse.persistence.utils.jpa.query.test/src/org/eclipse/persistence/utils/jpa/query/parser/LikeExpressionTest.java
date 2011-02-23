@@ -3,299 +3,170 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 @SuppressWarnings("nls")
-public final class LikeExpressionTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
+public final class LikeExpressionTest extends AbstractJPQLTest {
 
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
+
 		String query = "SELECT e FROM Employee e WHERE 'Pascal''s code' LIKE 'Pascal'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(string("'Pascal''s code'").like(string("'Pascal'")))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// LikeExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof LikeExpression);
-		LikeExpression likeExpression = (LikeExpression) expression;
-
-		assertFalse(likeExpression.hasEscape());
-		assertFalse(likeExpression.hasEscapeCharacter());
-		assertFalse(likeExpression.hasNot());
-
-		// Escape character
-		expression = likeExpression.getEscapeCharacter();
-		assertTrue(expression instanceof NullExpression);
-
-		// StringLiteral
-		expression = likeExpression.getStringExpression();
-		assertTrue(expression instanceof StringLiteral);
-		StringLiteral stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'Pascal''s code'", stringLiteral.toParsedText());
-
-		// StringLiteral
-		expression = likeExpression.getPatternValue();
-		assertTrue(expression instanceof StringLiteral);
-		stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'Pascal'", stringLiteral.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_02()
-	{
+	public void testBuildExpression_02() {
+
 		String query = "SELECT e FROM Employee e WHERE 'Pascal''s code' NOT LIKE 'Pascal'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(string("'Pascal''s code'").notLike(string("'Pascal'")))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// LikeExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof LikeExpression);
-		LikeExpression likeExpression = (LikeExpression) expression;
-
-		assertFalse(likeExpression.hasEscape());
-		assertFalse(likeExpression.hasEscapeCharacter());
-		assertTrue (likeExpression.hasNot());
-
-		// Escape Character
-		expression = likeExpression.getEscapeCharacter();
-		assertTrue(expression instanceof NullExpression);
-
-		// StringLiteral
-		expression = likeExpression.getStringExpression();
-		assertTrue(expression instanceof StringLiteral);
-		StringLiteral stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'Pascal''s code'", stringLiteral.toParsedText());
-
-		// StringLiteral
-		expression = likeExpression.getPatternValue();
-		assertTrue(expression instanceof StringLiteral);
-		stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'Pascal'", stringLiteral.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_03()
-	{
+	public void testBuildExpression_03() {
+
 		String query = "SELECT e FROM Employee e WHERE 'Pascal''s code' LIKE 'Pascal' ESCAPE 'p'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(string("'Pascal''s code'").like(string("'Pascal'"), string('p')))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// LikeExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof LikeExpression);
-		LikeExpression likeExpression = (LikeExpression) expression;
-
-		assertTrue (likeExpression.hasEscape());
-		assertTrue (likeExpression.hasEscapeCharacter());
-		assertFalse(likeExpression.hasNot());
-
-		// Escape Character
-		expression = likeExpression.getEscapeCharacter();
-		assertTrue(expression instanceof StringLiteral);
-		StringLiteral stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'p'", stringLiteral.toParsedText());
-
-		// StringLiteral
-		expression = likeExpression.getStringExpression();
-		assertTrue(expression instanceof StringLiteral);
-		stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'Pascal''s code'", stringLiteral.toParsedText());
-
-		// StringLiteral
-		expression = likeExpression.getPatternValue();
-		assertTrue(expression instanceof StringLiteral);
-		stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'Pascal'", stringLiteral.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_04()
-	{
+	public void testBuildExpression_04() {
+
 		String query = "SELECT e FROM Employee e WHERE 'Pascal''s code' NOT LIKE 'Pascal' ESCAPE 'p'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(string("'Pascal''s code'").notLike(string("'Pascal'"), string('p')))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// LikeExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof LikeExpression);
-		LikeExpression likeExpression = (LikeExpression) expression;
-
-		assertTrue (likeExpression.hasEscape());
-		assertTrue(likeExpression.hasEscapeCharacter());
-		assertTrue (likeExpression.hasNot());
-
-		// Escape Character
-		expression = likeExpression.getEscapeCharacter();
-		assertTrue(expression instanceof StringLiteral);
-		StringLiteral stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'p'", stringLiteral.toParsedText());
-
-		// StringLiteral
-		expression = likeExpression.getStringExpression();
-		assertTrue(expression instanceof StringLiteral);
-		stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'Pascal''s code'", stringLiteral.toParsedText());
-
-		// StringLiteral
-		expression = likeExpression.getPatternValue();
-		assertTrue(expression instanceof StringLiteral);
-		stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'Pascal'", stringLiteral.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
+
 		String query = "SELECT e FROM Employee e WHERE 'Pascal''s code' NOT LIKE 'Pascal' ESCAPE";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		LikeExpressionTester notLikeExpression = notLike(
+			string("'Pascal''s code'"),
+			string("'Pascal'")
+		);
+		notLikeExpression.hasEscape = true;
+		notLikeExpression.hasSpaceAfterEscape = false;
+		notLikeExpression.hasSpaceAfterPatternValue = true;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(notLikeExpression)
+		);
 
-		// LikeExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof LikeExpression);
-		LikeExpression likeExpression = (LikeExpression) expression;
-
-		assertTrue (likeExpression.hasEscape());
-		assertFalse(likeExpression.hasEscapeCharacter());
-		assertTrue (likeExpression.hasNot());
-
-		// Escape Character
-		expression = likeExpression.getEscapeCharacter();
-		assertTrue(expression instanceof NullExpression);
-
-		// StringLiteral
-		expression = likeExpression.getStringExpression();
-		assertTrue(expression instanceof StringLiteral);
-		StringLiteral stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'Pascal''s code'", stringLiteral.toParsedText());
-
-		// StringLiteral
-		expression = likeExpression.getPatternValue();
-		assertTrue(expression instanceof StringLiteral);
-		stringLiteral = (StringLiteral) expression;
-
-		assertEquals("'Pascal'", stringLiteral.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_06()
-	{
+	public void testBuildExpression_06() {
+
 		String query = "SELECT e FROM Employee e WHERE 'Pascal''s code' NOT LIKE 'Pascal' 'p'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		LikeExpressionTester notLikeExpression = notLike(
+			string("'Pascal''s code'"),
+			string("'Pascal'"),
+			string('p')
+		);
+		notLikeExpression.hasEscape = false;
+		notLikeExpression.hasSpaceAfterEscape = false;
+		notLikeExpression.hasSpaceAfterPatternValue = true;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(notLikeExpression)
+		);
 
-		// LikeExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof LikeExpression);
-		LikeExpression likeExpression = (LikeExpression) expression;
+		testInvalidQuery(query, selectStatement);
+	}
 
-		assertFalse(likeExpression.hasEscape());
-		assertTrue (likeExpression.hasEscapeCharacter());
-		assertTrue (likeExpression.hasNot());
+	@Test
+	public void testBuildExpression_07() {
 
-		// Escape Character
-		expression = likeExpression.getEscapeCharacter();
-		assertTrue(expression instanceof StringLiteral);
-		StringLiteral stringLiteral = (StringLiteral) expression;
+		String query = "SELECT e FROM Employee e WHERE 'Pascal''s code' LIKE 'Pascal' ESCAPE TRUE GROUP BY e";
 
-		assertEquals("'p'", stringLiteral.toParsedText());
+		LikeExpressionTester likeExpression = like(
+			string("'Pascal''s code'"),
+			string("'Pascal'"),
+			TRUE()
+		);
 
-		// StringLiteral
-		expression = likeExpression.getStringExpression();
-		assertTrue(expression instanceof StringLiteral);
-		stringLiteral = (StringLiteral) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(likeExpression),
+			groupBy(variable("e")),
+			nullExpression(),
+			nullExpression()
+		);
 
-		assertEquals("'Pascal''s code'", stringLiteral.toParsedText());
+		testInvalidQuery(query, selectStatement);
+	}
 
-		// StringLiteral
-		expression = likeExpression.getPatternValue();
-		assertTrue(expression instanceof StringLiteral);
-		stringLiteral = (StringLiteral) expression;
+	@Test
+	public void testBuildExpression_08() {
 
-		assertEquals("'Pascal'", stringLiteral.toParsedText());
+		String query = "SELECT e FROM Employee e WHERE 'Pascal''s code' LIKE 'Pascal' ESCAPE TRUE AND e.name = 'Pascal' GROUP BY e";
+
+		LikeExpressionTester likeExpression = like(
+			string("'Pascal''s code'"),
+			string("'Pascal'"),
+			TRUE()
+		);
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					likeExpression
+				.and(
+					path("e.name").equal(string("'Pascal'"))
+				)
+			),
+			groupBy(variable("e")),
+			nullExpression(),
+			nullExpression()
+		);
+
+		testInvalidQuery(query, selectStatement);
 	}
 }

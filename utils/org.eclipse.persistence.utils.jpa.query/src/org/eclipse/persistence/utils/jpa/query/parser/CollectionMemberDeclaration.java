@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -17,16 +17,14 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * An identification variable declared by a collection member declaration ranges
- * over values of a collection obtained by navigation using a path expression.
- * Such a path expression represents a navigation involving the association-fields
- * of an entity abstract schema type. Because a path expression can be based on
- * another path expression, the navigation can use the association-fields of
- * related entities. An identification variable of a collection member
- * declaration is declared using a special operator, the reserved identifier
- * <b>IN</b>. The argument to the <b>IN</b> operator is a collection-valued path
- * expression. The path expression evaluates to a collection type specified as a
- * result of navigation to a collection-valued association-field of an entity
+ * An identification variable declared by a collection member declaration ranges over values of a
+ * collection obtained by navigation using a path expression. Such a path expression represents a
+ * navigation involving the association-fields of an entity abstract schema type. Because a path
+ * expression can be based on another path expression, the navigation can use the association-fields
+ * of related entities. An identification variable of a collection member declaration is declared
+ * using a special operator, the reserved identifier <b>IN</b>. The argument to the <b>IN</b>
+ * operator is a collection-valued path expression. The path expression evaluates to a collection
+ * type specified as a result of navigation to a collection-valued association-field of an entity
  * abstract schema type.
  * <p>
  * <div nowrap><b>BNF:</b> <code>collection_member_declaration ::= IN(collection_valued_path_expression) [AS] identification_variable</code><p>
@@ -39,11 +37,11 @@ import java.util.List;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class CollectionMemberDeclaration extends AbstractExpression
-{
+public final class CollectionMemberDeclaration extends AbstractExpression {
+
 	/**
-	 * The {@link Expression} representing the collection member, which is
-	 * declared by an identification variable.
+	 * The {@link Expression} representing the collection member, which is declared by an
+	 * identification variable.
 	 */
 	private AbstractExpression collectionValuedPathExpression;
 
@@ -78,8 +76,8 @@ public final class CollectionMemberDeclaration extends AbstractExpression
 	private boolean hasSpaceAfterRightParenthesis;
 
 	/**
-	 * The {@link Expression} representing the identification variable, which
-	 * maps the collection-valued path expression.
+	 * The {@link Expression} representing the identification variable, which maps the collection-
+	 * valued path expression.
 	 */
 	private AbstractExpression identificationVariable;
 
@@ -88,26 +86,30 @@ public final class CollectionMemberDeclaration extends AbstractExpression
 	 *
 	 * @param parent The parent of this expression
 	 */
-	CollectionMemberDeclaration(AbstractExpression parent)
-	{
+	CollectionMemberDeclaration(AbstractExpression parent) {
 		super(parent, IN);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getCollectionValuedPathExpression().accept(visitor);
+		getIdentificationVariable().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	void addChildrenTo(Collection<Expression> children) {
 		children.add(getCollectionValuedPathExpression());
 		children.add(getIdentificationVariable());
 	}
@@ -116,86 +118,72 @@ public final class CollectionMemberDeclaration extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedChildrenTo(List<StringExpression> children)
-	{
+	void addOrderedChildrenTo(List<StringExpression> children) {
+
 		// 'IN'
 		children.add(buildStringExpression(IN));
 
-		if (hasSpaceAfterIn)
-		{
+		if (hasSpaceAfterIn) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// '('
-		if (hasLeftParenthesis)
-		{
+		if (hasLeftParenthesis) {
 			children.add(buildStringExpression(LEFT_PARENTHESIS));
 		}
 
 		// Collection-valued path expression
-		if (collectionValuedPathExpression != null)
-		{
+		if (collectionValuedPathExpression != null) {
 			children.add(collectionValuedPathExpression);
 		}
 
 		// ')'
-		if (hasRightParenthesis)
-		{
+		if (hasRightParenthesis) {
 			children.add(buildStringExpression(RIGHT_PARENTHESIS));
 		}
 
-		if (hasSpaceAfterRightParenthesis)
-		{
+		if (hasSpaceAfterRightParenthesis) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// AS
-		if (hasAs)
-		{
+		if (hasAs) {
 			children.add(buildStringExpression(AS));
 		}
 
-		if (hasSpaceAfterAs)
-		{
+		if (hasSpaceAfterAs) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// Identification variable
-		if (identificationVariable != null)
-		{
+		if (identificationVariable != null) {
 			children.add(identificationVariable);
 		}
 	}
 
 	/**
-	 * Returns the {@link Expression} representing the collection member, which
-	 * is declared by an identification variable.
+	 * Returns the {@link Expression} representing the collection member, which is declared by an
+	 * identification variable.
 	 *
 	 * @return The expression representing the collection-valued path expression
 	 */
-	public Expression getCollectionValuedPathExpression()
-	{
-		if (collectionValuedPathExpression == null)
-		{
+	public Expression getCollectionValuedPathExpression() {
+		if (collectionValuedPathExpression == null) {
 			collectionValuedPathExpression = buildNullExpression();
 		}
-
 		return collectionValuedPathExpression;
 	}
 
 	/**
-	 * Returns the {@link Expression} representing the identification variable,
-	 * which maps the collection-valued path expression.
+	 * Returns the {@link Expression} representing the identification variable, which maps the
+	 * collection-valued path expression.
 	 *
 	 * @return The expression representing the identification variable
 	 */
-	public Expression getIdentificationVariable()
-	{
-		if (identificationVariable == null)
-		{
+	public Expression getIdentificationVariable() {
+		if (identificationVariable == null) {
 			identificationVariable = buildNullExpression();
 		}
-
 		return identificationVariable;
 	}
 
@@ -203,30 +191,26 @@ public final class CollectionMemberDeclaration extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(CollectionMemberDeclarationBNF.ID);
 	}
 
 	/**
 	 * Determines whether the identifier <b>AS</b> was parsed.
 	 *
-	 * @return <code>true</code> if the identifier <b>AS</b> was parsed;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the identifier <b>AS</b> was parsed; <code>false</code> otherwise
 	 */
-	public boolean hasAs()
-	{
+	public boolean hasAs() {
 		return hasAs;
 	}
 
 	/**
 	 * Determines whether the collection-valued path expression was parsed.
 	 *
-	 * @return <code>true</code> if the query has the collection-valued path
-	 * expression; <code>false</code> otherwise
+	 * @return <code>true</code> if the query has the collection-valued path expression;
+	 * <code>false</code> otherwise
 	 */
-	public boolean hasCollectionValuedPathExpression()
-	{
+	public boolean hasCollectionValuedPathExpression() {
 		return collectionValuedPathExpression != null &&
 		      !collectionValuedPathExpression.isNull();
 	}
@@ -234,67 +218,62 @@ public final class CollectionMemberDeclaration extends AbstractExpression
 	/**
 	 * Determines whether the identification variable was parsed.
 	 *
-	 * @return <code>true</code> if the query has the identification variable;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the query has the identification variable; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasIdentificationVariable()
-	{
-		return identificationVariable != null &&
-		      !identificationVariable.isNull();
+	public boolean hasIdentificationVariable() {
+		return identificationVariable != null  &&
+		      !identificationVariable.isNull() &&
+		      !identificationVariable.isVirtual();
 	}
 
 	/**
 	 * Determines whether the open parenthesis was parsed or not.
 	 *
-	 * @return <code>true</code> if the open parenthesis was present in the
-	 * string version of the query; <code>false</code> otherwise
+	 * @return <code>true</code> if the open parenthesis was present in the string version of the
+	 * query; <code>false</code> otherwise
 	 */
-	public boolean hasLeftParenthesis()
-	{
+	public boolean hasLeftParenthesis() {
 		return hasLeftParenthesis;
 	}
 
 	/**
 	 * Determines whether the close parenthesis was parsed or not.
 	 *
-	 * @return <code>true</code> if the close parenthesis was present in the
-	 * string version of the query; <code>false</code> otherwise
+	 * @return <code>true</code> if the close parenthesis was present in the string version of the
+	 * query; <code>false</code> otherwise
 	 */
-	public boolean hasRightParenthesis()
-	{
+	public boolean hasRightParenthesis() {
 		return hasRightParenthesis;
 	}
 
 	/**
 	 * Determines whether a whitespace was found after <b>AS</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>AS</b>;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>AS</b>; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasSpaceAfterAs()
-	{
+	public boolean hasSpaceAfterAs() {
 		return hasSpaceAfterAs;
 	}
 
 	/**
 	 * Determines whether a whitespace was found after <b>IN</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>IN</b>;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>IN</b>; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasSpaceAfterIn()
-	{
+	public boolean hasSpaceAfterIn() {
 		return hasSpaceAfterIn;
 	}
 
 	/**
 	 * Determines whether a whitespace was found after the close parenthesis.
 	 *
-	 * @return <code>true</code> if there was a whitespace after the right
-	 * parenthesis; <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after the right parenthesis;
+	 * <code>false</code> otherwise
 	 */
-	public boolean hasSpaceAfterRightParenthesis()
-	{
+	public boolean hasSpaceAfterRightParenthesis() {
 		return hasSpaceAfterRightParenthesis;
 	}
 
@@ -302,8 +281,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
+	boolean isParsingComplete(WordParser wordParser, String word) {
 		return wordParser.character() == RIGHT_PARENTHESIS ||
 		       word.equalsIgnoreCase(AS)                   ||
 		       super.isParsingComplete(wordParser, word);
@@ -313,8 +291,8 @@ public final class CollectionMemberDeclaration extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parse(WordParser wordParser, boolean tolerant)
-	{
+	void parse(WordParser wordParser, boolean tolerant) {
+
 		// Parse 'IN'
 		wordParser.moveForward(IN);
 
@@ -323,56 +301,48 @@ public final class CollectionMemberDeclaration extends AbstractExpression
 		// Parse '('
 		hasLeftParenthesis = wordParser.startsWith(LEFT_PARENTHESIS);
 
-		if (hasLeftParenthesis)
-		{
+		if (hasLeftParenthesis) {
 			wordParser.moveForward(1);
 			count = wordParser.skipLeadingWhitespace();
 		}
 		// For JPA 2.0 a derived collection member declaration
-		else
-		{
+		else {
 			hasSpaceAfterIn = (count > 0);
 			count = 0;
 		}
 
 		// Parse the collection-valued path expression
-		collectionValuedPathExpression = parse
-		(
+		collectionValuedPathExpression = parse(
 			wordParser,
 			queryBNF(CollectionValuedPathExpressionBNF.ID),
 			tolerant
 		);
 
-		if (hasCollectionValuedPathExpression())
-		{
+		if (hasCollectionValuedPathExpression()) {
 			count = wordParser.skipLeadingWhitespace();
 		}
 
 		// Remove ')'
 		hasRightParenthesis = wordParser.startsWith(RIGHT_PARENTHESIS);
 
-		if (hasRightParenthesis)
-		{
+		if (hasRightParenthesis) {
 			wordParser.moveForward(1);
 			hasSpaceAfterRightParenthesis = wordParser.skipLeadingWhitespace() > 0;
 		}
-		else
-		{
+		else {
 			hasSpaceAfterRightParenthesis = (count > 0);
 		}
 
 		// Parse 'AS'
 		hasAs = wordParser.startsWithIdentifier(AS);
 
-		if (hasAs)
-		{
+		if (hasAs) {
 			wordParser.moveForward(AS);
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
 
 		// Parse the identification variable
-		identificationVariable = parse
-		(
+		identificationVariable = parse(
 			wordParser,
 			queryBNF(IdentificationVariableBNF.ID),
 			tolerant
@@ -383,52 +353,44 @@ public final class CollectionMemberDeclaration extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer)
-	{
+	void toParsedText(StringBuilder writer) {
+
 		// 'IN'
 		writer.append(getText());
 
 		// '('
-		if (hasLeftParenthesis)
-		{
+		if (hasLeftParenthesis) {
 			writer.append(LEFT_PARENTHESIS);
 		}
-		else if (hasSpaceAfterIn)
-		{
+		else if (hasSpaceAfterIn) {
 			writer.append(SPACE);
 		}
 
 		// Collection-valued path expression
-		if (collectionValuedPathExpression != null)
-		{
+		if (collectionValuedPathExpression != null) {
 			collectionValuedPathExpression.toParsedText(writer);
 		}
 
 		// ')'
-		if (hasRightParenthesis)
-		{
+		if (hasRightParenthesis) {
 			writer.append(RIGHT_PARENTHESIS);
 		}
 
-		if (hasSpaceAfterRightParenthesis)
-		{
+		if (hasSpaceAfterRightParenthesis) {
 			writer.append(SPACE);
 		}
 
 		// 'AS'
-		if (hasAs)
-		{
+		if (hasAs) {
 			writer.append(AS);
 		}
 
-		if (hasSpaceAfterAs)
-		{
+		if (hasSpaceAfterAs) {
 			writer.append(SPACE);
 		}
 
 		// Identification variable
-		if (identificationVariable != null)
-		{
+		if (identificationVariable != null) {
 			identificationVariable.toParsedText(writer);
 		}
 	}
@@ -439,37 +401,32 @@ public final class CollectionMemberDeclaration extends AbstractExpression
 	 *
 	 * @return The string representation of a section of this expression
 	 */
-	String toParsedTextUntilAs()
-	{
+	String toParsedTextUntilAs() {
+
 		StringBuilder writer = new StringBuilder();
 
 		// 'IN'
 		writer.append(getText());
 
 		// '('
-		if (hasLeftParenthesis)
-		{
+		if (hasLeftParenthesis) {
 			writer.append(LEFT_PARENTHESIS);
 		}
-		else if (hasSpaceAfterIn)
-		{
+		else if (hasSpaceAfterIn) {
 			writer.append(SPACE);
 		}
 
 		// Collection-valued path expression
-		if (collectionValuedPathExpression != null)
-		{
+		if (collectionValuedPathExpression != null) {
 			collectionValuedPathExpression.toParsedText(writer);
 		}
 
 		// ')'
-		if (hasRightParenthesis)
-		{
+		if (hasRightParenthesis) {
 			writer.append(RIGHT_PARENTHESIS);
 		}
 
-		if (hasSpaceAfterRightParenthesis)
-		{
+		if (hasSpaceAfterRightParenthesis) {
 			writer.append(SPACE);
 		}
 

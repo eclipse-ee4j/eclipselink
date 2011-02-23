@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -18,19 +18,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
-public final class SelectStatementTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
+public final class SelectStatementTest extends AbstractJPQLTest {
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
 		String query = "SELECT e FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -41,14 +33,13 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_02()
-	{
+	public void testBuildExpression_02() {
 		String query = "SELECT e " +
 		               "FROM Employee e " +
 		               "WHERE e.department.name = 'NA42' AND " +
 		               "      e.address.state IN ('NY', 'CA')";
 
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -137,7 +128,7 @@ public final class SelectStatementTest extends AbstractJPQLTest
 		assertEquals("e.address.state IN('NY', 'CA')", inExpression.toParsedText());
 
 		// StateFieldPathExpression
-		expression = inExpression.getStateFieldPathExpression();
+		expression = inExpression.getExpression();
 		assertTrue(expression instanceof StateFieldPathExpression);
 		stateFieldPathExpression = (StateFieldPathExpression) expression;
 
@@ -166,11 +157,10 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectDistinctFrom()
-	{
+	public void testBuildExpression_SelectDistinctFrom() {
 		String query = "SELECT Distinct e FROM Employee e";
-		String realQuery = JPQLQueries.formatQuery(query);
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		String realQuery = JPQLQueryBuilder.formatQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -195,11 +185,10 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectDistinctFromWhere()
-	{
+	public void testBuildExpression_SelectDistinctFromWhere() {
 		String query = "SELECT DISTINCT e from Employee e WHERE e.name = 'Pascal'";
-		String realQuery = JPQLQueries.formatQuery(query);
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		String realQuery = JPQLQueryBuilder.formatQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -220,11 +209,10 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectFrom()
-	{
+	public void testBuildExpression_SelectFrom() {
 		String query = "SELECT e From Employee e";
-		String realQuery = JPQLQueries.formatQuery(query);
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		String realQuery = JPQLQueryBuilder.formatQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -249,15 +237,14 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectFromGroupByHavingOrderBy()
-	{
+	public void testBuildExpression_SelectFromGroupByHavingOrderBy() {
 		String query = "SELECT e "        +
 		               "FROM Employee e " +
 		               "GROUP BY e "      +
 		               "HAVING SUM(e) "   +
 		               "ORDER BY e";
 
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -294,10 +281,9 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectFromWhere()
-	{
+	public void testBuildExpression_SelectFromWhere() {
 		String query = "SELECT e FROM Employee e WHERE e.name = 'Pascal'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -326,10 +312,9 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectFromWhereGroupBy()
-	{
+	public void testBuildExpression_SelectFromWhereGroupBy() {
 		String query = "SELECT e FROM Employee e WHERE e.name = 'Pascal' GROUP BY e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -362,10 +347,9 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectFromWhereGroupByHaving()
-	{
+	public void testBuildExpression_SelectFromWhereGroupByHaving() {
 		String query = "SELECT e FROM Employee e WHERE e.name = 'Pascal' GROUP BY e HAVING SUM(e)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -402,10 +386,9 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectFromWhereGroupByHavingOrderBy()
-	{
+	public void testBuildExpression_SelectFromWhereGroupByHavingOrderBy() {
 		String query = "SELECT e FROM Employee e WHERE e.name = 'Pascal' GROUP BY e HAVING SUM(e) ORDER BY e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -446,10 +429,9 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectFromWhereGroupByOrderBy()
-	{
+	public void testBuildExpression_SelectFromWhereGroupByOrderBy() {
 		String query = "SELECT e FROM Employee e WHERE e.name = 'Pascal' GROUP BY e ORDER BY e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -486,10 +468,9 @@ public final class SelectStatementTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectFromWhereHavingOrderBy()
-	{
+	public void testBuildExpression_SelectFromWhereHavingOrderBy() {
 		String query = "SELECT e FROM Employee e WHERE e.name = 'Pascal' HAVING SUM(e) ORDER BY e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();

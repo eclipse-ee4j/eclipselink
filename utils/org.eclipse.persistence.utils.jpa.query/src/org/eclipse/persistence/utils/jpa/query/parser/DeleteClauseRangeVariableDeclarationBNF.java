@@ -3,20 +3,19 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * The query BNF for a range variable declaration expression used by the DELETE
- * clause, which accepts collection and aggregate expression, which is used by
- * invalid queries.
+ * The query BNF for a range variable declaration expression used by the <b>DELETE</b> clause, which
+ * accepts collection and aggregate expression, which is used by invalid queries.
  *
  * <div nowrap><b>BNF:</b> <code>range_variable_declaration ::= entity_name [AS] identification_variable</code><p>
  *
@@ -25,8 +24,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class DeleteClauseRangeVariableDeclarationBNF extends JPQLQueryBNF
-{
+final class DeleteClauseRangeVariableDeclarationBNF extends JPQLQueryBNF {
+
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
@@ -35,8 +34,7 @@ final class DeleteClauseRangeVariableDeclarationBNF extends JPQLQueryBNF
 	/**
 	 * Creates a new <code>DeleteClauseRangeVariableDeclarationBNF</code>.
 	 */
-	DeleteClauseRangeVariableDeclarationBNF()
-	{
+	DeleteClauseRangeVariableDeclarationBNF() {
 		super(ID);
 	}
 
@@ -44,8 +42,7 @@ final class DeleteClauseRangeVariableDeclarationBNF extends JPQLQueryBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackBNFId()
-	{
+	String getFallbackBNFId() {
 		return RangeVariableDeclarationBNF.ID;
 	}
 
@@ -53,8 +50,7 @@ final class DeleteClauseRangeVariableDeclarationBNF extends JPQLQueryBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate()
-	{
+	boolean handleAggregate() {
 		// True only to support invalid query
 		return true;
 	}
@@ -63,17 +59,8 @@ final class DeleteClauseRangeVariableDeclarationBNF extends JPQLQueryBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection()
-	{
+	boolean handleCollection() {
 		// True only to support invalid query
 		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	void initialize()
-	{
 	}
 }

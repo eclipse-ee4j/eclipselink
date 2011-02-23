@@ -3,24 +3,25 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
-import java.util.Iterator;
+import java.util.ListIterator;
 
 /**
- * This is the root interface of the Java Persistence query parsed tree. The
- * parser supports the latest release of the JPQL functional specification,
- * which is <a href="http://jcp.org/en/jsr/detail?id=317">JSR 317: Java&trade; Persistence 2.0</a>
+ * This is the root interface of the Java Persistence query parsed tree. The parser supports the
+ * latest release of the JPQL functional specification, which is
+ * <a href="http://jcp.org/en/jsr/detail?id=317">JSR 317: Java&trade; Persistence 2.0</a>
  * <p>
  * The BNF for the Java Persistence query language, version 2.0:
+ *
  * <pre><code> QL_statement ::= select_statement | update_statement | delete_statement
  *
  * select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause]
@@ -39,14 +40,14 @@ import java.util.Iterator;
  *
  * fetch_join ::= join_spec FETCH join_association_path_expression
  *
- * join_spec::= [ LEFT [OUTER] | INNER ] JOIN
+ * join_spec ::= [ LEFT [OUTER] | INNER ] JOIN
  *
  * join_association_path_expression ::= join_collection_valued_path_expression |
  *                                      join_single_valued_path_expression
  *
- * join_collection_valued_path_expression::= identification_variable.{single_valued_embeddable_object_field.}*collection_valued_field
+ * join_collection_valued_path_expression ::= identification_variable.{single_valued_embeddable_object_field.}*collection_valued_field
  *
- * join_single_valued_path_expression::= identification_variable.{single_valued_embeddable_object_field.}*single_valued_object_field
+ * join_single_valued_path_expression ::= identification_variable.{single_valued_embeddable_object_field.}*single_valued_object_field
  *
  * collection_member_declaration ::= IN (collection_valued_path_expression) [AS] identification_variable
  *
@@ -64,7 +65,7 @@ import java.util.Iterator;
  *
  * state_field_path_expression ::= general_identification_variable.{single_valued_object_field.}*state_field
  *
- * single_valued_object_path_expression ::= general_identification_variable.{single_valued_object_field.}* single_valued_object_field
+ * single_valued_object_path_expression ::= general_identification_variable.{single_valued_object_field.}*single_valued_object_field
  *
  * collection_valued_path_expression ::= general_identification_variable.{single_valued_object_field.}*collection_valued_field
  *
@@ -180,7 +181,7 @@ import java.util.Iterator;
  *                                       input_parameter |
  *                                       literal
  *
- * exists_expression::= [NOT] EXISTS (subquery)
+ * exists_expression ::= [NOT] EXISTS (subquery)
  *
  * all_or_any_expression ::= { ALL | ANY | SOME} (subquery)
  *
@@ -261,7 +262,7 @@ import java.util.Iterator;
  *                                  SIZE(collection_valued_path_expression) |
  *                                  INDEX(identification_variable)
  *
- * functions_returning_datetime ::= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP
+ * functions_returning_datetime ::= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | literalTemporal
  *
  * functions_returning_strings ::= CONCAT(string_primary, string_primary {, string_primary}*) |
  *                                 SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression]) |
@@ -270,6 +271,8 @@ import java.util.Iterator;
  *                                 UPPER(string_primary)
  *
  * trim_specification ::= LEADING | TRAILING | BOTH
+ *
+ * trim_character ::= string_literal | input_parameter
  *
  * case_expression ::= general_case_expression |
  *                     simple_case_expression |
@@ -294,11 +297,28 @@ import java.util.Iterator;
  *
  * string_literal ::= 'string'
  *
- * enum_literal ::= EnumType.CONSTANT
+ * enum_literal ::= {package_name.}*EnumType.CONSTANT
+ *
+ * literalTemporal ::= date_literal | TIME_LITERAL | TIMESTAMP_LITERAL
+ *
+ * date_literal ::= "{" "'d'" (' ' | '\t')+ '\'' DATE_STRING '\'' (' ' | '\t')* "}"
+ *
+ * TIME_LITERAL ::= "{" "'t'" (' ' | '\t')+ '\'' TIME_STRING '\'' (' ' | '\t')* "}"
+ *
+ * TIMESTAMP_LITERAL ::= "{" ('ts') (' ' | '\t')+ '\'' DATE_STRING ' ' TIME_STRING '\'' (' ' | '\t')* "}"
+ *
+ * DATE_STRING ::= '0'..'9' '0'..'9' '0'..'9' '0'..'9' '-' '0'..'9' '0'..'9' '-' '0'..'9' '0'..'9'
+ *
+ * TIME_STRING ::= '0'..'9' ('0'..'9')? ':' '0'..'9' '0'..'9' ':' '0'..'9' '0'..'9' '.' '0'..'9'*
  * </pre></code>
  * <p>
- * The following BNF is the EclipseLink's extension over the standard JPQL BNF.
- * <pre><code> functions_returning_strings ::= ... | func_expression
+ * The following BNFs is the EclipseLink's extension over the standard JPQL BNF.
+ *
+ * <pre><code>join ::= join_spec { join_association_path_expression | join_treat_association_path_expression } [AS] identification_variable
+ *
+ * join_treat_association_path_expression ::= TREAT(join_association_path_expression AS entity_type_literal)
+ *
+ * functions_returning_strings ::= ... | func_expression
  *
  * functions_returning_numerics ::= ... | func_expression
  *
@@ -306,7 +326,16 @@ import java.util.Iterator;
  *
  * func_expression ::= FUNC (func_name {, func_item}*)
  *
- * func_item ::= state_field_path_expression | input_parameter | string_literal (NOT SURE)
+ * func_item ::= scalar_expression (NOT SURE)
+ *
+ * orderby_item ::= state_field_path_expression | result_variable | scalar_expression [ ASC | DESC ]
+ *
+ * groupby_item ::= single_valued_path_expression | identification_variable | scalar_expression
+ *
+ * aggregate_expression ::= { AVG | MAX | MIN | SUM | COUNT } ([DISTINCT] scalar_expression)
+ *
+ * in_item ::= literal | single_valued_input_parameter | scalar_expression
+ *
  * </code></pre>
  *
  * @version 11.2.0
@@ -314,8 +343,8 @@ import java.util.Iterator;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public interface Expression
-{
+public interface Expression {
+
 	/**
 	 * The constant for 'ABS'.
 	 */
@@ -827,6 +856,11 @@ public interface Expression
 	String TRAILING = "TRAILING";
 
 	/**
+	 * The constant for 'TREAT'.
+	 */
+	String TREAT = "TREAT";
+
+	/**
 	 * The constant for 'TRIM'.
 	 */
 	String TRIM = "TRIM";
@@ -879,12 +913,24 @@ public interface Expression
 	void accept(ExpressionVisitor visitor);
 
 	/**
+	 * Visits the children of this {@link Expression}. This method can be used to optimize traversing
+	 * the children since a new list is not created every time {@link #children()} or {@link
+	 * #getChildren()} is called.
+	 * <p>
+	 * This does not traverse the {@link Expression} sub-hierarchy, use an subclass of
+	 * {@link AbstractTraverseChildrenVisitor} in order to traverse the entire sub-hierarchy.
+	 *
+	 * @param visitor The {@link ExpressionVisitor visitor} to visit the children of this object.
+	 */
+	void acceptChildren(ExpressionVisitor visitor);
+
+	/**
 	 * Returns the children of this {@link Expression}.
 	 *
 	 * @return The children of this {@link Expression} or an empty list if this
 	 * {@link Expression} does not have children
 	 */
-	Iterator<Expression> children();
+	ListIterator<Expression> children();
 
 	/**
 	 * Returns the children of this {@link Expression}.

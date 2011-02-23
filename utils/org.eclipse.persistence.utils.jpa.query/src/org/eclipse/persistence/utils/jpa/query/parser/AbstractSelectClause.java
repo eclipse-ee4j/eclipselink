@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -17,19 +17,17 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * The <b>SELECT</b> clause denotes the query result. More than one value may
- * be returned from the <b>SELECT</b> clause of a query. The <b>SELECT</b>
- * clause may contain one or more of the following elements: a single range
- * variable or identification variable that ranges over an entity abstract
- * schema type, a single-valued path expression, an aggregate select expression,
- * a constructor expression.
+ * The <b>SELECT</b> clause denotes the query result. More than one value may be returned from the
+ * <b>SELECT</b> clause of a query. The <b>SELECT</b> clause may contain one or more of the
+ * following elements: a single range variable or identification variable that ranges over an entity
+ * abstract schema type, a single-valued path expression, an aggregate select expression, a
+ * constructor expression.
  * <p>
- * The <b>DISTINCT</b> keyword is used to specify that duplicate values must be
- * eliminated from the query result. If <b>DISTINCT</b> is not specified,
- * duplicate values are not eliminated. Stand-alone identification variables in
- * the <b>SELECT</b> clause may optionally be qualified by the <b>OBJECT</b>
- * operator. The <b>SELECT</b> clause must not use the <b>OBJECT</b> operator
- * to qualify path expressions.
+ * The <b>DISTINCT</b> keyword is used to specify that duplicate values must be eliminated from the
+ * query result. If <b>DISTINCT</b> is not specified, duplicate values are not eliminated.
+ * Stand-alone identification variables in the <b>SELECT</b> clause may optionally be qualified by
+ * the <b>OBJECT</b> operator. The <b>SELECT</b> clause must not use the <b>OBJECT</b> operator to
+ * qualify path expressions.
  *
  * @see SelectClause
  * @see SimpleSelectClause
@@ -38,8 +36,8 @@ import java.util.List;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public abstract class AbstractSelectClause extends AbstractExpression
-{
+public abstract class AbstractSelectClause extends AbstractExpression {
+
 	/**
 	 * Determines whether the identifier <b>DISTINCT</b> was parsed.
 	 */
@@ -65,17 +63,22 @@ public abstract class AbstractSelectClause extends AbstractExpression
 	 *
 	 * @param parent The parent of this expression
 	 */
-	AbstractSelectClause(AbstractExpression parent)
-	{
+	AbstractSelectClause(AbstractExpression parent) {
 		super(parent, SELECT);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getSelectExpression().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	void addChildrenTo(Collection<Expression> children) {
 		children.add(getSelectExpression());
 	}
 
@@ -83,30 +86,26 @@ public abstract class AbstractSelectClause extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedChildrenTo(List<StringExpression> children)
-	{
+	void addOrderedChildrenTo(List<StringExpression> children) {
+
 		// 'SELECT'
 		children.add(buildStringExpression(SELECT));
 
-		if (hasSpaceAfterSelect)
-		{
+		if (hasSpaceAfterSelect) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'DISTINCT'
-		if (hasDistinct)
-		{
+		if (hasDistinct) {
 			children.add(buildStringExpression(DISTINCT));
 		}
 
-		if (hasSpaceAfterDistinct)
-		{
+		if (hasSpaceAfterDistinct) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// Select expression
-		if (selectExpression != null)
-		{
+		if (selectExpression != null) {
 			children.add(selectExpression);
 		}
 	}
@@ -116,13 +115,10 @@ public abstract class AbstractSelectClause extends AbstractExpression
 	 *
 	 * @return The expression representing the select items
 	 */
-	public Expression getSelectExpression()
-	{
-		if (selectExpression == null)
-		{
+	public Expression getSelectExpression() {
+		if (selectExpression == null) {
 			selectExpression = buildNullExpression();
 		}
-
 		return selectExpression;
 	}
 
@@ -132,8 +128,7 @@ public abstract class AbstractSelectClause extends AbstractExpression
 	 * @return <code>true</code> if the identifier <b>DISTINCT</b> was parsed;
 	 * <code>false</code> otherwise
 	 */
-	public boolean hasDistinct()
-	{
+	public boolean hasDistinct() {
 		return hasDistinct;
 	}
 
@@ -143,8 +138,7 @@ public abstract class AbstractSelectClause extends AbstractExpression
 	 * @return <code>true</code> the list of select items was parsed;
 	 * <code>false</code> otherwise
 	 */
-	public boolean hasSelectExpression()
-	{
+	public boolean hasSelectExpression() {
 		return selectExpression != null &&
 		      !selectExpression.isNull();
 	}
@@ -155,8 +149,7 @@ public abstract class AbstractSelectClause extends AbstractExpression
 	 * @return <code>true</code> if there was a whitespace after <b>DISTINCT</b>;
 	 * <code>false</code> otherwise
 	 */
-	public boolean hasSpaceAfterDistinct()
-	{
+	public boolean hasSpaceAfterDistinct() {
 		return hasSpaceAfterDistinct;
 	}
 
@@ -166,8 +159,7 @@ public abstract class AbstractSelectClause extends AbstractExpression
 	 * @return <code>true</code> if there was a whitespace after <b>SELECT</b>;
 	 * <code>false</code> otherwise
 	 */
-	public boolean hasSpaceAfterSelect()
-	{
+	public boolean hasSpaceAfterSelect() {
 		return hasSpaceAfterSelect;
 	}
 
@@ -175,8 +167,8 @@ public abstract class AbstractSelectClause extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parse(WordParser wordParser, boolean tolerant)
-	{
+	void parse(WordParser wordParser, boolean tolerant) {
+
 		// Parse 'SELECT'
 		wordParser.moveForward(SELECT);
 
@@ -185,15 +177,13 @@ public abstract class AbstractSelectClause extends AbstractExpression
 		// Parse 'DISTINCT'
 		hasDistinct = wordParser.startsWithIdentifier(DISTINCT);
 
-		if (hasDistinct)
-		{
+		if (hasDistinct) {
 			wordParser.moveForward(DISTINCT);
 			hasSpaceAfterDistinct = wordParser.skipLeadingWhitespace() > 0;
 		}
 
 		// Parse the select expression
-		selectExpression = parse
-		(
+		selectExpression = parse(
 			wordParser,
 			selectItemBNF(),
 			tolerant
@@ -211,30 +201,26 @@ public abstract class AbstractSelectClause extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer)
-	{
-		// 'SELECT'
-		writer.append(getText());
+	void toParsedText(StringBuilder writer) {
 
-		if (hasSpaceAfterSelect)
-		{
+		// 'SELECT'
+		writer.append(SELECT);
+
+		if (hasSpaceAfterSelect) {
 			writer.append(SPACE);
 		}
 
 		// 'DISTINCT'
-		if (hasDistinct())
-		{
+		if (hasDistinct) {
 			writer.append(DISTINCT);
 		}
 
-		if (hasSpaceAfterDistinct)
-		{
+		if (hasSpaceAfterDistinct) {
 			writer.append(SPACE);
 		}
 
 		// Select expression
-		if (selectExpression != null)
-		{
+		if (selectExpression != null) {
 			selectExpression.toParsedText(writer);
 		}
 	}

@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -24,8 +24,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class CollectionValuedPathExpressionFactory extends ExpressionFactory
-{
+final class CollectionValuedPathExpressionFactory extends ExpressionFactory {
+
 	/**
 	 * The unique identifier of this {@link CollectionValuedPathExpressionFactory}.
 	 */
@@ -34,8 +34,7 @@ final class CollectionValuedPathExpressionFactory extends ExpressionFactory
 	/**
 	 * Creates a new <code>CollectionValuedPathExpressionFactory</code>.
 	 */
-	CollectionValuedPathExpressionFactory()
-	{
+	CollectionValuedPathExpressionFactory() {
 		super(ID);
 	}
 
@@ -48,19 +47,15 @@ final class CollectionValuedPathExpressionFactory extends ExpressionFactory
 	                                   String word,
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
-		if (expression != null)
-		{
+	                                   boolean tolerant) {
+		if (expression != null) {
 			expression = new CollectionValuedPathExpression(parent, expression);
 		}
-		else if (tolerant && (word.indexOf(AbstractExpression.DOT) == -1))
-		{
+		else if (tolerant && (word.indexOf(AbstractExpression.DOT) == -1)) {
 			ExpressionFactory factory = AbstractExpression.expressionFactory(PreLiteralExpressionFactory.ID);
 			return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
 		}
-		else
-		{
+		else {
 			expression = new CollectionValuedPathExpression(parent, word);
 		}
 

@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query;
@@ -25,8 +25,8 @@ import org.eclipse.persistence.utils.jpa.query.spi.IType;
  * @since 11.2.0
  * @author Pascal Filion
  */
-final class CollectionEquivalentTypeResolver extends AbstractTypeResolver
-{
+final class CollectionEquivalentTypeResolver extends AbstractTypeResolver {
+
 	/**
 	 * The list of {@link TypeResolver resolvers} that were created for each of the encapsulated
 	 * expressions.
@@ -40,8 +40,7 @@ final class CollectionEquivalentTypeResolver extends AbstractTypeResolver
 	 * @param resolvers The list of {@link TypeResolver resolvers} that were created for each of
 	 * the encapsulated expressions
 	 */
-	CollectionEquivalentTypeResolver(TypeVisitor parent, List<TypeResolver> resolvers)
-	{
+	CollectionEquivalentTypeResolver(TypeVisitor parent, List<TypeResolver> resolvers) {
 		super(parent);
 		this.resolvers = resolvers;
 	}
@@ -49,19 +48,16 @@ final class CollectionEquivalentTypeResolver extends AbstractTypeResolver
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public IType getType()
-	{
+	public IType getType() {
+
 		// Retrieve the first type so it can be compared with the others
 		IType type = resolvers.get(0).getType();
 
-		for (int index = 1, count = resolvers.size(); index < count; index++)
-		{
+		for (int index = 1, count = resolvers.size(); index < count; index++) {
 			IType anotherType = resolvers.get(index).getType();
 
 			// Two types are not the same, then the type is Object
-			if (!type.equals(anotherType))
-			{
+			if (!type.equals(anotherType)) {
 				return getType(Object.class);
 			}
 		}

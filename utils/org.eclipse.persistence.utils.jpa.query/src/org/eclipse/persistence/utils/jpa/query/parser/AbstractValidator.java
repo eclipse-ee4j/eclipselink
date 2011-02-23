@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -20,19 +20,20 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.persistence.utils.jpa.query.QueryProblem;
+import org.eclipse.persistence.utils.jpa.query.JPQLQueryProblem;
 import org.eclipse.persistence.utils.jpa.query.spi.IEmbeddable;
 import org.eclipse.persistence.utils.jpa.query.spi.IEntity;
 import org.eclipse.persistence.utils.jpa.query.spi.IManagedType;
 import org.eclipse.persistence.utils.jpa.query.spi.IManagedTypeProvider;
 import org.eclipse.persistence.utils.jpa.query.spi.IManagedTypeVisitor;
 import org.eclipse.persistence.utils.jpa.query.spi.IMappedSuperclass;
+import org.eclipse.persistence.utils.jpa.query.spi.IPlatform;
 import org.eclipse.persistence.utils.jpa.query.spi.IQuery;
 import org.eclipse.persistence.utils.jpa.query.spi.IType;
 import org.eclipse.persistence.utils.jpa.query.spi.ITypeRepository;
 
 /**
- * The abstract definition of a validator.
+ * The abstract definition of a validator, which provides helper methods and visitors.
  *
  * @see GrammarValidator
  * @see SemanticValidator
@@ -41,39 +42,37 @@ import org.eclipse.persistence.utils.jpa.query.spi.ITypeRepository;
  * @since 11.2.0
  * @author Pascal Filion
  */
-public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
-{
+public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor {
+
 	/**
 	 * The list of {@link QueryProblem QueryProblems} describing grammatic and
 	 * semantic issues found in the query.
 	 */
-	private List<QueryProblem> problems;
+	private final List<JPQLQueryProblem> problems;
 
 	/**
 	 * The external form representing the Java Persistence query.
 	 */
-	private IQuery query;
+	private final IQuery query;
 
 	/**
 	 * Creates a new <code>AbstractValidator</code>.
 	 *
-	 * @param query The external form representing a named query
+	 * @param query The external form of the query to validate, cannot be <code>null</code>
 	 */
-	protected AbstractValidator(IQuery query)
-	{
+	protected AbstractValidator(IQuery query) {
 		super();
-
 		this.query    = query;
-		this.problems = new ArrayList<QueryProblem>();
+		this.problems = new ArrayList<JPQLQueryProblem>();
 	}
 
 	/**
 	 * Adds a new validation problem that was found in the given {@link Expression}.
 	 *
 	 * @param expression The {@link Expression} that is either not following the BNF grammar or that
-	 * has sematic problems
+	 * has semantic problems
 	 * @param startIndex The position where the problem was encountered
-	 * @param stopIndex The position where the problem ends
+	 * @param endIndex The position where the problem ends, inclusively
 	 * @param messageKey The key used to retrieve the localized message describing the problem
 	 * @param messageArguments The list of arguments that can be used to format the localized
 	 * description of the problem
@@ -82,58 +81,62 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	                                int startIndex,
 	                                int endIndex,
 	                                String messageKey,
-	                                Object... messageArguments)
-	{
-		problems.add(buildProblem
-		(
-			expression,
-			startIndex,
-			endIndex,
-			messageKey,
-			messageArguments
-		));
+	                                String... messageArguments) {
+
+		problems.add(buildProblem(expression, startIndex, endIndex, messageKey, messageArguments));
 	}
 
-	protected final ExpressionValidator aggregateExpressionBNFValidator()
-	{
+	protected final ExpressionValidator aggregateExpressionBNFValidator() {
 		return buildExpressionValidator(AggregateExpressionBNF.ID);
 	}
 
-	protected final ExpressionValidator arithmeticExpressionBNFValidator()
-	{
+	protected final ExpressionValidator arithmeticExpressionBNFValidator() {
 		return buildExpressionValidator(ArithmeticExpressionBNF.ID);
 	}
 
-	protected final ExpressionValidator arithmeticTermBNFValidator()
-	{
+	protected final ExpressionValidator arithmeticPrimaryBNFValidator() {
+		return buildExpressionValidator(ArithmeticPrimaryBNF.ID);
+	}
+
+	protected final ExpressionValidator arithmeticTermBNFValidator() {
 		return buildExpressionValidator(ArithmeticTermBNF.ID);
 	}
 
-	private final ExpressionValidator buildExpressionValidator(String queryBNF)
-	{
+	protected final ExpressionValidator booleanPrimaryBNFValidator() {
+		return buildExpressionValidator(BooleanPrimaryBNF.ID);
+	}
+
+	private final ExpressionValidator buildExpressionValidator(String queryBNF) {
 		return new ExpressionValidator(AbstractExpression.queryBNF(queryBNF));
+	}
+
+	private final ExpressionValidator buildExpressionValidator(String... queryBNFs) {
+		JPQLQueryBNF[] bnfs = new JPQLQueryBNF[queryBNFs.length];
+		for (int index = queryBNFs.length; --index >= 0; ) {
+			bnfs[index] = AbstractExpression.queryBNF(queryBNFs[index]);
+		}
+		return new ExpressionValidator(bnfs);
 	}
 
 	/**
 	 * Creates a new validation problem that was found in the given {@link Expression}.
 	 *
 	 * @param expression The {@link Expression} that is either not following the BNF grammar or that
-	 * has sematic problems
+	 * has semantic problems
 	 * @param startIndex The position where the problem was encountered
-	 * @param stopIndex The position where the problem ends
+	 * @param endIndex The position where the problem ends, inclusively
 	 * @param messageKey The key used to retrieve the localized message describing the problem
 	 * @param messageArguments The list of arguments that can be used to format the localized
 	 * description of the problem
 	 * @return The {@link QueryProblem} describing a problem
 	 */
-	private QueryProblem buildProblem(Expression expression,
-	                                  int startIndex,
-	                                  int endIndex,
-	                                  String messageKey,
-	                                  Object... messageArguments)
-	{
-		return new DefaultQueryProblem
-		(
+	private JPQLQueryProblem buildProblem(Expression expression,
+	                                      int startIndex,
+	                                      int endIndex,
+	                                      String messageKey,
+	                                      String... messageArguments) {
+
+		return new DefaultJPQLQueryProblem(
 			query,
 			expression,
 			startIndex,
@@ -143,39 +146,33 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		);
 	}
 
-	protected final ExpressionVisitor bypassChildCollectionExpression(ExpressionVisitor visitor)
-	{
+	protected final ExpressionVisitor bypassChildCollectionExpression(ExpressionVisitor visitor) {
 		return new BypassChildCollectionExpression(visitor);
 	}
 
-	protected final ExpressionVisitor bypassChildSubExpression(ExpressionVisitor visitor)
-	{
+	protected final ExpressionVisitor bypassChildSubExpression(ExpressionVisitor visitor) {
 		return new BypassChildSubExpression(visitor);
 	}
 
-	protected final ExpressionVisitor bypassParentSubExpression(ExpressionVisitor visitor)
-	{
+	protected final ExpressionVisitor bypassParentSubExpression(ExpressionVisitor visitor) {
 		return new BypassParentSubExpression(visitor);
 	}
 
-	private int calculatePosition(Expression expression, int position)
-	{
+	private int calculatePosition(Expression expression, int position) {
+
 		AbstractExpression parent = (AbstractExpression) expression.getParent();
 
 		// Reach the root
-		if (parent == null)
-		{
+		if (parent == null) {
 			return position;
 		}
 
 		// Traverse the expression until the expression
-		for (Iterator<StringExpression> iter = parent.orderedChildren(); iter.hasNext(); )
-		{
+		for (Iterator<StringExpression> iter = parent.orderedChildren(); iter.hasNext(); ) {
 			StringExpression childExpression = iter.next();
 
 			// Continue to calculate the position by going up the hiearchy
-			if (childExpression == expression)
-			{
+			if (childExpression == expression) {
 				return calculatePosition(parent, position);
 			}
 
@@ -186,54 +183,31 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		throw new RuntimeException();
 	}
 
-	protected final ExpressionValidator collectionValuedPathExpressionBNFValidator()
-	{
+	protected final ExpressionValidator collectionValuedPathExpressionBNFValidator() {
 		return buildExpressionValidator(CollectionValuedPathExpressionBNF.ID);
 	}
 
-	protected final ExpressionValidator comparisonExpressionBNFValidator()
-	{
+	protected final ExpressionValidator comparisonExpressionBNFValidator() {
 		return buildExpressionValidator(ComparisonExpressionBNF.ID);
 	}
 
-	protected final ExpressionValidator conditionalBNFValidator()
-	{
-		return new ExpressionValidator
-		(
-			AbstractExpression.queryBNF(ConditionalFactorBNF.ID),
-			AbstractExpression.queryBNF(ComparisonExpressionBNF.ID),
-			AbstractExpression.queryBNF(BetweenExpressionBNF.ID),
-			AbstractExpression.queryBNF(InExpressionBNF.ID),
-			AbstractExpression.queryBNF(LikeExpressionBNF.ID),
-			AbstractExpression.queryBNF(NullComparisonExpressionBNF.ID),
-			AbstractExpression.queryBNF(EmptyCollectionComparisonExpressionBNF.ID),
-			AbstractExpression.queryBNF(CollectionMemberExpressionBNF.ID),
-			AbstractExpression.queryBNF(ExistsExpressionBNF.ID)
-		);
-	}
-
-	protected final ExpressionValidator conditionalExpressionBNFValidator()
-	{
+	protected final ExpressionValidator conditionalExpressionBNFValidator() {
 		return buildExpressionValidator(ConditionalExpressionBNF.ID);
 	}
 
-	protected final ExpressionValidator conditionalFactorBNFValidator()
-	{
+	protected final ExpressionValidator conditionalFactorBNFValidator() {
 		return buildExpressionValidator(ConditionalFactorBNF.ID);
 	}
 
-	protected final ExpressionValidator conditionalTermBNFValidator()
-	{
+	protected final ExpressionValidator conditionalTermBNFValidator() {
 		return buildExpressionValidator(ConditionalTermBNF.ID);
 	}
 
-	protected final ExpressionValidator countStateFieldPathExpressionBNFValidator()
-	{
-		return buildExpressionValidator(InternalCountBNF.ID);
+	protected final ExpressionValidator entityTypeLiteralBNFValidator() {
+		return buildExpressionValidator(EntityTypeLiteralBNF.ID);
 	}
 
-	protected final ExpressionValidator expressionValidator(JPQLQueryBNF queryBNF)
-	{
+	protected final ExpressionValidator expressionValidator(JPQLQueryBNF queryBNF) {
 		return new ExpressionValidator(queryBNF);
 	}
 
@@ -241,25 +215,21 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 * Retrieves the entity for the given type.
 	 *
 	 * @param type The type that is used as a managed type
-	 * @return The managed type for the given type, if one exists, <code>null</code>
-	 * otherwise
+	 * @return The managed type for the given type, if one exists, <code>null</code> otherwise
 	 */
-	protected final IManagedType getManagedType(IType type)
-	{
+	protected final IManagedType getManagedType(IType type) {
 		return getProvider().getManagedType(type);
 	}
 
 	/**
-	 * Retrieves the entity with the given abstract schema name, which can also
-	 * be the entity class name.
+	 * Retrieves the entity with the given abstract schema name, which can also be the entity class
+	 * name.
 	 *
-	 * @param abstractSchemaName The abstract schema name, which can be different
-	 * from the entity class name but by default, it's the same
-	 * @return The managed type that has the given name or <code>null</code> if
-	 * none could be found
+	 * @param abstractSchemaName The abstract schema name, which can be different from the entity
+	 * class name but by default, it's the same
+	 * @return The managed type that has the given name or <code>null</code> if none could be found
 	 */
-	protected final IManagedType getManagedType(String abstractSchemaName)
-	{
+	protected final IManagedType getManagedType(String abstractSchemaName) {
 		return getProvider().getManagedType(abstractSchemaName);
 	}
 
@@ -268,8 +238,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 *
 	 * @return The object that has access to the application's managed types.
 	 */
-	protected final IManagedTypeProvider getProvider()
-	{
+	protected final IManagedTypeProvider getProvider() {
 		return query.getProvider();
 	}
 
@@ -278,8 +247,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 *
 	 * @return The external form of the named query
 	 */
-	protected final IQuery getQuery()
-	{
+	protected final IQuery getQuery() {
 		return query;
 	}
 
@@ -288,8 +256,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 *
 	 * @return A non-<code>null</code> string
 	 */
-	protected final String getQueryExpression()
-	{
+	protected final String getQueryExpression() {
 		return query.getExpression();
 	}
 
@@ -299,8 +266,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 * @param type The Java type to wrap with an external form
 	 * @return The external form of the given type
 	 */
-	protected final IType getType(Class<?> type)
-	{
+	protected final IType getType(Class<?> type) {
 		return getTypeRepository().getType(type);
 	}
 
@@ -310,8 +276,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 * @param name The fully qualified class name of the class to retrieve
 	 * @return The external form of the class to retrieve
 	 */
-	protected final IType getType(String name)
-	{
+	protected final IType getType(String name) {
 		return getTypeRepository().getType(name);
 	}
 
@@ -320,19 +285,65 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 *
 	 * @return The repository of {@link IType ITypes}
 	 */
-	protected final ITypeRepository getTypeRepository()
-	{
+	protected final ITypeRepository getTypeRepository() {
 		return getProvider().getTypeRepository();
 	}
 
-	protected final ExpressionValidator identificationVariableBNFValidator()
-	{
+	protected final ExpressionValidator identificationVariableBNFValidator() {
 		return buildExpressionValidator(IdentificationVariableBNF.ID);
 	}
 
-	protected final ExpressionValidator internalOrderByItemBNFValidator()
-	{
-		return buildExpressionValidator(InternalOrderByItemBNF.ID);
+	protected final ExpressionValidator internalCountBNFValidator() {
+		return buildExpressionValidator(InternalCountBNF.ID);
+	}
+
+	protected final ExpressionValidator internalOrderByItemBNFValidator(IPlatform platform) {
+
+		if (platform == IPlatform.ECLIPSE_LINK) {
+			return buildExpressionValidator(InternalOrderByItemBNF.ID);
+		}
+
+		return buildExpressionValidator(
+			StateFieldPathExpressionBNF.ID,
+			IdentificationVariableBNF.ID,
+			ResultVariableBNF.ID
+		);
+	}
+
+	/**
+	 * Determines whether the platform is EclipseLink.
+	 *
+	 * @return <code>true</code> if the platform is EclipseLink; <code>false</code> if it's pure JPA
+	 * (generic)
+	 */
+	protected final boolean isEclipseLinkPlatform() {
+		return getProvider().getPlatform() == IPlatform.ECLIPSE_LINK;
+	}
+
+	/**
+	 * Determines whether the platform is pure JPA (generic).
+	 *
+	 * @return <code>true</code> if the platform is pure JPA; <code>false</code> if it's EclipseLink
+	 */
+	protected final boolean isJavaPlatform() {
+		return getProvider().getPlatform() == IPlatform.JAVA;
+	}
+
+	protected final boolean isValidJavaIdentifier(String variable) {
+
+		for (int index = 0, count = variable.length(); index < count; index++) {
+			int character = variable.charAt(index);
+
+			if ((index == 0) && !Character.isJavaIdentifierStart(character)) {
+				return false;
+			}
+
+			else if ((index > 0) && !Character.isJavaIdentifierPart(character)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -341,85 +352,88 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 * @param expression The expression to retrieve the length of its string
 	 * @return The length of the string representation of the given expression
 	 */
-	protected final int length(Expression expression)
-	{
+	protected final int length(Expression expression) {
 		return expression.toParsedText().length();
 	}
 
-	protected final ExpressionValidator newValueBNFValidator()
-	{
+	protected final ExpressionValidator literalBNFValidator() {
+		return buildExpressionValidator(LiteralBNF.ID);
+	}
+
+	protected final ExpressionValidator newValueBNFValidator() {
 		return buildExpressionValidator(NewValueBNF.ID);
 	}
 
-	protected final ExpressionValidator orderByItemBNFValidator()
-	{
+	protected final ExpressionValidator orderByItemBNFValidator() {
 		return buildExpressionValidator(OrderByItemBNF.ID);
 	}
 
 	/**
-	 * Calculates the position of the given expression by calculating the length
-	 * of what is before.
+	 * Calculates the position of the given expression by calculating the length of what is before.
 	 *
-	 * @param expression The expression to determine its position within the
-	 * parsed tree
-	 * @return The length of the string representation of what comes before the
-	 * given expression
+	 * @param expression The expression to determine its position within the parsed tree
+	 * @return The length of the string representation of what comes before the given expression
 	 */
-	protected final int position(Expression expression)
-	{
+	protected final int position(Expression expression) {
 		return calculatePosition(expression, 0);
 	}
 
 	/**
-	 * Returns the list of {@link QueryProblem QueryProblems} describing
-	 * grammatic and semantic issues found in the query.
+	 * Returns the list of {@link JPQLQueryProblem JPQLQueryProblems} describing issues found in the query.
 	 *
-	 * @return A non-<code>null</code> list of {@link QueryProblem QueryProblems}
+	 * @return A non-<code>null</code> list of {@link JPQLQueryProblem QueryProblems}
 	 */
-	public final List<QueryProblem> problems()
-	{
+	public final List<JPQLQueryProblem> problems() {
 		return problems;
 	}
 
-	protected final ExpressionValidator scalarExpressionBNFValidator()
-	{
+	protected final ExpressionValidator scalarExpressionBNFValidator() {
 		return buildExpressionValidator(ScalarExpressionBNF.ID);
 	}
 
-	protected final ExpressionValidator simpleArithmeticExpressionBNFValidator()
-	{
+	protected final ExpressionValidator simpleArithmeticExpressionBNFValidator() {
 		return buildExpressionValidator(SimpleArithmeticExpressionBNF.ID);
 	}
 
-	protected final ExpressionValidator stateFieldPathExpressionBNFValidator()
-	{
+	protected final ExpressionValidator stateFieldPathExpressionBNFValidator() {
 		return buildExpressionValidator(StateFieldPathExpressionBNF.ID);
 	}
 
-	protected final ExpressionValidator stringPrimaryBNFValidator()
-	{
+	protected final ExpressionValidator stringPrimaryBNFValidator() {
 		return buildExpressionValidator(StringPrimaryBNF.ID);
 	}
 
-	protected final ExpressionValidator subqueryBNFValidator()
-	{
+	protected final ExpressionValidator subqueryBNFValidator() {
 		return buildExpressionValidator(SubQueryBNF.ID);
 	}
 
-	protected final ExpressionValidator typeVariableBNFValidator()
-	{
+	protected final ExpressionValidator typeVariableBNFValidator() {
 		return buildExpressionValidator(InternalEntityTypeExpressionBNF.ID);
 	}
 
-	protected static final class AbstractPathExpressionVisitor extends AbstractExpressionVisitor
-	{
+	protected final void validateExpression(AbstractExpression expression,
+	                                        ExpressionValidator validator) {
+
+		JPQLQueryBNF queryBNF = expression.getParent().findQueryBNF(expression);
+		validator.validate(queryBNF);
+	}
+
+	/**
+	 * This visitor is meant to retrieve an {@link AbstractPathExpression} if the visited
+	 * {@link Expression} is that object.
+	 */
+	protected static final class AbstractPathExpressionVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The {@link CollectionValuedPathExpression} or {@link StateFieldPathExpression} that was
+		 * visited; <code>null</code> if he was not.
+		 */
 		public AbstractPathExpression expression;
 
 		/**
 		 * Creates a new <code>AbstractPathExpressionVisitor</code>.
 		 */
-		public AbstractPathExpressionVisitor()
-		{
+		public AbstractPathExpressionVisitor() {
 			super();
 		}
 
@@ -427,8 +441,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(CollectionValuedPathExpression expression)
-		{
+		public void visit(CollectionValuedPathExpression expression) {
 			this.expression = expression;
 		}
 
@@ -436,16 +449,14 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(StateFieldPathExpression expression)
-		{
+		public void visit(StateFieldPathExpression expression) {
 			this.expression = expression;
 		}
 	}
 
-	private static class BypassChildCollectionExpression extends ExpressionVisitorWrapper
-	{
-		BypassChildCollectionExpression(ExpressionVisitor visitor)
-		{
+	private static class BypassChildCollectionExpression extends ExpressionVisitorWrapper {
+
+		BypassChildCollectionExpression(ExpressionVisitor visitor) {
 			super(visitor);
 		}
 
@@ -453,19 +464,14 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(CollectionExpression expression)
-		{
-			for (Iterator<Expression> iter = expression.children(); iter.hasNext(); )
-			{
-				iter.next().accept(this);
-			}
+		public void visit(CollectionExpression expression) {
+			expression.acceptChildren(this);
 		}
 	}
 
-	private static class BypassChildSubExpression extends ExpressionVisitorWrapper
-	{
-		BypassChildSubExpression(ExpressionVisitor visitor)
-		{
+	private static class BypassChildSubExpression extends ExpressionVisitorWrapper {
+
+		BypassChildSubExpression(ExpressionVisitor visitor) {
 			super(visitor);
 		}
 
@@ -473,8 +479,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(BadExpression expression)
-		{
+		public void visit(BadExpression expression) {
 			// We don't traverse an invalid expression
 		}
 
@@ -482,10 +487,8 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(SubExpression expression)
-		{
-			if (expression.hasExpression())
-			{
+		public void visit(SubExpression expression) {
+			if (expression.hasExpression()) {
 				expression.getExpression().accept(this);
 			}
 		}
@@ -494,16 +497,14 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(UnknownExpression expression)
-		{
+		public void visit(UnknownExpression expression) {
 			// We don't traverse an invalid expression
 		}
 	}
 
-	private static class BypassParentSubExpression extends ExpressionVisitorWrapper
-	{
-		BypassParentSubExpression(ExpressionVisitor visitor)
-		{
+	private static class BypassParentSubExpression extends ExpressionVisitorWrapper {
+
+		BypassParentSubExpression(ExpressionVisitor visitor) {
 			super(visitor);
 		}
 
@@ -511,8 +512,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(SubExpression expression)
-		{
+		public void visit(SubExpression expression) {
 			expression.getParent().accept(this);
 		}
 	}
@@ -521,8 +521,8 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 * This visitor gathers the children of a {@link CollectionExpression} or a single visited
 	 * {@link Expression}.
 	 */
-	protected static final class ChildrenCollectorVisitor extends AnonymousExpressionVisitor
-	{
+	protected static final class ChildrenCollectorVisitor extends AnonymousExpressionVisitor {
+
 		/**
 		 * The unique {@link Expression} that was visited or the {@link CollectionExpression}'s
 		 * children.
@@ -532,8 +532,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>ChildrenCollectorVisitor</code>.
 		 */
-		public ChildrenCollectorVisitor()
-		{
+		public ChildrenCollectorVisitor() {
 			super();
 			expressions = new ArrayList<Expression>();
 		}
@@ -542,20 +541,15 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(CollectionExpression expression)
-		{
-			for (Iterator<Expression> iter = expression.children(); iter.hasNext(); )
-			{
-				expressions.add(iter.next());
-			}
+		public void visit(CollectionExpression expression) {
+			expression.addChildrenTo(expressions);
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		protected void visit(Expression expression)
-		{
+		protected void visit(Expression expression) {
 			expressions.add(expression);
 		}
 	}
@@ -563,8 +557,8 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	/**
 	 *
 	 */
-	protected static final class CollectionExpressionVisitor extends AbstractExpressionVisitor
-	{
+	protected static final class CollectionExpressionVisitor extends AbstractExpressionVisitor {
+
 		/**
 		 * The {@link CollectionExpression} if it is the {@link Expression} that
 		 * was visited.
@@ -574,8 +568,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>CollectionExpressionVisitor</code>.
 		 */
-		public CollectionExpressionVisitor()
-		{
+		public CollectionExpressionVisitor() {
 			super();
 		}
 
@@ -583,8 +576,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(CollectionExpression expression)
-		{
+		public void visit(CollectionExpression expression) {
 			this.expression = expression;
 		}
 	}
@@ -592,8 +584,8 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	/**
 	 * This visitor retrieves the total item count from a {@link CollectionExpression}.
 	 */
-	protected static final class CollectionItemCounter extends AbstractExpressionVisitor
-	{
+	protected static final class CollectionItemCounter extends AbstractExpressionVisitor {
+
 		/**
 		 * The total count of items a {@link CollectionExpression} has.
 		 */
@@ -603,8 +595,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(CollectionExpression expression)
-		{
+		public void visit(CollectionExpression expression) {
 			itemCount = expression.childrenSize();
 		}
 	}
@@ -612,8 +603,8 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	/**
 	 *
 	 */
-	protected static final class CollectionValuedPathExpressionVisitor extends AbstractExpressionVisitor
-	{
+	protected static final class CollectionValuedPathExpressionVisitor extends AbstractExpressionVisitor {
+
 		/**
 		 * The {@link CollectionValuedPathExpression} if it is the {@link Expression} that
 		 * was visited.
@@ -623,8 +614,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>CollectionValuedPathExpressionVisitor</code>.
 		 */
-		public CollectionValuedPathExpressionVisitor()
-		{
+		public CollectionValuedPathExpressionVisitor() {
 			super();
 		}
 
@@ -632,14 +622,13 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(CollectionValuedPathExpression expression)
-		{
+		public void visit(CollectionValuedPathExpression expression) {
 			this.expression = expression;
 		}
 	}
 
-	protected static final class ComparisonExpressionVisitor extends AbstractExpressionVisitor
-	{
+	protected static final class ComparisonExpressionVisitor extends AbstractExpressionVisitor {
+
 		/**
 		 * The {@link ComparisonExpression} if it is the {@link Expression} that was visited.
 		 */
@@ -648,8 +637,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>ComparisonExpressionVisitor</code>.
 		 */
-		public ComparisonExpressionVisitor()
-		{
+		public ComparisonExpressionVisitor() {
 			super();
 		}
 
@@ -657,14 +645,13 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(ComparisonExpression expression)
-		{
+		public void visit(ComparisonExpression expression) {
 			this.expression = expression;
 		}
 	}
 
-	protected static final class EmbeddableVisitor implements IManagedTypeVisitor
-	{
+	protected static final class EmbeddableVisitor implements IManagedTypeVisitor {
+
 		/**
 		 *
 		 */
@@ -673,39 +660,32 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>EmbeddableVisitor</code>.
 		 */
-		public EmbeddableVisitor()
-		{
+		public EmbeddableVisitor() {
 			super();
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public void visit(IEmbeddable embeddable)
-		{
+		public void visit(IEmbeddable embeddable) {
 			this.embeddable = embeddable;
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public void visit(IEntity entity)
-		{
+		public void visit(IEntity entity) {
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public void visit(IMappedSuperclass mappedSuperclass)
-		{
+		public void visit(IMappedSuperclass mappedSuperclass) {
 		}
 	}
 
-	protected static final class EntityVisitor implements IManagedTypeVisitor
-	{
+	protected static final class EntityVisitor implements IManagedTypeVisitor {
+
 		/**
 		 *
 		 */
@@ -714,39 +694,32 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>EntityVisitor</code>.
 		 */
-		public EntityVisitor()
-		{
+		public EntityVisitor() {
 			super();
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public void visit(IEmbeddable embeddable)
-		{
+		public void visit(IEmbeddable embeddable) {
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public void visit(IEntity entity)
-		{
+		public void visit(IEntity entity) {
 			this.entity = entity;
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public void visit(IMappedSuperclass mappedSuperclass)
-		{
+		public void visit(IMappedSuperclass mappedSuperclass) {
 		}
 	}
 
-	protected static final class EntryExpressionVisitor extends AbstractExpressionVisitor
-	{
+	protected static final class EntryExpressionVisitor extends AbstractExpressionVisitor {
+
 		/**
 		 * The {@link EntryExpression} if it is the {@link Expression} that was visited.
 		 */
@@ -755,8 +728,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>EntryExpressionVisitor</code>.
 		 */
-		public EntryExpressionVisitor()
-		{
+		public EntryExpressionVisitor() {
 			super();
 		}
 
@@ -764,14 +736,13 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(EntryExpression expression)
-		{
+		public void visit(EntryExpression expression) {
 			this.expression = expression;
 		}
 	}
 
-	protected static final class ExpressionValidator implements ExpressionVisitor
-	{
+	protected static final class ExpressionValidator extends AnonymousExpressionVisitor {
+
 		/**
 		 * The query BNF used to determine if the expression's BNF is valid.
 		 */
@@ -783,77 +754,53 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		private JPQLQueryBNF[] queryBNFs;
 
 		/**
-		 * Determines whether the visited {@link Expression}'s BNF is valid based
-		 * on the BNF that was used for validation.
+		 * Determines whether the visited {@link Expression}'s BNF is valid based on the BNF that was
+		 * used for validation.
 		 */
 		public boolean valid;
 
 		/**
-		 * Used to prevent infinite recursion between cyclical dependencies.
-		 */
-		private Set<JPQLQueryBNF> visitedQueryBNFs;
-
-		/**
 		 * Creates a new <code>ExpressionValidator</code>.
 		 *
-		 * @param queryBNF The query BNF used to determine if the expression's BNF
-		 * is valid
+		 * @param queryBNF The query BNF used to determine if the expression's BNF is valid
 		 */
-		ExpressionValidator(JPQLQueryBNF queryBNF)
-		{
+		ExpressionValidator(JPQLQueryBNF queryBNF) {
 			super();
-
-			this.queryBNF         = queryBNF;
-			this.visitedQueryBNFs = new HashSet<JPQLQueryBNF>();
+			this.queryBNF = queryBNF;
 		}
 
 		/**
 		 * Creates a new <code>ExpressionValidator</code>.
 		 *
-		 * @param queryBNF The query BNF used to determine if the expression's BNF
-		 * is valid
+		 * @param queryBNF The query BNF used to determine if the expression's BNF is valid
 		 */
-		ExpressionValidator(JPQLQueryBNF... queryBNFs)
-		{
+		ExpressionValidator(JPQLQueryBNF... queryBNFs) {
 			super();
-
-			this.queryBNFs        = queryBNFs;
-			this.visitedQueryBNFs = new HashSet<JPQLQueryBNF>();
+			this.queryBNFs = queryBNFs;
 		}
 
-		private void validate(JPQLQueryBNF queryBNF)
-		{
+		private void allJPQLQueryBNFs(Set<JPQLQueryBNF> queryBNFs, JPQLQueryBNF queryBNF) {
+			if (queryBNFs.add(queryBNF) && !queryBNF.isCompound()) {
+				for (JPQLQueryBNF childQueryBNF : queryBNF.nonCompoundChildren()) {
+					allJPQLQueryBNFs(queryBNFs, childQueryBNF);
+				}
+			}
+		}
+
+		private void validate(JPQLQueryBNF queryBNF) {
+
 			// By setting the flag to false will assure that if this validator is used for
 			// more than one item, it will reflect the global validity state. If all are
 			// valid, then the last expression will set the flag to true
 			valid = false;
 
-			if (queryBNFs != null)
-			{
+			if (queryBNFs != null) {
 				valid = Arrays.asList(queryBNFs).contains(queryBNF);
 			}
-			else
-			{
-				validate(queryBNF, this.queryBNF);
-			}
-		}
-
-		private void validate(JPQLQueryBNF queryBNF, JPQLQueryBNF childQueryBNF)
-		{
-			if (queryBNF == childQueryBNF)
-			{
-				valid = true;
-			}
-
-			if (visitedQueryBNFs.add(queryBNF) && !valid)
-			{
-				for (JPQLQueryBNF childChildQueryBNF : childQueryBNF.childQueryBNFs())
-				{
-					if (!valid)
-					{
-						validate(queryBNF, childChildQueryBNF);
-					}
-				}
+			else {
+				Set<JPQLQueryBNF> allQueryBNFs = new HashSet<JPQLQueryBNF>();
+				allJPQLQueryBNFs(allQueryBNFs, this.queryBNF);
+				valid = allQueryBNFs.contains(queryBNF);
 			}
 		}
 
@@ -861,71 +808,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(AbsExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AbstractSchemaName expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AdditionExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AllOrAnyExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AndExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ArithmeticFactor expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AvgFunction expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(BadExpression expression)
-		{
+		public void visit(BadExpression expression) {
 			// This is not a valid expression
 		}
 
@@ -933,561 +816,18 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(BetweenExpression expression)
-		{
-			validate(expression.getQueryBNF());
+		protected void visit(Expression expression) {
+			validate(((AbstractExpression) expression).getQueryBNF());
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(CaseExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
+		public void visit(SubExpression expression) {
+//			validate(expression.getQueryBNF());
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CoalesceExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionMemberDeclaration expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionMemberExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionValuedPathExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ComparisonExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ConcatExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ConstructorExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CountFunction expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DateTime expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DeleteClause expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DeleteStatement expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DivisionExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(EmptyCollectionComparisonExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(EntityTypeLiteral expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(EntryExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ExistsExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(FromClause expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(FuncExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(GroupByClause expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(HavingClause expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariableDeclaration expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IndexExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(InExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(InputParameter expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(Join expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JoinFetch expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JPQLExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(KeyExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(KeywordExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LengthExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LikeExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LocateExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LowerExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(MaxFunction expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(MinFunction expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ModExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(MultiplicationExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NotExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NullComparisonExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NullExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NullIfExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NumericLiteral expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ObjectExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(OrderByClause expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(OrderByItem expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(OrExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(RangeVariableDeclaration expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ResultVariable expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SelectClause expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SelectStatement expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SimpleFromClause expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SimpleSelectClause expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SimpleSelectStatement expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SizeExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SqrtExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StateFieldPathExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StringLiteral expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SubExpression expression)
-		{
-			validate(expression.getQueryBNF());
-
-			if (expression.hasExpression())
-			{
+			if (expression.hasExpression()) {
 				AbstractExpression childExpression = (AbstractExpression) expression.getExpression();
 				validate(childExpression.getQueryBNF());
 			}
@@ -1497,117 +837,8 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(SubstractionExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SubstringExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SumFunction expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(TrimExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(TypeExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UnknownExpression expression)
-		{
+		public void visit(UnknownExpression expression) {
 			// This is not a valid expression
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateClause expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateItem expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateStatement expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpperExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ValueExpression expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(WhenClause expression)
-		{
-			validate(expression.getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(WhereClause expression)
-		{
-			validate(expression.getQueryBNF());
 		}
 	}
 
@@ -1615,8 +846,8 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 * This visitor travers the {@link Expression} hierarchy up and look if the <b>FROM</b> clause
 	 * is present or not.
 	 */
-	protected final class FromClauseFinder extends AbstractTraverseParentVisitor
-	{
+	protected final class FromClauseFinder extends AbstractTraverseParentVisitor {
+
 		/**
 		 * The <b>FROM</b> clause if it was found.
 		 */
@@ -1625,8 +856,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>FromClauseFinder</code>.
 		 */
-		public FromClauseFinder()
-		{
+		public FromClauseFinder() {
 			super();
 		}
 
@@ -1634,8 +864,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(FromClause expression)
-		{
+		public void visit(FromClause expression) {
 			this.expression = expression;
 		}
 
@@ -1643,8 +872,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(NullExpression expression)
-		{
+		public void visit(NullExpression expression) {
 			// Prevent infinite recursion
 		}
 
@@ -1652,8 +880,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(SelectStatement expression)
-		{
+		public void visit(SelectStatement expression) {
 			expression.getFromClause().accept(this);
 		}
 
@@ -1661,8 +888,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(SimpleFromClause expression)
-		{
+		public void visit(SimpleFromClause expression) {
 			this.expression = expression;
 		}
 
@@ -1670,8 +896,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(SimpleSelectStatement expression)
-		{
+		public void visit(SimpleSelectStatement expression) {
 			expression.getFromClause().accept(this);
 		}
 	}
@@ -1680,8 +905,8 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 * This visitor is meant to retrieve an {@link IdentificationVariable} if the visited
 	 * {@link Expression} is that object.
 	 */
-	protected static final class IdentificationVariableVisitor extends AbstractExpressionVisitor
-	{
+	protected static final class IdentificationVariableVisitor extends AbstractExpressionVisitor {
+
 		/**
 		 * The {@link IdentificationVariable} retrieved by visiting a single expression and only if
 		 * that expression was an {@link IdentificationVariable}.
@@ -1691,8 +916,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>IdentificationVariableVisitor</code>.
 		 */
-		public IdentificationVariableVisitor()
-		{
+		public IdentificationVariableVisitor() {
 			super();
 		}
 
@@ -1700,8 +924,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(IdentificationVariable expression)
-		{
+		public void visit(IdentificationVariable expression) {
 			this.expression = expression;
 		}
 	}
@@ -1710,8 +933,8 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	 * This visitor collects all the {@link InputParameter InputParameters}. The visitor traverses
 	 * the children of the root of the {@link Expression} that is first visited.
 	 */
-	protected static class InputParameterCollector extends AbstractTraverseChildrenVisitor
-	{
+	protected static class InputParameterCollector extends AbstractTraverseChildrenVisitor {
+
 		/**
 		 * The list of {@link InputParameter InputParameters} representing named input parameters.
 		 */
@@ -1725,8 +948,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>InputParameterCollector</code>.
 		 */
-		public InputParameterCollector()
-		{
+		public InputParameterCollector() {
 			super();
 
 			namedParameters      = new ArrayList<InputParameter>();
@@ -1738,8 +960,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 *
 		 * @return The list of input parameters defined in the query
 		 */
-		public Collection<InputParameter> parameters()
-		{
+		public Collection<InputParameter> parameters() {
 			Collection<InputParameter> parameters = new ArrayList<InputParameter>();
 			parameters.addAll(namedParameters);
 			parameters.addAll(positionalParameters);
@@ -1750,21 +971,22 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(InputParameter expression)
-		{
-			if (expression.isNamed())
-			{
+		public void visit(InputParameter expression) {
+			if (expression.isNamed()) {
 				namedParameters.add(expression);
 			}
-			else
-			{
+			else {
 				positionalParameters.add(expression);
 			}
 		}
 	}
 
-	protected static final class InputParameterVisitor extends AbstractExpressionVisitor
-	{
+	/**
+	 * This visitor is meant to retrieve an {@link InputParameter} if the visited {@link Expression}
+	 * is that object.
+	 */
+	protected static final class InputParameterVisitor extends AbstractExpressionVisitor {
+
 		/**
 		 * The {@link InputParameter} that was visited; <code>null</code> if he was not.
 		 */
@@ -1773,8 +995,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>InputParameterVisitor</code>.
 		 */
-		public InputParameterVisitor()
-		{
+		public InputParameterVisitor() {
 			super();
 		}
 
@@ -1782,49 +1003,45 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(InputParameter expression)
-		{
+		public void visit(InputParameter expression) {
 			this.expression = expression;
 		}
 	}
 
-	protected static final class MappedSuperclassVisitor implements IManagedTypeVisitor
-	{
+	/**
+	 * This visitor is meant to retrieve an {@link IMappedSuperclass} if the visited
+	 * {@link IManagedType} is that object.
+	 */
+	protected static final class MappedSuperclassVisitor implements IManagedTypeVisitor {
+
 		/**
-		 *
+		 * The {@link IMappedSuperclass} that was visited; <code>null</code> if he was not.
 		 */
 		public IMappedSuperclass mappedSuperclass;
 
 		/**
 		 * Creates a new <code>MappedSuperclassVisitor</code>.
 		 */
-		public MappedSuperclassVisitor()
-		{
+		public MappedSuperclassVisitor() {
 			super();
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public void visit(IEmbeddable embeddable)
-		{
+		public void visit(IEmbeddable embeddable) {
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public void visit(IEntity entity)
-		{
+		public void visit(IEntity entity) {
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public void visit(IMappedSuperclass mappedSuperclass)
-		{
+		public void visit(IMappedSuperclass mappedSuperclass) {
 			this.mappedSuperclass = mappedSuperclass;
 		}
 	}
@@ -1832,8 +1049,8 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 	/**
 	 * This visitor checks to see if the visited expression is {@link NullExpression}.
 	 */
-	protected static final class NullExpressionVisitor extends AbstractExpressionVisitor
-	{
+	protected static final class NullExpressionVisitor extends AbstractExpressionVisitor {
+
 		/**
 		 * <code>true</code> if the visited expression is {@link NullExpression}.
 		 */
@@ -1843,14 +1060,13 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(NullExpression expression)
-		{
+		public void visit(NullExpression expression) {
 			nullExpression = true;
 		}
 	}
 
-	protected static final class OrderOfIdentificationVariableDeclarationVisitor extends AbstractTraverseChildrenVisitor
-	{
+	protected static final class OrderOfIdentificationVariableDeclarationVisitor extends AbstractTraverseChildrenVisitor {
+
 		/**
 		 *
 		 */
@@ -1864,8 +1080,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>ReferencedIdentificationVariableVisitor</code>.
 		 */
-		public OrderOfIdentificationVariableDeclarationVisitor()
-		{
+		public OrderOfIdentificationVariableDeclarationVisitor() {
 			super();
 
 			identificationVariableDeclarations = new ArrayList<IdentificationVariable>();
@@ -1876,8 +1091,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(CollectionMemberDeclaration expression)
-		{
+		public void visit(CollectionMemberDeclaration expression) {
 			visitAbstractPathExpression(expression.getCollectionValuedPathExpression());
 			visitIdentificationVariableDeclaration(expression.getIdentificationVariable());
 		}
@@ -1886,8 +1100,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(CollectionValuedPathExpression expression)
-		{
+		public void visit(CollectionValuedPathExpression expression) {
 			visitAbstractPathExpression(expression);
 		}
 
@@ -1895,8 +1108,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(IdentificationVariable expression)
-		{
+		public void visit(IdentificationVariable expression) {
 			visitIdentificationVariableDeclaration(expression);
 		}
 
@@ -1904,8 +1116,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(Join expression)
-		{
+		public void visit(Join expression) {
 			visitAbstractPathExpression(expression.getJoinAssociationPath());
 			visitIdentificationVariableDeclaration(expression.getIdentificationVariable());
 		}
@@ -1914,8 +1125,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(OrderByClause expression)
-		{
+		public void visit(OrderByClause expression) {
 			// Result variables (identification variables) are tested by another rule
 		}
 
@@ -1923,8 +1133,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(RangeVariableDeclaration expression)
-		{
+		public void visit(RangeVariableDeclaration expression) {
 			visitIdentificationVariableDeclaration(expression.getIdentificationVariable());
 		}
 
@@ -1932,8 +1141,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(ResultVariable expression)
-		{
+		public void visit(ResultVariable expression) {
 			// Result variable are tested by another rule
 		}
 
@@ -1941,21 +1149,18 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(StateFieldPathExpression expression)
-		{
+		public void visit(StateFieldPathExpression expression) {
 			visitAbstractPathExpession(expression);
 		}
 
-		private void visitAbstractPathExpession(AbstractPathExpression expression)
-		{
-			if (expression.hasIdentificationVariable())
-			{
+		private void visitAbstractPathExpession(AbstractPathExpression expression) {
+			if (expression.hasIdentificationVariable()) {
 				visitIdentificationVariableUsage(expression.getIdentificationVariable());
 			}
 		}
 
-		private void visitAbstractPathExpression(Expression expression)
-		{
+		private void visitAbstractPathExpression(Expression expression) {
+
 			// Check to see if the Expression is an AbstractPathExpression
 			AbstractPathExpressionVisitor visitor = new AbstractPathExpressionVisitor();
 			expression.accept(visitor);
@@ -1963,40 +1168,37 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 
 			// The Expression is an AbstractPathExpression, add it to the list
 			if (abstractPathExpression != null &&
-			    abstractPathExpression.hasIdentificationVariable())
-			{
+			    abstractPathExpression.hasIdentificationVariable()) {
+
 				visitIdentificationVariableUsage(abstractPathExpression.getIdentificationVariable());
 			}
 		}
 
-		private void visitIdentificationVariableDeclaration(Expression expression)
-		{
+		private void visitIdentificationVariableDeclaration(Expression expression) {
+
 			// Check to see if the Expression is an IdentiticationVariable
 			IdentificationVariableVisitor visitor = new IdentificationVariableVisitor();
 			expression.accept(visitor);
 			IdentificationVariable identificationVariable = visitor.expression;
 
 			// The Expression is an IdentificationVariable, add it to the list
-			if (identificationVariable != null)
-			{
+			if (identificationVariable != null) {
 				identificationVariableDeclarations.add(identificationVariable);
 			}
 		}
 
-		private void visitIdentificationVariableUsage(Expression expression)
-		{
+		private void visitIdentificationVariableUsage(Expression expression) {
+
 			// Check to see if the Expression is an IdentiticationVariable
 			IdentificationVariableVisitor visitor = new IdentificationVariableVisitor();
 			expression.accept(visitor);
 			IdentificationVariable identificationVariable = visitor.expression;
 
 			// The Expression is an IdentificationVariable, add it to the list
-			if (identificationVariable != null)
-			{
+			if (identificationVariable != null) {
 				String variable = identificationVariable.toParsedText().toLowerCase();
 
-				if (variable.length() > 0)
-				{
+				if (variable.length() > 0) {
 					Object[] values = new Object[2];
 					values[0] = identificationVariable;
 					values[1] = identificationVariableDeclarations.size();
@@ -2006,8 +1208,11 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		}
 	}
 
-	protected static final class OwningClauseVisitor extends AbstractTraverseParentVisitor
-	{
+	/**
+	 * This visitor retrieves the clause owning the visited {@link Expression}.
+	 */
+	protected static final class OwningClauseVisitor extends AbstractTraverseParentVisitor {
+
 		public DeleteClause deleteClause;
 		public FromClause fromClause;
 		public GroupByClause groupByClause;
@@ -2022,8 +1227,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>OwningClauseVisitor</code>.
 		 */
-		public OwningClauseVisitor()
-		{
+		public OwningClauseVisitor() {
 			super();
 		}
 
@@ -2031,8 +1235,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(DeleteClause expression)
-		{
+		public void visit(DeleteClause expression) {
 			deleteClause = expression;
 		}
 
@@ -2040,8 +1243,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(FromClause expression)
-		{
+		public void visit(FromClause expression) {
 			fromClause = expression;
 		}
 
@@ -2049,8 +1251,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(GroupByClause expression)
-		{
+		public void visit(GroupByClause expression) {
 			groupByClause = expression;
 		}
 
@@ -2058,8 +1259,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(HavingClause expression)
-		{
+		public void visit(HavingClause expression) {
 			havingClause = expression;
 		}
 
@@ -2067,8 +1267,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(OrderByClause expression)
-		{
+		public void visit(OrderByClause expression) {
 			orderByClause = expression;
 		}
 
@@ -2076,8 +1275,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(SelectClause expression)
-		{
+		public void visit(SelectClause expression) {
 			selectClause = expression;
 		}
 
@@ -2085,8 +1283,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(SimpleFromClause expression)
-		{
+		public void visit(SimpleFromClause expression) {
 			simpleFromClause = expression;
 		}
 
@@ -2094,8 +1291,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(SimpleSelectClause expression)
-		{
+		public void visit(SimpleSelectClause expression) {
 			simpleSelectClause = expression;
 		}
 
@@ -2103,8 +1299,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(UpdateClause expression)
-		{
+		public void visit(UpdateClause expression) {
 			updateClause = expression;
 		}
 
@@ -2112,21 +1307,26 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(WhereClause expression)
-		{
+		public void visit(WhereClause expression) {
 			whereClause = expression;
 		}
 	}
 
-	protected static final class SimpleSelectStatementVisitor extends AbstractExpressionVisitor
-	{
+	/**
+	 * This visitor is meant to retrieve an {@link SimpleSelectStatement} if the visited
+	 * {@link Expression} is that object.
+	 */
+	protected static final class SimpleSelectStatementVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The {@link SimpleSelectStatement} that was visited; <code>null</code> if he was not.
+		 */
 		public SimpleSelectStatement expression;
 
 		/**
 		 * Creates a new <code>SimpleSelectStatementVisitor</code>.
 		 */
-		public SimpleSelectStatementVisitor()
-		{
+		public SimpleSelectStatementVisitor() {
 			super();
 		}
 
@@ -2134,21 +1334,26 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(SimpleSelectStatement expression)
-		{
+		public void visit(SimpleSelectStatement expression) {
 			this.expression = expression;
 		}
 	}
 
-	protected static final class StateFieldPathExpressionVisitor extends AbstractExpressionVisitor
-	{
+	/**
+	 * This visitor is meant to retrieve an {@link StateFieldPathExpressionVisitor} if the visited
+	 * {@link Expression} is that object.
+	 */
+	protected static final class StateFieldPathExpressionVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The {@link StateFieldPathExpression} that was visited; <code>null</code> if he was not.
+		 */
 		public StateFieldPathExpression expression;
 
 		/**
 		 * Creates a new <code>StateFieldPathExpressionVisitor</code>.
 		 */
-		public StateFieldPathExpressionVisitor()
-		{
+		public StateFieldPathExpressionVisitor() {
 			super();
 		}
 
@@ -2156,14 +1361,17 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(StateFieldPathExpression expression)
-		{
+		public void visit(StateFieldPathExpression expression) {
 			this.expression = expression;
 		}
 	}
 
-	protected static final class StringLiteralVisitor extends AbstractExpressionVisitor
-	{
+	/**
+	 * This visitor is meant to retrieve an {@link StringLiteral} if the visited {@link Expression}
+	 * is that object.
+	 */
+	protected static final class StringLiteralVisitor extends AbstractExpressionVisitor {
+
 		/**
 		 * The {@link StringLiteral} that was visited; <code>null</code> if he was not.
 		 */
@@ -2172,8 +1380,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		/**
 		 * Creates a new <code>InputParameterVisitor</code>.
 		 */
-		public StringLiteralVisitor()
-		{
+		public StringLiteralVisitor() {
 			super();
 		}
 
@@ -2181,30 +1388,7 @@ public abstract class AbstractValidator extends AbstractTraverseChildrenVisitor
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(StringLiteral expression)
-		{
-			this.expression = expression;
-		}
-	}
-
-	protected static final class SubqueryVisitor extends AbstractExpressionVisitor
-	{
-		public SimpleSelectStatement expression;
-
-		/**
-		 * Creates a new <code>SubqueryVisitor</code>.
-		 */
-		public SubqueryVisitor()
-		{
-			super();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SimpleSelectStatement expression)
-		{
+		public void visit(StringLiteral expression) {
 			this.expression = expression;
 		}
 	}

@@ -3,16 +3,17 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query;
 
+import org.eclipse.persistence.utils.jpa.query.spi.IMapping;
 import org.eclipse.persistence.utils.jpa.query.spi.IType;
 import org.eclipse.persistence.utils.jpa.query.spi.ITypeDeclaration;
 
@@ -28,8 +29,8 @@ import org.eclipse.persistence.utils.jpa.query.spi.ITypeDeclaration;
  * @since 11.2.0
  * @author Pascal Filion
  */
-abstract class AbstractPathTypeResolver extends AbstractTypeResolver
-{
+abstract class AbstractPathTypeResolver extends AbstractTypeResolver {
+
 	/**
 	 * The name of the path for which its type will be retrieved.
 	 */
@@ -42,8 +43,7 @@ abstract class AbstractPathTypeResolver extends AbstractTypeResolver
 	 * the property should be retrieved
 	 * @param path The name of the path
 	 */
-	AbstractPathTypeResolver(TypeResolver parent, String path)
-	{
+	AbstractPathTypeResolver(TypeResolver parent, String path) {
 		super(parent);
 		this.path = path;
 	}
@@ -52,8 +52,14 @@ abstract class AbstractPathTypeResolver extends AbstractTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IType getType()
-	{
+	public IMapping getMapping() {
+		return resolveMapping(path);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IType getType() {
 		return resolveType(path);
 	}
 
@@ -61,8 +67,7 @@ abstract class AbstractPathTypeResolver extends AbstractTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ITypeDeclaration getTypeDeclaration()
-	{
+	public ITypeDeclaration getTypeDeclaration() {
 		return resolveTypeDeclaration(path);
 	}
 
@@ -70,8 +75,7 @@ abstract class AbstractPathTypeResolver extends AbstractTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IType resolveType(String variableName)
-	{
+	public IType resolveType(String variableName) {
 		return resolveTypeDeclaration(variableName).getType();
 	}
 }

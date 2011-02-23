@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -24,8 +24,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalOrderByItemFactory extends ExpressionFactory
-{
+final class InternalOrderByItemFactory extends ExpressionFactory {
+
 	/**
 	 * The unique identifier of this <code>InternalOrderByItemFactory</code>.
 	 */
@@ -34,8 +34,7 @@ final class InternalOrderByItemFactory extends ExpressionFactory
 	/**
 	 * Creates a new <code>InternalOrderByItemFactory</code>.
 	 */
-	InternalOrderByItemFactory()
-	{
+	InternalOrderByItemFactory() {
 		super(ID);
 	}
 
@@ -48,20 +47,17 @@ final class InternalOrderByItemFactory extends ExpressionFactory
 	                                   String word,
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
-		if (tolerant && AbstractExpression.isIdentifier(word))
-		{
+	                                   boolean tolerant) {
+
+		if (tolerant && AbstractExpression.isIdentifier(word) || (expression != null)) {
 			return null;
 		}
 
-		if (word.indexOf(AbstractExpression.DOT) > -1)
-		{
+		if (word.indexOf(AbstractExpression.DOT) > -1) {
 			expression = new StateFieldPathExpression(parent, word);
 			expression.parse(wordParser, tolerant);
 		}
-		else
-		{
+		else {
 			ExpressionFactory factory = AbstractExpression.expressionFactory(PreLiteralExpressionFactory.ID);
 			expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
 		}

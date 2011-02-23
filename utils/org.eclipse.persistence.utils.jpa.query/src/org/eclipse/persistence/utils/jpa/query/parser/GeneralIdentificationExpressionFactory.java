@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -27,16 +27,15 @@ import org.eclipse.persistence.utils.jpa.query.spi.IJPAVersion;
  * @since 11.2.0
  * @author Pascal Filion
  */
-abstract class GeneralIdentificationExpressionFactory extends ExpressionFactory
-{
+abstract class GeneralIdentificationExpressionFactory extends ExpressionFactory {
+
 	/**
 	 * Creates a new <code>GeneralIdentificationExpressionFactory</code>.
 	 *
 	 * @param id The unique identifier of this <code>ExpressionFactory</code>
 	 * @param identifier The JPQL identifier handled by this factory
 	 */
-	GeneralIdentificationExpressionFactory(String id, String identifier)
-	{
+	GeneralIdentificationExpressionFactory(String id, String identifier) {
 		super(id, identifier);
 	}
 
@@ -57,15 +56,13 @@ abstract class GeneralIdentificationExpressionFactory extends ExpressionFactory
 	                                         String word,
 	                                         JPQLQueryBNF queryBNF,
 	                                         AbstractExpression expression,
-	                                         boolean tolerant)
-	{
+	                                         boolean tolerant) {
 		expression = buildExpression(parent);
 		expression.parse(wordParser, tolerant);
 
-		if (wordParser.character() == AbstractExpression.DOT)
-		{
+		if (wordParser.character() == AbstractExpression.DOT) {
 			ExpressionFactory factory = AbstractExpression.expressionFactory(queryBNF.getFallbackExpressionFactoryId());
-			expression = factory.buildExpression(parent, wordParser, null, queryBNF, expression, tolerant);
+			expression = factory.buildExpression(parent, wordParser, wordParser.word(), queryBNF, expression, tolerant);
 		}
 
 		return expression;
@@ -75,8 +72,7 @@ abstract class GeneralIdentificationExpressionFactory extends ExpressionFactory
 	 * {@inheritDoc}
 	 */
 	@Override
-	final IJPAVersion getVersion()
-	{
+	final IJPAVersion getVersion() {
 		return IJPAVersion.VERSION_2_0;
 	}
 }

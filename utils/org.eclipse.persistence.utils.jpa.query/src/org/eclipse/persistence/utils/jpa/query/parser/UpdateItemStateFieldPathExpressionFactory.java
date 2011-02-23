@@ -3,21 +3,21 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * This {@link UpdateItemStateFieldPathExpressionFactory} is meant to handle the parsing
- * of a portion of the query when it's expected to be a state field path. By default a
- * word without a dot would be parsed as an identification variable but for the left side
- * of the update item assignment, a single word is a state field path expression.
+ * This {@link UpdateItemStateFieldPathExpressionFactory} is meant to handle the parsing of a
+ * portion of the query when it's expected to be a state field path. By default a word without a dot
+ * would be parsed as an identification variable but for the left side of the update item assignment,
+ * a single word is a state field path expression.
  *
  * @see StateFieldPathExpression
  *
@@ -26,8 +26,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class UpdateItemStateFieldPathExpressionFactory extends AbstractLiteralExpressionFactory
-{
+final class UpdateItemStateFieldPathExpressionFactory extends AbstractLiteralExpressionFactory {
+
 	/**
 	 * The unique identifier of this {@link StateFieldPathExpressionFactory}.
 	 */
@@ -36,8 +36,7 @@ final class UpdateItemStateFieldPathExpressionFactory extends AbstractLiteralExp
 	/**
 	 * Creates a new <code>UpdateItemStateFieldPathExpressionFactory</code>.
 	 */
-	UpdateItemStateFieldPathExpressionFactory()
-	{
+	UpdateItemStateFieldPathExpressionFactory() {
 		super(ID);
 	}
 
@@ -49,10 +48,9 @@ final class UpdateItemStateFieldPathExpressionFactory extends AbstractLiteralExp
 	                                   WordParser wordParser,
 	                                   String word,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
-		if (tolerant && AbstractExpression.isIdentifier(word))
-		{
+	                                   boolean tolerant) {
+
+		if (tolerant && AbstractExpression.isIdentifier(word)) {
 			return null;
 		}
 
@@ -65,8 +63,7 @@ final class UpdateItemStateFieldPathExpressionFactory extends AbstractLiteralExp
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean shouldSkip(AbstractExpression expression)
-	{
+	boolean shouldSkip(AbstractExpression expression) {
 		return false;
 	}
 }

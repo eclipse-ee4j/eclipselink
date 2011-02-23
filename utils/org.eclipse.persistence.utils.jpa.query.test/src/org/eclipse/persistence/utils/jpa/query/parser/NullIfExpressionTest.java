@@ -3,43 +3,30 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
-import org.eclipse.persistence.utils.jpa.query.parser.JPQLTests.QueryStringFormatter;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
-public final class NullIfExpressionTest extends AbstractJPQLTest
-{
-	private QueryStringFormatter buildFormatter_9()
-	{
-		return new QueryStringFormatter()
-		{
-			@Override
-			public String format(String query)
-			{
+public final class NullIfExpressionTest extends AbstractJPQLTest {
+	private JPQLQueryStringFormatter buildFormatter_9() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
 				return query.replace(",)", ", )");
 			}
 		};
 	}
 
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
 	@Test
-	public void testBuildExpression_1()
-	{
+	public void testBuildExpression_1() {
 		String query = "SELECT NULLIF('JPQL', 4 + e.age) FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement
@@ -52,8 +39,7 @@ public final class NullIfExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_2()
-	{
+	public void testBuildExpression_2() {
 		String query = "SELECT NULLIF() FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
@@ -70,8 +56,7 @@ public final class NullIfExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_3()
-	{
+	public void testBuildExpression_3() {
 		String query = "SELECT NULLIF(,) FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
@@ -88,8 +73,7 @@ public final class NullIfExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_4()
-	{
+	public void testBuildExpression_4() {
 		String query = "SELECT NULLIF FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
@@ -104,12 +88,11 @@ public final class NullIfExpressionTest extends AbstractJPQLTest
 			from("Employee", "e")
 		);
 
-		testQuery(query, selectStatement);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_5()
-	{
+	public void testBuildExpression_5() {
 		String query = "SELECT NULLIF( FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
@@ -124,12 +107,11 @@ public final class NullIfExpressionTest extends AbstractJPQLTest
 			from("Employee", "e")
 		);
 
-		testQuery(query, selectStatement);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_6()
-	{
+	public void testBuildExpression_6() {
 		String query = "SELECT NULLIF) FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
@@ -148,8 +130,7 @@ public final class NullIfExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_7()
-	{
+	public void testBuildExpression_7() {
 		String query = "SELECT NULLIF(e.name) FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
@@ -166,8 +147,7 @@ public final class NullIfExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_8()
-	{
+	public void testBuildExpression_8() {
 		String query = "SELECT NULLIF(e.name,) FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
@@ -184,8 +164,7 @@ public final class NullIfExpressionTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_9()
-	{
+	public void testBuildExpression_9() {
 		String query = "SELECT NULLIF(e.name, ) FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
@@ -198,6 +177,6 @@ public final class NullIfExpressionTest extends AbstractJPQLTest
 			from("Employee", "e")
 		);
 
-		testQuery(query, selectStatement, buildFormatter_9());
+		testValidQuery(query, selectStatement, buildFormatter_9());
 	}
 }

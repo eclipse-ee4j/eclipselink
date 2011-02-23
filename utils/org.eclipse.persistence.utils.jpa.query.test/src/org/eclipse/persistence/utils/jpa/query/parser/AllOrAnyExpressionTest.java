@@ -3,587 +3,327 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 @SuppressWarnings("nls")
-public final class AllOrAnyExpressionTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
+public final class AllOrAnyExpressionTest extends AbstractJPQLTest {
 
 	@Test
-	public void testBuildExpression_All_1()
-	{
+	public void testBuildExpression_All_1() {
 		String query = "SELECT e FROM Employee e WHERE ALL (SELECT m FROM Manager m)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(all(
+				subquery(
+					subSelect(variable("m")),
+					subFrom("Manager", "m")
+				)
+			))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame(AllOrAnyExpression.ALL, allOrAnyExpression.getIdentifier());
-		assertTrue(allOrAnyExpression.hasLeftParenthesis());
-		assertTrue(allOrAnyExpression.hasRightParenthesis());
-
-		// SimpleSelectStatement
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof SimpleSelectStatement);
-		SimpleSelectStatement simpleSelectStatement = (SimpleSelectStatement) expression;
-
-		assertEquals("SELECT m FROM Manager m", simpleSelectStatement.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_All_2()
-	{
+	public void testBuildExpression_All_2() {
 		String query = "SELECT e FROM Employee e WHERE ALL";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester allExpression = all(nullExpression());
+		allExpression.hasLeftParenthesis  = false;
+		allExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(allExpression)
+		);
 
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.ALL, allOrAnyExpression.getIdentifier());
-		assertFalse(allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_All_3()
-	{
+	public void testBuildExpression_All_3() {
 		String query = "SELECT e FROM Employee e WHERE ALL(";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester allExpression = all(nullExpression());
+		allExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(allExpression)
+		);
 
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.ALL, allOrAnyExpression.getIdentifier());
-		assertTrue (allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_All_4()
-	{
+	public void testBuildExpression_All_4() {
 		String query = "SELECT e FROM Employee e WHERE ALL()";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(all(nullExpression()))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame(AllOrAnyExpression.ALL, allOrAnyExpression.getIdentifier());
-		assertTrue(allOrAnyExpression.hasLeftParenthesis());
-		assertTrue(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_All_5()
-	{
+	public void testBuildExpression_All_5() {
 		String query = "SELECT e FROM Employee e WHERE ALL GROUP BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester allExpression = all(nullExpression());
+		allExpression.hasLeftParenthesis  = false;
+		allExpression.hasRightParenthesis = false;
 
-		assertTrue(selectStatement.hasGroupByClause());
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(allExpression),
+			groupBy(path("e.name")),
+			nullExpression(),
+			nullExpression()
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.ALL, allOrAnyExpression.getIdentifier());
-		assertFalse(allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_All_6()
-	{
+	public void testBuildExpression_All_6() {
 		String query = "SELECT e FROM Employee e WHERE ALL( GROUP BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester allExpression = all(nullExpression());
+		allExpression.hasRightParenthesis = false;
 
-		assertTrue(selectStatement.hasGroupByClause());
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(allExpression),
+			groupBy(path("e.name")),
+			nullExpression(),
+			nullExpression()
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.ALL, allOrAnyExpression.getIdentifier());
-		assertTrue (allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Any_1()
-	{
+	public void testBuildExpression_Any_1() {
 		String query = "SELECT e FROM Employee e WHERE ANY (SELECT m FROM Manager m)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(any(
+				subquery(
+					subSelect(variable("m")),
+					subFrom("Manager", "m")
+				)
+			))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame(AllOrAnyExpression.ANY, allOrAnyExpression.getIdentifier());
-		assertTrue(allOrAnyExpression.hasLeftParenthesis());
-		assertTrue(allOrAnyExpression.hasRightParenthesis());
-
-		// SimpleSelectStatement
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof SimpleSelectStatement);
-		SimpleSelectStatement simpleSelectStatement = (SimpleSelectStatement) expression;
-
-		assertEquals("SELECT m FROM Manager m", simpleSelectStatement.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Any_2()
-	{
+	public void testBuildExpression_Any_2() {
 		String query = "SELECT e FROM Employee e WHERE ANY";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester anyExpression = any(nullExpression());
+		anyExpression.hasLeftParenthesis  = false;
+		anyExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(anyExpression)
+		);
 
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame(AllOrAnyExpression.ANY, allOrAnyExpression.getIdentifier());
-		assertFalse(allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Any_3()
-	{
+	public void testBuildExpression_Any_3() {
 		String query = "SELECT e FROM Employee e WHERE ANY(";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester anyExpression = any(nullExpression());
+		anyExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(anyExpression)
+		);
 
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.ANY, allOrAnyExpression.getIdentifier());
-		assertTrue (allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Any_4()
-	{
+	public void testBuildExpression_Any_4() {
 		String query = "SELECT e FROM Employee e WHERE ANY()";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(any(nullExpression()))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame(AllOrAnyExpression.ANY, allOrAnyExpression.getIdentifier());
-		assertTrue(allOrAnyExpression.hasLeftParenthesis());
-		assertTrue(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Any_5()
-	{
+	public void testBuildExpression_Any_5() {
 		String query = "SELECT e FROM Employee e WHERE ANY GROUP BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester anyExpression = any(nullExpression());
+		anyExpression.hasLeftParenthesis  = false;
+		anyExpression.hasRightParenthesis = false;
 
-		assertTrue(selectStatement.hasGroupByClause());
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(anyExpression),
+			groupBy(path("e.name")),
+			nullExpression(),
+			nullExpression()
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.ANY, allOrAnyExpression.getIdentifier());
-		assertFalse(allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Any_6()
-	{
+	public void testBuildExpression_Any_6() {
 		String query = "SELECT e FROM Employee e WHERE ANY( GROUP BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester anyExpression = any(nullExpression());
+		anyExpression.hasRightParenthesis = false;
 
-		assertTrue(selectStatement.hasGroupByClause());
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(anyExpression),
+			groupBy(path("e.name")),
+			nullExpression(),
+			nullExpression()
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.ANY, allOrAnyExpression.getIdentifier());
-		assertTrue (allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Some_1()
-	{
+	public void testBuildExpression_Some_1() {
 		String query = "SELECT e FROM Employee e WHERE SOME (SELECT m FROM Manager m)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(some(
+				subquery(
+					subSelect(variable("m")),
+					subFrom("Manager", "m")
+				)
+			))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame(AllOrAnyExpression.SOME, allOrAnyExpression.getIdentifier());
-		assertTrue(allOrAnyExpression.hasLeftParenthesis());
-		assertTrue(allOrAnyExpression.hasRightParenthesis());
-
-		// SimpleSelectStatement
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof SimpleSelectStatement);
-		SimpleSelectStatement simpleSelectStatement = (SimpleSelectStatement) expression;
-
-		assertEquals("SELECT m FROM Manager m", simpleSelectStatement.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Some_2()
-	{
+	public void testBuildExpression_Some_2() {
 		String query = "SELECT e FROM Employee e WHERE SOME";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester someExpression = some(nullExpression());
+		someExpression.hasLeftParenthesis  = false;
+		someExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(someExpression)
+		);
 
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.SOME, allOrAnyExpression.getIdentifier());
-		assertFalse(allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Some_3()
-	{
+	public void testBuildExpression_Some_3() {
 		String query = "SELECT e FROM Employee e WHERE SOME(";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester someExpression = some(nullExpression());
+		someExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(someExpression)
+		);
 
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.SOME, allOrAnyExpression.getIdentifier());
-		assertTrue (allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Some_4()
-	{
+	public void testBuildExpression_Some_4() {
 		String query = "SELECT e FROM Employee e WHERE SOME()";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(some(nullExpression()))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame(AllOrAnyExpression.SOME, allOrAnyExpression.getIdentifier());
-		assertTrue(allOrAnyExpression.hasLeftParenthesis());
-		assertTrue(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Some_5()
-	{
+	public void testBuildExpression_Some_5() {
 		String query = "SELECT e FROM Employee e WHERE SOME GROUP BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester someExpression = some(nullExpression());
+		someExpression.hasLeftParenthesis  = false;
+		someExpression.hasRightParenthesis = false;
 
-		assertTrue(selectStatement.hasGroupByClause());
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(someExpression),
+			groupBy(path("e.name")),
+			nullExpression(),
+			nullExpression()
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.SOME, allOrAnyExpression.getIdentifier());
-		assertFalse(allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_Some_6()
-	{
+	public void testBuildExpression_Some_6() {
 		String query = "SELECT e FROM Employee e WHERE SOME( GROUP BY e.name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		AllOrAnyExpressionTester someExpression = some(nullExpression());
+		someExpression.hasRightParenthesis = false;
 
-		assertTrue(selectStatement.hasGroupByClause());
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(someExpression),
+			groupBy(path("e.name")),
+			nullExpression(),
+			nullExpression()
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// AllOrAnyExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof AllOrAnyExpression);
-		AllOrAnyExpression allOrAnyExpression = (AllOrAnyExpression) expression;
-
-		assertSame (AllOrAnyExpression.SOME, allOrAnyExpression.getIdentifier());
-		assertTrue (allOrAnyExpression.hasLeftParenthesis());
-		assertFalse(allOrAnyExpression.hasRightParenthesis());
-
-		// NullExpression
-		expression = allOrAnyExpression.getExpression();
-		assertTrue(expression instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 }

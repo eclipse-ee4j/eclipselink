@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -25,8 +25,8 @@ import org.eclipse.persistence.utils.jpa.query.spi.IJPAVersion;
  * @since 11.2.0
  * @author Pascal Filion
  */
-final class EntryExpressionFactory extends ExpressionFactory
-{
+final class EntryExpressionFactory extends ExpressionFactory {
+
 	/**
 	 * The unique identifier of this {@link EntryExpressionFactory}.
 	 */
@@ -35,8 +35,7 @@ final class EntryExpressionFactory extends ExpressionFactory
 	/**
 	 * Creates a new <code>EntryExpressionFactory</code>.
 	 */
-	EntryExpressionFactory()
-	{
+	EntryExpressionFactory() {
 		super(ID, Expression.ENTRY);
 	}
 
@@ -49,13 +48,11 @@ final class EntryExpressionFactory extends ExpressionFactory
 	                                   String word,
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
+	                                   boolean tolerant) {
 		expression = new EntryExpression(parent);
 		expression.parse(wordParser, tolerant);
 
-		if (wordParser.character() == AbstractExpression.DOT)
-		{
+		if (wordParser.character() == AbstractExpression.DOT) {
 			expression = new StateFieldPathExpression(parent, expression);
 			expression.parse(wordParser, tolerant);
 		}
@@ -67,8 +64,7 @@ final class EntryExpressionFactory extends ExpressionFactory
 	 * {@inheritDoc}
 	 */
 	@Override
-	IJPAVersion getVersion()
-	{
+	IJPAVersion getVersion() {
 		return IJPAVersion.VERSION_2_0;
 	}
 }

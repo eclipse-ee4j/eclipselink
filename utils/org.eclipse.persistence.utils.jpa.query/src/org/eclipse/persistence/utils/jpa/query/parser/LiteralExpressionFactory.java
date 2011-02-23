@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -16,8 +16,7 @@ package org.eclipse.persistence.utils.jpa.query.parser;
 import org.eclipse.persistence.utils.jpa.query.spi.IJPAVersion;
 
 /**
- * This {@link LiteralExpressionFactory} is responsible to return the right
- * literal expression.
+ * This {@link LiteralExpressionFactory} is responsible to return the right literal expression.
  *
  * @see StringLiteral
  * @see InputParameter
@@ -31,13 +30,7 @@ import org.eclipse.persistence.utils.jpa.query.spi.IJPAVersion;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
-{
-	/**
-	 * This {@link ExpressionVisitor} is used to check if the {@link Expression}
-	 * passed to this factory is an a literal type expression.
-	 */
-	private LiteralExpressionVisitor visitor;
+final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory {
 
 	/**
 	 * The unique identifier of this {@link LiteralExpressionFactory}.
@@ -45,10 +38,15 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
 	static final String ID = "literal";
 
 	/**
+	 * This {@link ExpressionVisitor} is used to check if the {@link Expression}
+	 * passed to this factory is an a literal type expression.
+	 */
+	private static LiteralExpressionVisitor visitor;
+
+	/**
 	 * Creates a new <code>LiteralExpressionFactory</code>.
 	 */
-	LiteralExpressionFactory()
-	{
+	LiteralExpressionFactory() {
 		super(ID);
 	}
 
@@ -60,8 +58,8 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
 	                                   WordParser wordParser,
 	                                   String word,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
+	                                   boolean tolerant) {
+
 		expression = new IdentificationVariable(parent, word);
 		expression.parse(wordParser, tolerant);
 		return expression;
@@ -71,18 +69,17 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean shouldSkip(AbstractExpression expression)
-	{
+	boolean shouldSkip(AbstractExpression expression) {
+
 		if ((expression == null) ||
-		    (expression.getJPAVersion() == IJPAVersion.VERSION_1_0))
-		{
+		    (expression.getJPAVersion() == IJPAVersion.VERSION_1_0)) {
+
 			return false;
 		}
 
 		expression.accept(visitor());
 
-		if (visitor.found)
-		{
+		if (visitor.found) {
 			visitor.found = false;
 			return true;
 		}
@@ -90,25 +87,21 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
 		return false;
 	}
 
-	private LiteralExpressionVisitor visitor()
-	{
-		if (visitor == null)
-		{
+	private LiteralExpressionVisitor visitor() {
+		if (visitor == null) {
 			visitor = new LiteralExpressionVisitor();
 		}
-
 		return visitor;
 	}
 
 	/**
-	 * This {@link ExpressionVisitor} is used to check if the {@link Expression}
-	 * passed to this factory is an a literal type expression.
+	 * This {@link ExpressionVisitor} is used to check if the {@link Expression} passed to this
+	 * factory is an a literal type expression.
 	 */
-	private class LiteralExpressionVisitor extends AbstractExpressionVisitor
-	{
+	private class LiteralExpressionVisitor extends AnonymousExpressionVisitor {
+
 		/**
-		 * This flag is turned on if the {@link Expression} visited is a literal
-		 * type expression.
+		 * This flag is turned on if the {@link Expression} visited is a literal type expression.
 		 */
 		private boolean found;
 
@@ -116,8 +109,15 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(IdentificationVariable expression)
-		{
+		protected void visit(Expression expression) {
+			found = false;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariable expression) {
 			found = true;
 		}
 
@@ -125,8 +125,7 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(InputParameter expression)
-		{
+		public void visit(InputParameter expression) {
 			found = true;
 		}
 
@@ -134,8 +133,7 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(KeywordExpression expression)
-		{
+		public void visit(KeywordExpression expression) {
 			found = true;
 		}
 
@@ -143,8 +141,7 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(NumericLiteral expression)
-		{
+		public void visit(NumericLiteral expression) {
 			found = true;
 		}
 
@@ -152,8 +149,7 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(StateFieldPathExpression expression)
-		{
+		public void visit(StateFieldPathExpression expression) {
 			found = true;
 		}
 
@@ -161,8 +157,7 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(StringLiteral expression)
-		{
+		public void visit(StringLiteral expression) {
 			found = true;
 		}
 	}

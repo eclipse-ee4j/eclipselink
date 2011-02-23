@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -17,13 +17,12 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * An identification variable is a valid identifier declared in the <b>FROM</b>
- * clause of a query. All identification variables must be declared in the
- * <b>FROM</b> clause. Identification variables cannot be declared in other
- * clauses. An identification variable must not be a reserved identifier or have
- * the same name as any entity in the same persistence unit: Identification
- * variables are case insensitive. An identification variable evaluates to a
- * value of the type of the expression used in declaring the variable.
+ * An identification variable is a valid identifier declared in the <b>FROM</b> clause of a query.
+ * All identification variables must be declared in the <b>FROM</b> clause. Identification variables
+ * cannot be declared in other clauses. An identification variable must not be a reserved identifier
+ * or have the same name as any entity in the same persistence unit: Identification variables are
+ * case insensitive. An identification variable evaluates to a value of the type of the expression
+ * used in declaring the variable.
  * <p>
  * <div nowrap><b>BNF:</b> <code>identification_variable_declaration ::= range_variable_declaration { join | fetch_join }*</code><p>
  *
@@ -31,16 +30,16 @@ import java.util.List;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class IdentificationVariableDeclaration extends AbstractExpression
-{
+public final class IdentificationVariableDeclaration extends AbstractExpression {
+
 	/**
 	 * Determines whether there is a space after the range variable declaration.
 	 */
 	private boolean hasSpace;
 
 	/**
-	 * The unique join (fetch join) or list of join (fetch join) expression or a
-	 * <code>null</code> expression if none was declared.
+	 * The unique join (fetch join) or list of join (fetch join) expression or a <code>null</code>
+	 * expression if none was declared.
 	 */
 	private AbstractExpression joins;
 
@@ -50,8 +49,7 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 	private boolean parsingJoinExpression;
 
 	/**
-	 * The variable declaration, which is the abstract schema name and the
-	 * variable.
+	 * The variable declaration, which is the abstract schema name and the variable.
 	 */
 	private AbstractExpression rangeVariableDeclaration;
 
@@ -60,26 +58,30 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 	 *
 	 * @param parent The parent of this expression
 	 */
-	IdentificationVariableDeclaration(AbstractExpression parent)
-	{
+	IdentificationVariableDeclaration(AbstractExpression parent) {
 		super(parent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getRangeVariableDeclaration().accept(visitor);
+		getJoins().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	void addChildrenTo(Collection<Expression> children) {
 		children.add(getRangeVariableDeclaration());
 		children.add(getJoins());
 	}
@@ -88,38 +90,30 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedChildrenTo(List<StringExpression> children)
-	{
-		if (rangeVariableDeclaration != null)
-		{
+	void addOrderedChildrenTo(List<StringExpression> children) {
+
+		if (rangeVariableDeclaration != null) {
 			children.add(rangeVariableDeclaration);
 		}
 
-		if (hasSpace)
-		{
+		if (hasSpace) {
 			children.add(buildStringExpression(SPACE));
 		}
 
-		if (joins != null)
-		{
+		if (joins != null) {
 			children.add(joins);
 		}
 	}
 
 	/**
-	 * Returns the unique join (fetch join) or the list of joins (fetch joins)
-	 * expression.
+	 * Returns the unique join (fetch join) or the list of joins (fetch joins) expression.
 	 *
-	 * @return The <code>JOIN</code> expression(s) or a <code>null</code>
-	 * expression if none was declared
+	 * @return The <code>JOIN</code> expression(s) or a <code>null</code> expression if none was declared
 	 */
-	public Expression getJoins()
-	{
-		if (joins == null)
-		{
+	public Expression getJoins() {
+		if (joins == null) {
 			joins = buildNullExpression();
 		}
-
 		return joins;
 	}
 
@@ -127,35 +121,30 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(IdentificationVariableDeclarationBNF.ID);
 	}
 
 	/**
-	 * Returns the variable declaration, which is the abstract schema name and
-	 * the identification variable.
+	 * Returns the variable declaration, which is the abstract schema name and the identification
+	 * variable.
 	 *
 	 * @return The {@link Expression} representing the range variable declaration
 	 */
-	public Expression getRangeVariableDeclaration()
-	{
-		if (rangeVariableDeclaration == null)
-		{
+	public Expression getRangeVariableDeclaration() {
+		if (rangeVariableDeclaration == null) {
 			rangeVariableDeclaration = buildNullExpression();
 		}
-
 		return rangeVariableDeclaration;
 	}
 
 	/**
 	 * Determines whether this declaration has any join expressions.
 	 *
-	 * @return <code>true</code> if at least one join expression was specified;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if at least one join expression was specified; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasJoins()
-	{
+	public boolean hasJoins() {
 		return joins != null &&
 		      !joins.isNull();
 	}
@@ -163,11 +152,10 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 	/**
 	 * Determines whether the range variable declaration was parsed.
 	 *
-	 * @return <code>true</code> if the range variable declaration was parsed;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the range variable declaration was parsed; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasRangeVariableDeclaration()
-	{
+	public boolean hasRangeVariableDeclaration() {
 		return rangeVariableDeclaration != null &&
 		      !rangeVariableDeclaration.isNull();
 	}
@@ -175,11 +163,10 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 	/**
 	 * Determines whether there is a space after the range variable declaration.
 	 *
-	 * @return <code>true</code> if the range variable declaration is followed by
-	 * a space, <code>false</code> otherwise
+	 * @return <code>true</code> if the range variable declaration is followed by a space,
+	 * <code>false</code> otherwise
 	 */
-	public boolean hasSpace()
-	{
+	public boolean hasSpace() {
 		return hasSpace;
 	}
 
@@ -187,11 +174,10 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
+	boolean isParsingComplete(WordParser wordParser, String word) {
+
 		// Parsing the join expressions
-		if (parsingJoinExpression)
-		{
+		if (parsingJoinExpression) {
 			return !word.equalsIgnoreCase(INNER) &&
 			       !word.equalsIgnoreCase(JOIN)  &&
 			       !word.equalsIgnoreCase(LEFT)  &&
@@ -210,20 +196,17 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parse(WordParser wordParser, boolean tolerant)
-	{
+	void parse(WordParser wordParser, boolean tolerant) {
+
 		// Parse the range variable declaration
-		if (tolerant)
-		{
-			rangeVariableDeclaration = parse
-			(
+		if (tolerant) {
+			rangeVariableDeclaration = parse(
 				wordParser,
 				queryBNF(RangeVariableDeclarationBNF.ID),
 				tolerant
 			);
 		}
-		else
-		{
+		else {
 			rangeVariableDeclaration = new RangeVariableDeclaration(this);
 			rangeVariableDeclaration.parse(wordParser, tolerant);
 		}
@@ -233,8 +216,7 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 		// Parse the JOIN expressions
 		parsingJoinExpression = true;
 
-		joins = parse
-		(
+		joins = parse(
 			wordParser,
 			queryBNF(InternalJoinBNF.ID),
 			tolerant
@@ -242,22 +224,31 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 
 		// If there are no JOIN expressions and there is more text to parse, then
 		// re-add the space so it can belong to a parent expression
-		if (!hasJoins() && !wordParser.isTail())
-		{
+		if (!hasJoins() && !wordParser.isTail() && (wordParser.character() != COMMA)) {
 			wordParser.moveBackward(count);
 		}
-		else
-		{
+		else {
 			hasSpace = (count > 0);
 		}
+	}
+
+	/**
+	 * Manually sets the range variable declaration.
+	 *
+	 * @param abstractSchemaName The abstract schema name to be mapped to the given variable
+	 * @param identificationVariable The identification variable mapping the given schema name
+	 */
+	void setRangeVariableDeclaration(String abstractSchemaName, String identificationVariable) {
+		RangeVariableDeclaration rangeVariableDeclaration = new RangeVariableDeclaration(this);
+		rangeVariableDeclaration.setDeclaration(abstractSchemaName, identificationVariable);
+		this.rangeVariableDeclaration = rangeVariableDeclaration;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean shouldParseWithFactoryFirst()
-	{
+	boolean shouldParseWithFactoryFirst() {
 		return parsingJoinExpression;
 	}
 
@@ -265,22 +256,19 @@ public final class IdentificationVariableDeclaration extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer)
-	{
+	void toParsedText(StringBuilder writer) {
+
 		// Range Variable Declaration
-		if (rangeVariableDeclaration != null)
-		{
+		if (rangeVariableDeclaration != null) {
 			rangeVariableDeclaration.toParsedText(writer);
 		}
 
-		if (hasSpace)
-		{
+		if (hasSpace) {
 			writer.append(SPACE);
 		}
 
 		// Joins
-		if (joins != null)
-		{
+		if (joins != null) {
 			joins.toParsedText(writer);
 		}
 	}

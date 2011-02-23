@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -25,24 +25,21 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.2.0
  * @author Pascal Filion
  */
-public final class IndexExpression extends AbstractSingleEncapsulatedExpression
-{
+public final class IndexExpression extends AbstractSingleEncapsulatedExpression {
+
 	/**
 	 * Creates a new <code>IndexExpression</code>.
 	 *
 	 * @param parent The parent of this expression
 	 */
-	IndexExpression(AbstractExpression parent)
-	{
+	IndexExpression(AbstractExpression parent) {
 		super(parent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
@@ -50,8 +47,7 @@ public final class IndexExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF()
-	{
+	JPQLQueryBNF encapsulatedExpressionBNF() {
 		return queryBNF(PreLiteralExpressionBNF.ID);
 	}
 
@@ -59,8 +55,7 @@ public final class IndexExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(FunctionsReturningNumericsBNF.ID);
 	}
 
@@ -70,10 +65,9 @@ public final class IndexExpression extends AbstractSingleEncapsulatedExpression
 	@Override
 	AbstractExpression parse(WordParser wordParser,
 	                         JPQLQueryBNF queryBNF,
-	                         boolean tolerant)
-	{
-		if (tolerant)
-		{
+	                         boolean tolerant) {
+
+		if (tolerant) {
 			return super.parse(wordParser, queryBNF, tolerant);
 		}
 
@@ -88,8 +82,7 @@ public final class IndexExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	String parseIdentifier(WordParser wordParser)
-	{
+	String parseIdentifier(WordParser wordParser) {
 		return INDEX;
 	}
 }

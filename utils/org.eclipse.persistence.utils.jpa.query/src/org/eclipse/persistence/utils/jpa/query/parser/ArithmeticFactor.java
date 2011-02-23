@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -17,8 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * This expression simply adds a plus or minus sign to the arithmetic primary
- * expression.
+ * This expression simply adds a plus or minus sign to the arithmetic primary expression.
  *
  * <div nowrap><b>BNF:</b> <code>arithmetic_factor ::= [{+|-}] arithmetic_primary</code><p>
  *
@@ -26,8 +25,8 @@ import java.util.List;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class ArithmeticFactor extends AbstractExpression
-{
+public final class ArithmeticFactor extends AbstractExpression {
+
 	/**
 	 * The {@link Expression} representing the arithmetic primary.
 	 */
@@ -39,26 +38,29 @@ public final class ArithmeticFactor extends AbstractExpression
 	 * @param parent The parent of this expression
 	 * @param arithmeticFactor The arithmetic factor, which is either '+' or '-'
 	 */
-	ArithmeticFactor(AbstractExpression parent, String arithmeticFactor)
-	{
+	ArithmeticFactor(AbstractExpression parent, String arithmeticFactor) {
 		super(parent, arithmeticFactor);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getExpression().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	void addChildrenTo(Collection<Expression> children) {
 		children.add(getExpression());
 	}
 
@@ -66,12 +68,11 @@ public final class ArithmeticFactor extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedChildrenTo(List<StringExpression> children)
-	{
+	void addOrderedChildrenTo(List<StringExpression> children) {
+
 		children.add(buildStringExpression(getText()));
 
-		if (expression != null)
-		{
+		if (expression != null) {
 			children.add(expression);
 		}
 	}
@@ -81,13 +82,10 @@ public final class ArithmeticFactor extends AbstractExpression
 	 *
 	 * @return The expression representing the arithmetic primary
 	 */
-	public Expression getExpression()
-	{
-		if (expression == null)
-		{
+	public Expression getExpression() {
+		if (expression == null) {
 			expression = buildNullExpression();
 		}
-
 		return expression;
 	}
 
@@ -95,8 +93,7 @@ public final class ArithmeticFactor extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(ArithmeticFactorBNF.ID);
 	}
 
@@ -104,19 +101,17 @@ public final class ArithmeticFactor extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate(JPQLQueryBNF queryBNF)
-	{
+	boolean handleAggregate(JPQLQueryBNF queryBNF) {
 		return false;
 	}
 
 	/**
 	 * Determines whether the arithmetic primary was parsed.
 	 *
-	 * @return <code>true</code> the arithmetic primary was parsed;
-	 * <code>false</code> if nothing was parsed
+	 * @return <code>true</code> the arithmetic primary was parsed; <code>false</code> if nothing was
+	 * parsed
 	 */
-	public boolean hasExpression()
-	{
+	public boolean hasExpression() {
 		return expression != null &&
 		      !expression.isNull();
 	}
@@ -124,22 +119,18 @@ public final class ArithmeticFactor extends AbstractExpression
 	/**
 	 * Determines if the arithmetic primary is prepended with the minus sign.
 	 *
-	 * @return <code>true</code> if the expression is prepended with '-';
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the expression is prepended with '-'; <code>false</code> otherwise
 	 */
-	public boolean hasMinusSign()
-	{
+	public boolean hasMinusSign() {
 		return getText().charAt(0) == '-';
 	}
 
 	/**
 	 * Determines if the arithmetic primary is prepended with the plus sign.
 	 *
-	 * @return <code>true</code> if the expression is prepended with '+';
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the expression is prepended with '+'; <code>false</code> otherwise
 	 */
-	public boolean hasPlusSign()
-	{
+	public boolean hasPlusSign() {
 		return getText().charAt(0) == '+';
 	}
 
@@ -147,8 +138,7 @@ public final class ArithmeticFactor extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
+	boolean isParsingComplete(WordParser wordParser, String word) {
 		char character = wordParser.character();
 
 		return wordParser.isArithmeticSymbol(character) ||
@@ -159,8 +149,8 @@ public final class ArithmeticFactor extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parse(WordParser wordParser, boolean tolerant)
-	{
+	void parse(WordParser wordParser, boolean tolerant) {
+
 		// Remove the arithmetic operator
 		wordParser.moveForward(1);
 
@@ -174,12 +164,11 @@ public final class ArithmeticFactor extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer)
-	{
+	void toParsedText(StringBuilder writer) {
+
 		writer.append(getText());
 
-		if (expression != null)
-		{
+		if (expression != null) {
 			expression.toParsedText(writer);
 		}
 	}

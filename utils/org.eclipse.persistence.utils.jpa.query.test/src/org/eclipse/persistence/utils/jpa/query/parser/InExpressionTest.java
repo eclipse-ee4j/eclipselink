@@ -3,289 +3,249 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 @SuppressWarnings("nls")
-public final class InExpressionTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
+public final class InExpressionTest extends AbstractJPQLTest {
 
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
+
 		String query = "SELECT e FROM Employee e WHERE e.name IN (e.address.street)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(path("e.name").in(path("e.address.street")))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// InExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof InExpression);
-		InExpression inExpression = (InExpression) expression;
-
-		assertSame (InExpression.IN, inExpression.getText());
-		assertFalse(inExpression.hasNot());
-		assertTrue (inExpression.hasLeftParenthesis());
-		assertTrue (inExpression.hasRightParenthesis());
-
-		// StateFieldPathExpression
-		expression = inExpression.getStateFieldPathExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals("e.name", stateFieldPathExpression.toParsedText());
-
-		// StateFieldPathExpression
-		expression = inExpression.getInItems();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals(3, stateFieldPathExpression.pathSize());
-		assertEquals("e.address.street", stateFieldPathExpression.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_02()
-	{
+	public void testBuildExpression_02() {
+
 		String query = "SELECT e FROM Employee e WHERE e NOT IN(e.address.street)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(variable("e").notIn(path("e.address.street")))
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// InExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof InExpression);
-		InExpression inExpression = (InExpression) expression;
-
-		assertSame(InExpression.IN, inExpression.getText());
-		assertTrue(inExpression.hasNot());
-		assertTrue(inExpression.hasLeftParenthesis());
-		assertTrue(inExpression.hasRightParenthesis());
-
-		// IdentificationVariable
-		expression = inExpression.getStateFieldPathExpression();
-		assertTrue(expression instanceof IdentificationVariable);
-		IdentificationVariable identificationVariable = (IdentificationVariable) expression;
-
-		assertEquals("e", identificationVariable.toParsedText());
-
-		// StateFieldPathExpression
-		expression = inExpression.getInItems();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals(3, stateFieldPathExpression.pathSize());
-		assertEquals("e.address.street", stateFieldPathExpression.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_03()
-	{
+	public void testBuildExpression_03() {
+
 		String query = "SELECT e FROM Employee e WHERE e IN (e.address.street, e.name)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					variable("e")
+				.in(
+					path("e.address.street"),
+					path("e.name")
+				)
+			)
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// InExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof InExpression);
-		InExpression inExpression = (InExpression) expression;
-
-		assertSame (InExpression.IN, inExpression.getText());
-		assertFalse(inExpression.hasNot());
-		assertTrue (inExpression.hasLeftParenthesis());
-		assertTrue (inExpression.hasRightParenthesis());
-
-		// IdentificationVariable
-		expression = inExpression.getStateFieldPathExpression();
-		assertTrue(expression instanceof IdentificationVariable);
-		IdentificationVariable identificationVariable = (IdentificationVariable) expression;
-
-		assertEquals("e", identificationVariable.toParsedText());
-
-		// CollectionExpression
-		expression = inExpression.getInItems();
-		assertTrue(expression instanceof CollectionExpression);
-		CollectionExpression collectionExpression = (CollectionExpression) expression;
-
-		assertEquals(2, collectionExpression.childrenSize());
-
-		// 1. StateFieldPathExpression
-		expression = collectionExpression.getChild(0);
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals(3, stateFieldPathExpression.pathSize());
-		assertEquals("e.address.street", stateFieldPathExpression.toParsedText());
-
-		// 2. StateFieldPathExpression
-		expression = collectionExpression.getChild(1);
-		assertTrue(expression instanceof StateFieldPathExpression);
-		stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals(2, stateFieldPathExpression.pathSize());
-		assertEquals("e.name", stateFieldPathExpression.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_04()
-	{
+	public void testBuildExpression_04() {
+
 		String query = "SELECT e FROM Employee e WHERE e IN (SELECT m FROM Manager m)";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					variable("e")
+				.in(
+					subquery(
+						subSelect(variable("m")),
+						subFrom("Manager", "m")
+					)
+				)
+			)
+		);
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
-
-		// InExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof InExpression);
-		InExpression inExpression = (InExpression) expression;
-
-		assertSame (InExpression.IN, inExpression.getText());
-		assertFalse(inExpression.hasNot());
-		assertTrue (inExpression.hasLeftParenthesis());
-		assertTrue (inExpression.hasRightParenthesis());
-
-		// IdentificationVariable
-		expression = inExpression.getStateFieldPathExpression();
-		assertTrue(expression instanceof IdentificationVariable);
-		IdentificationVariable identificationVariable = (IdentificationVariable) expression;
-
-		assertEquals("e", identificationVariable.toParsedText());
-
-		// SimpleSelectStatement
-		expression = inExpression.getInItems();
-		assertTrue(expression instanceof SimpleSelectStatement);
-		SimpleSelectStatement simpleSelectStatement = (SimpleSelectStatement) expression;
-
-		assertEquals("SELECT m FROM Manager m", simpleSelectStatement.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
+
 		String query = "SELECT e FROM Employee e WHERE e IN";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		InExpressionTester inExpression = in(variable("e"), nullExpression());
+		inExpression.hasSpaceAfterIn     = false;
+		inExpression.hasLeftParenthesis  = false;
+		inExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(inExpression)
+		);
 
-		// InExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof InExpression);
-		InExpression inExpression = (InExpression) expression;
-
-		assertSame (InExpression.IN, inExpression.getText());
-		assertFalse(inExpression.hasNot());
-		assertFalse(inExpression.hasLeftParenthesis());
-		assertFalse(inExpression.hasRightParenthesis());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_06()
-	{
+	public void testBuildExpression_06() {
+
 		String query = "SELECT e FROM Employee e WHERE e IN(";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		InExpressionTester inExpression = in(variable("e"), nullExpression());
+		inExpression.hasLeftParenthesis  = true;
+		inExpression.hasRightParenthesis = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(inExpression)
+		);
 
-		// InExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof InExpression);
-		InExpression inExpression = (InExpression) expression;
-
-		assertSame (InExpression.IN, inExpression.getText());
-		assertFalse(inExpression.hasNot());
-		assertTrue (inExpression.hasLeftParenthesis());
-		assertFalse(inExpression.hasRightParenthesis());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
-	public void testBuildExpression_07()
-	{
+	public void testBuildExpression_07() {
+
 		String query = "SELECT e FROM Employee e WHERE e IN()";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		InExpressionTester inExpression = in(variable("e"), nullExpression());
+		inExpression.hasLeftParenthesis  = true;
+		inExpression.hasRightParenthesis = true;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(inExpression)
+		);
 
-		// InExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof InExpression);
-		InExpression inExpression = (InExpression) expression;
+		testInvalidQuery(query, selectStatement);
+	}
 
-		assertSame (InExpression.IN, inExpression.getText());
-		assertFalse(inExpression.hasNot());
-		assertTrue (inExpression.hasLeftParenthesis());
-		assertTrue (inExpression.hasRightParenthesis());
+	@Test
+	public void testBuildExpression_08() {
+
+		String query = "SELECT e FROM Employee e WHERE e NOT IN()";
+
+		InExpressionTester notInExpression = notIn(variable("e"), nullExpression());
+		notInExpression.hasLeftParenthesis  = true;
+		notInExpression.hasRightParenthesis = true;
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(notInExpression)
+		);
+
+		testInvalidQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_09() {
+
+		String query = "SELECT e FROM Employee e WHERE e NOT IN(";
+
+		InExpressionTester notInExpression = notIn(variable("e"), nullExpression());
+		notInExpression.hasLeftParenthesis  = true;
+		notInExpression.hasRightParenthesis = false;
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(notInExpression)
+		);
+
+		testInvalidQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_10() {
+
+		String query = "SELECT e FROM Employee e " +
+		               "WHERE e IN ((SELECT e2 FROM Employee e2 WHERE e2 = e), " +
+		               "            (SELECT e3 FROM Employee e3 WHERE e3 = e))";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					variable("e")
+				.in(
+					subExpression(subquery(
+						subSelect(variable("e2")),
+						subFrom("Employee", "e2"),
+						where(variable("e2").equal(variable("e")))
+					)),
+					subExpression(subquery(
+						subSelect(variable("e3")),
+						subFrom("Employee", "e3"),
+						where(variable("e3").equal(variable("e")))
+					))
+				)
+			)
+		);
+
+		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_11() {
+
+		String query = "SELECT e FROM Employee e WHERE NOT IN('JPQL', 'JPA')";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					nullExpression()
+				.notIn(
+					string("'JPQL'"),
+					string("'JPA'")
+				)
+			)
+		);
+
+		testInvalidQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_12() {
+
+		String query = "SELECT e FROM Employee e WHERE IN('JPQL', 'JPA')";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					nullExpression()
+				.in(
+					string("'JPQL'"),
+					string("'JPA'")
+				)
+			)
+		);
+
+		testInvalidQuery(query, selectStatement);
 	}
 }

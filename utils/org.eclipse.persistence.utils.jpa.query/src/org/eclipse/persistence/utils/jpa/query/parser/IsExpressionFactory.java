@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -24,8 +24,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.2.0
  * @author Pascal Filion
  */
-final class IsExpressionFactory extends ExpressionFactory
-{
+final class IsExpressionFactory extends ExpressionFactory {
+
 	/**
 	 * The unique identifier of this {@link IsExpressionFactory}.
 	 */
@@ -34,8 +34,7 @@ final class IsExpressionFactory extends ExpressionFactory
 	/**
 	 * Creates a new <code>IsExpressionFactory</code>.
 	 */
-	IsExpressionFactory()
-	{
+	IsExpressionFactory() {
 		super(ID, Expression.IS);
 	}
 
@@ -48,44 +47,36 @@ final class IsExpressionFactory extends ExpressionFactory
 	                                   String word,
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
+	                                   boolean tolerant) {
 		int index = wordParser.position() + 2;
 		index += wordParser.whitespaceCount(index);
 
 		// IS NOT EMPTY or IS NO NULL
-		if (wordParser.startsWithIdentifier(Expression.NOT, index))
-		{
+		if (wordParser.startsWithIdentifier(Expression.NOT, index)) {
 			index += 3;
 			index += wordParser.whitespaceCount(index);
 
 			// IS NOT EMPTY
-			if (wordParser.startsWithIdentifier(Expression.EMPTY, index))
-			{
+			if (wordParser.startsWithIdentifier(Expression.EMPTY, index)) {
 				expression = new EmptyCollectionComparisonExpression(parent, Expression.IS_NOT_EMPTY, expression);
 			}
 			// IS NOT NULL
-			else if (wordParser.startsWithIdentifier(Expression.NULL, index))
-			{
+			else if (wordParser.startsWithIdentifier(Expression.NULL, index)) {
 				expression = new NullComparisonExpression(parent, Expression.IS_NOT_NULL, expression);
 			}
-			else
-			{
+			else {
 				return null;
 			}
 		}
 		// IS EMPTY
-		else if (wordParser.startsWithIdentifier(Expression.EMPTY, index))
-		{
+		else if (wordParser.startsWithIdentifier(Expression.EMPTY, index)) {
 			expression = new EmptyCollectionComparisonExpression(parent, Expression.IS_EMPTY, expression);
 		}
 		// IS NULL
-		else if (wordParser.startsWithIdentifier(Expression.NULL, index))
-		{
+		else if (wordParser.startsWithIdentifier(Expression.NULL, index)) {
 			expression = new NullComparisonExpression(parent, Expression.IS_NULL, expression);
 		}
-		else
-		{
+		else {
 			return null;
 		}
 

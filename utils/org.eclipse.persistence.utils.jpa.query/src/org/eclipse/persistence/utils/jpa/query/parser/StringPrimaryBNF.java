@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -17,16 +17,19 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * The query BNF for a string primary expression.
  *
  * <div nowrap><b>BNF:</b> <code>string_primary ::= state_field_path_expression |
- * string_literal | input_parameter | functions_returning_strings |
- * aggregate_expression | case_expression</code><p>
+ *                                                  string_literal |
+ *                                                  input_parameter |
+ *                                                  functions_returning_strings |
+ *                                                  aggregate_expression |
+ *                                                  case_expression</code><p>
  *
  * @version 11.2.0
  * @since 11.2.0
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class StringPrimaryBNF extends AbstractCompoundBNF
-{
+final class StringPrimaryBNF extends JPQLQueryBNF {
+
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
@@ -35,8 +38,7 @@ final class StringPrimaryBNF extends AbstractCompoundBNF
 	/**
 	 * Creates a new <code>StringPrimaryBNF</code>.
 	 */
-	StringPrimaryBNF()
-	{
+	StringPrimaryBNF() {
 		super(ID);
 	}
 
@@ -44,8 +46,7 @@ final class StringPrimaryBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackBNFId()
-	{
+	String getFallbackBNFId() {
 		return ID;
 	}
 
@@ -53,8 +54,7 @@ final class StringPrimaryBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackExpressionFactoryId()
-	{
+	String getFallbackExpressionFactoryId() {
 		return PreLiteralExpressionFactory.ID;
 	}
 
@@ -62,8 +62,7 @@ final class StringPrimaryBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	void initialize()
-	{
+	void initialize() {
 		super.initialize();
 
 		registerChild(StateFieldPathExpressionBNF.ID);

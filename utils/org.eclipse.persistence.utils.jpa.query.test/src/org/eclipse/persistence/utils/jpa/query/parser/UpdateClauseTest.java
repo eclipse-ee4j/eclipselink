@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -18,19 +18,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
-public final class UpdateClauseTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
+public final class UpdateClauseTest extends AbstractJPQLTest {
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
 		String query = "UPDATE ";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -58,10 +50,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_02()
-	{
+	public void testBuildExpression_02() {
 		String query = "UPDATE SET";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -89,10 +80,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_03()
-	{
+	public void testBuildExpression_03() {
 		String query = "UPDATE SET ";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -120,10 +110,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_04()
-	{
+	public void testBuildExpression_04() {
 		String query = "UPDATE Employee";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -154,10 +143,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
 		String query = "UPDATE Employee ";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -189,10 +177,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_06()
-	{
+	public void testBuildExpression_06() {
 		String query = "UPDATE Employee AS";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -223,10 +210,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_07()
-	{
+	public void testBuildExpression_07() {
 		String query = "UPDATE Employee AS e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -257,10 +243,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_08()
-	{
+	public void testBuildExpression_08() {
 		String query = "UPDATE Employee AS SET";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -292,10 +277,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_09()
-	{
+	public void testBuildExpression_09() {
 		String query = "UPDATE Employee AS e SET";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -326,10 +310,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_10()
-	{
+	public void testBuildExpression_10() {
 		String query = "UPDATE Employee AS SET ";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -361,10 +344,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_11()
-	{
+	public void testBuildExpression_11() {
 		String query = "UPDATE Employee AS e SET e.name = 'Pascal'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -398,10 +380,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_12()
-	{
+	public void testBuildExpression_12() {
 		String query = "UPDATE Employee AS e SET e.name = 'Pascal',";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -431,7 +412,7 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 		assertTrue(expression instanceof CollectionExpression);
 		CollectionExpression collectionExpression = (CollectionExpression) expression;
 
-		assertEquals(1, collectionExpression.childrenSize());
+		assertEquals(2, collectionExpression.childrenSize());
 
 		// (1) UpdateItem
 		expression = collectionExpression.getChild(0);
@@ -442,10 +423,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_13()
-	{
+	public void testBuildExpression_13() {
 		String query = "UPDATE  SET";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -473,10 +453,9 @@ public final class UpdateClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_14()
-	{
+	public void testBuildExpression_14() {
 		String query = "UPDATE SET e.name = 'Pascal'";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// UpdateStatement
 		Expression expression = jpqlExpression.getQueryStatement();

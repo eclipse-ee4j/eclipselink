@@ -3,16 +3,17 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query;
 
+import java.util.Collection;
 import org.eclipse.persistence.utils.jpa.query.parser.AbsExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.AbstractTraverseParentVisitor;
 import org.eclipse.persistence.utils.jpa.query.parser.AdditionExpression;
@@ -21,9 +22,11 @@ import org.eclipse.persistence.utils.jpa.query.parser.AvgFunction;
 import org.eclipse.persistence.utils.jpa.query.parser.BetweenExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.ComparisonExpression;
+import org.eclipse.persistence.utils.jpa.query.parser.CompoundExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.ConcatExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.CountFunction;
 import org.eclipse.persistence.utils.jpa.query.parser.DivisionExpression;
+import org.eclipse.persistence.utils.jpa.query.parser.EmptyCollectionComparisonExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.ExistsExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.Expression;
 import org.eclipse.persistence.utils.jpa.query.parser.IdentificationVariable;
@@ -42,12 +45,14 @@ import org.eclipse.persistence.utils.jpa.query.parser.OrExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.SizeExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.SqrtExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.StateFieldPathExpression;
-import org.eclipse.persistence.utils.jpa.query.parser.SubstractionExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.SubstringExpression;
+import org.eclipse.persistence.utils.jpa.query.parser.SubtractionExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.SumFunction;
+import org.eclipse.persistence.utils.jpa.query.parser.TrimExpression;
 import org.eclipse.persistence.utils.jpa.query.parser.UpdateItem;
 import org.eclipse.persistence.utils.jpa.query.spi.IQuery;
 import org.eclipse.persistence.utils.jpa.query.spi.IType;
+import org.eclipse.persistence.utils.jpa.query.spi.ITypeRepository;
 
 /**
  * This visitor's responsibility is to find the type of an input parameter.
@@ -56,63 +61,87 @@ import org.eclipse.persistence.utils.jpa.query.spi.IType;
  * @since 11.2.0
  * @author Pascal Filion
  */
-final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
-{
+final class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
+
 	/**
-	 * The {@link Expression} that will help to determine the type of the input
-	 * parameter.
+	 * This is used to prevent an infinite loop between input parameters. Example: ":arg1 = :arg2".
+	 */
+	private Expression currentExpression;
+
+	/**
+	 * The {@link Expression} that will help to determine the type of the input parameter.
 	 */
 	private Expression expression;
 
 	/**
-	 * The input parameter for which its type will be searched by visiting the
-	 * query
+	 * Used to ignore the type when calculating it. If <b>Object.class</b> was used, then it could
+	 * incorrectly calculate the type. Example: ":arg = 'JPQL' AND :arg IS NULL", the second :arg
+	 * should be ignored.
 	 */
-	private InputParameter inputParameter;
+	private boolean ignoreType;
 
 	/**
-	 * The model object representing the JPA named query.
+	 * The {@link InputParameter} for which its type will be searched by visiting the query.
 	 */
-	private IQuery query;
+	private final InputParameter inputParameter;
+
+	/**
+	 * The external form representing the JPQL query.
+	 */
+	private final IQuery query;
+
+	/**
+	 * The well defined type, which does not have to be calculated.
+	 */
+	private Class<?> type;
 
 	/**
 	 * Creates a new <code>ParameterTypeVisitor</code>.
 	 *
-	 * @param query The model object representing the JPA named query
-	 * @param inputParameter The input parameter for which its type will be
-	 * searched by visiting the query
+	 * @param query The external form representing the JPQL query
+	 * @param inputParameter The input parameter for which its type will be searched by visiting the query
 	 */
-	ParameterTypeVisitor(IQuery query, InputParameter inputParameter)
-	{
+	ParameterTypeVisitor(IQuery query, InputParameter inputParameter) {
 		super();
-
 		this.query          = query;
 		this.inputParameter = inputParameter;
-	}
-
-	private TypeVisitor buildTypeVisitor()
-	{
-		return new InputParameterTypeVisitor(query, inputParameter);
 	}
 
 	/**
 	 * Returns the type, if it can be determined, of the input parameter.
 	 *
+	 * @param typeVisitor The visitor used to calculate the type of the {@link Expression} that was
+	 * found to have the closest type of the input parameter
 	 * @return Either the closed type or {@link Object} if it can't be determined
 	 */
-	IType type()
-	{
-		TypeVisitor visitor = buildTypeVisitor();
-		expression.accept(visitor);
-		return visitor.getType();
+	IType getType(TypeVisitor typeVisitor) {
+
+		// The type should be ignored, use the special constant
+		if (ignoreType) {
+			return typeRepository().getType(IType.UNRESOLVABLE_TYPE);
+		}
+
+		// The calculation couldn't find an expression with a type
+		if (expression == null) {
+			if (type == null) {
+				type = Object.class;
+			}
+			return typeRepository().getType(type);
+		}
+
+		expression.accept(typeVisitor);
+		return typeVisitor.getType();
+	}
+
+	private ITypeRepository typeRepository() {
+		return query.getProvider().getTypeRepository();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AbsExpression expression)
-	{
+	public void visit(AbsExpression expression) {
 		// The absolute function always have a return type
 		this.expression = expression;
 	}
@@ -121,60 +150,23 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AdditionExpression expression)
-	{
-		Expression leftExpression  = expression.getLeftExpression();
-		Expression rightExpression = expression.getRightExpression();
-
-		// Now traverse the other side to find its return type
-		if (leftExpression.isAncestor(inputParameter))
-		{
-			rightExpression.accept(this);
-		}
-		// Now traverse the other side to find its return type
-		else if (rightExpression.isAncestor(inputParameter))
-		{
-			leftExpression.accept(this);
-		}
-		// Otherwise continue up
-		else
-		{
-			super.visit(expression);
-		}
+	public void visit(AdditionExpression expression) {
+		visitCompoundExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AndExpression expression)
-	{
-		Expression leftExpression  = expression.getLeftExpression();
-		Expression rightExpression = expression.getRightExpression();
-
-		// Now traverse the other side to find its return type
-		if (leftExpression.isAncestor(inputParameter))
-		{
-			rightExpression.accept(this);
-		}
-		// Now traverse the other side to find its return type
-		else if (rightExpression.isAncestor(inputParameter))
-		{
-			leftExpression.accept(this);
-		}
-		// Otherwise continue up
-		else
-		{
-			super.visit(expression);
-		}
+	public void visit(AndExpression expression) {
+		visitCompoundExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AvgFunction expression)
-	{
+	public void visit(AvgFunction expression) {
 		// The average function always have a return type
 		this.expression = expression;
 	}
@@ -183,8 +175,7 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(BetweenExpression expression)
-	{
+	public void visit(BetweenExpression expression) {
 		expression.getExpression().accept(this);
 	}
 
@@ -192,8 +183,7 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(CollectionValuedPathExpression expression)
-	{
+	public void visit(CollectionValuedPathExpression expression) {
 		// A collection-valued path expression always have a return type
 		this.expression = expression;
 	}
@@ -202,37 +192,16 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ComparisonExpression expression)
-	{
-		Expression leftExpression  = expression.getLeftExpression();
-		Expression rightExpression = expression.getRightExpression();
-
-		// Now traverse the other side to find its return type
-		if (leftExpression.isAncestor(inputParameter))
-		{
-			rightExpression.accept(this);
-		}
-		// Now traverse the other side to find its return type
-		else if (rightExpression.isAncestor(inputParameter))
-		{
-			leftExpression.accept(this);
-		}
-		// Otherwise continue up
-		else
-		{
-			super.visit(expression);
-		}
+	public void visit(ComparisonExpression expression) {
+		visitCompoundExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ConcatExpression expression)
-	{
-		if (expression.getFirstExpression() .isAncestor(inputParameter) ||
-		    expression.getSecondExpression().isAncestor(inputParameter))
-		{
+	public void visit(ConcatExpression expression) {
+		if (expression.getExpression().isAncestor(inputParameter)) {
 			this.expression = expression;
 		}
 	}
@@ -241,8 +210,7 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(CountFunction expression)
-	{
+	public void visit(CountFunction expression) {
 		// The count function always have a return type
 		this.expression = expression;
 	}
@@ -251,24 +219,21 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(DivisionExpression expression)
-	{
-		Expression leftExpression  = expression.getLeftExpression();
-		Expression rightExpression = expression.getRightExpression();
+	public void visit(DivisionExpression expression) {
+		visitCompoundExpression(expression);
+	}
 
-		// Now traverse the other side to find its return type
-		if (leftExpression.isAncestor(inputParameter))
-		{
-			rightExpression.accept(this);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(EmptyCollectionComparisonExpression expression) {
+
+		// Can't determine the type
+		if (expression.getExpression() == inputParameter) {
+			ignoreType = true;
 		}
-		// Now traverse the other side to find its return type
-		else if (rightExpression.isAncestor(inputParameter))
-		{
-			leftExpression.accept(this);
-		}
-		// Otherwise continue up
-		else
-		{
+		else {
 			super.visit(expression);
 		}
 	}
@@ -277,8 +242,7 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ExistsExpression expression)
-	{
+	public void visit(ExistsExpression expression) {
 		// The exist function always have a return type
 		this.expression = expression;
 	}
@@ -287,8 +251,7 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(IdentificationVariable expression)
-	{
+	public void visit(IdentificationVariable expression) {
 		// The identification variable always have a return type
 		this.expression = expression;
 	}
@@ -297,136 +260,13 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(InExpression expression)
-	{
-		if (expression.getInItems().isAncestor(inputParameter))
-		{
-			expression.getStateFieldPathExpression().accept(this);
+	public void visit(InExpression expression) {
+
+		// BNF: ... IN collection_valued_input_parameter
+		if (expression.getInItems() == inputParameter) {
+			type = Collection.class;
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(InputParameter expression)
-	{
-		expression.getParent().accept(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(LengthExpression expression)
-	{
-		// The length function always have a return type
-		this.expression = expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(LikeExpression expression)
-	{
-		Expression patternValue     = expression.getPatternValue();
-		Expression stringExpression = expression.getStringExpression();
-		Expression escapeCharacter  = expression.getEscapeCharacter();
-
-		// The like expression is always string related
-		if (escapeCharacter == inputParameter)
-		{
-			this.expression = expression;
-		}
-		else if (stringExpression.isAncestor(inputParameter) ||
-		         patternValue    .isAncestor(inputParameter))
-		{
-			this.expression = expression;
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(LowerExpression expression)
-	{
-		// The lower function always have a return type
-		this.expression = expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(MaxFunction expression)
-	{
-		// The maximum function always have a return type
-		this.expression = expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(MinFunction expression)
-	{
-		// The minimum function always have a return type
-		this.expression = expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(ModExpression expression)
-	{
-		// The modulo function always have a return type
-		this.expression = expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(MultiplicationExpression expression)
-	{
-		Expression leftExpression  = expression.getLeftExpression();
-		Expression rightExpression = expression.getRightExpression();
-
-		// Now traverse the other side to find its return type
-		if (leftExpression.isAncestor(inputParameter))
-		{
-			rightExpression.accept(this);
-		}
-		// Now traverse the other side to find its return type
-		else if (rightExpression.isAncestor(inputParameter))
-		{
-			leftExpression.accept(this);
-		}
-		// Otherwise continue up
-		else
-		{
-			super.visit(expression);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(NullComparisonExpression expression)
-	{
-		// The null comparison is done for the input parameter,
-		// the traversal up the hierarchy needs to continue
-		if (expression.getExpression() == inputParameter)
-		{
-			super.visit(expression);
-		}
-		// A singled valued path expression always have a return type
-		else
-		{
+		else if (expression.getInItems().isAncestor(inputParameter)) {
 			expression.getExpression().accept(this);
 		}
 	}
@@ -435,35 +275,23 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(NumericLiteral expression)
-	{
-		// A numerical expression always have a return type
-		this.expression = expression;
+	public void visit(InputParameter expression) {
+		expression.getParent().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(OrExpression expression)
-	{
-		Expression leftExpression  = expression.getLeftExpression();
-		Expression rightExpression = expression.getRightExpression();
+	public void visit(LengthExpression expression) {
 
-		// Now traverse the other side to find its return type
-		if (leftExpression.isAncestor(inputParameter))
-		{
-			rightExpression.accept(this);
+		// LENGTH takes a string as argument
+		if (expression.isAncestor(inputParameter)) {
+			type = String.class;
 		}
-		// Now traverse the other side to find its return type
-		else if (rightExpression.isAncestor(inputParameter))
-		{
-			leftExpression.accept(this);
-		}
-		// Otherwise continue up
-		else
-		{
-			super.visit(expression);
+		// LENGTH returns an integer value
+		else {
+			type = Integer.class;
 		}
 	}
 
@@ -471,66 +299,19 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SizeExpression expression)
-	{
-		// The modulo function always have a return type
-		this.expression = expression;
-	}
+	public void visit(LikeExpression expression) {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(SqrtExpression expression)
-	{
-		// The modulo function always have a return type
-		this.expression = expression;
-	}
+		Expression patternValue     = expression.getPatternValue();
+		Expression stringExpression = expression.getStringExpression();
+		Expression escapeCharacter  = expression.getEscapeCharacter();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(StateFieldPathExpression expression)
-	{
-		// A state field path expression always have a return type
-		this.expression = expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(SubstractionExpression expression)
-	{
-		Expression leftExpression  = expression.getLeftExpression();
-		Expression rightExpression = expression.getRightExpression();
-
-		// Now traverse the other side to find its return type
-		if (leftExpression.isAncestor(inputParameter))
-		{
-			rightExpression.accept(this);
+		if (escapeCharacter == inputParameter) {
+			this.type = Character.class;
 		}
-		// Now traverse the other side to find its return type
-		else if (rightExpression.isAncestor(inputParameter))
-		{
-			leftExpression.accept(this);
+		else if (patternValue.isAncestor(inputParameter)) {
+			this.expression = expression.getStringExpression();
 		}
-		// Otherwise continue up
-		else
-		{
-			super.visit(expression);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(SubstringExpression expression)
-	{
-		if (expression.isAncestor(inputParameter))
-		{
+		else if (stringExpression.isAncestor(inputParameter)) {
 			this.expression = expression;
 		}
 	}
@@ -539,8 +320,141 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SumFunction expression)
-	{
+	public void visit(LowerExpression expression) {
+		// The lower function always have a return type
+		this.expression = expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(MaxFunction expression) {
+		// The maximum function always have a return type
+		this.expression = expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(MinFunction expression) {
+		// The minimum function always have a return type
+		this.expression = expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(ModExpression expression) {
+		// The modulo function always have a return type
+		this.expression = expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(MultiplicationExpression expression) {
+		visitCompoundExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(NullComparisonExpression expression) {
+
+		// Can't determine the type
+		if (expression.getExpression() == inputParameter) {
+			ignoreType = true;
+		}
+		// A singled valued path expression always have a return type
+		else {
+			expression.getExpression().accept(this);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(NumericLiteral expression) {
+		// A numerical expression always have a return type
+		this.expression = expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(OrExpression expression) {
+		visitCompoundExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(SizeExpression expression) {
+		// The modulo function always have a return type
+		this.expression = expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(SqrtExpression expression) {
+		if (expression.isAncestor(inputParameter)) {
+			super.visit(expression);
+		}
+		else {
+			this.expression = expression;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(StateFieldPathExpression expression) {
+		// A state field path expression always have a return type
+		this.expression = expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(SubtractionExpression expression) {
+		visitCompoundExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(SubstringExpression expression) {
+
+		// The string primary is always a string
+		if (expression.getFirstExpression().isAncestor(inputParameter)) {
+			type = String.class;
+		}
+		// The first or second arithmetic expression is always an integer
+		else if (expression.getSecondExpression().isAncestor(inputParameter) ||
+		         expression.getThirdExpression() .isAncestor(inputParameter)) {
+
+			type = Integer.class;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(SumFunction expression) {
 		// The sum function always have a return type
 		this.expression = expression;
 	}
@@ -549,8 +463,58 @@ final class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(UpdateItem expression)
-	{
+	public void visit(TrimExpression expression) {
+
+		if (expression.getTrimCharacter() == inputParameter) {
+			type = Character.class;
+		}
+		else if (expression.getExpression() == inputParameter) {
+			type = String.class;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(UpdateItem expression) {
 		expression.getStateFieldPathExpression().accept(this);
+	}
+
+	private void visitCompoundExpression(CompoundExpression expression) {
+
+		Expression leftExpression  = expression.getLeftExpression();
+		Expression rightExpression = expression.getRightExpression();
+
+		// Now traverse the other side to find its return type
+		if (leftExpression.isAncestor(inputParameter)) {
+			if (currentExpression == null) {
+				currentExpression = expression;
+				rightExpression.accept(this);
+				currentExpression = null;
+			}
+			else {
+				type = null;
+				ignoreType = true;
+				expression = null;
+			}
+		}
+		// Now traverse the other side to find its return type
+		else if (rightExpression.isAncestor(inputParameter)) {
+			if (currentExpression == null) {
+				currentExpression = expression;
+				leftExpression.accept(this);
+				currentExpression = null;
+			}
+			else {
+				type = null;
+				ignoreType = true;
+				expression = null;
+			}
+		}
+		// Otherwise continue up
+		else {
+			super.visit(expression);
+		}
 	}
 }

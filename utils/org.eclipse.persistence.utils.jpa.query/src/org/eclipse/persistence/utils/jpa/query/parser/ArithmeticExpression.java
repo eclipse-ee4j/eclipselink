@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -20,22 +20,21 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @see AdditionExpression
  * @see DivisionExpression
  * @see MultiplicationExpression
- * @see SubstractionExpression
+ * @see SubtractionExpression
  *
  * @version 11.2.0
  * @since 11.0.0
  * @author Pascal Filion
  */
-public abstract class ArithmeticExpression extends CompoundExpression
-{
+public abstract class ArithmeticExpression extends CompoundExpression {
+
 	/**
 	 * Creates a new <code>ArithmeticExpression</code>.
 	 *
 	 * @param parent The parent of this expression
 	 * @param identifier The arithmetic sign
 	 */
-	ArithmeticExpression(AbstractExpression parent, String identifier)
-	{
+	ArithmeticExpression(AbstractExpression parent, String identifier) {
 		super(parent, identifier);
 	}
 
@@ -44,8 +43,7 @@ public abstract class ArithmeticExpression extends CompoundExpression
 	 *
 	 * @return The single character value of the arithmetic sign
 	 */
-	public final String getArithmeticSign()
-	{
+	public final String getArithmeticSign() {
 		return getText();
 	}
 
@@ -53,8 +51,7 @@ public abstract class ArithmeticExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	final JPQLQueryBNF getQueryBNF()
-	{
+	final JPQLQueryBNF getQueryBNF() {
 		return queryBNF(ArithmeticTermBNF.ID);
 	}
 
@@ -62,10 +59,19 @@ public abstract class ArithmeticExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	final boolean isParsingComplete(WordParser wordParser, String word)
-	{
-		return word.equalsIgnoreCase(OR)  ||
-		       word.equalsIgnoreCase(AND) ||
+	final boolean isParsingComplete(WordParser wordParser, String word) {
+
+		char character = word.charAt(0);
+
+		// TODO: Do a better job, these identifiers are aggregate identifiers: x <identifier> y
+		return word.equalsIgnoreCase(OR)   ||
+		       word.equalsIgnoreCase(AND)  ||
+		       word.equalsIgnoreCase(WHEN) ||
+		       word.equalsIgnoreCase(SET)  ||
+		       word.equalsIgnoreCase(AS)   ||
+		       character == '<'            ||
+		       character == '>'            ||
+		       character == '='            ||
 		       super.isParsingComplete(wordParser, word);
 	}
 
@@ -73,8 +79,7 @@ public abstract class ArithmeticExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	final String parseIdentifier(WordParser wordParser)
-	{
+	final String parseIdentifier(WordParser wordParser) {
 		return getText();
 	}
 
@@ -82,8 +87,7 @@ public abstract class ArithmeticExpression extends CompoundExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	final JPQLQueryBNF rightExpressionBNF()
-	{
+	final JPQLQueryBNF rightExpressionBNF() {
 		return queryBNF(ArithmeticTermBNF.ID);
 	}
 }

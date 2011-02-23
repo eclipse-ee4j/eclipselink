@@ -3,28 +3,28 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * This "parser" holds onto the string version of the Java Persistence query
- * that is parsed into a parsed tree. It uses a cursor that let the current
- * {@link Expression} object to parse its section of the query.
+ * This "parser" holds onto the string version of the Java Persistence query that is parsed into a
+ * parsed tree. It uses a cursor that let the current {@link Expression} object to parse its section
+ * of the query.
  *
  * @version 11.2.0
  * @since 11.2.0
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class WordParser
-{
+public final class WordParser {
+
 	/**
 	 * The current position of the cursor within the text.
 	 */
@@ -43,11 +43,9 @@ public final class WordParser
 	/**
 	 * Creates a new <code>WordParser</code>.
 	 *
-	 * @param text The string representation of the Java Persistence query to
-	 * parse
+	 * @param text The string representation of the Java Persistence query to parse
 	 */
-	public WordParser(CharSequence query)
-	{
+	public WordParser(CharSequence query) {
 		super();
 
 		checkText(query);
@@ -62,8 +60,7 @@ public final class WordParser
 	 *
 	 * @return The character retrieved from the string at the cursor position
 	 */
-	public char character()
-	{
+	public char character() {
 		return character(cursor);
 	}
 
@@ -73,46 +70,41 @@ public final class WordParser
 	 * @param position The position of the character to return
 	 * @return The character retrieved from the string at the given position
 	 */
-	public char character(int position)
-	{
+	public char character(int position) {
 		return (position >= length) ? '\0' : text.charAt(position);
 	}
 
-	private void checkText(CharSequence query)
-	{
-		if (query == null)
-		{
+	private void checkText(CharSequence query) {
+		if (query == null) {
 			throw new NullPointerException("The query cannot be null");
 		}
 	}
 
 	/**
-	 * Determines whether the query ends with the given suffix and the end
-	 * position is the end of the range for testing.
+	 * Determines whether the query ends with the given suffix and the end position is the end of the
+	 * range for testing.
 	 *
 	 * @param endPosition The position where the check stops
-	 * @param suffix The suffix is the text that is used to match it with the
-	 * substring within the text
-	 * @return <code>true</code> if the character sequence represented by the
-	 * argument is a suffix of the query; <code>false</code> otherwise
+	 * @param suffix The suffix is the text that is used to match it with the substring within the text
+	 * @return <code>true</code> if the character sequence represented by the argument is a suffix of
+	 * the query; <code>false</code> otherwise
 	 */
-	public boolean endsWith(int endPosition, String suffix)
-	{
+	public boolean endsWith(int endPosition, String suffix) {
 		// Skip whitespace between the endPosition and the character before them
-		for (int index = endPosition; --index >= 0; )
-		{
-			if (Character.isWhitespace(text.charAt(index)))
-			{
-				endPosition--;
-			}
-		}
+//		for (int index = endPosition; --index >= 0; )
+//		{
+//			if (Character.isWhitespace(text.charAt(index)))
+//			{
+//				endPosition--;
+//			}
+//		}
 
 		return startsWith(suffix, endPosition - suffix.length());
 	}
 
 	/**
-	 * Retrieves a word starting at the current position. The text before and
-	 * after the position will be part of the returned value.
+	 * Retrieves a word starting at the current position. The text before and after the position will
+	 * be part of the returned value.
 	 * <p>
 	 * For instance, "<b>SELECT</b> <b>AVG</b>(e.age) <b>FROM</b> Employee e":
 	 * <ul>
@@ -125,14 +117,13 @@ public final class WordParser
 	 *
 	 * @return The word in which the cursor is
 	 */
-	public String entireWord()
-	{
+	public String entireWord() {
 		return entireWord(cursor);
 	}
 
 	/**
-	 * Retrieves a word starting at the given position. The text before and
-	 * after the position will be part of the returned value.
+	 * Retrieves a word starting at the given position. The text before and after the position will
+	 * be part of the returned value.
 	 * <p>
 	 * For instance, "<b>SELECT</b> <b>AVG</b>(e.age) <b>FROM</b> Employee e":
 	 * <ul>
@@ -146,23 +137,21 @@ public final class WordParser
 	 * @param position The position where to retrieve the word
 	 * @return The word in which the cursor is
 	 */
-	public String entireWord(int position)
-	{
+	public String entireWord(int position) {
 		int startPosition = partialWordStartPosition(position);
 		int endPosition   = wordEndPosition(position);
 		return substring(startPosition, endPosition);
 	}
 
 	/**
-	 * Determines whether the given character is an arithmetic symbol, which is one of
-	 * the following: { '>', '<', '/', '*', '-', '+', '=', '{' }.
+	 * Determines whether the given character is an arithmetic symbol, which is one of the following:
+	 * { '>', '<', '/', '*', '-', '+', '=', '{' }.
 	 *
 	 * @param character The character to test if it's a math symbol
-	 * @return <code>true</code> if the given character is one of the valid math
-	 * symbols; <code>false</code> otherwise
+	 * @return <code>true</code> if the given character is one of the valid math symbols;
+	 * <code>false</code> otherwise
 	 */
-	public boolean isArithmeticSymbol(char character)
-	{
+	public boolean isArithmeticSymbol(char character) {
 		return character == '>' ||
 		       character == '<' ||
 		       character == '/' ||
@@ -174,37 +163,30 @@ public final class WordParser
 	}
 
 	/**
-	 * Determines whether the given character is a delimiter. The delimiter are
-	 * '(', ')' and ','.
+	 * Determines whether the given character is a delimiter. The delimiter are '(', ')' and ','.
 	 *
 	 * @param character The character to test
-	 * @return <code>true</code> if the given character is a delimiter,
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the given character is a delimiter; <code>false</code> otherwise
 	 */
-	public boolean isDelimitor(char character)
-	{
+	public boolean isDelimitor(char character) {
 		return character == '(' ||
 		       character == ')' ||
 		       character == ',';
 	}
 
 	/**
-	 * Determines whether the given character is a character that can be used in
-	 * a number. This includes all numeric characters [0, 9] and the period
-	 * character.
+	 * Determines whether the given character is a character that can be used in a number. This
+	 * includes all numeric characters [0, 9] and the period character.
 	 *
 	 * @param character The character to test if it's a digit
-	 * @return <code>true</code> if the given character is a digit; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if the given character is a digit; <code>false</code> otherwise
 	 */
-	public boolean isDigit(char character)
-	{
+	public boolean isDigit(char character) {
 		return (character == '.') ||
 		        Character.isDigit(character);
 	}
 
-	public boolean isParsingComplete(char character)
-	{
+	public boolean isParsingComplete(char character) {
 		return Character.isWhitespace(character) ||
 		       isDelimitor(character)            ||
 		       character == '>' ||
@@ -217,11 +199,10 @@ public final class WordParser
 	/**
 	 * Determines whether the position of the cursor is at the end of the text.
 	 *
-	 * @return <code>true</code> if the position of the cursor is at the end of
-	 * the text; <code>false</code> otherwise
+	 * @return <code>true</code> if the position of the cursor is at the end of the text;
+	 * <code>false</code> otherwise
 	 */
-	public boolean isTail()
-	{
+	public boolean isTail() {
 		return cursor >= length;
 	}
 
@@ -230,8 +211,7 @@ public final class WordParser
 	 *
 	 * @return The total count of characters
 	 */
-	public int length()
-	{
+	public int length() {
 		return length;
 	}
 
@@ -240,8 +220,7 @@ public final class WordParser
 	 *
 	 * @param word The word used to determine how much to move the position forward
 	 */
-	public void moveBackward(CharSequence word)
-	{
+	public void moveBackward(CharSequence word) {
 		moveBackward(word.length());
 	}
 
@@ -250,8 +229,7 @@ public final class WordParser
 	 *
 	 * @param position The amount to remove from the current position
 	 */
-	public void moveBackward(int position)
-	{
+	public void moveBackward(int position) {
 		cursor -= position;
 	}
 
@@ -260,8 +238,7 @@ public final class WordParser
 	 *
 	 * @param word The word used to determine how much to move the position forward
 	 */
-	public void moveForward(CharSequence word)
-	{
+	public void moveForward(CharSequence word) {
 		moveForward(word.length());
 	}
 
@@ -270,13 +247,12 @@ public final class WordParser
 	 *
 	 * @param position The amount to add to the current position
 	 */
-	public void moveForward(int position)
-	{
+	public void moveForward(int position) {
 		cursor += position;
 	}
 
 	/**
-	 * Retrieves a word and the specified position is where the parsing stop.
+	 * Retrieves a word before the specified position, which determines when the parsing stop.
 	 * <p>
 	 * For instance, "<b>SELECT</b> <b>AVG</b>(e.age) <b>FROM</b> Employee e":
 	 * <ul>
@@ -290,8 +266,7 @@ public final class WordParser
 	 * @param position The position of the cursor
 	 * @return The sub-string that is before the position
 	 */
-	public String partialWord(int position)
-	{
+	public String partialWord(int position) {
 		int startIndex = partialWordStartPosition(position);
 		return substring(startIndex, position);
 	}
@@ -306,21 +281,19 @@ public final class WordParser
 	 * </ul>
 	 *
 	 * @param position The position from which the search ends
-	 * @return The position, which is a smaller number or equal, than the given
-	 * position
+	 * @return The position, which is a smaller number or equal, than the given position
 	 */
-	public int partialWordStartPosition(int position)
-	{
+	public int partialWordStartPosition(int position) {
+
 		int startIndex = position;
 
-		for (int index = position; --index >= 0; )
-		{
+		for (int index = position; --index >= 0; ) {
 			char character = text.charAt(index);
 
-			if (character == '='                  ||
-			    Character.isWhitespace(character) ||
-			    isDelimitor(character))
-			{
+			if (Character.isWhitespace(character) ||
+			    isDelimitor(character) ||
+			    isArithmeticSymbol(character)) {
+
 				break;
 			}
 
@@ -335,8 +308,7 @@ public final class WordParser
 	 *
 	 * @return The current position of the cursor
 	 */
-	public int position()
-	{
+	public int position() {
 		return cursor;
 	}
 
@@ -345,8 +317,7 @@ public final class WordParser
 	 *
 	 * @return
 	 */
-	public String potentialWord()
-	{
+	public String potentialWord() {
 		return substring(cursor, potentialWordEndPosition());
 	}
 
@@ -355,18 +326,15 @@ public final class WordParser
 	 *
 	 * @return
 	 */
-	public int potentialWordEndPosition()
-	{
+	public int potentialWordEndPosition() {
+
 		int endIndex = cursor;
 
-		for (int index = cursor; index < length; index++)
-		{
+		for (int index = cursor; index < length; index++) {
 			char character = text.charAt(index);
 
-			if (isArithmeticSymbol(character))
-			{
-				if (endIndex == cursor)
-				{
+			if (isArithmeticSymbol(character)) {
+				if (endIndex == cursor) {
 					endIndex++;
 				}
 
@@ -374,12 +342,11 @@ public final class WordParser
 			}
 
 			if (Character.isWhitespace(character) ||
-			    isDelimitor(character))
-			{
+			    isDelimitor(character)) {
+
 				index = length;
 			}
-			else
-			{
+			else {
 				endIndex++;
 			}
 		}
@@ -388,8 +355,8 @@ public final class WordParser
 	}
 
 	/**
-	 * Retrieves the previous word from the current position. Any character from
-	 * the position to the first whitespace will be ignore.
+	 * Retrieves the previous word from the current position. Any character from the position to the
+	 * first whitespace will be ignore.
 	 * <p>
 	 * For instance, "<b>SELECT</b> <b>AVG</b>(e.age) <b>FROM</b> Employee e":
 	 * <ul>
@@ -403,21 +370,18 @@ public final class WordParser
 	 * @param position The position to start looking for a word in reverse
 	 * @return The previous word that is separated by whitespace with the position
 	 */
-	public String previousWord(int position)
-	{
+	public String previousWord(int position) {
+
 		// Find the first whitespace before the word at the given position
-		while (--position >= 0)
-		{
+		while (--position >= 0) {
 			char character = text.charAt(position);
 
-			if (Character.isWhitespace(character))
-			{
+			if (Character.isWhitespace(character)) {
 				break;
 			}
 		}
 
-		if (position <= 0)
-		{
+		if (position <= 0) {
 			return AbstractExpression.EMPTY_STRING;
 		}
 
@@ -429,26 +393,21 @@ public final class WordParser
 	 *
 	 * @param position The new position of the cursor
 	 */
-	public void setPosition(int position)
-	{
+	public void setPosition(int position) {
 		this.cursor = position;
 	}
 
 	/**
 	 * Removes the whitespace that starts the given text.
 	 *
-	 * @param text The text to have the whitespace removed from the beginning of
-	 * the string
+	 * @param text The text to have the whitespace removed from the beginning of the string
 	 * @return The number of whitespace removed
 	 */
-	public int skipLeadingWhitespace()
-	{
+	public int skipLeadingWhitespace() {
 		int count = 0;
 
-		while (cursor < length)
-		{
-			if (!Character.isWhitespace(text.charAt(cursor)))
-			{
+		while (cursor < length) {
+			if (!Character.isWhitespace(text.charAt(cursor))) {
 				break;
 			}
 
@@ -460,58 +419,51 @@ public final class WordParser
 	}
 
 	/**
-	 * Determines whether the text starts with the given character. The case of
-	 * the character is not ignored.
+	 * Determines whether the text starts with the given character. The case of the character is not
+	 * ignored.
 	 *
 	 * @param possibleCharacter The possible character at the current position
-	 * @return <code>true</code> if the text starts with the given character at
-	 * the current position; <code>false</code> otherwise
+	 * @return <code>true</code> if the text starts with the given character at the current position;
+	 * <code>false</code> otherwise
 	 */
-	public boolean startsWith(char possibleCharacter)
-	{
+	public boolean startsWith(char possibleCharacter) {
 		return possibleCharacter == character();
 	}
 
 	/**
-	 * Tests wether the query starts with the specified prefix from the current
-	 * position.
+	 * Tests whether the query starts with the specified prefix from the current position.
 	 *
 	 * @param prefix The prefix
-	 * @return <code>true</code> if the character sequence represented by the
-	 * argument is a prefix of the text; <code>false</code> otherwise
+	 * @return <code>true</code> if the character sequence represented by the argument is a prefix of
+	 * the text; <code>false</code> otherwise
 	 */
-	public boolean startsWith(CharSequence prefix)
-	{
+	public boolean startsWith(CharSequence prefix) {
 		return startsWith(prefix, cursor);
 	}
 
 	/**
-	 * Tests whether the substring of the query beginning at the specified index
-	 * starts with the specified prefix.
+	 * Tests whether the substring of the query beginning at the specified index starts with the
+	 * specified prefix.
 	 *
 	 * @param prefix The prefix
 	 * @param offset Where to begin looking in the query
 	 * @return <code>true</code> if the character sequence represented by the
-	 * argument is a prefix of the substring of this object starting at index
-	 * <code>toffset</code>; <code>false</code> otherwise
+	 * argument is a prefix of the substring of this object starting at index <code>startIndex</code>;
+	 * <code>false</code> otherwise
 	 */
-	public boolean startsWith(CharSequence prefix, int offset)
-	{
-		int pc = prefix.length();
+	public boolean startsWith(CharSequence prefix, int startIndex) {
 
-		// Note: toffset might be near -1 >>> 1
-		if ((offset < 0) || (offset > length - pc))
-		{
+		int prefixLength = prefix.length();
+
+		// Note: startIndex might be near -1 >>> 1
+		if ((startIndex < 0) || (startIndex > length - prefixLength)) {
 			return false;
 		}
 
-		int to = offset;
-		int po = 0;
+		int prefixIndex = 0;
 
-		while (--pc >= 0)
-		{
-			if (text.charAt(to++) != prefix.charAt(po++))
-			{
+		while (--prefixLength >= 0) {
+			if (text.charAt(startIndex++) != prefix.charAt(prefixIndex++)) {
 				return false;
 			}
 		}
@@ -520,14 +472,14 @@ public final class WordParser
 	}
 
 	/**
-	 * Determines whether the character at the current position is one of the
-	 * arithmetic operators: { '+', '-', '*', '/' },
+	 * Determines whether the character at the current position is one of the arithmetic operators:
+	 * { '+', '-', '*', '/' },
 	 *
-	 * @return <code>true</code> if the character at the current position is an
-	 * arithmetic operator; <code>false</code> otherwise
+	 * @return <code>true</code> if the character at the current position is an arithmetic operator;
+	 * <code>false</code> otherwise
 	 */
-	public boolean startsWithArithmeticOperator()
-	{
+	public boolean startsWithArithmeticOperator() {
+
 		char character = text.charAt(cursor);
 
 		return (character == '+') ||
@@ -537,65 +489,57 @@ public final class WordParser
 	}
 
 	/**
-	 * Determines if the text starts with a digit (<code>true</code>), an
-	 * arithmetic term (<code>false</code>) or anything else (<code>null</code>).
+	 * Determines if the text starts with a digit (<code>true</code>), an arithmetic term
+	 * (<code>false</code>) or anything else (<code>null</code>).
 	 *
-	 * @return <code>true</code> if the text starts with a digit (we'll assume it
-	 * is a digit if the text starts with a digit or an arithmetic sign followed
-	 * by a digit), <code>false</code> if it starts with an arithmetic term
-	 * (we'll assume it is a digit followed by a non-digit character); otherwise
-	 * returns <code>null</code>
+	 * @return <code>true</code> if the text starts with a digit (we'll assume it is a digit if the
+	 * text starts with a digit or an arithmetic sign followed by a digit), <code>false</code> if it
+	 * starts with an arithmetic term (we'll assume it is a digit followed by a non-digit character);
+	 * otherwise returns <code>null</code>
 	 */
-	public Boolean startsWithDigit()
-	{
+	public Boolean startsWithDigit() {
+
 		char character = character();
 
 		// Check if the first character is either '+' or '-' and make sure
 		// it's not used for a numeric value, which in that case, a numeric
 		// value will be created
 		if (character == '-' ||
-		    character == '+')
-		{
-			if ((cursor + 1 < length) && isDigit(character(cursor + 1)))
-			{
+		    character == '+') {
+
+			if ((cursor + 1 < length) && isDigit(character(cursor + 1))) {
 				return Boolean.TRUE;
 			}
 
 			return Boolean.FALSE;
 		}
-		else if (character == '.')
-		{
+		else if (character == '.') {
 			return isDigit(character(cursor + 1));
 		}
-		else if (isDigit(character))
-		{
+		else if (isDigit(character)) {
 			return Boolean.TRUE;
 		}
 
 		return null;
 	}
 
-	public boolean startsWithIdentifier(CharSequence prefix)
-	{
+	public boolean startsWithIdentifier(CharSequence prefix) {
 		return startsWithIdentifier(prefix, cursor);
 	}
 
-	public boolean startsWithIdentifier(CharSequence prefix, int toffset)
-	{
-		if (startsWithIgnoreCase(prefix, toffset))
-		{
+	public boolean startsWithIdentifier(CharSequence prefix, int toffset) {
+
+		if (startsWithIgnoreCase(prefix, toffset)) {
 			int nextCharacterIndex = toffset + prefix.length();
 
-			if (nextCharacterIndex == length)
-			{
+			if (nextCharacterIndex == length) {
 				return true;
 			}
 
 			char character = text.charAt(nextCharacterIndex);
 
 			if (Character.isWhitespace(character) ||
-			    isDelimitor(character))
-			{
+			    isDelimitor(character)) {
 				return true;
 			}
 		}
@@ -604,15 +548,15 @@ public final class WordParser
 	}
 
 	/**
-	 * Determines whether the text starts with the given character. The case of
-	 * the character is ignored.
+	 * Determines whether the text starts with the given character. The case of the character is
+	 * ignored.
 	 *
 	 * @param possibleCharacter The possible character at the current position
-	 * @return <code>true</code> if the text starts with the given character at
-	 * the current position; <code>false</code> otherwise
+	 * @return <code>true</code> if the text starts with the given character at the current position;
+	 * <code>false</code> otherwise
 	 */
-	public boolean startsWithIgnoreCase(char possibleCharacter)
-	{
+	public boolean startsWithIgnoreCase(char possibleCharacter) {
+
 		char character = character();
 
 		return possibleCharacter == character ||
@@ -623,15 +567,12 @@ public final class WordParser
 	 * Tests if the string starts with the specified prefix.
 	 *
 	 * @param prefix The prefix
-	 * @return <code>true</code> if the character sequence represented by the
-	 * argument is a prefix of the character sequence represented by this string;
-	 * <code>false</code> otherwise. Note also that <code>true</code> will be
-	 * returned if the argument is an empty string or is equal to this
-	 * <code>String</code> object as determined by the {@link #equals(Object)}
-	 * method
+	 * @return <code>true</code> if the character sequence represented by the argument is a prefix of
+	 * the character sequence represented by this string; <code>false</code> otherwise. Note also
+	 * that <code>true</code> will be returned if the argument is an empty string or is equal to this
+	 * <code>String</code> object as determined by the {@link #equals(Object)} method
 	 */
-	public boolean startsWithIgnoreCase(CharSequence prefix)
-	{
+	public boolean startsWithIgnoreCase(CharSequence prefix) {
 		return startsWithIgnoreCase(prefix, cursor);
 	}
 
@@ -640,30 +581,26 @@ public final class WordParser
 	 *
 	 * @param prefix The prefix
 	 * @param offset Where to begin looking in this string
-	 * @return <code>true</code> if the character sequence represented by the
-	 * argument is a prefix of the character sequence represented by this string;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the character sequence represented by the argument is a prefix of
+	 * the character sequence represented by this string; <code>false</code> otherwise
 	 */
-	public boolean startsWithIgnoreCase(CharSequence prefix, int offset)
-	{
+	public boolean startsWithIgnoreCase(CharSequence prefix, int offset) {
+
 		int pc = prefix.length();
 
 		// Note: toffset might be near -1 >>> 1
-		if ((offset < 0) || (offset > length - pc))
-		{
+		if ((offset < 0) || (offset > length - pc)) {
 			return false;
 		}
 
 		int po = 0;
 		int to = offset;
 
-		while (--pc >= 0)
-		{
+		while (--pc >= 0) {
 			char c1 = text.charAt(to++);
 			char c2 = prefix.charAt(po++);
 
-			if (c1 == c2)
-			{
+			if (c1 == c2) {
 				continue;
 			}
 
@@ -673,16 +610,14 @@ public final class WordParser
 			char u1 = Character.toUpperCase(c1);
 			char u2 = Character.toUpperCase(c2);
 
-			if (u1 != u2)
-			{
+			if (u1 != u2) {
 				return false;
 			}
 
 			// Unfortunately, conversion to uppercase does not work properly for
 			// the Georgian alphabet, which has strange rules about case
 			// conversion. So we need to make one last check before exiting
-			if (Character.toLowerCase(u1) != Character.toLowerCase(u2))
-			{
+			if (Character.toLowerCase(u1) != Character.toLowerCase(u2)) {
 				return false;
 			}
 		}
@@ -691,25 +626,21 @@ public final class WordParser
 	}
 
 	/**
-	 * Returns a substring that is within the current position of the cursor and
-	 * the end of the text.
+	 * Returns a substring that is within the current position of the cursor and the end of the text.
 	 *
 	 * @return The remain of the string starting at the current position
 	 */
-	public String substring()
-	{
+	public String substring() {
 		return substring(cursor);
 	}
 
 	/**
-	 * Returns a substring that is within the given position and the end of the
-	 * text.
+	 * Returns a substring that is within the given position and the end of the text.
 	 *
 	 * @param startIndex The beginning of the substring, inclusive
 	 * @return The remain of the string starting at the given position
 	 */
-	public String substring(int startIndex)
-	{
+	public String substring(int startIndex) {
 		return substring(startIndex, length);
 	}
 
@@ -720,8 +651,7 @@ public final class WordParser
 	 * @param endIndex The end of the substring, exclusive
 	 * @return The remain of the string that is within the given positions
 	 */
-	public String substring(int startIndex, int endIndex)
-	{
+	public String substring(int startIndex, int endIndex) {
 		return text.subSequence(startIndex, endIndex).toString();
 	}
 
@@ -729,37 +659,33 @@ public final class WordParser
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return isTail() ? AbstractExpression.EMPTY_STRING : substring();
 	}
 
 	/**
-	 * Calculates the number of whitespace that are in the query. The check
-	 * starts at the current position.
+	 * Calculates the number of whitespace that are in the query. The check starts at the current
+	 * position.
 	 *
 	 * @return The count of consecutive whitespace found from the current position
 	 */
-	public int whitespaceCount()
-	{
+	public int whitespaceCount() {
 		return whitespaceCount(cursor);
 	}
 
 	/**
-	 * Calculates the number of whitespace that are in the query. The check
-	 * starts at the current position.
+	 * Calculates the number of whitespace that are in the query. The check starts at the current
+	 * position.
 	 *
 	 * @param position The position from where the scan starts
 	 * @return The count of consecutive whitespace found from the given position
 	 */
-	public int whitespaceCount(int position)
-	{
-		for (int index = position; index < length; index++)
-		{
+	public int whitespaceCount(int position) {
+
+		for (int index = position; index < length; index++) {
 			char character = text.charAt(index);
 
-			if (!Character.isWhitespace(character))
-			{
+			if (!Character.isWhitespace(character)) {
 				return index - position;
 			}
 		}
@@ -770,23 +696,21 @@ public final class WordParser
 	/**
 	 * Retrieves the first word starting at the current position.
 	 *
-	 * @return The first word contained in the text, if none could be found, then
-	 * an empty string is returned
+	 * @return The first word contained in the text, if none could be found, then an empty string is
+	 * returned
 	 */
-	public String word()
-	{
+	public String word() {
 		return substring(cursor, wordEndPosition());
 	}
 
 	/**
-	 * Returns the position at which a word ends, the position is determined by
-	 * the current position of the cursor.
+	 * Returns the position at which a word ends, the position is determined by the current position
+	 * of the cursor.
 	 *
-	 * @return The position where the current word ends, it ends when a whitespace,
-	 * a delimitor {',', '(', ')'} or a math symbol is encountered
+	 * @return The position where the current word ends, it ends when a whitespace, a delimitor {',',
+	 * '(', ')'} or a math symbol is encountered
 	 */
-	public int wordEndPosition()
-	{
+	public int wordEndPosition() {
 		return wordEndPosition(cursor);
 	}
 
@@ -794,23 +718,20 @@ public final class WordParser
 	 * Returns the position at which a word ends.
 	 *
 	 * @param position The beginning of the search where the word ends
-	 * @return The position where the current word ends, it ends when a whitespace,
-	 * a delimitor {',', '(', ')'} or a math symbol is encountered
+	 * @return The position where the current word ends, it ends when a whitespace, a delimitor {',',
+	 * '(', ')'} or a math symbol is encountered
 	 */
-	public int wordEndPosition(int position)
-	{
+	public int wordEndPosition(int position) {
+
 		int endIndex = position;
 
-		for (int index = position; index < length; index++)
-		{
+		for (int index = position; index < length; index++) {
 			char character = text.charAt(index);
 
-			if (isParsingComplete(character))
-			{
+			if (isParsingComplete(character)) {
 				index = length;
 			}
-			else
-			{
+			else {
 				endIndex++;
 			}
 		}

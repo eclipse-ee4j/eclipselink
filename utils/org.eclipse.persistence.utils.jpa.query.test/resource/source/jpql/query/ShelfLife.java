@@ -1,16 +1,17 @@
 package jpql.query;
 
 import java.util.Date;
-import java.util.Vector;
 import javax.persistence.Embeddable;
-import javax.xml.bind.annotation.XmlAttachmentRef;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlMimeType;
 
 @Embeddable
-public final class ShelfLife
+public class ShelfLife
 {
+	@Temporal(TemporalType.DATE)
 	private Date soldDate;
 
 	public ShelfLife()

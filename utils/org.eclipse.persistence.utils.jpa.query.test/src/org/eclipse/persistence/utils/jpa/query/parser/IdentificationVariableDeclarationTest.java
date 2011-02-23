@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -18,19 +18,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
-public final class IdentificationVariableDeclarationTest extends AbstractJPQLTest
-{
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
+public final class IdentificationVariableDeclarationTest extends AbstractJPQLTest {
 	@Test
-	public void testBuildExpression_01()
-	{
+	public void testBuildExpression_01() {
 		String query = "SELECT e FROM Employee e, Address AS addr";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -104,10 +96,9 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 	}
 
 	@Test
-	public void testBuildExpression_02()
-	{
+	public void testBuildExpression_02() {
 		String query = "SELECT e FROM Employee e JOIN e.magazines AS mags";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -131,7 +122,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 
 		assertEquals("JOIN e.magazines AS mags", join.toParsedText());
 		assertTrue(join.hasAs());
-		assertSame(Join.Type.JOIN, join.getIdentifier());
+		assertSame(Expression.JOIN, join.getIdentifier());
 
 		// CollectionValuedPathExpression
 		expression = join.getJoinAssociationPath();
@@ -149,10 +140,9 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 	}
 
 	@Test
-	public void testBuildExpression_03()
-	{
+	public void testBuildExpression_03() {
 		String query = "SELECT e FROM Employee e JOIN e.magazines mags";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -176,7 +166,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 
 		assertEquals("JOIN e.magazines mags", join.toParsedText());
 		assertFalse(join.hasAs());
-		assertSame(Join.Type.JOIN, join.getIdentifier());
+		assertSame(Expression.JOIN, join.getIdentifier());
 
 		// CollectionValuedPathExpression
 		expression = join.getJoinAssociationPath();
@@ -194,10 +184,9 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 	}
 
 	@Test
-	public void testBuildExpression_04()
-	{
+	public void testBuildExpression_04() {
 		String query = "SELECT e FROM Employee e LEFT JOIN e.magazines mags";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -221,7 +210,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 
 		assertEquals("LEFT JOIN e.magazines mags", join.toParsedText());
 		assertFalse(join.hasAs());
-		assertSame(Join.Type.LEFT_JOIN, join.getIdentifier());
+		assertSame(Expression.LEFT_JOIN, join.getIdentifier());
 
 		// CollectionValuedPathExpression
 		expression = join.getJoinAssociationPath();
@@ -239,10 +228,9 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 	}
 
 	@Test
-	public void testBuildExpression_05()
-	{
+	public void testBuildExpression_05() {
 		String query = "SELECT e FROM Employee e JOIN FETCH e.magazines";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -265,7 +253,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 		JoinFetch fetchJoin = (JoinFetch) expression;
 
 		assertEquals("JOIN FETCH e.magazines", fetchJoin.toParsedText());
-		assertSame(JoinFetch.Type.JOIN_FETCH, fetchJoin.getIdentifier());
+		assertSame(Expression.JOIN_FETCH, fetchJoin.getIdentifier());
 
 		// CollectionValuedPathExpression
 		expression = fetchJoin.getJoinAssociationPath();
@@ -277,10 +265,9 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 	}
 
 	@Test
-	public void testBuildExpression_06()
-	{
+	public void testBuildExpression_06() {
 		String query = "SELECT e FROM Employee e JOIN e.magazines mags INNER JOIN e.name AS name";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -311,7 +298,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 
 		assertEquals("JOIN e.magazines mags", join.toParsedText());
 		assertFalse(join.hasAs());
-		assertSame(Join.Type.JOIN, join.getIdentifier());
+		assertSame(Expression.JOIN, join.getIdentifier());
 
 		// CollectionValuedPathExpression
 		expression = join.getJoinAssociationPath();
@@ -334,7 +321,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 
 		assertEquals("INNER JOIN e.name AS name", join.toParsedText());
 		assertTrue(join.hasAs());
-		assertSame(Join.Type.INNER_JOIN, join.getIdentifier());
+		assertSame(Expression.INNER_JOIN, join.getIdentifier());
 
 		// CollectionValuedPathExpression
 		expression = join.getJoinAssociationPath();
@@ -352,8 +339,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 	}
 
 	@Test
-	public void testBuildExpression_07()
-	{
+	public void testBuildExpression_07() {
 		String query = "SELECT e " +
 		               "FROM Employee e " +
 		               "     LEFT OUTER JOIN e.name name, " +
@@ -361,7 +347,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 		               "     INNER JOIN addr.zip AS zip, " +
 		               "     Manager m";
 
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -411,7 +397,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 		Join join = (Join) expression;
 
 		assertFalse(join.hasAs());
-		assertSame(Join.Type.LEFT_OUTER_JOIN, join.getIdentifier());
+		assertSame(Expression.LEFT_OUTER_JOIN, join.getIdentifier());
 
 		// CollectionValuedPathExpression
 		expression = join.getJoinAssociationPath();
@@ -463,7 +449,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 		assertTrue(expression instanceof JoinFetch);
 		JoinFetch fetchJoin = (JoinFetch) expression;
 
-		assertSame(JoinFetch.Type.JOIN_FETCH, fetchJoin.getIdentifier());
+		assertSame(Expression.JOIN_FETCH, fetchJoin.getIdentifier());
 
 		expression = fetchJoin.getJoinAssociationPath();
 		assertEquals("addr.street", expression.toParsedText());
@@ -474,7 +460,7 @@ public final class IdentificationVariableDeclarationTest extends AbstractJPQLTes
 		assertEquals("INNER JOIN addr.zip AS zip", expression.toParsedText());
 
 		assertTrue(join.hasAs());
-		assertSame(Join.Type.INNER_JOIN, join.getIdentifier());
+		assertSame(Expression.INNER_JOIN, join.getIdentifier());
 
 		expression = join.getJoinAssociationPath();
 		assertTrue(expression instanceof CollectionValuedPathExpression);

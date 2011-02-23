@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query;
@@ -29,8 +29,8 @@ import org.eclipse.persistence.utils.jpa.query.spi.ITypeDeclaration;
  * @since 11.2.0
  * @author Pascal Filion
  */
-final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver
-{
+final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver {
+
 	/**
 	 * Creates a new <code>CollectionValuedFieldTypeResolver</code>.
 	 *
@@ -38,8 +38,7 @@ final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver
 	 * be retrieved
 	 * @param path The name of the collection-valued field
 	 */
-	CollectionValuedFieldTypeResolver(TypeResolver parent, String path)
-	{
+	CollectionValuedFieldTypeResolver(TypeResolver parent, String path) {
 		super(parent, path);
 	}
 
@@ -47,8 +46,7 @@ final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType getManagedType()
-	{
+	public IManagedType getManagedType() {
 		return resolveManagedType(path);
 	}
 
@@ -56,21 +54,27 @@ final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType resolveManagedType(String abstractSchemaName)
-	{
+	public IMapping getMapping() {
+		return resolveMapping(path);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IManagedType resolveManagedType(String abstractSchemaName) {
+
 		// Retrieve the managed type that is the owner of the property
 		IManagedType managedType = getParentManagedType();
 
-		if (managedType == null)
-		{
+		if (managedType == null) {
 			return null;
 		}
 
 		// Retrieve the mapping for the property
 		IMapping mapping = managedType.getMappingNamed(abstractSchemaName);
 
-		if (mapping == null)
-		{
+		if (mapping == null) {
 			return null;
 		}
 
@@ -78,21 +82,16 @@ final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver
 		IType type = typeDeclaration.getType();
 
 		// Collection type cannot be traversed
-		if (isCollectionType(type))
-		{
-			Iterator<IType> componentTypes = typeDeclaration.parameterTypes();
-
-			if (!componentTypes.hasNext())
-			{
+		if (TypeHelper.isCollectionType(type)) {
+			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+			if (typeParameters.length == 0) {
 				return null;
 			}
-
-			type = componentTypes.next();
+			type = typeParameters[0].getType();
 		}
 		// Wrap the Map into a virtual IManagedType so it can be returned and the
 		// IType for the Map can be used to retrieve the type of the key and value
-		else if (isMapType(type))
-		{
+		else if (TypeHelper.isMapType(type)) {
 			return new MapManagedType(getProvider(), type);
 		}
 
@@ -104,36 +103,40 @@ final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IType resolveType(String variableName)
-	{
+	public IMapping resolveMapping(String variableName) {
+
+		// Retrieve the managed type that is the owner of the property
+		IManagedType managedType = getParentManagedType();
+
+		// Retrieve the mapping for the property
+		if (managedType != null) {
+			return managedType.getMappingNamed(variableName);
+		}
+
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IType resolveType(String variableName) {
+
 		ITypeDeclaration typeDeclaration = resolveTypeDeclaration(variableName);
 		IType type = typeDeclaration.getType();
 
 		// For a collection type, return the first type parameter
-		if (isCollectionType(type))
-		{
-			Iterator<IType> componentTypes = typeDeclaration.parameterTypes();
-
-			if (componentTypes.hasNext())
-			{
-				return componentTypes.next();
+		if (TypeHelper.isCollectionType(type)) {
+			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+			if (typeParameters.length > 0) {
+				return typeParameters[0].getType();
 			}
 		}
 		// For a map type, by default the value is the actual type to return
-		else if (isMapType(type))
-		{
-			Iterator<IType> componentTypes = typeDeclaration.parameterTypes();
-
-			// Skip the key type
-			if (componentTypes.hasNext())
-			{
-				componentTypes.next();
-
-				// Return the value type
-				if (componentTypes.hasNext())
-				{
-					return componentTypes.next();
-				}
+		else if (TypeHelper.isMapType(type)) {
+			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+			if (typeParameters.length == 2) {
+				return typeParameters[1].getType();
 			}
 		}
 
@@ -144,34 +147,23 @@ final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ITypeDeclaration resolveTypeDeclaration(String variableName)
-	{
-		// Retrieve the managed type that is the owner of the property
-		IManagedType managedType = getParentManagedType();
+	public ITypeDeclaration resolveTypeDeclaration(String variableName) {
 
-		if (managedType == null)
-		{
-			return objectTypeDeclaration();
+		IMapping mapping = resolveMapping(variableName);
+
+		if (mapping != null) {
+			return mapping.getTypeDeclaration();
 		}
 
-		// Retrieve the mapping for the property
-		IMapping mapping = managedType.getMappingNamed(variableName);
-
-		if (mapping == null)
-		{
-			return objectTypeDeclaration();
-		}
-
-		return mapping.getTypeDeclaration();
+		return TypeHelper.unknownTypeDeclaration();
 	}
 
-	private static class MapManagedType implements IManagedType
-	{
+	private static class MapManagedType implements IManagedType {
+
 		private IType mapType;
 		private IManagedTypeProvider provider;
 
-		MapManagedType(IManagedTypeProvider provider, IType mapType)
-		{
+		MapManagedType(IManagedTypeProvider provider, IType mapType) {
 			super();
 
 			this.provider = provider;
@@ -181,44 +173,34 @@ final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public void accept(IManagedTypeVisitor visitor)
-		{
+		public void accept(IManagedTypeVisitor visitor) {
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public IMapping getMappingNamed(String name)
-		{
+		public IMapping getMappingNamed(String name) {
 			return null;
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public IManagedTypeProvider getProvider()
-		{
+		public IManagedTypeProvider getProvider() {
 			return provider;
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public IType getType()
-		{
+		public IType getType() {
 			return mapType;
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		@Override
-		public Iterator<IMapping> mappings()
-		{
+		public Iterator<IMapping> mappings() {
 			return Collections.<IMapping>emptyList().iterator();
 		}
 	}

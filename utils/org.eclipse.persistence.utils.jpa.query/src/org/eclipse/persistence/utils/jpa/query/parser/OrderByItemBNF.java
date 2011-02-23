@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -23,8 +23,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class OrderByItemBNF extends JPQLQueryBNF
-{
+final class OrderByItemBNF extends JPQLQueryBNF {
+
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
@@ -33,8 +33,7 @@ final class OrderByItemBNF extends JPQLQueryBNF
 	/**
 	 * Creates a new <code>OrderByItemBNF</code>.
 	 */
-	OrderByItemBNF()
-	{
+	OrderByItemBNF() {
 		super(ID);
 	}
 
@@ -42,8 +41,7 @@ final class OrderByItemBNF extends JPQLQueryBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackBNFId()
-	{
+	String getFallbackBNFId() {
 		return ID;
 	}
 
@@ -51,8 +49,7 @@ final class OrderByItemBNF extends JPQLQueryBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackExpressionFactoryId()
-	{
+	String getFallbackExpressionFactoryId() {
 		return OrderByItemFactory.ID;
 	}
 
@@ -60,8 +57,7 @@ final class OrderByItemBNF extends JPQLQueryBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate()
-	{
+	boolean handleAggregate() {
 		return true;
 	}
 
@@ -69,19 +65,10 @@ final class OrderByItemBNF extends JPQLQueryBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection()
-	{
+	boolean handleCollection() {
 		// Technically, this BNF does not support collection but it's parent
 		// orderby_clause does. But this BNF is used by OrderByClause directly
 		// to parse the query so the flag has to be turned on here
 		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	void initialize()
-	{
 	}
 }

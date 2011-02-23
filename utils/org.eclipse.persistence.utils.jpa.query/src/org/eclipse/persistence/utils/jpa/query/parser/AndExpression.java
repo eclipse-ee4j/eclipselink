@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -20,24 +20,21 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class AndExpression extends LogicalExpression
-{
+public final class AndExpression extends LogicalExpression {
+
 	/**
 	 * Creates a new <code>AndExpression</code>.
 	 *
 	 * @param parent The parent of this expression
 	 */
-	AndExpression(AbstractExpression parent)
-	{
+	AndExpression(AbstractExpression parent) {
 		super(parent, AND);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
@@ -45,9 +42,9 @@ public final class AndExpression extends LogicalExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
-		return word.equalsIgnoreCase(OR) ||
+	boolean isParsingComplete(WordParser wordParser, String word) {
+		return word.equalsIgnoreCase(AND) ||
+		       word.equalsIgnoreCase(OR)  ||
 		       super.isParsingComplete(wordParser, word);
 	}
 
@@ -55,8 +52,7 @@ public final class AndExpression extends LogicalExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF rightExpressionBNF()
-	{
+	JPQLQueryBNF rightExpressionBNF() {
 		return queryBNF(ConditionalFactorBNF.ID);
 	}
 }

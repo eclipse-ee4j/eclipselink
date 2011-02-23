@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -25,8 +25,8 @@ import java.util.List;
  * @since 11.2.0
  * @author Pascal Filion
  */
-public final class CaseExpression extends AbstractExpression
-{
+public final class CaseExpression extends AbstractExpression {
+
 	/**
 	 * The {@link Expression} representing the case operand.
 	 */
@@ -63,8 +63,7 @@ public final class CaseExpression extends AbstractExpression
 	private boolean hasSpaceAfterElse;
 
 	/**
-	 * Determines whether a whitespace was parsed after the <b>BETWEEN</b>
-	 * expression.
+	 * Determines whether a whitespace was parsed after the <b>BETWEEN</b> expression.
 	 */
 	private boolean hasSpaceAfterElseExpression;
 
@@ -88,26 +87,31 @@ public final class CaseExpression extends AbstractExpression
 	 *
 	 * @param parent The parent of this expression
 	 */
-	CaseExpression(AbstractExpression parent)
-	{
+	CaseExpression(AbstractExpression parent) {
 		super(parent, CASE);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		getCaseOperand().accept(visitor);
+		getWhenClauses().accept(visitor);
+		getElseExpression().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	void addChildrenTo(Collection<Expression> children) {
 		children.add(getCaseOperand());
 		children.add(getWhenClauses());
 		children.add(getElseExpression());
@@ -117,63 +121,53 @@ public final class CaseExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedChildrenTo(List<StringExpression> children)
-	{
+	void addOrderedChildrenTo(List<StringExpression> children) {
+
 		// 'CASE'
 		children.add(buildStringExpression(CASE));
 
-		if (hasSpaceAfterCase)
-		{
+		if (hasSpaceAfterCase) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// Case operand
-		if (caseOperand != null)
-		{
+		if (caseOperand != null) {
 			children.add(caseOperand);
 		}
 
-		if (hasSpaceAfterCaseOperand)
-		{
+		if (hasSpaceAfterCaseOperand) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// WHEN clauses
-		if (whenClauses != null)
-		{
+		if (whenClauses != null) {
 			children.add(whenClauses);
 		}
 
-		if (hasSpaceAfterWhenClauses)
-		{
+		if (hasSpaceAfterWhenClauses) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'ELSE'
-		if (hasElse)
-		{
+		if (hasElse) {
 			children.add(buildStringExpression(ELSE));
 		}
 
-		if (hasSpaceAfterElse)
-		{
+		if (hasSpaceAfterElse) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// Else expression
-		if (elseExpression != null)
-		{
+		if (elseExpression != null) {
 			children.add(elseExpression);
 		}
 
-		if (hasSpaceAfterElseExpression)
-		{
+		if (hasSpaceAfterElseExpression) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'END'
-		if (hasEnd)
-		{
+		if (hasEnd) {
 			children.add(buildStringExpression(END));
 		}
 	}
@@ -183,13 +177,10 @@ public final class CaseExpression extends AbstractExpression
 	 *
 	 * @return The expression that was parsed representing the <b>CASE</b> operand
 	 */
-	public Expression getCaseOperand()
-	{
-		if (caseOperand == null)
-		{
+	public Expression getCaseOperand() {
+		if (caseOperand == null) {
 			caseOperand = buildNullExpression();
 		}
-
 		return caseOperand;
 	}
 
@@ -198,13 +189,10 @@ public final class CaseExpression extends AbstractExpression
 	 *
 	 * @return The expression that was parsed representing the <b>ELSE</b> operand
 	 */
-	public AbstractExpression getElseExpression()
-	{
-		if (elseExpression == null)
-		{
+	public AbstractExpression getElseExpression() {
+		if (elseExpression == null) {
 			elseExpression = buildNullExpression();
 		}
-
 		return elseExpression;
 	}
 
@@ -212,8 +200,7 @@ public final class CaseExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(GeneralCaseExpressionBNF.ID);
 	}
 
@@ -222,24 +209,19 @@ public final class CaseExpression extends AbstractExpression
 	 *
 	 * @return The expression that was parsed representing the <b>WHEN</b> clauses
 	 */
-	public AbstractExpression getWhenClauses()
-	{
-		if (whenClauses == null)
-		{
+	public AbstractExpression getWhenClauses() {
+		if (whenClauses == null) {
 			whenClauses = buildNullExpression();
 		}
-
 		return whenClauses;
 	}
 
 	/**
 	 * Determines whether the <b>CASE</b> operand was parsed.
 	 *
-	 * @return <code>true</code> if the <b>CASE</b> operand was parsed;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the <b>CASE</b> operand was parsed; <code>false</code> otherwise
 	 */
-	public boolean hasCaseOperand()
-	{
+	public boolean hasCaseOperand() {
 		return caseOperand != null &&
 		      !caseOperand.isNull();
 	}
@@ -247,22 +229,20 @@ public final class CaseExpression extends AbstractExpression
 	/**
 	 * Determines whether the identifier <b>ELSE</b> was parsed.
 	 *
-	 * @return <code>true</code> if the identifier <b>ELSE</b> was parsed;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the identifier <b>ELSE</b> was parsed; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasElse()
-	{
+	public boolean hasElse() {
 		return hasElse;
 	}
 
 	/**
 	 * Determines whether the <b>ELSE</b> expression was parsed.
 	 *
-	 * @return <code>true</code> if the <b>ELSE</b> expression was parsed;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the <b>ELSE</b> expression was parsed; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasElseExpression()
-	{
+	public boolean hasElseExpression() {
 		return elseExpression != null &&
 		      !elseExpression.isNull();
 	}
@@ -270,55 +250,49 @@ public final class CaseExpression extends AbstractExpression
 	/**
 	 * Determines whether the identifier <b>END</b> was parsed.
 	 *
-	 * @return <code>true</code> if the identifier <b>END</b> was parsed;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if the identifier <b>END</b> was parsed; <code>false</code> otherwise
 	 */
-	public boolean hasEnd()
-	{
+	public boolean hasEnd() {
 		return hasEnd;
 	}
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>CASE</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>CASE</b>;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>CASE</b>; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasSpaceAfterCase()
-	{
+	public boolean hasSpaceAfterCase() {
 		return hasSpaceAfterCase;
 	}
 
 	/**
 	 * Determines whether a whitespace was parsed after the case operand.
 	 *
-	 * @return <code>true</code> if there was a whitespace after the case
-	 * operand; <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after the case operand; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasSpaceAfterCaseOperand()
-	{
+	public boolean hasSpaceAfterCaseOperand() {
 		return hasSpaceAfterCaseOperand;
 	}
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>ELSE</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>ELSE</b>;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>ELSE</b>; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasSpaceAfterElse()
-	{
+	public boolean hasSpaceAfterElse() {
 		return hasSpaceAfterElse;
 	}
 
 	/**
 	 * Determines whether a whitespace was parsed after the else expression.
 	 *
-	 * @return <code>true</code> if there was a whitespace after the else
-	 * expression; <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after the else expression;
+	 * <code>false</code> otherwise
 	 */
-	public boolean hasSpaceAfterElseExpression()
-	{
+	public boolean hasSpaceAfterElseExpression() {
 		return hasSpaceAfterElseExpression;
 	}
 
@@ -328,8 +302,7 @@ public final class CaseExpression extends AbstractExpression
 	 * @return <code>true</code> if there was a whitespace after <the b>WHEN</b>
 	 * clause; <code>false</code> otherwise
 	 */
-	public boolean hasSpaceAfterWhenClauses()
-	{
+	public boolean hasSpaceAfterWhenClauses() {
 		return hasSpaceAfterWhenClauses;
 	}
 
@@ -339,8 +312,7 @@ public final class CaseExpression extends AbstractExpression
 	 * @return <code>true</code> if the <b>WHEN</b> clauses were parsed;
 	 * <code>false</code> otherwise
 	 */
-	public boolean hasWhenClauses()
-	{
+	public boolean hasWhenClauses() {
 		return whenClauses != null &&
 		      !whenClauses.isNull();
 	}
@@ -349,11 +321,10 @@ public final class CaseExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word)
-	{
+	boolean isParsingComplete(WordParser wordParser, String word) {
+
 		// 'CASE'
-		if (parsingType == ParsingType.CASE)
-		{
+		if (parsingType == ParsingType.CASE) {
 			return word.equalsIgnoreCase(WHEN) ||
 			       word.equalsIgnoreCase(ELSE) ||
 			       word.equalsIgnoreCase(END)  ||
@@ -361,8 +332,7 @@ public final class CaseExpression extends AbstractExpression
 		}
 
 		// 'WHEN'
-		if (parsingType == ParsingType.WHEN)
-		{
+		if (parsingType == ParsingType.WHEN) {
 			return word.equalsIgnoreCase(ELSE) ||
 			       word.equalsIgnoreCase(END)  ||
 			       super.isParsingComplete(wordParser, word);
@@ -377,8 +347,8 @@ public final class CaseExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parse(WordParser wordParser, boolean tolerant)
-	{
+	void parse(WordParser wordParser, boolean tolerant) {
+
 		// Parse 'CASE'
 		wordParser.moveForward(CASE);
 
@@ -387,10 +357,8 @@ public final class CaseExpression extends AbstractExpression
 		// Parse case operand
 		parsingType = ParsingType.CASE;
 
-		if (!wordParser.startsWithIdentifier(WHEN))
-		{
-			caseOperand = parse
-			(
+		if (!wordParser.startsWithIdentifier(WHEN)) {
+			caseOperand = parse(
 				wordParser,
 				queryBNF(CaseOperandBNF.ID),
 				tolerant
@@ -402,8 +370,7 @@ public final class CaseExpression extends AbstractExpression
 		// Parse the WHEN clauses
 		parsingType = ParsingType.WHEN;
 
-		whenClauses = parse
-		(
+		whenClauses = parse(
 			wordParser,
 			queryBNF(WhenClauseBNF.ID),
 			tolerant
@@ -414,8 +381,7 @@ public final class CaseExpression extends AbstractExpression
 		// Parse 'ELSE'
 		hasElse = wordParser.startsWithIdentifier(ELSE);
 
-		if (hasElse)
-		{
+		if (hasElse) {
 			wordParser.moveForward(ELSE);
 		}
 
@@ -424,8 +390,7 @@ public final class CaseExpression extends AbstractExpression
 		// Parse the ELSE expression
 		parsingType = ParsingType.ELSE;
 
-		elseExpression = parse
-		(
+		elseExpression = parse(
 			wordParser,
 			queryBNF(ElseExpressionBNF.ID),
 			tolerant
@@ -436,8 +401,7 @@ public final class CaseExpression extends AbstractExpression
 		// Parse 'END'
 		hasEnd = wordParser.startsWithIdentifier(END);
 
-		if (hasEnd)
-		{
+		if (hasEnd) {
 			wordParser.moveForward(END);
 		}
 	}
@@ -446,63 +410,53 @@ public final class CaseExpression extends AbstractExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer)
-	{
+	void toParsedText(StringBuilder writer) {
+
 		// 'CASE'
 		writer.append(CASE);
 
-		if (hasSpaceAfterCase)
-		{
+		if (hasSpaceAfterCase) {
 			writer.append(SPACE);
 		}
 
 		// Case Operand
-		if (caseOperand != null)
-		{
+		if (caseOperand != null) {
 			caseOperand.toParsedText(writer);
 		}
 
-		if (hasSpaceAfterCaseOperand)
-		{
+		if (hasSpaceAfterCaseOperand) {
 			writer.append(SPACE);
 		}
 
 		// When clauses
-		if (whenClauses != null)
-		{
+		if (whenClauses != null) {
 			whenClauses.toParsedText(writer);
 		}
 
-		if (hasSpaceAfterWhenClauses)
-		{
+		if (hasSpaceAfterWhenClauses) {
 			writer.append(SPACE);
 		}
 
 		// 'ELSE'
-		if (hasElse)
-		{
+		if (hasElse) {
 			writer.append(ELSE);
 		}
 
-		if (hasSpaceAfterElse)
-		{
+		if (hasSpaceAfterElse) {
 			writer.append(SPACE);
 		}
 
 		// Else expression
-		if (elseExpression != null)
-		{
+		if (elseExpression != null) {
 			elseExpression.toParsedText(writer);
 		}
 
-		if (hasSpaceAfterElseExpression)
-		{
+		if (hasSpaceAfterElseExpression) {
 			writer.append(SPACE);
 		}
 
 		// 'END'
-		if (hasEnd)
-		{
+		if (hasEnd) {
 			writer.append(END);
 		}
 	}
@@ -511,8 +465,7 @@ public final class CaseExpression extends AbstractExpression
 	 * A enumeration used to determine how {@link CaseExpression#isParsingComplete(WordParser, String)}
 	 * should behaves.
 	 */
-	private enum ParsingType
-	{
+	private enum ParsingType {
 		CASE,
 		ELSE,
 		WHEN

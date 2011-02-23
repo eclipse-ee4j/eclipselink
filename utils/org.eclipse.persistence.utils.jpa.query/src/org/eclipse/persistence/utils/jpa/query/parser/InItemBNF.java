@@ -3,28 +3,28 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * The query BNF for an in expression.
+ * The query BNF for the items of an <b>IN</b> expression.
  *
- * <div nowrap><b>BNF:</b> <code>in_item ::= literal | single_valued_input_parameter</code><p>
+ * <div nowrap><b>BNF:</b> <code>in_item ::= ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter</code><p>
  *
  * @version 11.2.0
  * @since 11.2.0
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InItemBNF extends AbstractCompoundBNF
-{
+final class InItemBNF extends JPQLQueryBNF {
+
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
@@ -33,8 +33,7 @@ final class InItemBNF extends AbstractCompoundBNF
 	/**
 	 * Creates a new <code>InItemBNF</code>.
 	 */
-	InItemBNF()
-	{
+	InItemBNF() {
 		super(ID);
 	}
 
@@ -42,8 +41,7 @@ final class InItemBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackBNFId()
-	{
+	String getFallbackBNFId() {
 		return ID;
 	}
 
@@ -51,17 +49,15 @@ final class InItemBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	String getFallbackExpressionFactoryId()
-	{
-		return BasicLiteralExpressionFactory.ID;
+	String getFallbackExpressionFactoryId() {
+		return EntityTypeLiteralFactory.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate()
-	{
+	boolean handleAggregate() {
 		// To support invalid queries
 		return true;
 	}
@@ -70,8 +66,7 @@ final class InItemBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection()
-	{
+	boolean handleCollection() {
 		return true;
 	}
 
@@ -79,13 +74,16 @@ final class InItemBNF extends AbstractCompoundBNF
 	 * {@inheritDoc}
 	 */
 	@Override
-	void initialize()
-	{
+	void initialize() {
 		super.initialize();
 
-		registerExpressionFactory(LiteralExpressionFactory.ID);
+		registerExpressionFactory(EntityTypeLiteralFactory.ID);
 
+		registerChild(LiteralBNF.ID);
 		registerChild(InputParameterBNF.ID);
 		registerChild(SubQueryBNF.ID);
+
+		// EclipseLink extension of JPQL grammar
+		registerChild(ScalarExpressionBNF.ID);
 	}
 }

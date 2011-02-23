@@ -12,9 +12,11 @@ import javax.persistence.OneToMany;
 @Entity
 @NamedQueries
 ({
-	@NamedQuery(name = "dept.findAll",     query = "select o from Dept o"),
-	@NamedQuery(name = "dept.dname",       query = "select o from Dept o where o.dname in (:dname1, :dname2, :dname3)"),
-	@NamedQuery(name = "dept.floorNumber", query = "select Dept.floorNumber from Dept Dept")
+	@NamedQuery(name = "dept.and.multiple", query = "DELETE FROM Dept d WHERE d.dname = 'DEPT A' AND d.role = 'ROLE A' AND d.loc = 'LOCATION A'"),
+	@NamedQuery(name = "dept.findAll",      query = "select o from Dept o"),
+	@NamedQuery(name = "dept.dname",        query = "select o from Dept o where o.dname in (:dname1, :dname2, :dname3)"),
+	@NamedQuery(name = "dept.floorNumber",  query = "select d.floorNumber from Dept d"),
+	@NamedQuery(name = "dept.new1",         query = "SELECT NEW java.util.Vector(d.dname) FROM Dept d")
 })
 public class Dept implements Serializable
 {
@@ -23,11 +25,12 @@ public class Dept implements Serializable
 	private Long deptno;
 	@Column(length = 14)
 	private String dname;
-	@Column(length = 13)
-	private String loc;
 	@OneToMany(mappedBy = "dept")
 	private List<Employee> empList;
 	private int floorNumber;
+	@Column(length = 13)
+	private String loc;
+	private String role;
 
 	public Dept()
 	{
@@ -42,14 +45,16 @@ public class Dept implements Serializable
 		this.loc = loc;
 	}
 
+	public Employee addEmp(Employee emp)
+	{
+		getEmpList().add(emp);
+		emp.setDept(this);
+		return emp;
+	}
+
 	public Long getDeptno()
 	{
 		return deptno;
-	}
-
-	public void setDeptno(Long deptno)
-	{
-		this.deptno = deptno;
 	}
 
 	public String getDname()
@@ -57,9 +62,14 @@ public class Dept implements Serializable
 		return dname;
 	}
 
-	public void setDname(String dname)
+	public List<Employee> getEmpList()
 	{
-		this.dname = dname;
+		return empList;
+	}
+
+	public int getFloorNumber()
+	{
+		return floorNumber;
 	}
 
 	public String getLoc()
@@ -67,26 +77,9 @@ public class Dept implements Serializable
 		return loc;
 	}
 
-	public void setLoc(String loc)
+	public String getRole()
 	{
-		this.loc = loc;
-	}
-
-	public List<Employee> getEmpList()
-	{
-		return empList;
-	}
-
-	public void setEmpList(List<Employee> empList)
-	{
-		this.empList = empList;
-	}
-
-	public Employee addEmp(Employee emp)
-	{
-		getEmpList().add(emp);
-		emp.setDept(this);
-		return emp;
+		return role;
 	}
 
 	public Employee removeEmp(Employee emp)
@@ -96,13 +89,28 @@ public class Dept implements Serializable
 		return emp;
 	}
 
-	public int getFloorNumber()
+	public void setDeptno(Long deptno)
 	{
-		return floorNumber;
+		this.deptno = deptno;
+	}
+
+	public void setDname(String dname)
+	{
+		this.dname = dname;
+	}
+
+	public void setEmpList(List<Employee> empList)
+	{
+		this.empList = empList;
 	}
 
 	public void setFloorNumber(int floorNumber)
 	{
 		this.floorNumber = floorNumber;
+	}
+
+	public void setLoc(String loc)
+	{
+		this.loc = loc;
 	}
 }

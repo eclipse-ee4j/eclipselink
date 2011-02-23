@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -23,8 +23,8 @@ import java.util.ListIterator;
  * @since 11.0.0
  * @author Pascal Filion
  */
-final class DefaultStringExpression extends StringExpression
-{
+final class DefaultStringExpression extends StringExpression {
+
 	/**
 	 * The {@link Expression} from where the text value comes.
 	 */
@@ -42,8 +42,7 @@ final class DefaultStringExpression extends StringExpression
 	 * comes
 	 * @param value The string value to wrap with this {@link StringExpression}
 	 */
-	DefaultStringExpression(AbstractExpression owningExpression, String value)
-	{
+	DefaultStringExpression(AbstractExpression owningExpression, String value) {
 		super();
 
 		this.value            = value;
@@ -54,8 +53,7 @@ final class DefaultStringExpression extends StringExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ListIterator<StringExpression> orderedChildren()
-	{
+	public ListIterator<StringExpression> orderedChildren() {
 		return Collections.<StringExpression>emptyList().listIterator();
 	}
 
@@ -63,8 +61,7 @@ final class DefaultStringExpression extends StringExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	void populatePosition(QueryPosition queryPosition, int position)
-	{
+	void populatePosition(QueryPosition queryPosition, int position) {
 		queryPosition.setExpression(owningExpression);
 	}
 
@@ -72,8 +69,7 @@ final class DefaultStringExpression extends StringExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String toParsedText()
-	{
+	public String toParsedText() {
 		return value;
 	}
 
@@ -81,8 +77,7 @@ final class DefaultStringExpression extends StringExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return toParsedText();
 	}
 }

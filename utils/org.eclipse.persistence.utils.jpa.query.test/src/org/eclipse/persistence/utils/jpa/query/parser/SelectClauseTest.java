@@ -3,31 +3,25 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
-import org.eclipse.persistence.utils.jpa.query.parser.JPQLTests.QueryStringFormatter;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
-public final class SelectClauseTest extends AbstractJPQLTest
-{
-	private QueryStringFormatter buildQueryStringFormatter_CountDistinct_WithSpaces()
-	{
-		return new QueryStringFormatter()
-		{
-			@Override
-			public String format(String query)
-			{
+public final class SelectClauseTest extends AbstractJPQLTest {
+	private JPQLQueryStringFormatter buildQueryStringFormatter_CountDistinct_WithSpaces() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
 				query = query.replaceAll("\\(\\s", "(");
 				query = query.replaceAll("\\s\\)", ")");
 				return query;
@@ -35,17 +29,10 @@ public final class SelectClauseTest extends AbstractJPQLTest
 		};
 	}
 
-	@Override
-	boolean isTolerant()
-	{
-		return true;
-	}
-
 	@Test
-	public void testBuildExpression_Avg()
-	{
+	public void testBuildExpression_Avg() {
 		String query = "SELECT AVG(mag.price) FROM Magazine mag";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -70,10 +57,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_Collection_1()
-	{
+	public void testBuildExpression_Collection_1() {
 		String query = "SELECT e.firstName, e.lastName, e.address FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -113,10 +99,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_Collection_2()
-	{
+	public void testBuildExpression_Collection_2() {
 		String query = "SELECT OBJECT(e), COUNT(DISTINCT e) FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -142,10 +127,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_CountDistinct()
-	{
+	public void testBuildExpression_CountDistinct() {
 		String query = "SELECT COUNT(DISTINCT mag.price) FROM Magazine mag";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -169,10 +153,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_CountDistinct_WithSpaces()
-	{
+	public void testBuildExpression_CountDistinct_WithSpaces() {
 		String query = "SELECT COUNT  ( DISTINCT mag.price  ) FROM Magazine mag";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query, buildQueryStringFormatter_CountDistinct_WithSpaces());
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query, buildQueryStringFormatter_CountDistinct_WithSpaces());
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -196,10 +179,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_Disctint()
-	{
+	public void testBuildExpression_Disctint() {
 		String query = "SELECT DISTINCT e FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -213,10 +195,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_MultipleSelectExpressions()
-	{
+	public void testBuildExpression_MultipleSelectExpressions() {
 		String query = "SELECT AVG(e), e, COUNT(e.name), NEW test(e), OBJECT(e), SUM(e.age) FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -266,10 +247,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_Object()
-	{
+	public void testBuildExpression_Object() {
 		String query = "SELECT OBJECT(e) FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -293,10 +273,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_ResultVariable_1()
-	{
+	public void testBuildExpression_ResultVariable_1() {
 		String query = "SELECT e AS emp FROM Employee e ORDER BY emp";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -329,10 +308,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_ResultVariable_2()
-	{
+	public void testBuildExpression_ResultVariable_2() {
 		String query = "SELECT e.name, AVG(e.age) AS age FROM Employee e ORDER BY age";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();
@@ -372,10 +350,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectDistinctFrom()
-	{
+	public void testBuildExpression_SelectDistinctFrom() {
 		String query = "SELECT DISTINCT e FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		Expression expression = jpqlExpression.getQueryStatement();
 		assertTrue(expression instanceof SelectStatement);
@@ -402,10 +379,9 @@ public final class SelectClauseTest extends AbstractJPQLTest
 	}
 
 	@Test
-	public void testBuildExpression_SelectFrom()
-	{
+	public void testBuildExpression_SelectFrom() {
 		String query = "SELECT e FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLTests.buildQuery(query);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
 		// SelectStatement
 		Expression expression = jpqlExpression.getQueryStatement();

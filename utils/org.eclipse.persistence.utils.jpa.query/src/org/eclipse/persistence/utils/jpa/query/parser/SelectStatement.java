@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -27,13 +27,13 @@ import java.util.List;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class SelectStatement extends AbstractSelectStatement
-{
+public final class SelectStatement extends AbstractSelectStatement {
+
 	/**
-	 * Determines whether there is a whitespace after the select statement parsed
-	 * by the superclass and the <b>ORDER BY</b> identifier.
+	 * Determines whether there is a whitespace after the select statement parsed by the superclass
+	 * and the <b>ORDER BY</b> identifier.
 	 */
-	private boolean hasSpaceBeforeGroupBy;
+	private boolean hasSpaceBeforeOrderBy;
 
 	/**
 	 * The <b>ORDER BY</b> expression.
@@ -45,17 +45,14 @@ public final class SelectStatement extends AbstractSelectStatement
 	 *
 	 * @param parent The parent of this expression
 	 */
-	SelectStatement(AbstractExpression parent)
-	{
+	SelectStatement(AbstractExpression parent) {
 		super(parent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
@@ -63,12 +60,20 @@ public final class SelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addChildrenTo(Collection<Expression> children)
-	{
+	public void acceptChildren(ExpressionVisitor visitor) {
+		super.acceptChildren(visitor);
+		getOrderByClause().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	void addChildrenTo(Collection<Expression> children) {
+
 		super.addChildrenTo(children);
 
-		if (orderByClause != null)
-		{
+		if (orderByClause != null) {
 			children.add(orderByClause);
 		}
 	}
@@ -77,18 +82,24 @@ public final class SelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	void addOrderedChildrenTo(List<StringExpression> children)
-	{
+	public FromClause addFromClause() {
+		return (FromClause) super.addFromClause();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	void addOrderedChildrenTo(List<StringExpression> children) {
+
 		super.addOrderedChildrenTo(children);
 
-		if (hasSpaceBeforeGroupBy)
-		{
+		if (hasSpaceBeforeOrderBy) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'ORDER BY' clause
-		if (orderByClause != null)
-		{
+		if (orderByClause != null) {
 			children.add(orderByClause);
 		}
 	}
@@ -97,8 +108,7 @@ public final class SelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	FromClause buildFromClause()
-	{
+	FromClause buildFromClause() {
 		return new FromClause(this);
 	}
 
@@ -106,24 +116,19 @@ public final class SelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	SelectClause buildSelectClause()
-	{
+	SelectClause buildSelectClause() {
 		return new SelectClause(this);
 	}
 
 	/**
 	 * Returns the {@link Expression} representing the <b>ORDER BY</b> clause.
 	 *
-	 * @return Either the {@link OrderByClause} or a {@link NullExpression} if
-	 * the clause is not defined
+	 * @return The expression representing the <b>ORDER BY</b> clause
 	 */
-	public Expression getOrderByClause()
-	{
-		if (orderByClause == null)
-		{
+	public Expression getOrderByClause() {
+		if (orderByClause == null) {
 			orderByClause = buildNullExpression();
 		}
-
 		return orderByClause;
 	}
 
@@ -131,8 +136,7 @@ public final class SelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(SelectStatementBNF.ID);
 	}
 
@@ -140,49 +144,43 @@ public final class SelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SelectClause getSelectClause()
-	{
+	public SelectClause getSelectClause() {
 		return (SelectClause) super.getSelectClause();
 	}
 
 	/**
 	 * Determines whether the <b>ORDER BY</b> clause is defined.
 	 *
-	 * @return <code>true</code> if the query that got parsed had the <b>ORDER BY</b>
-	 * clause
+	 * @return <code>true</code> if the query that got parsed had the <b>ORDER BY</b> clause
 	 */
-	public boolean hasOrderByClause()
-	{
+	public boolean hasOrderByClause() {
 		return orderByClause != null &&
 		      !orderByClause.isNull();
 	}
 
 	/**
-	 * Determines whether a whitespace was parsed before the <b>ORDER BY</b>
-	 * clause. In some cases, the space could be owned by a child of the previous
-	 * clause.
+	 * Determines whether a whitespace was parsed before the <b>ORDER BY</b> clause. In some cases,
+	 * the space could be owned by a child of the previous clause.
 	 *
-	 * @return <code>true</code> if there was a whitespace before the <b>ORDER
-	 * BY</b>; <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace before the <b>ORDER BY</b>; <code>false</code>
+	 * otherwise
 	 */
-	public boolean hasSpaceBeforeGroupBy()
-	{
-		return hasSpaceBeforeGroupBy;
+	public boolean hasSpaceBeforeOrderBy() {
+		return hasSpaceBeforeOrderBy;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	void parse(WordParser wordParser, boolean tolerant)
-	{
+	void parse(WordParser wordParser, boolean tolerant) {
+
 		super.parse(wordParser, tolerant);
 
-		hasSpaceBeforeGroupBy = wordParser.skipLeadingWhitespace() > 0;
+		hasSpaceBeforeOrderBy = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'ORDER BY'
-		if (wordParser.startsWithIdentifier(ORDER_BY))
-		{
+		if (wordParser.startsWithIdentifier(ORDER_BY)) {
 			orderByClause = new OrderByClause(this);
 			orderByClause.parse(wordParser, tolerant);
 		}
@@ -192,18 +190,16 @@ public final class SelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer)
-	{
+	void toParsedText(StringBuilder writer) {
+
 		super.toParsedText(writer);
 
-		if (hasSpaceBeforeGroupBy)
-		{
+		if (hasSpaceBeforeOrderBy) {
 			writer.append(SPACE);
 		}
 
 		// 'ORDER BY' clause
-		if (hasOrderByClause())
-		{
+		if (hasOrderByClause()) {
 			orderByClause.toParsedText(writer);
 		}
 	}

@@ -3,19 +3,19 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * This {@link AndExpression} creates a new {@link AdditionExpression}
- * when the portion of the query to parse starts with <b>AND</b>.
+ * This {@link AndExpression} creates a new {@link AdditionExpression} when the portion of the query
+ * to parse starts with <b>AND</b>.
  *
  * @see AndExpression
  *
@@ -23,8 +23,8 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.0.0
  * @author Pascal Filion
  */
-final class AndExpressionFactory extends ExpressionFactory
-{
+final class AndExpressionFactory extends ExpressionFactory {
+
 	/**
 	 * This {@link ExpressionVisitor} is used to check if the {@link Expression}
 	 * passed to this factory is an {@link OrExpression}.
@@ -39,8 +39,7 @@ final class AndExpressionFactory extends ExpressionFactory
 	/**
 	 * Creates a new <code>AndExpressionFactory</code>.
 	 */
-	AndExpressionFactory()
-	{
+	AndExpressionFactory() {
 		super(ID, Expression.AND);
 	}
 
@@ -54,15 +53,13 @@ final class AndExpressionFactory extends ExpressionFactory
 	                                   String word,
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
-	                                   boolean tolerant)
-	{
-		if (expression != null)
-		{
+	                                   boolean tolerant) {
+
+		if (expression != null) {
 			expression.accept(visitor());
 		}
 
-		if (visitor.found)
-		{
+		if (visitor.found) {
 			visitor.found = false;
 			OrExpression orExpression = (OrExpression) expression;
 
@@ -73,12 +70,10 @@ final class AndExpressionFactory extends ExpressionFactory
 
 			return orExpression;
 		}
-		else
-		{
+		else {
 			AndExpression andExpression = new AndExpression(parent);
 
-			if (expression != null)
-			{
+			if (expression != null) {
 				andExpression.setLeftExpression(expression);
 			}
 
@@ -87,25 +82,21 @@ final class AndExpressionFactory extends ExpressionFactory
 		}
 	}
 
-	private OrExpressionVisitor visitor()
-	{
-		if (visitor == null)
-		{
+	private OrExpressionVisitor visitor() {
+		if (visitor == null) {
 			visitor = new OrExpressionVisitor();
 		}
-
 		return visitor;
 	}
 
 	/**
-	 * This {@link ExpressionVisitor} is used to check if the {@link Expression}
-	 * passed to this factory is an {@link OrExpression}.
+	 * This {@link ExpressionVisitor} is used to check if the {@link Expression} passed to this
+	 * factory is an {@link OrExpression}.
 	 */
-	private class OrExpressionVisitor extends AbstractExpressionVisitor
-	{
+	private class OrExpressionVisitor extends AbstractExpressionVisitor {
+
 		/**
-		 * This flag is turned on if the {@link Expression} visited is
-		 * {@link OrExpression}.
+		 * This flag is turned on if the {@link Expression} visited is {@link OrExpression}.
 		 */
 		boolean found;
 
@@ -113,8 +104,7 @@ final class AndExpressionFactory extends ExpressionFactory
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(OrExpression expression)
-		{
+		public void visit(OrExpression expression) {
 			found = true;
 		}
 	}

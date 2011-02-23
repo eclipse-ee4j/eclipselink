@@ -3,12 +3,12 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
@@ -20,24 +20,21 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class SimpleSelectStatement extends AbstractSelectStatement
-{
+public final class SimpleSelectStatement extends AbstractSelectStatement {
+
 	/**
 	 * Creates a new <code>SimpleSelectStatement</code>.
 	 *
 	 * @param parent The parent of this expression
 	 */
-	SimpleSelectStatement(AbstractExpression parent)
-	{
+	SimpleSelectStatement(AbstractExpression parent) {
 		super(parent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
@@ -45,8 +42,15 @@ public final class SimpleSelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	SimpleFromClause buildFromClause()
-	{
+	public SimpleFromClause addFromClause() {
+		return (SimpleFromClause) super.addFromClause();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	SimpleFromClause buildFromClause() {
 		return new SimpleFromClause(this);
 	}
 
@@ -54,8 +58,7 @@ public final class SimpleSelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	SimpleSelectClause buildSelectClause()
-	{
+	SimpleSelectClause buildSelectClause() {
 		return new SimpleSelectClause(this);
 	}
 
@@ -63,8 +66,7 @@ public final class SimpleSelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF()
-	{
+	JPQLQueryBNF getQueryBNF() {
 		return queryBNF(SubQueryBNF.ID);
 	}
 
@@ -72,8 +74,7 @@ public final class SimpleSelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SimpleSelectClause getSelectClause()
-	{
+	public SimpleSelectClause getSelectClause() {
 		return (SimpleSelectClause) super.getSelectClause();
 	}
 
@@ -81,8 +82,7 @@ public final class SimpleSelectStatement extends AbstractSelectStatement
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean shouldManageSpaceAfterClause()
-	{
+	boolean shouldManageSpaceAfterClause() {
 		return false;
 	}
 }

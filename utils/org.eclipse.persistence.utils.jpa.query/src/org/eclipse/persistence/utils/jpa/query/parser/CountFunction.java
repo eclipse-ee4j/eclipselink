@@ -3,19 +3,18 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- * The Eclipse Public License is available athttp://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle
+ *     Oracle - initial API and implementation
  *
  ******************************************************************************/
 package org.eclipse.persistence.utils.jpa.query.parser;
 
 /**
- * One of the aggregate functions. The return type of this function is a
- * <code>Long</code>.
+ * One of the aggregate functions. The return type of this function is a <code>Long</code>.
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= COUNT ([DISTINCT] identification_variable |
  *                                                                state_field_path_expression |
@@ -25,24 +24,21 @@ package org.eclipse.persistence.utils.jpa.query.parser;
  * @since 11.0.0
  * @author Pascal Filion
  */
-public final class CountFunction extends AggregateFunction
-{
+public final class CountFunction extends AggregateFunction {
+
 	/**
 	 * Creates a new <code>CountFunction</code>.
 	 *
 	 * @param parent The parent of this expression
 	 */
-	CountFunction(AbstractExpression parent)
-	{
+	CountFunction(AbstractExpression parent) {
 		super(parent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void accept(ExpressionVisitor visitor)
-	{
+	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
 	}
 
@@ -51,22 +47,19 @@ public final class CountFunction extends AggregateFunction
 	 */
 	@Override
 	AbstractExpression buildEncapsulatedExpression(WordParser wordParser,
-	                                               String word)
-	{
-		if (KEY.equalsIgnoreCase(word))
-		{
+	                                               String word) {
+
+		if (KEY.equalsIgnoreCase(word)) {
 			ExpressionFactory factory = expressionFactory(KeyExpressionFactory.ID);
 			return factory.buildExpression(this, wordParser, word, getQueryBNF(), null, false);
 		}
 
-		if (VALUE.equalsIgnoreCase(word))
-		{
+		if (VALUE.equalsIgnoreCase(word)) {
 			ExpressionFactory factory = expressionFactory(ValueExpressionFactory.ID);
 			return factory.buildExpression(this, wordParser, word, getQueryBNF(), null, false);
 		}
 
-		if (word.indexOf(DOT) == -1)
-		{
+		if (word.indexOf(DOT) == -1) {
 			return new IdentificationVariable(this, word);
 		}
 
@@ -77,8 +70,7 @@ public final class CountFunction extends AggregateFunction
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF()
-	{
+	JPQLQueryBNF encapsulatedExpressionBNF() {
 		return queryBNF(InternalCountBNF.ID);
 	}
 
@@ -86,8 +78,7 @@ public final class CountFunction extends AggregateFunction
 	 * {@inheritDoc}
 	 */
 	@Override
-	String parseIdentifier(WordParser wordParser)
-	{
+	String parseIdentifier(WordParser wordParser) {
 		return COUNT;
 	}
 }
