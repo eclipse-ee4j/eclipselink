@@ -489,11 +489,15 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 && (!ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getJavaClass(getDescriptor().getJavaClass())))) {
             usesIndirection = false;
         }
+        String actualAttributeType = getAttributeType();
+        if (getAccessibleObject() != null){
+            actualAttributeType = getAccessibleObject().getType();
+        }
         
         if (usesIndirection && usesPropertyAccess()) {
-            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getGetMethodName(), getSetMethodName(), true));
+            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getGetMethodName(), getSetMethodName(), actualAttributeType, true));
         } else if (usesIndirection && usesFieldAccess()) {
-            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(Helper.getWeavedGetMethodName(mapping.getAttributeName()), Helper.getWeavedSetMethodName(mapping.getAttributeName()), false));
+            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(Helper.getWeavedGetMethodName(mapping.getAttributeName()), Helper.getWeavedSetMethodName(mapping.getAttributeName()), actualAttributeType, false));
         } else {
             mapping.setUsesIndirection(usesIndirection);
         }
