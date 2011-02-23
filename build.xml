@@ -262,6 +262,17 @@
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="build"/>
     </target>
 
+    <!--      *** Temporary:: intended for dev use only ***
+    *    Build core and Hermes JPQL bunldes.  Only needed until Hermes is ready for
+    *    addition to nightly build
+    * -->
+    <target name="build-hermes">
+        <ant antfile="build.xml"    dir="${eclipselink.asm}"                            target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.antlr}"                          target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.core}"                           target="build"/>
+        <ant antfile="antbuild.xml" dir="utils/org.eclipse.persistence.utils.jpa.query" target="build"/>
+    </target>
+
     <!--      *** intended for dev use only ***
     *    Create runtime components (excluding Tests) from existing classes in project heirarchy.
     *    note: oracle extension tries to be tricksy and either jars from classes like others,
@@ -320,7 +331,7 @@
         <ant antfile="build.xml" dir="${eclipselink.moxy.test}"    target="compile-tests-against-jar"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo.test}"     target="compile-sdo-tests-against-jar"/>
     </target>
-
+    
     <target name="build-dbws-test" unless="java_is_v5">
         <!-- Compiling dbws tests requires JDK 1.6 -->
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="build"/>
