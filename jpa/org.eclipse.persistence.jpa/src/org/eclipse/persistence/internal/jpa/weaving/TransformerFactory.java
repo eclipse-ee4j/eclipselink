@@ -407,9 +407,6 @@ public class TransformerFactory {
             if (typeClass != null) {
                 attributeDetails.setReferenceClassName(typeClass.getName());
                 attributeDetails.setReferenceClassType(Type.getType(typeClass.getTypeName()));
-                if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()){
-                    ((WeavedObjectBasicIndirectionPolicy)((ForeignReferenceMapping)mapping).getIndirectionPolicy()).setActualTypeClassName(typeClass.getName());
-                }
             }
             attributesMap.put(attribute, attributeDetails);    
         }

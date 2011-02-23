@@ -50,20 +50,17 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
     /** Stores the actual type of the mapping if different from the reference type.  Used for set method invocation*/
     protected String actualTypeClassName = null;
     
-    public WeavedObjectBasicIndirectionPolicy(String getMethodName, String setMethodName, boolean hasUsedMethodAccess) {
+    public WeavedObjectBasicIndirectionPolicy(String getMethodName, String setMethodName, String actualTypeClassName, boolean hasUsedMethodAccess) {
         super();
         this.setMethodName = setMethodName;
         this.getMethodName = getMethodName;
         this.hasUsedMethodAccess = hasUsedMethodAccess;
+        this.actualTypeClassName = actualTypeClassName;
     }    
     
 
     public String getActualTypeClassName() {
         return actualTypeClassName;
-    }
-
-    public void setActualTypeClassName(String actualTypeClassName) {
-        this.actualTypeClassName = actualTypeClassName;
     }
 
     /**
