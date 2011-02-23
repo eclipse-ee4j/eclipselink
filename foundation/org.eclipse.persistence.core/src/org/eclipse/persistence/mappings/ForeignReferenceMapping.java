@@ -1121,10 +1121,12 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             Class attributeType = getAttributeAccessor().getAttributeClass();
             // Check that not already weaved or coded.
             if (!(ClassConstants.ValueHolderInterface_Class.isAssignableFrom(attributeType))) {
-                if(getAttributeAccessor().isMethodAttributeAccessor()) {
-                    useWeavedIndirection(getGetMethodName(), getSetMethodName(), true);
-                } else if(getAttributeAccessor().isInstanceVariableAttributeAccessor()) {
-                    useWeavedIndirection(Helper.getWeavedSetMethodName(getAttributeName()), Helper.getWeavedSetMethodName(getAttributeName()), false);
+                if (!indirectionPolicy.isWeavedObjectBasicIndirectionPolicy()){
+                    if(getAttributeAccessor().isMethodAttributeAccessor()) {
+                        useWeavedIndirection(getGetMethodName(), getSetMethodName(), true);
+                    } else if(getAttributeAccessor().isInstanceVariableAttributeAccessor()) {
+                        useWeavedIndirection(Helper.getWeavedGetMethodName(getAttributeName()), Helper.getWeavedSetMethodName(getAttributeName()), false);
+                    }
                 }
                 setGetMethodName(Helper.getWeavedValueHolderGetMethodName(getAttributeName()));
                 setSetMethodName(Helper.getWeavedValueHolderSetMethodName(getAttributeName()));
@@ -1767,7 +1769,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * @param hasUsedMethodAccess indicates whether method or field access was originally used.
      */
     public void useWeavedIndirection(String getMethodName, String setMethodName, boolean hasUsedMethodAccess){
-        setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getMethodName, setMethodName, hasUsedMethodAccess));
+        setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getMethodName, setMethodName, null, hasUsedMethodAccess));
     }
 
     /**
