@@ -123,8 +123,8 @@
             <arg value="start-domain"/>
             <arg value="domain1"/>
         </exec>
-        <echo message="I'm going to sleep 2 minutes waiting for glassfish domain1 to be started up ..."/>
-        <sleep minutes="2"/>
+        <echo message="I'm going to sleep 2 minute waiting for glassfish domain1 to be started up ..."/>
+        <sleep minutes="1"/>
         <!--pass is.JTA and ejb.lookup properties to server-->
         <exec executable="${glassfish.home}/bin/asadmin${extension}" spawn="true">
             <arg value="create-jvm-options"/>
@@ -155,10 +155,10 @@
             <arg value="--restype"/>
             <arg value="javax.sql.XADataSource"/>
             <arg value="--datasourceclassname"/>
-            <arg value="oracle.jdbc.xa.client.OracleXADataSource"/>
+            <arg value="${xa.ds.classname}"/>
             <arg value="--property"/>
-            <arg value="URL=${glassfish.db.url}:User=${db.user}:Password=${db.pwd}"/>
-            <arg value="jdbc-oracle-jta-pool"/>
+            <arg value="User=${db.user}:Password=${db.pwd}:${glassfish.db.info}"/>
+            <arg value="jdbc-jta-pool"/>
         </exec> 
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="create-jdbc-resource"/>
@@ -167,7 +167,7 @@
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
             <arg value="--connectionpoolid"/>
-            <arg value="jdbc-oracle-jta-pool"/>
+            <arg value="jdbc-jta-pool"/>
             <arg value="jdbc/EclipseLinkDS"/>
         </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
@@ -177,13 +177,13 @@
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
             <arg value="--restype"/>
-            <arg value="javax.sql.XADataSource"/>
+            <arg value="javax.sql.DataSource"/>
             <arg value="--datasourceclassname"/>
-            <arg value="oracle.jdbc.xa.client.OracleXADataSource"/>
+            <arg value="${ds.classname}"/>
             <arg value="--nontransactionalconnections=true"/>
             <arg value="--property"/>
-            <arg value="URL=${glassfish.db.url}:User=${db.user}:Password=${db.pwd}"/>
-            <arg value="jdbc-oracle-nonjta-pool"/>
+            <arg value="User=${db.user}:Password=${db.pwd}:${glassfish.db.info}"/>
+            <arg value="jdbc-nonjta-pool"/>
         </exec> 
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="create-jdbc-resource"/>
@@ -192,7 +192,7 @@
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
             <arg value="--connectionpoolid"/>
-            <arg value="jdbc-oracle-nonjta-pool"/>
+            <arg value="jdbc-nonjta-pool"/>
             <arg value="jdbc/ELNonJTADS"/>
         </exec>
     </target>
@@ -217,7 +217,7 @@
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
-            <arg value="jdbc-oracle-jta-pool"/>
+            <arg value="jdbc-jta-pool"/>
         </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="delete-jdbc-resource"/>
@@ -233,10 +233,11 @@
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
-            <arg value="jdbc-oracle-nonjta-pool"/>
+            <arg value="jdbc-nonjta-pool"/>
         </exec>
     </target>
-             
+ 
+
     <!-- Stop the server. -->
     <target name="glassfish-stop">
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
