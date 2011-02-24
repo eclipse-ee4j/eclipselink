@@ -425,6 +425,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     private Object wrapObject(Object object, JAXBElement wrapperElement, TypeMappingInfo typeMappingInfo) {
         Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
+        if(generatedClass != null && object == null && wrapperElement != null) {
+            return wrapObjectInXMLRoot(wrapperElement, object);
+        }
         if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
             ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
             Object newObject = desc.getInstantiationPolicy().buildNewInstance();
