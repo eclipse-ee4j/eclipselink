@@ -2886,7 +2886,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 "SELECT MOD(e.id, 2) FROM Employee e",
                 "SELECT SQRT(e.id) FROM Employee e",
                 "SELECT LOCATE(e.firstName, 'a') FROM Employee e",
-                "SELECT SIZE(e.firstName) FROM Employee e",
+                "SELECT SIZE(e.phoneNumbers) FROM Employee e",
                 
                 "SELECT CONCAT(e.firstName, e.lastName) FROM Employee e", 
                 "SELECT CONCAT('a', e.lastName) FROM Employee e", 
