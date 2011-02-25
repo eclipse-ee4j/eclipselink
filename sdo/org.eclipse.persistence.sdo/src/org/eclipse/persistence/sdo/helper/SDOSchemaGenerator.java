@@ -421,7 +421,7 @@ public class SDOSchemaGenerator {
             QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_READONLY, sdoXmlPrefix);
             sc.getAttributesMap().put(qname, "true");
         }
-        if ((sdoProperty.getAliasNames() != null) && (sdoProperty.getAliasNames().size() > 0)) {
+        if (sdoProperty.hasAliasNames()) {
             String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
             String aliasNamesString = buildAliasNameString(sdoProperty.getAliasNames());
             QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_ALIASNAME, sdoXmlPrefix);
