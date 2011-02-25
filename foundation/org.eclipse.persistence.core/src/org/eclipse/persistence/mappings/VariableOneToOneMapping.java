@@ -723,7 +723,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * Check for batch + aggregation reading.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.isProtectedIsolation()) {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
@@ -731,6 +731,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                 Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null) {
+                    if (wasCacheUsed != null){
+                        wasCacheUsed[0] = Boolean.TRUE;
+                    }
                     return this.getAttributeValueFromObject(cached);
                 }
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
@@ -777,7 +780,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
 
             return getIndirectionPolicy().valueFromQuery(query, row, executionSession);
         } else {
-            return super.valueFromRow(row, joinManager, sourceQuery, cacheKey, executionSession, isTargetProtected);
+            return super.valueFromRow(row, joinManager, sourceQuery, cacheKey, executionSession, isTargetProtected, wasCacheUsed);
         }
     }
 

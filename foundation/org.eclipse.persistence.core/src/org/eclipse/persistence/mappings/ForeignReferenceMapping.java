@@ -243,7 +243,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (!this.isCacheable && (cacheKey != null && !cacheKey.isIsolated())){
             ReadObjectQuery query = new ReadObjectQuery(descriptor.getJavaClass());
             query.setSession(cloningSession);
-            attributeValue = valueFromRow(cacheKey.getProtectedForeignKeys(), null, query, cacheKey, cloningSession, true);
+            attributeValue = valueFromRow(cacheKey.getProtectedForeignKeys(), null, query, cacheKey, cloningSession, true, null);
         }else{
             attributeValue = getAttributeValueFromObject(original);
         }
@@ -271,8 +271,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     @Override
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
-        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true);
-        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,clone, unitOfWork, true);// building clone directly from row.
+        Boolean[] wasCacheUsed = new Boolean[]{Boolean.FALSE};
+        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true, wasCacheUsed);
+        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,clone, unitOfWork, !wasCacheUsed[0]);// building clone directly from row.
         if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
             Object oldAttribute = this.getAttributeValueFromObject(clone);
             setAttributeValueInObject(clone, clonedAttributeValue); // set this first to prevent infinite recursion
@@ -1326,8 +1327,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * the object.
      */
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
-        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected);
-        if (descriptor.isProtectedIsolation() && isTargetProtected && this.isCacheable){
+        Boolean[] wasCacheUsed = new Boolean[]{Boolean.FALSE};
+        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected, wasCacheUsed);
+        if (wasCacheUsed[0]){
             //must clone here as certain mappings require the clone object to clone the attribute.
             attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, executionSession, false);
         }
@@ -1918,14 +1920,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * and joining.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.isProtectedIsolation()) {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection
                 Object cached = cacheKey.getObject();
                 if (cached != null) {
-                    //this will just clone the indirection.
+                    if (wasCacheUsed != null){
+                        wasCacheUsed[0] = Boolean.TRUE;
+                    }
+                //this will just clone the indirection.
                     //the indirection object is responsible for cloning the value.
                     return getAttributeValueFromObject(cached);
                 }

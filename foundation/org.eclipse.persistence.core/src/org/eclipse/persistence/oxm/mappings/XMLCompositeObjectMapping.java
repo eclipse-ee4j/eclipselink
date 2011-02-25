@@ -585,7 +585,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         return toReturn;
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         Object fieldValue = row.get(this.getField());
         // BUG#2667762 there could be whitespace in the row instead of null
         if ((fieldValue == null) || (fieldValue instanceof String)) {

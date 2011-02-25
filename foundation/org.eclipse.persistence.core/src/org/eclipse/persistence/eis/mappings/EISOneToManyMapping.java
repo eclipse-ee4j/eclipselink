@@ -856,13 +856,16 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Check whether the mapping's attribute should be optimized through batch and joining.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.isProtectedIsolation()) {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection
                 Object cached = cacheKey.getObject();
                 if (cached != null) {
+                    if (wasCacheUsed != null){
+                        wasCacheUsed[0] = Boolean.TRUE;
+                    }
                     //this will just clone the indirection.
                     //the indirection object is responsible for cloning the value.
                     return getAttributeValueFromObject(cached);

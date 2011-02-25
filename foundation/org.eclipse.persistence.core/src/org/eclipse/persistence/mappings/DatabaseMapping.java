@@ -1322,7 +1322,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * the object.
      */
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
-        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected);
+        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected, null);
         setAttributeValueInObject(targetObject, attributeValue);
         return attributeValue;
     }    
@@ -1629,7 +1629,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Returns the value for the mapping from the database row.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, boolean isTargetProtected) throws DatabaseException {
-        return valueFromRow(row, joinManager, query, null, query.getExecutionSession(), isTargetProtected);
+        return valueFromRow(row, joinManager, query, null, query.getExecutionSession(), isTargetProtected, null);
     }
 
     /**
@@ -1639,7 +1639,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * The execution session is the session the query was executed on,
      * and its platform should be used for data conversion.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         return null;
     }
     

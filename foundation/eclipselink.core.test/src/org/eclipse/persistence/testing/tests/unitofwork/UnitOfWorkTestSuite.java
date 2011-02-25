@@ -72,6 +72,8 @@ public class UnitOfWorkTestSuite extends TestSuite {
         
         addTest(buildRefReadOnlyTest());
         
+        addTest(new BuildCloneFromRowOneToOneTest());
+        
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.

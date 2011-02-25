@@ -348,7 +348,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * directly from a row, the session set in the query will not know which platform to use
      * for converting the value.  Allows the correct session to be passed in.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) {
         // PERF: Direct variable access.
         boolean shouldCheckForXsiNil = getNullPolicy().isNullRepresentedByXsiNil();
         return getAttributeValue(((DOMRecord)row).getIndicatingNoEntry(this.field, false, shouldCheckForXsiNil), executionSession, (XMLRecord)row);

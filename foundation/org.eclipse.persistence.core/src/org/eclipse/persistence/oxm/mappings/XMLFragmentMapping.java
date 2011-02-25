@@ -45,7 +45,7 @@ public class XMLFragmentMapping extends XMLDirectMapping {
         writeSingleValue(attributeValue, object, (XMLRecord)row, session);
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) {
         DOMRecord domRecord = (DOMRecord) row;
         Object value = domRecord.getIndicatingNoEntry(this.getField(), true);
         if(value == domRecord) {

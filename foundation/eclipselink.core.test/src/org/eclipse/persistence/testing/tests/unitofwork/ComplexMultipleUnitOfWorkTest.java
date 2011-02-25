@@ -123,7 +123,8 @@ public class ComplexMultipleUnitOfWorkTest extends AutoVerifyTestCase {
         employee.addResponsibility("buy donuts");
         // One to one private/public
         employee.setAddress(addressExample4());
-        ((Employee)unitOfWork.readObject(Employee.class)).addManagedEmployee(employee);
+        
+        ((Employee)unitOfWork.readObject(Employee.class, new ExpressionBuilder().get("firstName").equal("Marcus"))).addManagedEmployee(employee);
     }
 
     public Employee createNewEmployeeObject() {

@@ -265,11 +265,17 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         }
  
         // This will set the value in the clone automatically.
-        Object attributeValue = readFromRowIntoObject(record, joinManager, clone, null, sourceQuery, executionSession, true);
+        Object attributeValue = readFromRowIntoObject(record, joinManager, clone, sharedCacheKey, sourceQuery, executionSession, true);
         if (usesIndirection()) {
-            Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null,// no original
+            boolean wasCacheUsed = this.isCacheable && sharedCacheKey != null && this.descriptor.isProtectedIsolation() && sharedCacheKey.getObject() != null ;
+            //it would be better if wasCacheUsed could be calculated within readFromRowIntoObject but that would require changing the signature of all mappings just for
+            //transformation mapping.
+            if (!wasCacheUsed){
+                //if the cache was used then the attribute has already been cloned by readFromRowIntoObject
+                attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null,// no original
                                                                              null, clone, unitOfWork, true);// build clone directly from row.
-            setAttributeValueInObject(clone, clonedAttributeValue);
+            }
+            setAttributeValueInObject(clone, attributeValue);
         }
     }
  

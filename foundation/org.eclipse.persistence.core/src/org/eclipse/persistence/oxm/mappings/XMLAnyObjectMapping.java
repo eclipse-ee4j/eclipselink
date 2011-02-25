@@ -276,7 +276,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         this.field = (XMLField) field;
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         XMLRecord record = (XMLRecord) row;
 
         if (getField() != null) {

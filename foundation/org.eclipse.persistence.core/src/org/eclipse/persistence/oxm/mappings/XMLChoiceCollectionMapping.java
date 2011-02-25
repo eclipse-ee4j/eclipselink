@@ -221,7 +221,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
        List<XMLEntry> values = ((DOMRecord)row).getValuesIndicatingNoEntry(this.getFields());
        Object container = getContainerPolicy().containerInstance(values.size());
        for(XMLEntry next:values) {

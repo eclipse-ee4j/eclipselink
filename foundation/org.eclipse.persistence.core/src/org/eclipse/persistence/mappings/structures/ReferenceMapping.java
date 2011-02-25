@@ -253,7 +253,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      * Check for batch + aggregation reading.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.isProtectedIsolation()){
             if (this.isCacheable && isTargetProtected && cacheKey != null){
                 //cachekey will be null when isolating to uow
@@ -261,6 +261,9 @@ public class ReferenceMapping extends ObjectReferenceMapping {
                 Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null){
+                    if (wasCacheUsed != null){
+                        wasCacheUsed[0] = Boolean.TRUE;
+                    }
                     return this.getAttributeValueFromObject(cached);
                 }
                 return result;

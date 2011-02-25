@@ -149,7 +149,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      */
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // automatically returns a uow result from scratch that doesn't need cloning
-        Object cloneAttributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true);
+        Object cloneAttributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true, null);
         setAttributeValueInObject(clone, cloneAttributeValue);
     }
 

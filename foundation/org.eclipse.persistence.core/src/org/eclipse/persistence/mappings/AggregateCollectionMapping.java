@@ -1018,7 +1018,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
-        return valueFromRow(dbRow, null, query, parentCacheKey, query.getExecutionSession(), isTargetProtected);
+        return valueFromRow(dbRow, null, query, parentCacheKey, query.getExecutionSession(), isTargetProtected, null);
     }
     
     /**

@@ -229,10 +229,10 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
     }
 
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         //try each of the fields and see if any of them has a value
         for(XMLMapping nextMapping:this.choiceElementMappings.values()) {
-            Object value = ((DatabaseMapping)nextMapping).valueFromRow(row, joinManager, sourceQuery, cacheKey, executionSession, isTargetProtected);
+            Object value = ((DatabaseMapping)nextMapping).valueFromRow(row, joinManager, sourceQuery, cacheKey, executionSession, isTargetProtected, wasCacheUsed);
             if(value != null) {
                 return value;
             }

@@ -798,7 +798,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return an aggregate collection from the specified row.
      */
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.isProtectedIsolation()){
             if (this.isCacheable && isTargetProtected && cacheKey != null){
                 //cachekey will be null when isolating to uow
@@ -806,6 +806,9 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
                 Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null){
+                    if (wasCacheUsed != null){
+                        wasCacheUsed[0] = Boolean.TRUE;
+                    }
                     Object attributeValue = this.getAttributeValueFromObject(cached);
                     return buildClonePart(cached, cacheKey, attributeValue, executionSession);
                 }
