@@ -1528,18 +1528,124 @@ public class PersistenceUnitProperties {
      */
     public static final String DDL_GENERATION = "eclipselink.ddl-generation";
 
+    /**
+     * The parameter value <code>"create-tables"</code>
+     * 
+     * <p>For use with the <code>"eclipselink.ddl-generation"</code> property.</p>
+     * <p>Specifies that database tables should be created.</p>
+     *
+     * @see #DDL_GENERATION
+     */
     public static final String CREATE_ONLY = "create-tables";
+    
+    /**
+     * The parameter value <code>"drop-and-create-tables"</code>
+     * 
+     * <p>For use with the <code>"eclipselink.ddl-generation"</code> property.</p>
+     * <p>Specifies that database tables should be dropped, then created.</p>
+     * 
+     * @see #DDL_GENERATION
+     */
     public static final String DROP_AND_CREATE = "drop-and-create-tables";
+    
+    /**
+     * The parameter value <code>"none"</code>
+     * 
+     * <p>For use with the <code>"eclipselink.ddl-generation"</code> property,
+     * and is the default parameter value.</p>
+     * <p>Specifies that database tables should not be created or dropped.</p>
+     * 
+     * @see #DDL_GENERATION
+     */
     public static final String NONE = "none";
 
+    /**
+     * The property <code>"eclipselink.application-location"</code>
+     * 
+     * <p>Specifies the file system directory location where 
+     * DDL files are written (output) to.</p>
+     * 
+     * <p>This property should be used in conjunction with the 
+     * <code>"eclipselink.ddl-generation.output-mode"</code> property, with 
+     * a setting of <code>"sql-script"</code> (or <code>"both"</code>) for 
+     * DDL file(s) to be written.</p>
+     * 
+     * @see #DEFAULT_APP_LOCATION
+     * @see #DDL_GENERATION_MODE
+     * @see #DDL_SQL_SCRIPT_GENERATION
+     * @see #DDL_BOTH_GENERATION
+     */
     public static final String APP_LOCATION = "eclipselink.application-location";
-
+    
+    /**
+     * The property <code>"eclipselink.create-ddl-jdbc-file-name"</code>
+     * 
+     * <p>Specifies the name of the DDL file which is used to create 
+     * database tables.</p>
+     * 
+     * <p>This property should be used in conjunction with the 
+     * <code>"eclipselink.application-location"</code> property to specify a 
+     * location on the file system for DDL file(s) to be written.</p>
+     * 
+     * @see #APP_LOCATION
+     * @see #DEFAULT_CREATE_JDBC_FILE_NAME
+     */
     public static final String CREATE_JDBC_DDL_FILE = "eclipselink.create-ddl-jdbc-file-name";
+    
+    /**
+     * The property <code>"eclipselink.drop-ddl-jdbc-file-name"</code>
+     * 
+     * <p>Specifies the name of the DDL file which is used to drop 
+     * database tables.</p>
+     * 
+     * <p>This property should be used in conjunction with the 
+     * <code>"eclipselink.application-location"</code> property to specify a 
+     * location on the file system for DDL file(s) to be written.</p>
+     * 
+     * @see #APP_LOCATION
+     * @see #DEFAULT_DROP_JDBC_FILE_NAME
+     */
     public static final String DROP_JDBC_DDL_FILE = "eclipselink.drop-ddl-jdbc-file-name";
 
+    /**
+     * The default location in the file system to output DDL files.
+     * Defaults to: the working directory.
+     * 
+     * @see #APP_LOCATION
+     */
     public static final String DEFAULT_APP_LOCATION = "." + File.separator;
+    
+    /**
+     * The default name of the DDL file which is used to create database tables.
+     * Defaults to: <code>createDDL.jdbc</code>
+     * 
+     * @see #CREATE_JDBC_DDL_FILE
+     */
     public static final String DEFAULT_CREATE_JDBC_FILE_NAME = "createDDL.jdbc";
+    
+    /**
+     * The default name of the DDL file which is used to drop database tables.
+     * Defaults to: <code>dropDDL.jdbc</code>
+     * 
+     * @see #DROP_JDBC_DDL_FILE
+     */
     public static final String DEFAULT_DROP_JDBC_FILE_NAME = "dropDDL.jdbc";
+    
+    /**
+     * The system property <code>INTERACT_WITH_DB</code>
+     * 
+     * <p>Specified to enable or disable the execution of DDL (configured with 
+     * the <code>eclipselink.ddl-generation<code> property) against a database.</p>
+     * 
+     * <p>e.g. a command line setting of <code>-DINTERACT_WITH_DB=false</code> 
+     * will not output DDL to the database.</p>
+     * 
+     * <p>Valid values:</p>
+     * <code>true</code> - output DDL to the database<br> 
+     * <code>false</code> - do not output DDL to the database
+     * 
+     * @see #DDL_GENERATION
+     */
     public static final String JAVASE_DB_INTERACTION = "INTERACT_WITH_DB";
 
     /**
@@ -1548,11 +1654,61 @@ public class PersistenceUnitProperties {
      * DDL_DATABASE_GENERATION, DDL_BOTH_GENERATION ("sql-script", "database",
      * "both") DDL_GENERATION must also be set, for this to have an effect.
      * Default is DDL_DATABASE_GENERATION.
+     * 
+     * @see #DEFAULT_DDL_GENERATION_MODE
+     * @see #DDL_DATABASE_GENERATION
+     * @see #DDL_SQL_SCRIPT_GENERATION
+     * @see #DDL_BOTH_GENERATION
      */
     public static final String DDL_GENERATION_MODE = "eclipselink.ddl-generation.output-mode";
+    
+    /**
+     * The parameter value <code>"sql-script"</code>
+     * 
+     * <p>For use with the <code>"eclipselink.ddl-generation.output-mode"</code> property.</p>
+     * 
+     * <p>Specifies that DDL will be written to file(s).</p>
+     * 
+     * @see #DDL_GENERATION_MODE
+     * @see #CREATE_JDBC_DDL_FILE
+     * @see #DROP_JDBC_DDL_FILE
+     */
     public static final String DDL_SQL_SCRIPT_GENERATION = "sql-script";
+    
+    /**
+     * The parameter value <code>"database"</code>
+     * 
+     * <p>For use with the <code>"eclipselink.ddl-generation.output-mode"</code> property, 
+     * and is the default parameter value</p>
+     * 
+     * <p>Specifies that DDL will be written to the database.</p>
+     * 
+     * @see #DDL_GENERATION_MODE
+     * @see #CREATE_JDBC_DDL_FILE
+     * @see #DROP_JDBC_DDL_FILE
+     */
     public static final String DDL_DATABASE_GENERATION = "database";
+    
+    /**
+     * The parameter value <code>"both"</code> 
+     * 
+     * <p>For use with the <code>"eclipselink.ddl-generation.output-mode"</code> property.</p>
+     * 
+     * <p>Specifies that DDL will be written to file(s) and the database.</p>
+     * 
+     * @see #DDL_GENERATION_MODE
+     * @see #CREATE_JDBC_DDL_FILE
+     * @see #DROP_JDBC_DDL_FILE
+     */
     public static final String DDL_BOTH_GENERATION = "both";
+    
+    /**
+     * The <code>eclipselink.ddl-generation.output-mode</code> parameter is configured
+     * to the default value of <code>database</code>.
+     * 
+     * @see #DDL_GENERATION_MODE
+     * @see #DDL_DATABASE_GENERATION
+     */
     public static final String DEFAULT_DDL_GENERATION_MODE = DDL_DATABASE_GENERATION;
 
     /**
