@@ -558,8 +558,10 @@ public class SDOType implements Type, Serializable {
             property.setContainingType(this);
 
             getDeclaredPropertiesMap().put(property.getName(), property);
-            for (int j = 0; j < property.getAliasNames().size(); j++) {
-                getDeclaredPropertiesMap().put(property.getAliasNames().get(j), property);
+            if (property.hasAliasNames()) {
+                for (int j = 0; j < property.getAliasNames().size(); j++) {
+                    getDeclaredPropertiesMap().put(property.getAliasNames().get(j), property);
+                }
             }
             if ((property.getType() != null) && (property.getType().isChangeSummaryType())) {
                 changeSummaryProperty = property;

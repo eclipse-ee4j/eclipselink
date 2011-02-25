@@ -1374,7 +1374,9 @@ public class SDOTypesGenerator {
             p.setName(refProp.getName());
             p.setXsdLocalName(refProp.getXsdLocalName());
             p.setNamespaceQualified(refProp.isNamespaceQualified());
-            p.setAliasNames(refProp.getAliasNames());
+            if (refProp.hasAliasNames()) {
+                p.setAliasNames(refProp.getAliasNames());
+            }
             p.setDefault(refProp.getDefault());
             p.setSubstitutable(refProp.isSubstitutable());
             p.setSubstitutableElements(refProp.getSubstitutableElements());

@@ -2678,8 +2678,10 @@ public class SDODataObject implements DataObject, SequencedObject {
             }
             theList.add(property);
             getInstanceProperties().add(property);
-            for (int i = 0, size = ((SDOProperty)property).getAliasNames().size(); i < size; i++) {
-                _getOpenContentAliasNamesMap().put((String)((SDOProperty)property).getAliasNames().get(i), property);
+            if (((SDOProperty)property).hasAliasNames()) {
+                for (int i = 0, size = ((SDOProperty)property).getAliasNames().size(); i < size; i++) {
+                    _getOpenContentAliasNamesMap().put((String)((SDOProperty)property).getAliasNames().get(i), property);
+                }
             }
         }
     }
@@ -2701,8 +2703,10 @@ public class SDODataObject implements DataObject, SequencedObject {
         _getOpenContentProperties().remove(property);
         _getOpenContentPropertiesAttributes().remove(property);
         getInstanceProperties().remove(property);
-        for (int i = 0, size = ((SDOProperty)property).getAliasNames().size(); i < size; i++) {
-           _getOpenContentAliasNamesMap().remove(((SDOProperty)property).getAliasNames().get(i));
+        if (((SDOProperty)property).hasAliasNames()) {
+            for (int i = 0, size = ((SDOProperty)property).getAliasNames().size(); i < size; i++) {
+               _getOpenContentAliasNamesMap().remove(((SDOProperty)property).getAliasNames().get(i));
+            }
         }
     }
 
