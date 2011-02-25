@@ -94,10 +94,16 @@ public class SDOType implements Type, Serializable {
     }
 
     public SDOType(SDOTypeHelper sdoTypeHelper) {
-        this.xmlDescriptor = new XMLDescriptor();
+        this(sdoTypeHelper, new XMLDescriptor());
+    }
+
+    protected SDOType(SDOTypeHelper sdoTypeHelper, XMLDescriptor xmlDescriptor) {
+        this.xmlDescriptor = xmlDescriptor;
         if(null != sdoTypeHelper) {
             aHelperContext = sdoTypeHelper.getHelperContext();
-            this.xmlDescriptor.setNamespaceResolver(sdoTypeHelper.getNamespaceResolver());
+            if(null != xmlDescriptor) {
+                this.xmlDescriptor.setNamespaceResolver(sdoTypeHelper.getNamespaceResolver());
+            }
         }
     }
 
@@ -121,6 +127,11 @@ public class SDOType implements Type, Serializable {
      */
     public SDOType(String uri, String name, SDOTypeHelper sdoTypeHelper) {
         this(sdoTypeHelper);
+        this.qName = new QName(uri, name);
+    }
+
+    protected SDOType(String uri, String name, SDOTypeHelper sdoTypeHelper, XMLDescriptor xmlDescriptor) {
+        this(sdoTypeHelper, xmlDescriptor);
         this.qName = new QName(uri, name);
     }
 
