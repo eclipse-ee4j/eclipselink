@@ -219,6 +219,10 @@ public class SDOProperty implements Property, Serializable {
         return opposite;
     }
 
+    public boolean hasAliasNames() {
+        return aliasNames != null && aliasNames.size() > 0;
+    }
+
     /**
      * Return a list of alias names for this Property.
      * @return a list of alias names for this Property.
