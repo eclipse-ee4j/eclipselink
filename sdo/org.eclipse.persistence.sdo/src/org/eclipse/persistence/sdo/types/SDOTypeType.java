@@ -20,23 +20,21 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
 public class SDOTypeType extends SDOType implements Type {
 
-    private static final String SDO_DO_URL = "org.eclipse.persistence.sdo.dataobjects";
-
     private boolean initialized = false;
 
     public SDOTypeType(SDOTypeHelper sdoTypeHelper) {
         super(SDOConstants.SDO_URL, SDOConstants.TYPE, sdoTypeHelper);
 
-        setImplClassName(SDO_DO_URL + ".TypeImpl");
-        Class implClass = getImplClass();
+        this.javaImplClass = TypeImpl.class;
 
-        xmlDescriptor.setJavaClass(implClass);
+        xmlDescriptor.setJavaClass(javaImplClass);
         xmlDescriptor.setInstantiationPolicy(new TypeInstantiationPolicy(this));
         xmlDescriptor.setDefaultRootElement("sdo:type");
 
@@ -154,5 +152,7 @@ public class SDOTypeType extends SDOType implements Type {
     public boolean isInitialized() {
         return this.initialized;
     }
+
+    public static class TypeImpl extends SDODataObject {}
 
 }

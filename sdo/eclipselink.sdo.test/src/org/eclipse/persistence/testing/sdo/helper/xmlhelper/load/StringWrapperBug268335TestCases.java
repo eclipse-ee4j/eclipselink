@@ -37,7 +37,7 @@ public class StringWrapperBug268335TestCases extends SDOXMLHelperLoadTestCases {
         
         // Test that the root object's class is an instance of StringWrapperImpl,
         // not StringsWrapperImpl (bug 268335)
-        assertEquals("The wrong wrapper type was created.", doClassName, "org.eclipse.persistence.sdo.StringWrapperImpl");
+        assertEquals("The wrong wrapper type was created.", doClassName, "org.eclipse.persistence.sdo.types.SDOWrapperType.StringWrapperImpl");
     }
 
     protected void createTypes() {
