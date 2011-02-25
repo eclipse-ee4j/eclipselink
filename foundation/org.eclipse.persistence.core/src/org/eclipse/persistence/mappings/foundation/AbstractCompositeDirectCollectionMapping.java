@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -132,7 +132,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      */
     public void buildCloneFromRow(AbstractRecord row, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // for direct collection a cloned value is no different from an original value
-        Object cloneAttributeValue = valueFromRow(row, joinManager, sourceQuery, sharedCacheKey, executionSession, true);
+        Object cloneAttributeValue = valueFromRow(row, joinManager, sourceQuery, sharedCacheKey, executionSession, true, new Boolean[1]);
         setAttributeValueInObject(clone, cloneAttributeValue);
     }
 
@@ -674,7 +674,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Build the nested collection from the database row.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.isProtectedIsolation()){
             if (this.isCacheable && isTargetProtected && cacheKey != null){
                 //cachekey will be null when isolating to uow
@@ -682,6 +682,9 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
                 Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null){
+                    if (wasCacheUsed != null){
+                        wasCacheUsed[0] = Boolean.TRUE;
+                    }
                     Object attributeValue = this.getAttributeValueFromObject(cached);
                     return buildClonePart(attributeValue, cacheKey, executionSession);
                 }

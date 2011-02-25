@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1011,7 +1011,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
-        return valueFromRow(dbRow, null, query, parentCacheKey, query.getExecutionSession(), isTargetProtected);
+        return valueFromRow(dbRow, null, query, parentCacheKey, query.getExecutionSession(), isTargetProtected, null);
     }
     
     /**

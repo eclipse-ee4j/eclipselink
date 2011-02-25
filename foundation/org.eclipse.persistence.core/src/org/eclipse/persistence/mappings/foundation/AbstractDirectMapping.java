@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1239,7 +1239,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
         // make that assumption.  It is easy to just build it again from the
         // row even if copy policy already copied it.
         // That optimization is lost.
-        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true);
+        Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true, null);
 
         setAttributeValueInObject(clone, attributeValue);
     }
@@ -1265,11 +1265,14 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * for converting the value.  Allows the correct session to be passed in.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected) {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) {
         if (this.descriptor.isProtectedIsolation()) {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 Object cached = cacheKey.getObject();
                 if (cached != null) {
+                    if (wasCacheUsed != null){
+                        wasCacheUsed[0] = Boolean.TRUE;
+                    }
                     Object attributeValue = getAttributeValueFromObject(cached);
                     return buildCloneValue(attributeValue, executionSession);
                 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -347,7 +347,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * Check for batch + aggregation reading.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.isProtectedIsolation()) {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
@@ -355,10 +355,12 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
                 Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null) {
-                    //this will just clone the indirection.
-                    //the indirection object is responsible for cloning the value.
+                    if (wasCacheUsed != null){
+                        wasCacheUsed[0] = Boolean.TRUE;
+                    }
                     return this.getAttributeValueFromObject(cached);
                 }
+                return result;
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }

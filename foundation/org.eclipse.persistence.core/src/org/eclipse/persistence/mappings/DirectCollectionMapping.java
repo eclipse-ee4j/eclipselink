@@ -1832,7 +1832,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setRealAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
         ContainerPolicy containerPolicy = getContainerPolicy();
@@ -3008,7 +3008,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Overridden to support flashback/historical queries.
      */
     @Override
-    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected) throws DatabaseException {
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.isProtectedIsolation()) {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
@@ -3016,10 +3016,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 Object result = null;
                 Object cached = cacheKey.getObject();
                 if (cached != null) {
-                    //this will just clone the indirection.
-                    //the indirection object is responsible for cloning the value.
+                    if (wasCacheUsed != null){
+                        wasCacheUsed[0] = Boolean.TRUE;
+                    }
                     return this.getAttributeValueFromObject(cached);
                 }
+                return result;
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
