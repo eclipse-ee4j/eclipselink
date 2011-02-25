@@ -124,7 +124,7 @@
             <arg value="domain1"/>
         </exec>
         <echo message="I'm going to sleep 2 minute waiting for glassfish domain1 to be started up ..."/>
-        <sleep minutes="1"/>
+        <sleep minutes="2"/>
         <!--pass is.JTA and ejb.lookup properties to server-->
         <exec executable="${glassfish.home}/bin/asadmin${extension}" spawn="true">
             <arg value="create-jvm-options"/>
@@ -145,7 +145,7 @@
         <delete file="${user.home}/.asadminpass" verbose="true" failonerror="false"/>        
         <echo message="Writing out the glassfish admin password to ${adminpassfile}"/>
         <echo file="${adminpassfile}" append="false">AS_ADMIN_PASSWORD=${server.pwd}</echo>
-        <echo message="glassfish.db.url == ${glassfish.db.url}"/>
+        <echo message="glassfish.db.info == ${glassfish.db.info}"/>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="create-jdbc-connection-pool"/>
             <arg value="--user"/>
