@@ -15,7 +15,6 @@ package org.eclipse.persistence.sdo;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
-import commonj.sdo.helper.XSDHelper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -86,10 +85,11 @@ public class SDOProperty implements Property, Serializable {
     private SDOProperty opposite;// the opposite Property
     private boolean xsd;
     private String xsdLocalName;
+    private Boolean isElement;
     private boolean global;
     private boolean namespaceQualified;
     private transient DatabaseMapping xmlMapping;
-    private Map propertyValues;
+    private Map<Property, Object> propertyValues;
     private boolean nullable;
     private QName xsdType;
     private boolean valueProperty;
@@ -398,6 +398,17 @@ public class SDOProperty implements Property, Serializable {
       */
     public boolean isGlobal() {
         return global;
+    }
+
+    /**
+     * INTERNAL:
+     * Return true if the property is an element, false if the property is an
+     * attribute, and null if it has not been specified.  This property has been
+     * added as a performance optimization to reduce the number of Maps created
+     * for the propertyValues property.
+     */
+    protected Boolean isElement() {
+        return isElement;
     }
 
     /**
@@ -1002,8 +1013,14 @@ public class SDOProperty implements Property, Serializable {
         return xpath;
     }
 
-    public Object get(Property property) {               
-        return getPropertyValues().get(property);
+    public Object get(Property property) {
+        if(SDOConstants.XMLELEMENT_PROPERTY.equals(property)) {
+            return isElement;
+        }
+        if(null == propertyValues) {
+            return null;
+        }
+        return propertyValues.get(property);
     }
 
     public List getInstanceProperties() {
@@ -1022,20 +1039,39 @@ public class SDOProperty implements Property, Serializable {
       */
     public Map getPropertyValues() {
         if (propertyValues == null) {
-            propertyValues = new HashMap();
+            propertyValues = new HashMap<Property, Object>(1);
+            if(null != isElement) {
+                propertyValues.put(SDOConstants.XMLELEMENT_PROPERTY, isElement);
+            }
+            
         }
         return propertyValues;
     }
 
     public void setInstanceProperty(Property property, Object value) {
-        getPropertyValues().put(property, value);
-        if(SDOConstants.SDOXML_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.SDOXML_DATATYPE.equals(property.getName()) && value instanceof Type) {
-            setType((Type)value);
-        }
-        if(SDOConstants.ORACLE_SDO_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.XML_SCHEMA_TYPE_NAME.equals(property.getName()) && value instanceof Type) {
-            Type schemaType = (Type)value;
-            QName schemaTypeQName = new QName(schemaType.getURI(), schemaType.getName());
-            setXsdType(schemaTypeQName);
+        if(SDOConstants.XMLELEMENT_PROPERTY.equals(property)) { 
+            isElement = (Boolean) value;
+            if(null != propertyValues) {
+                propertyValues.put(SDOConstants.XMLELEMENT_PROPERTY, isElement);
+            }
+        } else {
+            if(null == propertyValues) {
+                if(null != isElement) {
+                    propertyValues = new HashMap<Property, Object>(2);
+                    propertyValues.put(SDOConstants.XMLELEMENT_PROPERTY, isElement);
+                } else {
+                    propertyValues = new HashMap<Property, Object>(1);
+                }
+            }
+            propertyValues.put(property, value);
+            if(SDOConstants.SDOXML_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.SDOXML_DATATYPE.equals(property.getName()) && value instanceof Type) {
+                setType((Type)value);
+            }
+            if(SDOConstants.ORACLE_SDO_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.XML_SCHEMA_TYPE_NAME.equals(property.getName()) && value instanceof Type) {
+                Type schemaType = (Type)value;
+                QName schemaTypeQName = new QName(schemaType.getURI(), schemaType.getName());
+                setXsdType(schemaTypeQName);
+            }
         }
     }
 
@@ -1278,16 +1314,19 @@ public class SDOProperty implements Property, Serializable {
             return false;
         }
         // check attribute vs. element
-        XSDHelper helper = aHelperContext.getXSDHelper(); 
-        if (helper.isAttribute(this)) {
-            if (helper.isElement(prop)) {
+        Boolean propIsElement = prop.isElement();
+        if(null == isElement) {
+            if(null != propIsElement) {
                 return false;
             }
-        } else if (helper.isAttribute(prop)) {
-            return false;
+        } else {
+            if(!isElement.equals(propIsElement)) {
+                return false;
+            }
         }
         return true;
     }
+
     private void updateType(){    	
         if (type == SDOConstants.SDO_BOOLEAN) {
             setType(SDOConstants.SDO_BOOLEANOBJECT);

@@ -16,6 +16,7 @@ public class SDOPropertyEqualityTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("SDOProperty Equality Test Suite");
         suite.addTestSuite(SDOPropertyEqualityTests.class);
+        suite.addTestSuite(XmlElementPropertyTestCases.class);
         return suite;
     }    
 }
