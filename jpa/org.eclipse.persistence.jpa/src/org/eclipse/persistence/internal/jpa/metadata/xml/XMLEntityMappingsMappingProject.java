@@ -121,6 +121,8 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.OrderByMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.ReturnInsertMetadata;
+//import org.eclipse.persistence.internal.jpa.metadata.multitenant.TenantIdMetadata;
+//import org.eclipse.persistence.internal.jpa.metadata.multitenant.TenantSharedMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.HashPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.PartitioningMetadata;
@@ -209,6 +211,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildDiscriminatorClassDescriptor());
         
         addDescriptor(buildAdditionalCriteriaDescriptor());
+        //addDescriptor(buildTenantIdDescriptor());
+        //addDescriptor(buildTenantSharedDescriptor());
         addDescriptor(buildNamedQueryDescriptor());
         addDescriptor(buildNamedNativeQueryDescriptor());
         addDescriptor(buildNamedStoredProcedureQueryDescriptor());
@@ -929,185 +933,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         return descriptor;
     }
-    
-    /**
-     * XSD: partitioning
-     */
-    protected ClassDescriptor buildPartitioningDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(PartitioningMetadata.class);
-    
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getClassAttributeMapping());
         
-        return descriptor;
-    }
-    
-    /**
-     * XSD: replication-partitioning
-     */
-    protected ClassDescriptor buildReplicationPartitioningDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(ReplicationPartitioningMetadata.class);
-    
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getConnectionPoolsMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * XSD: round-robin-partitioning
-     */
-    protected ClassDescriptor buildRoundRobinPartitioningDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(RoundRobinPartitioningMetadata.class);
-    
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getReplicateWritesMapping());
-        descriptor.addMapping(getConnectionPoolsMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * XSD: range-partitioning
-     */
-    protected ClassDescriptor buildRangePartitioningDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(RangePartitioningMetadata.class);
-    
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getUnionUnpartitionableQueriesMapping());
-        descriptor.addMapping(getPartitionColumnMapping());
-        
-        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
-        mapping.setAttributeName("partitions");
-        mapping.setGetMethodName("getPartitions");
-        mapping.setSetMethodName("setPartitions");
-        mapping.setReferenceClass(RangePartitionMetadata.class);
-        mapping.setXPath("orm:partition");
-        descriptor.addMapping(mapping);
-        
-        return descriptor;
-    }
-    
-    /**
-     * XSD: range-partition
-     */
-    protected ClassDescriptor buildRangePartitionDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(RangePartitionMetadata.class);
-
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("startValue");
-        mapping.setGetMethodName("getStartValue");
-        mapping.setSetMethodName("setStartValue");
-        mapping.setXPath("@startValue");
-        descriptor.addMapping(mapping);
-        
-        mapping = new XMLDirectMapping();
-        mapping.setAttributeName("endValue");
-        mapping.setGetMethodName("getEndValue");
-        mapping.setSetMethodName("setEndValue");
-        mapping.setXPath("@endValue");
-        descriptor.addMapping(mapping);
-        
-        descriptor.addMapping(getConnectionPoolMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * XSD: value-partitioning
-     */
-    protected ClassDescriptor buildValuePartitioningDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(ValuePartitioningMetadata.class);
-    
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getUnionUnpartitionableQueriesMapping());
-        descriptor.addMapping(getPartitionColumnMapping());
-        
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("defaultConnectionPool");
-        mapping.setGetMethodName("getDefaultConnectionPool");
-        mapping.setSetMethodName("setDefaultConnectionPool");
-        mapping.setXPath("@default-connection-pool");
-        descriptor.addMapping(mapping);
-        
-        XMLCompositeCollectionMapping partitionsMapping = new XMLCompositeCollectionMapping();
-        partitionsMapping.setAttributeName("partitions");
-        partitionsMapping.setGetMethodName("getPartitions");
-        partitionsMapping.setSetMethodName("setPartitions");
-        partitionsMapping.setReferenceClass(ValuePartitionMetadata.class);
-        partitionsMapping.setXPath("orm:partition");
-        descriptor.addMapping(partitionsMapping);
-        
-        return descriptor;
-    }
-    
-    /**
-     * XSD: value-partition
-     */
-    protected ClassDescriptor buildValuePartitionDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(ValuePartitionMetadata.class);
-
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("value");
-        mapping.setGetMethodName("getValue");
-        mapping.setSetMethodName("setValue");
-        mapping.setXPath("@value");
-        descriptor.addMapping(mapping);
-        
-        descriptor.addMapping(getConnectionPoolMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * XSD: hash-partitioning
-     */
-    protected ClassDescriptor buildHashPartitioningDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(HashPartitioningMetadata.class);
-    
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getUnionUnpartitionableQueriesMapping());
-        descriptor.addMapping(getPartitionColumnMapping());
-        descriptor.addMapping(getConnectionPoolsMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * XSD: union-partitioning
-     */
-    protected ClassDescriptor buildUnionPartitioningDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(UnionPartitioningMetadata.class);
-    
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getReplicateWritesMapping());
-        descriptor.addMapping(getConnectionPoolsMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * XSD: pinned-partitioning
-     */
-    protected ClassDescriptor buildPinnedPartitioningDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(PinnedPartitioningMetadata.class);
-    
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getConnectionPoolMapping());
-        
-        return descriptor;
-    }
-    
     /**
      * INTERNAL:
      * XSD: copy-policy
@@ -1122,6 +948,66 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         classMapping.setSetMethodName("setCopyPolicyClassName");
         classMapping.setXPath("@class");
         descriptor.addMapping(classMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: cache-interceptor
+     */
+    protected ClassDescriptor buildDefaultRedirectorsDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(QueryRedirectorsMetadata.class);
+        
+        XMLDirectMapping allQueries = new XMLDirectMapping();
+        allQueries.setAttributeName("defaultQueryRedirector");
+        allQueries.setGetMethodName("getDefaultQueryRedirector");
+        allQueries.setSetMethodName("setDefaultQueryRedirector");
+        allQueries.setXPath("@all-queries");
+        descriptor.addMapping(allQueries);
+      
+        XMLDirectMapping readAllQuery = new XMLDirectMapping();
+        readAllQuery.setAttributeName("defaultReadAllQueryRedirector");
+        readAllQuery.setGetMethodName("getDefaultReadAllQueryRedirector");
+        readAllQuery.setSetMethodName("setDefaultReadAllQueryRedirector");
+        readAllQuery.setXPath("@read-all");
+        descriptor.addMapping(readAllQuery);
+
+        XMLDirectMapping readObjectQuery = new XMLDirectMapping();
+        readObjectQuery.setAttributeName("defaultReadObjectQueryRedirector");
+        readObjectQuery.setGetMethodName("getDefaultReadObjectQueryRedirector");
+        readObjectQuery.setSetMethodName("setDefaultReadObjectQueryRedirector");
+        readObjectQuery.setXPath("@read-object");
+        descriptor.addMapping(readObjectQuery);
+
+        XMLDirectMapping reportQuery = new XMLDirectMapping();
+        reportQuery.setAttributeName("defaultReportQueryRedirector");
+        reportQuery.setGetMethodName("getDefaultReportQueryRedirector");
+        reportQuery.setSetMethodName("setDefaultReportQueryRedirector");
+        reportQuery.setXPath("@report");
+        descriptor.addMapping(reportQuery);
+
+        XMLDirectMapping updateQuery = new XMLDirectMapping();
+        updateQuery.setAttributeName("defaultUpdateObjectQueryRedirector");
+        updateQuery.setGetMethodName("getDefaultUpdateObjectQueryRedirector");
+        updateQuery.setSetMethodName("setDefaultUpdateObjectQueryRedirector");
+        updateQuery.setXPath("@update");
+        descriptor.addMapping(updateQuery);
+
+        XMLDirectMapping insertQuery = new XMLDirectMapping();
+        insertQuery.setAttributeName("defaultInsertObjectQueryRedirector");
+        insertQuery.setGetMethodName("getDefaultInsertObjectQueryRedirector");
+        insertQuery.setSetMethodName("setDefaultInsertObjectQueryRedirector");
+        insertQuery.setXPath("@insert");
+        descriptor.addMapping(insertQuery);
+
+        XMLDirectMapping deleteQuery = new XMLDirectMapping();
+        deleteQuery.setAttributeName("defaultDeleteObjectQueryRedirector");
+        deleteQuery.setGetMethodName("getDefaultDeleteObjectQueryRedirector");
+        deleteQuery.setSetMethodName("setDefaultDeleteObjectQueryRedirector");
+        deleteQuery.setXPath("@delete");
+        descriptor.addMapping(deleteQuery);
         
         return descriptor;
     }
@@ -1736,6 +1622,21 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * XSD: hash-partitioning
+     */
+    protected ClassDescriptor buildHashPartitioningDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(HashPartitioningMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getUnionUnpartitionableQueriesMapping());
+        descriptor.addMapping(getPartitionColumnMapping());
+        descriptor.addMapping(getConnectionPoolsMapping());
+        
+        return descriptor;
+    }
+    
+    /**
      * INTERNAL:
      * XSD: id
      */
@@ -1764,6 +1665,38 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
         descriptor.addMapping(getAttributeTypeAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: index
+     */
+    protected ClassDescriptor buildIndexDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(IndexMetadata.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        XMLCompositeDirectCollectionMapping uniqueConstraintsMapping = new XMLCompositeDirectCollectionMapping();
+        uniqueConstraintsMapping.setAttributeName("columnNames");
+        uniqueConstraintsMapping.setGetMethodName("getColumnNames");
+        uniqueConstraintsMapping.setSetMethodName("setColumnNames");
+        uniqueConstraintsMapping.setXPath("orm:column-name");
+        descriptor.addMapping(uniqueConstraintsMapping);
+        
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getTableAttributeMapping());
+        descriptor.addMapping(getCatalogAttributeMapping());
+        descriptor.addMapping(getSchemaAttributeMapping());
+
+        XMLDirectMapping uniqueMapping = new XMLDirectMapping();
+        uniqueMapping.setAttributeName("unique");
+        uniqueMapping.setGetMethodName("getUnique");
+        uniqueMapping.setSetMethodName("setUnique");
+        uniqueMapping.setXPath("@unique");
+        descriptor.addMapping(uniqueMapping);
         
         return descriptor;
     }
@@ -1855,6 +1788,61 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: many-to-many
+     */
+    protected ClassDescriptor buildManyToManyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ManyToManyAccessor.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getOrderByMapping());
+        descriptor.addMapping(getOrderColumnMapping());
+        descriptor.addMapping(getMapKeyMapping());
+        descriptor.addMapping(getMapKeyClassMapping());
+        descriptor.addMapping(getMapKeyTemporalMapping());
+        descriptor.addMapping(getMapKeyEnumeratedMapping());
+        descriptor.addMapping(getMapKeyConvertMapping());
+        descriptor.addMapping(getMapKeyAttributeOverrideMapping());
+        descriptor.addMapping(getMapKeyAssociationOverrideMapping());
+        descriptor.addMapping(getMapKeyColumnMapping());
+        descriptor.addMapping(getMapKeyJoinColumnMapping());
+        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getTypeConverterMapping());
+        descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getStructConverterMapping());
+        descriptor.addMapping(getJoinTableMapping());
+        descriptor.addMapping(getCascadeMapping());
+        descriptor.addMapping(getCascadeOnDeleteMapping());
+        descriptor.addMapping(getJoinFetchMapping());
+        descriptor.addMapping(getBatchFetchMapping());
+        descriptor.addMapping(getBatchFetchSizeMapping());
+        descriptor.addMapping(getPropertyMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
+        descriptor.addMapping(getNonCacheableMapping());
+        
+        descriptor.addMapping(getPartitioningMapping());
+        descriptor.addMapping(getReplicationPartitioningMapping());
+        descriptor.addMapping(getRoundRobinPartitioningMapping());
+        descriptor.addMapping(getPinnedPartitioningMapping());
+        descriptor.addMapping(getRangePartitioningMapping());
+        descriptor.addMapping(getValuePartitioningMapping());
+        descriptor.addMapping(getHashPartitioningMapping());
+        descriptor.addMapping(getUnionPartitioningMapping());
+        descriptor.addMapping(getPartitionedMapping());
+        
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getTargetEntityAttributeMapping()); 
+        descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getMappedByAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: many-to-one
      */
     protected ClassDescriptor buildManyToOneDescriptor() {
@@ -1890,6 +1878,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMapsIdAttributeMapping());
         descriptor.addMapping(getIdAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: map-key
+     */
+    protected ClassDescriptor buildMapKeyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MapKeyMetadata.class);
+
+        descriptor.addMapping(getNameAttributeMapping());
         
         return descriptor;
     }
@@ -1960,74 +1961,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
         descriptor.addMapping(getExcludeDefaultMappingsAttributeMapping());
         descriptor.addMapping(getReadOnlyAttributeMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * INTERNAL:
-     * XSD: map-key
-     */
-    protected ClassDescriptor buildMapKeyDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(MapKeyMetadata.class);
-
-        descriptor.addMapping(getNameAttributeMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * INTERNAL:
-     * XSD: many-to-many
-     */
-    protected ClassDescriptor buildManyToManyDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(ManyToManyAccessor.class);
-        
-        // Element mappings - must remain in order of definition in XML.
-        descriptor.addMapping(getOrderByMapping());
-        descriptor.addMapping(getOrderColumnMapping());
-        descriptor.addMapping(getMapKeyMapping());
-        descriptor.addMapping(getMapKeyClassMapping());
-        descriptor.addMapping(getMapKeyTemporalMapping());
-        descriptor.addMapping(getMapKeyEnumeratedMapping());
-        descriptor.addMapping(getMapKeyConvertMapping());
-        descriptor.addMapping(getMapKeyAttributeOverrideMapping());
-        descriptor.addMapping(getMapKeyAssociationOverrideMapping());
-        descriptor.addMapping(getMapKeyColumnMapping());
-        descriptor.addMapping(getMapKeyJoinColumnMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
-        descriptor.addMapping(getJoinTableMapping());
-        descriptor.addMapping(getCascadeMapping());
-        descriptor.addMapping(getCascadeOnDeleteMapping());
-        descriptor.addMapping(getJoinFetchMapping());
-        descriptor.addMapping(getBatchFetchMapping());
-        descriptor.addMapping(getBatchFetchSizeMapping());
-        descriptor.addMapping(getPropertyMapping());
-        descriptor.addMapping(getAccessMethodsMapping());
-        descriptor.addMapping(getNonCacheableMapping());
-        
-        descriptor.addMapping(getPartitioningMapping());
-        descriptor.addMapping(getReplicationPartitioningMapping());
-        descriptor.addMapping(getRoundRobinPartitioningMapping());
-        descriptor.addMapping(getPinnedPartitioningMapping());
-        descriptor.addMapping(getRangePartitioningMapping());
-        descriptor.addMapping(getValuePartitioningMapping());
-        descriptor.addMapping(getHashPartitioningMapping());
-        descriptor.addMapping(getUnionPartitioningMapping());
-        descriptor.addMapping(getPartitionedMapping());
-        
-        // Attribute mappings.
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getTargetEntityAttributeMapping()); 
-        descriptor.addMapping(getFetchAttributeMapping());
-        descriptor.addMapping(getAccessAttributeMapping());
-        descriptor.addMapping(getMappedByAttributeMapping());
-        descriptor.addMapping(getAttributeTypeAttributeMapping());
         
         return descriptor;
     }
@@ -2130,6 +2063,63 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         defaultObjectMapping.setSetMethodName("setDefaultObjectValue");
         defaultObjectMapping.setXPath("orm:default-object-value");
         descriptor.addMapping(defaultObjectMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: one-to-many
+     */
+    protected ClassDescriptor buildOneToManyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(OneToManyAccessor.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getOrderByMapping());
+        descriptor.addMapping(getOrderColumnMapping());
+        descriptor.addMapping(getMapKeyMapping());
+        descriptor.addMapping(getMapKeyClassMapping());
+        descriptor.addMapping(getMapKeyTemporalMapping());
+        descriptor.addMapping(getMapKeyEnumeratedMapping());
+        descriptor.addMapping(getMapKeyConvertMapping());
+        descriptor.addMapping(getMapKeyAttributeOverrideMapping());
+        descriptor.addMapping(getMapKeyAssociationOverrideMapping());
+        descriptor.addMapping(getMapKeyColumnMapping());
+        descriptor.addMapping(getMapKeyJoinColumnMapping());
+        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getTypeConverterMapping());
+        descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getStructConverterMapping());
+        descriptor.addMapping(getJoinTableMapping());
+        descriptor.addMapping(getJoinColumnMapping());
+        descriptor.addMapping(getCascadeMapping());
+        descriptor.addMapping(getCascadeOnDeleteMapping());
+        descriptor.addMapping(getPrivateOwnedMapping());
+        descriptor.addMapping(getJoinFetchMapping());
+        descriptor.addMapping(getBatchFetchMapping());
+        descriptor.addMapping(getBatchFetchSizeMapping());
+        descriptor.addMapping(getPropertyMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
+        descriptor.addMapping(getNonCacheableMapping());
+        descriptor.addMapping(getPartitioningMapping());
+        descriptor.addMapping(getReplicationPartitioningMapping());
+        descriptor.addMapping(getRoundRobinPartitioningMapping());
+        descriptor.addMapping(getPinnedPartitioningMapping());
+        descriptor.addMapping(getRangePartitioningMapping());
+        descriptor.addMapping(getValuePartitioningMapping());
+        descriptor.addMapping(getHashPartitioningMapping());
+        descriptor.addMapping(getUnionPartitioningMapping());
+        descriptor.addMapping(getPartitionedMapping());
+        
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getTargetEntityAttributeMapping()); 
+        descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getMappedByAttributeMapping());
+        descriptor.addMapping(getOrphanRemovalAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
         
         return descriptor;
     }
@@ -2251,93 +2241,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
-     * INTERNAL:
-     * XSD: primary-key
+     * XSD: partitioning
      */
-    protected ClassDescriptor buildPrimaryKeyDescriptor() {
+    protected ClassDescriptor buildPartitioningDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(PrimaryKeyMetadata.class);
-        
-        // Element mappings - must remain in order of definition in XML.
-        XMLCompositeCollectionMapping columnsMapping = new XMLCompositeCollectionMapping();
-        columnsMapping.setAttributeName("m_columns");
-        columnsMapping.setReferenceClass(ColumnMetadata.class);
-        columnsMapping.setGetMethodName("getColumns");
-        columnsMapping.setSetMethodName("setColumns");
-        columnsMapping.setXPath("orm:column");
-        descriptor.addMapping(columnsMapping);
-        
-        // Attribute mappings.
-        XMLDirectMapping validationMapping = new XMLDirectMapping();
-        validationMapping.setAttributeName("m_validation");
-        validationMapping.setGetMethodName("getValidation");
-        validationMapping.setSetMethodName("setValidation");
-        validationMapping.setXPath("@validation");
-        descriptor.addMapping(validationMapping);
-        
-        XMLDirectMapping cacheKeyMapping = new XMLDirectMapping();
-        cacheKeyMapping.setAttributeName("m_cacheKeyType");
-        cacheKeyMapping.setGetMethodName("getCacheKeyType");
-        cacheKeyMapping.setSetMethodName("setCacheKeyType");
-        cacheKeyMapping.setXPath("@cache-key-type");
-        descriptor.addMapping(cacheKeyMapping);
-        
-        return descriptor;
-    }
+        descriptor.setJavaClass(PartitioningMetadata.class);
     
-    /**
-     * INTERNAL:
-     * XSD: one-to-many
-     */
-    protected ClassDescriptor buildOneToManyDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(OneToManyAccessor.class);
-        
-        // Element mappings - must remain in order of definition in XML.
-        descriptor.addMapping(getOrderByMapping());
-        descriptor.addMapping(getOrderColumnMapping());
-        descriptor.addMapping(getMapKeyMapping());
-        descriptor.addMapping(getMapKeyClassMapping());
-        descriptor.addMapping(getMapKeyTemporalMapping());
-        descriptor.addMapping(getMapKeyEnumeratedMapping());
-        descriptor.addMapping(getMapKeyConvertMapping());
-        descriptor.addMapping(getMapKeyAttributeOverrideMapping());
-        descriptor.addMapping(getMapKeyAssociationOverrideMapping());
-        descriptor.addMapping(getMapKeyColumnMapping());
-        descriptor.addMapping(getMapKeyJoinColumnMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
-        descriptor.addMapping(getJoinTableMapping());
-        descriptor.addMapping(getJoinColumnMapping());
-        descriptor.addMapping(getCascadeMapping());
-        descriptor.addMapping(getCascadeOnDeleteMapping());
-        descriptor.addMapping(getPrivateOwnedMapping());
-        descriptor.addMapping(getJoinFetchMapping());
-        descriptor.addMapping(getBatchFetchMapping());
-        descriptor.addMapping(getBatchFetchSizeMapping());
-        descriptor.addMapping(getPropertyMapping());
-        descriptor.addMapping(getAccessMethodsMapping());
-        descriptor.addMapping(getNonCacheableMapping());
-        descriptor.addMapping(getPartitioningMapping());
-        descriptor.addMapping(getReplicationPartitioningMapping());
-        descriptor.addMapping(getRoundRobinPartitioningMapping());
-        descriptor.addMapping(getPinnedPartitioningMapping());
-        descriptor.addMapping(getRangePartitioningMapping());
-        descriptor.addMapping(getValuePartitioningMapping());
-        descriptor.addMapping(getHashPartitioningMapping());
-        descriptor.addMapping(getUnionPartitioningMapping());
-        descriptor.addMapping(getPartitionedMapping());
-        
-        // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getTargetEntityAttributeMapping()); 
-        descriptor.addMapping(getFetchAttributeMapping());
-        descriptor.addMapping(getAccessAttributeMapping());
-        descriptor.addMapping(getMappedByAttributeMapping());
-        descriptor.addMapping(getOrphanRemovalAttributeMapping());
-        descriptor.addMapping(getAttributeTypeAttributeMapping());
+        descriptor.addMapping(getClassAttributeMapping());
         
         return descriptor;
     }
@@ -2412,6 +2323,54 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * XSD: pinned-partitioning
+     */
+    protected ClassDescriptor buildPinnedPartitioningDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PinnedPartitioningMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getConnectionPoolMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: primary-key
+     */
+    protected ClassDescriptor buildPrimaryKeyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PrimaryKeyMetadata.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        XMLCompositeCollectionMapping columnsMapping = new XMLCompositeCollectionMapping();
+        columnsMapping.setAttributeName("m_columns");
+        columnsMapping.setReferenceClass(ColumnMetadata.class);
+        columnsMapping.setGetMethodName("getColumns");
+        columnsMapping.setSetMethodName("setColumns");
+        columnsMapping.setXPath("orm:column");
+        descriptor.addMapping(columnsMapping);
+        
+        // Attribute mappings.
+        XMLDirectMapping validationMapping = new XMLDirectMapping();
+        validationMapping.setAttributeName("m_validation");
+        validationMapping.setGetMethodName("getValidation");
+        validationMapping.setSetMethodName("setValidation");
+        validationMapping.setXPath("@validation");
+        descriptor.addMapping(validationMapping);
+        
+        XMLDirectMapping cacheKeyMapping = new XMLDirectMapping();
+        cacheKeyMapping.setAttributeName("m_cacheKeyType");
+        cacheKeyMapping.setGetMethodName("getCacheKeyType");
+        cacheKeyMapping.setSetMethodName("setCacheKeyType");
+        cacheKeyMapping.setXPath("@cache-key-type");
+        descriptor.addMapping(cacheKeyMapping);
+        
+        return descriptor;
+    }
+    
+    /**
      * INTERNAL:
      * XSD: primary-key-join-column
      */
@@ -2469,62 +2428,49 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }    
     
     /**
-     * INTERNAL:
-     * XSD: cache-interceptor
+     * XSD: range-partition
      */
-    protected ClassDescriptor buildDefaultRedirectorsDescriptor() {
+    protected ClassDescriptor buildRangePartitionDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(QueryRedirectorsMetadata.class);
+        descriptor.setJavaClass(RangePartitionMetadata.class);
+
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("startValue");
+        mapping.setGetMethodName("getStartValue");
+        mapping.setSetMethodName("setStartValue");
+        mapping.setXPath("@startValue");
+        descriptor.addMapping(mapping);
         
-        XMLDirectMapping allQueries = new XMLDirectMapping();
-        allQueries.setAttributeName("defaultQueryRedirector");
-        allQueries.setGetMethodName("getDefaultQueryRedirector");
-        allQueries.setSetMethodName("setDefaultQueryRedirector");
-        allQueries.setXPath("@all-queries");
-        descriptor.addMapping(allQueries);
-      
-        XMLDirectMapping readAllQuery = new XMLDirectMapping();
-        readAllQuery.setAttributeName("defaultReadAllQueryRedirector");
-        readAllQuery.setGetMethodName("getDefaultReadAllQueryRedirector");
-        readAllQuery.setSetMethodName("setDefaultReadAllQueryRedirector");
-        readAllQuery.setXPath("@read-all");
-        descriptor.addMapping(readAllQuery);
-
-        XMLDirectMapping readObjectQuery = new XMLDirectMapping();
-        readObjectQuery.setAttributeName("defaultReadObjectQueryRedirector");
-        readObjectQuery.setGetMethodName("getDefaultReadObjectQueryRedirector");
-        readObjectQuery.setSetMethodName("setDefaultReadObjectQueryRedirector");
-        readObjectQuery.setXPath("@read-object");
-        descriptor.addMapping(readObjectQuery);
-
-        XMLDirectMapping reportQuery = new XMLDirectMapping();
-        reportQuery.setAttributeName("defaultReportQueryRedirector");
-        reportQuery.setGetMethodName("getDefaultReportQueryRedirector");
-        reportQuery.setSetMethodName("setDefaultReportQueryRedirector");
-        reportQuery.setXPath("@report");
-        descriptor.addMapping(reportQuery);
-
+        mapping = new XMLDirectMapping();
+        mapping.setAttributeName("endValue");
+        mapping.setGetMethodName("getEndValue");
+        mapping.setSetMethodName("setEndValue");
+        mapping.setXPath("@endValue");
+        descriptor.addMapping(mapping);
         
-        XMLDirectMapping updateQuery = new XMLDirectMapping();
-        updateQuery.setAttributeName("defaultUpdateObjectQueryRedirector");
-        updateQuery.setGetMethodName("getDefaultUpdateObjectQueryRedirector");
-        updateQuery.setSetMethodName("setDefaultUpdateObjectQueryRedirector");
-        updateQuery.setXPath("@update");
-        descriptor.addMapping(updateQuery);
-
-        XMLDirectMapping insertQuery = new XMLDirectMapping();
-        insertQuery.setAttributeName("defaultInsertObjectQueryRedirector");
-        insertQuery.setGetMethodName("getDefaultInsertObjectQueryRedirector");
-        insertQuery.setSetMethodName("setDefaultInsertObjectQueryRedirector");
-        insertQuery.setXPath("@insert");
-        descriptor.addMapping(insertQuery);
-
-        XMLDirectMapping deleteQuery = new XMLDirectMapping();
-        deleteQuery.setAttributeName("defaultDeleteObjectQueryRedirector");
-        deleteQuery.setGetMethodName("getDefaultDeleteObjectQueryRedirector");
-        deleteQuery.setSetMethodName("setDefaultDeleteObjectQueryRedirector");
-        deleteQuery.setXPath("@delete");
-        descriptor.addMapping(deleteQuery);
+        descriptor.addMapping(getConnectionPoolMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * XSD: range-partitioning
+     */
+    protected ClassDescriptor buildRangePartitioningDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(RangePartitioningMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getUnionUnpartitionableQueriesMapping());
+        descriptor.addMapping(getPartitionColumnMapping());
+        
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("partitions");
+        mapping.setGetMethodName("getPartitions");
+        mapping.setSetMethodName("setPartitions");
+        mapping.setReferenceClass(RangePartitionMetadata.class);
+        mapping.setXPath("orm:partition");
+        descriptor.addMapping(mapping);
         
         return descriptor;
     }
@@ -2544,6 +2490,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
 
     /**
+     * XSD: replication-partitioning
+     */
+    protected ClassDescriptor buildReplicationPartitioningDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ReplicationPartitioningMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getConnectionPoolsMapping());
+        
+        return descriptor;
+    }
+    
+    /**
      * INTERNAL:
      * XSD: return-insert
      */
@@ -2557,6 +2516,20 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         returnOnlyMapping.setSetMethodName("setReturnOnly");
         returnOnlyMapping.setXPath("@return-only");
         descriptor.addMapping(returnOnlyMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * XSD: round-robin-partitioning
+     */
+    protected ClassDescriptor buildRoundRobinPartitioningDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(RoundRobinPartitioningMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getReplicateWritesMapping());
+        descriptor.addMapping(getConnectionPoolsMapping());
         
         return descriptor;
     }
@@ -2792,6 +2765,52 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: tenant-id
+     */
+    /*
+    protected ClassDescriptor buildTenantIdDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(TenantIdMetadata.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getColumnMapping());
+        
+        // Attribute mappings
+        XMLDirectMapping propertyMapping = new XMLDirectMapping();
+        propertyMapping.setAttributeName("property");
+        propertyMapping.setGetMethodName("getProperty");
+        propertyMapping.setSetMethodName("setProperty");
+        propertyMapping.setXPath("@property");
+        descriptor.addMapping(propertyMapping);
+        
+        return descriptor;
+    }
+    */
+    
+    /**
+     * INTERNAL:
+     * XSD: tenant-shared
+     */
+    /*
+    protected ClassDescriptor buildTenantSharedDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(TenantSharedMetadata.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        XMLCompositeCollectionMapping tenantIdsMapping = new XMLCompositeCollectionMapping();
+        tenantIdsMapping.setAttributeName("tenantIds");
+        tenantIdsMapping.setGetMethodName("getTenantIds");
+        tenantIdsMapping.setSetMethodName("setTenantIds");
+        tenantIdsMapping.setReferenceClass(TenantIdMetadata.class);
+        tenantIdsMapping.setXPath("orm:tenant-id");
+        descriptor.addMapping(tenantIdsMapping);
+        
+        return descriptor;
+    }
+    */
+    
+    /**
+     * INTERNAL:
      * XSD: time-of-day
      */
     protected ClassDescriptor buildTimeOfDayDescriptor() {
@@ -2896,6 +2915,20 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * XSD: union-partitioning
+     */
+    protected ClassDescriptor buildUnionPartitioningDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(UnionPartitioningMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getReplicateWritesMapping());
+        descriptor.addMapping(getConnectionPoolsMapping());
+        
+        return descriptor;
+    }
+    
+    /**
      * INTERNAL:
      * XSD: unique-constraint
      */
@@ -2918,36 +2951,53 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
-     * INTERNAL:
-     * XSD: index
+     * XSD: value-partition
      */
-    protected ClassDescriptor buildIndexDescriptor() {
+    protected ClassDescriptor buildValuePartitionDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(IndexMetadata.class);
-        
-        // Element mappings - must remain in order of definition in XML.
-        XMLCompositeDirectCollectionMapping uniqueConstraintsMapping = new XMLCompositeDirectCollectionMapping();
-        uniqueConstraintsMapping.setAttributeName("columnNames");
-        uniqueConstraintsMapping.setGetMethodName("getColumnNames");
-        uniqueConstraintsMapping.setSetMethodName("setColumnNames");
-        uniqueConstraintsMapping.setXPath("orm:column-name");
-        descriptor.addMapping(uniqueConstraintsMapping);
-        
-        // Attribute mappings.
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getTableAttributeMapping());
-        descriptor.addMapping(getCatalogAttributeMapping());
-        descriptor.addMapping(getSchemaAttributeMapping());
+        descriptor.setJavaClass(ValuePartitionMetadata.class);
 
-        XMLDirectMapping uniqueMapping = new XMLDirectMapping();
-        uniqueMapping.setAttributeName("unique");
-        uniqueMapping.setGetMethodName("getUnique");
-        uniqueMapping.setSetMethodName("setUnique");
-        uniqueMapping.setXPath("@unique");
-        descriptor.addMapping(uniqueMapping);
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("value");
+        mapping.setGetMethodName("getValue");
+        mapping.setSetMethodName("setValue");
+        mapping.setXPath("@value");
+        descriptor.addMapping(mapping);
+        
+        descriptor.addMapping(getConnectionPoolMapping());
         
         return descriptor;
     }
+    
+    /**
+     * XSD: value-partitioning
+     */
+    protected ClassDescriptor buildValuePartitioningDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ValuePartitioningMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getUnionUnpartitionableQueriesMapping());
+        descriptor.addMapping(getPartitionColumnMapping());
+        
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("defaultConnectionPool");
+        mapping.setGetMethodName("getDefaultConnectionPool");
+        mapping.setSetMethodName("setDefaultConnectionPool");
+        mapping.setXPath("@default-connection-pool");
+        descriptor.addMapping(mapping);
+        
+        XMLCompositeCollectionMapping partitionsMapping = new XMLCompositeCollectionMapping();
+        partitionsMapping.setAttributeName("partitions");
+        partitionsMapping.setGetMethodName("getPartitions");
+        partitionsMapping.setSetMethodName("setPartitions");
+        partitionsMapping.setReferenceClass(ValuePartitionMetadata.class);
+        partitionsMapping.setXPath("orm:partition");
+        descriptor.addMapping(partitionsMapping);
+        
+        return descriptor;
+    }
+
     
     /**
      * INTERNAL:
