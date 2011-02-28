@@ -984,6 +984,7 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
@@ -992,6 +993,7 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
             <param name="RUN_PATH" value="run.extended.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
@@ -1033,6 +1035,7 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-Dignore"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath.static"/>
             <param name="DB_URL" value="${db.url}"/>
@@ -1041,6 +1044,7 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-Dignore"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
             <param name="RUN_PATH" value="run.extended.classpath.static"/>
             <param name="DB_URL" value="${db.url}"/>
@@ -1055,7 +1059,6 @@
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
         </antcall>
     </target>
 
@@ -1066,7 +1069,6 @@
             <param name="RUN_PATH" value="run.performance.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
         </antcall>
     </target>
 
@@ -1077,7 +1079,6 @@
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
         </antcall>
     </target>
 
@@ -1118,7 +1119,6 @@
             <param name="RUN_PATH" value="run.performance.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
         </antcall>
     </target>
 
@@ -1129,7 +1129,6 @@
             <param name="RUN_PATH" value="run.performance.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
         </antcall>
     </target>
 
@@ -1140,7 +1139,6 @@
             <param name="RUN_PATH" value="run.performance.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
         </antcall>
     </target>
 
@@ -1255,7 +1253,6 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
             <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/instrument.jar"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
@@ -1264,7 +1261,6 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"/>
             <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/instrument.jar"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
