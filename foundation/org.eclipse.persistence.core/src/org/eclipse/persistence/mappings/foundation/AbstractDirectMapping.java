@@ -1283,7 +1283,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) {
         if (this.descriptor.isProtectedIsolation()) {
-            if (this.isCacheable && isTargetProtected && (cacheKey != null)) {
+            if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 Object cached = cacheKey.getObject();
                 if (cached != null) {
                     if (wasCacheUsed != null){

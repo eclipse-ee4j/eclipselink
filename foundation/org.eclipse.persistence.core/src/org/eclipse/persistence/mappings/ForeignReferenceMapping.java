@@ -1930,7 +1930,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     if (wasCacheUsed != null){
                         wasCacheUsed[0] = Boolean.TRUE;
                     }
-                //this will just clone the indirection.
+                    //this will just clone the indirection.
                     //the indirection object is responsible for cloning the value.
                     return getAttributeValueFromObject(cached);
                 }

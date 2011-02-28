@@ -254,21 +254,20 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * Check for batch + aggregation reading.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
-        if (this.descriptor.isProtectedIsolation()){
-            if (this.isCacheable && isTargetProtected && cacheKey != null){
+        if (this.descriptor.isProtectedIsolation()) {
+            if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection
                 Object result = null;
                 Object cached = cacheKey.getObject();
-                if (cached != null){
+                if (cached != null) {
                     if (wasCacheUsed != null){
                         wasCacheUsed[0] = Boolean.TRUE;
                     }
                     return this.getAttributeValueFromObject(cached);
                 }
                 return result;
-                
-            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
+            } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
