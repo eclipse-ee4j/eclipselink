@@ -108,8 +108,8 @@
                 includes="org.eclipse.persistence.a*.jar
                           org.eclipse.persistence.c*.jar
                           org.eclipse.persistence.o*.jar
-                          org.eclipse.persistence.j*.jar"
-                          org.eclipse.persistence.dbws_*.jar
+                          org.eclipse.persistence.j*.jar
+                          org.eclipse.persistence.dbws_*.jar"
                 excludes="org.eclipse.persistence.*.source*.jar"/>
         </copy>
     </target>
