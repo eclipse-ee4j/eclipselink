@@ -1857,6 +1857,21 @@ public class SchemaGenerator {
         }
 
         QName elementName = property.getSchemaName();
+        String elementNamespace = elementName.getNamespaceURI();
+        String lookupNamespace = schema.getTargetNamespace();
+        if (lookupNamespace == null) {
+            lookupNamespace = EMPTY_STRING;
+        }
+        NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace);
+        boolean isElementFormQualified = false;
+        if (namespaceInfo != null) {
+            isElementFormQualified = namespaceInfo.isElementFormQualified();
+        }
+        // handle element reference
+        if ((isElementFormQualified && !elementNamespace.equals(lookupNamespace))
+                    || (!isElementFormQualified && !elementNamespace.equals(EMPTY_STRING))){
+            schema = this.getSchemaForNamespace(elementNamespace);
+        }
         JavaClass javaType = property.getActualType();                    
         element.setName(elementName.getLocalPart());
         String typeName = getTypeNameForElement(property, schema, javaType, element);
