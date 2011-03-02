@@ -2176,13 +2176,14 @@
 
     <target name="server-test-ddlgeneration" depends="cleanup-merge-inherited-ddl">
         <antcall target="server-run-all" inheritRefs="true">
-            <param name="PERSISTENCE_UNIT_NAME" value="ddlGeneration"/>
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/ddlgeneration"/>
             <param name="MODEL_NAME" value="eclipselink-ddl-generation-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/ddlgeneration"/>
             <param name="TEST_NAME" value="eclipselink-ddl-generation-model"/>
             <param name="EAR_NAME" value="eclipselink-ddl-generation-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
