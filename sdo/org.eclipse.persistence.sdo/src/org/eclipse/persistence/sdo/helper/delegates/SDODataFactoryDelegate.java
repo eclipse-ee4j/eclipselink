@@ -57,18 +57,18 @@ public class SDODataFactoryDelegate implements SDODataFactory {
         SDOXMLHelper xmlHelper = (SDOXMLHelper) getHelperContext().getXMLHelper();
         ClassLoader contextLoader = xmlHelper.getLoader();
         ClassLoader interfaceLoader = interfaceClass.getClassLoader();
-        ClassLoader parentLoader = contextLoader;
         boolean loadersAreRelated = false;
 
         // check the hierarchy to see if the interface loader is a parent of the context loader
-        while (parentLoader != null && !loadersAreRelated) {
-            if (parentLoader == interfaceLoader) {
+        while (contextLoader != null && !loadersAreRelated) {
+            if (contextLoader == interfaceLoader) {
                 loadersAreRelated = true;
             }
-            parentLoader = contextLoader.getParent();
-            if(parentLoader == contextLoader) {
+            ClassLoader parentLoader = contextLoader.getParent();
+            if(contextLoader == parentLoader) {
                 break;
             }
+            contextLoader = parentLoader;
         }
         
         throw new IllegalArgumentException(SDOException.typeNotFoundForInterface(interfaceClass.getName(), loadersAreRelated));
