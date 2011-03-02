@@ -355,6 +355,14 @@
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel"/>
         </antcall>
+
+		<!--PLSQL -->
+		<antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.plsql.PLSQLTestModel"/>
+        </antcall>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.plsql.PLSQLXMLTestModel"/>
+        </antcall>
     </target>
 
     <!-- Runs LRG (TestRunModel). -->
