@@ -241,6 +241,9 @@ public class SDOProperty implements Property, Serializable {
      * @param name    a string representing unique name of a property of a DataObject.
      */
     public void setName(String name) {
+        if(null != name) {
+            name = name.intern();
+        }
         propertyName = name;
     }
 
@@ -1214,6 +1217,9 @@ public class SDOProperty implements Property, Serializable {
     }
 
     public void setUri(String uri) {
+        if(null != uri) {
+            uri = uri.intern();
+        }
         this.uri = uri;
     }
 
