@@ -127,11 +127,23 @@ public class SDOType implements Type, Serializable {
      */
     public SDOType(String uri, String name, SDOTypeHelper sdoTypeHelper) {
         this(sdoTypeHelper);
+        if(null != uri) {
+            uri = uri.intern();
+        }
+        if(null != name) {
+            name = name.intern();
+        }
         this.qName = new QName(uri, name);
     }
 
     protected SDOType(String uri, String name, SDOTypeHelper sdoTypeHelper, XMLDescriptor xmlDescriptor) {
         this(sdoTypeHelper, xmlDescriptor);
+        if(null != uri) {
+            uri = uri.intern();
+        }
+        if(null != name) {
+            name = name.intern();
+        }
         this.qName = new QName(uri, name);
     }
 
