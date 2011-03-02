@@ -93,7 +93,7 @@ public class XPathFragment {
 
             if (xpathString.charAt(0) == '@') {
                 hasAttribute = true;
-                shortName = xpathString.substring(1);
+                shortName = xpathString.substring(1).intern();
                 indexValue = hasIndex(xpathString);
                 setupNamespaceInformation(shortName);
                 return;
@@ -101,7 +101,7 @@ public class XPathFragment {
 
             if (xpathString.charAt(0) == '/') {
                 setShouldExecuteSelectNodes(true);
-                shortName = xpathString.substring(xpathString.lastIndexOf('/') + 1);
+                shortName = xpathString.substring(xpathString.lastIndexOf('/') + 1).intern();
                 indexValue = hasIndex(xpathString);
                 setupNamespaceInformation(shortName);
                 return;
@@ -110,7 +110,7 @@ public class XPathFragment {
 
         if (xpathString.equals(XMLConstants.TEXT)) {
             nameIsText = true;
-            shortName = xpathString;
+            shortName = xpathString.intern();
             return;
         } else {
             nameIsText = false;
@@ -119,7 +119,7 @@ public class XPathFragment {
         // handle "self" xpath
         if (xpathString.equals(SELF_XPATH)) {
             isSelfFragment = true;
-            shortName = xpathString;
+            shortName = xpathString.intern();
             return;
         }
 
@@ -128,7 +128,7 @@ public class XPathFragment {
         
         try {
             shortNameBytes = shortName.getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-        } catch (UnsupportedEncodingException e) {        	        	
+        } catch (UnsupportedEncodingException e) {
         }
 
     }
@@ -136,10 +136,10 @@ public class XPathFragment {
         int nsindex = xpathString.indexOf(XMLConstants.COLON);
         if (nsindex != -1) {
             hasNamespace = true;
-            localName = xpathString.substring(nsindex + 1);
-            prefix = xpathString.substring(0, nsindex);
+            localName = xpathString.substring(nsindex + 1).intern();
+            prefix = xpathString.substring(0, nsindex).intern();
         } else {
-        	localName = xpathString;
+        	localName = xpathString.intern();
         }
     }
 

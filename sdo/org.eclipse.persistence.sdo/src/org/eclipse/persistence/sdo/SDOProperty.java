@@ -241,6 +241,9 @@ public class SDOProperty implements Property, Serializable {
      * @param name    a string representing unique name of a property of a DataObject.
      */
     public void setName(String name) {
+        if(null != name) {
+            name = name.intern();
+        }
         propertyName = name;
     }
 
@@ -554,6 +557,7 @@ public class SDOProperty implements Property, Serializable {
                     }
                 } else {
                     MimeTypePolicy mimeTypePolicy = getMimeTypePolicy();
+
                     //Removed check for XSD type since XSD type can't be set via typeHelper.define
                     if (isActivationAvailable && (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || 
                             ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")) ||
@@ -1213,6 +1217,9 @@ public class SDOProperty implements Property, Serializable {
     }
 
     public void setUri(String uri) {
+        if(null != uri) {
+            uri = uri.intern();
+        }
         this.uri = uri;
     }
 
