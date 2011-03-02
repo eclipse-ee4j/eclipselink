@@ -13,6 +13,7 @@
 package org.eclipse.persistence.oxm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,6 +50,9 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
  * @see org.eclipse.persistence.oxm.mappings
  */
 public class XMLDescriptor extends ClassDescriptor {
+
+    private static final Vector EMPTY_VECTOR = NonSynchronizedVector.newInstance(1);
+
     private NamespaceResolver namespaceResolver;
     private XMLSchemaReference schemaReference;
     private boolean shouldPreserveDocument = false;
@@ -64,12 +68,12 @@ public class XMLDescriptor extends ClassDescriptor {
     public XMLDescriptor() {
         this.tables = NonSynchronizedVector.newInstance(3);
         this.mappings = NonSynchronizedVector.newInstance();
-        this.primaryKeyFields = new ArrayList(2);
+        this.primaryKeyFields = new ArrayList(1);
         this.fields = NonSynchronizedVector.newInstance();
         this.allFields = NonSynchronizedVector.newInstance();
-        this.constraintDependencies = NonSynchronizedVector.newInstance(2);
-        this.multipleTableForeignKeys = new HashMap(5);
-        this.queryKeys = new HashMap(5);
+        this.constraintDependencies = EMPTY_VECTOR;
+        this.multipleTableForeignKeys = Collections.EMPTY_MAP;
+        this.queryKeys = Collections.EMPTY_MAP;
         this.initializationStage = UNINITIALIZED;
         this.interfaceInitializationStage = UNINITIALIZED;
         this.shouldAlwaysRefreshCache = false;
@@ -88,10 +92,13 @@ public class XMLDescriptor extends ClassDescriptor {
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
         this.cacheIsolation = null;
+        this.idValidation = null;
+        this.derivesIdMappings = Collections.EMPTY_MAP;
+        this.additionalWritableMapKeyFields = Collections.EMPTY_LIST;
 
         // Policies        
         this.objectBuilder = new TreeObjectBuilder(this);
-        this.cascadeLockingPolicies = NonSynchronizedVector.newInstance();
+        this.cascadeLockingPolicies = null;
 
         this.shouldOrderMappings = false;
         this.descriptorIsAggregate();
