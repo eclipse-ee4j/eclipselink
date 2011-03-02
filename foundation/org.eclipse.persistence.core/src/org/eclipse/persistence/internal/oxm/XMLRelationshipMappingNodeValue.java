@@ -205,13 +205,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
     protected void endElementProcessText(UnmarshalRecord unmarshalRecord, Converter converter, XPathFragment xPathFragment, Object collection) {
         Object value = unmarshalRecord.getStringBuffer().toString();
-        if(converter != null) {
-            if(converter instanceof XMLConverter){
-                value = ((XMLConverter)converter).convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-            }else{
-                value = converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession());
-            }
-        }
+
         unmarshalRecord.resetStringBuffer();
         if (!XMLConstants.EMPTY_STRING.equals(value)) {
             QName qname = unmarshalRecord.getTypeQName();
@@ -221,6 +215,13 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                     value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, qname);
                 }
             }
+            if(converter != null) {
+                if(converter instanceof XMLConverter){
+                    value = ((XMLConverter)converter).convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+                }else{
+                    value = converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession());
+                }
+            }            
             setOrAddAttributeValue(unmarshalRecord, value, xPathFragment, collection);
         }
     }

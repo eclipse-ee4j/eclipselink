@@ -812,6 +812,10 @@ public class MappingsGenerator {
             if(helper.getXMLToJavaTypeMap().get(element.getJavaType().getRawName()) == XMLConstants.BASE_64_BINARY_QNAME) {
                 xmlField.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
             }
+            if(areEquals(pType, Object.class)) {
+                xmlField.setIsTypedTextField(true);
+                xmlField.setSchemaType(XMLConstants.ANY_TYPE_QNAME);
+            }
             DatabaseMapping nestedMapping;
             if(isCollection){
                 XMLChoiceCollectionMapping xmlChoiceCollectionMapping = (XMLChoiceCollectionMapping) mapping;
