@@ -1404,18 +1404,21 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         containerPolicy.sizeFor(valueOfTarget);
         boolean fireChangeEvents = false;
         ObjectChangeListener listener = null;
+        Object valueOfSourceCloned = null;
         if (!mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
+            // EL Bug 338504 - No Need to clone in this case.
+            valueOfSourceCloned = valueOfSource;
             // if we are copying from original to clone then the source will be     
             // instantiated anyway and we must continue to use the UnitOfWork 
             // valueholder in the case of transparent indirection
-            Object newContainer = containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSource));
+            Object newContainer = containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSourceCloned));
             if ((this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
                 // Avoid triggering events if we are dealing with the same list.
                 // We rebuild the new container though since any cascade merge
                 // activity such as lifecycle methods etc will be captured on
                 // newly registered objects and not the clones and we need to
                 // make sure the target has these updates once we are done.
-                fireChangeEvents = valueOfSource != valueOfTarget;
+                fireChangeEvents = (valueOfSourceCloned != valueOfTarget);
                 // Collections may not be indirect list or may have been replaced with user collection.
                 Object iterator = containerPolicy.iteratorFor(valueOfTarget);
                 listener = (ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener();
@@ -1438,57 +1441,63 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
             valueOfTarget = newContainer;
         } else {
+            // EL Bug 338504 - It needs to iterate on object which can possibly 
+            // cause a deadlock scenario while merging changes from original
+            // to the working copy during rollback of the transaction. So, clone 
+            // the original object instead of synchronizing on it and use cloned
+            // object to iterate and merge changes to the working copy.
+            synchronized(valueOfSource) {
+                valueOfSourceCloned = containerPolicy.cloneFor(valueOfSource);
+            }
             //bug 3953038 - set a new collection in the object until merge completes, this
             //              prevents rel-maint. from adding duplicates.
-            setRealAttributeValueInObject(target, containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSource)));
+            setRealAttributeValueInObject(target, containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSourceCloned)));
             containerPolicy.clear(valueOfTarget);
         }
 
-        synchronized (valueOfSource) {
-            Object sourceIterator = containerPolicy.iteratorFor(valueOfSource);
-            // Index of the added object - objects are added to the end of the list. 
-            // When event is processed the index is used only in listOrderField case, ignored otherwise.  
-            int i = 0;
-            while (containerPolicy.hasNext(sourceIterator)) {
-                Object wrappedObject = containerPolicy.nextEntry(sourceIterator, mergeManager.getSession());
-                Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
-                if (object == null) {
-                    continue;// skip the null
-                }
-                if (shouldMergeCascadeParts(mergeManager)) {
-                    if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
-                        // If it is a unit of work, we have to check if I have a change Set for this object
-                        mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object), targetSession);
-                    } else {
-                        mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), null, targetSession);
-                    }
-                }
-                wrappedObject = containerPolicy.createWrappedObjectFromExistingWrappedObject(wrappedObject, source, referenceDescriptor, mergeManager, targetSession);
-                synchronized (valueOfTarget) {
-                    if (fireChangeEvents) {
-                        //Collections may not be indirect list or may have been replaced with user collection.
-                        //bug 304251: let the ContainerPolicy decide what changeevent object to create
-                        CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD, i++);
-                        listener.internalPropertyChange(event);
-                    }
-                    containerPolicy.addInto(wrappedObject, valueOfTarget, mergeManager.getSession());
+        Object sourceIterator = containerPolicy.iteratorFor(valueOfSourceCloned);
+        // Index of the added object - objects are added to the end of the list. 
+        // When event is processed the index is used only in listOrderField case, ignored otherwise.  
+        int i = 0;
+        while (containerPolicy.hasNext(sourceIterator)) {
+            Object wrappedObject = containerPolicy.nextEntry(sourceIterator, mergeManager.getSession());
+            Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
+            if (object == null) {
+                continue;// skip the null
+            }
+            if (shouldMergeCascadeParts(mergeManager)) {
+                if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
+                    // If it is a unit of work, we have to check if I have a change Set for this object
+                    mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object), targetSession);
+                } else {
+                    mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), null, targetSession);
                 }
             }
-            if (fireChangeEvents && (this.descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
-                // check that there were changes, if not then remove the record.
-                ObjectChangeSet changeSet = ((AttributeChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).getObjectChangeSet();
-                //Bug4910642  Add NullPointer check
-                if (changeSet != null) {
-                    CollectionChangeRecord changeRecord = (CollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
-                    if (changeRecord != null) {
-                        if (!changeRecord.isDeferred()) {
-                            if (!changeRecord.hasChanges()) {
-                                changeSet.removeChange(getAttributeName());
-                            }
-                        } else {
-                            // Must reset the latest collection.
-                            changeRecord.setLatestCollection(valueOfTarget);
+            wrappedObject = containerPolicy.createWrappedObjectFromExistingWrappedObject(wrappedObject, source, referenceDescriptor, mergeManager, targetSession);
+            synchronized (valueOfTarget) {
+                if (fireChangeEvents) {
+                    //Collections may not be indirect list or may have been replaced with user collection.
+                    //bug 304251: let the ContainerPolicy decide what changeevent object to create
+                    CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD, i++);
+                    listener.internalPropertyChange(event);
+                }
+                containerPolicy.addInto(wrappedObject, valueOfTarget, mergeManager.getSession());
+            }
+        }
+        if (fireChangeEvents && (this.descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
+            // check that there were changes, if not then remove the record.
+            ObjectChangeSet changeSet = ((AttributeChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).getObjectChangeSet();
+            //Bug4910642  Add NullPointer check
+            if (changeSet != null) {
+                CollectionChangeRecord changeRecord = (CollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
+                if (changeRecord != null) {
+                    if (!changeRecord.isDeferred()) {
+                        if (!changeRecord.hasChanges()) {
+                            changeSet.removeChange(getAttributeName());
                         }
+                    } else {
+                        // Must reset the latest collection.
+                        changeRecord.setLatestCollection(valueOfTarget);
                     }
                 }
             }
