@@ -898,7 +898,7 @@ public class AnnotationsProcessor {
                     generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
                 }
                 if (generatedClass == null) {
-                    generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType);
+                    generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType, extraClasses);
                     extraClasses.add(helper.getJavaClass(generatedClass));
                     arrayClassesToGeneratedClasses.put(javaClass.getName(), generatedClass);
                 }
@@ -1376,24 +1376,26 @@ public class AnnotationsProcessor {
             property.setXmlJavaTypeAdapter(xja);
         } else {
             TypeInfo ptypeInfo = typeInfo.get(ptype.getQualifiedName());
-            boolean newTypeInfoForAdapter = false;
-            if (ptypeInfo == null && shouldGenerateTypeInfo(ptype)) {
-                CompilerHelper.addClassToClassLoader(ptype, helper.getClassLoader());
-                JavaClass[] jClassArray = new JavaClass[] { ptype };
-                buildNewTypeInfo(jClassArray);
-                ptypeInfo = typeInfo.get(ptype.getQualifiedName());
-                newTypeInfoForAdapter = true;
-            }
             org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xmlJavaTypeAdapter;
+            if (ptypeInfo == null && shouldGenerateTypeInfo(ptype)) {
+                if(helper.isAnnotationPresent(ptype, XmlJavaTypeAdapter.class)) {
+                    XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(ptype, XmlJavaTypeAdapter.class);
+                    org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
+                    xja.setValue(adapter.value().getName());
+                    String boundType = adapter.type().getName();
+                    if (boundType == null || boundType.equals("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
+                        boundType = ptype.getRawName();
+                    }
+                    xja.setType(adapter.type().getName());
+                    property.setXmlJavaTypeAdapter(xja);
+                }
+            }
             if (ptypeInfo != null) {
                 if (null != (xmlJavaTypeAdapter = ptypeInfo.getXmlJavaTypeAdapter())) {
                     try {
                         property.setXmlJavaTypeAdapter(xmlJavaTypeAdapter);
                     } catch (JAXBException e) {
-                        throw JAXBException.invalidTypeAdapterClass(xmlJavaTypeAdapter.getValue(), javaClass.getName());                    }
-                } else {
-                    if(newTypeInfoForAdapter) {
-                        removeTypeInfo(ptype.getQualifiedName(), ptypeInfo);
+                        throw JAXBException.invalidTypeAdapterClass(xmlJavaTypeAdapter.getValue(), javaClass.getName());                    
                     }
                 }
             } 
@@ -1405,7 +1407,6 @@ public class AnnotationsProcessor {
                 xja.setType(ptype.getQualifiedName());
                 property.setXmlJavaTypeAdapter(xja);
             }
-
         }
     }
 
@@ -3448,7 +3449,7 @@ public class AnnotationsProcessor {
         return generateClassFromBytes(qualifiedClassName, classBytes);
     }
 
-    private Class generateWrapperForArrayClass(JavaClass arrayClass, TypeMappingInfo typeMappingInfo, Class xmlElementType) {
+    private Class generateWrapperForArrayClass(JavaClass arrayClass, TypeMappingInfo typeMappingInfo, Class xmlElementType, List<JavaClass> classesToProcess) {
         JavaClass componentClass = null;
         if (typeMappingInfo != null && xmlElementType != null) {
             componentClass = helper.getJavaClass(xmlElementType);
@@ -3456,8 +3457,12 @@ public class AnnotationsProcessor {
             componentClass = arrayClass.getComponentType();
         }
         if (componentClass.isArray()) {
-            Class nestedArrayClass = generateWrapperForArrayClass(componentClass, typeMappingInfo, xmlElementType);
-            arrayClassesToGeneratedClasses.put(componentClass.getName(), nestedArrayClass);
+            Class nestedArrayClass = arrayClassesToGeneratedClasses.get(componentClass.getName()); 
+            if(nestedArrayClass == null) {
+                nestedArrayClass = generateWrapperForArrayClass(componentClass, typeMappingInfo, xmlElementType, classesToProcess);
+                arrayClassesToGeneratedClasses.put(componentClass.getName(), nestedArrayClass);
+                classesToProcess.add(helper.getJavaClass(nestedArrayClass));
+            }                
             return generateArrayValue(arrayClass, componentClass, helper.getJavaClass(nestedArrayClass), typeMappingInfo);
         } else {
             return generateArrayValue(arrayClass, componentClass, componentClass, typeMappingInfo);

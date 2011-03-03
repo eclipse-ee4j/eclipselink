@@ -19,9 +19,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="root", namespace="urn:example")
 public class MultiDimensionalArrayRoot {
 
-    private int[][][] int3dArray;
     private int[][] int2dArray;
     private char[][] char2dArray;
+    private int[][][] int3dArray;
     private Integer[][][] integer3dArray;
     private Employee[][] employee2dArray;
     private ClassWithInnerClass.MyInner[][] innerClass2dArray;

@@ -8,19 +8,16 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Blaise Doughan - 2.3 - Initial implementation
+ *     Matt MacIvor - 2.3 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlaccessortype.none;
 
-import javax.xml.bind.annotation.XmlElement;
-
-public class Unmapped {
-
-    public Unmapped(String value) {
+public class UnmappedTwo {
+    
+    
+    public UnmappedTwo(String value) {
     }
 
-    @XmlElement
-    private UnmappedTwo unmapped;
     @Override
     public boolean equals(Object obj) {
         if(null == obj || obj.getClass() != Unmapped.class ) {
@@ -28,5 +25,4 @@ public class Unmapped {
         }
         return true;
     }
-
 }

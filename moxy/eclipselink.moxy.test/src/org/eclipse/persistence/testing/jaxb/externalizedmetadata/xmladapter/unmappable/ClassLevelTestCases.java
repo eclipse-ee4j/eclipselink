@@ -44,7 +44,7 @@ public class ClassLevelTestCases extends JAXBTestCases {
         super(name);
         setUp();
         setTypes(new Class[]{Container.class});
-        setControlDocument("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container.xml");
+        setControlDocument("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container_class.xml");
     }
     
     public Object getControlObject() {
