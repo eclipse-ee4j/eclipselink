@@ -20,6 +20,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
+
 public interface JPAEnvironment {
     
     
@@ -65,4 +67,8 @@ public interface JPAEnvironment {
     public boolean usesExtendedPC();
 
     public DataSource getDataSource();
+
+    public Object getPropertyValue(EntityManager em, String key);
+
+    public void evict(EntityManager em, Class<?> clazz);
 }

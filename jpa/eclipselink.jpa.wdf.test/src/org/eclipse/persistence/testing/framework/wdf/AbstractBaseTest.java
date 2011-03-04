@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -32,6 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -205,6 +208,56 @@ public abstract class AbstractBaseTest {
             return Persistence.createEntityManagerFactory(puName, mergedProperties); 
         }
 
+        @Override
+        public Object getPropertyValue(EntityManager em, String key) {
+            Object delegate = em.getDelegate();
+            Method getEntityManagerFactoryMethod;
+            try {
+                getEntityManagerFactoryMethod = delegate.getClass().getMethod("getEntityManagerFactory");
+                Object emf = getEntityManagerFactoryMethod.invoke(delegate);
+                
+                Method getPropertiesMethod = emf.getClass().getMethod("getProperties");
+                @SuppressWarnings("rawtypes")
+                Map map = (Map) getPropertiesMethod.invoke(emf);
+                
+                return map.get(key);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+            
+        }
+        
+        @Override
+        public void evict(EntityManager em, Class<?> clazz) {
+            Object delegate = em.getDelegate();
+            Method getEntityManagerFactoryMethod;
+            try {
+                getEntityManagerFactoryMethod = delegate.getClass().getMethod("getEntityManagerFactory");
+                Object emf = getEntityManagerFactoryMethod.invoke(delegate);
+                
+                Method getCacheMethod = emf.getClass().getMethod("getCache");
+                Object cache =  getCacheMethod.invoke(emf);
+                
+                Method evictClassMethod = cache.getClass().getMethod("evict", Class.class);
+                
+                evictClassMethod.invoke(cache, clazz);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
     final class JTATxScopedEnvironment implements JPAEnvironment {
@@ -285,6 +338,16 @@ public abstract class AbstractBaseTest {
 
         @Override
         public EntityManagerFactory createNewEntityManagerFactory(Map<String, Object> properties) throws NamingException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Object getPropertyValue(EntityManager em, String key) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void evict(EntityManager em, Class<?> clazz) {
             throw new UnsupportedOperationException();
         }
 
@@ -373,7 +436,8 @@ public abstract class AbstractBaseTest {
             conn.close();
         }
         
-        getEnvironment().getEntityManagerFactory().getCache().evictAll();
+        // TODO evictAll
+        
     }
 
     /**
