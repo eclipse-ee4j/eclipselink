@@ -25,16 +25,13 @@ public class OSGiTestSuite extends TestSuite {
         JUnitTestCase.initializePlatform();
         TestSuite suite = new TestSuite();
         suite.setName("Fieldaccess Advanced OSGiTestSuite");
-        suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
         suite.addTest(ExtendedPersistenceContextJUnitTestSuite.suite());
-        suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
         suite.addTest(ReportQueryConstructorExpressionTestSuite.suite());
         suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
-        suite.addTest(SQLResultSetMappingTestSuite.suite());
         suite.addTest(UpdateAllQueryAdvancedJunitTest.suite());
         
         return suite;
