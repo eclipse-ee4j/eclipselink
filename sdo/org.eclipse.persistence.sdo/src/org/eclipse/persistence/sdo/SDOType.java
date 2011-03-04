@@ -95,6 +95,7 @@ public class SDOType implements Type, Serializable {
 
     public SDOType(SDOTypeHelper sdoTypeHelper) {
         this(sdoTypeHelper, new XMLDescriptor());
+        xmlDescriptor.setLazilyInitialized(true);
     }
 
     protected SDOType(SDOTypeHelper sdoTypeHelper, XMLDescriptor xmlDescriptor) {

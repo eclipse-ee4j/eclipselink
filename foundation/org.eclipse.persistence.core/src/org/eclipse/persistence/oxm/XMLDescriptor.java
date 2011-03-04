@@ -15,7 +15,6 @@ package org.eclipse.persistence.oxm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -60,6 +59,7 @@ public class XMLDescriptor extends ClassDescriptor {
     private boolean sequencedObject = false;
     private boolean isWrapper = false;
     private boolean resultAlwaysXMLRoot = false;
+    private boolean lazilyInitialized = false;
 
     /**
      * PUBLIC:
@@ -236,6 +236,22 @@ public class XMLDescriptor extends ClassDescriptor {
      */
     public void setSchemaReference(XMLSchemaReference newSchemaReference) {
         schemaReference = newSchemaReference;
+    }
+
+    /**
+     * If true, the descriptor may be lazily initialized.  This is useful if the
+     * descriptor may not get used.
+     */
+    public boolean isLazilyInitialized() {
+        return lazilyInitialized;
+    }
+
+    /**
+     * Specify in the descriptor may be lazily initialized.  The default is 
+     * false.
+     */
+    public void setLazilyInitialized(boolean shouldLazyInitiailize) {
+        this.lazilyInitialized = shouldLazyInitiailize;
     }
 
     protected void validateMappingType(DatabaseMapping mapping) {
