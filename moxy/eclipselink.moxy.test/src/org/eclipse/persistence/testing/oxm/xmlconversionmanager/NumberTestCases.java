@@ -127,12 +127,12 @@ public class NumberTestCases extends OXTestCase {
 
     public void testConvertEmptyStringTo_BigDecimal() {
         BigDecimal test = (BigDecimal) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, BigDecimal.class);
-        assertEquals(BigDecimal.ZERO, test);
+        assertNull(test);
     }
 
     public void testConvertEmptyStringTo_BigInteger() {
         BigInteger test = (BigInteger) xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, BigInteger.class);
-        assertEquals(BigInteger.ZERO, test);
+        assertNull(test);
     }
 
     public static void main(String[] args) {

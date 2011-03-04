@@ -626,7 +626,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
        if(sourceObject instanceof String) {
            String sourceString = (String) sourceObject;
            if(sourceString.length() == 0) {
-               return BigInteger.ZERO;
+               return null;
            } else if(sourceString.charAt(0) == PLUS) {
                return super.convertObjectToBigInteger(sourceString.substring(1));
            }
@@ -642,7 +642,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
        if(sourceObject instanceof String) {
            String sourceString = (String) sourceObject;
            if(sourceString.length() == 0) {
-               return BigDecimal.ZERO;
+               return null;
            } else if(sourceString.charAt(0) == PLUS) {
                return super.convertObjectToBigDecimal(sourceString.substring(1));
            }
