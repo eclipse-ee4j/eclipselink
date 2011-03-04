@@ -72,6 +72,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     private List transformationMappings;
     private List containerValues;
     private List nullCapableValues;
+    private volatile boolean initialized = false;
 
     public TreeObjectBuilder(ClassDescriptor descriptor) {
         super(descriptor);
@@ -79,6 +80,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     public XPathNode getRootXPathNode() {
+        lazyInitialize();
         return this.rootXPathNode;
     }
 
@@ -119,173 +121,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         super.initialize(session);
         XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
 
-        // MAPPINGS
-        Iterator mappingIterator = xmlDescriptor.getMappings().iterator();
-        Iterator fieldTransformerIterator;
-        DatabaseMapping xmlMapping;
-
-        // Transformation Mapping
-        AbstractTransformationMapping transformationMapping;
-        FieldTransformerNodeValue fieldTransformerNodeValue;
-        Object[] nextFieldToTransformer;
-
-        // Simple Type Translator
-        TypeNodeValue typeNodeValue;
-
-        NodeValue mappingNodeValue = null;
-        XMLField xmlField;
-        while (mappingIterator.hasNext()) {
-            xmlMapping = (DatabaseMapping)mappingIterator.next();
-            
-            if (xmlMapping instanceof XMLInverseReferenceMapping) {
-                continue;
-            }
-            
-            xmlField = (XMLField)xmlMapping.getField();
-            if (xmlMapping.isTransformationMapping()) {
-                transformationMapping = (AbstractTransformationMapping)xmlMapping;
-                addTransformationMapping(transformationMapping);
-                fieldTransformerIterator = transformationMapping.getFieldToTransformers().iterator();
-                while (fieldTransformerIterator.hasNext()) {
-                    fieldTransformerNodeValue = new FieldTransformerNodeValue();
-                    nextFieldToTransformer = (Object[])fieldTransformerIterator.next();
-                    xmlField = (XMLField)nextFieldToTransformer[0];
-                    fieldTransformerNodeValue.setXMLField(xmlField);
-                    fieldTransformerNodeValue.setFieldTransformer((FieldTransformer)nextFieldToTransformer[1]);
-                    addChild(xmlField.getXPathFragment(), fieldTransformerNodeValue, xmlDescriptor.getNamespaceResolver());
-                }
-            } else {
-                if (xmlMapping.isAbstractDirectMapping()) {
-                    mappingNodeValue = new XMLDirectMappingNodeValue((XMLDirectMapping)xmlMapping);
-                } else if (xmlMapping.isAbstractCompositeObjectMapping()) {
-                    mappingNodeValue = new XMLCompositeObjectMappingNodeValue((XMLCompositeObjectMapping)xmlMapping);
-                } else if (xmlMapping.isAbstractCompositeDirectCollectionMapping()) {
-                    mappingNodeValue = new XMLCompositeDirectCollectionMappingNodeValue((XMLCompositeDirectCollectionMapping)xmlMapping);
-                } else if (xmlMapping.isAbstractCompositeCollectionMapping()) {
-                    mappingNodeValue = new XMLCompositeCollectionMappingNodeValue((XMLCompositeCollectionMapping)xmlMapping);
-                } else if (xmlMapping instanceof XMLAnyObjectMapping) {
-                    mappingNodeValue = new XMLAnyObjectMappingNodeValue((XMLAnyObjectMapping)xmlMapping);
-                } else if (xmlMapping instanceof XMLAnyCollectionMapping) {
-                    mappingNodeValue = new XMLAnyCollectionMappingNodeValue((XMLAnyCollectionMapping)xmlMapping);
-                } else if (xmlMapping instanceof XMLAnyAttributeMapping) {
-                    mappingNodeValue = new XMLAnyAttributeMappingNodeValue((XMLAnyAttributeMapping)xmlMapping);
-                } else if (xmlMapping instanceof XMLBinaryDataMapping) {
-                    mappingNodeValue = new XMLBinaryDataMappingNodeValue((XMLBinaryDataMapping)xmlMapping);
-                } else if (xmlMapping instanceof XMLBinaryDataCollectionMapping) {
-                    mappingNodeValue = new XMLBinaryDataCollectionMappingNodeValue((XMLBinaryDataCollectionMapping)xmlMapping);
-                } else if (xmlMapping instanceof XMLFragmentMapping) {
-                    mappingNodeValue = new XMLFragmentMappingNodeValue((XMLFragmentMapping)xmlMapping);
-                } else if (xmlMapping instanceof XMLFragmentCollectionMapping) {
-                    mappingNodeValue = new XMLFragmentCollectionMappingNodeValue((XMLFragmentCollectionMapping)xmlMapping);
-                } else if (xmlMapping instanceof XMLCollectionReferenceMapping) {
-                    XMLCollectionReferenceMapping xmlColMapping = (XMLCollectionReferenceMapping)xmlMapping;
-                    List fields = xmlColMapping.getFields();
-                    XMLField xmlColMappingField = (XMLField) xmlColMapping.getField();
-                    XPathNode branchNode;
-                    if(null == xmlColMappingField) {
-                        if(fields.size() > 1 && !xmlColMapping.usesSingleNode()) {
-                            addChild(XPathFragment.SELF_FRAGMENT, new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
-                        }
-                        branchNode = rootXPathNode;
-                    } else {
-                        branchNode = addChild(((XMLField) xmlColMapping.getField()).getXPathFragment(), new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
-                    }
-                    Iterator fieldIt = fields.iterator();
-                    while (fieldIt.hasNext()) {
-                        XMLField xmlFld = (XMLField)fieldIt.next();
-                        mappingNodeValue = new XMLCollectionReferenceMappingNodeValue(xmlColMapping, xmlFld);
-                        if (mappingNodeValue.isContainerValue()) {
-                            addContainerValue((ContainerValue)mappingNodeValue);
-                        }
-                        if (mappingNodeValue.isNullCapableValue()) {
-                            addNullCapableValue((NullCapableValue)mappingNodeValue);
-                        }
-                        branchNode.addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
-                    }
-                    continue;
-                } else if (xmlMapping instanceof XMLObjectReferenceMapping) {
-                    XMLObjectReferenceMapping xmlORMapping = (XMLObjectReferenceMapping)xmlMapping;
-                    Iterator fieldIt = xmlORMapping.getFields().iterator();
-                    while (fieldIt.hasNext()) {
-                        XMLField xmlFld = (XMLField)fieldIt.next();
-                        mappingNodeValue = new XMLObjectReferenceMappingNodeValue(xmlORMapping, xmlFld);
-                        if (mappingNodeValue.isContainerValue()) {
-                            addContainerValue((ContainerValue)mappingNodeValue);
-                        }
-                        if (mappingNodeValue.isNullCapableValue()) {
-                            addNullCapableValue((NullCapableValue)mappingNodeValue);
-                        }
-                        addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
-                    }
-                    continue;
-                } else if (xmlMapping instanceof XMLChoiceObjectMapping) {
-                    XMLChoiceObjectMapping xmlChoiceMapping = (XMLChoiceObjectMapping)xmlMapping;
-                    Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
-                    XMLField firstField = (XMLField)fields.next();
-                    XMLChoiceObjectMappingNodeValue firstNodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, firstField);
-                    firstNodeValue.setNullCapableNodeValue(firstNodeValue);
-                    this.addNullCapableValue(firstNodeValue);
-                    addChild(firstField.getXPathFragment(), firstNodeValue, xmlDescriptor.getNamespaceResolver());
-                    while(fields.hasNext()) {
-                        XMLField next = (XMLField)fields.next();
-                        XMLChoiceObjectMappingNodeValue nodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, next);
-                        nodeValue.setNullCapableNodeValue(firstNodeValue);
-                        addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
-                    }
-                    continue;
-                } else if(xmlMapping instanceof XMLChoiceCollectionMapping) {
-                    XMLChoiceCollectionMapping xmlChoiceMapping = (XMLChoiceCollectionMapping)xmlMapping;
-                    Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
-                    XMLField firstField = (XMLField)fields.next();
-                    XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, firstField);
-                    XMLChoiceCollectionMappingMarshalNodeValue marshalValue = new XMLChoiceCollectionMappingMarshalNodeValue(xmlChoiceMapping, firstField);
-                    HashMap<XMLField, NodeValue> fieldToNodeValues = new HashMap<XMLField, NodeValue>();
-                    unmarshalValue.setContainerNodeValue(unmarshalValue);
-                    marshalValue.setFieldToNodeValues(fieldToNodeValues);
-                    unmarshalValue.setFieldToNodeValues(fieldToNodeValues);
-                    this.addContainerValue(unmarshalValue);
-                    fieldToNodeValues.put(firstField, unmarshalValue);
-                    addChild(firstField.getXPathFragment(), unmarshalValue, xmlDescriptor.getNamespaceResolver());
-                    addChild(firstField.getXPathFragment(), marshalValue, xmlDescriptor.getNamespaceResolver());
-                    while(fields.hasNext()) {
-                        XMLField next = (XMLField)fields.next();
-                        XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, next);
-                        nodeValue.setContainerNodeValue(unmarshalValue);
-                        addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
-                        fieldToNodeValues.put(next, nodeValue);
-                    }
-                    continue;
-                }
-                if (mappingNodeValue.isContainerValue()) {
-                    addContainerValue((ContainerValue)mappingNodeValue);
-                }
-                if (mappingNodeValue.isNullCapableValue()) {
-                    addNullCapableValue((NullCapableValue)mappingNodeValue);
-                }
-                if (xmlField != null) {
-                    addChild(xmlField.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
-                } else {
-                    addChild(null, mappingNodeValue, xmlDescriptor.getNamespaceResolver());
-                }
-                if (xmlMapping.isAbstractDirectMapping() && xmlField.isTypedTextField()) {
-                    XPathFragment nextFragment = xmlField.getXPathFragment();
-                    StringBuilder typeXPathStringBuilder = new StringBuilder();
-                    while (nextFragment.getNextFragment() != null) {
-                        typeXPathStringBuilder.append(nextFragment.getXPath());
-                        nextFragment = nextFragment.getNextFragment();
-                    }
-                    XMLField typeField = new XMLField();
-                    if(typeXPathStringBuilder.length() > 0) {
-                        typeXPathStringBuilder.append('/');
-                    }
-                    typeField.setXPath(typeXPathStringBuilder.toString() + XMLConstants.ATTRIBUTE + xmlDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-                    typeNodeValue = new TypeNodeValue();
-                    typeNodeValue.setDirectMapping((AbstractDirectMapping)xmlMapping);
-                    addChild(typeField.getXPathFragment(), typeNodeValue, xmlDescriptor.getNamespaceResolver());
-                }
-            }
-        }
-
         // INHERITANCE
         if (xmlDescriptor.hasInheritance()) {
             InheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
@@ -293,8 +128,191 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             if (!inheritancePolicy.hasClassExtractor()) {
                 XMLField classIndicatorField = new XMLField(inheritancePolicy.getClassIndicatorFieldName());
                 classIndicatorField.setNamespaceResolver(xmlDescriptor.getNamespaceResolver());
-                    
             }
+        }
+
+        if(!xmlDescriptor.isLazilyInitialized()) {
+            lazyInitialize();
+        }
+    }
+
+    private void lazyInitialize() {
+        if(initialized) {
+            return;
+        }
+        synchronized(this) {
+            if(initialized) {
+                return;
+            }
+            XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
+    
+            // MAPPINGS
+            Iterator mappingIterator = xmlDescriptor.getMappings().iterator();
+            Iterator fieldTransformerIterator;
+            DatabaseMapping xmlMapping;
+    
+            // Transformation Mapping
+            AbstractTransformationMapping transformationMapping;
+            FieldTransformerNodeValue fieldTransformerNodeValue;
+            Object[] nextFieldToTransformer;
+    
+            // Simple Type Translator
+            TypeNodeValue typeNodeValue;
+    
+            NodeValue mappingNodeValue = null;
+            XMLField xmlField;
+            while (mappingIterator.hasNext()) {
+                xmlMapping = (DatabaseMapping)mappingIterator.next();
+                
+                if (xmlMapping instanceof XMLInverseReferenceMapping) {
+                    continue;
+                }
+                
+                xmlField = (XMLField)xmlMapping.getField();
+                if (xmlMapping.isTransformationMapping()) {
+                    transformationMapping = (AbstractTransformationMapping)xmlMapping;
+                    addTransformationMapping(transformationMapping);
+                    fieldTransformerIterator = transformationMapping.getFieldToTransformers().iterator();
+                    while (fieldTransformerIterator.hasNext()) {
+                        fieldTransformerNodeValue = new FieldTransformerNodeValue();
+                        nextFieldToTransformer = (Object[])fieldTransformerIterator.next();
+                        xmlField = (XMLField)nextFieldToTransformer[0];
+                        fieldTransformerNodeValue.setXMLField(xmlField);
+                        fieldTransformerNodeValue.setFieldTransformer((FieldTransformer)nextFieldToTransformer[1]);
+                        addChild(xmlField.getXPathFragment(), fieldTransformerNodeValue, xmlDescriptor.getNamespaceResolver());
+                    }
+                } else {
+                    if (xmlMapping.isAbstractDirectMapping()) {
+                        mappingNodeValue = new XMLDirectMappingNodeValue((XMLDirectMapping)xmlMapping);
+                    } else if (xmlMapping.isAbstractCompositeObjectMapping()) {
+                        mappingNodeValue = new XMLCompositeObjectMappingNodeValue((XMLCompositeObjectMapping)xmlMapping);
+                    } else if (xmlMapping.isAbstractCompositeDirectCollectionMapping()) {
+                        mappingNodeValue = new XMLCompositeDirectCollectionMappingNodeValue((XMLCompositeDirectCollectionMapping)xmlMapping);
+                    } else if (xmlMapping.isAbstractCompositeCollectionMapping()) {
+                        mappingNodeValue = new XMLCompositeCollectionMappingNodeValue((XMLCompositeCollectionMapping)xmlMapping);
+                    } else if (xmlMapping instanceof XMLAnyObjectMapping) {
+                        mappingNodeValue = new XMLAnyObjectMappingNodeValue((XMLAnyObjectMapping)xmlMapping);
+                    } else if (xmlMapping instanceof XMLAnyCollectionMapping) {
+                        mappingNodeValue = new XMLAnyCollectionMappingNodeValue((XMLAnyCollectionMapping)xmlMapping);
+                    } else if (xmlMapping instanceof XMLAnyAttributeMapping) {
+                        mappingNodeValue = new XMLAnyAttributeMappingNodeValue((XMLAnyAttributeMapping)xmlMapping);
+                    } else if (xmlMapping instanceof XMLBinaryDataMapping) {
+                        mappingNodeValue = new XMLBinaryDataMappingNodeValue((XMLBinaryDataMapping)xmlMapping);
+                    } else if (xmlMapping instanceof XMLBinaryDataCollectionMapping) {
+                        mappingNodeValue = new XMLBinaryDataCollectionMappingNodeValue((XMLBinaryDataCollectionMapping)xmlMapping);
+                    } else if (xmlMapping instanceof XMLFragmentMapping) {
+                        mappingNodeValue = new XMLFragmentMappingNodeValue((XMLFragmentMapping)xmlMapping);
+                    } else if (xmlMapping instanceof XMLFragmentCollectionMapping) {
+                        mappingNodeValue = new XMLFragmentCollectionMappingNodeValue((XMLFragmentCollectionMapping)xmlMapping);
+                    } else if (xmlMapping instanceof XMLCollectionReferenceMapping) {
+                        XMLCollectionReferenceMapping xmlColMapping = (XMLCollectionReferenceMapping)xmlMapping;
+                        List fields = xmlColMapping.getFields();
+                        XMLField xmlColMappingField = (XMLField) xmlColMapping.getField();
+                        XPathNode branchNode;
+                        if(null == xmlColMappingField) {
+                            if(fields.size() > 1 && !xmlColMapping.usesSingleNode()) {
+                                addChild(XPathFragment.SELF_FRAGMENT, new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
+                            }
+                            branchNode = rootXPathNode;
+                        } else {
+                            branchNode = addChild(((XMLField) xmlColMapping.getField()).getXPathFragment(), new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
+                        }
+                        Iterator fieldIt = fields.iterator();
+                        while (fieldIt.hasNext()) {
+                            XMLField xmlFld = (XMLField)fieldIt.next();
+                            mappingNodeValue = new XMLCollectionReferenceMappingNodeValue(xmlColMapping, xmlFld);
+                            if (mappingNodeValue.isContainerValue()) {
+                                addContainerValue((ContainerValue)mappingNodeValue);
+                            }
+                            if (mappingNodeValue.isNullCapableValue()) {
+                                addNullCapableValue((NullCapableValue)mappingNodeValue);
+                            }
+                            branchNode.addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
+                        }
+                        continue;
+                    } else if (xmlMapping instanceof XMLObjectReferenceMapping) {
+                        XMLObjectReferenceMapping xmlORMapping = (XMLObjectReferenceMapping)xmlMapping;
+                        Iterator fieldIt = xmlORMapping.getFields().iterator();
+                        while (fieldIt.hasNext()) {
+                            XMLField xmlFld = (XMLField)fieldIt.next();
+                            mappingNodeValue = new XMLObjectReferenceMappingNodeValue(xmlORMapping, xmlFld);
+                            if (mappingNodeValue.isContainerValue()) {
+                                addContainerValue((ContainerValue)mappingNodeValue);
+                            }
+                            if (mappingNodeValue.isNullCapableValue()) {
+                                addNullCapableValue((NullCapableValue)mappingNodeValue);
+                            }
+                            addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
+                        }
+                        continue;
+                    } else if (xmlMapping instanceof XMLChoiceObjectMapping) {
+                        XMLChoiceObjectMapping xmlChoiceMapping = (XMLChoiceObjectMapping)xmlMapping;
+                        Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
+                        XMLField firstField = (XMLField)fields.next();
+                        XMLChoiceObjectMappingNodeValue firstNodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, firstField);
+                        firstNodeValue.setNullCapableNodeValue(firstNodeValue);
+                        this.addNullCapableValue(firstNodeValue);
+                        addChild(firstField.getXPathFragment(), firstNodeValue, xmlDescriptor.getNamespaceResolver());
+                        while(fields.hasNext()) {
+                            XMLField next = (XMLField)fields.next();
+                            XMLChoiceObjectMappingNodeValue nodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, next);
+                            nodeValue.setNullCapableNodeValue(firstNodeValue);
+                            addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
+                        }
+                        continue;
+                    } else if(xmlMapping instanceof XMLChoiceCollectionMapping) {
+                        XMLChoiceCollectionMapping xmlChoiceMapping = (XMLChoiceCollectionMapping)xmlMapping;
+                        Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
+                        XMLField firstField = (XMLField)fields.next();
+                        XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, firstField);
+                        XMLChoiceCollectionMappingMarshalNodeValue marshalValue = new XMLChoiceCollectionMappingMarshalNodeValue(xmlChoiceMapping, firstField);
+                        HashMap<XMLField, NodeValue> fieldToNodeValues = new HashMap<XMLField, NodeValue>();
+                        unmarshalValue.setContainerNodeValue(unmarshalValue);
+                        marshalValue.setFieldToNodeValues(fieldToNodeValues);
+                        unmarshalValue.setFieldToNodeValues(fieldToNodeValues);
+                        this.addContainerValue(unmarshalValue);
+                        fieldToNodeValues.put(firstField, unmarshalValue);
+                        addChild(firstField.getXPathFragment(), unmarshalValue, xmlDescriptor.getNamespaceResolver());
+                        addChild(firstField.getXPathFragment(), marshalValue, xmlDescriptor.getNamespaceResolver());
+                        while(fields.hasNext()) {
+                            XMLField next = (XMLField)fields.next();
+                            XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, next);
+                            nodeValue.setContainerNodeValue(unmarshalValue);
+                            addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
+                            fieldToNodeValues.put(next, nodeValue);
+                        }
+                        continue;
+                    }
+                    if (mappingNodeValue.isContainerValue()) {
+                        addContainerValue((ContainerValue)mappingNodeValue);
+                    }
+                    if (mappingNodeValue.isNullCapableValue()) {
+                        addNullCapableValue((NullCapableValue)mappingNodeValue);
+                    }
+                    if (xmlField != null) {
+                        addChild(xmlField.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
+                    } else {
+                        addChild(null, mappingNodeValue, xmlDescriptor.getNamespaceResolver());
+                    }
+                    if (xmlMapping.isAbstractDirectMapping() && xmlField.isTypedTextField()) {
+                        XPathFragment nextFragment = xmlField.getXPathFragment();
+                        StringBuilder typeXPathStringBuilder = new StringBuilder();
+                        while (nextFragment.getNextFragment() != null) {
+                            typeXPathStringBuilder.append(nextFragment.getXPath());
+                            nextFragment = nextFragment.getNextFragment();
+                        }
+                        XMLField typeField = new XMLField();
+                        if(typeXPathStringBuilder.length() > 0) {
+                            typeXPathStringBuilder.append('/');
+                        }
+                        typeField.setXPath(typeXPathStringBuilder.toString() + XMLConstants.ATTRIBUTE + xmlDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                        typeNodeValue = new TypeNodeValue();
+                        typeNodeValue.setDirectMapping((AbstractDirectMapping)xmlMapping);
+                        addChild(typeField.getXPathFragment(), typeNodeValue, xmlDescriptor.getNamespaceResolver());
+                    }
+                }
+            }
+            initialized = true;
         }
     }
 
@@ -308,6 +326,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment, WriteType writeType) {
+        lazyInitialize();
         if (null == rootXPathNode.getNonAttributeChildren()) {
             return record;
         }
@@ -328,6 +347,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     public boolean marshalAttributes(MarshalRecord marshalRecord, Object object, AbstractSession session) {
+        lazyInitialize();
         boolean hasValue = false;
         NamespaceResolver namespaceResolver = ((XMLDescriptor)descriptor).getNamespaceResolver();
 
@@ -373,6 +393,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
      * This allows subclasses to define different record types.
      */
     public AbstractRecord createRecord(AbstractSession session) {
+        lazyInitialize();
         UnmarshalRecord uRec = new UnmarshalRecord(this);
         uRec.setSession(session);
         return uRec;
