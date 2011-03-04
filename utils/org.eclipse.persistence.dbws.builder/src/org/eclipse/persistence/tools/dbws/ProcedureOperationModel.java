@@ -68,6 +68,7 @@ public class ProcedureOperationModel extends OperationModel {
     protected int overload; // Oracle-specific
     protected SqlTypeWithMethods typ; // cache JPub description of operation
     protected boolean isAdvancedJDBC = false;
+    protected List<DbStoredProcedure> dbStoredProcedures;
 
     public ProcedureOperationModel() {
         super();
@@ -136,7 +137,6 @@ public class ProcedureOperationModel extends OperationModel {
 
     @Override
     public void buildOperation(DBWSBuilder builder) {
-
         super.buildOperation(builder);
         boolean isOracle = builder.databasePlatform.getClass().getName().contains("Oracle");
         boolean isMySQL = builder.databasePlatform.getClass().getName().contains("MySQL");
@@ -421,5 +421,34 @@ public class ProcedureOperationModel extends OperationModel {
                 "}" + typeString, builder.schema);
         }
         return qName;
+    }
+
+    /**
+     * Indicates if this ProcedureOperationModel has 1 or more stored procedures.
+     * 
+     * @return true if this ProcedureOperationModel has 1 or more stored 
+     *         procedures, false otherwise
+     */
+    public boolean hasDbStoredProcedures() {
+        return dbStoredProcedures != null;
+    }
+    
+    /**
+     * Return the List of stored procedures for this ProcedureOperationModel.
+     * 
+     * @return List of stored procedures for this ProcedureOperationModel, 
+     *         or null if not set
+     */
+    public List<DbStoredProcedure> getDbStoredProcedures() {
+        return dbStoredProcedures;
+    }
+
+    /**
+     * Set the List of stored procedures for this ProcedureOperationModel.
+     * 
+     * @param dbStoredProcedures
+     */
+    public void setDbStoredProcedures(List<DbStoredProcedure> dbStoredProcedures) {
+        this.dbStoredProcedures = dbStoredProcedures;
     }
 }

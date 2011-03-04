@@ -864,102 +864,104 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 oxProject.addDescriptor(xdesc);
             }
         }
-        for (DbStoredProcedure storedProcedure : dbStoredProcedures) {
-            boolean isPLSQLStoredProc = false;
-            for (DbStoredArgument arg : storedProcedure.getArguments()) {
-                if (arg.isPLSQLArgument()) {
-                    isPLSQLStoredProc = true;
-                    break;
+        if (procOpModel.hasDbStoredProcedures()) {
+            for (DbStoredProcedure storedProcedure : procOpModel.getDbStoredProcedures()) {
+                boolean isPLSQLStoredProc = false;
+                for (DbStoredArgument arg : storedProcedure.getArguments()) {
+                    if (arg.isPLSQLArgument()) {
+                        isPLSQLStoredProc = true;
+                        break;
+                    }
                 }
-            }
-            if (isPLSQLStoredProc) {
-                PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
-                String catalogPrefix = null;
-                String cat = storedProcedure.getCatalog();
-                if (cat == null | cat.length() == 0) {
-                    catalogPrefix = "";
-                }
-                else {
-                    catalogPrefix = cat + ".";
-                }
-                call.setProcedureName(catalogPrefix + storedProcedure.getName());
-                DatabaseQuery dq = null;
-                DbStoredProcedureNameAndModel nameAndModel =
-                    dbStoredProcedure2QueryName.get(storedProcedure);
-                String returnType = nameAndModel.procOpModel.getReturnType();
-                boolean hasResponse = returnType != null;
-                String typ = null;
-                ClassDescriptor xdesc = null;
-                if (hasResponse) {
-                    int idx = 0;
-                    int colonIdx = returnType.indexOf(":");
-                    if (colonIdx == -1) {
-                        idx = returnType.indexOf("}");
+                if (isPLSQLStoredProc) {
+                    PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
+                    String catalogPrefix = null;
+                    String cat = storedProcedure.getCatalog();
+                    if (cat == null | cat.length() == 0) {
+                        catalogPrefix = "";
                     }
                     else {
-                        idx = colonIdx;
+                        catalogPrefix = cat + ".";
                     }
-                    if (idx > 0) {
-                        typ = returnType.substring(idx+1);
-                        for (XMLDescriptor xd : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
-                            if (xd.getSchemaReference() != null) {
-                                String context = xd.getSchemaReference().getSchemaContext();
-                                if (context.substring(1).equals(typ)) {
-                                    xdesc = xd;
-                                    break;
+                    call.setProcedureName(catalogPrefix + storedProcedure.getName());
+                    DatabaseQuery dq = null;
+                    DbStoredProcedureNameAndModel nameAndModel =
+                        dbStoredProcedure2QueryName.get(storedProcedure);
+                    String returnType = nameAndModel.procOpModel.getReturnType();
+                    boolean hasResponse = returnType != null;
+                    String typ = null;
+                    ClassDescriptor xdesc = null;
+                    if (hasResponse) {
+                        int idx = 0;
+                        int colonIdx = returnType.indexOf(":");
+                        if (colonIdx == -1) {
+                            idx = returnType.indexOf("}");
+                        }
+                        else {
+                            idx = colonIdx;
+                        }
+                        if (idx > 0) {
+                            typ = returnType.substring(idx+1);
+                            for (XMLDescriptor xd : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
+                                if (xd.getSchemaReference() != null) {
+                                    String context = xd.getSchemaReference().getSchemaContext();
+                                    if (context.substring(1).equals(typ)) {
+                                        xdesc = xd;
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                if (hasResponse) {
-                    if (nameAndModel.procOpModel.isCollection) {
-                        dq = new DataReadQuery();
+                    if (hasResponse) {
+                        if (nameAndModel.procOpModel.isCollection) {
+                            dq = new DataReadQuery();
+                        }
+                        else {
+                            dq = new ValueReadQuery();
+                        }
                     }
                     else {
                         dq = new ValueReadQuery();
                     }
-                }
-                else {
-                    dq = new ValueReadQuery();
-                }
-                dq.bindAllParameters();
-                dq.setName(nameAndModel.name);
-                dq.setCall(call);
-                DatabaseType[] typesForMethod =
-                    helperObjectsBuilder.getTypesForMethod(storedProcedure.getName());
-                for (int i = 0, len = typesForMethod.length; i < len; i++) {
-                    DbStoredArgument arg = storedProcedure.getArguments().get(i);
-                    DatabaseType databaseType = typesForMethod[i];
-                    InOut direction = arg.getInOut();
-                    if (direction == OUT) {
-                        call.addNamedOutputArgument(arg.getName(), databaseType);
-                    }
-                    else if (direction == IN) {
-                        call.addNamedArgument(arg.getName(), databaseType);
-                    }
-                    else {
-                        call.addNamedInOutputArgument(arg.getName(), databaseType);
-                    }
-                    if (direction == IN | direction == INOUT) {
-                        if (xdesc != null) {
-                            dq.addArgumentByTypeName(arg.getName(), xdesc.getJavaClassName());
+                    dq.bindAllParameters();
+                    dq.setName(nameAndModel.name);
+                    dq.setCall(call);
+                    DatabaseType[] typesForMethod =
+                        helperObjectsBuilder.getTypesForMethod(storedProcedure.getName());
+                    for (int i = 0, len = typesForMethod.length; i < len; i++) {
+                        DbStoredArgument arg = storedProcedure.getArguments().get(i);
+                        DatabaseType databaseType = typesForMethod[i];
+                        InOut direction = arg.getInOut();
+                        if (direction == OUT) {
+                            call.addNamedOutputArgument(arg.getName(), databaseType);
+                        }
+                        else if (direction == IN) {
+                            call.addNamedArgument(arg.getName(), databaseType);
                         }
                         else {
-                            if (databaseType instanceof PLSQLCollection) {
-                                dq.addArgument(arg.getName(), Array.class);
-                            }
-                            else if (databaseType instanceof PLSQLrecord) {
-                                dq.addArgument(arg.getName(), Struct.class);
+                            call.addNamedInOutputArgument(arg.getName(), databaseType);
+                        }
+                        if (direction == IN | direction == INOUT) {
+                            if (xdesc != null) {
+                                dq.addArgumentByTypeName(arg.getName(), xdesc.getJavaClassName());
                             }
                             else {
-                                dq.addArgument(arg.getName(),
-                                    JDBCTypes.getClassForCode(databaseType.getConversionCode()));
+                                if (databaseType instanceof PLSQLCollection) {
+                                    dq.addArgument(arg.getName(), Array.class);
+                                }
+                                else if (databaseType instanceof PLSQLrecord) {
+                                    dq.addArgument(arg.getName(), Struct.class);
+                                }
+                                else {
+                                    dq.addArgument(arg.getName(),
+                                        JDBCTypes.getClassForCode(databaseType.getConversionCode()));
+                                }
                             }
                         }
                     }
+                    orProject.getQueries().add(dq);
                 }
-                orProject.getQueries().add(dq);
             }
         }
     }

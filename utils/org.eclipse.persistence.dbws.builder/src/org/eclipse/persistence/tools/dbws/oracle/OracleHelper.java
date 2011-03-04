@@ -172,6 +172,9 @@ public class OracleHelper {
                 dbStoredProcedures.add(dbStoredProcedure);
             }
         }
+        if (dbStoredProcedures != null && dbStoredProcedures.size() > 0) {
+            procedureModel.setDbStoredProcedures(dbStoredProcedures);
+        }
         return dbStoredProcedures;
     }
 

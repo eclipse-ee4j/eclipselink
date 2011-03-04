@@ -360,6 +360,7 @@
     <RunTestsuite testsuite-name="EchoEmpObjectTestWebService"/>
     <RunTestsuite testsuite-name="ORDescriptorBuilderTest"/>
     <RunTestsuite testsuite-name="OXDescriptorBuilderTest"/>
+    <RunTestsuite testsuite-name="P1P4testWebService"/>
     <RunTestsuite testsuite-name="P1testWebService"/>
     <RunTestsuite testsuite-name="P2testWebService"/>
     <RunTestsuite testsuite-name="P3testWebService"/>
