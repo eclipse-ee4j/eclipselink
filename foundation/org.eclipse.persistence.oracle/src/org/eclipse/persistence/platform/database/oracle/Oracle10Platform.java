@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -67,15 +67,17 @@ public class Oracle10Platform extends Oracle9Platform  {
     @Override
     public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
         if (isBlob(field.getType())) {
-            java.sql.Blob blob = (java.sql.Blob)resultSet.getObject(field.getNameDelimited(this));
+            //change for 338585 to use getName instead of getNameDelimited
+            java.sql.Blob blob = (java.sql.Blob)resultSet.getObject(field.getName());
             blob.setBytes(1, (byte[])value);
             //impose the localization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", Long.valueOf(blob.length()), field.getNameDelimited(this));
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", Long.valueOf(blob.length()), field.getName());
         } else if (isClob(field.getType())) {
-            java.sql.Clob clob = (java.sql.Clob)resultSet.getObject(field.getNameDelimited(this));
+            //change for 338585 to use getName instead of getNameDelimited
+            java.sql.Clob clob = (java.sql.Clob)resultSet.getObject(field.getName());
             clob.setString(1, (String)value);
             //impose the localization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", Long.valueOf(clob.length()), field.getNameDelimited(this));
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", Long.valueOf(clob.length()), field.getName());
         } else {
             //do nothing for now, open to BFILE or NCLOB types
         }
