@@ -756,11 +756,17 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     /**
      * If a Schema was set on the unmarshaller then wrap the ContentHandler in
-     * a ValidatorHandler. 
+     * a ValidatorHandler.
      */
     private void setContentHandler(XMLReader xmlReader, ContentHandler contentHandler) {
-        Schema schema = saxParserFactory.getSchema();
-        if(null == schema) {
+        Schema schema = null;
+        try {
+            schema = saxParserFactory.getSchema();
+        } catch (UnsupportedOperationException e) {
+            // Oracle XDK does not support getSchema()
+        }
+
+        if (null == schema) {
             xmlReader.setContentHandler(contentHandler);
         } else {
             ValidatorHandler validatorHandler = schema.newValidatorHandler();

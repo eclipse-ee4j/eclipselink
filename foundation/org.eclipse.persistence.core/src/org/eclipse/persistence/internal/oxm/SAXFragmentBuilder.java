@@ -118,7 +118,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
                 element.setAttribute(atts.getQName(x), atts.getValue(x));
             } else {
                 String value = atts.getValue(x);
-                element.setAttributeNS(attributeNamespaceURI, atts.getQName(x), value);
+                element.setAttributeNS(attributeNamespaceURI, atts.getQName(x), value == null ? XMLConstants.EMPTY_STRING : value);
 
                 if (XMLConstants.SCHEMA_INSTANCE_URL.equals(attributeNamespaceURI) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(atts.getLocalName(x))) {
                     int colonIndex = value.indexOf(XMLConstants.COLON);
