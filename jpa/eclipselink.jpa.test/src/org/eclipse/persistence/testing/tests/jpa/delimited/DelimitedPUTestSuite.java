@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     tware - testing for delimited identifiers in JPA 2.0
+ *     03/07/2011-2.3 Chris Delahunt 
+ *       - bug 338585: Issue while inserting blobs with delimited identifiers on Oracle Database 
  ******************************************************************************/  
 
 package org.eclipse.persistence.testing.tests.jpa.delimited;
@@ -31,18 +33,19 @@ import org.eclipse.persistence.testing.models.jpa.delimited.*;
  * Test the EntityManager API using a model that uses delimited-identifiers
  */
 public class DelimitedPUTestSuite extends JUnitTestCase {
-    
+
     private static Employee emp = null;
     private static Address addr = null;
     private static PhoneNumber pn = null;
     private static Employee emp2 = null;
     private static LargeProject lproj = null;
     private static SmallProject sproj = null;
-    
+    private static SimpleImage simage = null;
+
     public DelimitedPUTestSuite() {
         super();
     }
-    
+
     public DelimitedPUTestSuite(String name) {
         super(name);
     }
@@ -54,14 +57,15 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         suite.addTest(new DelimitedPUTestSuite("testReadEmployee"));
         suite.addTest(new DelimitedPUTestSuite("testNativeQuery"));
         suite.addTest(new DelimitedPUTestSuite("testUpdateEmployee"));
-        
+        suite.addTest(new DelimitedPUTestSuite("testReadImage"));
+
         return suite;
     }
 
     public void testPopulate(){
         EntityManager em = createEntityManager("delimited");
         beginTransaction(em);
-        
+
         createEmployee();
         createAddress();
         createPhoneNumber();
@@ -75,30 +79,31 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         em.persist(emp2);
         em.persist(lproj);
         em.persist(sproj);
-        
+        em.persist(createImage());
+
         addr.getEmployees().add(emp);
         emp.setAddress(addr);
-        
+
         emp.addPhoneNumber(pn);
         pn.setOwner(emp);
-        
+
         emp.addManagedEmployee(emp2);
         emp2.setManager(emp);
-        
+
         lproj.setTeamLeader(emp);
         emp.addProject(lproj);
         lproj.addTeamMember(emp2);
         emp2.addProject(lproj);
-        
+
         sproj.setTeamLeader(emp2);
         emp2.addProject(sproj);
 
         commitTransaction(em);
-     
+
         clearCache("delimited");
         closeEntityManager(em);
     }
-    
+
     public void testReadEmployee() {
         EntityManager em = createEntityManager("delimited");
 
@@ -109,7 +114,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         Assert.assertTrue("testCreateEmployee emp2 not properly persisted", getServerSession("delimited").compareObjects(emp2, returnedWorker));
         closeEntityManager(em);
     }
-    
+
     public void testNativeQuery(){
         clearCache("delimited");
         EntityManager em = createEntityManager("delimited");
@@ -123,8 +128,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         Assert.assertTrue("testNativeQuery did not return result ", result.size() >= 2);
         closeEntityManager(em);
     }
-    
-    
+
     public void testUpdateEmployee() {
         EntityManager em = createEntityManager("delimited");
         try {
@@ -153,7 +157,19 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
+    //bug 338585: Issue while inserting blobs with delimited identifiers on Oracle Database 
+    // mostly will only occur on Oracle8+ platforms, but we needed a general delimited blob/clob test
+    public void testReadImage() {
+        EntityManager em = createEntityManager("delimited");
+
+        SimpleImage returnedImage = (SimpleImage)em.createQuery("select e from SimpleImage e where e.id = "+simage.getId()).getSingleResult();
+        em.refresh(returnedImage);//make sure blob/clob is read from the database
+        Assert.assertTrue("testCreateEmployee emp not properly persisted", getServerSession("delimited").compareObjects(simage, returnedImage));
+
+        closeEntityManager(em);
+    }
+
     private static Employee createEmployee(){
         emp = new Employee();
         emp.setFirstName("Del");
@@ -167,7 +183,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         emp.setPeriod(period);
         return emp;
     }
-    
+
     private static Employee createEmployee2(){
         emp2 = new Employee();
         emp2.setFirstName("Art");
@@ -175,7 +191,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         emp2.setMale();
         return emp2;
     }
-    
+
     private static Address createAddress(){
         addr = new Address();
         addr.setCity("Ident");
@@ -185,7 +201,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         addr.setStreet("Del St.");
         return addr;
     }
-    
+
     private static PhoneNumber createPhoneNumber(){
         pn = new PhoneNumber();
         pn.setAreaCode("709");
@@ -193,7 +209,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         pn.setType("work");
         return pn;
     }
-    
+
     private static LargeProject createLargeProject(){
         lproj = new LargeProject();
         lproj.setBudget(10000000);
@@ -201,12 +217,18 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         lproj.setName("PUDefaults");
         return lproj;
     }
-    
+
     private static SmallProject createSmallProject(){
         sproj = new SmallProject();
         sproj.setDescription("Allow delimited identifiers in annotations");
         sproj.setName("Annotations");
         return sproj;
     }
-    
+
+    private static SimpleImage createImage(){
+        simage = new SimpleImage();
+        simage.setPicture(org.eclipse.persistence.testing.models.jpa.lob.ImageSimulator.initObjectByteBase(100));
+        simage.setScript(org.eclipse.persistence.testing.models.jpa.lob.ImageSimulator.initStringBase(100));
+        return simage;
+    }
 }

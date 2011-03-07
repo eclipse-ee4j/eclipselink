@@ -858,6 +858,9 @@ public class DatabasePlatform extends DatasourcePlatform {
         databasePlatform.setUsesNativeBatchWriting(usesNativeBatchWriting());
         databasePlatform.setUsesStreamsForBinding(usesStreamsForBinding());
         databasePlatform.printOuterJoinInWhereClause = this.printOuterJoinInWhereClause; 
+        //use the variable directly to avoid custom platform strings - only want to copy user set values.
+        //specifically used for login platform detection
+        databasePlatform.setTableCreationSuffix(this.tableCreationSuffix);
     }
 
     /**
