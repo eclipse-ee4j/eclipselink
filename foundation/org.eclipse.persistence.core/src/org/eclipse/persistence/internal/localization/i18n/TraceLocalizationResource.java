@@ -343,8 +343,6 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "failover", "Connection pool [{0}] is dead, failing over to poll [{1}]." },
                                             { "release_connection", "Connection released to connection pool [{0}]." },
                                             { "max_time_exceeded_for_acquirerequiredlocks_wait", "MAX TIME {0} seconds EXCEEDED FOR WRITELOCKMANAGER WAIT.  Waiting on Entity type: {1}with pk: {2} currently locked by thread: {3} with the following trace:\n"}
-
-
     };
 
     /**

@@ -102,7 +102,7 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
                 // not to any entry inside it. Ideally this should have been
                 // file:/tmp/a_ear/lib/pu.jar,
                 // but containers (e.g.) WebLogic return this kind of URL,
-                // so we better handle this in our code to imrove pluggability.
+                // so we better handle this in our code to improve pluggability.
                 // Read the entire jar file.
                 result = new JarFileArchive(conn.getJarFile(), descriptorLocation);
             } else if (je.isDirectory()) {

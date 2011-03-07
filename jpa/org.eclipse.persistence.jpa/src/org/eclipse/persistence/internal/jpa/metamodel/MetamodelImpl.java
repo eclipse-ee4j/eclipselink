@@ -28,6 +28,9 @@
  *        when you are expecting a BasicType
  *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
  *     08/06/2010-2.2 mobrien 303063 - handle null descriptor.javaClass passed from the metadata API
+ *     03/06/2011-2.3 mobrien 338837 - Metamodel entity processing requires specified entities in persistence.xml 
+ *        to avoid IllegalArgumentException when accessing an EntityType|EmbeddableType|ManagedType
+ *        "The type [null] is not the expected [EntityType] for the key class" will result in certain managed persistence contexts 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -137,15 +140,43 @@ public class MetamodelImpl implements Metamodel, Serializable {
      */
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
         Object aType = this.embeddables.get(clazz);
-        if(aType instanceof EmbeddableType) {
-            return (EmbeddableType<X>) aType;
-        } else {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                    "metamodel_class_incorrect_type_instance", 
-                    new Object[] { clazz, "EmbeddableType", aType}));
+        if(!(aType instanceof EmbeddableType)) {
+        	entityEmbeddableManagedTypeNotFound(aType, clazz, "Embeddable", "EmbeddableType");
         }
+        return (EmbeddableType<X>) aType;
     }
 
+    /**
+     * INTERNAL:
+     * This function will warn the user and/or throw an IllegalArgumentException if the type is not found in the metamodel.
+     * There is a chance that the entire metamodel is empty because the model was not found during entity search.  This is
+     * usually due to the case where an expected managed persistence unit in a Java EE environment is actually processed as a
+     * Java SE (unmanaged) persistence unit.
+     * This may occur on certain configurations of Spring or on Java EE 6 Web Profile implementations that are not in compliance
+     * with the specification. 
+     * See <link>http://bugs.eclipse.org/338837</link>
+     * @param aType
+     * @param clazz
+     * @param metamodelType
+     * @param metamodelTypeName
+     */
+    private void entityEmbeddableManagedTypeNotFound(Object aType, Class clazz, String metamodelType, String metamodelTypeName) {
+    	// 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
+    	if(this.entities.isEmpty()) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "metamodel_type_collection_empty", clazz);    	    
+    	}
+    	// A null type will mean either the metamodel type does not exist because it was not found/processed, or the clazz is not part of the model
+    	if(null == aType) {
+    		throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                "metamodel_class_null_type_instance",  
+                new Object[] { clazz, "EntityType", "Entity"}));
+    	} else {
+    		throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                "metamodel_class_incorrect_type_instance",
+                new Object[] { clazz, "EntityType", aType}));
+    	}    	
+    }
+    
     /**
      *  Return the metamodel entity type representing the entity.
      *  @param clazz  the type of the represented entity
@@ -154,13 +185,10 @@ public class MetamodelImpl implements Metamodel, Serializable {
      */
     public <X> EntityType<X> entity(Class<X> clazz) {
         Object aType = this.entities.get(clazz);
-        if(aType instanceof EntityType) {
-            return (EntityType<X>) aType;
-        } else {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                    "metamodel_class_incorrect_type_instance", 
-                    new Object[] { clazz, "EntityType", aType}));
+        if(!(aType instanceof EntityType)) {
+        	entityEmbeddableManagedTypeNotFound(aType, clazz, "Entity", "EntityType");
         }
+        return (EntityType<X>) aType;
     }
     
     /**
@@ -453,13 +481,10 @@ public class MetamodelImpl implements Metamodel, Serializable {
         Object aType = this.managedTypes.get(clazz);
         // Throw an IAE exception if the returned type is not a ManagedType
         // For any clazz that resolves to a BasicType - use getType(clazz) in implementations when you are expecting a BasicType
-        if(null != aType && aType instanceof ManagedType) {
-            return (ManagedType<X>) aType;
-        } else {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                    "metamodel_class_incorrect_type_instance", 
-                    new Object[] { clazz, "ManagedType", aType}));
+        if(!(aType instanceof ManagedType)) {
+        	entityEmbeddableManagedTypeNotFound(aType, clazz, "Managed", "ManagedType");
         }
+        return (ManagedType<X>) aType;
     }
     
     /**

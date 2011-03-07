@@ -420,6 +420,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "named_argument_not_found_in_query_parameters", "Missing Query parameter for named argument: {0} 'null' will be substituted." },
         { "jmx_unregistered_mbean", "Unregistered MBean [{0}] from MBeanServer [{1}]." },        
         { "jmx_unable_to_unregister_mbean", "Unable to unregister MBean [{0}] because the MBeanServer is null. Verify that your ServerPlatform is JMX enabled." },        
+        // 338837:
+        { "metamodel_type_collection_empty", "The collection of metamodel types is empty. Model classes may not have been found during entity search for Java SE and some Java EE container managed persistence units.  Please verify that your entity classes are referenced in persistence.xml using either <class> elements or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element.  The lookup on [{0}] will return null." },                                            
         
         // MESSAGES end
         
@@ -703,7 +705,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metamodel_print_type_value.MSGID", "TOP-50246"},
         { "named_argument_not_found_in_query_parameters.MSGID", "TOP-50247" },
         { "jmx_unregistered_mbean.MSGID", "TOP-50248" },
-        { "jmx_unable_to_unregister_mbean.MSGID", "TOP-50249" }        
+        { "jmx_unable_to_unregister_mbean.MSGID", "TOP-50249" },
+        // 338837:
+        { "metamodel_type_collection_empty.MSGID", "TOP-50250" }                                            
         
 
         /**

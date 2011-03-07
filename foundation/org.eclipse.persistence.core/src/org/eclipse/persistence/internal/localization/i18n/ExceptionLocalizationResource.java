@@ -120,7 +120,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "metamodel_managed_type_declared_attribute_not_present_but_is_on_superclass", "The declared attribute [{0}] from the managed type [{1}] is not present - however, it is declared on a superclass." },
                                            { "metamodel_managed_type_attribute_return_type_incorrect", "Expected attribute return type [{2}] on the existing attribute [{0}] on the managed type [{1}] but found attribute return type [{3}]." },
                                            { "metamodel_incompatible_persistence_config_for_getIdType", "Incompatible persistence configuration getting Metamodel Id Type for the ManagedType [{0}]." },
+                                           // 338837:
                                            { "metamodel_class_incorrect_type_instance", "The type [{2}] is not the expected [{1}] for the key class [{0}]." },
+                                           { "metamodel_class_null_type_instance", "No [{1}] was found for the key class [{0}] in the Metamodel - please verify that the [{2}] class was referenced in persistence.xml using a specific <class>{0}</class> property or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element." },
                                            { "metamodel_interface_inheritance_not_supported", "The descriptor [{0}] using ({1} inheritance) is not currently supported during metamodel generation, try using Entity or MappedSuperclass (Abstract class) inheritance." },
                                            { "sdo_helper_invalid_type", "The provided Type [{0}] is not an EclipseLink SDOType, and therefore could not be converted." },
                                            { "sdo_helper_invalid_property", "The provided Property [{0}] is not an EclipseLink SDOProperty, and therefore could not be converted." },
@@ -176,7 +178,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "cache_impl_object_descriptor_has_no_cmppolicy_set", "The object [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable to return an Id."}, //
                                            { "cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key", "The class [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable create a primary key instance for the id type [{2}]."},                                           
                                            { "cannot_update_entity_fetch-group", "Attempt to add or remove attribute [{1}] to {0} - EntityFetchGroup object is immutable."},                                           
-                                           { "cannot_get_unfetched_attribute", "Cannot get unfetched attribute [{1}] from detached object {0}."}                                           
+                                           { "cannot_get_unfetched_attribute", "Cannot get unfetched attribute [{1}] from detached object {0}."}
                                         };
     /**
      * Return the lookup table.
