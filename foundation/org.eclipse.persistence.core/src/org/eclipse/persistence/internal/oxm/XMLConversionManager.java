@@ -43,6 +43,7 @@ import org.eclipse.persistence.internal.helper.TimeZoneHolder;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
  * INTERNAL:
@@ -1998,5 +1999,23 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     public boolean trimGMonth() {
         return this.trimGMonth;
     }
+
+    public QName buildQNameFromString(String stringValue, XMLRecord record){     
+        int index = stringValue.lastIndexOf(XMLConstants.COLON);
+        if(index > -1) {
+            String prefix =  stringValue.substring(0, index);
+            String localName = stringValue.substring(index + 1);
+            
+            String namespaceURI = record.resolveNamespacePrefix(prefix);            
+            return new QName(namespaceURI, localName, prefix);
+        } else {
+            String namespaceURI = record.resolveNamespacePrefix(XMLConstants.EMPTY_STRING);
+            if(namespaceURI == null){
+                namespaceURI = record.resolveNamespacePrefix(null);
+            }
+            return new QName(namespaceURI, stringValue);
+        }
+    }
+    
 
 }

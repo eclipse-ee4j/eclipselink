@@ -159,7 +159,7 @@ public class XMLUnionField extends XMLField {
                 if (nextQName != null) {
                 	
                 	if(XMLConstants.QNAME_QNAME.equals(nextQName)){
-                		buildQNameFromString((String)value, record);        		                		
+                		xmlConversionManager.buildQNameFromString((String)value, record);        		                		
                 		break;
                 	}else{
                         Class javaClass = getJavaClass(nextQName);

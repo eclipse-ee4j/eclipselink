@@ -697,7 +697,7 @@ public class XMLField extends DatabaseField {
     public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
         if (getSchemaType() != null) { 
         	if(XMLConstants.QNAME_QNAME.equals(getSchemaType())){
-        		return buildQNameFromString((String)value, record);        		
+        		return xmlConversionManager.buildQNameFromString((String)value, record);        		
         	}else{
 	            Class fieldType = getType();
 	            if (fieldType == null) {
@@ -709,22 +709,6 @@ public class XMLField extends DatabaseField {
         return value;
     }
 
-    protected QName buildQNameFromString(String stringValue, XMLRecord record){	    
-		int index = stringValue.lastIndexOf(XMLConstants.COLON);
-		if(index > -1) {
-			String prefix =  stringValue.substring(0, index);
-			String localName = stringValue.substring(index + 1);
-			
-			String namespaceURI = record.resolveNamespacePrefix(prefix);			
-			return new QName(namespaceURI, localName, prefix);
-		} else {
-			String namespaceURI = record.resolveNamespacePrefix(XMLConstants.EMPTY_STRING);
-			if(namespaceURI == null){
-				namespaceURI = record.resolveNamespacePrefix(null);
-			}
-			return new QName(namespaceURI, stringValue);
-		}
-    }
     
     /**
     * Add an XML to Java Conversion pair entry

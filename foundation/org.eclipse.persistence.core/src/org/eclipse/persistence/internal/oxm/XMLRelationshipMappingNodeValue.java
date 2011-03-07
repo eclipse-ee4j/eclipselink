@@ -210,9 +210,13 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         if (!XMLConstants.EMPTY_STRING.equals(value)) {
             QName qname = unmarshalRecord.getTypeQName();
             if (qname != null) {
-                Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
-                if (theClass != null) {
-                    value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, qname);
+                if(qname.equals(XMLConstants.QNAME_QNAME)) {
+                    value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).buildQNameFromString((String)value, unmarshalRecord);
+                } else {
+                    Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
+                    if (theClass != null) {
+                        value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, qname);
+                    }
                 }
             }
             if(converter != null) {
