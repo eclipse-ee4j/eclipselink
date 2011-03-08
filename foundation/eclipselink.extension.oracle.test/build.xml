@@ -154,6 +154,10 @@
                                              else="${extensions.depend.dir}/${oracle.orai18n-mapping.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
         </condition>
+        <condition property="oracle.ucp.lib" value="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"
+                                          else="${extensions.depend.dir}/${oracle.ucp.jar}">
+            <available file="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
+        </condition>
 
         <!-- Create needed directories
         <mkdir dir="${oracle_test.classes.dir}"/>
@@ -188,6 +192,7 @@
         <available file="${oracle.aqapi.lib}"     property="oracle.aqapi.lib.exist"/>
         <available file="${oracle.sdoapi.lib}"    property="oracle.sdoapi.lib.exist"/>
         <available file="${oracle.xmlparser.lib}" property="oracle.xmlparser.lib.exist"/>
+        <available file="${oracle.ucp.lib}" property="oracle.ucp.lib.exist"/>
 
         <!-- Determine where to get product classes, based upon availability  -->
         <condition property="use.eclipselink">
@@ -233,6 +238,7 @@
                 <isset property="oracle.aqapi.lib.exist"/>
                 <isset property="oracle.sdoapi.lib.exist"/>
                 <isset property="oracle.xmlparser.lib.exist"/>
+                <isset property="oracle.ucp.lib.exist"/>
             </and>
         </condition>
         <condition property="run.ok">
@@ -278,6 +284,7 @@
             <pathelement path="${oracle.sdoapi.lib}"/>
             <pathelement path="${oracle.xmlparser.lib}"/>
             <pathelement path="${oracle.orai18n-mapping.lib}"/>
+            <pathelement path="${oracle.ucp.lib}"/>
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.test.infrastructure.path">
@@ -326,6 +333,7 @@
         <echo message="        '${oracle.aqapi.lib}'       :: found='${oracle.aqapi.lib.exist}'"/>
         <echo message="        '${oracle.sdoapi.lib}'      :: found='${oracle.sdoapi.lib.exist}'"/>
         <echo message="        '${oracle.xmlparser.lib}' :: found='${oracle.xmlparser.lib.exist}'"/>
+        <echo message="        '${oracle.ucp.lib}' :: found='${oracle.ucp.lib.exist}'"/>
         <echo message="Please put your Oracle dependencies in one of the two 'dependency' locations (default or custom defined)."/>
         <fail message="Missing dependencies!" unless="compile.ok"/>
     </target>
@@ -339,6 +347,7 @@
         <echo message="    '${oracle.sdoapi.lib}'"/>
         <echo message="    '${oracle.xmlparser.lib}'"/>
         <echo message="    '${oracle.orai18n-mapping.lib}'"/>
+        <echo message="    '${oracle.ucp.lib}'"/>
         <mkdir dir="${oracle_test.classes.dir}"/>
         <javac srcdir="${oracle_test.src.dir}"
                destdir="${oracle_test.classes.dir}"
