@@ -193,7 +193,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
         // JAXBElement from the returned XMLRoot object
         if (obj instanceof XMLRoot) {
             JAXBElement jaxbElement = createJAXBElementFromXMLRoot(((XMLRoot)obj), declaredClass);
-            jaxbElement.setNil(((XMLRoot)obj).isNil());
+            if(((XMLRoot)obj).isNil()) {
+                jaxbElement.setNil(((XMLRoot)obj).isNil());
+                jaxbElement.setValue(null);
+            }
             return jaxbElement;
         }
 
