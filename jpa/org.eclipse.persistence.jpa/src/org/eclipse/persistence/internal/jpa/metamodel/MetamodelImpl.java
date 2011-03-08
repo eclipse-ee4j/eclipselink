@@ -140,8 +140,8 @@ public class MetamodelImpl implements Metamodel, Serializable {
      */
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
         Object aType = this.embeddables.get(clazz);
-        if(!(aType instanceof EmbeddableType)) {
-        	entityEmbeddableManagedTypeNotFound(aType, clazz, "Embeddable", "EmbeddableType");
+        if(!(aType instanceof EmbeddableType)) { // will only be true for null or non-metamodel types - as the map only stores EmbeddableType values
+        	entityEmbeddableManagedTypeNotFound(embeddables, aType, clazz, "Embeddable", "EmbeddableType");
         }
         return (EmbeddableType<X>) aType;
     }
@@ -160,20 +160,26 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * @param metamodelType
      * @param metamodelTypeName
      */
-    private void entityEmbeddableManagedTypeNotFound(Object aType, Class clazz, String metamodelType, String metamodelTypeName) {
+    private void entityEmbeddableManagedTypeNotFound(Map typeMap, Object aType, Class clazz, String metamodelType, String metamodelTypeName) {
     	// 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
-    	if(this.entities.isEmpty()) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "metamodel_type_collection_empty", clazz);    	    
+    	if(typeMap.isEmpty()) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "metamodel_type_collection_empty_during_lookup", clazz, metamodelTypeName);    	    
     	}
     	// A null type will mean either the metamodel type does not exist because it was not found/processed, or the clazz is not part of the model
-    	if(null == aType) {
-    		throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                "metamodel_class_null_type_instance",  
-                new Object[] { clazz, "EntityType", "Entity"}));
+    	if(null == clazz) {
+    	        throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+    	                "metamodel_class_null_type_instance_for_null_key",  
+    	                new Object[] { metamodelTypeName, metamodelType}));
     	} else {
-    		throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                "metamodel_class_incorrect_type_instance",
-                new Object[] { clazz, "EntityType", aType}));
+    	    if(null == aType) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                        "metamodel_class_null_type_instance",  
+                        new Object[] { clazz.getCanonicalName(), metamodelTypeName, metamodelType}));
+    	    } else {
+    	        throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+    	                "metamodel_class_incorrect_type_instance",
+    	                new Object[] { clazz, metamodelTypeName, aType}));
+    	    }
     	}    	
     }
     
@@ -185,8 +191,8 @@ public class MetamodelImpl implements Metamodel, Serializable {
      */
     public <X> EntityType<X> entity(Class<X> clazz) {
         Object aType = this.entities.get(clazz);
-        if(!(aType instanceof EntityType)) {
-        	entityEmbeddableManagedTypeNotFound(aType, clazz, "Entity", "EntityType");
+        if(!(aType instanceof EntityType)) { // will only be true for null or non-metamodel types - as the map only stores EntityType values 
+        	entityEmbeddableManagedTypeNotFound(entities, aType, clazz, "Entity", "EntityType");
         }
         return (EntityType<X>) aType;
     }
@@ -468,6 +474,13 @@ public class MetamodelImpl implements Metamodel, Serializable {
                 ((IdentifiableTypeImpl<?>)potentialIdentifiableType).initializeIdAttributes(); 
             }
         }
+        
+        // 338837: verify that the collections are not empty - this would mean entities did not make it into the search path
+        if((null == this.embeddables || this.embeddables.isEmpty()) && 
+                (null == this.managedTypes || this.managedTypes.isEmpty()) && 
+                (null == this.entities || this.entities.isEmpty())) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "metamodel_type_collection_empty");
+        }
     }
 
     /**
@@ -481,8 +494,8 @@ public class MetamodelImpl implements Metamodel, Serializable {
         Object aType = this.managedTypes.get(clazz);
         // Throw an IAE exception if the returned type is not a ManagedType
         // For any clazz that resolves to a BasicType - use getType(clazz) in implementations when you are expecting a BasicType
-        if(!(aType instanceof ManagedType)) {
-        	entityEmbeddableManagedTypeNotFound(aType, clazz, "Managed", "ManagedType");
+        if(!(aType instanceof ManagedType)) { // will only be true for null or non-metamodel types - as entities and embeddables are managedTypes
+        	entityEmbeddableManagedTypeNotFound(managedTypes, aType, clazz, "Managed", "ManagedType");
         }
         return (ManagedType<X>) aType;
     }
@@ -493,12 +506,17 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * @return
      */
     public void printAllTypes() {
-        ((AbstractSession)session).log(SessionLog.INFO, SessionLog.METAMODEL, 
-                "metamodel_print_type_header",this.types.size());
-        for(Type aType : this.types.values()) {
+        if(null == types || types.isEmpty()) {
+            // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "metamodel_type_collection_empty");           
+        } else {
             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.METAMODEL, 
+                "metamodel_print_type_header",this.types.size());
+            for(Type aType : this.types.values()) {
+                ((AbstractSession)session).log(SessionLog.INFO, SessionLog.METAMODEL, 
                     "metamodel_print_type_value",aType);
-        }        
+            }
+        }
     }
     
     /**

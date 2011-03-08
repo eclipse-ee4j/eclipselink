@@ -2206,8 +2206,9 @@ public class EntityManagerSetupImpl {
         // perform lazy initialisation
         Metamodel tempMetaModel = null;
         if(null == metaModel) {
+            // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
             tempMetaModel = new MetamodelImpl(this);
-            //If the canonical metamodel classes exist, initialize them
+            // If the canonical metamodel classes exist, initialize them
             initializeCanonicalMetamodel(tempMetaModel);
             // set variable after init has executed without exception
             metaModel = tempMetaModel;
@@ -2221,7 +2222,10 @@ public class EntityManagerSetupImpl {
      * @since Java Persistence 2.0 
      */
     protected void initializeCanonicalMetamodel(Metamodel model) {
-
+        // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
+        if(null == model.getManagedTypes() || model.getManagedTypes().isEmpty()) {
+            getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_type_collection_empty");
+        }
         for (ManagedType manType : model.getManagedTypes()) {
             boolean classInitialized = false;
             String className = MetadataHelper.getQualifiedCanonicalName(manType.getJavaType().getName(), getSession());
