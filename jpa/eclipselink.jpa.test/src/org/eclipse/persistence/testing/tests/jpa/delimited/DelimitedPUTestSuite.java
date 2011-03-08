@@ -79,6 +79,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         em.persist(emp2);
         em.persist(lproj);
         em.persist(sproj);
+        //this will fail without fix for bug 338585
         em.persist(createImage());
 
         addr.getEmployees().add(emp);
@@ -162,12 +163,17 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
     // mostly will only occur on Oracle8+ platforms, but we needed a general delimited blob/clob test
     public void testReadImage() {
         EntityManager em = createEntityManager("delimited");
-
-        SimpleImage returnedImage = (SimpleImage)em.createQuery("select e from SimpleImage e where e.id = "+simage.getId()).getSingleResult();
-        em.refresh(returnedImage);//make sure blob/clob is read from the database
-        Assert.assertTrue("testCreateEmployee emp not properly persisted", getServerSession("delimited").compareObjects(simage, returnedImage));
-
-        closeEntityManager(em);
+        try {
+            beginTransaction(em);
+            SimpleImage returnedImage = (SimpleImage)em.createQuery("select e from SimpleImage e where e.id = "+simage.getId()).getSingleResult();
+            em.refresh(returnedImage);
+            Assert.assertTrue("SimpleImage was not properly read back in", getServerSession("delimited").compareObjects(simage, returnedImage));
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
 
     private static Employee createEmployee(){
