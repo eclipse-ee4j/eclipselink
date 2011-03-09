@@ -15,6 +15,8 @@ package org.eclipse.persistence.platform.database.oracle.plsql;
 //javase imports
 import static java.sql.Types.ARRAY;
 
+import java.util.ArrayList;
+
 //EclipseLink imports
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseType;
@@ -30,6 +32,7 @@ public class PLSQLCollection extends ComplexDatabaseType implements Cloneable, O
     
     public PLSQLCollection() {
         super();
+        this.javaType = ArrayList.class;
     }
 
     @Override

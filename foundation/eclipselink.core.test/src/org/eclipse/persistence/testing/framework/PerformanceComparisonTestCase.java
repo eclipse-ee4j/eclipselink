@@ -169,12 +169,13 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
             // Repeat the test and baseline for the number of repeats.
             for (int index = 0; index < REPEATS; index++) {
                 long startTime, endTime;
+                int iterations = 0;
                 try {
                     System.gc();
                     Thread.sleep(1000);
-                    performanceTest.startTest();
                     performanceTest.resetIterations();
                     startTime = System.currentTimeMillis();
+                    performanceTest.startTest();
                     endTime = startTime;
                     // Count how many times the test can be invoked in the run time.
                     // This allows for the test run time to be easily changed.
@@ -183,20 +184,21 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
                         performanceTest.incrementIterations();
                         endTime = System.currentTimeMillis();
                     }
+                    iterations = performanceTest.getIterations();
                 } finally {
                     performanceTest.endTest();
                 }
-                result.addTestCount(performanceTest.getIterations(), 0);
+                result.addTestCount(iterations, 0);
 
                 for (int testIndex = 0; testIndex < performanceTest.getTests().size(); testIndex++) {
                     PerformanceComparisonTest test = (PerformanceComparisonTest)performanceTest.getTests().get(testIndex);
                     ((TestCase)test).setExecutor(((TestCase)performanceTest).getExecutor());
                     try {
-                        test.startTest();
-                        performanceTest.resetIterations();
                         System.gc();
                         Thread.sleep(1000);
+                        performanceTest.resetIterations();
                         startTime = System.currentTimeMillis();
+                        test.startTest();
                         endTime = startTime;
                         // Count how many times the test can be invoked in the run time.
                         // This allows for the test run time to be easily changed.
@@ -205,10 +207,11 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
                             performanceTest.incrementIterations();
                             endTime = System.currentTimeMillis();
                         }
+                        iterations = performanceTest.getIterations();
                     } finally {
                         test.endTest();
                     }
-                    result.addTestCount(performanceTest.getIterations(), testIndex + 1);
+                    result.addTestCount(iterations, testIndex + 1);
                 }
             }
         } finally {

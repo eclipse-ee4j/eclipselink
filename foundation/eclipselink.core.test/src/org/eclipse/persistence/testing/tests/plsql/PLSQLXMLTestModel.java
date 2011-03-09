@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     James - initial impl
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.plsql;
 
 import org.eclipse.persistence.testing.models.plsql.PLSQLXMLSystem;
@@ -18,15 +18,22 @@ import org.eclipse.persistence.testing.models.plsql.PLSQLXMLSystem;
  * This model tests calling PLSQL stored procedures with PLSQL types.
  */
 public class PLSQLXMLTestModel extends PLSQLTestModel {
-	public PLSQLXMLTestModel() {
-		setDescription("This model tests calling PLSQL stored procedures with PLSQL types from project XML.");
-	}
+    public PLSQLXMLTestModel() {
+        setDescription("This model tests calling PLSQL stored procedures with PLSQL types from project XML.");
+    }
 
-	public void addRequiredSystems() {
-		if (!getSession().getLogin().getPlatform().isOracle()) {
-			warning("PLSQL is only supported on Oracle.");
-		}
+    public void addTests() {
+        addTest(getSimpleTestSuite());
+        addTest(getRecordTestSuite());
+        addTest(getCollectionTestSuite());
+        addTest(getErrorTestSuite());
+    }
 
-		addRequiredSystem(new PLSQLXMLSystem());
-	}
+    public void addRequiredSystems() {
+        if (!getSession().getLogin().getPlatform().isOracle()) {
+            warning("PLSQL is only supported on Oracle.");
+        }
+
+        addRequiredSystem(new PLSQLXMLSystem());
+    }
 }

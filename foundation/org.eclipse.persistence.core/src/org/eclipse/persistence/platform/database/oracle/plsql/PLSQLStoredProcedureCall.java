@@ -470,8 +470,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     }
 
     /**
-     * INTERNAL compute the re-ordered indices - Do the IN args first, then the 'IN-half' of the
-     * INOUT args next, the OUT args, then the 'OUT-half' of the INOUT args
+     * INTERNAL compute the re-ordered indices - Do the IN args first, then the
+     * 'IN-half' of the INOUT args next, the OUT args, then the 'OUT-half' of
+     * the INOUT args
      */
     protected void assignIndices() {
         List<PLSQLargument> inArguments = getArguments(arguments, IN);
@@ -479,10 +480,11 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         inArguments.addAll(inOutArguments);
         int newIndex = 1;
         List<PLSQLargument> expandedArguments = new ArrayList<PLSQLargument>();
-        // Must move any expanded types to the end, as they are assigned after in the BEGIN clause.
+        // Must move any expanded types to the end, as they are assigned after
+        // in the BEGIN clause.
         for (ListIterator<PLSQLargument> inArgsIter = inArguments.listIterator(); inArgsIter.hasNext();) {
             PLSQLargument inArg = inArgsIter.next();
-        	if (inArg.databaseType.isComplexDatabaseType() && (!((ComplexDatabaseType)inArg.databaseType).hasCompatibleType())) {
+            if (inArg.databaseType.isComplexDatabaseType() && (!((ComplexDatabaseType) inArg.databaseType).hasCompatibleType())) {
                 expandedArguments.add(inArg);
                 inArgsIter.remove();
             }
@@ -490,39 +492,32 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         inArguments.addAll(expandedArguments);
         for (ListIterator<PLSQLargument> inArgsIter = inArguments.listIterator(); inArgsIter.hasNext();) {
             PLSQLargument inArg = inArgsIter.next();
-            // delegate to arg's DatabaseType - ComplexTypes may expand arguments
+            // delegate to arg's DatabaseType - ComplexTypes may expand
+            // arguments
             // use ListIterator so that computeInIndex can add expanded args
-            newIndex = inArg.databaseType.computeInIndex(inArg, newIndex,
-                inArgsIter);
+            newIndex = inArg.databaseType.computeInIndex(inArg, newIndex, inArgsIter);
         }
         for (PLSQLargument inArg : inArguments) {
             DatabaseType type = inArg.databaseType;
             if (!type.isComplexDatabaseType()) {
                 super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode());
-            }
-            else {
-                ComplexDatabaseType complexType = (ComplexDatabaseType)type;
+            } else {
+                ComplexDatabaseType complexType = (ComplexDatabaseType) type;
                 if (inArg.inIndex != MIN_VALUE) {
                     if (type instanceof PLSQLCollection) {
-                        DatabaseType nestedType = ((PLSQLCollection)type).getNestedType();
+                        DatabaseType nestedType = ((PLSQLCollection) type).getNestedType();
                         if (nestedType != null) {
-                            ObjectRelationalDatabaseField field = 
-                                new ObjectRelationalDatabaseField(inArg.name);
+                            ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(inArg.name);
                             field.setSqlType(nestedType.getConversionCode());
                             if (nestedType.isComplexDatabaseType()) {
-                                field.setSqlTypeName(((ComplexDatabaseType)nestedType).getCompatibleType());
+                                field.setSqlTypeName(((ComplexDatabaseType) nestedType).getCompatibleType());
                             }
-                            super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(),
-                                complexType.getCompatibleType(), field);
+                            super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(), complexType.getCompatibleType(), field);
+                        } else {
+                            super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(), complexType.getCompatibleType());
                         }
-                        else {
-                            super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(),
-                                complexType.getCompatibleType());
-                        }
-                    }
-                    else {
-                        super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(),
-                            complexType.getCompatibleType());
+                    } else {
+                        super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(), complexType.getCompatibleType());
                     }
                 }
             }
@@ -531,37 +526,36 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         outArguments.addAll(inOutArguments);
         for (ListIterator<PLSQLargument> outArgsIter = outArguments.listIterator(); outArgsIter.hasNext();) {
             PLSQLargument outArg = outArgsIter.next();
-            newIndex = outArg.databaseType.computeOutIndex(outArg, newIndex,
-                outArgsIter);
+            newIndex = outArg.databaseType.computeOutIndex(outArg, newIndex, outArgsIter);
         }
         for (PLSQLargument outArg : outArguments) {
-        	DatabaseType type = outArg.databaseType;
+            DatabaseType type = outArg.databaseType;
             if (!type.isComplexDatabaseType()) {
                 super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode());
             } else {
-            	ComplexDatabaseType complexType = (ComplexDatabaseType)type;
+                ComplexDatabaseType complexType = (ComplexDatabaseType) type;
                 if (outArg.outIndex != MIN_VALUE) {
-                	if (complexType instanceof PLSQLCollection) {
-                		DatabaseType nestedType = ((PLSQLCollection)complexType).getNestedType();
-                		if (nestedType != null) {
-                			ObjectRelationalDatabaseField nestedField = new ObjectRelationalDatabaseField(outArg.name);
-                			nestedField.setSqlType(nestedType.getConversionCode());
-                			if (nestedType.isComplexDatabaseType()) {
-                				ComplexDatabaseType complexNestedType = (ComplexDatabaseType)nestedType;
-                    			nestedField.setType(complexNestedType.getJavaType());
-                    			nestedField.setSqlTypeName(complexNestedType.getCompatibleType());
-                			}
-    	                    super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), 
-    	                    		complexType.getCompatibleType(), complexType.getJavaType(), nestedField);                			
-                		} else {
-    	                    super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getCompatibleType());
-                		}
-                	} else if (complexType.hasCompatibleType()) {
-                		super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getCompatibleType(), complexType.getJavaType());
-                	} else {
-                		// If there is no STRUCT type set, then the output is expanded, so one output for each field.
-                		super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode());
-                	}
+                    if (complexType instanceof PLSQLCollection) {
+                        DatabaseType nestedType = ((PLSQLCollection) complexType).getNestedType();
+                        if (nestedType != null) {
+                            ObjectRelationalDatabaseField nestedField = new ObjectRelationalDatabaseField(outArg.name);
+                            nestedField.setSqlType(nestedType.getConversionCode());
+                            if (nestedType.isComplexDatabaseType()) {
+                                ComplexDatabaseType complexNestedType = (ComplexDatabaseType) nestedType;
+                                nestedField.setType(complexNestedType.getJavaType());
+                                nestedField.setSqlTypeName(complexNestedType.getCompatibleType());
+                            }
+                            super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getCompatibleType(), complexType.getJavaType(), nestedField);
+                        } else {
+                            super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getCompatibleType());
+                        }
+                    } else if (complexType.hasCompatibleType()) {
+                        super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getCompatibleType(), complexType.getJavaType());
+                    } else {
+                        // If there is no STRUCT type set, then the output is
+                        // expanded, so one output for each field.
+                        super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode());
+                    }
                 }
             }
         }
@@ -934,7 +928,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * @param sb
      */
     protected void buildProcedureInvocation(StringBuilder sb) {
-
+        
         sb.append("  ");
         sb.append(getProcedureName());
         sb.append("(");

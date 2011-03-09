@@ -217,14 +217,13 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
      */
     public void clear() {
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
-            Iterator objects = this.iterator();
+            Iterator objects = iterator();
             while (objects.hasNext()) {
-                Object o = objects.next();
+                objects.next();
                 objects.remove();
-                this.raiseRemoveChangeEvent(o);
             }
         } else {
-            this.getDelegate().clear();
+            getDelegate().clear();
         }
     }
 

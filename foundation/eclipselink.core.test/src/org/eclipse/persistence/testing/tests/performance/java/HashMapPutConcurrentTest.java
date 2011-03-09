@@ -31,8 +31,8 @@ public class HashMapPutConcurrentTest extends ConcurrentPerformanceComparisonTes
     
     public void setup() {
         super.setup();
-        map = new HashMap(10);
-        for (int index = 0; index < 10; index++) {
+        map = new HashMap(100);
+        for (int index = 0; index < 100; index++) {
             map.put(new Integer(index), new Integer(index));
         }
     }

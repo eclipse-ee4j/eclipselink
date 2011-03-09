@@ -36,7 +36,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -75,7 +74,6 @@ import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.queries.Call;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
@@ -2903,7 +2901,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @return Array
      */
     public Array createArray(String elementDataTypeName, Object[] elements, Connection connection) throws SQLException {
-        return null; //JDK 1.6 connection.createArrayOf(elementDataTypeName, elements);
+        return connection.createArrayOf(elementDataTypeName, elements);
     }
     
     /**
@@ -2912,9 +2910,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @return Struct
      */
     public Struct createStruct(String structTypeName, Object[] attributes, Connection connection) throws SQLException {
-        return null; //JDK 1.6 connection.createStruct(structTypeName, attributes);
+        return connection.createStruct(structTypeName, attributes);
     }
-
     
     /**
      * INTERNAL:
