@@ -1268,6 +1268,16 @@ public class AnnotationsProcessor {
      */
     private void postProcessXmlAccessorType(TypeInfo info, NamespaceInfo packageNamespace) {
         if (!info.isSetXmlAccessType()) {
+            //Check for super class
+            JavaClass next = helper.getJavaClass(info.getJavaClassName()).getSuperclass();
+            while(next != null && !(next.getName().equals(JAVA_LANG_OBJECT))) {
+                TypeInfo parentInfo = this.typeInfo.get(next.getName());
+                if(parentInfo != null && parentInfo.isSetXmlAccessType()) {
+                    info.setXmlAccessType(parentInfo.getXmlAccessType());
+                    break;
+                }
+                next = next.getSuperclass();
+            }
             // use value in package-info.java as last resort - will default if
             // not set
             info.setXmlAccessType(org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(packageNamespace.getAccessType().name()));
@@ -1476,8 +1486,15 @@ public class AnnotationsProcessor {
             if (null != superClass) {
                 TypeInfo superClassInfo = typeInfo.get(superClass.getQualifiedName());
                 while (superClassInfo != null && superClassInfo.isTransient()) {
-                    List<Property> superProps = getPublicMemberPropertiesForClass(superClass, superClassInfo);
-                    returnList.addAll(0, superProps);
+                    if (info.getXmlAccessType() == XmlAccessType.FIELD) {
+                        returnList.addAll(getFieldPropertiesForClass(superClass, superClassInfo, false));
+                    } else if (info.getXmlAccessType() == XmlAccessType.PROPERTY) {
+                        returnList.addAll(getPropertyPropertiesForClass(superClass, superClassInfo, false));
+                    } else if (info.getXmlAccessType() == XmlAccessType.PUBLIC_MEMBER) {
+                        returnList.addAll(getPublicMemberPropertiesForClass(superClass, superClassInfo));
+                    } else {
+                        returnList.addAll(getNoAccessTypePropertiesForClass(superClass, superClassInfo));
+                    }                   
                     superClass = superClass.getSuperclass();
                     superClassInfo = typeInfo.get(superClass.getQualifiedName());
                 }
