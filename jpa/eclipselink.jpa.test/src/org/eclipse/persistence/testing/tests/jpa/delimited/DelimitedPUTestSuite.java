@@ -233,7 +233,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
     private static SimpleImage createImage(){
         simage = new SimpleImage();
         simage.setPicture(org.eclipse.persistence.testing.models.jpa.lob.ImageSimulator.initObjectByteBase(100));
-        simage.setScript(org.eclipse.persistence.testing.models.jpa.lob.ImageSimulator.initStringBase(100));
+        simage.setScript(org.eclipse.persistence.testing.models.jpa.lob.ImageSimulator.initStringBase(1));
         return simage;
     }
 }
