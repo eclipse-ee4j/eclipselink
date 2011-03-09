@@ -1,0 +1,18 @@
+Export-Package: org.eclipse.persistence*;version="${hermes.version.string}";-noimport:=true,
+Implementation-Version: ${hermes.version.string}
+Specification-Vendor: ${specification.vendor}
+Bundle-Name: EclipseLink Hermes Parser
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.jpql
+Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}"
+Implementation-Vendor: ${implementation.vendor}
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: ${hermes.version.string}
+Include-Resource:\
+ ${hermes.2.base.dir}/about.html,\
+ ${hermes.2.base.dir}/readme.html,\
+ ${hermes.2.base.dir}/license.html
+Import-Package:\
+ org.eclipse.persistence.*;version="${version.string}", *
+Specification-Version: ${hermes.version}
+
