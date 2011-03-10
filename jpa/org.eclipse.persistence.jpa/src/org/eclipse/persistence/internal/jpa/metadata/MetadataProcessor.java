@@ -252,7 +252,7 @@ public class MetadataProcessor {
             embeddable.getEntityMappings().processEntityMappingsDefaults(embeddable);
         }
         
-        // 4 - Iterate through the classes that are references from the
+        // 4 - Iterate through the classes that are referenced from the
         // persistence.xml file.
         PersistenceUnitInfo persistenceUnitInfo = m_project.getPersistenceUnitInfo();
         List<String> classNames = new ArrayList<String>();
