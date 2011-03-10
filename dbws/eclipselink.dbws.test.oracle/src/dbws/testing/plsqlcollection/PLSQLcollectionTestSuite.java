@@ -141,6 +141,7 @@ public class PLSQLcollectionTestSuite {
                                        "<index>0</index>" +
                                        "<type-name>SOMEPACKAGE.TBL1</type-name>" +
                                        "<compatible-type>SOMEPACKAGE_TBL1</compatible-type>" +
+                                       "<java-type>java.util.ArrayList</java-type>" +
                                        "<nested-type type-name=\"VARCHAR_TYPE\" xsi:type=\"jdbc-type\"/>" +
                                     "</argument>" +
                                     "<argument type-name=\"VARCHAR_TYPE\" xsi:type=\"jdbc-type\">" +
