@@ -136,6 +136,7 @@ public class DOMReader extends XMLReaderAdapter {
             // If local name is null, use the node name
             lname = elem.getNodeName();
             qname = lname;
+            handlePrefixedAttribute(elem);
         } else {
             qname = getQName(elem);
         }
@@ -192,10 +193,6 @@ public class DOMReader extends XMLReaderAdapter {
     }
 
     protected String getQName(Element elem) throws SAXException {
-        if (elem.getLocalName() == null) {
-            return elem.getNodeName();
-        }
-
         handlePrefixedAttribute(elem);
         String prefix = elem.getPrefix();
         if (prefix != null && prefix.length() > 0) {
