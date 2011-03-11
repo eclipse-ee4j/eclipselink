@@ -26,10 +26,10 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import junit.framework.TestCase;
 
 public class XMLStreamWriterDefaultNamespaceTestCases extends TestCase {
-    
+
     public void testDefaultNamespaceOverride() throws Exception {
         if(System.getProperty("java.version").contains("1.6")) {
-        
+
             JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{Employee.class}, null);
             StringWriter writer = new StringWriter();
             XMLStreamWriter streamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(writer);
@@ -37,16 +37,20 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends TestCase {
             streamWriter.writeDefaultNamespace("someNamespace");
             Marshaller marshaller = ctx.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, new Boolean(true));
-        
+
             marshaller.marshal(new JAXBElement(new QName("employee"), Employee.class, new Employee()), streamWriter);
             streamWriter.writeEndElement();
             streamWriter.writeEndDocument();
             streamWriter.flush();
-        
+
             String xml = "<root xmlns=\"someNamespace\"><employee xmlns=\"\"></employee></root>";
-            assertTrue("Incorrect XML: " + writer.toString(), writer.toString().equals(xml));
+            String xml2 = "<root xmlns=\"someNamespace\"><employee xmlns=\"\"/></root>";
+
+            String writerString = writer.toString();
+
+            assertTrue("Incorrect XML: " + writerString, writerString.equals(xml) || writerString.equals(xml2));
         }
-        
+
     }
 
 }
