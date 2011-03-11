@@ -135,7 +135,6 @@
                 <pathelement location="${jboss.home}/bin/run.jar"/>
                 <pathelement location="${jdbc.driver.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
-                <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             </classpath>           
         </java>
