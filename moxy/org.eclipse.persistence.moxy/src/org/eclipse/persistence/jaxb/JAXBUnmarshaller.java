@@ -15,6 +15,7 @@ package org.eclipse.persistence.jaxb;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.HashMap;
@@ -355,6 +356,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     }
                 }
                 return  unmarshal(source, (Class)type.getType());
+            } else if(type.getType() instanceof ParameterizedType) {
+                return unmarshal(source, ((ParameterizedType)type.getType()).getRawType());
             }
             return null;
         } catch (XMLMarshalException xmlMarshalException) {
@@ -458,6 +461,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     }
                 }
                 return  unmarshal(streamReader, (Class)type.getType());
+            } else if(type.getType() instanceof ParameterizedType) {
+                return unmarshal(streamReader, ((ParameterizedType)type.getType()).getRawType());
             }
             return null;
         } catch (XMLMarshalException xmlMarshalException) {
@@ -573,6 +578,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     }
                 }
                 return  unmarshal(eventReader, (Class)type.getType());
+            } else if(type.getType() instanceof ParameterizedType) {
+                return unmarshal(eventReader, ((ParameterizedType)type.getType()).getRawType());
             }
             return null;
         } catch (XMLMarshalException xmlMarshalException) {
