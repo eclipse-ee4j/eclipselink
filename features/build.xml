@@ -213,6 +213,9 @@
         <property name="xml.bind.criteria" value="[2.2.0,2.3.0)"/>
         <property name="xml.stream.prefix" value="javax.xml.stream"/>
         <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
+        <!-- For EclipseLink bundles -->
+        <property name="hermes.prefix" value="org.eclipse.persistence.jpa.jpql"/>
+        <property name="hermes.criteria" value="[1.0,2.0)"/>
     </target>
 
     <!-- Need to copy only the bundles that will be in the features into the "p2.repos.dir/plugins" dir
@@ -273,6 +276,9 @@
         <selectbundle basename="${xml.stream.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${xml.stream.criteria}" property="xml.stream.version" versiononly="true"
         />
+        <selectbundle basename="${hermes.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
+        />
         <echo message="Searching ${feature.2.sdo.plugins.dir}..."/>
         <say  message="   sdo.version         = '${sdo.version}'"         if="sdo.version"/>
         <say  message="   '${sdo.prefix}_${sdo.criteria}.jar' not found! Generated features will be invalid."                 unless="sdo.version"/>
@@ -290,6 +296,8 @@
         <say  message="   '${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="xml.bind.version"/>
         <say  message="   xml.stream.version  = '${xml.stream.version}'"  if="xml.stream.version"/>
         <say  message="   '${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="xml.stream.version"/>
+        <say  message="   hermes.version      = '${hermes.version}'"      if="hermes.version"/>
+        <say  message="   '${hermes.prefix}_${hermes.criteria}.jar' not found! Generated features will be invalid."           unless="hermes.version"/>
     </target>
 
     <target name="create-deployable-features" depends="resolve-feature-dependencies">
@@ -306,6 +314,8 @@
         <filter token="SERVLET_VERSION"     value="${servlet.version}"/>
         <filter token="XMLBIND_VERSION"     value="${xml.bind.version}"/>
         <filter token="XMLSTREAM_VERSION"   value="${xml.stream.version}"/>
+        <!--          Filters for product bundles in feature.xml files -->
+        <filter token="HERMES_VERSION"      value="${hermes.version}"/>
         <!--          Filters for feature.properties files          -->
         <filter token="PROVIDER"            value="${specification.vendor}"/>
         <filter token="REPOS_NAME"          value="${p2.release.repos.name}"/>

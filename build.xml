@@ -213,64 +213,55 @@
         </delete>
     </target>
     <target name="clean-runtime-built" description="Clean the runtime projects">
-        <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.asm}"              target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.core}"             target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.osgi}"             target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy.dynamic}"     target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.util.jaxb}"        target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.dbws.builder}"        target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.util.rename}"      target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.util.workbench}"   target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.antlr}"            target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.asm}"              target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.core}"             target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.extension.oracle}" target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.dbws}"             target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.jpa}"              target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.osgi}"             target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.modelgen}"         target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.weaving}"          target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.equinox}"          target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.moxy}"             target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.moxy.dynamic}"     target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.util.jaxb}"        target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.sdo}"              target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.dbws.builder}"     target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.util.rename}"      target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="clean"/>
         <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
 
     <target name="clean-testing" description="Clean the testing projects">
-        <ant antfile="build.xml" dir="${eclipselink.core.test}"        target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.jpa.test}"         target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy.test}"        target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo.test}"         target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.core.test}"           target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa.test}"            target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo.test}"            target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="clean"/>
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="build-core" depends="clean-runtime-checkedin">
-        <ant antfile="build.xml" dir="${eclipselink.asm}"              target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.core}"             target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
-        <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.osgi}"             target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy.dynamic}"     target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.util.jaxb}"        target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="build"/>
-    </target>
-
-    <!--      *** Temporary:: intended for dev use only ***
-    *    Build core and Hermes JPQL bunldes.  Only needed until Hermes is ready for
-    *    addition to nightly build
-    * -->
-    <target name="build-hermes">
-        <ant antfile="build.xml"    dir="${eclipselink.asm}"                            target="build"/>
-        <ant antfile="build.xml"    dir="${eclipselink.antlr}"                          target="build"/>
-        <ant antfile="build.xml"    dir="${eclipselink.core}"                           target="build"/>
-        <ant antfile="antbuild.xml" dir="utils/org.eclipse.persistence.utils.jpa.query" target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.asm}"              target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.antlr}"            target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.core}"             target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.extension.oracle}" target="repackage"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.jpa}"              target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.osgi}"             target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.modelgen}"         target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.weaving}"          target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.equinox}"          target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.moxy}"             target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.moxy.dynamic}"     target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.util.jaxb}"        target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.sdo}"              target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.dbws}"             target="build"/>
     </target>
 
     <!--      *** intended for dev use only ***
@@ -279,18 +270,19 @@
     *          or "rejars" from prebuilt bundle if classes dir doesn't exist.
     * -->
     <target name="dev-package-bundles" depends="clean-runtime-checkedin">
-        <ant antfile="build.xml" dir="${eclipselink.asm}"              target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
-        <ant antfile="build.xml" dir="${eclipselink.core}"             target="jar"/>
-        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="jar"/>
-        <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="jar"/>
-        <ant antfile="build.xml" dir="${eclipselink.osgi}"             target="jar"/>
-        <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="jar"/>
-        <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="jar"/>
-        <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="jar"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="jar"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="jar"/>
-        <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="jar"/>
+        <ant antfile="build.xml"    dir="${eclipselink.asm}"              target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.antlr}"            target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.core}"             target="jar"/>
+        <ant antfile="build.xml"    dir="${eclipselink.extension.oracle}" target="jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="jar"/>
+        <ant antfile="build.xml"    dir="${eclipselink.jpa}"              target="jar"/>
+        <ant antfile="build.xml"    dir="${eclipselink.osgi}"             target="jar"/>
+        <ant antfile="build.xml"    dir="${eclipselink.modelgen}"         target="jar"/>
+        <ant antfile="build.xml"    dir="${eclipselink.weaving}"          target="jar"/>
+        <ant antfile="build.xml"    dir="${eclipselink.equinox}"          target="jar"/>
+        <ant antfile="build.xml"    dir="${eclipselink.moxy}"             target="jar"/>
+        <ant antfile="build.xml"    dir="${eclipselink.sdo}"              target="jar"/>
+        <ant antfile="build.xml"    dir="${eclipselink.dbws}"             target="jar"/>
     </target>
 
     <target name="build-persistence20">
@@ -331,7 +323,7 @@
         <ant antfile="build.xml" dir="${eclipselink.moxy.test}"    target="compile-tests-against-jar"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo.test}"     target="compile-sdo-tests-against-jar"/>
     </target>
-    
+
     <target name="build-dbws-test" unless="java_is_v5">
         <!-- Compiling dbws tests requires JDK 1.6 -->
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="build"/>
@@ -415,10 +407,9 @@
                 <attribute name="Premain-Class"          value="${eclipselink.premain.class}"/>
             </manifest>
             <zipgroupfileset dir="${eclipselink.plugins}">
-                <include name="${asm}_${version.string}.jar"/>
-                <include name="${antlr}_${version.string}.jar"/>
                 <include name="org.eclipse.persistence*.jar"/>
                 <exclude name="*source*.jar"/>
+                <exclude name="*jpa.jpql*.jar"/>
                 <exclude name="*equinox*.jar"/>
             </zipgroupfileset>
             <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->

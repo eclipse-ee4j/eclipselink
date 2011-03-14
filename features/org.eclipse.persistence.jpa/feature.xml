@@ -83,6 +83,13 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.persistence.jpa.jpql"
+         download-size="0"
+         install-size="0"
+         version="@HERMES_VERSION@"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.persistence.jpa.equinox"
          download-size="0"
          install-size="0"

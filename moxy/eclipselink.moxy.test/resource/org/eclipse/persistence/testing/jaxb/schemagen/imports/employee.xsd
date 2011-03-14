@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:y="addressNamespace" xmlns:x="employeeNamespace" targetNamespace="employeeNamespace">
-   <xsd:import schemaLocation="file:/D:/Workspace/2.3/moxy/eclipselink.moxy.test/resource/org/eclipse/persistence/testing/jaxb/schemagen/imports/address.xsd" namespace="addressNamespace"/>
+   <xsd:import schemaLocation="file:/C:/_EL_trunk5/moxy/eclipselink.moxy.test/resource/org/eclipse/persistence/testing/jaxb/schemagen/imports/address.xsd" namespace="addressNamespace"/>
    <xsd:complexType name="employee-type">
       <xsd:sequence>
          <xsd:element name="firstName" type="xsd:string"/>
