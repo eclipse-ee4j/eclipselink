@@ -130,8 +130,12 @@
             <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
             <sysproperty key="java.endorsed.dirs" value="${jboss.home}/lib/endorsed"/>
             <classpath>
+                <!-- The following 2 jars are for 5.x version -->
                 <pathelement location="${jboss.home}/lib/jboss-common-core.jar"/>
                 <pathelement location="${jboss.home}/lib/jboss-logging-spi.jar"/>
+                <!-- The following 2 jars are only for 6.0 and later version -->
+                <pathelement location="${jboss.home}/lib/jboss-logging.jar"/>
+                <pathelement location="${jboss.home}/lib/jboss-logmanager.jar"/>
                 <pathelement location="${jboss.home}/bin/run.jar"/>
                 <pathelement location="${jdbc.driver.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
