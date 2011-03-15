@@ -68,15 +68,4 @@ public class XmlAnyElementLaxTestCases extends JAXBTestCases {
         return employee;
     }
 
-    @Override
-    public void testRoundTrip() throws Exception {
-        // Disable this test if running on XDK
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document doc = factory.newDocumentBuilder().newDocument();
-        if (doc.getClass().getPackage().getName().contains("oracle.xml.parser")) {
-            return;
-        }
-        super.testRoundTrip();
-    }
-
 }
