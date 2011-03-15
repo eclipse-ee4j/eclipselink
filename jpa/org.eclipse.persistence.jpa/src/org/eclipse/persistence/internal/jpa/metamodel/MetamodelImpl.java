@@ -334,15 +334,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
          * Normally this functionality would be placed on the (core) Project class, however
          * this would create a JPA dependency in Core when we try to use MetadataClass functionality there. 
          */
-        // Internally we use the JPA MetadataClass as the key - but to avoid JPA dependencies the Map is keyed on Object
-        Set<Object> keySet = this.getSession().getProject().getMappedSuperclassDescriptors().keySet();
-        for(Object key : keySet) {
-            // The key is always a MetadataClass Object
-            if(((MetadataClass)key).getName().equals(qualifiedClassNameKeyString)) {
-                return true;
-            }
-        }
-        return false;
+        return this.getSession().getProject().hasMappedSuperclass(qualifiedClassNameKeyString);
     }    
     
     /**
