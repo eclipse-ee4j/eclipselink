@@ -122,16 +122,20 @@
         <java classname="org.jboss.Main" 
             fork="true"
             failonerror="false" >
-            <jvmarg value="-XX:MaxPermSize=768m"/>
-            <jvmarg value="-Xms768m"/>
-            <jvmarg value="-Xmx960m"/>
+            <jvmarg value="-XX:MaxPermSize=128m"/>
+            <jvmarg value="-Xms128m"/>
+            <jvmarg value="-Xmx560m"/>
             <sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/>
             <sysproperty key="http.proxyPort" value="80"/>
             <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
             <sysproperty key="java.endorsed.dirs" value="${jboss.home}/lib/endorsed"/>
             <classpath>
+                <!-- The following 2 jars are for 5.x version -->
                 <pathelement location="${jboss.home}/lib/jboss-common-core.jar"/>
                 <pathelement location="${jboss.home}/lib/jboss-logging-spi.jar"/>
+                <!-- The following 2 jars are only for 6.0 and later version -->
+                <pathelement location="${jboss.home}/lib/jboss-logging.jar"/>
+                <pathelement location="${jboss.home}/lib/jboss-logmanager.jar"/>
                 <pathelement location="${jboss.home}/bin/run.jar"/>
                 <pathelement location="${jdbc.driver.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
