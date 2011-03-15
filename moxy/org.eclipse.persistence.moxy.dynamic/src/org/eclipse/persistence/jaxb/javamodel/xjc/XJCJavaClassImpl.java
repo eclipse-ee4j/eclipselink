@@ -309,7 +309,7 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     private String getPrimitiveArrayNameFor(String fullName) {
-        Class componentClass = ConversionManager.getPrimitiveClass(fullName);
+        Class<?> componentClass = ConversionManager.getPrimitiveClass(fullName);
         if(componentClass != null) {
             if(componentClass == ClassConstants.PBYTE) {
                 return ClassConstants.APBYTE.getName();
