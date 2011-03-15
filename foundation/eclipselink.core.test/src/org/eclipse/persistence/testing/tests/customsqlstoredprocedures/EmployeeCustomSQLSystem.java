@@ -253,11 +253,14 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         proc.addArgument("L_NAME", String.class, 40);
         proc.addArgument("GENDER", String.class, 1);
         proc.addArgument("ADDR_ID", Long.class);
-        proc.addArgument("VERSION", Long.class);
         proc.addArgument("START_TIME", java.sql.Time.class);
         proc.addArgument("END_TIME", java.sql.Time.class);
         proc.addStatement("Update SALARY set SALARY = @SALARY WHERE (EMP_ID = @EMP_ID)");
-        proc.addStatement("Update EMPLOYEE set END_DATE = @END_DATE, MANAGER_ID = @MANAGER_ID, " + "START_DATE = @START_DATE, F_NAME = @F_NAME, L_NAME = @L_NAME, GENDER = @GENDER, ADDR_ID = @ADDR_ID, " + "VERSION = @VERSION + 1 WHERE ((EMP_ID = @EMP_ID) AND (VERSION = @VERSION))");
+        // ELBug 339072 - A Row is inserted with version value as 'null' as optimistic locking
+        // is turned off. During update, it executes the statement using version = null check
+        // in where clause which fails to update the row. So, removing version field from
+        // following update statement to fix the issue.
+        proc.addStatement("Update EMPLOYEE set END_DATE = @END_DATE, MANAGER_ID = @MANAGER_ID, " + "START_DATE = @START_DATE, F_NAME = @F_NAME, L_NAME = @L_NAME, GENDER = @GENDER, ADDR_ID = @ADDR_ID " + " WHERE (EMP_ID = @EMP_ID)");
         return proc;
     }
 
@@ -703,7 +706,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         call.addNamedArgument("L_NAME");
         call.addNamedArgument("GENDER");
         call.addNamedArgument("ADDR_ID");
-        call.addNamedArgument("VERSION");
+        //call.addNamedArgument("VERSION");
         call.addNamedArgument("START_TIME");
         call.addNamedArgument("END_TIME");
         updateQuery.setCall(call);
