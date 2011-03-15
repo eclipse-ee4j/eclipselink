@@ -2624,11 +2624,9 @@ public class AnnotationsProcessor {
     }
 
     private String decapitalize(String javaName) {
-        // return Introspector.decapitalize(name); Spec Compliant
-        // RI compliancy
         char[] name = javaName.toCharArray();
         int i = 0;
-        while (i < name.length && Character.isUpperCase(name[i])) {
+        while (i < name.length && (Character.isUpperCase(name[i]) || !Character.isLetter(name[i]))) {
             i++;
         }
         if (i > 0) {
