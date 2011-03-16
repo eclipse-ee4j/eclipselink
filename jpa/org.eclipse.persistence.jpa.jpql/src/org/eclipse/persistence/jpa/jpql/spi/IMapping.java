@@ -25,7 +25,8 @@ import java.lang.annotation.Annotation;
  * @since 2.3
  * @author Pascal Filion
  */
-public interface IMapping extends IExternalForm {
+public interface IMapping extends IExternalForm,
+                                  Comparable<IMapping> {
 
 	/**
 	 * Returns the type of this mapping.

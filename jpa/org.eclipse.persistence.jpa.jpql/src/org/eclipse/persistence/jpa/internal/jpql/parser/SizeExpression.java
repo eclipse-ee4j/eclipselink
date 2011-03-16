@@ -14,9 +14,8 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 /**
- * The <b>SIZE</b> function returns an integer value, the number of elements of
- * the collection. If the collection is empty, the <b>SIZE</b> function
- * evaluates to zero.
+ * The <b>SIZE</b> function returns an integer value, the number of elements of the collection. If
+ * the collection is empty, the <b>SIZE</b> function evaluates to zero.
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= SIZE(collection_valued_path_expression)</code><p>
  *
@@ -62,9 +61,8 @@ public final class SizeExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	AbstractExpression parse(WordParser wordParser,
-	                         JPQLQueryBNF queryBNF,
-	                         boolean tolerant) {
+	AbstractExpression parse(WordParser wordParser, JPQLQueryBNF queryBNF, boolean tolerant) {
+
 		if (tolerant) {
 			return super.parse(wordParser, queryBNF, tolerant);
 		}

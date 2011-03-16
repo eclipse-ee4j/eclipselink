@@ -19,7 +19,9 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * <p>
  * Part of JPA 2.0.
  * <p>
- * <div nowrap><b>BNF:</b> <code>type_discriminator ::= TYPE(identification_variable | single_valued_object_path_expression | input_parameter)</code></pre><p>
+ * <div nowrap><b>BNF:</b> <code>type_discriminator ::= TYPE(identification_variable |
+ *                                                           single_valued_object_path_expression |
+ *                                                           input_parameter)</code></pre><p>
  *
  * @version 2.3
  * @since 2.3
@@ -63,9 +65,7 @@ public final class TypeExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	AbstractExpression parse(WordParser wordParser,
-	                         JPQLQueryBNF queryBNF,
-	                         boolean tolerant) {
+	AbstractExpression parse(WordParser wordParser, JPQLQueryBNF queryBNF, boolean tolerant) {
 
 		if (tolerant) {
 			return super.parse(wordParser, queryBNF, tolerant);

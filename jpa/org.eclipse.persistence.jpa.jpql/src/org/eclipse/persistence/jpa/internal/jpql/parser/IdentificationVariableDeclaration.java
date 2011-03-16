@@ -194,14 +194,14 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
 		// Parsing the join expressions
 		if (parsingJoinExpression) {
 			return !word.equalsIgnoreCase(INNER) &&
 			       !word.equalsIgnoreCase(JOIN)  &&
 			       !word.equalsIgnoreCase(LEFT)  &&
-			       super.isParsingComplete(wordParser, word);
+			       super.isParsingComplete(wordParser, word, expression);
 		}
 
 		// Parsing the range variable declaration
@@ -209,7 +209,7 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 		       word.equalsIgnoreCase(JOIN)  ||
 		       word.equalsIgnoreCase(LEFT)  ||
 		       word.equalsIgnoreCase(IN)    ||
-		       super.isParsingComplete(wordParser, word);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**

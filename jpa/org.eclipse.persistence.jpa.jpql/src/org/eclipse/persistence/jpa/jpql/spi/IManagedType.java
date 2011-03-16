@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.spi;
 
-import java.util.Iterator;
-
 /**
  * The external representation of a managed type, which is a JPA persistent object.
  *
@@ -26,7 +24,8 @@ import java.util.Iterator;
  * @since 2.3
  * @author Pascal Filion
  */
-public interface IManagedType extends IExternalForm {
+public interface IManagedType extends IExternalForm,
+                                      Comparable<IManagedType> {
 
 	/**
 	 * Visits this managed type with the given visitor.
@@ -59,9 +58,9 @@ public interface IManagedType extends IExternalForm {
 	IType getType();
 
 	/**
-	 * Returns the list of mappings defined in this managed type.
+	 * Returns the collection of {@link IMapping mappings} defined in this managed type.
 	 *
-	 * @return The list of persistent fields and properties of this managed type
+	 * @return The collection of persistent fields and properties of this managed type
 	 */
-	Iterator<IMapping> mappings();
+	Iterable<IMapping> mappings();
 }

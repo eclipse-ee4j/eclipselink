@@ -18,7 +18,6 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import org.eclipse.persistence.jpa.jpql.spi.IConstructor;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
@@ -56,12 +55,12 @@ final class JavaType implements IType {
 	/**
 	 * The fully qualified name of the Java type.
 	 */
-	private String typeName;
+	private final String typeName;
 
 	/**
 	 * The external form of a type repository.
 	 */
-	private ITypeRepository typeRepository;
+	private final ITypeRepository typeRepository;
 
 	/**
 	 * Creates a new <code>JavaType</code>.
@@ -125,11 +124,11 @@ final class JavaType implements IType {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Iterator<IConstructor> constructors() {
+	public Iterable<IConstructor> constructors() {
 		if (constructors == null) {
 			constructors = buildConstructors();
 		}
-		return constructors.iterator();
+		return Collections.unmodifiableCollection(constructors);
 	}
 
 	/**

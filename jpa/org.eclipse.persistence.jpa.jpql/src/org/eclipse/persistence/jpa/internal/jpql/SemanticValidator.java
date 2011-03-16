@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -115,7 +114,9 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IConstructor;
+import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
@@ -215,12 +216,15 @@ public final class SemanticValidator extends AbstractValidator {
 		// 2. The type cannot be determined, pretend they are equivalent,
 		//    another rule will validate it
 		// 3. One is assignable to the other one
+		TypeHelper helper = getTypeHelper();
+
 		return (type1 == type2) ||
 		       !type1.isResolvable() ||
 		       !type2.isResolvable() ||
-		        getTypeHelper().isNumericType(type1) && getTypeHelper().isNumericType(type2) ||
-		        getTypeHelper().isDateType(type1)    && getTypeHelper().isDateType(type2)    ||
-		        type1.isAssignableTo(type2)     || type2.isAssignableTo(type1);
+		        helper.isNumericType(type1) && helper.isNumericType(type2) ||
+		        helper.isDateType(type1)    && helper.isDateType(type2)    ||
+		        type1.isAssignableTo(type2) ||
+		        type2.isAssignableTo(type1);
 	}
 
 	private boolean isEnumType(Expression expression) {
@@ -240,15 +244,17 @@ public final class SemanticValidator extends AbstractValidator {
 			return true;
 		}
 
+		TypeHelper helper = getTypeHelper();
+
 		if (type1 == type2) {
-			return getTypeHelper().isNumericType(type1) ||
-			       getTypeHelper().isStringType(type1)  ||
-			       getTypeHelper().isDateType(type1);
+			return helper.isNumericType(type1) ||
+			       helper.isStringType(type1)  ||
+			       helper.isDateType(type1);
 		}
 		else {
-			return getTypeHelper().isNumericType(type1) && getTypeHelper().isNumericType(type2) ||
-			       getTypeHelper().isStringType(type1)  && getTypeHelper().isStringType(type2)  ||
-			       getTypeHelper().isDateType(type1)    && getTypeHelper().isDateType(type2);
+			return helper.isNumericType(type1) && helper.isNumericType(type2) ||
+			       helper.isStringType(type1)  && helper.isStringType(type2)  ||
+			       helper.isDateType(type1)    && helper.isDateType(type2);
 		}
 	}
 
@@ -495,11 +501,13 @@ public final class SemanticValidator extends AbstractValidator {
 				return;
 			}
 
+			TypeHelper helper = getTypeHelper();
 			IType newValueType = type(newValue);
 
 			if (!newValueType.isResolvable() ||
-			    (getTypeHelper().isDateType(type) && getTypeHelper().isDateType(newValueType)))
-			{
+			    helper.isDateType(type)    && helper.isDateType(newValueType) ||
+			    helper.isNumericType(type) && helper.isNumericType(newValueType)) {
+
 				return;
 			}
 
@@ -857,10 +865,7 @@ public final class SemanticValidator extends AbstractValidator {
 				IType[] calculatedTypes = null;
 
 				// Retrieve the type's constructors
-				Iterator<IConstructor> constructors = type.constructors();
-
-				while (constructors.hasNext()) {
-					IConstructor constructor = constructors.next();
+				for (IConstructor constructor : type.constructors()) {
 					ITypeDeclaration[] types1 = constructor.getParameterTypes();
 
 					// The number of items match, check their types are equivalent
@@ -1085,11 +1090,11 @@ public final class SemanticValidator extends AbstractValidator {
 
 			if (ExpressionTools.stringIsNotEmpty(variable)) {
 
-				for (Iterator<String> entityNames = getProvider().entityNames(); entityNames.hasNext(); ) {
+				for (IEntity entity : getProvider().abstractSchemaTypes()) {
 
 					// An identification variable must not have the same name as any entity in the same
 					// persistence unit, unless it's representing a entity literal
-					String entityName = entityNames.next();
+					String entityName = entity.getName();
 
 					if (variable.equalsIgnoreCase(entityName)) {
 
@@ -2366,7 +2371,7 @@ public final class SemanticValidator extends AbstractValidator {
 		/**
 		 *
 		 */
-		private Set<String> variables;
+		private final Set<String> variables;
 
 		/**
 		 * Creates a new <code>JoinExpressionVisitor</code>.

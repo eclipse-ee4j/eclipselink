@@ -321,26 +321,26 @@ public final class CaseExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
 		// 'CASE'
 		if (parsingType == ParsingType.CASE) {
 			return word.equalsIgnoreCase(WHEN) ||
 			       word.equalsIgnoreCase(ELSE) ||
 			       word.equalsIgnoreCase(END)  ||
-			       super.isParsingComplete(wordParser, word);
+			       super.isParsingComplete(wordParser, word, expression);
 		}
 
 		// 'WHEN'
 		if (parsingType == ParsingType.WHEN) {
 			return word.equalsIgnoreCase(ELSE) ||
 			       word.equalsIgnoreCase(END)  ||
-			       super.isParsingComplete(wordParser, word);
+			       super.isParsingComplete(wordParser, word, expression);
 		}
 
 		// 'ELSE'
 		return word.equalsIgnoreCase(END) ||
-		       super.isParsingComplete(wordParser, word);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**

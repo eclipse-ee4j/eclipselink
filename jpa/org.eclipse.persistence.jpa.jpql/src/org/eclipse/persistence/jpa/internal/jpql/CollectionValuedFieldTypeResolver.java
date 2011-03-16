@@ -14,7 +14,6 @@
 package org.eclipse.persistence.jpa.internal.jpql;
 
 import java.util.Collections;
-import java.util.Iterator;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeVisitor;
@@ -160,8 +159,8 @@ final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver {
 
 	private static class MapManagedType implements IManagedType {
 
-		private IType mapType;
-		private IManagedTypeProvider provider;
+		private final IType mapType;
+		private final IManagedTypeProvider provider;
 
 		MapManagedType(IManagedTypeProvider provider, IType mapType) {
 			super();
@@ -174,6 +173,13 @@ final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver {
 		 * {@inheritDoc}
 		 */
 		public void accept(IManagedTypeVisitor visitor) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public int compareTo(IManagedType managedType) {
+			return getType().getName().compareTo(managedType.getType().getName());
 		}
 
 		/**
@@ -200,8 +206,8 @@ final class CollectionValuedFieldTypeResolver extends AbstractPathTypeResolver {
 		/**
 		 * {@inheritDoc}
 		 */
-		public Iterator<IMapping> mappings() {
-			return Collections.<IMapping>emptyList().iterator();
+		public Iterable<IMapping> mappings() {
+			return Collections.emptyList();
 		}
 	}
 }

@@ -252,9 +252,9 @@ public final class UpdateClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 		return word.equalsIgnoreCase(SET) ||
-		       super.isParsingComplete(wordParser, word);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**

@@ -73,9 +73,7 @@ public final class AllOrAnyExpression extends AbstractSingleEncapsulatedExpressi
 	 * {@inheritDoc}
 	 */
 	@Override
-	AbstractExpression parse(WordParser wordParser,
-	                         JPQLQueryBNF queryBNF,
-	                         boolean tolerant) {
+	AbstractExpression parse(WordParser wordParser, JPQLQueryBNF queryBNF, boolean tolerant) {
 
 		if (tolerant) {
 			return super.parse(wordParser, queryBNF, tolerant);
@@ -91,6 +89,7 @@ public final class AllOrAnyExpression extends AbstractSingleEncapsulatedExpressi
 	 */
 	@Override
 	String parseIdentifier(WordParser wordParser) {
+
 		switch (wordParser.character()) {
 			case 's': case 'S': {
 				return SOME;

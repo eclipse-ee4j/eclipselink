@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.Arrays;
 import org.eclipse.persistence.jpa.internal.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.internal.jpql.parser.TrimExpression.Specification;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
 import static org.junit.Assert.*;
@@ -749,12 +750,24 @@ abstract class AbstractJPQLTest {
 		return select(selectExpression, true);
 	}
 
+	private static ResultVariableTester selectItem(ExpressionTester selectExpression, boolean hasAs, ExpressionTester resultVariable) {
+		return new ResultVariableTester(selectExpression, hasAs, resultVariable);
+	}
+
+	static ResultVariableTester selectItem(ExpressionTester selectExpression, ExpressionTester resultVariable) {
+		return selectItem(selectExpression, false, resultVariable);
+	}
+
 	static ResultVariableTester selectItem(ExpressionTester selectExpression, String resultVariable) {
-		return new ResultVariableTester(selectExpression, false, variable(resultVariable));
+		return selectItem(selectExpression, false, variable(resultVariable));
+	}
+
+	static ResultVariableTester selectItemAs(ExpressionTester selectExpression, ExpressionTester resultVariable) {
+		return selectItem(selectExpression, true, resultVariable);
 	}
 
 	static ResultVariableTester selectItemAs(ExpressionTester selectExpression, String resultVariable) {
-		return new ResultVariableTester(selectExpression, true, variable(resultVariable));
+		return selectItemAs(selectExpression, variable(resultVariable));
 	}
 
 	static SelectStatementTester selectStatement(ExpressionTester selectClause, ExpressionTester fromClause) {
@@ -1477,42 +1490,53 @@ abstract class AbstractJPQLTest {
 	}
 
 	static abstract class AbstractSelectClauseTester extends AbstractExpressionTester {
+
 		private boolean hasDistinct;
-		private ExpressionTester selectExpressions;
+		boolean hasSpaceAfterDistinct;
+		boolean hasSpaceAfterSelect;
+		private ExpressionTester selectExpression;
 
-		AbstractSelectClauseTester(ExpressionTester selectExpressions,
-		                           boolean hasDistinct) {
+		AbstractSelectClauseTester(ExpressionTester selectExpression, boolean hasDistinct) {
 			super();
-
-			this.hasDistinct       = hasDistinct;
-			this.selectExpressions = selectExpressions;
+			this.hasDistinct           = hasDistinct;
+			this.hasSpaceAfterDistinct = hasDistinct;
+			this.hasSpaceAfterSelect   = hasDistinct || !selectExpression.isNull();
+			this.selectExpression      = selectExpression;
 		}
 
 		public void test(Expression expression) {
+
 			assertInstance(expression, AbstractSelectClause.class);
-
 			AbstractSelectClause selectClause = (AbstractSelectClause) expression;
-			assertEquals(toString(),  selectClause.toParsedText());
-			assertTrue  (selectClause.hasSelectExpression());
-			assertEquals(hasDistinct, selectClause.hasDistinct());
-			assertEquals(hasDistinct, selectClause.hasSpaceAfterDistinct());
-			assertTrue  (selectClause.hasSpaceAfterSelect());
 
-			selectExpressions.test(selectClause.getSelectExpression());
+			assertEquals(toString(),                 selectClause.toParsedText());
+			assertEquals(hasSpaceAfterSelect,        selectClause.hasSpaceAfterSelect());
+			assertEquals(hasDistinct,                selectClause.hasDistinct());
+			assertEquals(hasSpaceAfterDistinct,      selectClause.hasSpaceAfterDistinct());
+			assertEquals(!selectExpression.isNull(), selectClause.hasSelectExpression());
+
+			selectExpression.test(selectClause.getSelectExpression());
 		}
 
 		@Override
 		public String toString() {
+
 			StringBuilder sb = new StringBuilder();
 			sb.append(SELECT);
-			sb.append(" ");
 
-			if (hasDistinct) {
-				sb.append(DISTINCT);
+			if (hasSpaceAfterSelect) {
 				sb.append(" ");
 			}
 
-			sb.append(selectExpressions);
+			if (hasDistinct) {
+				sb.append(DISTINCT);
+			}
+
+			if (hasSpaceAfterDistinct) {
+				sb.append(" ");
+			}
+
+			sb.append(selectExpression);
 			return sb.toString();
 		}
 	}
@@ -2882,8 +2906,7 @@ abstract class AbstractJPQLTest {
 		private ExpressionTester queryStatement;
 		private ExpressionTester unknownExpression;
 
-		JPQLExpressionTester(ExpressionTester queryStatement,
-		                     ExpressionTester unknownExpression) {
+		JPQLExpressionTester(ExpressionTester queryStatement, ExpressionTester unknownExpression) {
 
 			super();
 			this.queryStatement    = queryStatement;
@@ -2891,10 +2914,11 @@ abstract class AbstractJPQLTest {
 		}
 
 		public void test(Expression expression) {
+
 			JPQLExpression jpqlExpression = (JPQLExpression) expression;
 
-			assertEquals(toString(), jpqlExpression.toParsedText());
-			assertEquals(!queryStatement.isNull(), jpqlExpression.hasQueryStatement());
+			assertEquals(toString(),                  jpqlExpression.toParsedText());
+			assertEquals(!queryStatement.isNull(),    jpqlExpression.hasQueryStatement());
 			assertEquals(!unknownExpression.isNull(), jpqlExpression.hasUnknownEndingStatement());
 
 			queryStatement   .test(jpqlExpression.getQueryStatement());
@@ -3220,7 +3244,7 @@ abstract class AbstractJPQLTest {
 
 		@Override
 		public String toString() {
-			return AbstractExpression.EMPTY_STRING;
+			return ExpressionTools.EMPTY_STRING;
 		}
 	}
 
@@ -3434,30 +3458,31 @@ abstract class AbstractJPQLTest {
 		}
 	}
 
-	private static final class ResultVariableTester extends AbstractExpressionTester {
+	static final class ResultVariableTester extends AbstractExpressionTester {
+
 		private boolean hasAs;
+		boolean hasSpaceAfterAs;
 		private ExpressionTester resultVariable;
 		private ExpressionTester selectExpression;
 
-		ResultVariableTester(ExpressionTester selectExpression,
-		                     boolean hasAs,
-		                     ExpressionTester resultVariable) {
+		ResultVariableTester(ExpressionTester selectExpression, boolean hasAs, ExpressionTester resultVariable) {
 			super();
-
-			this.hasAs = hasAs;
+			this.hasAs            = hasAs;
+			this.hasSpaceAfterAs  = hasAs;
 			this.selectExpression = selectExpression;
-			this.resultVariable = resultVariable;
+			this.resultVariable   = resultVariable;
 		}
 
 		public void test(Expression expression) {
-			assertInstance(expression, ResultVariable.class);
 
+			assertInstance(expression, ResultVariable.class);
 			ResultVariable resultVariable = (ResultVariable) expression;
-			assertEquals(toString(), resultVariable.toParsedText());
-			assertEquals(hasAs, resultVariable.hasAs());
-			assertEquals(hasAs, resultVariable.hasSpaceAfterAs());
-			assertTrue(resultVariable.hasResultVariable());
-			assertTrue(resultVariable.hasSelectExpression());
+
+			assertEquals(toString(),                    resultVariable.toParsedText());
+			assertEquals(hasAs,                         resultVariable.hasAs());
+			assertEquals(hasSpaceAfterAs,               resultVariable.hasSpaceAfterAs());
+			assertEquals(!this.resultVariable.isNull(), resultVariable.hasResultVariable());
+			assertEquals(!selectExpression.isNull(),    resultVariable.hasSelectExpression());
 
 			this.selectExpression.test(resultVariable.getSelectExpression());
 			this.resultVariable  .test(resultVariable.getResultVariable());
@@ -3465,12 +3490,20 @@ abstract class AbstractJPQLTest {
 
 		@Override
 		public String toString() {
+
 			StringBuilder sb = new StringBuilder();
 			sb.append(selectExpression);
-			sb.append(" ");
+
+			if (!selectExpression.isNull()) {
+				sb.append(" ");
+			}
 
 			if (hasAs) {
-				sb.append("AS ");
+				sb.append(AS);
+			}
+
+			if (hasSpaceAfterAs) {
+				sb.append(" ");
 			}
 
 			sb.append(resultVariable);
@@ -3479,8 +3512,8 @@ abstract class AbstractJPQLTest {
 	}
 
 	static final class SelectClauseTester extends AbstractSelectClauseTester {
-		SelectClauseTester(ExpressionTester selectExpressions,
-		                   boolean hasDistinct) {
+
+		SelectClauseTester(ExpressionTester selectExpressions, boolean hasDistinct) {
 			super(selectExpressions, hasDistinct);
 		}
 
@@ -3492,6 +3525,7 @@ abstract class AbstractJPQLTest {
 	}
 
 	static final class SelectStatementTester extends AbstractSelectStatementTester {
+
 		boolean hasSpaceBeforeOrderBy;
 		private ExpressionTester orderByClause;
 
@@ -3530,6 +3564,7 @@ abstract class AbstractJPQLTest {
 
 		@Override
 		public String toString() {
+
 			StringBuilder sb = new StringBuilder();
 			sb.append(super.toString());
 
@@ -3555,8 +3590,8 @@ abstract class AbstractJPQLTest {
 	}
 
 	static final class SimpleSelectClauseTester extends AbstractSelectClauseTester {
-		SimpleSelectClauseTester(ExpressionTester selectExpressions,
-		                         boolean hasDistinct) {
+
+		SimpleSelectClauseTester(ExpressionTester selectExpressions, boolean hasDistinct) {
 			super(selectExpressions, hasDistinct);
 		}
 
@@ -3585,6 +3620,7 @@ abstract class AbstractJPQLTest {
 	}
 
 	static final class SizeExpressionTester extends AbstractExpressionTester {
+
 		private ExpressionTester collectionValuedPathExpression;
 
 		SizeExpressionTester(ExpressionTester collectionValuedPathExpression) {
@@ -3788,6 +3824,7 @@ abstract class AbstractJPQLTest {
 
 		@Override
 		void toStringEncapsulatedExpression(StringBuilder sb) {
+
 			if (specification != Specification.DEFAULT) {
 				sb.append(specification);
 				sb.append(" ");

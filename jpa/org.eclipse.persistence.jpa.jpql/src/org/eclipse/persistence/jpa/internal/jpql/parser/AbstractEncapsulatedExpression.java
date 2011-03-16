@@ -130,13 +130,13 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
 		if (wordParser.startsWith(RIGHT_PARENTHESIS) ||
 		    word.equalsIgnoreCase(WHEN)              ||
 		    word.equalsIgnoreCase(SET)               ||
 		    word.equalsIgnoreCase(AS)                ||
-		    super.isParsingComplete(wordParser, word)) {
+		    super.isParsingComplete(wordParser, word, expression)) {
 
 			return true;
 		}

@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.spi;
 
-import java.util.Iterator;
-
 /**
  * The external representation of the provider of managed types.
  *
@@ -27,11 +25,11 @@ import java.util.Iterator;
 public interface IManagedTypeProvider extends IExternalForm {
 
 	/**
-	 * Returns the abstract schema names for each entity owned by this container.
+	 * Returns the collection of possible abstract schema types.
 	 *
-	 * @return The abstract schema names, which may differ from the entity class name
+	 * @return The {@link IEntity entities} defined in the persistence context
 	 */
-	Iterator<String> entityNames();
+	Iterable<IEntity> abstractSchemaTypes();
 
 	/**
 	 * Retrieves the entity for the given type.
@@ -77,5 +75,5 @@ public interface IManagedTypeProvider extends IExternalForm {
 	 *
 	 * @return The managed types owned by this provider
 	 */
-	Iterator<IManagedType> managedTypes();
+	Iterable<IManagedType> managedTypes();
 }

@@ -54,7 +54,15 @@ public final class AbsExpressionTest extends AbstractJPQLTest {
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(abs(path("e.age").add(numeric("100").substract(avg("e.age")))))
+			where(
+					abs(path("e.age")
+				.add(
+						numeric("100")
+					.substract(
+						avg("e.age"))
+					)
+				)
+			)
 		);
 
 		testQuery(query, selectStatement);

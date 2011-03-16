@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -129,7 +130,7 @@ public final class WordParserTest {
 		WordParser wordParser = new WordParser(query);
 
 		CharSequence word = wordParser.partialWord(0);
-		assertEquals(AbstractExpression.EMPTY_STRING, word);
+		assertEquals(ExpressionTools.EMPTY_STRING, word);
 	}
 
 	@Test
@@ -148,7 +149,7 @@ public final class WordParserTest {
 
 		int position = "SELECT ".length();
 		CharSequence word = wordParser.partialWord(position);
-		assertEquals(AbstractExpression.EMPTY_STRING, word);
+		assertEquals(ExpressionTools.EMPTY_STRING, word);
 	}
 
 	@Test
@@ -168,7 +169,7 @@ public final class WordParserTest {
 
 		int position = "SEL".length();
 		CharSequence word = wordParser.previousWord(position);
-		assertEquals(AbstractExpression.EMPTY_STRING, word);
+		assertEquals(ExpressionTools.EMPTY_STRING, word);
 	}
 
 	@Test

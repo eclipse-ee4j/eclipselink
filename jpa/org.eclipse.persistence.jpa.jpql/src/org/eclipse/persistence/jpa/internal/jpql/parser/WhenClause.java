@@ -230,12 +230,12 @@ public final class WhenClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 		return word.equalsIgnoreCase(WHEN) ||
 		       word.equalsIgnoreCase(THEN) ||
 		       word.equalsIgnoreCase(ELSE) ||
 		       word.equalsIgnoreCase(END)  ||
-		       super.isParsingComplete(wordParser, word);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**

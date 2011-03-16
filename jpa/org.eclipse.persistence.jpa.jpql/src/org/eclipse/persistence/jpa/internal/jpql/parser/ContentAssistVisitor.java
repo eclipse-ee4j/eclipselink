@@ -26,10 +26,16 @@ import org.eclipse.persistence.jpa.internal.jpql.VariableNameType;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractValidator.CollectionExpressionVisitor;
 import org.eclipse.persistence.jpa.internal.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.spi.IEmbeddable;
+import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeVisitor;
+import org.eclipse.persistence.jpa.jpql.spi.IMappedSuperclass;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 
 import static org.eclipse.persistence.jpa.internal.jpql.parser.AbstractExpression.*;
+import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
 
 /**
  * This visitor traverses the JPQL parsed tree and gather the possible choices at a given position.
@@ -80,6 +86,11 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	private DoubleEncapsulatedCollectionHelper doubleEncapsulatedCollectionHelper;
 
 	/**
+	 * 
+	 */
+	private EntityVisitor entityVisitor;
+
+	/**
 	 *
 	 */
 	private CollectionExpressionHelper<AbstractFromClause> fromClauseCollectionHelper;
@@ -104,6 +115,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	 */
 	private DefaultContentAssistItems items;
 
+	/**
+	 * 
+	 */
 	private JoinCollectionHelper joinCollectionHelper;
 
 	/**
@@ -112,6 +126,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	 */
 	private Stack<Expression> lockedExpressions;
 
+	/**
+	 * 
+	 */
 	private OrderByClauseCollectionHelper orderByClauseCollectionHelper;
 
 	/**
@@ -141,6 +158,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	 */
 	private SelectClauseCompletenessVisitor selectClauseCompletenessVisitor;
 
+	/**
+	 * 
+	 */
 	private TripleEncapsulatedCollectionHelper tripleEncapsulatedCollectionHelper;
 
 	/**
@@ -198,15 +218,25 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		initialize(query, jpqlExpression, queryContext, items, queryPosition);
 	}
 
+	private IEntity abstractSchemaType(IManagedType managedType) {
+		EntityVisitor visitor = entityVisitor();
+		try {
+			managedType.accept(visitor);
+			return visitor.entity;
+		}
+		finally {
+			visitor.entity = null;
+		}
+	}
+
 	/**
-	 * Adds the abstract schema names as possible content assist items but will be filtered using
+	 * Adds the abstract schema types as possible content assist items but will be filtered using
 	 * the current word.
 	 */
-	private void addAbstractSchemaNames() {
-		for (Iterator<String> iter = query.getProvider().entityNames(); iter.hasNext(); ) {
-			String abstractSchemaName = iter.next();
-			if (isValidChoice(abstractSchemaName, word)) {
-				items.addAbstractSchemaName(abstractSchemaName);
+	private void addAbstractSchemaTypes() {
+		for (IEntity abstractSchemaType : query.getProvider().abstractSchemaTypes()) {
+			if (isValidChoice(abstractSchemaType.getName(), word)) {
+				items.addAbstractSchemaType(abstractSchemaType);
 			}
 		}
 	}
@@ -272,16 +302,22 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 			return;
 		}
 
-		// Locate the declaration expressions
-		DeclarationExpressionLocator locator = new DeclarationExpressionLocator();
-		expression.accept(locator);
-
 		IdentificationVariableFinder visitor = new IdentificationVariableFinder(type, expression);
 
-		// First retrieve visit the expression and gather the identification variables
-		for (Expression declaration : locator.declarationExpresions()) {
-			declaration.accept(visitor);
-			visitor.complete = false;
+		if (type == IdentificationVariableType.RESULT_VARIABLE) {
+			expression.getRoot().accept(visitor);
+		}
+		else {
+
+			// Locate the declaration expressions
+			DeclarationExpressionLocator locator = new DeclarationExpressionLocator();
+			expression.accept(locator);
+
+			// First retrieve visit the expression and gather the identification variables
+			for (Expression declaration : locator.declarationExpresions()) {
+				declaration.accept(visitor);
+				visitor.complete = false;
+			}
 		}
 
 		for (String identificationVariable : visitor.identificationVariables) {
@@ -295,7 +331,13 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				String abstractSchemaName = visitor.rangeIdentificationVariables.get(identificationVariable);
 
 				if (abstractSchemaName != null) {
-					items.addRangeIdentificationVariable(identificationVariable, abstractSchemaName);
+					IManagedType managedType = query.getProvider().getManagedType(abstractSchemaName);
+					if (managedType != null) {
+						IEntity abstractSchemaType = abstractSchemaType(managedType);
+						if (abstractSchemaType != null) {
+							items.addRangeIdentificationVariable(identificationVariable, abstractSchemaType);
+						}
+					}
 				}
 			}
 		}
@@ -379,9 +421,13 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
+	private void addResultVariables(Expression expression) {
+		addIdentificationVariables(IdentificationVariableType.RESULT_VARIABLE, expression);
+	}
+
 	private void addScalarExpressionChoices(Expression expression) {
 		addAllIdentificationVariables(expression);
-		addAbstractSchemaNames();
+		addAbstractSchemaTypes();
 		addAllPossibleFunctions(ScalarExpressionBNF.ID);
 	}
 
@@ -533,6 +579,13 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 			doubleEncapsulatedCollectionHelper = new DoubleEncapsulatedCollectionHelper();
 		}
 		return doubleEncapsulatedCollectionHelper;
+	}
+
+	private EntityVisitor entityVisitor() {
+		if (entityVisitor == null) {
+			entityVisitor = new EntityVisitor();
+		}
+		return entityVisitor;
 	}
 
 	private int findExpressionPosition(CollectionExpression expression) {
@@ -851,7 +904,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		corrections.pop();
 
 		// Add the possible abstract schema names
-		addAbstractSchemaNames();
+		addAbstractSchemaTypes();
 	}
 
 	/**
@@ -1349,7 +1402,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		corrections.pop();
 
 		// Add the possible abstract schema names
-		addAbstractSchemaNames();
+		addAbstractSchemaTypes();
 	}
 
 	/**
@@ -1439,7 +1492,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				addJoinIdentifiers();
 			}
 			else {
-				visitCollectionExpression(expression, EMPTY_STRING, joinCollectionHelper());
+				visitCollectionExpression(expression, ExpressionTools.EMPTY_STRING, joinCollectionHelper());
 			}
 		}
 	}
@@ -2084,7 +2137,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					// the possible abstract schema names
 					if (!expression.hasEntityType()) {
 						// TODO: Filter to only have the valid abstract schema names
-						addAbstractSchemaNames();
+						addAbstractSchemaTypes();
 					}
 				}
 			}
@@ -2098,7 +2151,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				// Right after "AS "
 				if (position == length) {
 					// TODO: Filter to only have the valid abstract schema names
-					addAbstractSchemaNames();
+					addAbstractSchemaTypes();
 				}
 			}
 		}
@@ -2228,7 +2281,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// Right after "UPDATE "
 			if (position == length) {
-				addAbstractSchemaNames();
+				addAbstractSchemaTypes();
 			}
 			// After "<range variable declaration> "
 			else if (expression.hasRangeVariableDeclaration()) {
@@ -2288,7 +2341,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 							}
 							// Within the new value expressions
 							else {
-								visitCollectionExpression(expression, EMPTY_STRING, updateItemCollectionHelper());
+								visitCollectionExpression(expression, ExpressionTools.EMPTY_STRING, updateItemCollectionHelper());
 							}
 						}
 					}
@@ -3688,7 +3741,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		 * {@inheritDoc}
 		 */
 		public void addChoices(DeleteClause expression) {
-			addAbstractSchemaNames();
+			addAbstractSchemaTypes();
 		}
 
 		/**
@@ -3758,6 +3811,21 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
+	private class EntityVisitor implements IManagedTypeVisitor {
+	
+		private IEntity entity;
+
+		public void visit(IEmbeddable embeddable) {
+		}
+
+		public void visit(IEntity entity) {
+			this.entity = entity;
+		}
+
+		public void visit(IMappedSuperclass mappedSuperclass) {
+		}
+	}
+
 	private class FromClauseCollectionHelper implements CollectionExpressionHelper<AbstractFromClause> {
 
 		/**
@@ -3771,7 +3839,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		 * {@inheritDoc}
 		 */
 		public void addChoices(AbstractFromClause expression, int index) {
-			addAbstractSchemaNames();
+			addAbstractSchemaTypes();
 			if (index > 0) {
 				addPossibleChoice(IN);
 			}
@@ -3831,7 +3899,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		 */
 		public void addChoices(AbstractFromClause expression) {
 
-			addAbstractSchemaNames();
+			addAbstractSchemaTypes();
 
 			// With the correction, check to see if the possible identifiers (IN)
 			// can be added and only if it's not the first item in the list
@@ -3930,6 +3998,14 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 	private class IdentificationVariableFinder extends AbstractTraverseChildrenVisitor {
 
+		/**
+		 *
+		 */
+		private boolean collectResultVariable;
+
+		/**
+		 *
+		 */
 		boolean complete;
 
 		/**
@@ -3937,7 +4013,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		 * the type is {@link IdentificationVariableType#LEFT} or {@link IdentificationVariableType#
 		 * LEFT_RANGE}.
 		 */
-		private Expression expression;
+		private final Expression expression;
 
 		/**
 		 * The identification variable names defined in the declaration expression.
@@ -4037,6 +4113,19 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		 * {@inheritDoc}
 		 */
 		@Override
+		public void visit(IdentificationVariable expression) {
+			if (collectResultVariable) {
+				String variable = expression.getText();
+				if (ExpressionTools.stringIsNotEmpty(variable)) {
+					identificationVariables.add(variable);
+				}
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		public void visit(IdentificationVariableDeclaration expression) {
 
 			if (this.expression != expression) {
@@ -4072,6 +4161,14 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		 * {@inheritDoc}
 		 */
 		@Override
+		public void visit(JPQLExpression expression) {
+			expression.getQueryStatement().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		public void visit(RangeVariableDeclaration expression) {
 
 			if (type == IdentificationVariableType.ALL ||
@@ -4101,8 +4198,25 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		 * {@inheritDoc}
 		 */
 		@Override
+		public void visit(ResultVariable expression) {
+			if (expression.hasResultVariable()) {
+				collectResultVariable = true;
+				expression.getResultVariable().accept(this);
+				collectResultVariable = true;
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		public void visit(SelectStatement expression) {
-			expression.getFromClause().accept(this);
+			if (type == IdentificationVariableType.RESULT_VARIABLE) {
+				expression.getSelectClause().accept(this);
+			}
+			else {
+				expression.getFromClause().accept(this);
+			}
 		}
 
 		/**
@@ -4142,11 +4256,42 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	 * The various ways of retrieving identification variables from the declaration expression.
 	 */
 	private enum IdentificationVariableType {
+
+		/**
+		 * Retrieves all the identification variables declared in the declaration portion of the
+		 * expression, which is either in the <b>FROM</b> clause of a <b>SELECT</b> query or
+		 * <b>DELETE</b> query or in the <b>UPDATE</b> query.
+		 */
 		ALL,
+
+		/**
+		 * Only retrieves the identification variables that map a path expression defined in a
+		 * <b>JOIN</b> expression or in a <b>IN</b> expression.
+		 */
 		COLLECTION,
+
+		/**
+		 * Only retrieves the identification variables that have been declared to the left of the
+		 * expression requested them, both range and collection type variables are collected.
+		 */
 		LEFT,
+
+		/**
+		 * Only retrieves the identification variables that map a path expression defined in a
+		 * <b>JOIN</b> expression or in a <b>IN</b> expression but that have been declared to the
+		 * left of the expression requested them.
+		 */
 		LEFT_COLLECTION,
-		NONE
+
+		/**
+		 * Simply indicate the identification variables should not be collected.
+		 */
+		NONE,
+
+		/**
+		 * Retrieves the result variables that have been defined in the <b>SELECT</b> clause.
+		 */
+		RESULT_VARIABLE
 	}
 
 	private class JoinCollectionHelper implements CollectionExpressionHelper<IdentificationVariableDeclaration> {
@@ -4221,6 +4366,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		 */
 		public void addChoices(OrderByClause expression, int index) {
 			addAllIdentificationVariables(expression);
+			addResultVariables(expression);
 		}
 
 		/**

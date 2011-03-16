@@ -42,9 +42,9 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
  */
 final class JavaMapping implements IMapping {
 
-	private Field field;
+	private final Field field;
 	private IMappingType mappingType;
-	private IManagedType parent;
+	private final IManagedType parent;
 	private IType type;
 	private ITypeDeclaration typeDeclaration;
 
@@ -67,6 +67,13 @@ final class JavaMapping implements IMapping {
 			field.getGenericType(),
 			field.getType().isArray()
 		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int compareTo(IMapping mapping) {
+		return getName().compareTo(mapping.getName());
 	}
 
 	/**

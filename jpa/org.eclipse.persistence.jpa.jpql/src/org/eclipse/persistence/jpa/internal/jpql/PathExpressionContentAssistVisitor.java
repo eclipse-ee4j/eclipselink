@@ -16,9 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractTraverseParentVisitor;
@@ -34,6 +32,7 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.StateFieldPathExpression
 import org.eclipse.persistence.jpa.internal.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.internal.jpql.util.AndFilter;
 import org.eclipse.persistence.jpa.internal.jpql.util.Filter;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
@@ -61,17 +60,17 @@ final class PathExpressionContentAssistVisitor extends AbstractTraverseParentVis
 	/**
 	 * The root of the {@link TypeResolver} hierarchy.
 	 */
-	private DefaultTypeResolver parent;
+	private final DefaultTypeResolver parent;
 
 	/**
 	 * The external form representing the JPA query.
 	 */
-	private IQuery query;
+	private final IQuery query;
 
 	/**
 	 * Contains the position of the cursor within the parsed {@link Expression}.
 	 */
-	private QueryPosition queryPosition;
+	private final QueryPosition queryPosition;
 
 	/**
 	 * Creates a new <code>PathExpressionContentAssistVisitor</code>.
@@ -96,7 +95,7 @@ final class PathExpressionContentAssistVisitor extends AbstractTraverseParentVis
 			expression,
 			resolver,
 			filter,
-			AbstractExpression.EMPTY_STRING
+			ExpressionTools.EMPTY_STRING
 		);
 	}
 
@@ -167,9 +166,7 @@ final class PathExpressionContentAssistVisitor extends AbstractTraverseParentVis
 	 * category
 	 */
 	public void buildItems(DefaultContentAssistItems items) {
-		for (IMapping mapping : choiceBuilder.choices()) {
-			items.addProperty(mapping.getName(), mapping.getMappingType());
-		}
+		items.addMappings(choiceBuilder.choices());
 	}
 
 	private PathExpressionHelper buildPropertyPathHelper() {
@@ -236,7 +233,7 @@ final class PathExpressionContentAssistVisitor extends AbstractTraverseParentVis
 			// We're at the position, create the ChoiceBuilder
 			if (cursor + path.length() >= position) {
 				if (cursor == position) {
-					path = AbstractExpression.EMPTY_STRING;
+					path = ExpressionTools.EMPTY_STRING;
 				}
 				else if (position - cursor > -1) {
 					path = path.substring(0, position - cursor);
@@ -434,7 +431,7 @@ final class PathExpressionContentAssistVisitor extends AbstractTraverseParentVis
 		/**
 		 * The type used to determine if the mapping's type is a valid type.
 		 */
-		private IType type;
+		private final IType type;
 
 		/**
 		 * Creates a new <code>MappingTypeFilter</code>.
@@ -470,17 +467,17 @@ final class PathExpressionContentAssistVisitor extends AbstractTraverseParentVis
 		 * The filter used to filter out either the collection type properties or the non-collection
 		 * type properties.
 		 */
-		private Filter<IMapping> filter;
+		private final Filter<IMapping> filter;
 
 		/**
 		 * The suffix is used to determine if the property name needs to be filtered out or not.
 		 */
-		private String suffix;
+		private final String suffix;
 
 		/**
 		 * This resolver is used to retrieve the managed type, which is the parent path of this one.
 		 */
-		private TypeResolver typeResolver;
+		private final TypeResolver typeResolver;
 
 		/**
 		 * Creates a new <code>PathChoiceBuilder</code>.
@@ -503,9 +500,7 @@ final class PathExpressionContentAssistVisitor extends AbstractTraverseParentVis
 
 			Filter<IMapping> filter = buildAggregateFilter(suffix);
 
-			for (Iterator<IMapping> iter = managedType.mappings(); iter.hasNext(); ) {
-				IMapping mapping = iter.next();
-
+			for (IMapping mapping : managedType.mappings()) {
 				if (filter.accept(mapping)) {
 					mappings.add(mapping);
 				}

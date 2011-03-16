@@ -314,8 +314,8 @@ public final class LikeExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
-		return super.isParsingComplete(wordParser, word) ||
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+		return super.isParsingComplete(wordParser, word, expression) ||
 		       word.equalsIgnoreCase(AND) ||
 		       word.equalsIgnoreCase(OR);
 	}

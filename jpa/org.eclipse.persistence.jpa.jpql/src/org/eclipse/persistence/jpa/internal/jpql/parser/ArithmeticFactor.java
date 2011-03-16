@@ -138,11 +138,11 @@ public final class ArithmeticFactor extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 		char character = wordParser.character();
 
 		return wordParser.isArithmeticSymbol(character) ||
-		       super.isParsingComplete(wordParser, word);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**

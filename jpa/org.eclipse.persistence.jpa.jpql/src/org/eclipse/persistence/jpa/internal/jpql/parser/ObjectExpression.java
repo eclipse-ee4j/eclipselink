@@ -14,9 +14,9 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 /**
- * Stand-alone identification variables in the <b>SELECT</b> clause may
- * optionally be qualified by the <b>OBJECT</b> operator. The <b>SELECT</b>
- * clause must not use the <b>OBJECT</b> operator to qualify path expressions.
+ * Stand-alone identification variables in the <b>SELECT</b> clause may optionally be qualified by
+ * the <b>OBJECT</b> operator. The <b>SELECT</b> clause must not use the <b>OBJECT</b> operator to
+ * qualify path expressions.
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= OBJECT(identification_variable)</code><p>
  *
@@ -62,16 +62,13 @@ public final class ObjectExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	AbstractExpression parse(WordParser wordParser,
-	                         JPQLQueryBNF queryBNF,
-	                         boolean tolerant) {
+	AbstractExpression parse(WordParser wordParser, JPQLQueryBNF queryBNF, boolean tolerant) {
+
 		if (tolerant) {
 			return super.parse(wordParser, queryBNF, tolerant);
 		}
 
-		String word = wordParser.word();
-
-		IdentificationVariable expression = new IdentificationVariable(this, word);
+		IdentificationVariable expression = new IdentificationVariable(this, wordParser.word());
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}

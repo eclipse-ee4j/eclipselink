@@ -13,8 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import org.eclipse.persistence.jpa.jpql.example.Address;
 import org.eclipse.persistence.jpa.jpql.example.Alias;
@@ -27,9 +29,13 @@ import org.eclipse.persistence.jpa.jpql.example.Order;
 import org.eclipse.persistence.jpa.jpql.example.Phone;
 import org.eclipse.persistence.jpa.jpql.example.Product;
 import org.eclipse.persistence.jpa.jpql.example.Project;
+import org.eclipse.persistence.jpa.jpql.spi.IEmbeddable;
+import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeVisitor;
+import org.eclipse.persistence.jpa.jpql.spi.IMappedSuperclass;
 import org.eclipse.persistence.jpa.jpql.spi.IPlatform;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 
@@ -44,8 +50,24 @@ import org.eclipse.persistence.jpa.jpql.spi.IType;
 @SuppressWarnings("nls")
 final class JavaManagedTypeProvider implements IManagedTypeProvider {
 
+	/**
+	 * The filtered collection of managed types that are the abstract schema types.
+	 */
+	private Collection<IEntity> abstractSchemaTypes;
+
+	/**
+	 * The cached {@link IManagedType managed types}.
+	 */
 	private Map<String, IManagedType> managedTypes;
+
+	/**
+	 * The external form of a type repository.
+	 */
 	private JavaTypeRepository typeRepository;
+
+	/**
+	 * The version of the Java Persistence this entity for which it was defined.
+	 */
 	private final IJPAVersion version;
 
 	/**
@@ -58,16 +80,23 @@ final class JavaManagedTypeProvider implements IManagedTypeProvider {
 		this.version = version;
 	}
 
-	private IManagedType buildEntity(Class<?> type) {
-		return new JavaEntity(this, getTypeRepository().getType(type));
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
-	public Iterator<String> entityNames() {
-		initializeManagedTypes();
-		return managedTypes.keySet().iterator();
+	public Iterable<IEntity> abstractSchemaTypes() {
+		if (abstractSchemaTypes == null) {
+			initializeManagedTypes();
+			EntityCollector visitor = new EntityCollector();
+			for (IManagedType managedType : managedTypes.values()) {
+				managedType.accept(visitor);
+			}
+			abstractSchemaTypes = visitor.entities;
+		}
+		return Collections.unmodifiableCollection(abstractSchemaTypes);
+	}
+
+	private IManagedType buildEntity(Class<?> type) {
+		return new JavaEntity(this, getTypeRepository().getType(type));
 	}
 
 	/**
@@ -138,8 +167,43 @@ final class JavaManagedTypeProvider implements IManagedTypeProvider {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Iterator<IManagedType> managedTypes() {
+	public Iterable<IManagedType> managedTypes() {
 		initializeManagedTypes();
-		return managedTypes.values().iterator();
+		return Collections.unmodifiableCollection(managedTypes.values());
+	}
+
+	private static class EntityCollector implements IManagedTypeVisitor {
+
+		/**
+		 * The collection of {@link IEntity entities} that got visited.
+		 */
+		private final Collection<IEntity> entities;
+
+		/**
+		 * Creates a new <code>EntityCollector</code>.
+		 */
+		EntityCollector() {
+			super();
+			entities = new ArrayList<IEntity>();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(IEmbeddable embeddable) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(IEntity entity) {
+			entities.add(entity);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(IMappedSuperclass mappedSuperclass) {
+		}
 	}
 }

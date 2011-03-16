@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+
 /**
  * This expression wraps a sub-expression within parenthesis.
  * <p>
@@ -87,6 +89,6 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 	 */
 	@Override
 	String parseIdentifier(WordParser wordParser) {
-		return EMPTY_STRING;
+		return ExpressionTools.EMPTY_STRING;
 	}
 }

@@ -24,6 +24,13 @@ package org.eclipse.persistence.jpa.jpql.spi;
 public interface IEntity extends IManagedType {
 
 	/**
+	 * Returns the name of this entity.
+	 *
+	 * @return The non-default name or the short class name of this entity
+	 */
+	String getName();
+
+	/**
 	 * Returns the external form of the given named query;
 	 *
 	 * @param queryName The name of the JPQL query to retrieve

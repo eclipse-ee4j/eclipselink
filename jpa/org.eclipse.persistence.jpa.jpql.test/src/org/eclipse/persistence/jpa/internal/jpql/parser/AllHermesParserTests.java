@@ -62,6 +62,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	OrderByClauseTest.class,
 	OrderByItemTest.class,
 	RangeVariableDeclarationTest.class,
+	ResultVariableTest.class,
 	SelectClauseTest.class,
 	SelectStatementTest.class,
 	SimpleSelectStatementTest.class,

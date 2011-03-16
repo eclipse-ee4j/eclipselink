@@ -44,17 +44,13 @@ public final class ValueExpression extends EncapsulatedIdentificationVariableExp
 	 * {@inheritDoc}
 	 */
 	@Override
-	AbstractExpression parse(WordParser wordParser,
-	                         JPQLQueryBNF queryBNF,
-	                         boolean tolerant) {
+	AbstractExpression parse(WordParser wordParser, JPQLQueryBNF queryBNF, boolean tolerant) {
 
 		if (tolerant) {
 			return super.parse(wordParser, queryBNF, tolerant);
 		}
 
-		String word = wordParser.word();
-
-		IdentificationVariable expression = new IdentificationVariable(this, word);
+		IdentificationVariable expression = new IdentificationVariable(this, wordParser.word());
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}

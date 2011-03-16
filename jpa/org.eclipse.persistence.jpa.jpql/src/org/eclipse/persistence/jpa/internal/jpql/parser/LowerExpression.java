@@ -60,20 +60,6 @@ public final class LowerExpression extends AbstractSingleEncapsulatedExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	AbstractExpression parse(WordParser wordParser,
-	                         JPQLQueryBNF queryBNF,
-	                         boolean tolerant) {
-		if (tolerant) {
-			return super.parse(wordParser, queryBNF, tolerant);
-		}
-
-		return parseWithoutCollection(wordParser, queryBNF, tolerant);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	String parseIdentifier(WordParser wordParser) {
 		return LOWER;
 	}

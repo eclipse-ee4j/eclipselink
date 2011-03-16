@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.internal.jpql;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +26,8 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.WordParser;
 import org.eclipse.persistence.jpa.jpql.ContentAssistItems;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.ResultQuery;
-import org.eclipse.persistence.jpa.jpql.spi.IMappingType;
+import org.eclipse.persistence.jpa.jpql.spi.IEntity;
+import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 
 import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
 
@@ -40,9 +42,9 @@ import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
 public final class DefaultContentAssistItems implements ContentAssistItems {
 
 	/**
-	 * The set of possible abstract schema names, which are the entity names.
+	 * The set of possible abstract schema types.
 	 */
-	private Set<String> abstractSchemaNames;
+	private Set<IEntity> abstractSchemaTypes;
 
 	/**
 	 * The set of possible identification variables.
@@ -55,14 +57,15 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	private Set<String> identifiers;
 
 	/**
-	 * The set of possible properties, which are either state fields or collection valued fields.
+	 * The set of possible {@link IMapping mappings}, which can be state fields, association fields
+	 * and/or collection fields.
 	 */
-	private Map<String, IMappingType> properties;
+	private Set<IMapping> mappings;
 
 	/**
-	 * The identification variables mapped to their abstract schema names.
+	 * The identification variables mapped to their abstract schema types.
 	 */
-	private Map<String, String> rangeIdentificationVariables;
+	private Map<String, IEntity> rangeIdentificationVariables;
 
 	/**
 	 * An JPQL identifier that is mapped to its longest counterpart.
@@ -135,17 +138,17 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Iterator<String> abstractSchemaNames() {
-		return new ArrayList<String>(abstractSchemaNames).iterator();
+	public Iterable<IEntity> abstractSchemaTypes() {
+		return Collections.unmodifiableSet(abstractSchemaTypes);
 	}
 
 	/**
-	 * Adds the given abstract schema name as a choice.
+	 * Adds the given {@link IEntity} as a possible abstract schema type.
 	 *
-	 * @param abstractSchemaName The abstract schema name that is a valid choice
+	 * @param abstractSchemaType The abstract schema type that is a valid choice
 	 */
-	public void addAbstractSchemaName(String abstractSchemaName) {
-		abstractSchemaNames.add(abstractSchemaName);
+	public void addAbstractSchemaType(IEntity abstractSchemaType) {
+		abstractSchemaTypes.add(abstractSchemaType);
 	}
 
 	/**
@@ -167,26 +170,51 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	}
 
 	/**
-	 * Adds the given property (state field, association field or collection field) as a choice.
+	 * Adds the given {@link IMapping mapping} (state field, association field or collection field)
+	 * as a valid choice.
 	 *
-	 * @param property The name of the state field, association field or collection field, which does
-	 * not include the full path
-	 * @param mappingType The type of the mapping it represents
+	 * @param mapping The {@link IMapping} of the state field, association field or collection field
 	 */
-	public void addProperty(String property, IMappingType mappingType) {
-		properties.put(property, mappingType);
+	public void addMapping(IMapping mapping) {
+		mappings.add(mapping);
 	}
 
 	/**
-	 * Adds the given range identification variable that is mapping the given abstract schema name.
+	 * Adds the given {@link IMapping mappings} (state fields, association fields or collection fields)
+	 * as valid choices.
+	 *
+	 * @param mappings The {@link IMapping mappings} of the state fields, association fields or
+	 * collection fields
+	 */
+	public void addMappings(Collection<IMapping> mappings) {
+		this.mappings.addAll(mappings);
+	}
+
+	/**
+	 * Adds the given range identification variable that is mapping the given abstract schema type.
 	 *
 	 * @param identificationVariable The range identification variable mapping the abstract schema name
-	 * @param abstractSchemaName The abstract schema name that identifies the type of the variable
+	 * @param abstractSchemaType The abstract type name that identifies the type of the variable
 	 */
 	public void addRangeIdentificationVariable(String identificationVariable,
-	                                           String abstractSchemaName) {
+	                                           IEntity abstractSchemaType) {
 
-		rangeIdentificationVariables.put(identificationVariable, abstractSchemaName);
+		rangeIdentificationVariables.put(identificationVariable, abstractSchemaType);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Result buildEscapedQuery(String jpqlQuery, String choice, int position, boolean insert) {
+
+		Result result = buildQuery(jpqlQuery, choice, position, insert);
+
+		// Escape the JPQL query and adjust the position accordingly
+		int[] positions = { result.position };
+		result.jpqlQuery = ExpressionTools.escape(result.jpqlQuery, positions);
+		result.position  = positions[0];
+
+		return result;
 	}
 
 	/**
@@ -262,7 +290,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 				startPosition = wordParser.position() - partialWord.length() + dotIndex + 1;
 			}
 			else {
-				wordsToReplace = partialWord;
+				wordsToReplace = wordParser.potentialWord();
 				startPosition = wordParser.position() - partialWord.length();
 			}
 		}
@@ -305,7 +333,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	/**
 	 * {@inheritDoc}
 	 */
-	public ResultQuery buildQuery(String jpqlQuery, String choice, int position, boolean insert) {
+	public Result buildQuery(String jpqlQuery, String choice, int position, boolean insert) {
 
 		// Nothing to replace
 		if (ExpressionTools.stringIsEmpty(choice)) {
@@ -322,54 +350,47 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 		StringBuilder sb = new StringBuilder(jpqlQuery);
 		sb.replace(positions[0], positions[1], choice);
 
-		// Now return the result
+		// Return the result
 		return new Result(sb.toString(), positions[0] + choice.length());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getAbstractSchemaName(String identificationVariable) {
+	public IEntity getAbstractSchemaType(String identificationVariable) {
 		return rangeIdentificationVariables.get(identificationVariable);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IMappingType getMappingType(String propertyName) {
-		return properties.get(propertyName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public boolean hasItems() {
-		return !properties.isEmpty()          ||
+		return !mappings.isEmpty()            ||
 		       !identifiers.isEmpty()         ||
-		       !abstractSchemaNames.isEmpty() ||
+		       !abstractSchemaTypes.isEmpty() ||
 		       !identificationVariables.isEmpty();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public Iterator<String> identificationVariables() {
-		return new ArrayList<String>(identificationVariables).iterator();
+	public Iterable<String> identificationVariables() {
+		return Collections.unmodifiableSet(identificationVariables);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public Iterator<String> identifiers() {
-		return new ArrayList<String>(identifiers).iterator();
+	public Iterable<String> identifiers() {
+		return Collections.unmodifiableSet(identifiers);
 	}
 
 	private void initialize() {
+		mappings                     = new HashSet<IMapping>();
 		identifiers                  = new HashSet<String>();
-		abstractSchemaNames          = new HashSet<String>();
+		abstractSchemaTypes          = new HashSet<IEntity>();
 		identificationVariables      = new HashSet<String>();
-		rangeIdentificationVariables = new HashMap<String, String>();
-		properties                   = new HashMap<String, IMappingType>();
+		rangeIdentificationVariables = new HashMap<String, IEntity>();
 	}
 
 	private String longuestIdentifier(String choice) {
@@ -379,16 +400,47 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Iterator<String> properties() {
-		return new ArrayList<String>(properties.keySet()).iterator();
+	public Iterable<IMapping> mappings() {
+		return Collections.unmodifiableSet(mappings);
 	}
 
-	public boolean remove(String identifier) {
-		return identifiers.remove(identifier)             ||
-		       abstractSchemaNames.remove(identifier)     ||
-		       identificationVariables.remove(identifier) ||
-		       properties.remove(identifier) != null      ||
-		       rangeIdentificationVariables.remove(identifier) != null;
+	/**
+	 * This is only used by the unit-tests, it removes the given choice from one of the collection
+	 * of possible choices.
+	 *
+	 * @param choice The choice to remove
+	 * @return <code>true</code> the given choice was removed from one of the collections;
+	 * <code>false</code> if it could not be found, thus not removed
+	 */
+	public boolean remove(String choice) {
+
+		boolean removed = identifiers.remove(choice)             ||
+		                  identificationVariables.remove(choice) ||
+		                  rangeIdentificationVariables.remove(choice) != null;
+
+		if (!removed) {
+			for (Iterator<IMapping> iter = mappings.iterator(); iter.hasNext(); ) {
+				IMapping mapping = iter.next();
+				if (mapping.getName().equals(choice)) {
+					iter.remove();
+					removed = true;
+					break;
+				}
+			}
+		}
+
+		if (!removed) {
+			for (Iterator<IEntity> iter = abstractSchemaTypes.iterator(); iter.hasNext(); ) {
+				IEntity entity = iter.next();
+				if (entity.getName().equals(choice)) {
+					iter.remove();
+					removed = true;
+					break;
+				}
+			}
+		}
+
+		return removed;
 	}
 
 	private int startPositionImp(WordParser wordParser, String choice) {
@@ -419,12 +471,12 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 			sb.append(identifiers);
 		}
 
-		if (!abstractSchemaNames.isEmpty()) {
+		if (!abstractSchemaTypes.isEmpty()) {
 			if (sb.length() > 0) {
 				sb.append(", ");
 			}
 
-			sb.append(abstractSchemaNames);
+			sb.append(abstractSchemaTypes);
 		}
 
 		if (!identificationVariables.isEmpty()) {
@@ -435,12 +487,12 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 			sb.append(identificationVariables);
 		}
 
-		if (!properties.isEmpty()) {
+		if (!mappings.isEmpty()) {
 			if (sb.length() > 0) {
 				sb.append(", ");
 			}
 
-			sb.append(properties);
+			sb.append(mappings);
 		}
 
 		if (sb.length() == 0) {
@@ -453,6 +505,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	/**
 	 * This contains the result of inserting a choice into a JPQL query at a given position.
 	 *
+	 * @see ContentAssistItems#buildEscapedQuery(String, String, int, boolean)
 	 * @see ContentAssistItems#buildQuery(String, String, int, boolean)
 	 */
 	private final class Result implements ResultQuery {
@@ -460,12 +513,12 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 		/**
 		 * The new JPQL query after insertion of the choice.
 		 */
-		private final String jpqlQuery;
+		private String jpqlQuery;
 
 		/**
 		 * The position of the cursor within the new query.
 		 */
-		private final int position;
+		private int position;
 
 		/**
 		 * Creates a new <code>Result</code>.

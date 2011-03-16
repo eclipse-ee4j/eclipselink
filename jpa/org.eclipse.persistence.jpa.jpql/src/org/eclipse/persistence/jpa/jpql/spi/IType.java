@@ -14,7 +14,6 @@
 package org.eclipse.persistence.jpa.jpql.spi;
 
 import java.lang.annotation.Annotation;
-import java.util.Iterator;
 
 /**
  * The external representation of a Java type.
@@ -38,7 +37,7 @@ public interface IType extends IExternalForm {
 	 *
 	 * @return The declared constructors
 	 */
-	Iterator<IConstructor> constructors();
+	Iterable<IConstructor> constructors();
 
 	/**
 	 * Determines whether the given type represents the same Java type thank this

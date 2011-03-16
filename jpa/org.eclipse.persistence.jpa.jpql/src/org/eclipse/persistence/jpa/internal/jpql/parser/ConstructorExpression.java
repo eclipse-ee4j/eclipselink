@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 /**
  * In the <b>SELECT</b> clause a constructor may be used in the <b>SELECT</b> list to return one or
@@ -223,9 +224,9 @@ public final class ConstructorExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 		return wordParser.character() == RIGHT_PARENTHESIS ||
-		       super.isParsingComplete(wordParser, word);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**
@@ -243,7 +244,7 @@ public final class ConstructorExpression extends AbstractExpression {
 		String className = wordParser.word();
 
 		if (tolerant && isIdentifier(className)) {
-			this.className        = EMPTY_STRING;
+			this.className        = ExpressionTools.EMPTY_STRING;
 			this.constructorItems = buildNullExpression();
 			return;
 		}

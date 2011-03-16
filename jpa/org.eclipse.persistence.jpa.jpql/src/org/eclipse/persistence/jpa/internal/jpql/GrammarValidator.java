@@ -36,7 +36,7 @@ import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
 public final class GrammarValidator extends AbstractValidator {
 
 	/**
-	 * The {@link Pattern} that validates a numeric literal using {@link #REGULAR_EXPRESSION_NUMERIC_LITERAL}.
+	 * The compiled regular expression that validates numeric literals using {@link #REGULAR_EXPRESSION_NUMERIC_LITERAL}.
 	 */
 	private static Pattern numericalLiteralPattern;
 
@@ -58,7 +58,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 * </pre>
 	 */
 	private static final String REGULAR_EXPRESSION_NUMERIC_LITERAL =
-		"^[-+]?[0-9]*((\\.[0-9]+([fFdD]|([eE][-+]?[0-9]+))?)|([lL]|([eE][-+]?[0-9]+)))?$";
+		"^[-+]?[0-9]*((\\.[0-9]+([fFdD]|([eE][-+]?[0-9]+))?)|([fFdDlL]|([eE][-+]?[0-9]+)))?$";
 
 	/**
 	 * Creates a new <code>GrammarValidator</code>.
@@ -4686,10 +4686,10 @@ public final class GrammarValidator extends AbstractValidator {
 			super(endsWithCommadProblemKey, missingCommaProblemKey, false);
 		}
 
-		@Override
 		/**
 		 * {@inheritDoc}
 		 */
+		@Override
 		boolean validateSeparator(CollectionExpression expression, int index) {
 			return expression.hasComma(index);
 		}
@@ -4724,10 +4724,10 @@ public final class GrammarValidator extends AbstractValidator {
 			super(endsWithCommadProblemKey, hasCommaProblemKey, false);
 		}
 
-		@Override
 		/**
 		 * {@inheritDoc}
 		 */
+		@Override
 		boolean validateSeparator(CollectionExpression expression, int index) {
 			return !expression.hasComma(index);
 		}

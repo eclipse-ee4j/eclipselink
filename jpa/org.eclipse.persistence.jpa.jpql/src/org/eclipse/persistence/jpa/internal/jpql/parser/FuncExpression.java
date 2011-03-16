@@ -154,7 +154,7 @@ public final class FuncExpression extends AbstractSingleEncapsulatedExpression {
 			wordParser.skipLeadingWhitespace();
 		}
 		else {
-			functionName = EMPTY_STRING;
+			functionName = ExpressionTools.EMPTY_STRING;
 		}
 
 		hasComma = wordParser.startsWith(COMMA);

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 
 /**
@@ -82,21 +83,28 @@ final class NumericTypeResolver extends AbstractTypeResolver {
 	public IType getType() {
 
 		List<IType> types = new ArrayList<IType>(typeResolvers.size());
+		TypeHelper helper = getTypeHelper();
+		IType unresolvableType = getType(IType.UNRESOLVABLE_TYPE);
 
 		// Convert any primitive types into its Class type and any non-number into Object
 		for (TypeResolver typeResolver : typeResolvers) {
 
 			IType type = typeResolver.getType();
 
-			type = getTypeHelper().convertPrimitive(type);
-			type = getTypeHelper().convertNotNumberType(type);
+			if (type != unresolvableType) {
+				type = helper.convertPrimitive(type);
+				type = helper.convertNotNumberType(type);
+				types.add(type);
+			}
+		}
 
-			types.add(type);
+		if (types.isEmpty()) {
+			return helper.unknownType();
 		}
 
 		// Comparing the types will result in putting the
 		// result at the beginning of the list
-		Collections.sort(types, new NumericTypeComparator(getTypeHelper()));
+		Collections.sort(types, new NumericTypeComparator(helper));
 
 		return types.get(0);
 	}

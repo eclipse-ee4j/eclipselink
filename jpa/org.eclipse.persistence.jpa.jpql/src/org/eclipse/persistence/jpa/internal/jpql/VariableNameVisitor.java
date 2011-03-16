@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql;
 
-import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractSchemaName;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AnonymousExpressionVisitor;
@@ -24,6 +23,7 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.Join;
 import org.eclipse.persistence.jpa.internal.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.internal.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.StringLiteral;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 /**
  * This visitor traverses {@link org.eclipse.persistence.jpa.query.parser.Expression expressions}
@@ -71,7 +71,7 @@ public final class VariableNameVisitor extends AnonymousExpressionVisitor {
 	 */
 	public void setType(VariableNameType type) {
 		this.type = type;
-		this.variableName = AbstractExpression.EMPTY_STRING;
+		this.variableName = ExpressionTools.EMPTY_STRING;
 	}
 
 	/**

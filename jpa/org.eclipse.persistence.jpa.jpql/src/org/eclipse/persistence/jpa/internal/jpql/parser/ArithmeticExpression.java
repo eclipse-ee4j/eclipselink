@@ -14,8 +14,8 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 /**
- * This expression represents an arithmetic expression, which means the first
- * and second expressions are aggregated with an arithmetic sign.
+ * This expression represents an arithmetic expression, which means the first and second expressions
+ * are aggregated with an arithmetic sign.
  *
  * @see AdditionExpression
  * @see DivisionExpression
@@ -59,20 +59,25 @@ public abstract class ArithmeticExpression extends CompoundExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	final boolean isParsingComplete(WordParser wordParser, String word) {
+	final boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
 		char character = word.charAt(0);
 
-		// TODO: Do a better job, these identifiers are aggregate identifiers: x <identifier> y
+		// A comparison symbol needs to continue the parsing
+		if (character == '=' || character == '<' || character == '>') {
+			return true;
+		}
+
+		if ((expression != null) && character == '+' || character == '-') {
+			return false;
+		}
+
 		return word.equalsIgnoreCase(OR)   ||
 		       word.equalsIgnoreCase(AND)  ||
 		       word.equalsIgnoreCase(WHEN) ||
 		       word.equalsIgnoreCase(SET)  ||
 		       word.equalsIgnoreCase(AS)   ||
-		       character == '<'            ||
-		       character == '>'            ||
-		       character == '='            ||
-		       super.isParsingComplete(wordParser, word);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**

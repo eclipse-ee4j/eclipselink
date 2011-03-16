@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 /**
@@ -38,11 +39,15 @@ public abstract class AbstractExpression extends StringExpression
 
 	/**
 	 * The children of this {@link AbstractExpression}.
+	 *
+	 * @see #children()
 	 */
 	private List<Expression> children;
 
 	/**
 	 * The string representation of this {@link AbstractExpression}.
+	 *
+	 * @see #orderedChildren()
 	 */
 	private List<StringExpression> orderedChildren;
 
@@ -54,6 +59,8 @@ public abstract class AbstractExpression extends StringExpression
 
 	/**
 	 * The string representation of this {@link AbstractExpression}.
+	 *
+	 * @see #toParsedText()
 	 */
 	private String parsedText;
 
@@ -77,11 +84,6 @@ public abstract class AbstractExpression extends StringExpression
 	 * The constant for '"'.
 	 */
 	static final char DOUBLE_QUOTE = '\"';
-
-	/**
-	 * The constant for an empty string.
-	 */
-	public static final String EMPTY_STRING = "";
 
 	/**
 	 * The constant for '{'.
@@ -135,7 +137,7 @@ public abstract class AbstractExpression extends StringExpression
 	 * @param parent The parent of this expression
 	 */
 	AbstractExpression(AbstractExpression parent) {
-		this(parent, EMPTY_STRING);
+		this(parent, ExpressionTools.EMPTY_STRING);
 	}
 
 	/**
@@ -263,19 +265,6 @@ public abstract class AbstractExpression extends StringExpression
 	}
 
 	/**
-	 * Creates the string representation of this {@link AbstractExpression}.
-	 *
-	 * @return The portion of the JPQL query that was parsed by this {@link AbstractExpression},
-	 * which includes the children {@link AbstractExpression expressions}
-	 * @see #toParsedText()
-	 */
-	private String buildParsedText() {
-		StringBuilder sb = new StringBuilder();
-		toParsedText(sb);
-		return sb.toString();
-	}
-
-	/**
 	 * Creates a new {@link StringExpression} wrapping the given character value.
 	 *
 	 * @param value The character to wrap as a {@link StringExpression}
@@ -322,26 +311,29 @@ public abstract class AbstractExpression extends StringExpression
 
 		String fallBackBNFId = queryBNF.getFallbackBNFId();
 
+		// No fall back BNF is defined, then nothing can be done
 		if (fallBackBNFId == null) {
 			return null;
 		}
 
 		JPQLQueryBNF fallBackQueryBNF = queryBNF(fallBackBNFId);
 
+		// Traverse the fall back BNF because it has its own fall back BNF
 		if (fallBackQueryBNF != queryBNF &&
 		    fallBackQueryBNF.getFallbackBNFId() != null) {
 
 			return findFallBackExpressionFactory(fallBackQueryBNF);
 		}
 
+		// Retrieve the factory associated with the fall back BNF
 		return expressionFactory(fallBackQueryBNF.getFallbackExpressionFactoryId());
 	}
 
 	/**
-	 * Retrieves the {@link JPQLQueryBNF} that was used to parse the given.
+	 * Retrieves the {@link JPQLQueryBNF} that was used to parse the given {@link Expression}.
 	 *
-	 * @param expression
-	 * @return
+	 * @param expression The expression for which its BNF is needed
+	 * @return The {@link JPQLQueryBNF} that was used to parse the given expression
 	 */
 	JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
 		return getQueryBNF();
@@ -454,10 +446,11 @@ public abstract class AbstractExpression extends StringExpression
 	 * @param wordParser The text to parse based on the current position of the cursor
 	 * @param word The word that was retrieved from the given text, which is the first word in the
 	 * text
+	 * @param expression The {@link Expression} that has already been parsed
 	 * @return <code>true</code> if the text no longer can't be parsed by the current expression;
 	 * <code>false</code> if more can be parsed
 	 */
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 		return word.equalsIgnoreCase(FROM)               ||
 		       word.equalsIgnoreCase(WHERE)              ||
 		       word.equalsIgnoreCase(HAVING)             ||
@@ -533,24 +526,6 @@ public abstract class AbstractExpression extends StringExpression
 	 * @return The {@link Expression} representing the given sub-query
 	 */
 	AbstractExpression parse(WordParser wordParser, JPQLQueryBNF queryBNF, boolean tolerant) {
-		return parse(wordParser, queryBNF, tolerant, true, true);
-	}
-
-	/**
-	 * Parses the given text by using the specified BNF.
-	 *
-	 * @param wordParser The text to parse based on the current position of the cursor
-	 * @param queryBNF The grammar used to retrieve the possible {@link ExpressionFactory expression
-	 * factories}
-	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
-	 * try to parse invalid or incomplete queries
-	 * @return The {@link Expression} representing the given sub-query
-	 */
-	private AbstractExpression parse(WordParser wordParser,
-	                                 JPQLQueryBNF queryBNF,
-	                                 boolean tolerant,
-	                                 boolean supportCollection,
-	                                 boolean parseWithFactories) {
 
 		// Quick check so we don't create some objects for no reasons
 		if (wordParser.isTail()) {
@@ -594,11 +569,10 @@ public abstract class AbstractExpression extends StringExpression
 			String word = wordParser.potentialWord();
 
 			if (word.length() > 0) {
-//				String wordUpperCase = word.toUpperCase();
 
 				// Nothing more to parse
-				if (!tolerant && !beginning && isParsingComplete(wordParser, word) ||
-				     tolerant &&               isParsingComplete(wordParser, word)) {
+				if (!tolerant && !beginning && isParsingComplete(wordParser, word, expression) ||
+				     tolerant &&               isParsingComplete(wordParser, word, expression)) {
 
 					break;
 				}
@@ -680,15 +654,10 @@ public abstract class AbstractExpression extends StringExpression
 				separatedBySpaces.add(count > 1);
 			}
 
-			// Skip leading whitespace
-//			count = wordParser.skipLeadingWhitespace();
-
 			// Nothing else to parse
 			if (wordParser.isTail()) {
 				break;
 			}
-
-//			character = wordParser.character();
 
 			// ','
 			if (character == COMMA) {
@@ -719,7 +688,7 @@ public abstract class AbstractExpression extends StringExpression
 
 				// No more text, the query ends with a comma
 				word = wordParser.potentialWord();
-				boolean stopParsing = tolerant && (word.length() == 0 || isParsingComplete(wordParser, word));
+				boolean stopParsing = tolerant && (word.length() == 0 || isParsingComplete(wordParser, word, null));
 
 				if (wordParser.isTail() || stopParsing) {
 					child = null;
@@ -836,237 +805,7 @@ public abstract class AbstractExpression extends StringExpression
 
 		String word = wordParser.potentialWord();
 		ExpressionFactory factory = queryBNF.expressionFactory(word);
-
-		if (factory == null) {
-			return null;
-		}
-
-		return parse(wordParser, word, factory, queryBNF, null, tolerant);
-	}
-
-	/**
-	 * Parses the given text by using the specified BNF.
-	 *
-	 * @param wordParser The text to parse based on the current position of the cursor
-	 * @param queryBNF The grammar used to retrieve the possible {@link ExpressionFactory expression
-	 * factories}
-	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
-	 * try to parse invalid or incomplete queries
-	 * @return The {@link Expression} representing the given sub-query
-	 */
-	AbstractExpression parseWithFactory(WordParser wordParser,
-	                                    JPQLQueryBNF queryBNF,
-	                                    ExpressionFactory expressionFactory,
-	                                    boolean tolerant) {
-
-		// Quick check so we don't create some objects for no reasons
-		if (wordParser.isTail()) {
-			return null;
-		}
-
-		List<AbstractExpression> children = new ArrayList<AbstractExpression>();
-		List<Boolean> separatedByCommas = new ArrayList<Boolean>();
-		List<Boolean> separatedBySpaces = new ArrayList<Boolean>();
-		AbstractExpression expression = null;
-		boolean beginning = !tolerant;
-		int count = 0;
-		int length = wordParser.position();
-
-		// Parse the string until the position of the cursor is at the end of the
-		// string or until ParserHelper says the parsing is complete
-		while (!wordParser.isTail()) {
-
-			String word = wordParser.potentialWord();
-			String wordUpperCase = word.toUpperCase();
-
-			if (!beginning && isParsingComplete(wordParser, wordUpperCase)) {
-				break;
-			}
-
-			AbstractExpression child = null;
-
-			// Parse the query using the factory
-			if (shouldParseWithFactoryFirst()) {
-				if (isValidExpressionFactory(expressionFactory)) {
-					child = parse(wordParser, word, expressionFactory, queryBNF, expression, tolerant);
-
-					if (child != null) {
-						expression = updateParsingInfo(expression, child, children, separatedByCommas, separatedBySpaces);
-					}
-				}
-			}
-
-			// No factories could be used, use the fall back ExpressionFactory
-			if (child == null) {
-				child = buildExpressionFromFallingBack(wordParser, word, queryBNF, expression, tolerant);
-
-				if (child != null) {
-					expression = updateParsingInfo(expression, child, children, separatedByCommas, separatedBySpaces);
-				}
-			}
-
-			beginning = false;
-
-			if (child != null) {
-				count = 0;
-			}
-
-			// If the length and the new length are the same, it means the
-			// expression factories and the parser helper could not parsed the
-			// text, break here to prevent the parsing from hanging
-			int newLength = wordParser.position();
-
-			if ((newLength == length) &&
-			    !wordParser.startsWith(COMMA)) {
-
-				break;
-			}
-
-			// No more expression can be parsed here, break here so the caller can
-			// continue parsing
-			if ((child == null) && !wordParser.startsWith(COMMA)) {
-				break;
-			}
-
-			// Store the child
-			children.add(child);
-			separatedByCommas.add(Boolean.FALSE);
-			separatedBySpaces.add(Boolean.FALSE);
-
-			// Skip leading whitespace
-			count = wordParser.skipLeadingWhitespace();
-
-			// Nothing else to parse
-			if (wordParser.isTail()) {
-				break;
-			}
-
-			// ','
-			if (wordParser.startsWith(COMMA)) {
-
-				// The current expression does not handle collection, than stop the
-				// parsing here so the parent can continue parsing it
-				if (!queryBNF.handleCollection()) {
-					break;
-				}
-
-				int collectionIndex = separatedByCommas.size() - 1;
-
-				// Skip the comma
-				wordParser.moveForward(1);
-				separatedByCommas.set(collectionIndex, Boolean.TRUE);
-
-				// Remove leading whitespace
-				count = wordParser.skipLeadingWhitespace();
-				separatedBySpaces.set(collectionIndex, count > 0);
-
-				expression = null;
-
-				// No more text, the query ends with a comma
-				word = wordParser.potentialWord();
-				boolean parsingComplete = false;
-
-				if (wordParser.isTail() ||
-				    tolerant && (parsingComplete = isParsingComplete(wordParser, word.toUpperCase()))) {
-
-					child = null;
-
-					if (!wordParser.isTail() && (count > 0)) {
-						separatedBySpaces.set(collectionIndex, Boolean.FALSE);
-					}
-					// Make sure the space isn't re-added at the end of the query
-					else {
-						count = 0;
-					}
-
-					if (parsingComplete) {
-						break;
-					}
-				}
-
-				// More text to parse, continue right away otherwise the else
-				// of the if statement below will stop the parsing
-				if (!wordParser.isTail() &&
-				    !wordParser.startsWith(RIGHT_PARENTHESIS)) {
-
-					continue;
-				}
-			}
-			else {
-				// ')'
-				if (wordParser.startsWith(RIGHT_PARENTHESIS)) {
-					break;
-				}
-				// Continue parsing the collection expression
-				else if (handleAggregate(queryBNF) /*&&
-				         !isParsingComplete(wordParser, wordParser.potentialWord().toUpperCase())*/) {
-					separatedBySpaces.set(separatedBySpaces.size() - 1, count > 0);
-				}
-				// Nothing more to parse
-				else {
-					break;
-				}
-			}
-		}
-
-		if (count > 0) {
-			wordParser.moveBackward(count);
-
-			if (!separatedBySpaces.isEmpty()) {
-				separatedBySpaces.set(separatedBySpaces.size() - 1, Boolean.FALSE);
-			}
-		}
-
-		// Simply return the single expression
-		if (children.size() == 1) {
-			expression = children.get(0);
-		}
-		// Return a collection expression, which wraps the sub-expressions
-		else if (!children.isEmpty()) {
-			expression = new CollectionExpression(this, children, separatedByCommas, separatedBySpaces);
-		}
-		// No query could be found, return a null expression
-		else {
-			expression = null;
-		}
-
-		return expression;
-	}
-
-	/**
-	 * Parses the text without support for collection or aggregate expressions.
-	 *
-	 * @param wordParser The text to parse based on the current position of the cursor
-	 * @param queryBNF The grammar used to retrieve the possible {@link ExpressionFactory expression
-	 * factories}
-	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
-	 * try to parse invalid or incomplete queries
-	 * @return The {@link Expression} representing the given sub-query or <code>null</code> if
-	 * nothing could be parsed
-	 */
-	AbstractExpression parseWithoutCollection(WordParser wordParser,
-	                                          JPQLQueryBNF queryBNF,
-	                                          boolean tolerant) {
-
-		return parse(wordParser, queryBNF, tolerant, false, true);
-	}
-
-	/**
-	 * Quickly parses the given text by using the specified BNF. This method does not check for many
-	 * thing, it simply uses the fallback expression factory.
-	 *
-	 * @param wordParser The text to parse based on the current position of the cursor
-	 * @param queryBNF The grammar used to retrieve the possible {@link ExpressionFactory expression
-	 * factories}
-	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
-	 * try to parse invalid or incomplete queries
-	 * @return The {@link Expression} representing the given sub-query
-	 */
-	final AbstractExpression parseWithoutFactories(WordParser wordParser,
-	                                               JPQLQueryBNF queryBNF,
-	                                               boolean tolerant) {
-
-		return parse(wordParser, queryBNF, tolerant, false, false);
+		return (factory == null) ? null : parse(wordParser, word, factory, queryBNF, null, tolerant);
 	}
 
 	/**
@@ -1146,7 +885,9 @@ public abstract class AbstractExpression extends StringExpression
 	@Override
 	public String toParsedText() {
 		if (parsedText == null) {
-			parsedText = buildParsedText();
+			StringBuilder writer = new StringBuilder();
+			toParsedText(writer);
+			parsedText = writer.toString();
 		}
 		return parsedText;
 	}
@@ -1175,6 +916,7 @@ public abstract class AbstractExpression extends StringExpression
 		// "child" is a child of the expression, remove it from the
 		// collection since it's already parented
 		if ((expression != null) && child.isAncestor(expression)) {
+
 			// Also remove the indicator for comma separation
 			int expressionLocation = children.indexOf(expression);
 

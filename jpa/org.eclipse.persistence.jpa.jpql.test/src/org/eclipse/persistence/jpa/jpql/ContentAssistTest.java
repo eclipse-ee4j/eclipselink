@@ -21,15 +21,11 @@ import java.util.List;
 import org.eclipse.persistence.jpa.internal.jpql.ContentAssistProvider;
 import org.eclipse.persistence.jpa.internal.jpql.DefaultContentAssistItems;
 import org.eclipse.persistence.jpa.internal.jpql.VirtualQuery;
-import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.JPQLQueryBNFAccessor;
+import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
-import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
-import org.eclipse.persistence.jpa.jpql.spi.IPlatform;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
-import org.eclipse.persistence.jpa.jpql.spi.IType;
-import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
@@ -46,8 +42,16 @@ import static org.junit.Assert.*;
 public final class ContentAssistTest {
 
 	private Iterator<String> abstractSchemaNames() {
+		List<String> names = new ArrayList<String>();
+		for (IEntity entity : abstractSchemaTypes()) {
+			names.add(entity.getName());
+		}
+		return names.iterator();
+	}
+
+	private Iterable<IEntity> abstractSchemaTypes() {
 		IManagedTypeProvider provider = new JavaManagedTypeProvider(IJPAVersion.DEFAULT_VERSION);
-		return provider.entityNames();
+		return provider.abstractSchemaTypes();
 	}
 
 	private List<String> addAll(List<String> items1, Iterator<String> items2) {
@@ -117,8 +121,8 @@ public final class ContentAssistTest {
 
 		List<String> names = new ArrayList<String>();
 
-		for (Iterator<String> iter = abstractSchemaNames(); iter.hasNext(); ) {
-			String name = iter.next();
+		for (IEntity entity : abstractSchemaTypes()) {
+			String name = entity.getName();
 
 			if (name.startsWith(startsWith)) {
 				names.add(name);
@@ -5666,7 +5670,7 @@ public final class ContentAssistTest {
 
 	@Test
 	public void test_Query_01() throws Exception {
-		String query = AbstractExpression.EMPTY_STRING;
+		String query = ExpressionTools.EMPTY_STRING;
 		int position = 0;
 
 		testHasOnlyIdentifiers(

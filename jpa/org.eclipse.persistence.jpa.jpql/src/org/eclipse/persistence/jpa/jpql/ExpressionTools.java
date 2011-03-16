@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql;
 import org.eclipse.persistence.jpa.internal.jpql.parser.WordParser;
 
 /**
- * A utility class containing various methods.
+ * A utility class containing various methods related to the Hermes parser.
  *
  * @version 2.3
  * @since 2.3
@@ -31,6 +31,11 @@ public final class ExpressionTools {
 	public static final Object[] EMPTY_ARRAY = new Object[0];
 
 	/**
+	 * The constant for an empty string.
+	 */
+	public static final String EMPTY_STRING = "";
+
+	/**
 	 * The constant of an empty String array.
 	 */
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
@@ -41,6 +46,46 @@ public final class ExpressionTools {
 	private ExpressionTools() {
 		super();
 		throw new IllegalAccessError("ExpressionTools cannot be instantiated");
+	}
+
+	/**
+	 * Converts the escape characters contained by the given {@link CharSequence} to non-escape
+	 * characters. For example, the character '\b' is converted into the string value '\\b'.
+	 *
+	 * @param value The sequence of characters to convert to a non-escape version
+	 * @param position This is a one element array that needs to be adjusted when an escape
+	 * character is converted
+	 * @return The new sequence of characters that does not contain any escape character but it's
+	 * string representation
+	 */
+	public static String escape(CharSequence value, int[] position) {
+
+		StringBuilder sb = new StringBuilder(value.length());
+
+		for (int index = 0, count = value.length(); index < count; index++) {
+			char character = value.charAt(index);
+
+			switch(character) {
+				case '\b': sb.append("\\b");  if (index <= position[0]) position[0]++; break;
+				case '\t': sb.append("\\t");  if (index <= position[0]) position[0]++; break;
+				case '\n': sb.append("\\n");  if (index <= position[0]) position[0]++; break;
+				case '\f': sb.append("\\f");  if (index <= position[0]) position[0]++; break;
+				case '\r': sb.append("\\r");  if (index <= position[0]) position[0]++; break;
+				case '\"': sb.append("\\\""); if (index <= position[0]) position[0]++; break;
+				case '\\': sb.append("\\\\"); if (index <= position[0]) position[0]++; break;
+				case '\0': sb.append("\\0");  if (index <= position[0]) position[0]++; break;
+				case '\1': sb.append("\\1");  if (index <= position[0]) position[0]++; break;
+				case '\2': sb.append("\\2");  if (index <= position[0]) position[0]++; break;
+				case '\3': sb.append("\\3");  if (index <= position[0]) position[0]++; break;
+				case '\4': sb.append("\\4");  if (index <= position[0]) position[0]++; break;
+				case '\5': sb.append("\\5");  if (index <= position[0]) position[0]++; break;
+				case '\6': sb.append("\\6");  if (index <= position[0]) position[0]++; break;
+				case '\7': sb.append("\\7");  if (index <= position[0]) position[0]++; break;
+				default:   sb.append(character);
+			}
+		}
+
+		return sb.toString();
 	}
 
 	/**
@@ -70,23 +115,39 @@ public final class ExpressionTools {
 	 * Retrieves the first word from the given text starting at the specified position.
 	 *
 	 * @param text The text from which the first word will be retrieved
-	 * @param position The position of the cursor where to start retreiving the word
+	 * @param position The position of the cursor where to start retrieving the word
 	 * @return The first word contained in the text, if none could be found, then an empty string is
 	 * returned
 	 */
 	public static String parseLiteral(WordParser wordParser) {
 
-		int endIndex = wordParser.position() + 1;
+		int startPosition = wordParser.position();
+		int endIndex = startPosition + 1;
+		char startQuote = wordParser.character();
 
 		for (int length = wordParser.length(); endIndex < length; endIndex++) {
 			char character = wordParser.character(endIndex);
 
-			if (ExpressionTools.isQuote(character)) {
+			if (character == startQuote) {
 				endIndex++;
 
-				// The single quote is escaped by '
-				if ((endIndex < length) && ExpressionTools.isQuote(wordParser.character(endIndex))) {
-					continue;
+				// Verify if the single quote is escaped with another single quote
+				if ((startQuote == '\'') && (endIndex < length)) {
+					char nextCharacter = wordParser.character(endIndex);
+
+					// The single quote is escaped, continue
+					if (nextCharacter == '\'') {
+						continue;
+					}
+				}
+				// Verify if the double quote is escaped with backslash
+				else if ((startQuote == '\"') && (endIndex - 2 > startPosition)) {
+					char previousCharacter = wordParser.character(endIndex - 2);
+
+					// The double quote is escaped, continue
+					if (previousCharacter == '\\') {
+						continue;
+					}
 				}
 
 				// Reached the end of the string literal
@@ -223,6 +284,80 @@ public final class ExpressionTools {
 	 */
 	public static boolean stringIsNotEmpty(CharSequence text) {
 		return !stringIsEmpty(text);
+	}
+
+	/**
+	 * Converts the string representation of the escape characters contained by the given {@link
+	 * CharSequence} into the actual escape characters. For example, the string '\\b' is converted
+	 * into the character value '\b'.
+	 *
+	 * @param value The sequence of characters to convert to an escaped version
+	 * @param position This is a one element array that needs to be adjusted when an escape
+	 * character is converted
+	 * @return The new sequence of characters that contains escape characters rather than their
+	 * string representation
+	 */
+	public static String unescape(CharSequence value, int[] position) {
+
+		StringBuilder sb = new StringBuilder(value.length());
+		int originalPosition = position[0];
+
+		for (int index = 0, count = value.length(); index < count; index++) {
+
+			char character = value.charAt(index);
+
+			if ((character == '\\') && (index + 1 < count)) {
+				character = value.charAt(++index);
+
+				switch(character) {
+					// Standard escape character
+					case 'b':  sb.append("\b"); if (index <= originalPosition) position[0]--; break;
+					case 't':  sb.append("\t"); if (index <= originalPosition) position[0]--; break;
+					case 'n':  sb.append("\n"); if (index <= originalPosition) position[0]--; break;
+					case 'f':  sb.append("\f"); if (index <= originalPosition) position[0]--; break;
+					case 'r':  sb.append("\r"); if (index <= originalPosition) position[0]--; break;
+					case '"':  sb.append("\""); if (index <= originalPosition) position[0]--; break;
+					case '\\': sb.append("\\"); if (index <= originalPosition) position[0]--; break;
+					case '0':  sb.append("\0"); if (index <= originalPosition) position[0]--; break;
+					case '1':  sb.append("\1"); if (index <= originalPosition) position[0]--; break;
+					case '2':  sb.append("\2"); if (index <= originalPosition) position[0]--; break;
+					case '3':  sb.append("\3"); if (index <= originalPosition) position[0]--; break;
+					case '4':  sb.append("\4"); if (index <= originalPosition) position[0]--; break;
+					case '5':  sb.append("\5"); if (index <= originalPosition) position[0]--; break;
+					case '6':  sb.append("\6"); if (index <= originalPosition) position[0]--; break;
+					case '7':  sb.append("\7"); if (index <= originalPosition) position[0]--; break;
+
+					// Unicode
+					case 'u': {
+						// Convert the hexadecimal digit into a char
+						String hexadecimals = value.subSequence(index + 1, index + 5).toString();
+						char unicode = (char) Integer.parseInt(hexadecimals, 16);
+						sb.append(unicode);
+
+						// Adjust the position and make sure if the position is within the unicode
+						// value, then it's only adjusted to be at the beginning of the unicode value
+						if ((index - 1 > originalPosition) && (index + 5 <= originalPosition)) {
+							position[0] -= (index + 5 - position[0]);
+						}
+						else if (index <= originalPosition) {
+							position[0] -= 5;
+						}
+
+						index += 4;
+						break;
+					}
+					// Non-escape character
+					default: {
+						sb.append(character);
+					}
+				}
+			}
+			else {
+				sb.append(character);
+			}
+		}
+
+		return sb.toString();
 	}
 
 	/**

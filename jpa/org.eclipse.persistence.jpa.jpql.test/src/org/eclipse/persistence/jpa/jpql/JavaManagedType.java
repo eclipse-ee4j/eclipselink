@@ -14,13 +14,12 @@
 package org.eclipse.persistence.jpa.jpql;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
-import org.eclipse.persistence.jpa.jpql.spi.IType;
 
 /**
  * The abstract definition of {@link IManagedType} defined for wrapping the runtime mapped class
@@ -40,13 +39,13 @@ abstract class JavaManagedType implements IManagedType {
 	/**
 	 * The provider of JPA managed types.
 	 */
-	private IManagedTypeProvider provider;
+	private final IManagedTypeProvider provider;
 
 	/**
 	 * The cached {@link IType} representing the managed type.
 	 */
-	private JavaType type;
-
+	private final JavaType type;
+	
 	/**
 	 * Creates a new <code>JavaManagedType</code>.
 	 *
@@ -62,7 +61,14 @@ abstract class JavaManagedType implements IManagedType {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IMapping getMappingNamed(String name) {
+	public final int compareTo(IManagedType managedType) {
+		return getType().getName().compareTo(managedType.getType().getName());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public final IMapping getMappingNamed(String name) {
 		initializeMappings();
 		return mappings.get(name);
 	}
@@ -77,7 +83,7 @@ abstract class JavaManagedType implements IManagedType {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IType getType() {
+	public JavaType getType() {
 		return type;
 	}
 
@@ -93,8 +99,8 @@ abstract class JavaManagedType implements IManagedType {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Iterator<IMapping> mappings() {
+	public final Iterable<IMapping> mappings() {
 		initializeMappings();
-		return mappings.values().iterator();
+		return Collections.unmodifiableCollection(mappings.values());
 	}
 }

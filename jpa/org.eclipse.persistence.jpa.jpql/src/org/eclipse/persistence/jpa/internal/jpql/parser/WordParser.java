@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+
 /**
  * This "parser" holds onto the string version of the Java Persistence query that is parsed into a
  * parsed tree. It uses a cursor that let the current {@link Expression} object to parse its section
@@ -402,7 +404,7 @@ public final class WordParser {
 		}
 
 		if (position <= 0) {
-			return AbstractExpression.EMPTY_STRING;
+			return ExpressionTools.EMPTY_STRING;
 		}
 
 		return entireWord(position);
@@ -683,7 +685,7 @@ public final class WordParser {
 	 */
 	@Override
 	public String toString() {
-		return isTail() ? AbstractExpression.EMPTY_STRING : substring();
+		return isTail() ? ExpressionTools.EMPTY_STRING : substring();
 	}
 
 	/**

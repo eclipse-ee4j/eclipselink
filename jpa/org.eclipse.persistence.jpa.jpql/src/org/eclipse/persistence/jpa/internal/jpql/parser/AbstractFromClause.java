@@ -180,7 +180,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 		String word = null;
 		int count = 0;
 
-		while (firstPass || !wordParser.isTail() && !isParsingComplete(wordParser, word)) {
+		while (firstPass || !wordParser.isTail() && !isParsingComplete(wordParser, word, null)) {
 
 			// First pass it's always an identification variable declaration
 			if (firstPass || !word.equalsIgnoreCase(IN)) {

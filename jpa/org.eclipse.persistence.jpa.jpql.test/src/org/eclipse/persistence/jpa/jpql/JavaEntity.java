@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import java.lang.reflect.Method;
+import javax.persistence.Entity;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeVisitor;
@@ -26,6 +28,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IQuery;
  * @since 2.3
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 final class JavaEntity extends JavaManagedType
                        implements IEntity {
 
@@ -44,6 +47,31 @@ final class JavaEntity extends JavaManagedType
 	 */
 	public void accept(IManagedTypeVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getName() {
+
+		Class<?> type = getType().getType();
+		Entity entity = type.getAnnotation(Entity.class);
+		String name = null;
+
+		try {
+			Method nameMethod = entity.getClass().getMethod("name");
+			name = (String) nameMethod.invoke(entity);
+		}
+		catch (Exception e) {
+			// Ignore
+		}
+		finally {
+			if (ExpressionTools.stringIsEmpty(name)) {
+				name = type.getSimpleName();
+			}
+		}
+
+		return name;
 	}
 
 	/**

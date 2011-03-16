@@ -14,8 +14,8 @@
 package org.eclipse.persistence.jpa.jpql.spi;
 
 /**
- * This interface is only meant to allow a type hierarchy over the interfaces defining the JPQL SPI
- * and the various implementers.
+ * This interface is only meant to allow a type hierarchy over the interfaces defining the Hermes
+ * SPI and the various implementers.
  *
  * @version 2.3
  * @since 2.3

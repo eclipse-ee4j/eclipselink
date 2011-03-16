@@ -42,10 +42,10 @@ public final class AndExpression extends LogicalExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 		return word.equalsIgnoreCase(AND) ||
 		       word.equalsIgnoreCase(OR)  ||
-		       super.isParsingComplete(wordParser, word);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**

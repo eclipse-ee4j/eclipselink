@@ -16,7 +16,6 @@ package org.eclipse.persistence.jpa.jpql;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import org.eclipse.persistence.jpa.internal.jpql.JPQLQueryProblemMessages;
-import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractValidator;
 import org.eclipse.persistence.jpa.internal.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.JPQLQueryStringFormatter;
@@ -2972,7 +2971,7 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 	@Test
 	public void test_JPQLExpression_InvalidQuery_1() throws Exception {
 
-		String query = AbstractExpression.EMPTY_STRING;
+		String query = ExpressionTools.EMPTY_STRING;
 		int startPosition = 0;
 		int endPosition   = 0;
 

@@ -226,12 +226,12 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 		return word.equalsIgnoreCase(SET)   ||
 		       word.equalsIgnoreCase(INNER) ||
 		       word.equalsIgnoreCase(JOIN)  ||
 		       word.equalsIgnoreCase(LEFT)  ||
-		       super.isParsingComplete( wordParser, word);
+		       super.isParsingComplete( wordParser, word, expression);
 	}
 
 	/**
@@ -260,19 +260,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	AbstractExpression parse(WordParser wordParser,
-	                         JPQLQueryBNF queryBNF,
-	                         boolean tolerant) {
-
-	    return parseWithoutFactories(wordParser, queryBNF, tolerant);
-	}
-
-	private AbstractExpression parseAbstractSchemaName(WordParser wordParser,
-	                                                   boolean tolerant) {
+	private AbstractExpression parseAbstractSchemaName(WordParser wordParser, boolean tolerant) {
 
 		if (tolerant) {
 

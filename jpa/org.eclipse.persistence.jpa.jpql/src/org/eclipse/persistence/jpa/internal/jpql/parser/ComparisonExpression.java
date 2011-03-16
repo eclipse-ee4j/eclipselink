@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+
 /**
  * Only the values of like types are permitted to be compared. A type is like
  * another type if they correspond to the same Java language type, or if one is
@@ -60,7 +62,7 @@ public final class ComparisonExpression extends CompoundExpression {
 	 * @param parent The parent of this expression
 	 */
 	ComparisonExpression(AbstractExpression parent) {
-		super(parent, EMPTY_STRING);
+		super(parent, ExpressionTools.EMPTY_STRING);
 	}
 
 	/**
@@ -91,11 +93,11 @@ public final class ComparisonExpression extends CompoundExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isParsingComplete(WordParser wordParser, String word) {
+	boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 		return wordParser.character() == RIGHT_PARENTHESIS ||
 		       word.equalsIgnoreCase(OR)                   ||
 		       word.equalsIgnoreCase(AND)                  ||
-		       super.isParsingComplete(wordParser, word);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**

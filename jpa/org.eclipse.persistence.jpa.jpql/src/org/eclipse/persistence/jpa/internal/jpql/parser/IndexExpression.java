@@ -63,9 +63,7 @@ public final class IndexExpression extends AbstractSingleEncapsulatedExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	AbstractExpression parse(WordParser wordParser,
-	                         JPQLQueryBNF queryBNF,
-	                         boolean tolerant) {
+	AbstractExpression parse(WordParser wordParser, JPQLQueryBNF queryBNF, boolean tolerant) {
 
 		if (tolerant) {
 			return super.parse(wordParser, queryBNF, tolerant);
