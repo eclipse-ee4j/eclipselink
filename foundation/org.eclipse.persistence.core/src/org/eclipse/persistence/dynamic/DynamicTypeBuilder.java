@@ -445,7 +445,7 @@ public class DynamicTypeBuilder {
      * position of the mapping in the descriptor is captured to use as its
      * index.
      */
-    protected DatabaseMapping addMapping(DatabaseMapping mapping) {
+    public DatabaseMapping addMapping(DatabaseMapping mapping) {
         ClassDescriptor descriptor = getType().getDescriptor();
 
         if (!descriptor.getMappings().contains(mapping)) {
