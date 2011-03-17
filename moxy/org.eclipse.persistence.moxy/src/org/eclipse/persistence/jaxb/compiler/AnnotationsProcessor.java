@@ -1505,7 +1505,9 @@ public class AnnotationsProcessor {
             returnList.addAll(getNoAccessTypePropertiesForClass(cls, info));
         } else if (info.getXmlAccessType() == XmlAccessType.FIELD) {
             returnList.addAll(getFieldPropertiesForClass(cls, info, false));
+            returnList.addAll(getPropertyPropertiesForClass(cls, info, false, true));
         } else if (info.getXmlAccessType() == XmlAccessType.PROPERTY) {
+            returnList.addAll(getFieldPropertiesForClass(cls, info, false, true));
             returnList.addAll(getPropertyPropertiesForClass(cls, info, false));
         } else if (info.getXmlAccessType() == XmlAccessType.PUBLIC_MEMBER) {
             returnList.addAll(getPublicMemberPropertiesForClass(cls, info));
@@ -1516,6 +1518,10 @@ public class AnnotationsProcessor {
     }
 
     public ArrayList<Property> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
+        return getFieldPropertiesForClass(cls, info, onlyPublic, false);
+    }
+    
+    public ArrayList<Property> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic, boolean onlyExplicit) {
         ArrayList<Property> properties = new ArrayList<Property>();
         if (cls == null) {
             return properties;
@@ -1527,8 +1533,10 @@ public class AnnotationsProcessor {
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
                 if (!Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
                     if (!Modifier.isStatic(modifiers)) {
-                        Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
-                        properties.add(property);
+                        if((onlyExplicit && hasJAXBAnnotations(nextField)) || !onlyExplicit) {
+                            Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
+                            properties.add(property);
+                        }
                     } else if (helper.isAnnotationPresent(nextField, XmlAttribute.class)) {
                         try {
                             Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
@@ -2292,6 +2300,10 @@ public class AnnotationsProcessor {
     }
 
     public ArrayList<Property> getPropertyPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
+        return getPropertyPropertiesForClass(cls, info, onlyPublic, false);
+    }
+
+    public ArrayList<Property> getPropertyPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic, boolean onlyExplicit) {
         ArrayList<Property> properties = new ArrayList<Property>();
         if (cls == null) {
             return properties;
@@ -2344,19 +2356,21 @@ public class AnnotationsProcessor {
 
                 JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
                 setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
-                if (setMethod != null && !setMethod.getAnnotations().isEmpty()) {
+                if (setMethod != null && hasJAXBAnnotations(setMethod)) {
                     // use the set method if it exists and is annotated
                     if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
                         propertyMethod = setMethod;
                     } else {
                         isPropertyTransient = true;
                     }
-                } else {
+                } else if((onlyExplicit && hasJAXBAnnotations(getMethod)) || !onlyExplicit) {
                     if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
                         propertyMethod = getMethod;
                     } else {
                         isPropertyTransient = true;
                     }
+                } else if(onlyExplicit){
+                    continue;
                 }
             } else {
                 propertyName = nextMethod.getName().substring(3);
@@ -2370,19 +2384,21 @@ public class AnnotationsProcessor {
                     getMethodName = IS_STR + propertyName;
                     getMethod = cls.getDeclaredMethod(getMethodName, new JavaClass[] {});
                 }
-                if (getMethod != null && !getMethod.getAnnotations().isEmpty()) {
+                if (getMethod != null && hasJAXBAnnotations(getMethod)) {
                     // use the set method if it exists and is annotated
                     if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
                         propertyMethod = getMethod;
                     } else {
                         isPropertyTransient = true;
                     }
-                } else {
-                    if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
+                } else if((onlyExplicit && hasJAXBAnnotations(setMethod)) || !onlyExplicit) {
+                    if(!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
                         propertyMethod = setMethod;
                     } else {
                         isPropertyTransient = true;
                     }
+                } else if(onlyExplicit) {
+                    continue;
                 }
                 // use the JavaBean API to correctly decapitalize the first
                 // character, if necessary

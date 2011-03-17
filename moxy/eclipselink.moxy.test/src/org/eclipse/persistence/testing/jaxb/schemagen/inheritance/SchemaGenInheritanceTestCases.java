@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import junit.framework.TestCase;
 
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.eclipse.persistence.testing.jaxb.schemagen.date.Employee;
 import org.w3c.dom.Document;
@@ -66,22 +67,16 @@ public class SchemaGenInheritanceTestCases extends TestCase {
     }
 
     public void testSchemaGenTransient() throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(TransientCar.class, Mazda.class);
-        StringOutputResolver sor = new StringOutputResolver();
-        jaxbContext.generateSchema(sor);
-
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-
-        InputSource testSchemaInputSource = new InputSource(new StringReader(sor.getSchema()));
-        Document testSchemaDocument = db.parse(testSchemaInputSource);
-
-        InputStream controlSchemaInputStream = new FileInputStream(new File(CONTROL_SCHEMA_2));
-        Document controlSchemaDocument = db.parse(controlSchemaInputStream);
-
-        JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
-        assertTrue("Test schema did not match control schema.", xmlComparer.isSchemaEqual(controlSchemaDocument, testSchemaDocument));
+        JAXBException e = null;
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(TransientCar.class, Mazda.class);
+        } catch(javax.xml.bind.JAXBException ex) {
+            e = (JAXBException)ex.getCause();
+            assertTrue("Incorrect Exception thrown: " + ex.getMessage(), e.getErrorCode() == JAXBException.DUPLICATE_PROPERTY_NAME);
+        }
+        if(e == null) {
+            fail("Exception was not thrown as expected");
+        }
     }
 
     private class StringOutputResolver extends SchemaOutputResolver {

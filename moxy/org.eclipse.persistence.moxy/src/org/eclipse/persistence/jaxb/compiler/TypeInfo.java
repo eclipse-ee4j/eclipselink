@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBException;
+
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
@@ -253,6 +255,9 @@ public class TypeInfo {
      * 
      */
     public void addProperty(String name, Property property) {
+        if(originalProperties.get(name) != null) {
+            throw org.eclipse.persistence.exceptions.JAXBException.duplicatePropertyName(name, this.getJavaClassName());
+        }
         originalProperties.put(name, property);
         properties.put(name, property);
         propertyNames.add(name);

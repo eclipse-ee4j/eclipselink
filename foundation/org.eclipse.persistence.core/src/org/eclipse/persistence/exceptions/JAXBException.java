@@ -101,6 +101,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int BINDINGS_PKG_NOT_SET = 50069;
     public static final int INCORRECT_NUMBER_OF_XMLJOINNODES_ON_XMLELEMENTS = 50070;
     public static final int INVALID_XML_PATH_ATTRIBUTE = 50071;
+    public static final int DUPLICATE_PROPERTY_NAME = 50072;
 
     protected JAXBException(String message) {
         super(message);
@@ -930,6 +931,13 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { propertyName, className, xpath };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XML_PATH_ATTRIBUTE, args));
         validationException.setErrorCode(INVALID_XML_PATH_ATTRIBUTE);
+        return validationException;
+    }
+    
+    public static JAXBException duplicatePropertyName(String propertyName, String className) {
+        Object[] args = {propertyName, className};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, DUPLICATE_PROPERTY_NAME, args));
+        validationException.setErrorCode(DUPLICATE_PROPERTY_NAME);
         return validationException;
     }
 }
