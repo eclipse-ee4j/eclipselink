@@ -3220,7 +3220,8 @@ public class AnnotationsProcessor {
     			helper.isAnnotationPresent(elem, XmlWriteOnly.class) || 
     			helper.isAnnotationPresent(elem, XmlCDATA.class) || 
     			helper.isAnnotationPresent(elem, XmlAccessMethods.class) || 
-    			helper.isAnnotationPresent(elem, XmlNullPolicy.class));
+    			helper.isAnnotationPresent(elem, XmlNullPolicy.class) ||
+    			helper.isAnnotationPresent(elem, XmlJavaTypeAdapter.class));
     }
 
     private void validateElementIsInPropOrder(TypeInfo info, String name) {
