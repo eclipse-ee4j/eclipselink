@@ -19,7 +19,7 @@ Include-Resource:\
  META-INF/services=src/META-INF/services
 Import-Package:\
  javax.servlet;version="2.4",\
- javax.wsdl.*;version="1.6.2",\
+ javax.wsdl.*;version="1.6",\
  javax.*;resolution:=optional,\
  org.eclipse.persistence.internal.libraries.antlr.*;resolution:=optional,\
  org.eclipse.persistence.*;version="${version.string}",\
