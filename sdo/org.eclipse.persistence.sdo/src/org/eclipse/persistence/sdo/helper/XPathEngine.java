@@ -106,6 +106,11 @@ public class XPathEngine {
 
         int index = path.indexOf('/');
         if (index > -1) {
+            int openBracketIndex = path.indexOf('[');
+            int closeBracketIndex = path.indexOf(']');
+            if(index > openBracketIndex && index < closeBracketIndex) {
+                return getValueForFragment(path, caller);
+            }
             if (index == (path.length() - 1)) {
                 return getValueForFragment(path.substring(0, index), caller);
             } else {
@@ -261,6 +266,10 @@ public class XPathEngine {
     private String getLocalName(String qualifiedName) {
         int index = qualifiedName.indexOf(':');
         if (index > -1) {
+            int bracketIndex = qualifiedName.indexOf('[');
+            if(bracketIndex > -1 && bracketIndex < index) {
+                return qualifiedName;
+            }
             String local = qualifiedName.substring(index + 1, qualifiedName.length());
             return local;
         } else {
@@ -278,7 +287,7 @@ public class XPathEngine {
      */
     private Object getValueForFragment(String frag, DataObject caller) {
         int indexOfDot = frag.lastIndexOf('.');
-        int indexOfOpenBracket = frag.lastIndexOf('[');
+        int indexOfOpenBracket = frag.indexOf('[');
         int indexOfCloseBracket = frag.lastIndexOf(']');
         int position = getNumberInFrag(frag, indexOfDot, indexOfOpenBracket, indexOfCloseBracket);
         String propertyName = getPropertyNameInFrag(frag, position, indexOfDot, indexOfOpenBracket);
@@ -299,7 +308,8 @@ public class XPathEngine {
      */
     private String getPropertyNameInFrag(String frag, int position, int indexOfDot, int indexOfOpenBracket) {
         int startIndex = 0;
-        if (frag.indexOf('@') != -1) {
+        int atIndex = frag.indexOf('@');
+        if (atIndex != -1 && (indexOfOpenBracket == -1 || atIndex < indexOfOpenBracket)) {
             startIndex += 1;
         }
         if (indexOfOpenBracket != -1) {

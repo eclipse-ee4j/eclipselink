@@ -27,6 +27,7 @@ public class SDODataObjectXPathEngineTestSuite {
         suite.addTest(new TestSuite(XPathHelperLogicalOPTestCases.class));
         suite.addTest(new TestSuite(XPathExpressionTestCases.class));
         suite.addTest(new TestSuite(XPathEngineBug242108TestCases.class));
+        suite.addTestSuite(XPathCharacterTestCases.class);
         return suite;
     }
 
