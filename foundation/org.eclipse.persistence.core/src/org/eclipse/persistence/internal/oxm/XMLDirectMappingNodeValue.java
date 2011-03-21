@@ -132,9 +132,11 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
                     newFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
                     marshalRecord.openStartElement(newFragment, namespaceResolver);
                     marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + ":" + prefix, namespaceResolver.getDefaultNamespaceURI());
+                    marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
                     xPathFragment = newFragment;
                 } else {
                     marshalRecord.openStartElement(xPathFragment, namespaceResolver);
+                    marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
                     marshalRecord.closeStartElement();
                 }
             }

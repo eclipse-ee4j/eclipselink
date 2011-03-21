@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
@@ -328,7 +329,12 @@ public class XMLField extends DatabaseField {
         isInitialized = true;
     }
 
-    private void initializeXPathFragment(XPathFragment xPathFragment) {    
+    private void initializeXPathFragment(XPathFragment xPathFragment) {
+        XPathPredicate predicate = xPathFragment.getPredicate(); 
+        if(null != predicate) {
+            initializeXPathFragment(predicate.getXPathFragment());
+        }
+
     	String localName = xPathFragment.getLocalName();
     	if(localName !=null && !localName.equals(XMLConstants.EMPTY_STRING)){
 	        if(null == xPathFragment.getNamespaceURI()) {

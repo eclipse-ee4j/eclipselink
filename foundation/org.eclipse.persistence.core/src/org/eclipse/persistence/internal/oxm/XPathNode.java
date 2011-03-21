@@ -329,6 +329,9 @@ public class XPathNode {
         }
         marshalRecord.openStartElement(anXPathFragment, namespaceResolver);
         boolean hasValue = false;
+
+        marshalRecord.predicateAttribute(anXPathFragment, namespaceResolver);
+
         if (null != attributeChildren) {
             for (int x = 0, size = attributeChildren.size(); x < size; x++) {
                 XPathNode attributeNode = attributeChildren.get(x);

@@ -260,6 +260,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                     marshalRecord.attribute(nextFragment, namespaceResolver, stringValue);
                     marshalRecord.closeStartElement();
                 } else {
+                    marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
                     marshalRecord.closeStartElement();
                     marshalRecord.characters(stringValue);
                 }

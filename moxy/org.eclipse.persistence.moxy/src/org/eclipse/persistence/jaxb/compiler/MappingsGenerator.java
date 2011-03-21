@@ -2221,84 +2221,62 @@ public class MappingsGenerator {
         XMLField xmlField = null;
         if (property.getXmlPath() != null) {
             xmlField = new XMLField(property.getXmlPath());
-            xmlField.setSchemaType(property.getSchemaType());
-            return xmlField;
-        }
-        String xPath = "";
-        if (property.isSetXmlElementWrapper()) {
-            XmlElementWrapper wrapper = property.getXmlElementWrapper();
-            String namespace = wrapper.getNamespace();
-            if (namespace.equals("##default")) {
-                if (namespaceInfo.isElementFormQualified()) {
-                    namespace = namespaceInfo.getNamespace();
-                } else {
-                    namespace = "";
-                }
-            }
-            if (namespace.equals("")) {
-                xPath += (wrapper.getName() + "/");
-            } else {
-            	String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
-            	xPath += getQualifiedString(prefix, wrapper.getName() + "/");
-            }
-        }
-        if (property.isAttribute()) {
-            if (property.isSetXmlPath()) {
-                xPath += property.getXmlPath();
-            } else {
-                QName name = property.getSchemaName();
-                String namespace = "";
-                if (namespaceInfo.isAttributeFormQualified()) {
-                    namespace = namespaceInfo.getNamespace();
-                }
-                if (!name.getNamespaceURI().equals("")) {
-                    namespace = name.getNamespaceURI();
+        } else {
+            String xPath = "";
+            if (property.isSetXmlElementWrapper()) {
+                XmlElementWrapper wrapper = property.getXmlElementWrapper();
+                String namespace = wrapper.getNamespace();
+                if (namespace.equals("##default")) {
+                    if (namespaceInfo.isElementFormQualified()) {
+                        namespace = namespaceInfo.getNamespace();
+                    } else {
+                        namespace = "";
+                    }
                 }
                 if (namespace.equals("")) {
-                    xPath += (ATT + name.getLocalPart());
+                    xPath += (wrapper.getName() + "/");
                 } else {
-                    String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
-                	xPath += ATT + getQualifiedString(prefix, name.getLocalPart());
+                	String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
+                	xPath += getQualifiedString(prefix, wrapper.getName() + "/");
                 }
             }
-            QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());
-            if (property.getSchemaType() != null) {
-                schemaType = property.getSchemaType();
+            if (property.isAttribute()) {
+                if (property.isSetXmlPath()) {
+                    xPath += property.getXmlPath();
+                } else {
+                    QName name = property.getSchemaName();
+                    String namespace = "";
+                    if (namespaceInfo.isAttributeFormQualified()) {
+                        namespace = namespaceInfo.getNamespace();
+                    }
+                    if (!name.getNamespaceURI().equals("")) {
+                        namespace = name.getNamespaceURI();
+                    }
+                    if (namespace.equals("")) {
+                        xPath += (ATT + name.getLocalPart());
+                    } else {
+                        String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
+                    	xPath += ATT + getQualifiedString(prefix, name.getLocalPart());
+                    }
+                }
+                xmlField = new XMLField(xPath);
+            } else if (property.isXmlValue()) {
+                xmlField = new XMLField("text()");
+            } else {
+                QName elementName = property.getSchemaName();
+                xmlField = getXPathForElement(xPath, elementName, namespaceInfo, isTextMapping);
             }
-            if (schemaType == null) {
-                schemaType = (QName) helper.getXMLToJavaTypeMap().get(property.getType().getRawName());
-            }
-            XMLField field = new XMLField(xPath);
-            field.setSchemaType(schemaType);
-            return field;
         }
-        if (property.isXmlValue()) {
-            xPath = "text()";
-            XMLField field = new XMLField(xPath);
-            QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());
-            if (property.getSchemaType() != null) {
-                schemaType = property.getSchemaType();
-            }
-            if (schemaType == null) {
-                schemaType = (QName) helper.getXMLToJavaTypeMap().get(property.getType());
-            }
-            field.setSchemaType(schemaType);
-            return field;
-        }
-        QName elementName = property.getSchemaName();
-        xmlField = getXPathForElement(xPath, elementName, namespaceInfo, isTextMapping);
 
-        QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());
+        QName schemaType = (QName) userDefinedSchemaTypes.get(property.getActualType().getQualifiedName());
         if (property.getSchemaType() != null) {
             schemaType = property.getSchemaType();
         }
-
-        if (schemaType == null){
-        	JavaClass propertyType = property.getActualType();
-
-            schemaType = (QName) helper.getXMLToJavaTypeMap().get(propertyType.getRawName());
+        if (schemaType == null) {
+            schemaType = (QName) helper.getXMLToJavaTypeMap().get(property.getActualType().getRawName());
         }
         xmlField.setSchemaType(schemaType);
+
         return xmlField;
     }
 

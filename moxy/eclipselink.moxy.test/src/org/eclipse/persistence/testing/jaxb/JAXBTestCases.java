@@ -161,10 +161,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
     public void testXMLToObjectFromInputStream() throws Exception {
-        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-        Object testObject = jaxbUnmarshaller.unmarshal(instream);
-        instream.close();
-        xmlToObjectTest(testObject);
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            Object testObject = jaxbUnmarshaller.unmarshal(instream);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
     }
 
     public void testRoundTrip() throws Exception{
@@ -368,13 +370,15 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
     public void testXMLToObjectFromURL() throws Exception {
-        java.net.URL url = ClassLoader.getSystemResource(resourceName);
-        Object testObject = jaxbUnmarshaller.unmarshal(url);
-        xmlToObjectTest(testObject);
+        if(isUnmarshalTest()) {
+            java.net.URL url = ClassLoader.getSystemResource(resourceName);
+            Object testObject = jaxbUnmarshaller.unmarshal(url);
+            xmlToObjectTest(testObject);
+        }
     }
 
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
-        if(null != XML_INPUT_FACTORY) {
+        if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
             Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader);
@@ -384,7 +388,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
     public void testXMLToObjectFromXMLEventReader() throws Exception {
-        if(null != XML_INPUT_FACTORY) {
+        if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
             Object testObject = jaxbUnmarshaller.unmarshal(xmlEventReader);
@@ -493,19 +497,21 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
     public void testUnmarshallerHandler() throws Exception {
-        SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-        saxParserFactory.setNamespaceAware(true);
-        SAXParser saxParser = saxParserFactory.newSAXParser();
-        XMLReader xmlReader = saxParser.getXMLReader();
-
-        JAXBUnmarshallerHandler jaxbUnmarshallerHandler = (JAXBUnmarshallerHandler)jaxbUnmarshaller.getUnmarshallerHandler();
-        xmlReader.setContentHandler(jaxbUnmarshallerHandler);
-
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(resourceName);
-        InputSource inputSource = new InputSource(inputStream);
-        xmlReader.parse(inputSource);
-
-        xmlToObjectTest(jaxbUnmarshallerHandler.getResult());
+        if(isUnmarshalTest()) {
+            SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+            saxParserFactory.setNamespaceAware(true);
+            SAXParser saxParser = saxParserFactory.newSAXParser();
+            XMLReader xmlReader = saxParser.getXMLReader();
+    
+            JAXBUnmarshallerHandler jaxbUnmarshallerHandler = (JAXBUnmarshallerHandler)jaxbUnmarshaller.getUnmarshallerHandler();
+            xmlReader.setContentHandler(jaxbUnmarshallerHandler);
+    
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(resourceName);
+            InputSource inputSource = new InputSource(inputStream);
+            xmlReader.parse(inputSource);
+    
+            xmlToObjectTest(jaxbUnmarshallerHandler.getResult());
+        }
     }
 
     public void testSchemaGen(List<InputStream> controlSchemas) throws Exception {

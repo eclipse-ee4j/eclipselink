@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
@@ -291,6 +292,9 @@ public abstract class MarshalRecord extends XMLRecord {
             XPathNode xPathNode = groupingElements.get(x);
             xPathFragment = xPathNode.getXPathFragment();
             openStartElement(xPathFragment, namespaceResolver);
+
+            predicateAttribute(xPathFragment, namespaceResolver);
+
             if (x != (groupingElementsSize - 1)) {
                 closeStartElement();
             }
@@ -356,6 +360,21 @@ public abstract class MarshalRecord extends XMLRecord {
      */
     public void setGroupingElement(ArrayList<XPathNode> elements) {
         this.groupingElements = elements;
+    }
+
+    /**
+     * Marshal the attribute for the predicate if one was specified. 
+     */
+    public void predicateAttribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
+        if(null != xPathFragment) {
+            XPathPredicate predicate = xPathFragment.getPredicate();
+            if(null != predicate) {
+                XPathFragment predicateXPathFragment = predicate.getXPathFragment();
+                if(predicateXPathFragment.isAttribute()) {
+                    attribute(predicateXPathFragment, namespaceResolver, predicate.getValue());
+                }
+            }
+        }
     }
 
 }

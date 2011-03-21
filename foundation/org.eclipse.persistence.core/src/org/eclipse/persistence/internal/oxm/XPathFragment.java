@@ -56,6 +56,15 @@ public class XPathFragment {
     protected boolean isSelfFragment = false;
     private QName leafElementType;
     private boolean generatedPrefix = false;   
+    private XPathPredicate predicate; 
+
+    public XPathPredicate getPredicate() {
+        return predicate;
+    }
+
+    public void setPredicate(XPathPredicate condition) {
+        this.predicate = condition;
+    }
 
     public XPathFragment(String xpathString) {
         setXPath(xpathString);
@@ -147,6 +156,10 @@ public class XPathFragment {
         return hasAttribute;
     }
 
+    public void setAttribute(boolean isAttribute) {
+        hasAttribute = isAttribute;
+    }
+
     public String getShortName() {
         return shortName;
     }
@@ -192,19 +205,29 @@ public class XPathFragment {
     }
 
     private int hasIndex(String xpathString) {
-        int index;
+        int index = -1;
         int startindex = xpathString.lastIndexOf('[');
         if ((startindex != -1) && (xpathString.lastIndexOf(']') != -1)) {
-            setContainsIndex(true);
             StringTokenizer st = new StringTokenizer(xpathString, "[]");
             String element = st.nextToken();
-            String indexString = st.nextToken();
 
-            try {
-                index = Integer.valueOf(indexString).intValue();
-            } catch (NumberFormatException e) {
-                setShouldExecuteSelectNodes(true);
-                index = -1;
+            while(st.hasMoreTokens()) {
+                String indexString = st.nextToken();
+                try {
+                    index = Integer.valueOf(indexString).intValue();
+                    setContainsIndex(true);
+                } catch (NumberFormatException e) {
+                    StringTokenizer st2 = new StringTokenizer(indexString, "=");
+                    if(2 == st2.countTokens()) {
+                        XPathFragment xPathFragment = new XPathFragment(st2.nextToken());
+                        String value = st2.nextToken();
+                        value = value.substring(1, value.length() - 1);
+                        predicate = new XPathPredicate(xPathFragment, value);
+                    } else {
+                        setContainsIndex(true);
+                    }
+                    setShouldExecuteSelectNodes(true);
+                }
             }
             shortName = element;
 
@@ -276,6 +299,12 @@ public class XPathFragment {
                 return true;
             }
             XPathFragment xPathFragment = (XPathFragment)object;
+            if(null == predicate && null != xPathFragment.getPredicate()) {
+                return false;
+            }
+            if(null != predicate && !predicate.equals(xPathFragment.getPredicate())) {
+                return false;
+            }
             return ((nameIsText && xPathFragment.nameIsText()) || (localName == xPathFragment.getLocalName()) || ((localName != null) && localName.equals(xPathFragment.getLocalName()))) && ((namespaceURI == xPathFragment.getNamespaceURI()) || ((namespaceURI != null) && namespaceURI.equals(xPathFragment.getNamespaceURI()))) && (this.indexValue == xPathFragment.getIndexValue()) && (nameIsText == xPathFragment.nameIsText());
         } catch (ClassCastException e) {
             return false;

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<customer xmlns="http://www.example.org">
+    <personal-info pi-type="first-name">
+        <name name-type="first">First</name>
+    </personal-info>
+    <personal-info pi-type="last-name">
+        <name name-type="surname">Last</name>
+        <name name-type="last">Surname</name>
+    </personal-info>
+    <personal-info pi-type="nickname">
+        <name name-type="nickname">A</name>
+        <name name-type="nickname">B</name>
+    </personal-info>
+    <contact method="address">
+        <street>123 A Street</street>
+    </contact>
+    <contact method="phone number">555-1111</contact>
+    <contact method="phone number">555-2222</contact>
+</customer>

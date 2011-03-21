@@ -102,6 +102,7 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlCDATA;
 import org.eclipse.persistence.oxm.annotations.XmlClassExtractor;
@@ -1817,7 +1818,7 @@ public class AnnotationsProcessor {
             }
             if (next.getXmlPath() != null) {
                 choiceProp.setXmlPath(next.getXmlPath());
-                boolean isAttribute = next.getXmlPath().contains(AT_SIGN);
+                boolean isAttribute = new XMLField(next.getXmlPath()).getLastXPathFragment().isAttribute();
                 // validate attribute - must be in nested path, not at root
                 if (isAttribute && !next.getXmlPath().contains(SLASH)) {
                     throw JAXBException.invalidXmlPathWithAttribute(propertyName, cls.getQualifiedName(), next.getXmlPath());
@@ -3215,7 +3216,9 @@ public class AnnotationsProcessor {
     			helper.isAnnotationPresent(elem, XmlIDREF.class) || 
     			helper.isAnnotationPresent(elem, XmlPath.class) || 
     			helper.isAnnotationPresent(elem, XmlPaths.class) || 
-    			helper.isAnnotationPresent(elem, XmlInverseReference.class) || 
+    			helper.isAnnotationPresent(elem, XmlInverseReference.class) ||
+    			helper.isAnnotationPresent(elem, XmlJoinNode.class) ||
+    			helper.isAnnotationPresent(elem, XmlJoinNodes.class) ||
     			helper.isAnnotationPresent(elem, XmlReadOnly.class) || 
     			helper.isAnnotationPresent(elem, XmlWriteOnly.class) || 
     			helper.isAnnotationPresent(elem, XmlCDATA.class) || 

@@ -279,6 +279,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                         marshalRecord.openStartElement(newFragment, namespaceResolver);
                         isElementOpen = true;
                         marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + ":" + prefix, namespaceResolver.getDefaultNamespaceURI());
+                        marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
                         xPathFragment = newFragment;
                     } 
                 }
@@ -296,6 +297,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                     updateNamespaces(schemaType, marshalRecord, xmlField);
                 }
                 marshalRecord.closeStartElement();
+                marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
                 if (xmlCompositeDirectCollectionMapping.isCDATA()) {
                     marshalRecord.cdata(stringValue);
                 } else {

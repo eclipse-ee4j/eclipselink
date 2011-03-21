@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.MappingNodeValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
@@ -649,7 +650,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 return;
             }
 
-            XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName);
+            XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName, atts);
             if (null == node) {
                 NodeValue parentNodeValue = xPathNode.getUnmarshalNodeValue();
                 if ((null == xPathNode.getXPathFragment()) && (parentNodeValue != null)) {
@@ -934,7 +935,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     public void skippedEntity(String name) throws SAXException {
     }
 
-    protected XPathNode getNonAttributeXPathNode(String namespaceURI, String localName, String qName) {
+    protected XPathNode getNonAttributeXPathNode(String namespaceURI, String localName, String qName, Attributes attributes) {
         if (0 == levelIndex) {
             return xPathNode;
         }
@@ -965,14 +966,29 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     }
                 }
                 indexMap.put(xPathFragment, newIndex);
-                XPathFragment positionalFragment = new XPathFragment();
-                positionalFragment.setNamespaceURI(xPathFragment.getNamespaceURI());
-                positionalFragment.setLocalName(xPathFragment.getLocalName());
-                positionalFragment.setIndexValue(newIndex);
-                resultNode = (XPathNode)nonAttributeChildrenMap.get(positionalFragment);
+                XPathFragment predicateFragment = new XPathFragment();
+                predicateFragment.setNamespaceURI(xPathFragment.getNamespaceURI());
+                predicateFragment.setLocalName(xPathFragment.getLocalName());
+                predicateFragment.setIndexValue(newIndex);
+                resultNode = (XPathNode)nonAttributeChildrenMap.get(predicateFragment);
                 if (null == resultNode) {
-                    // ANY MAPPING
-                    resultNode = xPathNode.getAnyNode();
+                    predicateFragment.setIndexValue(-1);
+                    for(int x = 0, length = attributes.getLength(); x<length; x++) {
+                        XPathFragment conditionFragment = new XPathFragment();
+                        conditionFragment.setLocalName(attributes.getLocalName(x));
+                        conditionFragment.setNamespaceURI(attributes.getURI(x));
+                        conditionFragment.setAttribute(true);
+                        XPathPredicate condition = new XPathPredicate(conditionFragment, attributes.getValue(x));
+                        predicateFragment.setPredicate(condition);
+                        resultNode = (XPathNode) nonAttributeChildrenMap.get(predicateFragment);
+                        if(null != resultNode) {
+                            break;
+                        }
+                    }
+                    if(null == resultNode) {
+                        // ANY MAPPING
+                        resultNode = xPathNode.getAnyNode();
+                    }
                 }
             }
             return resultNode;
