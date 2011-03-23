@@ -641,6 +641,23 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     /**
+     * Compare objects.
+     */
+    public void compareObjects(Object obj1, Object obj2) {
+        compareObjects(obj1, obj2, getPersistenceUnitName());
+    }
+    
+    /**
+     * Compare objects.
+     */
+    public static void compareObjects(Object obj1, Object obj2, String persistenceUnit) {
+        DatabaseSessionImpl dbs = getServerSession(persistenceUnit); 
+        if (!dbs.compareObjects(obj1, obj2)) {
+            fail("Objects " + obj1 + " and " + obj2 + " are not equal. See log (on finest) for what did not match.");
+        }
+    }
+
+    /**
      * Generic persist test.
      */
     public void verifyPersist(Object object) {

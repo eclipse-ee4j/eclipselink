@@ -2879,11 +2879,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // This means that the object is not in the parent im, so was created under this unit of work.
                 // This means that it must be new.
                 registeredObject = cloneAndRegisterNewObject(object);
+                if (mergeManagerForActiveMerge != null) {
+                    mergeManagerForActiveMerge.getMergedNewObjects().put(registeredObject, registeredObject);
+                }
             }
-        }
-        
-        if (registeredObject != null && mergeManagerForActiveMerge != null){
-            mergeManagerForActiveMerge.getMergedNewObjects().put(registeredObject, registeredObject);
         }
 
         return registeredObject;

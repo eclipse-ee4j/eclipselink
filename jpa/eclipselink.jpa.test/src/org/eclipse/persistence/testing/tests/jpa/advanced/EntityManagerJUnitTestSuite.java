@@ -373,6 +373,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testObjectReferencedInBothEmAndSharedCache_AggregateObjectMapping");
         tests.add("testObjectReferencedInBothEmAndSharedCache_ObjectReferenceMappingVH");
         tests.add("testCharFieldDefaultNullValue");
+        tests.add("testMergeNewReferencingOldChanged");
+        // Bug 340810 - merge problem: existing object referenced by new not cascade merged if not in cache.
+        // Uncomment testMergeNewReferencingOldChangedClearCache when the bug is fixed.
+        // tests.add("testMergeNewReferencingOldChangedClearCache");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -11064,5 +11068,61 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-}
 
+	// Bug 340810 - merge problem: existing object referenced by new not cascade merged if not in cache
+    // Uncomment the test when the bug is fixed
+/*    public void testMergeNewReferencingOldChangedClearCache() {
+        internalTestMergeNewReferencingOldChanged(true);
+    }*/
+    // Bug 340802 - merge problem: existing object referenced by new not cascade merged 
+    public void testMergeNewReferencingOldChanged() {
+        internalTestMergeNewReferencingOldChanged(false);
+    }
+    void internalTestMergeNewReferencingOldChanged(boolean shouldClearCache) {
+        // create and persist Address
+        Address address = new Address();
+        address.setCountry("Original");
+        address.setProvince("Original");
+        address.setPostalCode("Original");
+        address.setCity("Original");
+        address.setStreet("Original");
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        em.persist(address);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        if (shouldClearCache) {
+            clearCache();
+        }
+        
+        // alter the Address, Create a new Employee, assign it the Address, merge the Employee in the new EntityManager.
+        address.setCountry("Updated");
+        address.setProvince("Updated");
+        address.setPostalCode("Updated");
+        address.setCity("Updated");
+        address.setStreet("Updated");
+        Employee emp = new Employee();
+        emp.setFirstName("New");
+        emp.setAddress(address);
+        address.getEmployees().add(emp);
+        em = createEntityManager();
+        beginTransaction(em);
+        Employee empMerged = em.merge(emp);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        Address addressMerged = empMerged.getAddress();
+        
+        // compare would fail unless emp also has id and version
+        emp.setId(empMerged.getId());
+        emp.setVersion(1);
+        compareObjects(emp, empMerged);
+        // compare would fail unless address has the same version as addressMerged
+        address.setVersion(addressMerged.getVersion());
+        compareObjects(address, addressMerged);
+        
+        verifyObjectInCacheAndDatabase(empMerged);
+        verifyObjectInCacheAndDatabase(addressMerged);
+    }
+}

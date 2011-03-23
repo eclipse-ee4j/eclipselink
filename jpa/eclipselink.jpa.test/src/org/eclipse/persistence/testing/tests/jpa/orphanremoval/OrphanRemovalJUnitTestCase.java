@@ -24,7 +24,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
         super(name);
     }
     
-    protected void compareObjects(Object obj, Object objRead) {
+    public void compareObjects(Object obj, Object objRead) {
         assertTrue("The object [" + obj + "] when read back did not match the original", getServerSession().compareObjects(obj, objRead));
     }
     
