@@ -134,6 +134,9 @@ public class CacheableRelationshipsEntity {
     public void addCacheableFalseDetail(CacheableFalseDetail cacheableFalseDetail) {
         cacheableFalseDetails.add(cacheableFalseDetail);
     }
+    public void removeCacheableFalseDetail(CacheableFalseDetail cacheableFalseDetail) {
+        getCacheableFalseDetails().remove(cacheableFalseDetail);
+    }
     /* element collection with ebeddable (false protected)*/
     @ElementCollection
     @CollectionTable(
