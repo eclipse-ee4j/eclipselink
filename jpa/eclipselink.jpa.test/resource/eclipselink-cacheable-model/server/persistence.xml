@@ -96,7 +96,11 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationsipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableRelationshipsEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
         <properties>
