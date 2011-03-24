@@ -53,6 +53,8 @@
  *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
  *     01/06/2011-2.3 Guy Pelletier
  *       - 312244: can't map optional one-to-one relationship using @PrimaryKeyJoinColumn
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -68,6 +70,7 @@ import javax.persistence.PrimaryKeyJoinColumns;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
@@ -97,12 +100,19 @@ import org.eclipse.persistence.mappings.RelationTableMechanism;
  * INTERNAL:
  * A single object relationship accessor.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class ObjectAccessor extends RelationshipAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private Boolean m_id;
     private Boolean m_optional;
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
@@ -119,8 +129,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     /**
      * INTERNAL:
      */
-    protected ObjectAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(annotation, accessibleObject, classAccessor);
+    protected ObjectAccessor(MetadataAnnotation annotation, MetadataAnnotatedElement annotatedElement, ClassAccessor classAccessor) {
+        super(annotation, annotatedElement, classAccessor);
         
         if (annotation != null) {
             m_optional = (Boolean) annotation.getAttribute("optional");
@@ -128,17 +138,15 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         // Set the primary key join columns if some are present.
         // Process all the primary key join columns first.
-        MetadataAnnotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
-        if (primaryKeyJoinColumns != null) {
-            for (Object primaryKeyJoinColumn : (Object[]) primaryKeyJoinColumns.getAttributeArray("value")) { 
-                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessibleObject));
+        if (isAnnotationPresent(PrimaryKeyJoinColumns.class)) {
+            for (Object primaryKeyJoinColumn : (Object[]) getAnnotation(PrimaryKeyJoinColumns.class).getAttributeArray("value")) { 
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation) primaryKeyJoinColumn, this));
             }
         }
         
         // Process the single primary key join column second.
-        MetadataAnnotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
-        if (primaryKeyJoinColumn != null) {
-            m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn, accessibleObject));
+        if (isAnnotationPresent(PrimaryKeyJoinColumn.class)) {
+            m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(PrimaryKeyJoinColumn.class), this));
         }
         
         // Set the mapped by id if one is present.

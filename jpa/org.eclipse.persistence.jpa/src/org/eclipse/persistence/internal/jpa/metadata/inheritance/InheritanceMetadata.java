@@ -16,6 +16,8 @@
  *       - 249860: Implement table per class inheritance support.
  *     12/18/2009-2.1 Guy Pelletier 
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.inheritance;
 
@@ -26,14 +28,22 @@ import org.eclipse.persistence.descriptors.TablePerClassPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Object to represent inheritance metadata. The processing of this metadata
  * to its related class descriptors should be performed by this class.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
@@ -43,6 +53,7 @@ public class InheritanceMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public InheritanceMetadata() {
         super("<inheritance>");
@@ -50,9 +61,10 @@ public class InheritanceMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public InheritanceMetadata(MetadataAnnotation inheritance, MetadataAccessibleObject accessibleObject) {
-        super(inheritance, accessibleObject);
+    public InheritanceMetadata(MetadataAnnotation inheritance, MetadataAccessor accessor) {
+        super(inheritance, accessor);
         
         if (inheritance != null) {
             m_strategy = (String)inheritance.getAttribute("strategy");

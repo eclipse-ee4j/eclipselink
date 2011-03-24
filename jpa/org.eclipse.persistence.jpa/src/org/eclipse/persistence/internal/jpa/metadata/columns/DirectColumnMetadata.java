@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+  * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,17 +13,27 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
  * Object to hold onto relation (fk and pk) column metadata in a Eclipselink
  * database field.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.2
@@ -35,9 +45,10 @@ public class DirectColumnMetadata extends MetadataColumn {
     
     /**
      * INTERNAL:
+     * Used annotation loading.
      */
-    public DirectColumnMetadata(MetadataAnnotation directColumn, MetadataAccessibleObject accessibleObject) {
-        super(directColumn, accessibleObject);
+    public DirectColumnMetadata(MetadataAnnotation directColumn, MetadataAccessor accessor) {
+        super(directColumn, accessor);
         
         if (directColumn != null) {
             m_nullable = (Boolean) directColumn.getAttribute("nullable");
@@ -48,7 +59,7 @@ public class DirectColumnMetadata extends MetadataColumn {
 
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     protected DirectColumnMetadata(String xmlElement) {
         super(xmlElement);

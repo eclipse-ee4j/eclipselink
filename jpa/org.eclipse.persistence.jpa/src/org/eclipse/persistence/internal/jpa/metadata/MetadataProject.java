@@ -71,6 +71,8 @@
  *       - 251554: ExcludeDefaultMapping annotation needed
  *     12/02/2010-2.2 Guy Pelletier 
  *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1055,6 +1057,13 @@ public class MetadataProject {
     public Set<EmbeddableAccessor> getRootEmbeddableAccessors() {
         return m_rootEmbeddableAccessors;
     }
+    
+    /**
+     * INTERNAL:
+     */
+    public AbstractSession getSession() {
+        return m_session;
+    }
 
     /**
      * INTERNAL:
@@ -1355,7 +1364,9 @@ public class MetadataProject {
     /**
      * INTERNAL:
      * Process any and all persistence unit metadata and defaults to the given 
-     * descriptor.
+     * descriptor. This method for will called for every descriptor belonging
+     * to this project/persistence unit.
+     * 
      */
     protected void processPersistenceUnitMetadata(MetadataDescriptor descriptor) {
         // Set the persistence unit meta data (if there is any) on the descriptor.
@@ -1370,6 +1381,7 @@ public class MetadataProject {
                 descriptor.setDefaultAccess(persistenceUnitDefaults.getAccess());
                 descriptor.setDefaultSchema(persistenceUnitDefaults.getSchema());
                 descriptor.setDefaultCatalog(persistenceUnitDefaults.getCatalog());
+                descriptor.setDefaultTenantDiscriminatorColumns(persistenceUnitDefaults.getTenantDiscriminatorColumns());
                 descriptor.setIsCascadePersist(persistenceUnitDefaults.isCascadePersist());
                 
                 // Set any default access methods if specified.
@@ -1437,7 +1449,8 @@ public class MetadataProject {
                 // metadata changes after processing and ensure we always 
                 // process with the correct and necessary metadata.
                 Sequence seq = m_session.getDatasourcePlatform().getDefaultSequence();
-                String defaultTableGeneratorName = (seq instanceof TableSequence) ? ((TableSequence) seq).getTableName() : DEFAULT_TABLE_GENERATOR; 
+                String defaultTableGeneratorName = (seq instanceof TableSequence) ? ((TableSequence) seq).getTableName() : DEFAULT_TABLE_GENERATOR;
+                // Process the default values.
                 processTable(tableGenerator, defaultTableGeneratorName, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema());
                 
                 sequences.put(DEFAULT_TABLE_GENERATOR, tableGenerator.process(m_logger));
@@ -1626,7 +1639,7 @@ public class MetadataProject {
 
         table.getDatabaseTable().setCreationSuffix(table.getCreationSuffix());
 
-        // Process the unique constraints
+        // Process the unique constraints.
         table.processUniqueConstraints();
     }
     
@@ -1661,7 +1674,7 @@ public class MetadataProject {
     public void removeMappedSuperclassAccessor(MetadataClass metadataClass) {
         m_mappedSuperclasseAccessors.remove(metadataClass.getName());
     }
-
+    
     /** 
      * INTERNAL:
      */

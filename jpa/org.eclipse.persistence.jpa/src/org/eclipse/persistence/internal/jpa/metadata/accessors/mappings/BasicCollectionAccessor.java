@@ -29,6 +29,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     01/04/2011-2.3 Guy Pelletier 
  *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -56,13 +58,20 @@ import org.eclipse.persistence.mappings.DirectCollectionMapping;
  * INTERNAL:
  * A basic collection accessor.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink 11g
  */
 @SuppressWarnings("deprecation")
 public class BasicCollectionAccessor extends DirectCollectionAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private ColumnMetadata m_valueColumn;
     
     /**
@@ -88,12 +97,12 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
 
         // Must check, BasicMapAccessor calls this constructor ...
         if (basicCollection != null) {
-            m_valueColumn = new ColumnMetadata((MetadataAnnotation) basicCollection.getAttribute("valueColumn"), accessibleObject);
+            m_valueColumn = new ColumnMetadata((MetadataAnnotation) basicCollection.getAttribute("valueColumn"), this);        
         }
         
         // Set the collection table if one is present.
         if (isAnnotationPresent(CollectionTable.class)) {
-            setCollectionTable(new CollectionTableMetadata(getAnnotation(CollectionTable.class), accessibleObject, false));
+            setCollectionTable(new CollectionTableMetadata(getAnnotation(CollectionTable.class), this, false));
         }
     }
     

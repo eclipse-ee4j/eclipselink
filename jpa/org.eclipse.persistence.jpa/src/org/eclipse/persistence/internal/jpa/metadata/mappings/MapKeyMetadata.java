@@ -14,6 +14,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -24,23 +26,29 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.mappings.CollectionMapping;
 
 /**
  * Object to hold onto map key metadata.
+ *
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 2.0
  */
 public class MapKeyMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private String m_name;
 
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public MapKeyMetadata() {
         super("<map-key>");
@@ -48,16 +56,18 @@ public class MapKeyMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
+     * Used for defaulting.
      */
-    public MapKeyMetadata(MetadataAccessibleObject accessibleObject) {
-        super(null, accessibleObject);
+    public MapKeyMetadata(MetadataAccessor accessor) {
+        super(null, accessor);
     }
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public MapKeyMetadata(MetadataAnnotation mapKey, MetadataAccessibleObject accessibleObject) {
-        super(mapKey, accessibleObject);
+    public MapKeyMetadata(MetadataAnnotation mapKey, MetadataAccessor accessor) {
+        super(mapKey, accessor);
 
         m_name = (String) mapKey.getAttributeString("name");
     }

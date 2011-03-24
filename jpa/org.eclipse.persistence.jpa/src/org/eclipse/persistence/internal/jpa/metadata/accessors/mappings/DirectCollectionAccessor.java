@@ -28,6 +28,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     12/30/2010-2.3 Guy Pelletier  
  *       - 312253: Descriptor exception with Embeddable on DDL gen
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -57,12 +59,19 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
  * Used to support DirectCollection, DirectMap, AggregateCollection through 
  * the ElementCollection, BasicCollection and BasicMap metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
 public abstract class DirectCollectionAccessor extends DirectAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private String m_joinFetch;
     private String m_batchFetch;
     private Integer m_batchFetchSize;
@@ -347,7 +356,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     protected void processCollectionTable(CollectionMapping mapping) {
         // Check that we loaded a collection table otherwise default one.        
         if (m_collectionTable == null) {
-            m_collectionTable = new CollectionTableMetadata(getAccessibleObject());
+            m_collectionTable = new CollectionTableMetadata(this);
         }
         
         // Process any table defaults and log warning messages.

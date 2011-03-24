@@ -17,6 +17,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -31,8 +33,8 @@ import java.util.HashMap;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
@@ -46,19 +48,25 @@ import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 /**
  * INTERNAL:
  * Object to hold onto an object type converter metadata.
+ *
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since TopLink 11g
  */
 public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private List<ConversionValueMetadata> m_conversionValues = new ArrayList<ConversionValueMetadata>();
     private String m_defaultObjectValue;
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public ObjectTypeConverterMetadata() {
         super("<object-type-converter>");
@@ -66,12 +74,13 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public ObjectTypeConverterMetadata(MetadataAnnotation objectTypeConverter, MetadataAccessibleObject accessibleObject) {
-        super(objectTypeConverter, accessibleObject);
+    public ObjectTypeConverterMetadata(MetadataAnnotation objectTypeConverter, MetadataAccessor accessor) {
+        super(objectTypeConverter, accessor);
         
         for (Object conversionValue: (Object[]) objectTypeConverter.getAttributeArray("conversionValues")) {
-            m_conversionValues.add(new ConversionValueMetadata((MetadataAnnotation)conversionValue, accessibleObject));
+            m_conversionValues.add(new ConversionValueMetadata((MetadataAnnotation)conversionValue, accessor));
         }
         
         m_defaultObjectValue = (String) objectTypeConverter.getAttribute("defaultObjectValue"); 

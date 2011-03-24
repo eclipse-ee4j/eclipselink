@@ -28,6 +28,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     01/25/2011-2.3 Guy Pelletier 
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -42,6 +44,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.InterfaceAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorClassMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
@@ -56,12 +59,19 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
  * currently is not required to be defined on the accessible object, that is, 
  * a v1-1 can default if the raw class is an interface.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public class VariableOneToOneAccessor extends ObjectAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     public static final String DEFAULT_QUERY_KEY = "id";
     
     private Integer m_lastDiscriminatorIndex;
@@ -79,8 +89,8 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     /**
      * INTERNAL:
      */
-    public VariableOneToOneAccessor(MetadataAnnotation variableOneToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(variableOneToOne, accessibleObject, classAccessor);
+    public VariableOneToOneAccessor(MetadataAnnotation variableOneToOne, MetadataAnnotatedElement annotatedElement, ClassAccessor classAccessor) {
+        super(variableOneToOne, annotatedElement, classAccessor);
         
         // Initialiaze the discriminator classes list.
         m_discriminatorClasses = new ArrayList<DiscriminatorClassMetadata>();
@@ -92,11 +102,11 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             setTargetEntity(getMetadataClass((String) variableOneToOne.getAttribute("targetInterface")));
             setOrphanRemoval((Boolean) variableOneToOne.getAttribute("orphanRemoval"));
             
-            m_discriminatorColumn = new DiscriminatorColumnMetadata((MetadataAnnotation) variableOneToOne.getAttribute("discriminatorColumn"), accessibleObject);
+            m_discriminatorColumn = new DiscriminatorColumnMetadata((MetadataAnnotation) variableOneToOne.getAttribute("discriminatorColumn"), this);
             
             // Set the discriminator classes if specified.
             for (Object discriminatorClass : (Object[]) variableOneToOne.getAttributeArray("discriminatorClasses")) {
-                m_discriminatorClasses.add(new DiscriminatorClassMetadata((MetadataAnnotation)discriminatorClass, accessibleObject));
+                m_discriminatorClasses.add(new DiscriminatorClassMetadata((MetadataAnnotation) discriminatorClass, this));
             }
         }
     }
@@ -254,7 +264,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
 
         // Process the discriminator column.
         if (m_discriminatorColumn == null) {
-            mapping.setTypeField(new DiscriminatorColumnMetadata().process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN));
+            mapping.setTypeField(new DiscriminatorColumnMetadata(this).process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN));
         } else {
             mapping.setTypeField(m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN));
         }

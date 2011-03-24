@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping file
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -20,13 +22,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 
 /**
  * INTERNAL:
  * Object to hold onto table metadata in a TopLink database table.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
@@ -37,6 +47,7 @@ public class JoinTableMetadata extends TableMetadata {
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public JoinTableMetadata() {
         super("<join-table>");
@@ -44,17 +55,26 @@ public class JoinTableMetadata extends TableMetadata {
     
     /**
      * INTERNAL:
+     * Used for defaulting.
      */
-    public JoinTableMetadata(MetadataAnnotation joinTable, MetadataAccessibleObject accessibleObject) {
-        super(joinTable, accessibleObject);
+    public JoinTableMetadata(MetadataAccessor accessor) {
+        super(null, accessor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for annotation loading.
+     */
+    public JoinTableMetadata(MetadataAnnotation joinTable, MetadataAccessor accessor) {
+        super(joinTable, accessor);
         
         if (joinTable != null) {
             for (Object joinColumn : (Object[]) joinTable.getAttributeArray("joinColumns")) {
-                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessibleObject));
+                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessor));
             }  
         
             for (Object inverseJoinColumn : (Object[]) joinTable.getAttributeArray("inverseJoinColumns")) {
-                m_inverseJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation)inverseJoinColumn, accessibleObject));
+                m_inverseJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation)inverseJoinColumn, accessor));
             }
         }
     }

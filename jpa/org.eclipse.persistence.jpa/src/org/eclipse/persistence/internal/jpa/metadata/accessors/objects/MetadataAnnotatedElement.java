@@ -39,6 +39,8 @@
  *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
  *     01/25/2011-2.3 Guy Pelletier 
  *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 

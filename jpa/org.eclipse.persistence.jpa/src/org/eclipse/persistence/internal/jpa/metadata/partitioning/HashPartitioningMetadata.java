@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     James Sutherland - initial API and implementation
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.partitioning;
 
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.descriptors.partitioning.HashPartitioningPolicy;
@@ -26,23 +28,34 @@ import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
  * INTERNAL:
  * Define JPA meta-data for partitioning policy.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author James Sutherland
  * @since EclipseLink 2.2
  */
 public class HashPartitioningMetadata extends FieldPartitioningMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     protected List<String> connectionPools;
     
     /**
-     * Used for OX mapping.
+     * INTERNAL:
+     * Used for XML loading.
      */
     public HashPartitioningMetadata() {
         super("<hash-partitioning>");
     }
 
-    public HashPartitioningMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject) {
-        super(annotation, accessibleObject);
+    /**
+     * INTERNAL:
+     * Used for annotation loading.
+     */
+    public HashPartitioningMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
+        super(annotation, accessor);
         this.connectionPools = new ArrayList<String>();
         this.connectionPools.addAll((List)Arrays.asList((Object[]) annotation.getAttributeArray("connectionPools")));
     }

@@ -19,6 +19,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     10/28/2010-2.2 Guy Pelletier 
  *       - 3223850: Primary key metadata issues
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -274,6 +276,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_inheritance_subclass_cache_interceptor", "Ignoring the cache interceptor metadata on the inheritance subclass [{0}]. Cache interceptor metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_default_redirectors", "Ignoring the default redirector metadata on the inheritance subclass [{0}]. Default redirector metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_read_only", "Ignoring the read only setting on the inheritance subclass [{0}]. A read only setting should only be specified on the root of the inheritance hierarchy and can not be overridden in an inheritance subclass." },
+        { "metadata_warning_ignore_inheritance_tenant_discriminator_column", "Ignoring the tenant discriminator column setting on the inheritance subclass [{0}]. Tenant discriminator column(s) should only be specified on the root of the inheritance hierarchy and can not be overridden and/or specified in an inheritance subclass." }, 
        
         { "metadata_warning_ignore_mapped_superclass_association_override", "Ignoring the association override named [{0}] defined on the mapped superclass [{1}] for the entity [{2}] since an association override with the same name was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_attribute_override", "Ignoring the attribute override named [{0}] defined on the mapped superclass [{1}] for the entity [{2}] since an attribute override override with the same name was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },

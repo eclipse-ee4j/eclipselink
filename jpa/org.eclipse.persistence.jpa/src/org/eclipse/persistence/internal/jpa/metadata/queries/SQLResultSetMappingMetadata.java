@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -20,6 +22,7 @@ import java.util.List;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -34,6 +37,14 @@ import org.eclipse.persistence.queries.SQLResultSetMapping;
  * INTERNAL:
  * Object to hold onto an sql result mapping metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
@@ -44,7 +55,7 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public SQLResultSetMappingMetadata() {
         super("<sql-result-set-mapping>");
@@ -52,14 +63,15 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public SQLResultSetMappingMetadata(MetadataAnnotation sqlResultSetMapping, MetadataAccessibleObject accessibleObject) {
-        super(sqlResultSetMapping, accessibleObject);
+    public SQLResultSetMappingMetadata(MetadataAnnotation sqlResultSetMapping, MetadataAccessor accessor) {
+        super(sqlResultSetMapping, accessor);
         
         m_name = (String) sqlResultSetMapping.getAttribute("name");
         
         for (Object entityResult : (Object[]) sqlResultSetMapping.getAttributeArray("entities")) {
-            m_entityResults.add(new EntityResultMetadata((MetadataAnnotation)entityResult, accessibleObject));
+            m_entityResults.add(new EntityResultMetadata((MetadataAnnotation)entityResult, accessor));
         }
         
         for (Object columnResult : (Object[]) sqlResultSetMapping.getAttributeArray("columns")) {

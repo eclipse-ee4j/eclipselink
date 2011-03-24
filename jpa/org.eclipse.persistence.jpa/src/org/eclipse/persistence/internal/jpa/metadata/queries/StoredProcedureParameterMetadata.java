@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -21,6 +23,7 @@ import org.eclipse.persistence.annotations.Direction;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -30,6 +33,14 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 /**
  * INTERNAL:
  * Object to hold onto a stored procedure parameter metadata.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since TopLink 11g
@@ -45,7 +56,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public StoredProcedureParameterMetadata() {
         super("<stored-procedure-parameter>");
@@ -53,9 +64,10 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public StoredProcedureParameterMetadata(MetadataAnnotation storedProcedureParameter, MetadataAccessibleObject accessibleObject) {
-        super(storedProcedureParameter, accessibleObject);
+    public StoredProcedureParameterMetadata(MetadataAnnotation storedProcedureParameter, MetadataAccessor accessor) {
+        super(storedProcedureParameter, accessor);
         
         m_direction = (String) storedProcedureParameter.getAttribute("direction");
         m_name = (String) storedProcedureParameter.getAttribute("name");

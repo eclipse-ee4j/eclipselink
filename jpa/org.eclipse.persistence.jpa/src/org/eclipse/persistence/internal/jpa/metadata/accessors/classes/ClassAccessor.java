@@ -65,6 +65,8 @@
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
  *     12/02/2010-2.2 Guy Pelletier 
  *       - 251554: ExcludeDefaultMapping annotation needed
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -159,6 +161,15 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAc
  * INTERNAL:
  * A abstract class accessor. Holds common metadata for entities, embeddables
  * and mapped superclasses.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
@@ -1014,7 +1025,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * flag.
      */
     @Override
-    protected boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
+    public boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
         return getAccessibleObject().isAnnotationPresent(annotation, this);
     }
     
@@ -1154,6 +1165,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Process the copy policy metadata.
         processCopyPolicy();
         
+        // Process the partitioning metadata.
         processPartitioning();
         
         // Process the property metadata.
@@ -1208,14 +1220,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
         MetadataAnnotation associationOverrides = getAnnotation(AssociationOverrides.class);
         if (associationOverrides != null) {
             for (Object associationOverride : (Object[]) associationOverrides.getAttributeArray("value")) {
-                processAssociationOverride(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, getAccessibleObject()));
+                processAssociationOverride(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, this));
             }
         }
         
         // Look for an @AssociationOverride.
         MetadataAnnotation associationOverride = getAnnotation(AssociationOverride.class);
         if (associationOverride != null) {
-            processAssociationOverride(new AssociationOverrideMetadata(associationOverride, getAccessibleObject()));
+            processAssociationOverride(new AssociationOverrideMetadata(associationOverride, this));
         }
     }
     
@@ -1253,14 +1265,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
         MetadataAnnotation attributeOverrides = getAnnotation(AttributeOverrides.class);    
         if (attributeOverrides != null) {
             for (Object attributeOverride : (Object[]) attributeOverrides.getAttribute("value")){ 
-                processAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, getAccessibleObject()));
+                processAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, this));
             }
         }
         
         // Look for an @AttributeOverride.
         MetadataAnnotation attributeOverride = getAnnotation(AttributeOverride.class);
         if (attributeOverride != null) {
-            processAttributeOverride(new AttributeOverrideMetadata(attributeOverride, getAccessibleObject()));
+            processAttributeOverride(new AttributeOverrideMetadata(attributeOverride, this));
         }
     }
     
@@ -1279,7 +1291,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_changeTracking == null) {
-                    new ChangeTrackingMetadata(changeTracking, getAccessibleObject()).process(getDescriptor());
+                    new ChangeTrackingMetadata(changeTracking, this).process(getDescriptor());
                 } else {
                     if (changeTracking != null) {
                         getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, changeTracking, getJavaClassName(), getLocation());
@@ -1312,7 +1324,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                         throw ValidationException.multipleCopyPolicyAnnotationsOnSameClass(getJavaClassName());
                     }
 
-                    new CustomCopyPolicyMetadata(copyPolicy, getAccessibleObject()).process(getDescriptor());
+                    new CustomCopyPolicyMetadata(copyPolicy, this).process(getDescriptor());
                 }
                 
                 if (instantiationCopyPolicy != null){
@@ -1320,11 +1332,11 @@ public abstract class ClassAccessor extends MetadataAccessor {
                         throw ValidationException.multipleCopyPolicyAnnotationsOnSameClass(getJavaClassName());
                     }
                     
-                    new InstantiationCopyPolicyMetadata(instantiationCopyPolicy, getAccessibleObject()).process(getDescriptor());
+                    new InstantiationCopyPolicyMetadata(instantiationCopyPolicy, this).process(getDescriptor());
                 }
                 
                 if (cloneCopyPolicy != null){
-                    new CloneCopyPolicyMetadata(cloneCopyPolicy, getAccessibleObject()).process(getDescriptor());
+                    new CloneCopyPolicyMetadata(cloneCopyPolicy, this).process(getDescriptor());
                 }
                 
             } else {
@@ -1469,13 +1481,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
         MetadataAnnotation properties = getAnnotation(Properties.class);
         if (properties != null) {
             for (Object property : (Object[]) properties.getAttributeArray("value")) {
-                getDescriptor().addProperty(new PropertyMetadata((MetadataAnnotation)property, getAccessibleObject()));
+                getDescriptor().addProperty(new PropertyMetadata((MetadataAnnotation) property, this));
             }
         }
         
         MetadataAnnotation property = getAnnotation(Property.class);
         if (property != null) {
-            getDescriptor().addProperty(new PropertyMetadata(property, getAccessibleObject()));
+            getDescriptor().addProperty(new PropertyMetadata(property, this));
         }
     }
     

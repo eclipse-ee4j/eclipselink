@@ -11,12 +11,15 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
@@ -26,6 +29,14 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * INTERNAL:
  * Object to hold onto an attribute override meta data.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
@@ -34,6 +45,7 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
 
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public AttributeOverrideMetadata() {
         super("<attribute-override>");
@@ -41,11 +53,12 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public AttributeOverrideMetadata(MetadataAnnotation attributeOverride, MetadataAccessibleObject accessibleObject) {
-        super(attributeOverride, accessibleObject);
+    public AttributeOverrideMetadata(MetadataAnnotation attributeOverride, MetadataAccessor accessor) {
+        super(attributeOverride, accessor);
 
-        m_column = new ColumnMetadata((MetadataAnnotation) attributeOverride.getAttribute("column"), accessibleObject);
+        m_column = new ColumnMetadata((MetadataAnnotation) attributeOverride.getAttribute("column"), accessor);
     }
 
     /**

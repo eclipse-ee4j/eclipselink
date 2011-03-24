@@ -52,6 +52,8 @@
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
  *     12/02/2010-2.2 Guy Pelletier 
  *       - 251554: ExcludeDefaultMapping annotation needed 
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -71,6 +73,15 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 /**
  * INTERNAL:
  * An embeddable accessor.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0

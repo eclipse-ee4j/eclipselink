@@ -84,6 +84,8 @@
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
  *     12/02/2010-2.2 Guy Pelletier 
  *       - 251554: ExcludeDefaultMapping annotation needed
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -123,6 +125,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListener;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
@@ -168,6 +171,7 @@ public class MetadataDescriptor {
     private List<String> m_orderByAttributeNames;
     private List<String> m_idOrderByAttributeNames;
     private List<MetadataDescriptor> m_embeddableDescriptors;
+    private List<TenantDiscriminatorColumnMetadata> m_defaultTenantDiscriminatorColumns;
     
     // Holds a list of derived id accessors.
     private List<ObjectAccessor> m_derivedIdAccessors;
@@ -237,6 +241,7 @@ public class MetadataDescriptor {
         m_idOrderByAttributeNames = new ArrayList<String>();
         m_embeddableDescriptors = new ArrayList<MetadataDescriptor>();
         m_derivedIdAccessors = new ArrayList<ObjectAccessor>();
+        m_defaultTenantDiscriminatorColumns = new ArrayList<TenantDiscriminatorColumnMetadata>();
         
         m_pkClassIDs = new HashMap<String, String>();
         m_genericTypes = new HashMap<String, String>();
@@ -552,29 +557,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * The default table name is the descriptor alias, unless this descriptor 
-     * metadata is an inheritance subclass with a SINGLE_TABLE strategy. Then 
-     * it is the table name of the root descriptor metadata.
-     */
-    public String getDefaultTableName() {
-        String defaultTableName = null;
-        if (getProject() != null && getProject().getPersistenceUnitMetadata() != null && getProject().getPersistenceUnitMetadata().isDelimitedIdentifiers()){
-            defaultTableName = getAlias();
-        } else {
-            defaultTableName = getAlias().toUpperCase();
-        }
-        
-        if (isInheritanceSubclass()) {    
-            if (getInheritanceRootDescriptor().usesSingleTableInheritanceStrategy()) {
-                defaultTableName = getInheritanceRootDescriptor().getPrimaryTableName();
-            }
-        }
-        
-        return defaultTableName;
-    }
-    
-    /**
-     * INTERNAL:
      */
     public ClassAccessor getClassAccessor() {
         return m_classAccessor;
@@ -621,6 +603,31 @@ public class MetadataDescriptor {
      */
     public String getDefaultSchema() {
         return m_defaultSchema;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public List<TenantDiscriminatorColumnMetadata> getDefaultTenantDiscriminatorColumns() {
+        return m_defaultTenantDiscriminatorColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * The default table name is the descriptor alias, unless this descriptor 
+     * metadata is an inheritance subclass with a SINGLE_TABLE strategy. Then 
+     * it is the table name of the root descriptor metadata.
+     */
+    public String getDefaultTableName() {
+        String defaultTableName =(getProject().useDelimitedIdentifier()) ? getAlias() : getAlias().toUpperCase();
+        
+        if (isInheritanceSubclass()) {    
+            if (getInheritanceRootDescriptor().usesSingleTableInheritanceStrategy()) {
+                defaultTableName = getInheritanceRootDescriptor().getPrimaryTableName();
+            }
+        }
+        
+        return defaultTableName;
     }
     
     /**
@@ -1202,15 +1209,6 @@ public class MetadataDescriptor {
     public boolean hasCopyPolicy() {
         return m_hasCopyPolicy;
     }
-    
-    /**
-     * INTERNAL:
-     * Indicates that a PrimaryKey annotation or primary-key element has been 
-     * processed for this descriptor.
-     */
-    public boolean hasPrimaryKey() {
-        return m_hasPrimaryKey;
-    }
 
     /**
      * INTERNAL:
@@ -1219,15 +1217,6 @@ public class MetadataDescriptor {
      */
     public boolean hasCustomizer() {
         return m_hasCustomizer;
-    }
-    
-    /**
-     * INTERNAL:
-     * Indicates that a read only annotation or read only element has already 
-     * been processed for this descriptor.
-     */
-    public boolean hasReadOnly() {
-        return m_hasReadOnly;
     }
     
     /**
@@ -1263,10 +1252,38 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Indicates that a PrimaryKey annotation or primary-key element has been 
+     * processed for this descriptor.
+     */
+    public boolean hasPrimaryKey() {
+        return m_hasPrimaryKey;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true is the descriptor has primary key fields set.
      */
     public boolean hasPrimaryKeyFields() {
         return m_descriptor.getPrimaryKeyFields().size() > 0;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that a read only annotation or read only element has already 
+     * been processed for this descriptor.
+     */
+    public boolean hasReadOnly() {
+        return m_hasReadOnly;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates if multitenant metadata has been processed for this descriptor.
+     */
+    public boolean hasMultitenant() { 
+        // TODO: Guy update when core is implemented
+        return false;
+        //return m_descriptor.hasTenantDiscriminatorFields();
     }
     
     /**
@@ -1503,6 +1520,13 @@ public class MetadataDescriptor {
      */
     public void setDefaultSchema(String defaultSchema) {
         m_defaultSchema = defaultSchema;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setDefaultTenantDiscriminatorColumns(List<TenantDiscriminatorColumnMetadata> defaultTenantDiscriminatorColumns) {
+        m_defaultTenantDiscriminatorColumns = defaultTenantDiscriminatorColumns;
     }
     
     /**

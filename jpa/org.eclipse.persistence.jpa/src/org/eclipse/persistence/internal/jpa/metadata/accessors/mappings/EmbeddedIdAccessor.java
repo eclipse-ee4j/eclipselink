@@ -41,6 +41,8 @@
  *       - 330755: Nested embeddables can't be used as embedded ids
  *     12/23/2010-2.3 Guy Pelletier  
  *       - 331386: NPE when mapping chain of 2 multi-column relationships using JPA 2.0 and @EmbeddedId composite PK-FK
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -60,12 +62,19 @@ import org.eclipse.persistence.mappings.EmbeddableMapping;
 /**
  * An embedded id relationship accessor.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class EmbeddedIdAccessor extends EmbeddedAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     // We store map of fields that are the primary key and add them only at the
     // end of processing since they may change when processing attribute 
     // overrides. They are mapped by attribute name.

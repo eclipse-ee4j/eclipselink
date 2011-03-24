@@ -13,6 +13,8 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     01/19/2010-2.1 Guy Pelletier 
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
+ *     03/23/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa;
 
@@ -35,6 +37,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCo
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.ConcurrencyTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockingExtendedScopeTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.UpdateAllQueryAdvancedJunitTest;
@@ -120,6 +123,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedFetchGroupJunitTest.suite());
+        suite.addTest(AdvancedMultiTenantJunitTest.suite());
         suite.addTest(PessimisticLockingExtendedScopeTestSuite.suite());
         suite.addTest(UpdateAllQueryAdvancedJunitTest.suite());
         fullSuite.addTest(suite);

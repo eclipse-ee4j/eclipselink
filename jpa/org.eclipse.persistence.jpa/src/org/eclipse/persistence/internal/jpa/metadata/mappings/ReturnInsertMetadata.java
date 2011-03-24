@@ -12,28 +12,37 @@
  *       - 296612:  Add current annotation only metadata support of return insert/update to the EclipseLink-ORM.XML Schema
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Object to hold onto return insert metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 2.1
  */
 public class ReturnInsertMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private Boolean m_returnOnly;
 
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public ReturnInsertMetadata() {
         super("<return-insert>");
@@ -41,9 +50,10 @@ public class ReturnInsertMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public ReturnInsertMetadata(MetadataAnnotation returnInsert, MetadataAccessibleObject accessibleObject) {
-        super(returnInsert, accessibleObject);
+    public ReturnInsertMetadata(MetadataAnnotation returnInsert, MetadataAccessor accessor) {
+        super(returnInsert, accessor);
 
         m_returnOnly = (Boolean) returnInsert.getAttributeBooleanDefaultFalse("returnOnly");
     }

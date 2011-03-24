@@ -13,13 +13,15 @@
  *       - 218084: Implement metadata merging functionality between mapping file
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -28,16 +30,23 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * INTERNAL:
  * Object to hold onto a secondary table metadata in a TopLink database table.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class SecondaryTableMetadata extends TableMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public SecondaryTableMetadata() {
         super("<secondary-table>");
@@ -45,13 +54,14 @@ public class SecondaryTableMetadata extends TableMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public SecondaryTableMetadata(MetadataAnnotation secondaryTable, MetadataAccessibleObject accessibleObject) {
-        super(secondaryTable, accessibleObject);
+    public SecondaryTableMetadata(MetadataAnnotation secondaryTable, MetadataAccessor accessor) {
+        super(secondaryTable, accessor);
        
         if (secondaryTable != null) {
             for (Object primaryKeyJoinColumn : (Object[]) secondaryTable.getAttributeArray("pkJoinColumns")) {
-                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessibleObject));
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessor));
             }
         }
     }

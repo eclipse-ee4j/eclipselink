@@ -17,6 +17,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     09/16/2010-2.2 Guy Pelletier 
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -48,12 +50,19 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * Object to represent all the attributes of an XML defined entity,
  * mapped-superclass or embeddable.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public class XMLAttributes extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private EmbeddedIdAccessor m_embeddedId;
     
     private List<BasicAccessor> m_basics;

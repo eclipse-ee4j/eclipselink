@@ -20,6 +20,8 @@
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -32,12 +34,18 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
  * are required. For VIRTUAL access defaults we use the defaults "get" and 
  * "set" if no access methods are specified.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Chris Delahunt
  * @since EclipseLink 1.0M8
  */
 public class AccessMethodsMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     // Access method names are required in XML, therefore will override these
     // default values used for VIRTUAL access defaults.
     String getMethodName = "get";
@@ -45,6 +53,7 @@ public class AccessMethodsMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public AccessMethodsMetadata() {
         super("<access-methods>");

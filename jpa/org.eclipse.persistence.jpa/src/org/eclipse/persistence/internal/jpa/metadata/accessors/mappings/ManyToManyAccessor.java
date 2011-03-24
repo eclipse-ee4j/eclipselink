@@ -23,6 +23,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -31,7 +33,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -41,12 +43,19 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
  * INTERNAL:
  * A many to many relationship accessor.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class ManyToManyAccessor extends CollectionAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -58,8 +67,8 @@ public class ManyToManyAccessor extends CollectionAccessor {
     /**
      * INTERNAL:
      */
-    public ManyToManyAccessor(MetadataAnnotation manyToMany, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(manyToMany, accessibleObject, classAccessor);
+    public ManyToManyAccessor(MetadataAnnotation manyToMany, MetadataAnnotatedElement annotatedElement, ClassAccessor classAccessor) {
+        super(manyToMany, annotatedElement, classAccessor);
         
         setMappedBy((String) manyToMany.getAttribute("mappedBy"));
     }

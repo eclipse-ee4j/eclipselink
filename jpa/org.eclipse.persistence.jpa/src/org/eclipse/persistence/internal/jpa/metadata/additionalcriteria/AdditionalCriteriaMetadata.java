@@ -10,27 +10,36 @@
  * Contributors:
  *     10/08/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.additionalcriteria;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Object to hold onto additional criteria metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 2.2
  */
-public class AdditionalCriteriaMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-    
+public class AdditionalCriteriaMetadata extends ORMetadata {    
     protected String m_criteria;
 
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public AdditionalCriteriaMetadata() {
         super("<additional-criteria>");
@@ -38,9 +47,10 @@ public class AdditionalCriteriaMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public AdditionalCriteriaMetadata(MetadataAnnotation additionalCriteria, MetadataAccessibleObject accessibleObject) {
-        super(additionalCriteria, accessibleObject);
+    public AdditionalCriteriaMetadata(MetadataAnnotation additionalCriteria, MetadataAccessor accessor) {
+        super(additionalCriteria, accessor);
         
         m_criteria = (String) additionalCriteria.getAttribute("value");
     }

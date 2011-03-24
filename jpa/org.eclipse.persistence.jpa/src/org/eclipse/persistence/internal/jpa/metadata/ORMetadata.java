@@ -24,6 +24,8 @@
  *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  *     01/25/2011-2.3 Guy Pelletier 
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -33,6 +35,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -76,6 +81,12 @@ public abstract class ORMetadata {
     // 2 - Annotated element (Class, Method or Field)
     private Object m_location;
     
+    // The project this metadata belongs to. Having the project can facilitate 
+    // individual metadata process methods since it contains the logger, 
+    // persistence unit property metadata, the session etc. 
+    private MetadataProject m_project;
+    
+    // If this metadata was loaded from XML the entity mappings will be set.
     private XMLEntityMappings m_entityMappings;
     
     // The tag name of the XML element. Used in logging messages and validation
@@ -110,21 +121,33 @@ public abstract class ORMetadata {
     public abstract boolean equals(Object objectToCompare);
     
     /**
-     * Used for defaulting.
+     * INTERNAL:
+     * Used for annotation loading of metadata objects.
      */
-    public ORMetadata(MetadataAccessibleObject accessibleObject) {
-        m_location = accessibleObject;
-        m_accessibleObject = accessibleObject;
+    public ORMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
+        m_location = accessor.getLocation();
+        m_accessibleObject = accessor.getAccessibleObject();
+        m_project = accessor.getProject();
+        m_annotation = annotation;
     }
     
     /**
      * INTERNAL:
-     * Used for Annotation loading.
+     * Used for annotation loading of class and mapping accessors.
      */
-    public ORMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject) {
+    public ORMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, MetadataProject project) {
         m_location = accessibleObject;
-        m_annotation = annotation;
+        m_project = project;
         m_accessibleObject = accessibleObject;
+        m_annotation = annotation;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for defaulting.
+     */
+    protected ORMetadata(MetadataProject project) {
+        m_project = project;
     }
     
     /**
@@ -260,6 +283,14 @@ public abstract class ORMetadata {
     
     /**
      * INTERNAL:
+     * Return the metadata logger.
+     */
+    public MetadataLogger getLogger() {
+        return m_project.getLogger();
+    }
+    
+    /**
+     * INTERNAL:
      * Return the MetadataClass for the class.
      */
     public MetadataClass getMetadataClass(Class javaClass) {
@@ -330,6 +361,14 @@ public abstract class ORMetadata {
     
     /**
      * INTERNAL:
+     * Return the MetadataProject.
+     */
+    public MetadataProject getProject() {
+        return m_project;
+    }
+    
+    /**
+     * INTERNAL:
      * This is a value is that is used when logging messages for overriding.
      * @see shouldOverride
      */
@@ -360,6 +399,7 @@ public abstract class ORMetadata {
      * class) should override this method. 
      */
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        m_project = entityMappings.getProject();
         m_accessibleObject = accessibleObject;
         setEntityMappings(entityMappings);
     }
@@ -580,6 +620,31 @@ public abstract class ORMetadata {
     public void setEntityMappings(XMLEntityMappings entityMappings) {
         m_entityMappings = entityMappings;
         m_location = entityMappings.getMappingFileOrURL();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setFieldName(DatabaseField field, String name) {
+        // This may set the use delimited identifier flag to true.
+        field.setName(name, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+        
+        // The check is necessary to avoid overriding a true setting (set after 
+        // setting the name of the field). We don't want to override it at this
+        // point if the global flag is set to false. 
+        if (m_project.useDelimitedIdentifier()) {
+            field.setUseDelimiters(true);
+        } else if (m_project.getShouldForceFieldNamesToUpperCase() && ! field.shouldUseDelimiters()) {
+            field.useUpperCaseForComparisons(true);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the metadata project.
+     */
+    public void setProject(MetadataProject project) {
+        m_project = project;
     }
     
     /**

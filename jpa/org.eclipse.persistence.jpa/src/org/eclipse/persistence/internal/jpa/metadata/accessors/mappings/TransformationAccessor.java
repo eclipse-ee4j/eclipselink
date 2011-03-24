@@ -18,6 +18,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -30,6 +32,7 @@ import org.eclipse.persistence.annotations.WriteTransformers;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.internal.jpa.metadata.transformers.ReadTransformerMetadata;
@@ -43,14 +46,21 @@ import org.eclipse.persistence.mappings.TransformationMapping;
  * TransformationAccessor. Transformation annotation may or may not be present 
  * on the accessible object.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Andrei Ilitchev
  * @since EclipseLink 1.0 
  */
 public class TransformationAccessor extends BasicAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private ReadTransformerMetadata m_readTransformer;
-    private List<WriteTransformerMetadata> m_writeTransformers;
+    private List<WriteTransformerMetadata> m_writeTransformers = new ArrayList<WriteTransformerMetadata>();
     
     /**
      * INTERNAL:
@@ -62,33 +72,29 @@ public class TransformationAccessor extends BasicAccessor {
     /**
      * INTERNAL:
      */
-    public TransformationAccessor(MetadataAnnotation transformation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(transformation, accessibleObject, classAccessor);
+    public TransformationAccessor(MetadataAnnotation transformation, MetadataAnnotatedElement annotatedElement, ClassAccessor classAccessor) {
+        super(transformation, annotatedElement, classAccessor);
         
         if (transformation != null) {
             setFetch((String) transformation.getAttribute("fetch"));
             setOptional((Boolean) transformation.getAttribute("optional"));
         }
         
-        MetadataAnnotation readTransformer = getAnnotation(ReadTransformer.class);
-        if (readTransformer != null) {
-            m_readTransformer = new ReadTransformerMetadata(readTransformer, accessibleObject);
+        if (isAnnotationPresent(ReadTransformer.class)) {
+            m_readTransformer = new ReadTransformerMetadata(getAnnotation(ReadTransformer.class), this);
         }
         
-        // Set the write transformers if specified.
-        m_writeTransformers = new ArrayList<WriteTransformerMetadata>();
+        // Set the write transformers if specified. 
         // Process all the write transformers first.
-        MetadataAnnotation writeTransformers = getAnnotation(WriteTransformers.class);
-        if (writeTransformers != null) {
-            for (Object transformer : (Object[]) writeTransformers.getAttributeArray("value")) {
-                m_writeTransformers.add(new WriteTransformerMetadata((MetadataAnnotation)transformer, accessibleObject));
+        if (isAnnotationPresent(WriteTransformers.class)) {
+            for (Object transformer : (Object[]) getAnnotation(WriteTransformers.class).getAttributeArray("value")) {
+                m_writeTransformers.add(new WriteTransformerMetadata((MetadataAnnotation) transformer, this));
             }
         }
         
         // Process the single write transformer second.
-        MetadataAnnotation writeTransformer = getAnnotation(WriteTransformer.class);
-        if (writeTransformer != null) {
-            m_writeTransformers.add(new WriteTransformerMetadata(writeTransformer, accessibleObject));
+        if (isAnnotationPresent(WriteTransformer.class)) {
+            m_writeTransformers.add(new WriteTransformerMetadata(getAnnotation(WriteTransformer.class), this));
         }
         
         // TODO: ReturningPolicy

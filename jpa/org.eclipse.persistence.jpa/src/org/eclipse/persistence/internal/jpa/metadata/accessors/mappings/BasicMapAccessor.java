@@ -23,6 +23,8 @@
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -40,12 +42,19 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * INTERNAL:
  * A basic collection accessor.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink 11g
  */
 public class BasicMapAccessor extends BasicCollectionAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private ColumnMetadata m_keyColumn;
     private String m_keyConverter;
     private String m_valueConverter;
@@ -64,7 +73,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     public BasicMapAccessor(MetadataAnnotation basicMap, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(basicMap, accessibleObject, classAccessor);
         
-        m_keyColumn = new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("keyColumn"), accessibleObject);
+        m_keyColumn = new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("keyColumn"), this);
 
         MetadataAnnotation keyConvert = (MetadataAnnotation) basicMap.getAttribute("keyConverter");
         if (keyConvert != null) {
@@ -76,7 +85,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
             m_valueConverter = (String)valueConvert.getAttribute("value");
         }
         
-        setValueColumn(new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("valueColumn"), accessibleObject));
+        setValueColumn(new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("valueColumn"), this));
         setFetch((String) basicMap.getAttribute("fetch"));
     }
    

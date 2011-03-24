@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -21,6 +23,7 @@ import java.util.Map;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -30,6 +33,14 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * INTERNAL:
  * Object to hold onto named native query metadata.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
@@ -41,7 +52,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public NamedNativeQueryMetadata() {
         super("<named-native-query>");
@@ -49,19 +60,21 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    protected NamedNativeQueryMetadata(String javaClassName) {
-        super(javaClassName);
+    public NamedNativeQueryMetadata(MetadataAnnotation namedNativeQuery, MetadataAccessor accessor) {
+        super(namedNativeQuery, accessor);
+        
+        m_resultClass = getMetadataClass((String) namedNativeQuery.getAttributeString("resultClass")); 
+        m_resultSetMapping = (String) namedNativeQuery.getAttributeString("resultSetMapping");
     }
     
     /**
      * INTERNAL:
+     * 
      */
-    public NamedNativeQueryMetadata(MetadataAnnotation namedNativeQuery, MetadataAccessibleObject accessibleObject) {
-        super(namedNativeQuery, accessibleObject);
-        
-        m_resultClass = getMetadataClass((String) namedNativeQuery.getAttributeString("resultClass")); 
-        m_resultSetMapping = (String) namedNativeQuery.getAttributeString("resultSetMapping");
+    protected NamedNativeQueryMetadata(String javaClassName) {
+        super(javaClassName);
     }
     
     /**

@@ -25,6 +25,8 @@
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -48,6 +50,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSup
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFile;
+import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
@@ -99,15 +102,15 @@ public class XMLEntityMappings extends ORMetadata {
     private List<StructConverterMetadata> m_structConverters;
     private List<TableGeneratorMetadata> m_tableGenerators;
     private List<TypeConverterMetadata> m_typeConverters;
-    
-    protected List<PartitioningMetadata> partitioning;
-    protected List<RangePartitioningMetadata> rangePartitioning;
-    protected List<ValuePartitioningMetadata> valuePartitioning;
-    protected List<UnionPartitioningMetadata> unionPartitioning;
-    protected List<ReplicationPartitioningMetadata> replicationPartitioning;
-    protected List<RoundRobinPartitioningMetadata> roundRobinPartitioning;
-    protected List<HashPartitioningMetadata> hashPartitioning;
-    protected List<PinnedPartitioningMetadata> pinnedPartitioning;
+    private List<PartitioningMetadata> m_partitioning;
+    private List<RangePartitioningMetadata> m_rangePartitioning;
+    private List<ValuePartitioningMetadata> m_valuePartitioning;
+    private List<UnionPartitioningMetadata> m_unionPartitioning;
+    private List<ReplicationPartitioningMetadata> m_replicationPartitioning;
+    private List<RoundRobinPartitioningMetadata> m_roundRobinPartitioning;
+    private List<HashPartitioningMetadata> m_hashPartitioning;
+    private List<PinnedPartitioningMetadata> m_pinnedPartitioning;
+    private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns;
 
     private MetadataFactory m_factory;
     private MetadataFile m_file;
@@ -274,6 +277,14 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<HashPartitioningMetadata> getHashPartitioning() {
+        return m_hashPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<MappedSuperclassAccessor> getMappedSuperclasses() {
         return m_mappedSuperclasses;
     }
@@ -336,8 +347,24 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<PartitioningMetadata> getPartitioning() {
+        return m_partitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public XMLPersistenceUnitMetadata getPersistenceUnitMetadata() {
         return m_persistenceUnitMetadata;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<PinnedPartitioningMetadata> getPinnedPartitioning() {
+        return m_pinnedPartitioning;
     }
     
     /**
@@ -345,6 +372,30 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public MetadataProject getProject() {
         return m_project;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<RangePartitioningMetadata> getRangePartitioning() {
+        return m_rangePartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ReplicationPartitioningMetadata> getReplicationPartitioning() {
+        return m_replicationPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<RoundRobinPartitioningMetadata> getRoundRobinPartitioning() {
+        return m_roundRobinPartitioning;
     }
     
     /**
@@ -391,8 +442,32 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<TenantDiscriminatorColumnMetadata> getTenantDiscriminatorColumns() {
+        return m_tenantDiscriminatorColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<TypeConverterMetadata> getTypeConverters() {
         return m_typeConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<UnionPartitioningMetadata> getUnionPartitioning() {
+        return m_unionPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ValuePartitioningMetadata> getValuePartitioning() {
+        return m_valuePartitioning;
     }
     
     /**
@@ -475,7 +550,7 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      */
     public boolean loadedForCanonicalModel() {
-        return this.m_loadedForCanonicalModel;
+        return m_loadedForCanonicalModel;
     }
     
     /**
@@ -544,31 +619,37 @@ public class XMLEntityMappings extends ORMetadata {
         }
         
         // Add the partitioning to the project.
-        for (PartitioningMetadata partitioning : this.partitioning) {
+        for (PartitioningMetadata partitioning : m_partitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        for (ReplicationPartitioningMetadata partitioning : this.replicationPartitioning) {
+        
+        for (ReplicationPartitioningMetadata partitioning : m_replicationPartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        for (RoundRobinPartitioningMetadata partitioning : this.roundRobinPartitioning) {
+        
+        for (RoundRobinPartitioningMetadata partitioning : m_roundRobinPartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        for (PinnedPartitioningMetadata partitioning : this.pinnedPartitioning) {
+        
+        for (PinnedPartitioningMetadata partitioning : m_pinnedPartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        for (RangePartitioningMetadata partitioning : this.rangePartitioning) {
+        
+        for (RangePartitioningMetadata partitioning : m_rangePartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        for (ValuePartitioningMetadata partitioning : this.valuePartitioning) {
+        
+        for (ValuePartitioningMetadata partitioning : m_valuePartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        for (HashPartitioningMetadata partitioning : this.hashPartitioning) {
+        
+        for (HashPartitioningMetadata partitioning : m_hashPartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
@@ -625,6 +706,11 @@ public class XMLEntityMappings extends ORMetadata {
         // Set the entity-mappings schema if specified.
         if (m_schema != null) {
             descriptor.setDefaultSchema(m_schema);
+        }
+        
+        // Set the tenant-ids if specified.
+        if (! m_tenantDiscriminatorColumns.isEmpty()) {
+            descriptor.setDefaultTenantDiscriminatorColumns(m_tenantDiscriminatorColumns);
         }
     }
 
@@ -797,6 +883,14 @@ public class XMLEntityMappings extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setHashPartitioning(List<HashPartitioningMetadata> hashPartitioning) {
+        m_hashPartitioning = hashPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public void setIsEclipseLinkORMFile(boolean isEclipseLinkORMFile) {
         m_isEclipseLinkORMFile = isEclipseLinkORMFile;
@@ -882,8 +976,24 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setPartitioning(List<PartitioningMetadata> partitioning) {
+        m_partitioning = partitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setPersistenceUnitMetadata(XMLPersistenceUnitMetadata persistenceUnitMetadata) {
         m_persistenceUnitMetadata = persistenceUnitMetadata;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPinnedPartitioning(List<PinnedPartitioningMetadata> pinnedPartitioning) {
+        m_pinnedPartitioning = pinnedPartitioning;
     }
     
     /**
@@ -892,6 +1002,30 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setProject(MetadataProject project) {
         m_project = project;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setRangePartitioning(List<RangePartitioningMetadata> rangePartitioning) {
+        m_rangePartitioning = rangePartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setReplicationPartitioning(List<ReplicationPartitioningMetadata> replicationPartitioning) {
+        m_replicationPartitioning = replicationPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setRoundRobinPartitioning(List<RoundRobinPartitioningMetadata> roundRobinPartitioning) {
+        m_roundRobinPartitioning = roundRobinPartitioning;
     }
     
     /**
@@ -938,6 +1072,14 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setTenantDiscriminatorColumns(List<TenantDiscriminatorColumnMetadata> tenantDiscriminatorColumns) {
+        m_tenantDiscriminatorColumns = tenantDiscriminatorColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
         m_typeConverters = typeConverters;
     }
@@ -946,71 +1088,23 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setVersion(String version) {
-        m_version = version;
+    public void setUnionPartitioning(List<UnionPartitioningMetadata> unionPartitioning) {
+        m_unionPartitioning = unionPartitioning;
     }
     
-    public List<PartitioningMetadata> getPartitioning() {
-        return partitioning;
-    }
-
-    public void setPartitioning(List<PartitioningMetadata> partitioning) {
-        this.partitioning = partitioning;
-    }
-
-    public List<RangePartitioningMetadata> getRangePartitioning() {
-        return rangePartitioning;
-    }
-
-    public void setRangePartitioning(List<RangePartitioningMetadata> rangePartitioning) {
-        this.rangePartitioning = rangePartitioning;
-    }
-
-    public List<ValuePartitioningMetadata> getValuePartitioning() {
-        return valuePartitioning;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setValuePartitioning(List<ValuePartitioningMetadata> valuePartitioning) {
-        this.valuePartitioning = valuePartitioning;
+        m_valuePartitioning = valuePartitioning;
     }
-
-    public List<UnionPartitioningMetadata> getUnionPartitioning() {
-        return unionPartitioning;
-    }
-
-    public void setUnionPartitioning(List<UnionPartitioningMetadata> unionPartitioning) {
-        this.unionPartitioning = unionPartitioning;
-    }
-
-    public List<ReplicationPartitioningMetadata> getReplicationPartitioning() {
-        return replicationPartitioning;
-    }
-
-    public void setReplicationPartitioning(List<ReplicationPartitioningMetadata> replicationPartitioning) {
-        this.replicationPartitioning = replicationPartitioning;
-    }
-
-    public List<RoundRobinPartitioningMetadata> getRoundRobinPartitioning() {
-        return roundRobinPartitioning;
-    }
-
-    public void setRoundRobinPartitioning(List<RoundRobinPartitioningMetadata> roundRobinPartitioning) {
-        this.roundRobinPartitioning = roundRobinPartitioning;
-    }
-
-    public List<PinnedPartitioningMetadata> getPinnedPartitioning() {
-        return pinnedPartitioning;
-    }
-
-    public void setPinnedPartitioning(List<PinnedPartitioningMetadata> pinnedPartitioning) {
-        this.pinnedPartitioning = pinnedPartitioning;
-    }
-
-    public List<HashPartitioningMetadata> getHashPartitioning() {
-        return hashPartitioning;
-    }
-
-    public void setHashPartitioning(List<HashPartitioningMetadata> hashPartitioning) {
-        this.hashPartitioning = hashPartitioning;
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setVersion(String version) {
+        m_version = version;
     }
 }

@@ -22,6 +22,8 @@
 <!--        - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings (update version to 2.2)  -->
 <!--     10/15/2010-2.2 Guy Pelletier                                                                                                -->
 <!--       - 322008: Improve usability of additional criteria applied to queries at the session/EM                                   -->
+<!--     03/24/2011-2.3 Guy Pelletier                                                                                                -->
+<!--       - 337323: Multi-tenant with shared schema support (part 1)                                                                -->
 <!-- ******************************************************************************************************************************* -->
 
 <!-- Java Persistence API object-relational mapping file schema -->
@@ -30,11 +32,11 @@
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
   elementFormDefault="qualified" 
   attributeFormDefault="unqualified" 
-  version="2.2">
+  version="2.3">
 
   <xsd:annotation>
     <xsd:documentation>
-      @(#)eclipselink_orm_2_2.xsd 2.2  June 14 2010
+      @(#)eclipselink_orm_2_3.xsd 2.3  March 23 2011
     </xsd:documentation>
   </xsd:annotation>
   
@@ -55,8 +57,8 @@
        <entity-mappings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm 
-       eclipselink_orm_2_2.xsd
-       version="2.2">
+       eclipselink_orm_2_3.xsd
+       version="2.3">
        ...
        </entity-mappings>
 
@@ -258,7 +260,6 @@
 
   <!-- **************************************************** -->
 
-
   <xsd:simpleType name="cache-type">
     <xsd:annotation>
       <xsd:documentation>
@@ -342,6 +343,7 @@
   </xsd:simpleType>
 
   <!-- **************************************************** -->
+  
   <xsd:simpleType name="cache-isolation-type">
     <xsd:annotation>
       <xsd:documentation>
@@ -639,7 +641,9 @@
         <xsd:element name="access" type="orm:access-type"
                      minOccurs="0"/>
         <xsd:element name="access-methods" type="orm:access-methods" 
-                     minOccurs="0"/>                     
+                     minOccurs="0"/>
+        <xsd:element name="tenant-discriminator" type="orm:tenant-discriminator" 
+                     minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
@@ -672,7 +676,7 @@
                      minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
       <xsd:attribute name="version" type="orm:versionType" 
-                     fixed="2.2" use="required"/>
+                     fixed="2.3" use="required"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -799,6 +803,8 @@
                      minOccurs="0"/>
         <xsd:element name="cascade-persist" type="orm:emptyType" 
                      minOccurs="0"/>
+        <xsd:element name="tenant-discriminator" type="orm:tenant-discriminator" 
+                     minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="entity-listeners" type="orm:entity-listeners"
                      minOccurs="0"/>
     </xsd:sequence>
@@ -907,7 +913,7 @@
     <xsd:attribute name="exclude-default-mappings" type="xsd:boolean"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:group name="partitioning-group">
     <xsd:sequence>
@@ -923,6 +929,8 @@
     </xsd:sequence>
   </xsd:group>
       
+  <!-- **************************************************** -->
+    
   <xsd:simpleType name="access-type">
     <xsd:annotation>
       <xsd:documentation>
@@ -939,7 +947,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="association-override">
     <xsd:annotation>
@@ -966,7 +974,7 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="attribute-override">
     <xsd:annotation>
@@ -987,7 +995,7 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="attributes">
     <xsd:annotation>
@@ -1034,7 +1042,7 @@
     </xsd:sequence>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="basic">
     <xsd:annotation>
@@ -1079,7 +1087,7 @@
     <xsd:attribute name="attribute-type" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="basic-collection">
     <xsd:annotation>
@@ -1226,7 +1234,7 @@
     </xsd:sequence>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="class-extractor">
     <xsd:annotation>
@@ -1279,7 +1287,7 @@
     <xsd:attribute name="class" type="xsd:string" use="required"/>
   </xsd:complexType>
   
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="clone-copy-policy">
     <xsd:annotation>
@@ -1429,7 +1437,7 @@
   </xsd:complexType>
 
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="column">
     <xsd:annotation>
@@ -1463,7 +1471,7 @@
     <xsd:attribute name="scale" type="xsd:int"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="conversion-value">
     <xsd:annotation>
@@ -2081,7 +2089,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="discriminator-value">
     <xsd:annotation>
@@ -2097,9 +2105,9 @@
     <xsd:restriction base="xsd:string"/>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
-<xsd:complexType name="element-collection">
+  <xsd:complexType name="element-collection">
     <xsd:annotation>
       <xsd:documentation>
 
@@ -2197,9 +2205,9 @@
     <xsd:attribute name="fetch" type="orm:fetch-type"/>
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="attribute-type" type="xsd:string"/>
-</xsd:complexType>
+  </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="embeddable">
     <xsd:annotation>
@@ -2266,7 +2274,7 @@
     <xsd:attribute name="attribute-type" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="embedded-id">
     <xsd:annotation>
@@ -2288,7 +2296,7 @@
     <xsd:attribute name="attribute-type" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="entity-listener">
     <xsd:annotation>
@@ -2313,7 +2321,7 @@
     <xsd:attribute name="class" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="entity-listeners">
     <xsd:annotation>
@@ -2332,7 +2340,7 @@
     </xsd:sequence>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="entity-result">
     <xsd:annotation>
@@ -2355,7 +2363,7 @@
     <xsd:attribute name="discriminator-column" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="enum-type">
     <xsd:annotation>
@@ -2374,7 +2382,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="enumerated">
     <xsd:annotation>
@@ -2390,7 +2398,7 @@
     <xsd:restriction base="orm:enum-type"/>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="fetch-attribute">
     <xsd:annotation>
@@ -2410,7 +2418,7 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
   
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="fetch-group">
     <xsd:annotation>
@@ -2445,7 +2453,7 @@
     <xsd:attribute name="load" type="xsd:boolean"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="fetch-type">
     <xsd:annotation>
@@ -2461,7 +2469,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="field-result">
     <xsd:annotation>
@@ -2479,7 +2487,7 @@
     <xsd:attribute name="column" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="generated-value">
     <xsd:annotation>
@@ -2497,7 +2505,7 @@
     <xsd:attribute name="generator" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="generation-type">
     <xsd:annotation>
@@ -2515,7 +2523,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="id">
     <xsd:annotation>
@@ -2556,7 +2564,7 @@
     <xsd:attribute name="attribute-type" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="id-class">
     <xsd:annotation>
@@ -2572,7 +2580,7 @@
     <xsd:attribute name="class" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="id-validation">
     <xsd:annotation>
@@ -2616,6 +2624,8 @@
     </xsd:restriction>
   </xsd:simpleType>
 
+  <!-- **************************************************** -->
+  
   <xsd:simpleType name="cache-key-type">
     <xsd:annotation>
       <xsd:documentation>
@@ -2693,7 +2703,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="instantiation-copy-policy">
     <xsd:annotation>
@@ -2748,7 +2758,7 @@
     <xsd:attribute name="table" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="join-fetch-type">
     <xsd:annotation>
@@ -2776,7 +2786,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="batch-fetch-type">
     <xsd:annotation>
@@ -2845,7 +2855,7 @@
     <xsd:attribute name="creation-suffix" type="xsd:string" />
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="lob">
     <xsd:annotation>
@@ -2858,7 +2868,7 @@
     </xsd:annotation>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="lock-mode-type">
     <xsd:annotation>
@@ -2881,9 +2891,9 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
-<xsd:complexType name="many-to-many">
+  <xsd:complexType name="many-to-many">
     <xsd:annotation>
       <xsd:documentation>
 
@@ -2960,7 +2970,7 @@
     <xsd:attribute name="attribute-type" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="many-to-one">
     <xsd:annotation>
@@ -3001,7 +3011,7 @@
     <xsd:attribute name="id" type="xsd:boolean"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="map-key">
     <xsd:annotation>
@@ -3017,7 +3027,7 @@
     <xsd:attribute name="name" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="map-key-class">
     <xsd:annotation>
@@ -3033,7 +3043,7 @@
     <xsd:attribute name="class" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="map-key-column">
     <xsd:annotation>
@@ -3067,7 +3077,7 @@
     <xsd:attribute name="scale" type="xsd:int"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="map-key-join-column">
     <xsd:annotation>
@@ -3097,8 +3107,7 @@
     <xsd:attribute name="table" type="xsd:string"/>
   </xsd:complexType>
 
-
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="mapped-superclass">
     <xsd:annotation>
@@ -3119,6 +3128,7 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:element name="multitenant" type="orm:multitenant" minOccurs="0"/>
       <xsd:element name="additional-criteria" type="orm:additional-criteria" minOccurs="0"/>
       <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
       <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
@@ -3181,7 +3191,59 @@
     <xsd:attribute name="exclude-default-mappings" type="xsd:boolean"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="multitenant">
+    <xsd:annotation>
+      <xsd:documentation>
+ 
+        @Target({TYPE}) 
+        @Retention(RUNTIME)
+        public @interface Multitenant {
+            /**
+             * (Optional) Specify the multi-tenant strategy to use.
+             */
+            MultitenantType value() default MultitenantType.SINGLE_TABLE;
+        }
+ 
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="tenant-discriminator" type="orm:tenant-discriminator" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="type" type="orm:multitenant-type"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+  
+  <xsd:simpleType name="multitenant-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum MultitenantType {
+            /**
+             * Specifies that table(s) the entity maps to includes rows for multiple 
+             * tenants. The tenant discriminator column(s) are used with application 
+             * context values to limit what a persistence context can access.
+             */
+            SINGLE_TABLE, 
+
+            /**
+             * Specifies that different tables are used for each tenant. The table scan 
+             * be uniquely identified by name, schema/tablespace.
+             */
+            TABLE_PER_TENANT 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="SINGLE_TABLE"/>
+      <xsd:enumeration value="TABLE_PER_TENANT"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!-- **************************************************** -->
 
   <xsd:complexType name="named-native-query">
     <xsd:annotation>
@@ -3209,7 +3271,7 @@
     <xsd:attribute name="result-set-mapping" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="named-query">
     <xsd:annotation>
@@ -3233,9 +3295,9 @@
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
-</xsd:complexType>
+  </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="named-stored-procedure-query">
     <xsd:annotation>
@@ -3354,7 +3416,7 @@
 
   <!-- **************************************************** -->
 
-<xsd:complexType name="one-to-many">
+  <xsd:complexType name="one-to-many">
     <xsd:annotation>
       <xsd:documentation>
 
@@ -3437,7 +3499,7 @@
     <xsd:attribute name="attribute-type" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="one-to-one">
     <xsd:annotation>
@@ -3485,9 +3547,9 @@
     <xsd:attribute name="orphan-removal" type="xsd:boolean"/>
     <xsd:attribute name="maps-id" type="xsd:string"/>
     <xsd:attribute name="id" type="xsd:boolean"/>
-</xsd:complexType>
+  </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="optimistic-locking">
     <xsd:annotation>
@@ -3602,7 +3664,7 @@
     <xsd:restriction base="xsd:string"/>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="order-column">
     <xsd:annotation>
@@ -3648,7 +3710,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="post-load">
     <xsd:annotation>
@@ -3665,7 +3727,7 @@
     <xsd:attribute name="method-name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="post-persist">
     <xsd:annotation>
@@ -3682,7 +3744,7 @@
     <xsd:attribute name="method-name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="post-remove">
     <xsd:annotation>
@@ -3699,7 +3761,7 @@
     <xsd:attribute name="method-name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="post-update">
     <xsd:annotation>
@@ -3716,7 +3778,7 @@
     <xsd:attribute name="method-name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="pre-persist">
     <xsd:annotation>
@@ -3733,7 +3795,7 @@
     <xsd:attribute name="method-name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="pre-remove">
     <xsd:annotation>
@@ -3750,7 +3812,7 @@
     <xsd:attribute name="method-name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="pre-update">
     <xsd:annotation>
@@ -3767,7 +3829,7 @@
     <xsd:attribute name="method-name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="primary-key">
     <xsd:annotation>
@@ -3833,7 +3895,7 @@
     <xsd:attribute name="column-definition" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="property">
     <xsd:annotation>
@@ -3892,79 +3954,79 @@
     <xsd:attribute name="value" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="query-redirectors">
     <xsd:annotation>
       <xsd:documentation>
 
-@Target({TYPE}) @Retention(RUNTIME)
-public @interface QueryRedirectors {
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface QueryRedirectors {
     
-    /**
-     * This AllQueries Query Redirector will be applied to any executing object query
-     * that does not have a more precise redirector (like the 
-     * ReadObjectQuery Redirector) or a redirector set directly on the query.
-     * Query redirectors allow the user to intercept query execution preventing
-     * it or alternately performing some side effect like auditing.
-     * 
-     */
-    Class allQueries() default void.class;
+            /**
+             * This AllQueries Query Redirector will be applied to any executing object query
+             * that does not have a more precise redirector (like the 
+             * ReadObjectQuery Redirector) or a redirector set directly on the query.
+             * Query redirectors allow the user to intercept query execution preventing
+             * it or alternately performing some side effect like auditing.
+             * 
+             */
+            Class allQueries() default void.class;
     
-    /**
-     * A Default ReadAll Query Redirector will be applied to any executing
-     * ReadAllQuery that does not have a redirector set directly on the query.
-     * Query redirectors allow the user to intercept query execution preventing
-     * it or alternately performing some side effect like auditing.
-     * For users executing a JPA Query through the getResultList() API this is the redirector that will be invoked
-     */
-    Class readAll() default void.class;
+            /**
+             * A Default ReadAll Query Redirector will be applied to any executing
+             * ReadAllQuery that does not have a redirector set directly on the query.
+             * Query redirectors allow the user to intercept query execution preventing
+             * it or alternately performing some side effect like auditing.
+             * For users executing a JPA Query through the getResultList() API this is the redirector that will be invoked
+             */
+            Class readAll() default void.class;
     
-    /**
-     * A Default ReadObject Query Redirector will be applied to any executing
-     * ReadObjectQuery that does not have a redirector set directly on the query.
-     * Query redirectors allow the user to intercept query execution preventing
-     * it or alternately performing some side effect like auditing.
-     * For users executing a JPA Query through the getSingleResult() API or EntityManager.find() this is the redirector that will be invoked
-     */
-    Class readObject() default void.class;
+            /**
+             * A Default ReadObject Query Redirector will be applied to any executing
+             * ReadObjectQuery that does not have a redirector set directly on the query.
+             * Query redirectors allow the user to intercept query execution preventing
+             * it or alternately performing some side effect like auditing.
+             * For users executing a JPA Query through the getSingleResult() API or EntityManager.find() this is the redirector that will be invoked
+             */
+            Class readObject() default void.class;
     
-    /**
-     * A Default ReportQuery Redirector will be applied to any executing
-     * ReportQuery that does not have a redirector set directly on the query.
-     * Query redirectors allow the user to intercept query execution preventing
-     * it or alternately performing some side effect like auditing.
-     * For users executing a JPA Query that contains agregate functions or selects multiple entities this is the redirector that will be invoked
-     */
-    Class report() default void.class;
+            /**
+             * A Default ReportQuery Redirector will be applied to any executing
+             * ReportQuery that does not have a redirector set directly on the query.
+             * Query redirectors allow the user to intercept query execution preventing
+             * it or alternately performing some side effect like auditing.
+             * For users executing a JPA Query that contains agregate functions or selects multiple entities this is the redirector that will be invoked
+             */
+            Class report() default void.class;
     
-    /**
-     * A Default Update Query Redirector will be applied to any executing
-     * UpdateObjectQuery or UpdateAllQuery that does not have a redirector set directly on the query.
-     * In EclipseLink an UpdateObjectQuery is executed whenever flushing changes to the datasource.
-     * Query redirectors allow the user to intercept query execution preventing
-     * it or alternately performing some side effect like auditing.
-     */ 
-    Class update() default void.class;
+            /**
+             * A Default Update Query Redirector will be applied to any executing
+             * UpdateObjectQuery or UpdateAllQuery that does not have a redirector set directly on the query.
+             * In EclipseLink an UpdateObjectQuery is executed whenever flushing changes to the datasource.
+             * Query redirectors allow the user to intercept query execution preventing
+             * it or alternately performing some side effect like auditing.
+             */ 
+            Class update() default void.class;
     
-    /**
-     * A Default Insert Query Redirector will be applied to any executing
-     * InsertObjectQuery that does not have a redirector set directly on the query.
-     * In EclipseLink an InsertObjectQuery is executed when persisting an object to the datasource.
-     * Query redirectors allow the user to intercept query execution preventing
-     * it or alternately performing some side effect like auditing.
-     */
-    Class insert() default void.class;
+            /**
+             * A Default Insert Query Redirector will be applied to any executing
+             * InsertObjectQuery that does not have a redirector set directly on the query.
+             * In EclipseLink an InsertObjectQuery is executed when persisting an object to the datasource.
+             * Query redirectors allow the user to intercept query execution preventing
+             * it or alternately performing some side effect like auditing.
+             */
+            Class insert() default void.class;
     
-    /**
-     * A Default Delete Object Query Redirector will be applied to any executing
-     * DeleteObjectQuery or DeleteAllQuery that does not have a redirector set directly on the query.
-     * Query redirectors allow the user to intercept query execution preventing
-     * it or alternately performing some side effect like auditing.
-     */
-    Class delete() default void.class;
-
-}
+            /**
+             * A Default Delete Object Query Redirector will be applied to any executing
+             * DeleteObjectQuery or DeleteAllQuery that does not have a redirector set directly on the query.
+             * Query redirectors allow the user to intercept query execution preventing
+             * it or alternately performing some side effect like auditing.
+             */
+            Class delete() default void.class;
+        }
+        
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="all-queries" type="xsd:string"/>
@@ -4075,7 +4137,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="creation-suffix" type="xsd:string" />
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="sequence-generator">
     <xsd:annotation>
@@ -4104,7 +4166,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="allocation-size" type="xsd:int"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="sql-result-set-mapping">
     <xsd:annotation>
@@ -4129,7 +4191,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="stored-procedure-parameter">
     <xsd:annotation>
@@ -4234,6 +4296,7 @@ public @interface QueryRedirectors {
     <xsd:sequence>
       <xsd:element name="unique-constraint" type="orm:unique-constraint" 
                    minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="multitenant" type="orm:multitenant" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
@@ -4241,7 +4304,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="creation-suffix" type="xsd:string" />
   </xsd:complexType>
   
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="index">
     <xsd:annotation>
@@ -4292,7 +4355,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="unique" type="xsd:boolean"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="table-generator">
     <xsd:annotation>
@@ -4331,7 +4394,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="allocation-size" type="xsd:int"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="temporal">
     <xsd:annotation>
@@ -4367,7 +4430,71 @@ public @interface QueryRedirectors {
         <xsd:enumeration value="TIMESTAMP"/>
      </xsd:restriction>
   </xsd:simpleType>
+  
+  <!-- **************************************************** -->
 
+  <xsd:complexType name="tenant-discriminator">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) 
+        @Retention(RUNTIME)
+        public @interface TenantDiscriminator {
+            /**
+             * (Optional) The name of column to be used for the discriminator.
+             */
+            String name() default "eclipselink.tenant-id";
+
+            /**
+             * (Optional) The name of the context property to apply to the 
+             * tenant discriminator column.
+             */
+            String contextProperty() default "TENANT_ID";
+
+            /**
+             * (Optional) The type of object/column to use as a class discriminator.
+             * Defaults to {@link DiscriminatorType#STRING DiscriminatorType.STRING}.
+             */
+            DiscriminatorType discriminatorType() default DiscriminatorType.STRING;
+
+            /**
+             * (Optional) The SQL fragment that is used when generating the DDL
+             * for the discriminator column.
+             * Defaults to the provider-generated SQL to create a column
+             * of the specified discriminator type.
+             */
+            String columnDefinition() default "";
+
+            /**
+             * (Optional) The column length for String-based discriminator types.
+             * Ignored for other discriminator types.
+             */
+            int length() default 31;
+
+            /**
+             * (Optional) The name of the table that contains the column.
+             * If absent the column is assumed to be in the primary table.
+             */
+            String table() default "";
+
+            /**
+             * Specifies that the tenant discriminator column is part of the primary 
+             * key of the tables.
+             */
+            boolean primaryKey() default false; 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="column-name" type="xsd:string"/>
+    <xsd:attribute name="discriminator-type" type="orm:discriminator-type"/>
+    <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="table" type="xsd:string"/>
+    <xsd:attribute name="length" type="xsd:int"/>
+    <xsd:attribute name="primary-key" type="xsd:boolean"/>
+  </xsd:complexType>
+  
   <!-- **************************************************** -->  
 
   <xsd:complexType name="time-of-day">
@@ -4411,7 +4538,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="millisecond" type="xsd:integer"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="transformation">
     <xsd:annotation>
@@ -4484,7 +4611,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="type-converter">
     <xsd:annotation>
@@ -4542,7 +4669,7 @@ public @interface QueryRedirectors {
     <xsd:attribute name="name" type="xsd:string"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
+  <!-- **************************************************** -->
 
   <xsd:complexType name="variable-one-to-one">
     <xsd:annotation>
@@ -4733,7 +4860,9 @@ public @interface QueryRedirectors {
     <xsd:attribute name="transformer-class" type="xsd:string"/>
     <xsd:attribute name="method" type="xsd:string"/>
   </xsd:complexType>
-  
+
+  <!-- **************************************************** -->
+   
   <xsd:complexType name="batch-fetch">
     <xsd:annotation>
       <xsd:documentation>

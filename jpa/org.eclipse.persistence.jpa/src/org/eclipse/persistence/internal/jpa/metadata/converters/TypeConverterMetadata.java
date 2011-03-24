@@ -15,12 +15,15 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -36,12 +39,18 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
  * INTERNAL:
  * Object to hold onto a type converter metadata. 
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink 11g
  */
 public class TypeConverterMetadata extends AbstractConverterMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private MetadataClass m_dataType;
     private MetadataClass m_objectType;
     private String m_dataTypeName;
@@ -49,26 +58,29 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public TypeConverterMetadata() {
         super("<type-converter>");
     }
-    
+
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public TypeConverterMetadata(String xmlElement) {
-        super(xmlElement);
+    public TypeConverterMetadata(MetadataAnnotation typeConverter, MetadataAccessor accessor) {
+        super(typeConverter, accessor);
+        
+        m_dataType = getMetadataClass((String)typeConverter.getAttributeString("dataType")); 
+        m_objectType = getMetadataClass((String)typeConverter.getAttributeString("objectType")); 
     }
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
-    public TypeConverterMetadata(MetadataAnnotation typeConverter, MetadataAccessibleObject accessibleObject) {
-        super(typeConverter, accessibleObject);
-        
-        m_dataType = getMetadataClass((String)typeConverter.getAttributeString("dataType")); 
-        m_objectType = getMetadataClass((String)typeConverter.getAttributeString("objectType")); 
+    protected TypeConverterMetadata(String xmlElement) {
+        super(xmlElement);
     }
     
     /**

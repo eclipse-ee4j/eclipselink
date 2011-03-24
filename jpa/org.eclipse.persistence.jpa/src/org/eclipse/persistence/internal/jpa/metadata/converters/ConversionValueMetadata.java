@@ -11,15 +11,25 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Object to hold onto conversion values.
+ * 
+  * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
@@ -30,7 +40,7 @@ public class ConversionValueMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public ConversionValueMetadata() {
         super("<conversion-value");
@@ -38,9 +48,10 @@ public class ConversionValueMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public ConversionValueMetadata(MetadataAnnotation conversionValue, MetadataAccessibleObject accessibleObject) {
-        super(conversionValue, accessibleObject);
+    public ConversionValueMetadata(MetadataAnnotation conversionValue, MetadataAccessor accessor) {
+        super(conversionValue, accessor);
         
         m_dataValue = (String) conversionValue.getAttribute("dataValue"); 
         m_objectValue = (String) conversionValue.getAttribute("objectValue");  

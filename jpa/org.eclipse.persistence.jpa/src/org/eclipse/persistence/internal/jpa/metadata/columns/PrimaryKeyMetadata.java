@@ -17,6 +17,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     10/28/2010-2.2 Guy Pelletier 
  *       - 3223850: Primary key metadata issues
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -29,26 +31,33 @@ import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
 /**
  * Object to hold onto primary key metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @see PrimaryKey
  * @author James Sutherland
  * @since EclipseLink 1.1
  */
 public class PrimaryKeyMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private String m_validation;
     private String m_cacheKeyType;
     private List<ColumnMetadata> m_columns = new ArrayList<ColumnMetadata>();
 
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public PrimaryKeyMetadata() {
         super("<primary-key>");
@@ -56,16 +65,17 @@ public class PrimaryKeyMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public PrimaryKeyMetadata(MetadataAnnotation primaryKey, MetadataAccessibleObject accessibleObject) {
-        super(primaryKey, accessibleObject);
+    public PrimaryKeyMetadata(MetadataAnnotation primaryKey, MetadataAccessor accessor) {
+        super(primaryKey, accessor);
         
         m_validation = (String) primaryKey.getAttribute("validation");
         
         m_cacheKeyType = (String) primaryKey.getAttribute("cacheKeyType"); 
         
         for (Object selectedColumn : (Object[]) primaryKey.getAttributeArray("columns")) {
-            m_columns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessibleObject));
+            m_columns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessor));
         }
     }
 

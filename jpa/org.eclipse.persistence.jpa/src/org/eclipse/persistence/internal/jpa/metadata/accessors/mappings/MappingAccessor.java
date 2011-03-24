@@ -67,6 +67,8 @@
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
  *     12/01/2010-2.2 Guy Pelletier 
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -137,12 +139,19 @@ import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
  * INTERNAL:
  * An abstract mapping accessor. Holds common metadata for all mappings.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public abstract class MappingAccessor extends MetadataAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-    
     // Reserved converter names
     private static final String CONVERT_NONE = "none";
     private static final String CONVERT_SERIALIZED = "serialized";
@@ -414,7 +423,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * @see CollectionAccessor
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
-        return new ColumnMetadata(getAccessibleObject());
+        return new ColumnMetadata(this);
     }
     
     /**
@@ -912,7 +921,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * flag.
      */
     @Override
-    protected boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
+    public boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
         return getAccessibleObject().isAnnotationPresent(annotation, getClassAccessor());
     }
     
@@ -1433,7 +1442,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected void processEnumerated(EnumeratedMetadata enumerated, DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         if (enumerated == null) {
-            enumerated = new EnumeratedMetadata(getAccessibleObject());
+            enumerated = new EnumeratedMetadata(this);
         }
         
         enumerated.process(mapping, this, referenceClass, isForMapKey);
@@ -1624,13 +1633,13 @@ public abstract class MappingAccessor extends MetadataAccessor {
             MetadataAnnotation properties = getAnnotation(Properties.class);
             if (properties != null) {
                 for (Object property : (Object[]) properties.getAttribute("value")) {
-                    processProperty(mapping, new PropertyMetadata((MetadataAnnotation)property, getAccessibleObject()));
+                    processProperty(mapping, new PropertyMetadata((MetadataAnnotation)property, this));
                 }
             }
             
             MetadataAnnotation property = getAnnotation(Property.class);
             if (property != null) {
-                processProperty(mapping, new PropertyMetadata(property, getAccessibleObject()));
+                processProperty(mapping, new PropertyMetadata(property, this));
             }    
         }
     }
@@ -1687,7 +1696,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * the mapping.
      */
     protected void processSerialized(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {        
-        new SerializedMetadata(getAccessibleObject()).process(mapping, this, referenceClass, isForMapKey);
+        new SerializedMetadata(this).process(mapping, this, referenceClass, isForMapKey);
     }
     
     /**
@@ -1697,7 +1706,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * the mapping.
      */
     protected void processSerialized(DatabaseMapping mapping, MetadataClass referenceClass, MetadataClass classification, boolean isForMapKey) {
-        new SerializedMetadata(getAccessibleObject()).process(mapping, this, referenceClass, classification, isForMapKey);
+        new SerializedMetadata(this).process(mapping, this, referenceClass, classification, isForMapKey);
     }
     
     /**

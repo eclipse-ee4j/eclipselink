@@ -15,6 +15,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -23,8 +25,8 @@ import java.sql.Types;
 import org.eclipse.persistence.config.StructConverterType;
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
@@ -38,15 +40,22 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
  * 
  * This class will allow a StructConverter to be added to a Session through 
  * annotations when defined with the StructConverter annotation.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  */
 public class StructConverterMetadata extends AbstractConverterMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private String m_converter;
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public StructConverterMetadata() {
         super("<struct-converter>");
@@ -54,9 +63,10 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public StructConverterMetadata(MetadataAnnotation structConverter, MetadataAccessibleObject accessibleObject) {
-        super(structConverter, accessibleObject);
+    public StructConverterMetadata(MetadataAnnotation structConverter, MetadataAccessor accessor) {
+        super(structConverter, accessor);
         
         setConverter((String) structConverter.getAttribute("converter"));
     }

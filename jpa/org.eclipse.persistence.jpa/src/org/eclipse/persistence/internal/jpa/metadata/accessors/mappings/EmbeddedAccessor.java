@@ -27,6 +27,8 @@
  *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -56,14 +58,21 @@ import org.eclipse.persistence.mappings.EmbeddableMapping;
  * level. An embedded owning descriptor is a reference back to the actual
  * owning entity's descriptor where the first embedded was discovered.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class EmbeddedAccessor extends MappingAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
-    private List<AssociationOverrideMetadata> m_associationOverrides;
-    private List<AttributeOverrideMetadata> m_attributeOverrides;
+    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
+    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
 
     /**
      * INTERNAL:
@@ -87,35 +96,29 @@ public class EmbeddedAccessor extends MappingAccessor {
         super(embedded, accessibleObject, classAccessor);
         
         // Set the attribute overrides if some are present.
-        m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
         // Process the attribute overrides first.
-        MetadataAnnotation attributeOverrides = getAnnotation(AttributeOverrides.class);
-        if (attributeOverrides != null) {
-            for (Object attributeOverride : (Object[]) attributeOverrides.getAttributeArray("value")) {
-                m_attributeOverrides.add(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, accessibleObject));
+        if (isAnnotationPresent(AttributeOverrides.class)) {
+            for (Object attributeOverride : (Object[]) getAnnotation(AttributeOverrides.class).getAttributeArray("value")) {
+                m_attributeOverrides.add(new AttributeOverrideMetadata((MetadataAnnotation) attributeOverride, this));
             }
         }
         
         // Process the single attribute override second.  
-        MetadataAnnotation attributeOverride = getAnnotation(AttributeOverride.class);  
-        if (attributeOverride != null) {
-            m_attributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, accessibleObject));
+        if (isAnnotationPresent(AttributeOverride.class)) {
+            m_attributeOverrides.add(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), this));
         }
         
         // Set the association overrides if some are present.
-        m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
         // Process the attribute overrides first.
-        MetadataAnnotation associationOverrides = getAnnotation(AssociationOverrides.class);
-        if (associationOverrides != null) {
-            for (Object associationOverride : (Object[]) associationOverrides.getAttributeArray("value")) {
-                m_associationOverrides.add(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, accessibleObject));
+        if (isAnnotationPresent(AssociationOverrides.class)) {
+            for (Object associationOverride : (Object[]) getAnnotation(AssociationOverrides.class).getAttributeArray("value")) {
+                m_associationOverrides.add(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, this));
             }
         }
         
         // Process the single attribute override second.
-        MetadataAnnotation associationOverride = getAnnotation(AssociationOverride.class);  
-        if (associationOverride != null) {
-            m_associationOverrides.add(new AssociationOverrideMetadata(associationOverride, accessibleObject));
+        if (isAnnotationPresent(AssociationOverride.class)) {
+            m_associationOverrides.add(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), this));
         }
     }
     

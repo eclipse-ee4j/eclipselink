@@ -16,6 +16,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -52,8 +54,8 @@ public class PropertyMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public PropertyMetadata(MetadataAnnotation property, MetadataAccessibleObject accessibleObject) {
-        super(property, accessibleObject);
+    public PropertyMetadata(MetadataAnnotation property, MetadataAccessor accessor) {
+        super(property, accessor);
         
         m_name = (String)property.getAttributeString("name");
         m_value = (String)property.getAttributeString("value");

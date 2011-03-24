@@ -15,6 +15,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -22,23 +24,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 
 /**
  * Object to hold onto an association override meta data.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public class AssociationOverrideMetadata extends OverrideMetadata {
     private JoinTableMetadata m_joinTable;
-    private List<JoinColumnMetadata> m_joinColumns;
+    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
     
     /**
      * INTERNAL:
-     * Assumed to be used solely for OX loading.
+     * Used for XML loading.
      */
     public AssociationOverrideMetadata() {
         super("<association-override>");
@@ -46,18 +56,18 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public AssociationOverrideMetadata(MetadataAnnotation associationOverride, MetadataAccessibleObject accessibleObject) {
-        super(associationOverride, accessibleObject);
+    public AssociationOverrideMetadata(MetadataAnnotation associationOverride, MetadataAccessor accessor) {
+        super(associationOverride, accessor);
         
-        // Set the join columns.
-        m_joinColumns = new ArrayList<JoinColumnMetadata>();
+        // Set the join columns. 
         for (Object joinColumn : (Object[]) associationOverride.getAttributeArray("joinColumns")) {
-            m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessibleObject));
+            m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessor));
         }
         
         // Set the join table.
-        m_joinTable = new JoinTableMetadata((MetadataAnnotation) associationOverride.getAttribute("joinTable"), accessibleObject);
+        m_joinTable = new JoinTableMetadata((MetadataAnnotation) associationOverride.getAttribute("joinTable"), accessor);
     }
     
     /**

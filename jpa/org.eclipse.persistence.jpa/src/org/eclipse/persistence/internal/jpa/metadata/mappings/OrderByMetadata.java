@@ -10,6 +10,8 @@
  * Contributors:
  *     01/25/2011-2.3 Guy Pelletier 
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -19,8 +21,8 @@ import java.util.StringTokenizer;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -28,12 +30,18 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 /**
  * Object to hold onto order by metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 2.3
  */
 public class OrderByMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     // Order by constants
     private static final String ASCENDING = "ASC";
     private static final String DESCENDING = "DESC";
@@ -42,6 +50,7 @@ public class OrderByMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public OrderByMetadata() {
         super("<order-by>");
@@ -49,9 +58,10 @@ public class OrderByMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public OrderByMetadata(MetadataAnnotation orderBy, MetadataAccessibleObject accessibleObject) {
-        super(orderBy, accessibleObject);
+    public OrderByMetadata(MetadataAnnotation orderBy, MetadataAccessor accessor) {
+        super(orderBy, accessor);
 
         m_value = (String) orderBy.getAttributeString("value");
     }

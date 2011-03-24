@@ -35,6 +35,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     07/05/2010-2.1.1 Guy Pelletier 
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -55,7 +57,6 @@ import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -77,19 +78,25 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 
 /**
  * INTERNAL:
  * A relational accessor. A Basic annotation may or may not be present on the
  * accessible object.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class BasicAccessor extends DirectAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private Boolean m_mutable;
     private boolean m_returnUpdate;
     private ColumnMetadata m_column;
@@ -113,6 +120,56 @@ public class BasicAccessor extends DirectAccessor {
      */
     public BasicAccessor(String xmlElement) {
         super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public BasicAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(annotation, accessibleObject, classAccessor);
+        
+        // Set the basic metadata if one is present.
+        MetadataAnnotation basic = getAnnotation(Basic.class);
+        if (basic != null) {
+            setFetch((String) basic.getAttribute("fetch"));
+            setOptional((Boolean) basic.getAttribute("optional"));
+        }
+        
+        // Set the column metadata if one if present.
+        m_column = new ColumnMetadata(getAnnotation(Column.class), this);
+        
+        // Set the mutable value if one is present.
+        if (isAnnotationPresent(Mutable.class)) {
+            m_mutable = (Boolean) getAnnotation(Mutable.class).getAttributeBooleanDefaultTrue("value");
+        }
+        
+        // Set the generated value if one is present.
+        if (isAnnotationPresent(GeneratedValue.class)) {
+            m_generatedValue = new GeneratedValueMetadata(getAnnotation(GeneratedValue.class), this);
+        }
+        
+        // Set the sequence generator if one is present.        
+        if (isAnnotationPresent(SequenceGenerator.class)) {
+            m_sequenceGenerator = new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), this);
+        }
+        
+        // Set the table generator if one is present.        
+        if (isAnnotationPresent(TableGenerator.class)) {
+            m_tableGenerator = new TableGeneratorMetadata(getAnnotation(TableGenerator.class), this);
+        }
+        
+        // Set the return insert if one is present.
+        if (isAnnotationPresent(ReturnInsert.class)) {
+            m_returnInsert = new ReturnInsertMetadata(getAnnotation(ReturnInsert.class), this);
+        }
+        
+        // Set the return update if one is present.
+        m_returnUpdate = isAnnotationPresent(ReturnUpdate.class);
+        
+        // Set the index annotation if one is present.
+        if (isAnnotationPresent(Index.class)) {
+            m_index = new IndexMetadata(getAnnotation(Index.class), this);
+        }
     }
     
     /**
@@ -151,52 +208,6 @@ public class BasicAccessor extends DirectAccessor {
         }
         
         return false;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public BasicAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(annotation, accessibleObject, classAccessor);
-        
-        // Set the basic metadata if one is present.
-        MetadataAnnotation basic = getAnnotation(Basic.class);
-        if (basic != null) {
-            setFetch((String) basic.getAttribute("fetch"));
-            setOptional((Boolean) basic.getAttribute("optional"));
-        }
-        
-        // Set the column metadata if one if present.
-        m_column = new ColumnMetadata(getAnnotation(Column.class), accessibleObject);
-        
-        // Set the mutable value if one is present.
-        MetadataAnnotation mutable = getAnnotation(Mutable.class);
-        if (mutable != null) {
-            m_mutable = (Boolean) mutable.getAttributeBooleanDefaultTrue("value");
-        }
-        
-        // Set the generated value if one is present.
-        if (isAnnotationPresent(GeneratedValue.class)) {
-            m_generatedValue = new GeneratedValueMetadata(getAnnotation(GeneratedValue.class));
-        }
-        
-        // Set the sequence generator if one is present.        
-        if (isAnnotationPresent(SequenceGenerator.class)) {
-            m_sequenceGenerator = new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), accessibleObject);
-        }
-        
-        // Set the table generator if one is present.        
-        if (isAnnotationPresent(TableGenerator.class)) {
-            m_tableGenerator = new TableGeneratorMetadata(getAnnotation(TableGenerator.class), accessibleObject);
-        }
-        
-        // Set the return insert if one is present.
-        if (isAnnotationPresent(ReturnInsert.class)) {
-            m_returnInsert = new ReturnInsertMetadata(getAnnotation(ReturnInsert.class), accessibleObject);
-        }
-        
-        // Set the return update if one is present.
-        m_returnUpdate = isAnnotationPresent(ReturnUpdate.class);
     }
     
     /**
@@ -287,7 +298,7 @@ public class BasicAccessor extends DirectAccessor {
 
         // Default a column if necessary.
         if (m_column == null) {
-            m_column = new ColumnMetadata(accessibleObject);
+            m_column = new ColumnMetadata(this);
         } else {
             // Initialize single objects.
             initXMLObject(m_column, accessibleObject);
@@ -392,6 +403,7 @@ public class BasicAccessor extends DirectAccessor {
             getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
         
+        // Process the index metadata.
         processIndex();
     }
 
@@ -436,6 +448,16 @@ public class BasicAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
+     * Process index information for the given mapping.
+     */
+    protected void processIndex() {
+        if (m_index != null) {
+            m_index.process(getDescriptor(), m_field.getName());
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process a Lob metadata. The lob must be specified to process and 
      * create a lob type mapping.
      */
@@ -473,76 +495,20 @@ public class BasicAccessor extends DirectAccessor {
         }
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public IndexMetadata getIndex() {
         return m_index;
     }
 
-    public void setIndex(IndexMetadata index) {
-        m_index = index;
-    }
-    
     /**
      * INTERNAL:
-     * Process index information for the given mapping.
+     * Used for OX mapping.
      */
-    protected void processIndex() {
-        MetadataAnnotation index = getAnnotation(Index.class);
-        
-        if (index != null) {
-            m_index = new IndexMetadata(index, getAccessibleObject());
-        }
-        
-        if (m_index != null) {
-            IndexDefinition indexDefinition = new IndexDefinition();
-            if (m_index.getColumnNames().isEmpty()) {
-                indexDefinition.getFields().add(getColumn(MetadataLogger.COLUMN).getName());
-            } else {
-                indexDefinition.getFields().addAll(m_index.getColumnNames());
-            }
-            if ((m_index.getName() != null) && (m_index.getName().length() != 0)) {
-                indexDefinition.setName(m_index.getName());            
-            } else {
-                String name = "INDEX_" + getDescriptor().getPrimaryTable().getName();
-                for (String column : indexDefinition.getFields()) {
-                    name = name + "_" + column;
-                }
-                indexDefinition.setName(name);
-            }
-            if ((m_index.getSchema() != null) && (m_index.getSchema().length() != 0)) {
-                indexDefinition.setQualifier(m_index.getSchema());
-            } else if ((getDescriptor().getDefaultSchema() != null) && (getDescriptor().getDefaultSchema().length() != 0)) {
-                indexDefinition.setQualifier(m_index.getSchema());                
-            }
-            if ((m_index.getCatalog() != null) && (m_index.getCatalog().length() != 0)) {
-                indexDefinition.setQualifier(m_index.getCatalog());
-            } else if ((getDescriptor().getDefaultCatalog() != null) && (getDescriptor().getDefaultCatalog().length() != 0)) {
-                indexDefinition.setQualifier(getDescriptor().getDefaultCatalog());                
-            }
-            if (m_index.getUnique() != null) {
-                indexDefinition.setIsUnique(m_index.getUnique());
-            }
-            String table = m_index.getTable();
-            if ((table == null) || (table.length() == 0)) {
-                indexDefinition.setTargetTable(getDescriptor().getPrimaryTable().getQualifiedName());
-                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-            } else if (table.equals(getDescriptor().getPrimaryTable().getQualifiedName())
-                        || table.equals(getDescriptor().getPrimaryTable().getName())) {
-                indexDefinition.setTargetTable(table);
-                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-            } else {
-                indexDefinition.setTargetTable(table);
-                boolean found = false;
-                for (DatabaseTable databaseTable : getDescriptor().getClassDescriptor().getTables()) {
-                    if (table.equals(databaseTable.getQualifiedName()) || table.equals(databaseTable.getName())) {
-                        databaseTable.getIndexes().add(indexDefinition);
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-                }
-            }
-        }
+    public void setIndex(IndexMetadata index) {
+        m_index = index;
     }
 
     /**

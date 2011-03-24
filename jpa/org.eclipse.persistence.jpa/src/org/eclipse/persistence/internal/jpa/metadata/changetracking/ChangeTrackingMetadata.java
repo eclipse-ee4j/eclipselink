@@ -16,6 +16,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     08/17/2010-2.2 Guy Pelletier 
  *       - 252280:  inconsistency in change-tracking xml
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.changetracking;
 
@@ -28,22 +30,29 @@ import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPo
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Object to hold onto change tracking metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public class ChangeTrackingMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private String m_type;    
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public ChangeTrackingMetadata() {
         super("<change-tracking>");
@@ -51,9 +60,10 @@ public class ChangeTrackingMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public ChangeTrackingMetadata(MetadataAnnotation changeTracking, MetadataAccessibleObject accessibleObject) {
-        super(changeTracking, accessibleObject);
+    public ChangeTrackingMetadata(MetadataAnnotation changeTracking, MetadataAccessor accessor) {
+        super(changeTracking, accessor);
         
         m_type = (String) changeTracking.getAttribute("value");
     }

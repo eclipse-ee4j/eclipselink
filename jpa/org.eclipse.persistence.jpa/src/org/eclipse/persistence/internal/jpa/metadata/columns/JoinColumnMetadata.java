@@ -15,16 +15,26 @@
  *       - 249037: JPA 2.0 persisting list item index
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
  * Object to process JPA join columns EclipseLink database fields.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
@@ -39,7 +49,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public JoinColumnMetadata() {
         super("<join-column>");
@@ -47,9 +57,10 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public JoinColumnMetadata(MetadataAnnotation joinColumn, MetadataAccessibleObject accessibleObject) {
-        super(joinColumn, accessibleObject);
+    public JoinColumnMetadata(MetadataAnnotation joinColumn, MetadataAccessor accessor) {
+        super(joinColumn, accessor);
         
         if (joinColumn != null) {
             m_table = ((String) joinColumn.getAttribute("table"));

@@ -19,6 +19,8 @@
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  *     12/01/2010-2.2 Guy Pelletier 
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -32,6 +34,14 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSup
  * A metadata class to facilitate the processing of lifecycle methods on an
  * entity class (and its mapped superclasses).
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
@@ -40,10 +50,10 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
     private MetadataDescriptor m_descriptor;
     
     /**
-     * INTERNAL: 
+     * INTERNAL:
      */
     public EntityClassListenerMetadata(EntityAccessor accessor) {
-        super(null, null, accessor.getAccessibleObject());
+        super(null, null, accessor);
     
         m_accessor = accessor;
         m_descriptor = accessor.getDescriptor();

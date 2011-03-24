@@ -50,7 +50,7 @@
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <!-- property name="eclipselink.logging.level" value="FINEST"/ -->
             <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
             <property name="eclipselink.logging.timestamp" value="false"/>
             <property name="eclipselink.orm.throw.exceptions" value="false"/>
@@ -226,4 +226,18 @@
              <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.AddTargetCustomizer"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="multi-tenant">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <!-- properties will be set in code at create entity manager factory time -->
+    </persistence-unit>
+    
 </persistence>

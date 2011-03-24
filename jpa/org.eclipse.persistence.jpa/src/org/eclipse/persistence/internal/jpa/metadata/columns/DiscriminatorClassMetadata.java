@@ -16,12 +16,15 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     01/25/2011-2.3 Guy Pelletier 
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -34,19 +37,25 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
  * INTERNAL:
  * A discriminator class is used within a variable one to one mapping.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public class DiscriminatorClassMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private MetadataClass m_valueClass;
     private String m_value;
     private String m_discriminator;
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public DiscriminatorClassMetadata() {
         super("<discriminator-class>");
@@ -54,9 +63,10 @@ public class DiscriminatorClassMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public DiscriminatorClassMetadata(MetadataAnnotation discriminatorClass, MetadataAccessibleObject accessibleObject) {
-        super(discriminatorClass, accessibleObject);
+    public DiscriminatorClassMetadata(MetadataAnnotation discriminatorClass, MetadataAccessor accessor) {
+        super(discriminatorClass, accessor);
         
         setDiscriminator((String) discriminatorClass.getAttribute("discriminator"));
         setValueClass(getMetadataClass((String) discriminatorClass.getAttribute("value")));

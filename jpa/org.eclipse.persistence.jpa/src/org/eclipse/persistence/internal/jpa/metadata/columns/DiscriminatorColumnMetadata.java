@@ -15,33 +15,40 @@
  *       - 249037: JPA 2.0 persisting list item index
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import javax.persistence.DiscriminatorType;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
  * Object to process a JPA discriminator column into an EclipseLink database field.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class DiscriminatorColumnMetadata extends MetadataColumn {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private Integer m_length;
     private String m_discriminatorType;
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public DiscriminatorColumnMetadata() {
         super("<discriminator-column>");
@@ -49,14 +56,31 @@ public class DiscriminatorColumnMetadata extends MetadataColumn {
     
     /**
      * INTERNAL:
+     * Used for defaulting.
      */
-    public DiscriminatorColumnMetadata(MetadataAnnotation discriminatorColumn, MetadataAccessibleObject accessibleObject) {
-        super(discriminatorColumn, accessibleObject);
+    public DiscriminatorColumnMetadata(MetadataAccessor accessor) {
+        super(accessor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for annotation loading.
+     */
+    public DiscriminatorColumnMetadata(MetadataAnnotation discriminatorColumn, MetadataAccessor accessor) {
+        super(discriminatorColumn, accessor);
         
         if (discriminatorColumn != null) {
             m_length = (Integer) discriminatorColumn.getAttribute("length");
             m_discriminatorType = (String) discriminatorColumn.getAttribute("discriminatorType");    
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for XML loading.
+     */
+    protected DiscriminatorColumnMetadata(String xmlElement) {
+        super(xmlElement);
     }
     
     /**
@@ -125,15 +149,8 @@ public class DiscriminatorColumnMetadata extends MetadataColumn {
     public DatabaseField process(MetadataDescriptor descriptor, String annotatedElementName, String loggingCtx) {     
         DatabaseField field = getDatabaseField();
         
-        boolean useDelimitedIdentifier = (descriptor.getProject() != null) ? descriptor.getProject().useDelimitedIdentifier() : false;
-        
-        // Process the name
-        field.setName(MetadataHelper.getName(field.getName(), "DTYPE", loggingCtx, descriptor.getLogger(), annotatedElementName), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-        if (useDelimitedIdentifier){
-            field.setUseDelimiters(useDelimitedIdentifier);
-        } else if (descriptor.getProject().getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
-            field.useUpperCaseForComparisons(true);
-        }
+        // Set the field name taking into consideration delimited identifier settings.
+        setFieldName(field, MetadataHelper.getName(field.getName(), "DTYPE", loggingCtx, descriptor.getLogger(), annotatedElementName));
 
         // Set the table.
         field.setTable(descriptor.getPrimaryTable());

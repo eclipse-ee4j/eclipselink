@@ -14,6 +14,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -23,8 +25,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
@@ -33,12 +35,18 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * Abstract converter class that parents both the JPA and Eclipselink 
  * converters.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
 public class EnumeratedMetadata extends MetadataConverter {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private String m_enumeratedType;
     
     /**
@@ -46,28 +54,24 @@ public class EnumeratedMetadata extends MetadataConverter {
      * Used for defaulting case.
      */
     public EnumeratedMetadata() {
+        super("<enumerated>");
         m_enumeratedType = EnumType.ORDINAL.name();
     }
     
     /**
      * INTERNAL:
-     */
-    public EnumeratedMetadata(String xmlElement) {
-        super(xmlElement);
-    }
-    
-    /**
      * Used for defaulting.
      */
-    public EnumeratedMetadata(MetadataAccessibleObject accessibleObject) {
-        super(accessibleObject);
+    public EnumeratedMetadata(MetadataAccessor accessor) {
+        super(null, accessor);
     }
     
     /**
      * INTERNAL:
+     * Used for annotation loading
      */
-    public EnumeratedMetadata(MetadataAnnotation enumerated, MetadataAccessibleObject accessibleObject) {
-        super(enumerated, accessibleObject);
+    public EnumeratedMetadata(MetadataAnnotation enumerated, MetadataAccessor accessor) {
+        super(enumerated, accessor);
         
         m_enumeratedType = (String) enumerated.getAttribute("value");
     }

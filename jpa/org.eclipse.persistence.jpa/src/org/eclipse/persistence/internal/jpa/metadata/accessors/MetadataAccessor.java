@@ -49,6 +49,8 @@
  *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
  *     01/25/2011-2.3 Guy Pelletier 
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -115,12 +117,19 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  * INTERNAL:
  * Common metadata accessor level for mappings and classes.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class MetadataAccessor extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-    
     private AccessMethodsMetadata m_accessMethods;
     
     private List<ConverterMetadata> m_converters = new ArrayList<ConverterMetadata>();
@@ -130,7 +139,6 @@ public abstract class MetadataAccessor extends ORMetadata {
     private List<PropertyMetadata> m_properties = new ArrayList<PropertyMetadata>();
     
     private MetadataDescriptor m_descriptor;
-    private MetadataProject m_project;
 
     protected PartitioningMetadata partitioning;
     protected ReplicationPartitioningMetadata replicationPartitioning;
@@ -157,9 +165,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      */
     public MetadataAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
-        super(annotation, accessibleObject);
-        
-        m_project = project;
+        super(annotation, accessibleObject, project);
         setDescriptor(descriptor);
     }
     
@@ -249,7 +255,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Return the annotation if it exists.
      */
-    protected MetadataAnnotation getAnnotation(Class annotation) {
+    public MetadataAnnotation getAnnotation(Class annotation) {
         return getAnnotation(annotation.getName());
     }
     
@@ -277,6 +283,15 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Return the upper cased attribute name for this accessor. Used when
+     * defaulting.
+     */
+    protected String getDefaultAttributeName() {
+        return (getProject().useDelimitedIdentifier()) ? getAttributeName() : getAttributeName().toUpperCase();
+    }
+    
+    /**
+     * INTERNAL:
      * Return the MetadataDescriptor for this accessor.
      */
     public MetadataDescriptor getDescriptor() {
@@ -289,6 +304,14 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public MetadataClass getDescriptorJavaClass() {
         return m_descriptor.getJavaClass();
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public HashPartitioningMetadata getHashPartitioning() {
+        return hashPartitioning;
     }
     
     /**
@@ -314,14 +337,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     protected String getJavaClassName() {
         return getJavaClass().getName();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the metadata logger.
-     */
-    public MetadataLogger getLogger() {
-        return m_project.getLogger();
     }
     
     /**
@@ -354,21 +369,45 @@ public abstract class MetadataAccessor extends ORMetadata {
     public List<ObjectTypeConverterMetadata> getObjectTypeConverters() {
         return m_objectTypeConverters;
     }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getPartitioned() {
+        return partitioned;
+    }
     
     /**
      * INTERNAL:
-     * Return the MetadataProject.
+     * Used for OX mapping.
      */
-    public MetadataProject getProject() {
-        return m_project;
+    public PartitioningMetadata getPartitioning() {
+        return partitioning;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public PinnedPartitioningMetadata getPinnedPartitioning() {
+        return pinnedPartitioning;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
      */    
     public List<PropertyMetadata> getProperties() {
         return m_properties;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public RangePartitioningMetadata getRangePartitioning() {
+        return rangePartitioning;
     }
     
     /**
@@ -441,6 +480,22 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public ReplicationPartitioningMetadata getReplicationPartitioning() {
+        return replicationPartitioning;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public RoundRobinPartitioningMetadata getRoundRobinPartitioning() {
+        return roundRobinPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<StructConverterMetadata> getStructConverters() {
         return m_structConverters;
     }
@@ -455,11 +510,10 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Return the upper cased attribute name for this accessor. Used when
-     * defaulting.
+     * Used for OX mapping.
      */
-    protected String getDefaultAttributeName() {
-        return (m_project.useDelimitedIdentifier()) ? getAttributeName() : getAttributeName().toUpperCase();
+    public UnionPartitioningMetadata getUnionPartitioning() {
+        return unionPartitioning;
     }
     
     /**
@@ -486,6 +540,14 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     protected String getValue(String value, String defaultValue) {
         return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getValue(value, defaultValue);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ValuePartitioningMetadata getValuePartitioning() {
+        return valuePartitioning;
     }
     
     /**
@@ -523,7 +585,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * extra initialization.
      */
     public void initXMLAccessor(MetadataDescriptor descriptor, MetadataProject project) {
-        m_project = project;
+        setProject(project);
         setDescriptor(descriptor);
     }
 
@@ -558,7 +620,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Return the annotation if it exists.
      */
-    protected abstract boolean isAnnotationPresent(Class<? extends Annotation> annotation);
+    public abstract boolean isAnnotationPresent(Class<? extends Annotation> annotation);
     
     /**
      * Subclasses must handle this flag.
@@ -630,21 +692,21 @@ public abstract class MetadataAccessor extends ORMetadata {
     protected void processCustomConverters() {
         // Check for XML defined converters.
         for (ConverterMetadata converter : m_converters) {
-            m_project.addConverter(converter);
+            getProject().addConverter(converter);
         }
         
         // Check for a Converters annotation
         MetadataAnnotation converters = getAnnotation(Converters.class);
         if (converters != null) {
             for (Object converter : (Object[]) converters.getAttributeArray("value")) {
-                m_project.addConverter(new ConverterMetadata((MetadataAnnotation) converter, getAccessibleObject()));
+                getProject().addConverter(new ConverterMetadata((MetadataAnnotation) converter, this));
             }
         }
         
         // Check for a Converter annotation.
         MetadataAnnotation converter = getAnnotation(Converter.class);
         if (converter != null) {
-            m_project.addConverter(new ConverterMetadata(converter, getAccessibleObject()));
+            getProject().addConverter(new ConverterMetadata(converter, this));
         }
     }
     
@@ -656,21 +718,137 @@ public abstract class MetadataAccessor extends ORMetadata {
     protected void processObjectTypeConverters() {
         // Check for XML defined object type converters.
         for (ObjectTypeConverterMetadata objectTypeConverter : m_objectTypeConverters) {
-            m_project.addConverter(objectTypeConverter);
+            getProject().addConverter(objectTypeConverter);
         }
         
         // Check for an ObjectTypeConverters annotation
         MetadataAnnotation objectTypeConverters = getAnnotation(ObjectTypeConverters.class);
         if (objectTypeConverters != null) {
             for (Object objectTypeConverter : (Object[]) objectTypeConverters.getAttributeArray("value")) {
-                m_project.addConverter(new ObjectTypeConverterMetadata((MetadataAnnotation) objectTypeConverter, getAccessibleObject()));
+                getProject().addConverter(new ObjectTypeConverterMetadata((MetadataAnnotation) objectTypeConverter, this));
             }
         }
         
         // Check for an ObjectTypeConverter annotation.
         MetadataAnnotation objectTypeConverter = getAnnotation(ObjectTypeConverter.class);
         if (objectTypeConverter != null) {
-            m_project.addConverter(new ObjectTypeConverterMetadata(objectTypeConverter, getAccessibleObject()));
+            getProject().addConverter(new ObjectTypeConverterMetadata(objectTypeConverter, this));
+        }
+    }
+    
+    /**
+     * Set the policy on the descriptor or mapping.
+     */
+    public void processPartitioned(String name) {
+        if (this instanceof ClassAccessor) {
+            if (getDescriptor().getClassDescriptor().getPartitioningPolicy() != null) {
+                // We must be processing a mapped superclass setting for an
+                // entity that has its own setting. Ignore it and log a warning.
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_ANNOTATION, Partitioned.class, getJavaClass(), getDescriptor().getJavaClass());
+            }
+            getDescriptor().getClassDescriptor().setPartitioningPolicyName(name);
+        } else if (this instanceof MappingAccessor) {
+            ((ForeignReferenceMapping)((MappingAccessor)this).getMapping()).setPartitioningPolicyName(name);
+        }
+    }
+    
+    /**
+     * Process the partitioning policies defined on this element.
+     */
+    protected void processPartitioning() {
+        boolean found = false;
+        // Check for XML defined partitioning.
+        if (this.replicationPartitioning != null) {
+            found = true;
+            getProject().addPartitioningPolicy(this.replicationPartitioning);
+        }
+        if (this.roundRobinPartitioning != null) {
+            found = true;
+            getProject().addPartitioningPolicy(this.roundRobinPartitioning);
+        }
+        if (this.partitioning != null) {
+            found = true;
+            getProject().addPartitioningPolicy(this.partitioning);
+        }
+        if (this.rangePartitioning != null) {
+            found = true;
+            getProject().addPartitioningPolicy(this.rangePartitioning);
+        }
+        if (this.valuePartitioning != null) {
+            found = true;
+            getProject().addPartitioningPolicy(this.valuePartitioning);
+        }
+        if (this.hashPartitioning != null) {
+            found = true;
+            getProject().addPartitioningPolicy(this.hashPartitioning);
+        }
+        if (this.unionPartitioning != null) {
+            found = true;
+            getProject().addPartitioningPolicy(this.unionPartitioning);
+        }
+        if (this.pinnedPartitioning != null) {
+            found = true;
+            getProject().addPartitioningPolicy(this.pinnedPartitioning);
+        }
+        
+        // Check for partitioning annotations.
+        MetadataAnnotation annotation = getAnnotation(Partitioning.class);
+        if (annotation != null) {
+            found = true;
+            getProject().addPartitioningPolicy(new PartitioningMetadata(annotation, this));
+        }
+        annotation = getAnnotation(ReplicationPartitioning.class);
+        if (annotation != null) {
+            found = true;
+            getProject().addPartitioningPolicy(new ReplicationPartitioningMetadata(annotation, this));
+        }
+        annotation = getAnnotation(RoundRobinPartitioning.class);
+        if (annotation != null) {
+            found = true;
+            getProject().addPartitioningPolicy(new RoundRobinPartitioningMetadata(annotation, this));
+        }
+        annotation = getAnnotation(UnionPartitioning.class);
+        if (annotation != null) {
+            found = true;
+            getProject().addPartitioningPolicy(new UnionPartitioningMetadata(annotation, this));
+        }
+        annotation = getAnnotation(RangePartitioning.class);
+        if (annotation != null) {
+            found = true;
+            getProject().addPartitioningPolicy(new RangePartitioningMetadata(annotation, this));
+        }
+        annotation = getAnnotation(ValuePartitioning.class);
+        if (annotation != null) {
+            found = true;
+            getProject().addPartitioningPolicy(new ValuePartitioningMetadata(annotation, this));
+        }
+        annotation = getAnnotation(ValuePartitioning.class);
+        if (annotation != null) {
+            found = true;
+            getProject().addPartitioningPolicy(new ValuePartitioningMetadata(annotation, this));
+        }
+        annotation = getAnnotation(PinnedPartitioning.class);
+        if (annotation != null) {
+            found = true;
+            getProject().addPartitioningPolicy(new PinnedPartitioningMetadata(annotation, this));
+        }
+        annotation = getAnnotation(HashPartitioning.class);
+        if (annotation != null) {
+            found = true;
+            getProject().addPartitioningPolicy(new HashPartitioningMetadata(annotation, this));
+        }
+        boolean processed = false;
+        if (this.partitioned != null) {
+            processed = true;
+            processPartitioned(this.partitioned);
+        }
+        annotation = getAnnotation(Partitioned.class);
+        if (!processed && annotation != null) {
+            processed = true;
+            processPartitioned((String)annotation.getAttribute("value"));
+        }
+        if (found && !processed) {
+            getLogger().logWarningMessage(MetadataLogger.WARNING_PARTIONED_NOT_SET, getJavaClass(), getAccessibleObject());
         }
     }
     
@@ -725,21 +903,21 @@ public abstract class MetadataAccessor extends ORMetadata {
     protected void processStructConverters() {
         // Check for XML defined struct converters.
         for (StructConverterMetadata structConverter : m_structConverters) {
-            m_project.addConverter(structConverter);
+            getProject().addConverter(structConverter);
         }
         
         // Check for a StructConverters annotation
         MetadataAnnotation structConverters = getAnnotation(StructConverters.class);
         if (structConverters != null) {
             for (Object structConverter : (Object[]) structConverters.getAttributeArray("value")) {
-                m_project.addConverter(new StructConverterMetadata((MetadataAnnotation) structConverter, getAccessibleObject()));
+                getProject().addConverter(new StructConverterMetadata((MetadataAnnotation) structConverter, this));
             }
         }
         
         // Check for a StructConverter annotation.
         MetadataAnnotation converter = getAnnotation(StructConverter.class);
         if (converter != null) {
-            m_project.addConverter(new StructConverterMetadata(converter, getAccessibleObject()));
+            getProject().addConverter(new StructConverterMetadata(converter, this));
         }
     }
     
@@ -749,6 +927,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * collection table.
      */
     protected void processTable(TableMetadata table, String defaultName) {
+        // Process the default values.
         getProject().processTable(table, defaultName, m_descriptor.getDefaultCatalog(), m_descriptor.getDefaultSchema());
     }
     
@@ -760,21 +939,21 @@ public abstract class MetadataAccessor extends ORMetadata {
     protected void processTypeConverters() {
         // Check for XML defined type converters.
         for (TypeConverterMetadata typeConverter : m_typeConverters) {
-            m_project.addConverter(typeConverter);
+            getProject().addConverter(typeConverter);
         }
         
         // Check for a TypeConverters annotation
         MetadataAnnotation typeConverters = getAnnotation(TypeConverters.class);
         if (typeConverters != null) {
             for (Object typeConverter : (Object[]) typeConverters.getAttributeArray("value")) {
-                m_project.addConverter(new TypeConverterMetadata((MetadataAnnotation) typeConverter, getAccessibleObject()));
+                getProject().addConverter(new TypeConverterMetadata((MetadataAnnotation) typeConverter, this));
             }
         }
         
         // Check for an TypeConverter annotation.
         MetadataAnnotation typeConverter = getAnnotation(TypeConverter.class);
         if (typeConverter != null) {
-            m_project.addConverter(new TypeConverterMetadata(typeConverter, getAccessibleObject()));
+            getProject().addConverter(new TypeConverterMetadata(typeConverter, this));
         }
     }
     
@@ -814,25 +993,16 @@ public abstract class MetadataAccessor extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void setFieldName(DatabaseField field, String name) {
-        // This may set the use delimited identifier flag to true.
-        field.setName(name, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-        
-        // The check is necessary to avoid overriding a true setting (set after 
-        // setting the name of the field). We don't want to override it at this
-        // point if the global flag is set to false. 
-        if (m_project.useDelimitedIdentifier()) {
-            field.setUseDelimiters(true);
-        } else if (m_project.getShouldForceFieldNamesToUpperCase() && ! field.shouldUseDelimiters()) {
-            field.useUpperCaseForComparisons(true);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public void setFieldName(DatabaseField field, String defaultName, String context) {
         setFieldName(field, getName(field.getName(), defaultName, context));
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setHashPartitioning(HashPartitioningMetadata hashPartitioning) {
+        this.hashPartitioning = hashPartitioning;
     }
     
     /**
@@ -854,9 +1024,57 @@ public abstract class MetadataAccessor extends ORMetadata {
     /**
      * INTERNAL:
      * Used for OX mapping.
+     */
+    public void setPartitioned(String partitioned) {
+        this.partitioned = partitioned;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPartitioning(PartitioningMetadata partitioning) {
+        this.partitioning = partitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPinnedPartitioning(PinnedPartitioningMetadata pinnedPartitioning) {
+        this.pinnedPartitioning = pinnedPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */    
     public void setProperties(List<PropertyMetadata> properties) {
         m_properties = properties;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setRangePartitioning(RangePartitioningMetadata rangePartitioning) {
+        this.rangePartitioning = rangePartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setReplicationPartitioning(ReplicationPartitioningMetadata replicationPartitioning) {
+        this.replicationPartitioning = replicationPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setRoundRobinPartitioning(RoundRobinPartitioningMetadata roundRobinPartitioning) {
+        this.roundRobinPartitioning = roundRobinPartitioning;
     }
     
     /**
@@ -876,192 +1094,19 @@ public abstract class MetadataAccessor extends ORMetadata {
     }
     
     /**
-     * Process the partitioning policies defined on this element.
+     * INTERNAL:
+     * Used for OX mapping.
      */
-    protected void processPartitioning() {
-        boolean found = false;
-        // Check for XML defined partitioning.
-        if (this.replicationPartitioning != null) {
-            found = true;
-            m_project.addPartitioningPolicy(this.replicationPartitioning);
-        }
-        if (this.roundRobinPartitioning != null) {
-            found = true;
-            m_project.addPartitioningPolicy(this.roundRobinPartitioning);
-        }
-        if (this.partitioning != null) {
-            found = true;
-            m_project.addPartitioningPolicy(this.partitioning);
-        }
-        if (this.rangePartitioning != null) {
-            found = true;
-            m_project.addPartitioningPolicy(this.rangePartitioning);
-        }
-        if (this.valuePartitioning != null) {
-            found = true;
-            m_project.addPartitioningPolicy(this.valuePartitioning);
-        }
-        if (this.hashPartitioning != null) {
-            found = true;
-            m_project.addPartitioningPolicy(this.hashPartitioning);
-        }
-        if (this.unionPartitioning != null) {
-            found = true;
-            m_project.addPartitioningPolicy(this.unionPartitioning);
-        }
-        if (this.pinnedPartitioning != null) {
-            found = true;
-            m_project.addPartitioningPolicy(this.pinnedPartitioning);
-        }
-        
-        // Check for partitioning annotations.
-        MetadataAnnotation annotation = getAnnotation(Partitioning.class);
-        if (annotation != null) {
-            found = true;
-            m_project.addPartitioningPolicy(new PartitioningMetadata(annotation, getAccessibleObject()));
-        }
-        annotation = getAnnotation(ReplicationPartitioning.class);
-        if (annotation != null) {
-            found = true;
-            m_project.addPartitioningPolicy(new ReplicationPartitioningMetadata(annotation, getAccessibleObject()));
-        }
-        annotation = getAnnotation(RoundRobinPartitioning.class);
-        if (annotation != null) {
-            found = true;
-            m_project.addPartitioningPolicy(new RoundRobinPartitioningMetadata(annotation, getAccessibleObject()));
-        }
-        annotation = getAnnotation(UnionPartitioning.class);
-        if (annotation != null) {
-            found = true;
-            m_project.addPartitioningPolicy(new UnionPartitioningMetadata(annotation, getAccessibleObject()));
-        }
-        annotation = getAnnotation(RangePartitioning.class);
-        if (annotation != null) {
-            found = true;
-            m_project.addPartitioningPolicy(new RangePartitioningMetadata(annotation, getAccessibleObject()));
-        }
-        annotation = getAnnotation(ValuePartitioning.class);
-        if (annotation != null) {
-            found = true;
-            m_project.addPartitioningPolicy(new ValuePartitioningMetadata(annotation, getAccessibleObject()));
-        }
-        annotation = getAnnotation(ValuePartitioning.class);
-        if (annotation != null) {
-            found = true;
-            m_project.addPartitioningPolicy(new ValuePartitioningMetadata(annotation, getAccessibleObject()));
-        }
-        annotation = getAnnotation(PinnedPartitioning.class);
-        if (annotation != null) {
-            found = true;
-            m_project.addPartitioningPolicy(new PinnedPartitioningMetadata(annotation, getAccessibleObject()));
-        }
-        annotation = getAnnotation(HashPartitioning.class);
-        if (annotation != null) {
-            found = true;
-            m_project.addPartitioningPolicy(new HashPartitioningMetadata(annotation, getAccessibleObject()));
-        }
-        boolean processed = false;
-        if (this.partitioned != null) {
-            processed = true;
-            processPartitioned(this.partitioned);
-        }
-        annotation = getAnnotation(Partitioned.class);
-        if (!processed && annotation != null) {
-            processed = true;
-            processPartitioned((String)annotation.getAttribute("value"));
-        }
-        if (found && !processed) {
-            getLogger().logWarningMessage(MetadataLogger.WARNING_PARTIONED_NOT_SET, getJavaClass(), getAccessibleObject());
-        }
-    }
-    
-    /**
-     * Set the policy on the descriptor or mapping.
-     */
-    public void processPartitioned(String name) {
-        if (this instanceof ClassAccessor) {
-            if (getDescriptor().getClassDescriptor().getPartitioningPolicy() != null) {
-                // We must be processing a mapped superclass setting for an
-                // entity that has its own setting. Ignore it and log a warning.
-                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_ANNOTATION, Partitioned.class, getJavaClass(), getDescriptor().getJavaClass());
-            }
-            getDescriptor().getClassDescriptor().setPartitioningPolicyName(name);
-        } else if (this instanceof MappingAccessor) {
-            ((ForeignReferenceMapping)((MappingAccessor)this).getMapping()).setPartitioningPolicyName(name);
-        }
-    }
-    
-    public PartitioningMetadata getPartitioning() {
-        return partitioning;
-    }
-
-    public void setPartitioning(PartitioningMetadata partitioning) {
-        this.partitioning = partitioning;
-    }
-
-    public RangePartitioningMetadata getRangePartitioning() {
-        return rangePartitioning;
-    }
-
-    public void setRangePartitioning(RangePartitioningMetadata rangePartitioning) {
-        this.rangePartitioning = rangePartitioning;
-    }
-
-    public ValuePartitioningMetadata getValuePartitioning() {
-        return valuePartitioning;
-    }
-
-    public void setValuePartitioning(ValuePartitioningMetadata valuePartitioning) {
-        this.valuePartitioning = valuePartitioning;
-    }
-
-    public UnionPartitioningMetadata getUnionPartitioning() {
-        return unionPartitioning;
-    }
-
     public void setUnionPartitioning(UnionPartitioningMetadata unionPartitioning) {
         this.unionPartitioning = unionPartitioning;
     }
-
-    public ReplicationPartitioningMetadata getReplicationPartitioning() {
-        return replicationPartitioning;
-    }
-
-    public void setReplicationPartitioning(ReplicationPartitioningMetadata replicationPartitioning) {
-        this.replicationPartitioning = replicationPartitioning;
-    }
-
-    public RoundRobinPartitioningMetadata getRoundRobinPartitioning() {
-        return roundRobinPartitioning;
-    }
-
-    public void setRoundRobinPartitioning(RoundRobinPartitioningMetadata roundRobinPartitioning) {
-        this.roundRobinPartitioning = roundRobinPartitioning;
-    }
-
-    public HashPartitioningMetadata getHashPartitioning() {
-        return hashPartitioning;
-    }
-
-    public void setHashPartitioning(HashPartitioningMetadata hashPartitioning) {
-        this.hashPartitioning = hashPartitioning;
-    }
-
-    public PinnedPartitioningMetadata getPinnedPartitioning() {
-        return pinnedPartitioning;
-    }
-
-    public void setPinnedPartitioning(PinnedPartitioningMetadata pinnedPartitioning) {
-        this.pinnedPartitioning = pinnedPartitioning;
-    }
     
-    public String getPartitioned() {
-        return partitioned;
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setValuePartitioning(ValuePartitioningMetadata valuePartitioning) {
+        this.valuePartitioning = valuePartitioning;
     }
-
-    public void setPartitioned(String partitioned) {
-        this.partitioned = partitioned;
-    }
-
 }
 

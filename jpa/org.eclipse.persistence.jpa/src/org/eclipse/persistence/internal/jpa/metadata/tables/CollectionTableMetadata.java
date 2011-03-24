@@ -13,13 +13,15 @@
  *       - 218084: Implement metadata merging functionality between mapping file
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/    
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
@@ -30,17 +32,24 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * Object to hold onto a collection table metadata in an EclipseLink 
  * database table.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink 11g
  */
 public class CollectionTableMetadata extends TableMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public CollectionTableMetadata() {
         super("<collection-table>");
@@ -48,25 +57,27 @@ public class CollectionTableMetadata extends TableMetadata {
     
     /**
      * INTERNAL:
+     * Used for defaulting.
      */
-    public CollectionTableMetadata(MetadataAccessibleObject accessibleObject) {
-        super(null, accessibleObject);
+    public CollectionTableMetadata(MetadataAccessor accessor) {
+        super(null, accessor);
     }
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public CollectionTableMetadata(MetadataAnnotation collectionTable, MetadataAccessibleObject accessibleObject, boolean isJPACollectionTable) {
-        super(collectionTable, accessibleObject);
+    public CollectionTableMetadata(MetadataAnnotation collectionTable, MetadataAccessor accessor, boolean isJPACollectionTable) {
+        super(collectionTable, accessor);
         
         if (collectionTable != null) {
             if (isJPACollectionTable) {
                 for (Object joinColumn : (Object[]) collectionTable.getAttributeArray("joinColumns")) {
-                    m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessibleObject));
+                    m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessor));
                 }
             } else {
                 for (Object primaryKeyJoinColumn : (Object[]) collectionTable.getAttributeArray("primaryKeyJoinColumns")) {
-                    m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessibleObject));
+                    m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessor));
                 }
             }
         }

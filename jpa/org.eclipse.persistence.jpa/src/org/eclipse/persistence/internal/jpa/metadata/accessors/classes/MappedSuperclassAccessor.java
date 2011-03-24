@@ -58,6 +58,10 @@
  *       - 3223850: Primary key metadata issues
  *     12/01/2010-2.2 Guy Pelletier 
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *     03/08/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -89,6 +93,7 @@ import org.eclipse.persistence.annotations.FetchGroups;
 import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.annotations.QueryRedirectors;
 import org.eclipse.persistence.annotations.ExistenceChecking;
+import org.eclipse.persistence.annotations.Multitenant;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.OptimisticLocking;
@@ -104,8 +109,8 @@ import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetad
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.multitenant.MultitenantMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -134,6 +139,15 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * ORMetadata which is used when merging. Also new member metadata variables 
  * need to be added to the merge method.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
@@ -157,7 +171,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
     
     private MetadataClass m_idClass;
-
+    private MultitenantMetadata m_multitenant;
     private OptimisticLockingMetadata m_optimisticLocking;
     private PrimaryKeyMetadata m_primaryKey;
     private QueryRedirectorsMetadata m_queryRedirectors;
@@ -203,7 +217,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public MappedSuperclassAccessor(MetadataAnnotation annotation, MetadataClass cls, MetadataDescriptor descriptor) {        
         super(annotation, cls, descriptor);
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -305,6 +319,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public String getIdClassName() {
         return m_idClassName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public MultitenantMetadata getMultitenant() {
+        return m_multitenant;
     }
     
     /**
@@ -530,6 +552,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         initXMLObject(m_queryRedirectors, accessibleObject);
         initXMLObject(m_sequenceGenerator, accessibleObject);
         initXMLObject(m_tableGenerator, accessibleObject);
+        initXMLObject(m_multitenant, accessibleObject);
         
         // Initialize lists of objects.
         initXMLObjects(m_entityListeners, accessibleObject);
@@ -596,6 +619,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_queryRedirectors = (QueryRedirectorsMetadata) mergeORObjects(m_queryRedirectors, accessor.getQueryRedirectors());
         m_sequenceGenerator = (SequenceGeneratorMetadata) mergeORObjects(m_sequenceGenerator, accessor.getSequenceGenerator());
         m_tableGenerator = (TableGeneratorMetadata) mergeORObjects(m_tableGenerator, accessor.getTableGenerator());
+        m_multitenant = (MultitenantMetadata) mergeORObjects(m_multitenant, accessor.getMultitenant());
         
         // ORMetadata list merging.
         m_entityListeners = mergeORObjectLists(m_entityListeners, accessor.getEntityListeners());
@@ -684,6 +708,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the additional criteria metadata.
         processAdditionalCriteria();
+       
+        // Process the multitenant metadata
+        processMultitenant();
         
         // Process our parents metadata after processing our own.
         super.process();
@@ -712,7 +739,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
 
             } else {
                 // Process the additional criteria from the annotation.
-                new AdditionalCriteriaMetadata(getAnnotation(AdditionalCriteria.class), getAccessibleObject()).process(getDescriptor());
+                new AdditionalCriteriaMetadata(getAnnotation(AdditionalCriteria.class), this).process(getDescriptor());
             }
         }
     }
@@ -773,7 +800,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_cache == null) {
-                    new CacheMetadata(getAnnotation(Cache.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
+                    new CacheMetadata(getAnnotation(Cache.class), this).process(getDescriptor(), getJavaClass());
                 } else {
                     m_cache.process(getDescriptor(), getJavaClass());
                 }
@@ -818,7 +845,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE_INTERCEPTOR, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_cacheInterceptor == null) {
-                    new CacheInterceptorMetadata(getAnnotation(CacheInterceptor.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
+                    new CacheInterceptorMetadata(getAnnotation(CacheInterceptor.class), this).process(getDescriptor(), getJavaClass());
                 } else {
                     m_cacheInterceptor.process(getDescriptor(), getJavaClass());
                 }
@@ -870,7 +897,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_DEFAULT_REDIRECTORS, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_queryRedirectors == null) {
-                    new QueryRedirectorsMetadata(getAnnotation(QueryRedirectors.class), getAccessibleObject()).process(getDescriptor(), getJavaClass());
+                    new QueryRedirectorsMetadata(getAnnotation(QueryRedirectors.class), this).process(getDescriptor(), getJavaClass());
                 } else {
                     m_queryRedirectors.process(getDescriptor(), getJavaClass());
                 }
@@ -890,7 +917,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             
             if (entityListeners != null) {
                 for (Object entityListenerClass : (Object[]) entityListeners.getAttribute("value")) {
-                    EntityListenerMetadata listener = new EntityListenerMetadata(entityListeners, getMetadataClass((String)entityListenerClass), getAccessibleObject());
+                    EntityListenerMetadata listener = new EntityListenerMetadata(entityListeners, getMetadataClass((String) entityListenerClass), this);
                     listener.process(this, loader, false);
                 }
             }
@@ -995,13 +1022,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Look for a @FetchGroup.
         if (isAnnotationPresent(FetchGroups.class)) {
             for (Object fetchGroup : (Object[]) getAnnotation(FetchGroups.class).getAttributeArray("value")) {
-                processFetchGroup(new FetchGroupMetadata((MetadataAnnotation) fetchGroup, getAccessibleObject()), fetchGroups);
+                processFetchGroup(new FetchGroupMetadata((MetadataAnnotation) fetchGroup, this), fetchGroups);
             }
         }
         
         // Look for a @FetchGroup.
         if (isAnnotationPresent(FetchGroup.class)) {
-            processFetchGroup(new FetchGroupMetadata(getAnnotation(FetchGroup.class), getAccessibleObject()), fetchGroups);
+            processFetchGroup(new FetchGroupMetadata(getAnnotation(FetchGroup.class), this), fetchGroups);
         }
         
         // Now process all the fetch groups we found to the descriptor only
@@ -1061,6 +1088,37 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Process the multitenant metadata specified on a mapped superclass and 
+     * apply it to a sub-entity that has no multitenant metadata specified. We 
+     * do not want to process when we are an entity since it will be processed 
+     * during the table processing. 
+     */
+    protected void processMultitenant() {
+        if ((m_multitenant != null || isAnnotationPresent(Multitenant.class)) && isMappedSuperclass()) {
+            // We have multitenant metadata available. If the descriptor already
+            // has multi-tenant settings ignore the multi-tenant metadata.
+            if (getDescriptor().hasMultitenant()) {
+                // Ignore additional criteria on mapped superclass if additional
+                // criteria is already defined on the entity.
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_ADDITIONAL_CRITERIA, getDescriptor().getJavaClass(), getJavaClass());    
+            } else if (m_multitenant != null) {
+                // We have multitenant metadata loaded from XML. Log a warning
+                // if equivalent annotaiton metadata is specified.
+                if (isAnnotationPresent(Multitenant.class)) {
+                    getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(Multitenant.class), getJavaClassName(), getLocation());
+                }
+                
+                // Process the multitenant metadata that was specified in XML.
+                m_multitenant.process(getDescriptor());
+            } else {
+                // Process the multitenant from the annotation.
+                new MultitenantMetadata(getAnnotation(Multitenant.class), this).process(getDescriptor());
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process/collect the named native queries on this accessor and add them
      * to the project for later processing.
      */
@@ -1075,14 +1133,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         MetadataAnnotation namedNativeQueries = getAnnotation(NamedNativeQueries.class);
         if (namedNativeQueries != null) {
             for (Object namedNativeQuery : (Object[]) namedNativeQueries.getAttribute("value")) { 
-                getProject().addQuery(new NamedNativeQueryMetadata((MetadataAnnotation)namedNativeQuery, getAccessibleObject()));
+                getProject().addQuery(new NamedNativeQueryMetadata((MetadataAnnotation) namedNativeQuery, this));
             }
         }
         
         // Look for a @NamedNativeQuery.
         MetadataAnnotation namedNativeQuery = getAnnotation(NamedNativeQuery.class);
         if (namedNativeQuery != null) {
-            getProject().addQuery(new NamedNativeQueryMetadata(namedNativeQuery, getAccessibleObject()));
+            getProject().addQuery(new NamedNativeQueryMetadata(namedNativeQuery, this));
         }
     }
     
@@ -1102,14 +1160,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         MetadataAnnotation namedQueries = getAnnotation(NamedQueries.class);
         if (namedQueries != null) {
             for (Object namedQuery : (Object[]) namedQueries.getAttributeArray("value")) { 
-                getProject().addQuery(new NamedQueryMetadata((MetadataAnnotation)namedQuery, getAccessibleObject()));
+                getProject().addQuery(new NamedQueryMetadata((MetadataAnnotation) namedQuery, this));
             }
         }
         
         // Look for a @NamedQuery.
         MetadataAnnotation namedQuery = getAnnotation(NamedQuery.class);
         if (namedQuery != null) {
-            getProject().addQuery(new NamedQueryMetadata(namedQuery, getAccessibleObject()));
+            getProject().addQuery(new NamedQueryMetadata(namedQuery, this));
         }
     }
     
@@ -1129,14 +1187,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         MetadataAnnotation namedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
         if (namedStoredProcedureQueries != null) {
             for (Object namedStoredProcedureQuery : (Object[]) namedStoredProcedureQueries.getAttribute("value")) { 
-                getProject().addQuery(new NamedStoredProcedureQueryMetadata((MetadataAnnotation)namedStoredProcedureQuery, getAccessibleObject()));
+                getProject().addQuery(new NamedStoredProcedureQueryMetadata((MetadataAnnotation) namedStoredProcedureQuery, this));
             }
         }
         
         // Look for a @NamedStoredProcedureQuery.
         MetadataAnnotation namedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
         if (namedStoredProcedureQuery != null) {
-            getProject().addQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getAccessibleObject()));
+            getProject().addQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, this));
         }
     }
     
@@ -1158,7 +1216,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             if (m_optimisticLocking == null) {
                 if (optimisticLocking != null) {
                     // Process the meta data for this accessor's descriptor.
-                    new OptimisticLockingMetadata(optimisticLocking, getAccessibleObject()).process(getDescriptor());
+                    new OptimisticLockingMetadata(optimisticLocking, this).process(getDescriptor());
                 }
             } else {
                 // If there is an annotation log a warning that we are 
@@ -1214,7 +1272,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_PRIMARY_KEY, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_primaryKey == null) {
-                    new PrimaryKeyMetadata(getAnnotation(PrimaryKey.class), getAccessibleObject()).process(getDescriptor());
+                    new PrimaryKeyMetadata(getAnnotation(PrimaryKey.class), this).process(getDescriptor());
                 } else {                    
                     if (isAnnotationPresent(PrimaryKey.class)) {
                         getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(PrimaryKey.class), getJavaClassName(), getLocation());
@@ -1239,7 +1297,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         if (isAnnotationPresent(SequenceGenerator.class)) {
             // Ask the common processor to process what we found.
-            getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), getAccessibleObject()), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
     }
     
@@ -1260,14 +1318,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
 
         if (sqlResultSetMappings != null) {
             for (Object sqlResultSetMapping : (Object[]) sqlResultSetMappings.getAttribute("value")) {
-                getProject().addSQLResultSetMapping(new SQLResultSetMappingMetadata((MetadataAnnotation)sqlResultSetMapping, getAccessibleObject()));
+                getProject().addSQLResultSetMapping(new SQLResultSetMappingMetadata((MetadataAnnotation)sqlResultSetMapping, this));
             }
         } else {
             // Look for a @SqlResultSetMapping.
             MetadataAnnotation sqlResultSetMapping = getAnnotation(SqlResultSetMapping.class);
             
             if (sqlResultSetMapping != null) {
-                getProject().addSQLResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping, getAccessibleObject()));
+                getProject().addSQLResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping, this));
             }
         }
     }
@@ -1284,7 +1342,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         }
         
         if (isAnnotationPresent(TableGenerator.class)) {
-            getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(TableGenerator.class), getAccessibleObject()), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(TableGenerator.class), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
     } 
     
@@ -1374,7 +1432,15 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public void setIdClassName(String idClassName) {
         m_idClassName = idClassName;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMultitenant(MultitenantMetadata multitenant) {
+        m_multitenant = multitenant;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -13,22 +13,30 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * Object to hold onto time of day metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink 11g
  */
 public class TimeOfDayMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private Integer m_hour;
     private Integer m_millisecond;
     private Integer m_minute;
@@ -36,6 +44,7 @@ public class TimeOfDayMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public TimeOfDayMetadata() {
         super("<time-of-day>");
@@ -43,9 +52,10 @@ public class TimeOfDayMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public TimeOfDayMetadata(MetadataAnnotation timeOfDay, MetadataAccessibleObject accessibleObject) {
-        super(timeOfDay, accessibleObject);
+    public TimeOfDayMetadata(MetadataAnnotation timeOfDay, MetadataAccessor accessor) {
+        super(timeOfDay, accessor);
         
         m_hour = (Integer) timeOfDay.getAttribute("hour");
         m_millisecond = (Integer) timeOfDay.getAttribute("millisecond");

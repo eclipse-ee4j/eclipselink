@@ -13,17 +13,24 @@
  *       - 218084: Implement metadata merging functionality between mapping file
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.annotations.Multitenant;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.multitenant.MultitenantMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 
@@ -31,38 +38,42 @@ import org.eclipse.persistence.internal.helper.Helper;
  * INTERNAL:
  * Object to hold onto table metadata in a TopLink database table.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class TableMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private DatabaseTable m_databaseTable = new DatabaseTable();
     private List<UniqueConstraintMetadata> m_uniqueConstraints = new ArrayList<UniqueConstraintMetadata>();
+    
+    private MultitenantMetadata m_multitenant;
+    
     private String m_name;
     private String m_schema;
     private String m_catalog;
-    public String m_creationSuffix;
+    private String m_creationSuffix;
 
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public TableMetadata() {
         super("<table>");
     }
-    
-    /**
-     * INTERNAL:
-     */
-    protected TableMetadata(String xmlElement) {
-        super(xmlElement);
-    }
 
     /**
      * INTERNAL:
+     * Used for annotatation loading.
      */
-    public TableMetadata(MetadataAnnotation table, MetadataAccessibleObject accessibleObject) {
-        super(table, accessibleObject);
+    public TableMetadata(MetadataAnnotation table, MetadataAccessor accessor) {
+        super(table, accessor);
         
         if (table != null) {
             m_name = (String) table.getAttribute("name"); 
@@ -70,9 +81,25 @@ public class TableMetadata extends ORMetadata {
             m_catalog = (String) table.getAttribute("catalog");
 
             for (Object uniqueConstraint : (Object[]) table.getAttributeArray("uniqueConstraints")) {
-                m_uniqueConstraints.add(new UniqueConstraintMetadata((MetadataAnnotation)uniqueConstraint, accessibleObject));
+                m_uniqueConstraints.add(new UniqueConstraintMetadata((MetadataAnnotation) uniqueConstraint, accessor));
             }
         }
+
+        // Look for multitenant metadata. We must ask the class accessor for the
+        // annotation since we must take a metadata complete setting into 
+        // account.
+        MetadataAnnotation multitenant = accessor.getAnnotation(Multitenant.class);
+        if (multitenant != null) {
+            m_multitenant = new MultitenantMetadata(accessor.getAnnotation(Multitenant.class), accessor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for XML loading.
+     */
+    protected TableMetadata(String xmlElement) {
+        super(xmlElement);
     }
 
     /**
@@ -139,6 +166,14 @@ public class TableMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public MultitenantMetadata getMultitenant() {
+        return m_multitenant;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getName() {
         return m_name;
     }
@@ -175,6 +210,17 @@ public class TableMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+        
+        // Initialize single objects.
+        initXMLObject(m_multitenant, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
      * Add the unique constraints to the database table.
      */
     public void processUniqueConstraints() {
@@ -186,6 +232,16 @@ public class TableMetadata extends ORMetadata {
                     m_databaseTable.addUniqueConstraints(uniqueConstraint.getName(), uniqueConstraint.getColumnNames());
                 }
             }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the multitenant metadata for this table metadata.
+     */
+    public void processMultitenant(MetadataDescriptor descriptor) {
+        if (m_multitenant != null) {
+            m_multitenant.process(descriptor);
         }
     }
 
@@ -219,6 +275,14 @@ public class TableMetadata extends ORMetadata {
         m_databaseTable = databaseTable;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMultitenant(MultitenantMetadata multitenant) {
+        m_multitenant = multitenant;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

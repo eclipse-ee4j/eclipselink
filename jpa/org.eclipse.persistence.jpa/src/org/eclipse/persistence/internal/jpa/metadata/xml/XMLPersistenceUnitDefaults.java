@@ -21,18 +21,30 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     12/01/2010-2.2 Guy Pelletier 
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
 /**
  * Object to hold onto the XML persistence unit defaults.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
@@ -42,8 +54,9 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
     
     private boolean m_cascadePersist;
     private boolean m_delimitedIdentifiers;
-    
-    private List<EntityListenerMetadata> m_entityListeners;
+       
+    private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
+    private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns = new ArrayList<TenantDiscriminatorColumnMetadata>();
     
     private String m_access;
     private String m_catalog;
@@ -58,7 +71,6 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
     
     /**
      * INTERNAL:
-     * If equals returns false, call getConflict() for a finer grain reason why.
      */
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof XMLPersistenceUnitDefaults) {
@@ -84,7 +96,15 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
                 return false;
             } 
         
-            return true;
+            if (! valuesMatch(persistenceUnitDefaults.getAccessMethods(), getAccessMethods())) {
+                return false;
+            }
+            
+            if (! valuesMatch(persistenceUnitDefaults.getTenantDiscriminatorColumns(), getTenantDiscriminatorColumns())) {
+                return false;
+            }
+            
+            return valuesMatch(persistenceUnitDefaults.getEntityListeners(), getEntityListeners());
         }
         
         return false;
@@ -118,16 +138,16 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getDelimitedIdentifiers() {
-        return null;
+    public String getCatalog() {
+        return m_catalog;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getCatalog() {
-        return m_catalog;
+    public String getDelimitedIdentifiers() {
+        return null;
     }
     
     /**
@@ -144,6 +164,14 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      */
     public String getSchema() {
         return m_schema;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<TenantDiscriminatorColumnMetadata> getTenantDiscriminatorColumns() {
+        return m_tenantDiscriminatorColumns;
     }
     
     /**
@@ -197,6 +225,11 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
             
             // ORMetadata object merging.        
             m_accessMethods = (AccessMethodsMetadata) mergeORObjects(m_accessMethods, persistenceUnitDefaults.getAccessMethods());
+            
+            // ORMetadata list merging. 
+            m_entityListeners = mergeORObjectLists(m_entityListeners, persistenceUnitDefaults.getEntityListeners());
+            m_tenantDiscriminatorColumns = mergeORObjectLists(m_tenantDiscriminatorColumns, persistenceUnitDefaults.getTenantDiscriminatorColumns());
+            
         }
     }
     
@@ -228,14 +261,6 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setEntityListeners(List<EntityListenerMetadata> entityListeners) {
-        m_entityListeners = entityListeners;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
     public void setCascadePersist(String ignore) {
         m_cascadePersist = true;
     }
@@ -252,7 +277,23 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setEntityListeners(List<EntityListenerMetadata> entityListeners) {
+        m_entityListeners = entityListeners;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setSchema(String schema) {
         m_schema = schema;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setTenantDiscriminatorColumns(List<TenantDiscriminatorColumnMetadata> tenantDiscriminatorColumns) {
+        m_tenantDiscriminatorColumns = tenantDiscriminatorColumns;
     }
 }

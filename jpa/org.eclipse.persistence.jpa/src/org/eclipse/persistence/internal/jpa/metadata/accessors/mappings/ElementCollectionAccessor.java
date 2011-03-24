@@ -39,6 +39,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -63,7 +65,6 @@ import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 
 import org.eclipse.persistence.annotations.MapKeyConvert;
-import org.eclipse.persistence.annotations.OrderCorrection;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -98,22 +99,29 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * 
  * Used to support DirectCollection, DirectMap, AggregateCollection.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
 public class ElementCollectionAccessor extends DirectCollectionAccessor implements MappedKeyMapAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private ColumnMetadata m_column;
     private ColumnMetadata m_mapKeyColumn;
     
     private EnumeratedMetadata m_mapKeyEnumerated;
     
-    private List<AssociationOverrideMetadata> m_associationOverrides;
-    private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides;
-    private List<AttributeOverrideMetadata> m_attributeOverrides;
-    private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides;
-    private List<JoinColumnMetadata> m_mapKeyJoinColumns; 
+    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
+    private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
+    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+    private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+    private List<JoinColumnMetadata> m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>(); 
     
     private MapKeyMetadata m_mapKey;
     private MetadataClass m_targetClass;
@@ -147,59 +155,49 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         m_targetClass = getMetadataClass((String) elementCollection.getAttribute("targetClass"));
         
         // Set the attribute overrides if some are present.
-        m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-        m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-        
         // Set the attribute overrides first if defined.
         if (isAnnotationPresent(AttributeOverrides.class)) {
             for (Object attributeOverride : (Object[]) getAnnotation(AttributeOverrides.class).getAttributeArray("value")) {
-                addAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, accessibleObject));
+                addAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, this));
             }
         }
         
         // Set the single attribute override second if defined.
         if (isAnnotationPresent(AttributeOverride.class)) {
-            addAttributeOverride(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), accessibleObject));
+            addAttributeOverride(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), this));
         }
         
         // Set the association overrides if some are present.
-        m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
-        m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
-        
         // Set the association overrides first if defined.
         if (isAnnotationPresent(AssociationOverrides.class)) {
             for (MetadataAnnotation associationOverride : (MetadataAnnotation[]) getAnnotation(AssociationOverrides.class).getAttribute("value")) {
-                addAssociationOverride(new AssociationOverrideMetadata(associationOverride, accessibleObject));
+                addAssociationOverride(new AssociationOverrideMetadata(associationOverride, this));
             }
         }
         
         // Set the single association override second if defined.
         if (isAnnotationPresent(AssociationOverride.class)) {
-            addAssociationOverride(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), accessibleObject));
+            addAssociationOverride(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), this));
         }
         
         // Set the column if one if defined.
         if (isAnnotationPresent(Column.class)) {
-            m_column = new ColumnMetadata(getAnnotation(Column.class), accessibleObject);
+            m_column = new ColumnMetadata(getAnnotation(Column.class), this);
         }
         
         // Set the collection table if one is defined.
         if (isAnnotationPresent(CollectionTable.class)) {
-            setCollectionTable(new CollectionTableMetadata(getAnnotation(CollectionTable.class), accessibleObject, true));
+            setCollectionTable(new CollectionTableMetadata(getAnnotation(CollectionTable.class), this, true));
         }
         
         // Set the order if one is present.
         if (isAnnotationPresent(OrderBy.class)) {
-            m_orderBy = (String) getAnnotation(OrderBy.class).getAttribute("value");
-            // No value means default order-by.
-            if (m_orderBy == null) {
-                m_orderBy = "";
-            }
+            m_orderBy = (String) getAnnotation(OrderBy.class).getAttributeString("value");
         }
         
         // Set the map key if one is defined.
         if (isAnnotationPresent(MapKey.class)) {
-            m_mapKey = new MapKeyMetadata(getAnnotation(MapKey.class), accessibleObject);
+            m_mapKey = new MapKeyMetadata(getAnnotation(MapKey.class), this);
         }
         
         // Set the map key class if one is defined.
@@ -209,30 +207,29 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the map key enumerated if one is defined.
         if (isAnnotationPresent(MapKeyEnumerated.class)) {
-            m_mapKeyEnumerated = new EnumeratedMetadata(getAnnotation(MapKeyEnumerated.class), accessibleObject);
+            m_mapKeyEnumerated = new EnumeratedMetadata(getAnnotation(MapKeyEnumerated.class), this);
         }
         
         // Set the map key temporal if one is defined.
         if (isAnnotationPresent(MapKeyTemporal.class)) {
-            m_mapKeyTemporal = new TemporalMetadata(getAnnotation(MapKeyTemporal.class), accessibleObject);
+            m_mapKeyTemporal = new TemporalMetadata(getAnnotation(MapKeyTemporal.class), this);
         }
         
         // Set the map key join columns if some are present.
-        m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>();
         // Process all the map key join columns first.
         if (isAnnotationPresent(MapKeyJoinColumns.class)) {
-            for (Object jColumn : (Object[]) getAnnotation(MapKeyJoinColumns.class).getAttributeArray("value")) {
-                m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation)jColumn, accessibleObject));
+            for (Object joinColumn : (Object[]) getAnnotation(MapKeyJoinColumns.class).getAttributeArray("value")) {
+                m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation) joinColumn, this));
             }
         }
         
         if (isAnnotationPresent(MapKeyJoinColumn.class)) {
-            m_mapKeyJoinColumns.add(new JoinColumnMetadata(getAnnotation(MapKeyJoinColumn.class), accessibleObject));
+            m_mapKeyJoinColumns.add(new JoinColumnMetadata(getAnnotation(MapKeyJoinColumn.class), this));
         }
         
         // Set the map key column if one is defined.
         if (isAnnotationPresent(MapKeyColumn.class)) {
-            m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), accessibleObject);
+            m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), this);
         }
         
         // Set the convert key if one is defined.
@@ -242,11 +239,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the order column if one is defined.
         if (isAnnotationPresent(OrderColumn.class)) {
-            String correctionType = null;
-            if (isAnnotationPresent(OrderCorrection.class)) {
-                correctionType = getAnnotation(OrderCorrection.class).getAttribute("value").toString();
-            }
-            m_orderColumn = new OrderColumnMetadata(getAnnotation(OrderColumn.class), accessibleObject, correctionType);
+            m_orderColumn = new OrderColumnMetadata(getAnnotation(OrderColumn.class), this);
         }
     }
     

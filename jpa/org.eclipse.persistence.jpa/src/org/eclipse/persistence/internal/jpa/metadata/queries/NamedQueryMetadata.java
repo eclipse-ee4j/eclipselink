@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -25,13 +27,21 @@ import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
  * Object to hold onto a named query metadata.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
@@ -44,32 +54,34 @@ public class NamedQueryMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public NamedQueryMetadata() {
         super("<named-query>");
     }
-
-    /**
-     * INTERNAL:
-     */
-    protected NamedQueryMetadata(String xmlElement) {
-        super(xmlElement);
-    }
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public NamedQueryMetadata(MetadataAnnotation namedQuery, MetadataAccessibleObject accessibleObject) {
-        super(namedQuery, accessibleObject);
+    public NamedQueryMetadata(MetadataAnnotation namedQuery, MetadataAccessor accessor) {
+        super(namedQuery, accessor);
         
         m_name = (String) namedQuery.getAttribute("name");
         m_query = (String) namedQuery.getAttribute("query");
         m_lockMode = (String) namedQuery.getAttribute("lockMode");
         
         for (Object hint : (Object[]) namedQuery.getAttributeArray("hints")) {
-            m_hints.add(new QueryHintMetadata((MetadataAnnotation)hint, accessibleObject));
+            m_hints.add(new QueryHintMetadata((MetadataAnnotation)hint, accessor));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for XML loading.
+     */
+    protected NamedQueryMetadata(String xmlElement) {
+        super(xmlElement);
     }
     
     /**

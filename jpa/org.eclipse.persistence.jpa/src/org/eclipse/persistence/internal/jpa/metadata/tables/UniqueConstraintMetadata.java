@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping file
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -20,12 +22,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
  * Object to hold onto a unique constraint metadata.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  */
 public class UniqueConstraintMetadata extends ORMetadata {
     private String m_name;
@@ -33,6 +44,7 @@ public class UniqueConstraintMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public UniqueConstraintMetadata() {
         super("<unique-constraint>");
@@ -40,9 +52,10 @@ public class UniqueConstraintMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public UniqueConstraintMetadata(MetadataAnnotation uniqueConstraint, MetadataAccessibleObject accessibleObject) {
-        super(uniqueConstraint, accessibleObject);
+    public UniqueConstraintMetadata(MetadataAnnotation uniqueConstraint, MetadataAccessor accessor) {
+        super(uniqueConstraint, accessor);
         
         m_name = (String) uniqueConstraint.getAttribute("name");
         

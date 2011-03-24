@@ -37,6 +37,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     10/28/2010-2.2 Guy Pelletier 
  *       - 3223850: Primary key metadata issues
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -92,10 +94,12 @@ public class MetadataLogger {
     public static final String IGNORE_ASSOCIATION_OVERRIDE = "metadata_warning_ignore_association_override";
     
     public static final String IGNORE_VERSION_LOCKING = "metadata_warning_ignore_version_locking";
+    
     public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE = "metadata_warning_ignore_inheritance_subclass_cache";
     public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR = "metadata_warning_ignore_inheritance_subclass_cache_interceptor";
     public static final String IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS = "metadata_warning_ignore_inheritance_subclass_default_redirectors";
     public static final String IGNORE_INHERITANCE_SUBCLASS_READ_ONLY = "metadata_warning_ignore_inheritance_subclass_read_only";
+    public static final String IGNORE_INHERITANCE_TENANT_DISCRIMINATOR_COLUMN = "metadata_warning_ignore_inheritance_tenant_discriminator_column";
     
     public static final String IGNORE_MAPPED_SUPERCLASS_COPY_POLICY = "metadata_warning_ignore_mapped_superclass_copy_policy";
     public static final String IGNORE_MAPPED_SUPERCLASS_ADDITIONAL_CRITERIA = "metadata_warning_ignore_mapped_superclass_additional_criteria";
@@ -238,6 +242,7 @@ public class MetadataLogger {
         addContextString(IGNORE_INHERITANCE_SUBCLASS_CACHE_INTERCEPTOR);
         addContextString(IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS);
         addContextString(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);
+        addContextString(IGNORE_INHERITANCE_TENANT_DISCRIMINATOR_COLUMN);
        
         addContextString(IGNORE_MAPPED_SUPERCLASS_COPY_POLICY);
         addContextString(IGNORE_MAPPED_SUPERCLASS_ADDITIONAL_CRITERIA);

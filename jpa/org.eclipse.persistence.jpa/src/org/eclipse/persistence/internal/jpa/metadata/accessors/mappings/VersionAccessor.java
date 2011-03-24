@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -25,7 +27,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
@@ -33,12 +35,19 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * INTERNAL:
  * A basic version accessor.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public class VersionAccessor extends BasicAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -50,8 +59,8 @@ public class VersionAccessor extends BasicAccessor {
     /**
      * INTERNAL:
      */
-    public VersionAccessor(MetadataAnnotation version, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        super(version, accessibleObject, classAccessor);
+    public VersionAccessor(MetadataAnnotation version, MetadataAnnotatedElement annotatedElement, ClassAccessor classAccessor) {
+        super(version, annotatedElement, classAccessor);
     }
 
     /**

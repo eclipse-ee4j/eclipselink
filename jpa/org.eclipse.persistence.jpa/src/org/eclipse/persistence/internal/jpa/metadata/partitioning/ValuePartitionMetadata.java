@@ -9,35 +9,48 @@
  *
  * Contributors:
  *     James Sutherland - initial API and implementation
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.partitioning;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
  * Define JPA meta-data for partitioning policy.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author James Sutherland
  * @since EclipseLink 2.2
  */
 public class ValuePartitionMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     protected String connectionPool;
     protected String value;
 
     /**
-     * Used for OX mapping.
+     * INTERNAL:
+     * Used for XML loading.
      */
     public ValuePartitionMetadata() {
         super("<value-partition>");
     }
     
-    public ValuePartitionMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject) {
-        super(annotation, accessibleObject);
+    /**
+     * INTERNAL:
+     * Used for annotation loading.
+     */
+    public ValuePartitionMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
+        super(annotation, accessor);
         this.connectionPool = (String)annotation.getAttribute("connectionPool");
         this.value = (String)annotation.getAttribute("value");
     }

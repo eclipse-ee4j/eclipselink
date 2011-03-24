@@ -12,11 +12,13 @@
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
@@ -24,17 +26,23 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * Object to hold onto a fetch attribute metadata from a named fetch group 
  * metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 2.1
  */
 public class FetchAttributeMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     protected String m_name;
 
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public FetchAttributeMetadata() {
         super("<fetch-attribute>");
@@ -42,9 +50,10 @@ public class FetchAttributeMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public FetchAttributeMetadata(MetadataAnnotation fetchAttribute, MetadataAccessibleObject accessibleObject) {
-        super(fetchAttribute, accessibleObject);
+    public FetchAttributeMetadata(MetadataAnnotation fetchAttribute, MetadataAccessor accessor) {
+        super(fetchAttribute, accessor);
         
         m_name = (String) fetchAttribute.getAttribute("name");
     }

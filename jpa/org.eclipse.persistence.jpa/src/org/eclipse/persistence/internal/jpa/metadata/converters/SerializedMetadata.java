@@ -19,6 +19,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -28,8 +30,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
@@ -38,29 +40,38 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * Abstract converter class that parents both the JPA and Eclipselink 
  * converters.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
 public class SerializedMetadata extends MetadataConverter {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     /**
      * INTERNAL:
+     * Used for defaulting case.
      */
     public SerializedMetadata() {}
     
     /**
+     * INTERNAL:
      * Used for defaulting.
      */
-    public SerializedMetadata(MetadataAccessibleObject accessibleObject) {
-        super(accessibleObject);
+    public SerializedMetadata(MetadataAccessor accessor) {
+        super(null, accessor);
     }
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public SerializedMetadata(MetadataAnnotation converter, MetadataAccessibleObject accessibleObject) {
-        super(converter, accessibleObject);
+    public SerializedMetadata(MetadataAnnotation converter, MetadataAccessor accessor) {
+        super(converter, accessor);
     }
     
     /**

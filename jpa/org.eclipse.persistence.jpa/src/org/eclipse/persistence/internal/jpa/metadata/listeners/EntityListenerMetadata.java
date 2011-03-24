@@ -21,6 +21,8 @@
  *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  *     12/01/2010-2.2 Guy Pelletier 
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -45,6 +47,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -64,12 +67,18 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  * Callback methods from an EntityListener require a signature on the method. 
  * Namely, they must have an Object parameter.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
 public class EntityListenerMetadata extends ORMetadata implements Cloneable {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private MetadataClass m_entityListenerClass;
     
     protected EntityListener m_listener;
@@ -85,7 +94,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
 
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public EntityListenerMetadata() {
         super("<entity-listener>");
@@ -93,9 +102,10 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
 
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public EntityListenerMetadata(MetadataAnnotation entityListeners, MetadataClass entityListenerClass, MetadataAccessibleObject accessibleObject) {
-        super(entityListeners, accessibleObject);
+    public EntityListenerMetadata(MetadataAnnotation entityListeners, MetadataClass entityListenerClass, MetadataAccessor accessor) {
+        super(entityListeners, accessor);
         
         m_entityListenerClass = entityListenerClass;
     }

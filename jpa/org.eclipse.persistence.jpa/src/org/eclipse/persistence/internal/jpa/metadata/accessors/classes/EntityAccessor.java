@@ -79,6 +79,8 @@
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  *     01/04/2011-2.3 Guy Pelletier 
  *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -129,10 +131,18 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
-import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 
 /**
  * An entity accessor.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
@@ -146,7 +156,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
     private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
-
+    
     private MetadataClass m_classExtractor;
     
     private String m_classExtractorName;
@@ -323,6 +333,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<IndexMetadata> getIndexes() {
+        return m_indexes;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public InheritanceMetadata getInheritance() {
         return m_inheritance;
     }
@@ -349,14 +367,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public TableMetadata getTable() {
         return m_table;
-    }
-    
-    public List<IndexMetadata> getIndexes() {
-        return m_indexes;
-    }
-
-    public void setIndexes(List<IndexMetadata> indexes) {
-        m_indexes = indexes;
     }
     
     /**
@@ -426,8 +436,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Initialize lists of objects.
         initXMLObjects(m_secondaryTables, accessibleObject);
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
+        initXMLObjects(m_indexes, accessibleObject);
     }
-    
     
     /**
      * INTERNAL:
@@ -588,7 +598,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             
         // Process the Table and Inheritance metadata.
         processTableAndInheritance();
-        
         
         // Process the indices metadata.
         processIndexes();
@@ -843,7 +852,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         MetadataAnnotation discriminatorColumn = getAnnotation(DiscriminatorColumn.class);
         
         if (m_discriminatorColumn == null) {
-            m_discriminatorColumn = new DiscriminatorColumnMetadata(discriminatorColumn, getAccessibleObject()); 
+            m_discriminatorColumn = new DiscriminatorColumnMetadata(discriminatorColumn, this); 
         } else {
             if (isAnnotationPresent(DiscriminatorColumn.class)) {
                 getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, discriminatorColumn, getJavaClassName(), getLocation());
@@ -906,66 +915,25 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process index information for the given metadata descriptor.
      */
     protected void processIndexes() {
+        // TODO: This goes against the JPA spec where XML always overrides
+        // annotations. This method is appending annotation metadata to XML
+        // metadata.
         MetadataAnnotation index = getAnnotation(Index.class);
         
         if (index != null) {
-            m_indexes.add(new IndexMetadata(index, getAccessibleObject()));
+            m_indexes.add(new IndexMetadata(index, this));
         }
         
         MetadataAnnotation indexes = getAnnotation(Indexes.class);
         if (indexes != null) {
             Object[] indexArray = (Object[])indexes.getAttributeArray("value");
             for (Object eachIndex : indexArray) {
-                m_indexes.add(new IndexMetadata((MetadataAnnotation)eachIndex, getAccessibleObject()));            
+                m_indexes.add(new IndexMetadata((MetadataAnnotation) eachIndex, this));            
             }
         }
         
         for (IndexMetadata indexMetadata : m_indexes) {
-            IndexDefinition indexDefinition = new IndexDefinition();
-            if ((indexMetadata.getName() != null) && (indexMetadata.getName().length() != 0)) {
-                indexDefinition.setName(indexMetadata.getName());            
-            } else {
-                String name = "INDEX_" + getDescriptor().getPrimaryTable().getName();
-                for (String column : indexMetadata.getColumnNames()) {
-                    name = name + "_" + column;
-                }
-                indexDefinition.setName(name);
-            }
-            if ((indexMetadata.getSchema() != null) && (indexMetadata.getSchema().length() != 0)) {
-                indexDefinition.setQualifier(indexMetadata.getSchema());
-            } else if ((getDescriptor().getDefaultSchema() != null) && (getDescriptor().getDefaultSchema().length() != 0)) {
-                indexDefinition.setQualifier(indexMetadata.getSchema());                
-            }
-            if ((indexMetadata.getCatalog() != null) && (indexMetadata.getCatalog().length() != 0)) {
-                indexDefinition.setQualifier(indexMetadata.getCatalog());
-            } else if ((getDescriptor().getDefaultCatalog() != null) && (getDescriptor().getDefaultCatalog().length() != 0)) {
-                indexDefinition.setQualifier(getDescriptor().getDefaultCatalog());                
-            }
-            if (indexMetadata.getUnique() != null) {
-                indexDefinition.setIsUnique(indexMetadata.getUnique());
-            }
-            indexDefinition.getFields().addAll(indexMetadata.getColumnNames());
-            String table = indexMetadata.getTable();
-            if ((table == null) || (table.length() == 0)) {
-                indexDefinition.setTargetTable(getDescriptor().getPrimaryTable().getQualifiedName());
-                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-            } else if (table.equals(getDescriptor().getPrimaryTable().getQualifiedName())
-                        || table.equals(getDescriptor().getPrimaryTable().getName())) {
-                indexDefinition.setTargetTable(table);
-                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-            } else {
-                indexDefinition.setTargetTable(table);
-                boolean found = false;
-                for (DatabaseTable databaseTable : getDescriptor().getClassDescriptor().getTables()) {
-                    if (table.equals(databaseTable.getQualifiedName()) || table.equals(databaseTable.getName())) {
-                        databaseTable.getIndexes().add(indexDefinition);
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-                }
-            }
+            indexMetadata.process(getDescriptor(), null);
         }
     }
     
@@ -981,7 +949,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the inheritance metadata first. Create one if one does not 
         // exist.
         if (m_inheritance == null) {
-            m_inheritance = new InheritanceMetadata(getAnnotation(Inheritance.class), getAccessibleObject());
+            m_inheritance = new InheritanceMetadata(getAnnotation(Inheritance.class), this);
         }
         
         m_inheritance.process(getDescriptor());
@@ -1001,13 +969,13 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             if (isAnnotationPresent(PrimaryKeyJoinColumns.class)) {
                 MetadataAnnotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
                 for (Object primaryKeyJoinColumn : (Object[]) primaryKeyJoinColumns.getAttributeArray("value")) { 
-                    m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, getAccessibleObject()));
+                    m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation) primaryKeyJoinColumn, this));
                 }
             }
             
             // Process the single primary key join column second.
             if (isAnnotationPresent(PrimaryKeyJoinColumn.class)) {
-                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(PrimaryKeyJoinColumn.class), getAccessibleObject()));
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(PrimaryKeyJoinColumn.class), this));
             }
         }
         
@@ -1110,12 +1078,12 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // Look for a SecondaryTables annotation.
             if (secondaryTables != null) {
                 for (Object table : (Object[]) secondaryTables.getAttributeArray("value")) { 
-                    processSecondaryTable(new SecondaryTableMetadata((MetadataAnnotation)table, getAccessibleObject()));
+                    processSecondaryTable(new SecondaryTableMetadata((MetadataAnnotation)table, this));
                 }
             } else {
                 // Look for a SecondaryTable annotation
                 if (secondaryTable != null) {    
-                    processSecondaryTable(new SecondaryTableMetadata(secondaryTable, getAccessibleObject()));
+                    processSecondaryTable(new SecondaryTableMetadata(secondaryTable, this));
                 }
             }
         } else {
@@ -1143,7 +1111,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (m_table == null) {
             // Check for a table annotation. If no annotation is defined, the 
             // table will default.
-            processTable(new TableMetadata(table, getAccessibleObject()));
+            processTable(new TableMetadata(table, this));
         } else {
             if (table != null) {
                 getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, table, getJavaClassName(), getLocation());
@@ -1164,6 +1132,11 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Set the table on the descriptor.
         getDescriptor().setPrimaryTable(table.getDatabaseTable());
+        
+        // Now process the multitenancy if present. (must be done after the
+        // primary table has been set)
+        // Process the multitenant metadata.
+        table.processMultitenant(getDescriptor());
     }
     
     /**
@@ -1265,6 +1238,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setIndexes(List<IndexMetadata> indexes) {
+        m_indexes = indexes;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setInheritance(InheritanceMetadata inheritance) {
         m_inheritance = inheritance;
     }
@@ -1306,7 +1287,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * 
      * Call this method after a primary key should have been found.
      */
     protected void validatePrimaryKey() {

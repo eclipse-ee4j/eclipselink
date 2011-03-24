@@ -12,16 +12,18 @@
  *       - 249037: JPA 2.0 persisting list item index
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import org.eclipse.persistence.annotations.OrderCorrection;
 import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -30,19 +32,25 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * INTERNAL:
  * Object to process a JPA order column into an EclipseLink database field.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
 public class OrderColumnMetadata extends DirectColumnMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private static final String _ORDER = "_ORDER";
     
     private String m_correctionType;    
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for XML loading.
      */
     public OrderColumnMetadata() {
         super("<order-column>");
@@ -50,10 +58,14 @@ public class OrderColumnMetadata extends DirectColumnMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public OrderColumnMetadata(MetadataAnnotation orderColumn, MetadataAccessibleObject accessibleObject, String correctionType) {
-        super(orderColumn, accessibleObject);
-        m_correctionType = correctionType;
+    public OrderColumnMetadata(MetadataAnnotation orderColumn, MetadataAccessor accessor) {
+        super(orderColumn, accessor);
+        
+        if (accessor.isAnnotationPresent(OrderCorrection.class)) {
+            m_correctionType = (String) accessor.getAnnotation(OrderCorrection.class).getAttribute("value");
+        }
     }
     
     /**
@@ -85,15 +97,8 @@ public class OrderColumnMetadata extends DirectColumnMetadata {
             // Get the database field with metadata applied.
             DatabaseField orderField = getDatabaseField();
             
-            boolean useDelimitedIdentifier = (descriptor.getProject() != null) ? descriptor.getProject().useDelimitedIdentifier() : false;
-
-            // Process and default is necessary the name.
-            orderField.setName(MetadataHelper.getName(getName(), mapping.getAttributeName() + _ORDER, MetadataLogger.ORDER_COLUMN, descriptor.getLogger(), getAccessibleObject().toString()), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
-            if (useDelimitedIdentifier){
-                orderField.setUseDelimiters(useDelimitedIdentifier);
-            } else if (descriptor.getProject().getShouldForceFieldNamesToUpperCase() && !orderField.shouldUseDelimiters()) {
-                orderField.useUpperCaseForComparisons(true);
-            }
+            // Set the field name taking into consideration delimited identifier settings..
+            setFieldName(orderField, MetadataHelper.getName(getName(), mapping.getAttributeName() + _ORDER, MetadataLogger.ORDER_COLUMN, getLogger(), getAccessibleObject().toString()));
 
             // We don't set a table, the mapping will figure that out for us at runtime.
 

@@ -23,6 +23,8 @@
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -47,12 +49,19 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * 
  * Subclasses: BasicAccessor, BasicCollectionAccessor, BasicMapAccessor.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink 11g
  */
 public abstract class DirectAccessor extends MappingAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-    
     private Boolean m_optional;
     private EnumeratedMetadata m_enumerated;
     private LobMetadata m_lob;
@@ -77,17 +86,17 @@ public abstract class DirectAccessor extends MappingAccessor {
         
         // Set the lob if one is present.
         if (isAnnotationPresent(Lob.class)) {
-            m_lob = new LobMetadata(getAnnotation(Lob.class), getAccessibleObject());
+            m_lob = new LobMetadata(getAnnotation(Lob.class), this);
         }
         
         // Set the enumerated if one is present.
         if (isAnnotationPresent(Enumerated.class)) {
-            m_enumerated = new EnumeratedMetadata(getAnnotation(Enumerated.class), getAccessibleObject());
+            m_enumerated = new EnumeratedMetadata(getAnnotation(Enumerated.class), this);
         }
         
         // Set the temporal type if one is present.
         if (isAnnotationPresent(Temporal.class)) {
-            m_temporal = new TemporalMetadata(getAnnotation(Temporal.class), getAccessibleObject());
+            m_temporal = new TemporalMetadata(getAnnotation(Temporal.class), this);
         }
         
         // Set the convert value if one is present.

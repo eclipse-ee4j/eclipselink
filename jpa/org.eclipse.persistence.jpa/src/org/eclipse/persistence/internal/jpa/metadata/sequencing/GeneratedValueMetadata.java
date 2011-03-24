@@ -15,6 +15,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     07/23/2010-2.2 Guy Pelletier 
  *       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
@@ -25,6 +27,7 @@ import javax.persistence.GenerationType;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatasourceLogin;
@@ -32,24 +35,34 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 /**
  * Metadata object to hold generated value information.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class GeneratedValueMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private String m_strategy;
     private String m_generator;
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public GeneratedValueMetadata() {}
     
     /**
      * INTERNAL:
+     * Used annotation loading.
      */
-    public GeneratedValueMetadata(MetadataAnnotation generatedValue) {
+    public GeneratedValueMetadata(MetadataAnnotation generatedValue, MetadataAccessor accessor) {
+        super(generatedValue, accessor);
+        
         m_generator = (String) generatedValue.getAttributeString("generator");
         m_strategy = (String) generatedValue.getAttribute("strategy"); 
     }

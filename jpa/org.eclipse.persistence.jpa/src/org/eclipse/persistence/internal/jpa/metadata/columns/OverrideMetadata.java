@@ -11,17 +11,27 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
  * Object to hold onto common attribute/association override metadata.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
@@ -31,19 +41,20 @@ public abstract class OverrideMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for annotation loading.
      */
-    protected OverrideMetadata(String xmlElement) {
-        super(xmlElement);
+    protected OverrideMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
+        super(annotation, accessor);
+        
+        m_name = (String) annotation.getAttribute("name");
     }
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
-    protected OverrideMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject) {
-        super(annotation, accessibleObject);
-        
-        m_name = (String) annotation.getAttribute("name");
+    protected OverrideMetadata(String xmlElement) {
+        super(xmlElement);
     }
     
     /**

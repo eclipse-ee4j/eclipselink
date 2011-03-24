@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     tware - added handling of database delimiters
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
@@ -39,6 +41,7 @@ public class DatabaseField implements Cloneable, Serializable {
     protected boolean isNullable;
     protected boolean isUpdatable;
     protected boolean isInsertable;
+    protected boolean isPrimaryKey;
     protected String columnDefinition;
     
     /** Column name of the field. */
@@ -143,6 +146,7 @@ public class DatabaseField implements Cloneable, Serializable {
         isNullable = true;
         isUpdatable = true;
         isInsertable = true;
+        isPrimaryKey = false;
         columnDefinition = "";
     }
 
@@ -376,6 +380,14 @@ public class DatabaseField implements Cloneable, Serializable {
     }
     
     /**
+     * Used to specify whether the column should be included in the primary
+     * on the database table.
+     */    
+    public boolean isPrimaryKey() {
+        return this.isPrimaryKey;
+    }
+    
+    /**
      * Used for generating DDL. Returns true if the field is a unique key. 
      */
     public boolean isUnique() {
@@ -495,6 +507,14 @@ public class DatabaseField implements Cloneable, Serializable {
      */
     public void setPrecision(int precision) {
         this.precision = precision;
+    }
+    
+    /**
+     * Used to specify whether the column should be included in primary key
+     * on the database table.
+     */
+    public void setPrimaryKey(boolean isPrimaryKey) {
+        this.isPrimaryKey = isPrimaryKey;
     }
     
     /**

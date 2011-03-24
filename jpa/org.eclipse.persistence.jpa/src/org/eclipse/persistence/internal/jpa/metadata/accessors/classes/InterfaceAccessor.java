@@ -16,6 +16,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     05/04/2010-2.1 Guy Pelletier 
  *       - 309373: Add parent class attribute to EclipseLink-ORM
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -35,6 +37,15 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * Things that should or could be mapped on this interface are:
  *  - alias
  *  - query keys
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0

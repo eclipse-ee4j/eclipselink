@@ -41,6 +41,8 @@
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -86,12 +88,19 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * INTERNAL:
  * A relational accessor.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be handled in the merge
+ *   method. (merging is done at the accessor/mapping level)
+ * - any metadata mapped from XML to this class msst be initialized in the
+ *   initXMLObject  method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class RelationshipAccessor extends MappingAccessor {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private Boolean m_orphanRemoval;
     private boolean m_privateOwned;
     private boolean m_cascadeOnDelete;
@@ -126,48 +135,46 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         
         m_fetch = (annotation == null) ? getDefaultFetchType() : (String) annotation.getAttribute("fetch");
         m_targetEntity = getMetadataClass((annotation == null) ? "void" : (String) annotation.getAttributeString("targetEntity"));         
-        m_cascade = (annotation == null) ? null : new CascadeMetadata((Object[]) annotation.getAttributeArray("cascade"), accessibleObject);
+        m_cascade = (annotation == null) ? null : new CascadeMetadata((Object[]) annotation.getAttributeArray("cascade"), this);
         
-        // Set the join fetch if one is present.           
-        MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);            
-        if (joinFetch != null) {
+        // Set the join fetch if one is present.                       
+        if (isAnnotationPresent(JoinFetch.class)) {
             // Get attribute string will return the default ""
-            m_joinFetch = (String) joinFetch.getAttributeString("value");
+            m_joinFetch = (String) getAnnotation(JoinFetch.class).getAttributeString("value");
         }
         
         // Set the batch fetch if one is present.           
-        MetadataAnnotation batchFetch = getAnnotation(BatchFetch.class);            
-        if (batchFetch != null) {
+        if (isAnnotationPresent(BatchFetch.class)) {
             // Get attribute string will return the default ""
-            m_batchFetch = (String) batchFetch.getAttributeString("value");
-            m_batchFetchSize = (Integer) batchFetch.getAttribute("size");
+            m_batchFetch = (String) getAnnotation(BatchFetch.class).getAttributeString("value");
+            m_batchFetchSize = (Integer) getAnnotation(BatchFetch.class).getAttribute("size");
+        }
+        
+        // Set the join columns if some are present. 
+        // Process all the join columns first.
+        if (isAnnotationPresent(JoinColumns.class)) {
+            for (Object joinColumn : (Object[]) getAnnotation(JoinColumns.class).getAttributeArray("value")) {
+                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, this));
+            }
+        }
+        
+        // Process the single key join column second.
+        if (isAnnotationPresent(JoinColumn.class)) {
+            m_joinColumns.add(new JoinColumnMetadata(getAnnotation(JoinColumn.class), this));
+        }
+        
+        // Set the join table if one is present.
+        if (isAnnotationPresent(JoinTable.class)) {
+            m_joinTable = new JoinTableMetadata(getAnnotation(JoinTable.class), this);
         }
         
         // Set the private owned if one is present.
         m_privateOwned = isAnnotationPresent(PrivateOwned.class);
         
+        // Set the cascahe on delete if one is present.
         m_cascadeOnDelete = isAnnotationPresent(CascadeOnDelete.class);
         
-        // Set the join columns if some are present. 
-        // Process all the join columns first.
-        MetadataAnnotation joinColumns = getAnnotation(JoinColumns.class);
-        if (joinColumns != null) {
-            for (Object jColumn : (Object[]) joinColumns.getAttributeArray("value")) {
-                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)jColumn, accessibleObject));
-            }
-        }
-        
-        // Process the single key join column second.
-        MetadataAnnotation joinColumn = getAnnotation(JoinColumn.class);
-        if (joinColumn != null) {
-            m_joinColumns.add(new JoinColumnMetadata(joinColumn, accessibleObject));
-        }
-        
-        // Set the join table if one is present.
-        if (isAnnotationPresent(JoinTable.class)) {
-            m_joinTable = new JoinTableMetadata(getAnnotation(JoinTable.class), accessibleObject);
-        }
-        
+        // Set the non cacheable if one is present.
         m_nonCacheable = isAnnotationPresent(Noncacheable.class);
     }
     
@@ -364,7 +371,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         } else {
             if (m_joinTable == null) {
                 // TODO: Log a defaulting message.
-                m_joinTable = new JoinTableMetadata(null, getAccessibleObject());
+                m_joinTable = new JoinTableMetadata(getClassAccessor());
             }
         }
         return m_joinTable;

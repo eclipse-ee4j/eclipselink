@@ -14,11 +14,13 @@
  *       - 218084: Implement metadata merging functionality between mapping file
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.transformers;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.mappings.TransformationMapping;
@@ -28,16 +30,23 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
  * INTERNAL:
  * Matadata for WriteTransformer.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Andrei Ilitchev
  * @since EclipseLink 1.0 
  */
 public class WriteTransformerMetadata extends ReadTransformerMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private ColumnMetadata m_column;
     
     /**
      * INTERNAL:
+     * Used for XML loading.
      */
     public WriteTransformerMetadata() {
         super("<write-transformer>");
@@ -45,11 +54,12 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
 
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
-    public WriteTransformerMetadata(MetadataAnnotation writeTransformer, MetadataAccessibleObject accessibleObject) {
-        super(writeTransformer, accessibleObject);
+    public WriteTransformerMetadata(MetadataAnnotation writeTransformer, MetadataAccessor accessor) {
+        super(writeTransformer, accessor);
         
-        m_column = new ColumnMetadata((MetadataAnnotation) writeTransformer.getAttribute("column"), accessibleObject);
+        m_column = new ColumnMetadata((MetadataAnnotation) writeTransformer.getAttribute("column"), accessor);
     }
     
     /**
