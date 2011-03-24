@@ -116,6 +116,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
     private boolean isXsiNil;
     private boolean xpathNodeIsMixedContent = false;
+    private int unmappedLevel = -1;
 
     protected List<UnmarshalRecord> childRecordPool;
 
@@ -160,6 +161,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         unmarshalContext = null;
         isXsiNil = false;
         this.childRecordPool.add(this);
+        unmappedLevel = -1;
     }
 
     @Override
@@ -642,6 +644,11 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 }
             }
 
+            if(unmappedLevel != -1 && unmappedLevel <= levelIndex) {
+                levelIndex++;
+                return;
+            }
+
             XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName);
             if (null == node) {
                 NodeValue parentNodeValue = xPathNode.getUnmarshalNodeValue();
@@ -746,6 +753,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
     public void startUnmappedElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if ((null != selfRecords) || (null == xmlReader) || isSelfRecord()) {
+            if(-1 == unmappedLevel) {
+                this.unmappedLevel = this.levelIndex;
+            }
             return;
         }
         Class unmappedContentHandlerClass = getUnmarshaller().getUnmappedContentHandlerClass();
@@ -781,6 +791,13 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                         getFragmentBuilder().endSelfElement(namespaceURI, localName, qName);
                     }
                 }
+            }
+            if(-1 != unmappedLevel && unmappedLevel <= levelIndex) {
+                if(levelIndex == unmappedLevel) {
+                    unmappedLevel = -1;
+                }
+                levelIndex--;
+                return;
             }
             if (null != xPathNode.getUnmarshalNodeValue()) {
                 xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
@@ -871,7 +888,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                     }
                 }
             }
-
+            if(-1 != unmappedLevel && unmappedLevel <= levelIndex) {
+                return;
+            }
             XPathNode textNode = xPathNode.getTextNode();
             if (null == textNode) {
                 textNode = xPathNode.getAnyNode();

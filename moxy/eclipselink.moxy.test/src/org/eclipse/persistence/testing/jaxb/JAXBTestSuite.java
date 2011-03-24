@@ -99,6 +99,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.XmlPathTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.XmlPathOverrideTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.XmlPathUnmappedTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.self.SelfTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.cdata.XmlCDATATestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.cdata.XmlCDATAOverrideTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlwriteonly.XmlWriteOnlyTestCases.class);
