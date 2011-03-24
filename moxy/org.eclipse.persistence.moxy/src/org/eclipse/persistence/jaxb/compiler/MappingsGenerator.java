@@ -1037,11 +1037,14 @@ public class MappingsGenerator {
             }
         }
         // if the XPath is set (via xml-path) use it; otherwise figure it out
+        XMLField xmlField;
         if (property.getXmlPath() != null) {
-            mapping.setField(new XMLField(property.getXmlPath()));
+            xmlField = new XMLField(property.getXmlPath());
+            xmlField.setSchemaType(property.getSchemaType());
         } else {
-            mapping.setField(getXPathForField(property, namespaceInfo, true));
+            xmlField = getXPathForField(property, namespaceInfo, true);
         }
+        mapping.setField(xmlField);
 
         if (property.getDefaultValue() != null) {
             mapping.setNullValue(property.getDefaultValue());
@@ -1791,6 +1794,7 @@ public class MappingsGenerator {
         XMLField xmlField;
         if (property.getXmlPath() != null) {
             xmlField = new XMLField(property.getXmlPath());
+            xmlField.setSchemaType(property.getSchemaType());
         } else {
             xmlField = getXPathForField(property, namespaceInfo, true);
         }
