@@ -65,7 +65,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         suite.setName("AdvancedMultiTenantJunitTest");
         
         // TODO: Guy update
-        suite.addTest(new AdvancedMultiTenantJunitTest("testSetup"));
+        //suite.addTest(new AdvancedMultiTenantJunitTest("testSetup"));
         //suite.addTest(new AdvancedMultiTenantJunitTest("testCreateMafiaFamily707"));
         //suite.addTest(new AdvancedMultiTenantJunitTest("testCreateMafiaFamily007"));
         //suite.addTest(new AdvancedMultiTenantJunitTest("testValidateMafiaFamily707"));

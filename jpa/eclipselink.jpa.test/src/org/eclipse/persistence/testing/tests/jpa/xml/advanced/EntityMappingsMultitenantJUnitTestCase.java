@@ -65,7 +65,7 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
         suite.setName("Advanced Multitenant Test Suite");
         
         // TODO: Guy update
-        suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testSetup"));
+        //suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testSetup"));
         //suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testCreateMafiaFamily707"));
         //suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testCreateMafiaFamily007"));
         //suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testValidateMafiaFamily707"));
