@@ -252,7 +252,11 @@ public class Property implements Cloneable {
         if(isCollectionType(cls)){
         	if(cls.hasActualTypeArguments()){
         		ArrayList typeArgs =  (ArrayList) cls.getActualTypeArguments();
-        		genericType = (JavaClass) typeArgs.get(0);
+        		if(typeArgs.size() > 0) {
+        		    genericType = (JavaClass) typeArgs.get(0);
+        		} else {
+        		    genericType = helper.getJavaClass(Object.class);
+        		}
         	}else{
         		genericType = helper.getJavaClass(Object.class);
         	}

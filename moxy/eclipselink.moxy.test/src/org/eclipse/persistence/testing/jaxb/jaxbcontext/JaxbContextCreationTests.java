@@ -126,4 +126,10 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         fail();
     }
 
+    public void testCreateContextWithGenerics() throws JAXBException {
+        Class[] classes = new Class[1];
+        classes[0] = ConcreteClassWithGenerics.class;
+        JAXBContextFactory.createContext(classes, null);
+    }
+
 }
