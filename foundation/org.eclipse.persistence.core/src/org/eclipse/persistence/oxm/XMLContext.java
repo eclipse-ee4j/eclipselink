@@ -205,7 +205,7 @@ public class XMLContext {
         // turn logging for this session off and leave the global session up
         // Note: setting level to SEVERE or WARNING will printout stacktraces for expected exceptions
         session.setLogLevel(SessionLog.OFF);
-        // dont turn off global static logging
+        // don't turn off global static logging
         //AbstractSessionLog.getLog().log(AbstractSessionLog.INFO, "ox_turn_global_logging_off", getClass());        			
         //AbstractSessionLog.getLog().setLevel(AbstractSessionLog.OFF);
         setupDocumentPreservationPolicy(session);
@@ -238,7 +238,7 @@ public class XMLContext {
     		// turn logging for this session off and leave the global session up
     		// Note: setting level to SEVERE or WARNING will printout stacktraces for expected exceptions
     		session.setLogLevel(SessionLog.OFF);
-    		// dont turn off global static logging
+    		// don't turn off global static logging
     		//AbstractSessionLog.getLog().log(AbstractSessionLog.INFO, "ox_turn_global_logging_off", getClass());        			
     		//AbstractSessionLog.getLog().setLevel(AbstractSessionLog.OFF);
     		setupDocumentPreservationPolicy(session);
@@ -441,7 +441,7 @@ public class XMLContext {
     }
 
     /**
-     * INTERNAL: Return the EclipseLink session used to marshall.
+     * INTERNAL: Return the EclipseLink session used to marshal.
      */
     public List getSessions() {
         return sessions;
@@ -593,8 +593,8 @@ public class XMLContext {
     }
 
     /**
-     * INTERNAL: Return the XMLDescriptor with the default root mapping matchin
-     * the QName paramater.
+     * INTERNAL: Return the XMLDescriptor with the default root mapping matching
+     * the QName parameter.
      */
     public XMLDescriptor getDescriptor(QName qName) {
         return (XMLDescriptor) descriptorsByQName.get(qName);
@@ -660,7 +660,7 @@ public class XMLContext {
     
     /**
     * ADVANCED:
-    * Adjust the OXM metadata to take into accound ORM mapping metadata,
+    * Adjust the OXM metadata to take into account ORM mapping metadata,
     */
     public void applyORMMetadata(AbstractSession ormSession) {
         //Iterate over the ORM descriptors and check for matching OXM descriptors
