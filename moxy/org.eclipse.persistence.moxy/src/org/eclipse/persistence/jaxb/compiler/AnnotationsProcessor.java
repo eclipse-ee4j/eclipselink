@@ -168,7 +168,6 @@ public class AnnotationsProcessor {
     private static final String JAVA_UTIL_LIST = "java.util.List";
     private static final String JAVA_LANG_OBJECT = "java.lang.Object";
     private static final String SLASH = "/";
-    private static final String AT_SIGN = "@";
     private static final String SEMI_COLON = ";";
     private static final String L = "L";
     private static final String ITEM = "item";
@@ -3209,11 +3208,13 @@ public class AnnotationsProcessor {
     			helper.isAnnotationPresent(elem, XmlElementRef.class) || 
     			helper.isAnnotationPresent(elem, XmlElementRefs.class) || 
     			helper.isAnnotationPresent(elem, XmlID.class) || 
+    			helper.isAnnotationPresent(elem, XmlInlineBinaryData.class) || 
     			helper.isAnnotationPresent(elem, XmlSchemaType.class) || 
     			helper.isAnnotationPresent(elem, XmlElementWrapper.class) || 
     			helper.isAnnotationPresent(elem, XmlList.class) || 
     			helper.isAnnotationPresent(elem, XmlMimeType.class) || 
     			helper.isAnnotationPresent(elem, XmlIDREF.class) || 
+    			helper.isAnnotationPresent(elem, XmlTransient.class) || 
     			helper.isAnnotationPresent(elem, XmlPath.class) || 
     			helper.isAnnotationPresent(elem, XmlPaths.class) || 
     			helper.isAnnotationPresent(elem, XmlInverseReference.class) ||
