@@ -22,13 +22,6 @@ public class PLSQLXMLTestModel extends PLSQLTestModel {
         setDescription("This model tests calling PLSQL stored procedures with PLSQL types from project XML.");
     }
 
-    public void addTests() {
-        addTest(getSimpleTestSuite());
-        addTest(getRecordTestSuite());
-        addTest(getCollectionTestSuite());
-        addTest(getErrorTestSuite());
-    }
-
     public void addRequiredSystems() {
         if (!getSession().getLogin().getPlatform().isOracle()) {
             warning("PLSQL is only supported on Oracle.");

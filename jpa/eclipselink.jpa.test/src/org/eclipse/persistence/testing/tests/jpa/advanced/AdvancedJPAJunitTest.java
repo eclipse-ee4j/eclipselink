@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,8 +38,6 @@ import java.util.Vector;
 
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
@@ -64,7 +61,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -111,6 +107,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Bo
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Nut;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.School;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Student;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
 
 /**
  * This test suite tests EclipseLink JPA annotations extensions.
@@ -177,11 +175,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testUpdateReadOnlyEquipmentCode"));
         
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQuery"));
+        suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryByIndex"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryInOut"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithRawData"));
         suite.addTest(new AdvancedJPAJunitTest("testModifyNamedStoredProcedureQueryWithRawData"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetMapping"));
-        suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetFieldMapping"));
+        suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetFieldMapping"));        
+        suite.addTest(new AdvancedJPAJunitTest("testNamedFunction"));
 
         suite.addTest(new AdvancedJPAJunitTest("testMethodBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
@@ -200,7 +200,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
         
         suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
-
+        
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
             suite.addTest(new AdvancedJPAJunitTest("testQueryGetParameter"));
@@ -242,6 +242,38 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         descriptor.setShouldBeReadOnly(shouldBeReadOnly);
 
         clearCache();
+
+        //create stored function when database supports it
+        if (supportsStoredFunctions()) {
+            SchemaManager schema = new SchemaManager(session);
+            schema.replaceObject(buildStoredFunction());
+        }
+    }
+
+    public StoredFunctionDefinition buildStoredFunction() {
+        StoredFunctionDefinition func = new StoredFunctionDefinition();
+        func.setName("StoredFunction_In");
+        func.addArgument("P_IN", Long.class);
+        func.setReturnType(Long.class);
+        func.addStatement("RETURN P_IN * 1000");
+        return func;
+    }
+    
+    /* Test named function 'StoredFunction_In'*/
+    public void testNamedFunction() {
+        if (!supportsStoredFunctions()) {
+            warning("this test is not suitable for running on dbs that don't support stored function");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        Query query;
+        try {
+            query = em.createNamedQuery("StoredFunction_In");
+            query.setParameter("P_IN", 1);
+            query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
     }
     
     /**
@@ -1175,6 +1207,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             q.setHint(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
             try {
                 Employee clone = (Employee)q.getSingleResult();
+                clone.toString();
             }catch (java.lang.NullPointerException e){
                 this.fail("NPE occured building an Entity whos reference in the shared cache was garbage collected: "+e);
             }
@@ -1382,7 +1415,57 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             Address address2 = (Address) em.createNamedQuery("SProcAddress").setParameter("ADDRESS_ID", address1.getID()).getSingleResult();
             assertNotNull("Address returned from stored procedure is null", address2);
             assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
-            assertTrue("Address not found using stored procedure", (address2.getID() == address1.getID()));
+            assertTrue("Address build correctly using stored procedure", (address2.getID() == address1.getID()));
+            assertTrue("Address build correctly using stored procedure", (address2.getStreet().equals(address1.getStreet())));
+            assertTrue("Address build correctly using stored procedure", (address2.getCountry().equals(address1.getCountry())));
+            assertTrue("Address build correctly using stored procedure", (address2.getProvince().equals(address1.getProvince())));
+            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    /**
+     * Tests a @NamedStoredProcedureQuery using indexed parameters.
+     */
+    public void testNamedStoredProcedureQueryByIndex() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            Address address1 = new Address();
+        
+            address1.setCity("Ottawa");
+            address1.setPostalCode("K1G6P3");
+            address1.setProvince("ON");
+            address1.setStreet("123 Street");
+            address1.setCountry("Canada");
+
+            em.persist(address1);
+            commitTransaction(em);
+
+            // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
+            em.clear();
+
+            Address address2 = (Address) em.createNamedQuery("SProcAddressByIndex").setParameter("ADDRESS_ID", address1.getID()).getSingleResult();
+            assertNotNull("Address returned from stored procedure is null", address2);
+            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
+            assertTrue("Address build correctly using stored procedure", (address2.getID() == address1.getID()));
+            assertTrue("Address build correctly using stored procedure", (address2.getStreet().equals(address1.getStreet())));
+            assertTrue("Address build correctly using stored procedure", (address2.getCountry().equals(address1.getCountry())));
+            assertTrue("Address build correctly using stored procedure", (address2.getProvince().equals(address1.getProvince())));
             
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){

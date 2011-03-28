@@ -646,6 +646,13 @@ public class MySQLPlatform extends DatabasePlatform {
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
     }
+
+    /**
+     * Used for stored procedure creation: MySQL platforms need brackets around arguments declaration even if no arguments exist.
+     */
+    public boolean requiresProcedureBrackets() {
+        return true;
+    }
     
     /**
      * INTERNAL:

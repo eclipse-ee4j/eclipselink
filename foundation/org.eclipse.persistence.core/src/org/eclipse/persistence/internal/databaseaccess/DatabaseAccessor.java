@@ -32,6 +32,7 @@ import java.sql.Types;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -252,7 +253,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     public AbstractRecord buildOutputRow(CallableStatement statement, DatabaseCall call, AbstractSession session) throws DatabaseException {
         try {
-            return call.buildOutputRow(statement);
+            return call.buildOutputRow(statement, this, session);
         } catch (SQLException exception) {
             DatabaseException commException = processExceptionForCommError(session, exception, null);
             if (commException != null) throw commException;
@@ -590,7 +591,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (dbCall.isNothingReturned()) {
                 result = executeNoSelect(dbCall, statement, session);
                 if (!isInBatchWritingMode(session)) {
-                    writeStatementsCount++;
+                    this.writeStatementsCount++;
                 }
                 if (dbCall.isLOBLocatorNeeded()) {
                     // add original (insert or update) call to the LOB locator
@@ -600,17 +601,16 @@ public class DatabaseAccessor extends DatasourceAccessor {
             } else if (!dbCall.getReturnsResultSet() || (dbCall.getReturnsResultSet() && dbCall.shouldBuildOutputRow())) {
                 result = session.getPlatform().executeStoredProcedure(dbCall, (PreparedStatement)statement, this, session);
                 if (!isInBatchWritingMode(session)) {
-                    storedProcedureStatementsCount++;
+                    this.storedProcedureStatementsCount++;
                 }
-            } else {// not a stored procedure
+            } else {
                 resultSet = executeSelect(dbCall, statement, session);
                 if (!isInBatchWritingMode(session)) {
-                    readStatementsCount++;
+                    this.readStatementsCount++;
                 }
                 if (!dbCall.shouldIgnoreFirstRowSetting() && dbCall.getFirstResult() != 0) {
                     resultSet.absolute(dbCall.getFirstResult());
                 }
-                ResultSetMetaData metaData = resultSet.getMetaData();
                 dbCall.matchFieldOrder(resultSet, this, session);
 
                 if (dbCall.isCursorReturned()) {
@@ -618,55 +618,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     dbCall.setResult(resultSet);
                     return dbCall;
                 }
-
-                session.startOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
-                try {
-                    if (dbCall.isOneRowReturned()) {
-                        if (resultSet.next()) {
-                            if (dbCall.isLOBLocatorNeeded()) {
-                                //if Oracle BLOB/CLOB field is being written, and the thin driver is used, the driver 4k
-                                //limit bug prevent the call from directly writing to the table if the LOB value size exceeds 4k.
-                                //Instead, a LOB locator is retrieved and value is then piped into the table through the locator.
-                                // Bug 2804663 - LOBValueWriter is no longer a singleton
-                                getLOBWriter().fetchLocatorAndWriteValue(dbCall, resultSet);
-                            } else {
-                                result = fetchRow(dbCall.getFields(), dbCall.getFieldsArray(), resultSet, metaData, session);
-                            }
-                            if (resultSet.next()) {
-                                // Raise more rows event, some apps may interpret as error or warning.
-                                if (session.hasEventManager()) {
-                                    session.getEventManager().moreRowsDetected(dbCall);
-                                }
-                            }
-                        } else {
-                            result = null;
-                        }
-                    } else {
-                        boolean hasNext = resultSet.next();
-                        Vector results = null;
-
-                        // PERF: Optimize out simple empty case.
-                        if (hasNext) {
-                            if (shouldUseThreadCursors()) {
-                                // If using threading return the cursored list,
-                                // do not close the result or statement as the rows are being fetched by the thread.
-                                return buildThreadCursoredResult(dbCall, resultSet, statement, metaData, session);
-                            } else {
-                                results = new Vector(20);
-                                while (hasNext) {
-                                    results.add(fetchRow(dbCall.getFields(), dbCall.getFieldsArray(), resultSet, metaData, session));
-                                    hasNext = resultSet.next();
-                                }
-                            }
-                        } else {
-                            results = new Vector(0);
-                        }
-                        result = results;
-                    }
-                    resultSet.close();// This must be closed in case the statement is cached and not closed.
-                } finally {
-                    session.endOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
-                }
+                result = processResultSet(resultSet, dbCall, statement, session);                
             }
             // Log any warnings on finest.
             if (session.shouldLog(SessionLog.FINEST, SessionLog.SQL)) {// Avoid printing if no logging required.
@@ -715,13 +667,95 @@ public class DatabaseAccessor extends DatasourceAccessor {
             //With an external connection pool the connection may be null after this call, if it is we will
             //be unable to determine if it is a connection based exception so treat it as if it wasn't.
             DatabaseException commException = processExceptionForCommError(session, exception, null);
-            if (commException != null) throw commException;
+            if (commException != null) {
+                throw commException;
+            }
             throw DatabaseException.sqlException(exception, this, session, false);
         }
 
         return result;
     }
 
+    /**
+     * Fetch all the rows from the result set.
+     */
+    public Object processResultSet(ResultSet resultSet, DatabaseCall call, Statement statement, AbstractSession session) throws SQLException {
+        Object result = null;
+        ResultSetMetaData metaData = resultSet.getMetaData();
+
+        session.startOperationProfile(SessionProfiler.RowFetch, call.getQuery(), SessionProfiler.ALL);
+        try {
+            if (call.isOneRowReturned()) {
+                if (resultSet.next()) {
+                    if (call.isLOBLocatorNeeded()) {
+                        //if Oracle BLOB/CLOB field is being written, and the thin driver is used, the driver 4k
+                        //limit bug prevent the call from directly writing to the table if the LOB value size exceeds 4k.
+                        //Instead, a LOB locator is retrieved and value is then piped into the table through the locator.
+                        // Bug 2804663 - LOBValueWriter is no longer a singleton
+                        getLOBWriter().fetchLocatorAndWriteValue(call, resultSet);
+                    } else {
+                        result = fetchRow(call.getFields(), call.getFieldsArray(), resultSet, metaData, session);
+                    }
+                    if (resultSet.next()) {
+                        // Raise more rows event, some apps may interpret as error or warning.
+                        if (session.hasEventManager()) {
+                            session.getEventManager().moreRowsDetected(call);
+                        }
+                    }
+                } else {
+                    result = null;
+                }
+            } else {
+                boolean hasMultipleResultsSets = call.hasMultipleResultSets();
+                Vector results = null;
+                boolean hasMoreResultsSets = true;
+                while (hasMoreResultsSets) {
+                    boolean hasNext = resultSet.next();
+                    // PERF: Optimize out simple empty case.
+                    if (hasNext) {
+                        if (shouldUseThreadCursors()) {
+                            // If using threading return the cursored list,
+                            // do not close the result or statement as the rows are being fetched by the thread.
+                            return buildThreadCursoredResult(call, resultSet, statement, metaData, session);
+                        } else {
+                            results = new Vector(16);
+                            while (hasNext) {
+                                results.add(fetchRow(call.getFields(), call.getFieldsArray(), resultSet, metaData, session));
+                                hasNext = resultSet.next();
+                            }
+                        }
+                    } else {
+                        results = new Vector(0);
+                    }
+                    if (result == null) {
+                        result = results;
+                    } else {
+                        ((List)result).addAll(results);
+                    }
+                    if (hasMultipleResultsSets) {
+                        hasMoreResultsSets = statement.getMoreResults();
+                        if (hasMoreResultsSets) {
+                            resultSet = statement.getResultSet();
+                            metaData = resultSet.getMetaData();
+                            call.setFields(null);
+                            call.matchFieldOrder(resultSet, this, session);
+                        }
+                    } else {
+                        hasMoreResultsSets = false;
+                    }
+                }
+            }
+            resultSet.close();// This must be closed in case the statement is cached and not closed.
+        } finally {
+            session.endOperationProfile(SessionProfiler.RowFetch, call.getQuery(), SessionProfiler.ALL);
+        }
+        return result;
+    }
+    
+    /**
+     * This allows for the rows to be fetched concurrently to the objects being built.
+     * This code is not currently publicly supported.
+     */
     protected Vector buildThreadCursoredResult(final DatabaseCall dbCall, final ResultSet resultSet, final Statement statement, final ResultSetMetaData metaData, final AbstractSession session) {
         final ThreadCursoredList results = new ThreadCursoredList(20);
         Thread thread = new Thread() {

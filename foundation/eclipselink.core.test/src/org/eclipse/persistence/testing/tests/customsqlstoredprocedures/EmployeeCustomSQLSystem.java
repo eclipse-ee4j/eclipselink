@@ -86,6 +86,16 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         return proc;
     }
 
+    public StoredProcedureDefinition buildOracle2OutCursorsProcedure() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Emp_Add");
+        proc.addOutputArgument("CUR1", "CURSOR_TYPE.ANY_CURSOR");
+        proc.addOutputArgument("CUR2", "CURSOR_TYPE.ANY_CURSOR");
+        proc.addStatement("OPEN CUR1 FOR Select E.*, S.* from EMPLOYEE E, SALARY S WHERE E.EMP_ID = S.EMP_ID");
+        proc.addStatement("OPEN CUR2 FOR Select a.* from ADDRESS a");
+        return proc;
+    }
+
     public StoredProcedureDefinition buildOracleReadObjectProcedure() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Employee");
@@ -306,6 +316,14 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         return proc;
     }
 
+    public StoredProcedureDefinition buildMySQL2ResultSetProcedure() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Emp_Add");
+        proc.addStatement("Select E.*, S.* from EMPLOYEE E, SALARY S WHERE E.EMP_ID = S.EMP_ID");
+        proc.addStatement("Select a.* from ADDRESS a");
+        return proc;
+    }
+
     public StoredProcedureDefinition buildSybaseReadObjectProcedure() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Employee");
@@ -477,6 +495,9 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
             schema.replaceObject(buildSybaseSelectWithOutputAndResultSetProcedure());
             schema.replaceObject(buildSybaseWithoutParametersProcedure());
         }
+        if (platform.isMySQL()) {
+            schema.replaceObject(buildMySQL2ResultSetProcedure());
+        }
 
         if (platform.isSQLAnywhere()) {
             schema.replaceObject(EmployeeCustomSQLSystem.buildSQLAnywhereDeleteProcedure());
@@ -501,6 +522,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
             schema.replaceObject(buildOracleReadObjectProcedure());
             schema.replaceObject(buildOracleInsertProcedure());
             schema.replaceObject(buildOracleUpdateProcedure());
+            schema.replaceObject(buildOracle2OutCursorsProcedure());
         }
         if (platform.isDB2()) {
             schema.replaceObject(buildDB2SelectWithOutputAndResultSetProcedure());

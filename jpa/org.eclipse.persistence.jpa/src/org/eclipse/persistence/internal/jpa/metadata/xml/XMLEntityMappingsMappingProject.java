@@ -142,6 +142,7 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FieldResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryHintMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMetadata;
@@ -218,6 +219,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildNamedQueryDescriptor());
         addDescriptor(buildNamedNativeQueryDescriptor());
         addDescriptor(buildNamedStoredProcedureQueryDescriptor());
+        addDescriptor(buildNamedStoredFunctionQueryDescriptor());
         addDescriptor(buildStoredProcedureParameterDescriptor());
         addDescriptor(buildSqlResultSetMappingDescriptor());
         addDescriptor(buildQueryHintDescriptor());
@@ -1257,6 +1259,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedQueryMapping());
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
+        descriptor.addMapping(getNamedStoredFunctionQueryMapping());
         descriptor.addMapping(getResultSetMappingMapping());
         descriptor.addMapping(getQueryRedirectorsMapping());
         descriptor.addMapping(getExcludeDefaultListenersMapping());
@@ -1434,6 +1437,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedQueryMapping());        
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
+        descriptor.addMapping(getNamedStoredFunctionQueryMapping());
         descriptor.addMapping(getResultSetMappingMapping());
         
         XMLCompositeCollectionMapping mappedSuperclassMapping = new XMLCompositeCollectionMapping();
@@ -1912,6 +1916,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedQueryMapping());
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
+        descriptor.addMapping(getNamedStoredFunctionQueryMapping());
         descriptor.addMapping(getResultSetMappingMapping());
         descriptor.addMapping(getQueryRedirectorsMapping());
         descriptor.addMapping(getExcludeDefaultListenersMapping());
@@ -2020,12 +2025,72 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         procedureNameMapping.setXPath("@procedure-name");
         descriptor.addMapping(procedureNameMapping);
         
+        XMLDirectMapping callByIndexMapping = new XMLDirectMapping();
+        callByIndexMapping.setAttributeName("m_callByIndex");
+        callByIndexMapping.setGetMethodName("getCallByIndex");
+        callByIndexMapping.setSetMethodName("setCallByIndex");
+        callByIndexMapping.setXPath("@call-by-index");
+        descriptor.addMapping(callByIndexMapping);
+        
         XMLDirectMapping returnsResultSetMapping = new XMLDirectMapping();
         returnsResultSetMapping.setAttributeName("m_returnsResultSet");
         returnsResultSetMapping.setGetMethodName("getReturnsResultSet");
         returnsResultSetMapping.setSetMethodName("setReturnsResultSet");
         returnsResultSetMapping.setXPath("@returns-result-set");
         descriptor.addMapping(returnsResultSetMapping);
+        
+        XMLDirectMapping multipleResultSetsMapping = new XMLDirectMapping();
+        multipleResultSetsMapping.setAttributeName("m_multipleResultSets");
+        multipleResultSetsMapping.setGetMethodName("getMultipleResultSets");
+        multipleResultSetsMapping.setSetMethodName("setMultipleResultSets");
+        multipleResultSetsMapping.setXPath("@multiple-result-sets");
+        descriptor.addMapping(multipleResultSetsMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: named-stored-function-query
+     */
+    protected ClassDescriptor buildNamedStoredFunctionQueryDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NamedStoredFunctionQueryMetadata.class);
+                
+        descriptor.addMapping(getHintMapping());
+        
+        XMLCompositeCollectionMapping procedureParameterMapping = new XMLCompositeCollectionMapping();
+        procedureParameterMapping.setAttributeName("m_parameters");
+        procedureParameterMapping.setGetMethodName("getParameters");
+        procedureParameterMapping.setSetMethodName("setParameters");
+        procedureParameterMapping.setReferenceClass(StoredProcedureParameterMetadata.class);
+        procedureParameterMapping.setXPath("orm:parameter");
+        descriptor.addMapping(procedureParameterMapping);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getResultSetMappingAttributeMapping());
+        
+        XMLDirectMapping procedureNameMapping = new XMLDirectMapping();
+        procedureNameMapping.setAttributeName("m_procedureName");
+        procedureNameMapping.setGetMethodName("getProcedureName");
+        procedureNameMapping.setSetMethodName("setProcedureName");
+        procedureNameMapping.setXPath("@function-name");
+        descriptor.addMapping(procedureNameMapping);
+        
+        XMLDirectMapping callByIndexMapping = new XMLDirectMapping();
+        callByIndexMapping.setAttributeName("m_callByIndex");
+        callByIndexMapping.setGetMethodName("getCallByIndex");
+        callByIndexMapping.setSetMethodName("setCallByIndex");
+        callByIndexMapping.setXPath("@call-by-index");
+        descriptor.addMapping(callByIndexMapping);
+        
+        XMLCompositeObjectMapping returnParameterMapping = new XMLCompositeObjectMapping();
+        returnParameterMapping.setAttributeName("m_returnParameter");
+        returnParameterMapping.setGetMethodName("getReturnParameter");
+        returnParameterMapping.setSetMethodName("setReturnParameter");
+        returnParameterMapping.setReferenceClass(StoredProcedureParameterMetadata.class);
+        returnParameterMapping.setXPath("orm:return-parameter");
+        descriptor.addMapping(returnParameterMapping);
         
         return descriptor;
     }
@@ -4101,6 +4166,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         namedStoredProcedureQueryMapping.setReferenceClass(NamedStoredProcedureQueryMetadata.class);
         namedStoredProcedureQueryMapping.setXPath("orm:named-stored-procedure-query");
         return namedStoredProcedureQueryMapping;
+    }
+
+    protected XMLCompositeCollectionMapping getNamedStoredFunctionQueryMapping() {
+        XMLCompositeCollectionMapping namedStoredFunctionQueryMapping = new XMLCompositeCollectionMapping();
+        namedStoredFunctionQueryMapping.setAttributeName("m_namedStoredFunctionQueries");
+        namedStoredFunctionQueryMapping.setGetMethodName("getNamedStoredFunctionQueries");
+        namedStoredFunctionQueryMapping.setSetMethodName("setNamedStoredFunctionQueries");
+        namedStoredFunctionQueryMapping.setReferenceClass(NamedStoredFunctionQueryMetadata.class);
+        namedStoredFunctionQueryMapping.setXPath("orm:named-stored-function-query");
+        return namedStoredFunctionQueryMapping;
     }
 
     /**

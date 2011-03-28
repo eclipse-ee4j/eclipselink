@@ -819,6 +819,28 @@ public class StoredProcedureCall extends DatabaseCall {
     }
 
     /**
+     * ADVANCED:
+     * Add the cursor output parameter to the procedure.
+     * This is used for procedures that have multiple cursor output parameters.
+     * If the procedure has a single cursor output parameter, then useNamedCursorOutputAsResultSet() should be used.
+     */
+    public void addNamedCursorOutput(String argumentName) {
+        getProcedureArgumentNames().add(argumentName);
+        appendOutCursor(new DatabaseField(argumentName));
+    }
+
+    /**
+     * ADVANCED:
+     * Add the cursor output parameter to the procedure.
+     * This is used for procedures that have multiple cursor output parameters.
+     * If the procedure has a single cursor output parameter, then useNamedCursorOutputAsResultSet() should be used.
+     */
+    public void addUnnamedCursorOutput(String outputRowFieldName) {
+        getProcedureArgumentNames().add(null);
+        appendOutCursor(new DatabaseField(outputRowFieldName));
+    }
+
+    /**
      * PUBLIC:
      * Used for Oracle result sets through procedures.
      * This can only be used if the arguments are not named but ordered.
@@ -836,5 +858,16 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     public void useUnnamedCursorOutputAsResultSet() {
         setIsCursorOutputProcedure(true);
+        getProcedureArgumentNames().add(null);
+        appendOut(new DatabaseField("CURSOR"));
+    }
+    
+    
+    /**
+     * PUBLIC:
+     * Set if the call returns multiple result sets.
+     */
+    public void setHasMultipleResultSets(boolean hasMultipleResultSets) {
+        super.setHasMultipleResultSets(hasMultipleResultSets);
     }
 }

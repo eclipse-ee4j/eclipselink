@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     Oracle - initial API and implementation
  ******************************************************************************/  
 package org.eclipse.persistence.annotations;
 
@@ -21,21 +21,20 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import javax.persistence.QueryHint;
 
 /** 
- * A NamedStoredProcedureQuery annotation allows the definition of queries that 
- * call stored procedures as named queries.
+ * A NamedStoredFunctionQuery annotation allows the definition of queries that 
+ * call stored functions as named queries.
  * 
- * A NamedStoredProcedureQuery annotation may be defined on an Entity or
+ * A NamedStoredFunctionQuery annotation may be defined on an Entity or
  * MappedSuperclass.
  * 
- * @see org.eclipse.persistence.annotations.StoredProcedureParameter.
- * @author Guy Pelletier
- * @since Oracle TopLink 11.1.1.0.0 
+ * @author James
+ * @since EclipseLink 2.3
  */ 
 @Target({TYPE})
 @Retention(RUNTIME)
-public @interface NamedStoredProcedureQuery {
+public @interface NamedStoredFunctionQuery {
     /**
-     * (Required) Unique name that references this stored procedure query.
+     * (Required) Unique name that references this stored function query.
      */
     String name();
 
@@ -45,31 +44,14 @@ public @interface NamedStoredProcedureQuery {
     QueryHint[] hints() default {};
 
     /**
-     * (Optional) Refers to the class of the result.
-     */
-    Class resultClass() default void.class;
-
-    /**
      * (Optional) The name of the SQLResultMapping.
      */
     String resultSetMapping() default "";
 
     /**
-     * (Required) The name of the stored procedure.
+     * (Required) The name of the stored function.
      */
-    String procedureName();
-
-    /**
-     * (Optional) Defines if stored procedure returns a result set.
-     * This is only relevant on databases that support returning result sets from stored procedures.
-     */
-    boolean returnsResultSet() default false;
-    
-    /**
-     * (Optional) Defines if the stored procedure returns multiple result sets.
-     * This is only relevant on databases that support multiple result sets from stored procedures.
-     */
-    boolean multipleResultSets() default false;
+    String functionName();
     
     /**
      * (Optional) Defines if the stored procedure should be called by index or by name.
@@ -77,9 +59,14 @@ public @interface NamedStoredProcedureQuery {
      * By name requires the database platform support naming procedure parameters.
      */
     boolean callByIndex() default false;
-
+    
     /**
-     * (Optional) Defines the parameters to the stored procedure.
+     * (Optional) Defines the parameters to the stored function.
      */
     StoredProcedureParameter[] parameters() default {};
+    
+    /**
+     * (Required) Defines the return value of the stored function.
+     */
+    StoredProcedureParameter returnParameter();
 }

@@ -277,19 +277,18 @@ public class ClientSession extends AbstractSession {
     public Accessor getAccessor() {
         Collection<Accessor> accessors = getAccessors();
         if ((accessors == null) || accessors.isEmpty()) {
-        if (isInTransaction()) {
+            if (isInTransaction()) {
                 this.parent.acquireClientConnection(this);
                 accessors = getAccessors();
-        } else {
+            } else {
                 return this.parent.getAccessor();
-        }
+            }
         }
         if (accessors instanceof List) {
             return ((List<Accessor>)accessors).get(0);
-    }
+        }
         return accessors.iterator().next();
     }
-
 
     /**
      * ADVANCED:

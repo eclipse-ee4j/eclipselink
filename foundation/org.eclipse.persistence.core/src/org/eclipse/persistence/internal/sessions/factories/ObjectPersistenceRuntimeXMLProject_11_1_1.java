@@ -81,6 +81,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
@@ -178,6 +179,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         addDescriptor(buildPLSQLCollectionWrapperDescriptor());
         addDescriptor(buildPLSQLargumentDescriptor());
         addDescriptor(buildPLSQLStoredProcedureCallDescriptor());
+        addDescriptor(buildPLSQLStoredFunctionCallDescriptor());
         addDescriptor(buildPLSQLrecordDescriptor());
         addDescriptor(buildPLSQLCollectionDescriptor());
 
@@ -698,6 +700,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           getPrimaryNamespaceXPath() + "stored-function-call");
       descriptor.getInheritancePolicy().addClassIndicator(PLSQLStoredProcedureCall.class,
           getPrimaryNamespaceXPath() + "plsql-stored-procedure-call");
+      descriptor.getInheritancePolicy().addClassIndicator(PLSQLStoredFunctionCall.class,
+              getPrimaryNamespaceXPath() + "plsql-stored-function-call");
       return descriptor;
     }
 
@@ -1732,6 +1736,17 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          argumentsMapping.setXPath(getPrimaryNamespaceXPath() + "arguments/" + getPrimaryNamespaceXPath() + "argument");
          argumentsMapping.setReferenceClass(PLSQLargument.class);
          descriptor.addMapping(argumentsMapping);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildPLSQLStoredFunctionCallDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(PLSQLStoredFunctionCall.class);
+         descriptor.getInheritancePolicy().setParentClass(PLSQLStoredProcedureCall.class);
+         descriptor.setDefaultRootElement(getPrimaryNamespaceXPath() + "plsql-stored-function-call");
+         descriptor.descriptorIsAggregate();
 
          return descriptor;
      }

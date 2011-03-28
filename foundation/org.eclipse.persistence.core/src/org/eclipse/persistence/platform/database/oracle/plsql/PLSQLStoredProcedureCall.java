@@ -32,6 +32,7 @@ import static java.lang.Integer.MIN_VALUE;
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
@@ -72,6 +73,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * List of procedure IN/OUT/INOUT arguments.
      */
     protected List<PLSQLargument> arguments = new ArrayList<PLSQLargument>();
+
     /**
      * Keeps track of the next procedure argument index.
      */
@@ -1018,9 +1020,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * This handles re-ordering parameters.                
      */                                                    
     @Override
-    public AbstractRecord buildOutputRow(CallableStatement statement) throws SQLException {
-
-        AbstractRecord outputRow = super.buildOutputRow(statement);
+    public AbstractRecord buildOutputRow(CallableStatement statement, DatabaseAccessor accessor, AbstractSession session) throws SQLException {
+        
+        AbstractRecord outputRow = super.buildOutputRow(statement, accessor, session);
         if (!shouldBuildOutputRow) {
             outputRow.put("", 1); // fake-out Oracle executeUpdate rowCount, always 1
             return outputRow;
@@ -1037,8 +1039,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             }
         });
         for (PLSQLargument outArg : outArguments) {
-            outArg.databaseType.buildOutputRow(outArg, outputRow,
-                newOutputRow, outputRowFields, outputRowValues);
+            outArg.databaseType.buildOutputRow(outArg, outputRow, newOutputRow, outputRowFields, outputRowValues);
         }
         return newOutputRow;
     }
@@ -1152,5 +1153,19 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             info = generateNestedFunction(type);
         }
         return info.pl2SqlName;
+    }
+    
+    /**
+     * Return the PLSQL arguments.
+     */
+    public List<PLSQLargument> getArguments() {
+        return arguments;
+    }
+    
+    /**
+     * Set the PLSQL arguments.
+     */
+    public void setArguments(List<PLSQLargument> arguments) {
+        this.arguments = arguments;
     }
 }

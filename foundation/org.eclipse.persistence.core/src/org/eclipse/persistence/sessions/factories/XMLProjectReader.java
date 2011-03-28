@@ -62,7 +62,7 @@ public class XMLProjectReader {
     protected static Project project;
     public static final String SCHEMA_DIR = "org/eclipse/persistence/";
     public static final String OPM_SCHEMA = "object-persistence_1_0.xsd";
-    public static final String ECLIPSELINK_SCHEMA = "eclipselink_persistence_map_2.0.xsd";
+    public static final String ECLIPSELINK_SCHEMA = "eclipselink_persistence_map_2.3.xsd";
     public static final String ECLIPSELINK_1_0_SCHEMA = "eclipselink_persistence_map_1.0.xsd";    
     public static final String TOPLINK_11_SCHEMA = "toplink-object-persistence_11_1_1.xsd";
     public static final String TOPLINK_10_SCHEMA = "toplink-object-persistence_10_1_3.xsd";

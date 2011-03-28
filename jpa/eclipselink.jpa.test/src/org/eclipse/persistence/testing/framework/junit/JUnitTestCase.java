@@ -817,7 +817,7 @@ public abstract class JUnitTestCase extends TestCase {
         if (platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSymfoware()) {
             return true;
         }
-        warning("This database does not support stored procedure creation.");
+        warning("This database does not support stored function creation.");
         return false;
     }
 

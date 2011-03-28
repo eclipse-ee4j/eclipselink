@@ -69,6 +69,7 @@ import org.eclipse.persistence.internal.jpa.metadata.partitioning.UnionPartition
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.ValuePartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 
@@ -96,6 +97,7 @@ public class XMLEntityMappings extends ORMetadata {
     private List<NamedNativeQueryMetadata> m_namedNativeQueries;
     private List<NamedQueryMetadata> m_namedQueries;
     private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries;
+    private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries;
     private List<ObjectTypeConverterMetadata> m_objectTypeConverters;
     private List<SequenceGeneratorMetadata> m_sequenceGenerators;
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings;
@@ -325,6 +327,10 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
         return m_namedStoredProcedureQueries;
+    }
+
+    public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
+        return m_namedStoredFunctionQueries;
     }
     
     /**
@@ -663,13 +669,19 @@ public class XMLEntityMappings extends ORMetadata {
         // Add the XML named native queries to the project.
         for (NamedNativeQueryMetadata namedNativeQuery : m_namedNativeQueries) {
             namedNativeQuery.initXMLObject(m_file, this);
-               m_project.addQuery(namedNativeQuery);
-           }
+            m_project.addQuery(namedNativeQuery);
+        }
         
         // Add the XML named stored procedure queries to the project.
         for (NamedStoredProcedureQueryMetadata namedStoredProcedureQuery : m_namedStoredProcedureQueries) {
             namedStoredProcedureQuery.initXMLObject(m_file, this);
             m_project.addQuery(namedStoredProcedureQuery);
+        }
+        
+        // Add the XML named stored function queries to the project.
+        for (NamedStoredFunctionQueryMetadata namedStoredFunctionQuery : m_namedStoredFunctionQueries) {
+            namedStoredFunctionQuery.initXMLObject(m_file, this);
+            m_project.addQuery(namedStoredFunctionQuery);
         }
             
         // Add the XML sql result set mappings to the project.
@@ -954,6 +966,10 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries) {
         m_namedStoredProcedureQueries = namedStoredProcedureQueries;
+    }
+
+    public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
+        m_namedStoredFunctionQueries = namedStoredFunctionQueries;
     }
     
     /**

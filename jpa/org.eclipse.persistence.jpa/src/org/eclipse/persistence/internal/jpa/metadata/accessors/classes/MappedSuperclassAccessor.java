@@ -90,6 +90,8 @@ import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheInterceptor;
 import org.eclipse.persistence.annotations.FetchGroup;
 import org.eclipse.persistence.annotations.FetchGroups;
+import org.eclipse.persistence.annotations.NamedStoredFunctionQueries;
+import org.eclipse.persistence.annotations.NamedStoredFunctionQuery;
 import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.annotations.QueryRedirectors;
 import org.eclipse.persistence.annotations.ExistenceChecking;
@@ -122,6 +124,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
@@ -168,6 +171,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private List<NamedQueryMetadata> m_namedQueries = new ArrayList<NamedQueryMetadata>();
     private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<NamedNativeQueryMetadata>();
     private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQueryMetadata>();
+    private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries = new ArrayList<NamedStoredFunctionQueryMetadata>();
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
     
     private MetadataClass m_idClass;
@@ -351,6 +355,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
         return m_namedStoredProcedureQueries;
+    }
+    
+    public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
+        return m_namedStoredFunctionQueries;
     }
     
     /**
@@ -1196,6 +1204,28 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         if (namedStoredProcedureQuery != null) {
             getProject().addQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, this));
         }
+        
+        // Functions
+        
+        // Process the XML named queries first.
+        for (NamedStoredFunctionQueryMetadata namedStoredFunctionQuery : m_namedStoredFunctionQueries) {
+            getProject().addQuery(namedStoredFunctionQuery);
+        }
+        
+        // Process the named stored procedure query annotations.
+        // Look for a @NamedStoredFunctionQueries.
+        MetadataAnnotation namedStoredFunctionQueries = getAnnotation(NamedStoredFunctionQueries.class);
+        if (namedStoredFunctionQueries != null) {
+            for (Object namedStoredFunctionQuery : (Object[]) namedStoredFunctionQueries.getAttribute("value")) { 
+                getProject().addQuery(new NamedStoredProcedureQueryMetadata((MetadataAnnotation)namedStoredFunctionQuery, this));
+            }
+        }
+        
+        // Look for a @NamedStoredFunctionQuery.
+        MetadataAnnotation namedStoredFunctionQuery = getAnnotation(NamedStoredFunctionQuery.class);
+        if (namedStoredFunctionQuery != null) {
+            getProject().addQuery(new NamedStoredFunctionQueryMetadata(namedStoredFunctionQuery, this));
+        }
     }
     
     /**
@@ -1463,6 +1493,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries) {
         m_namedStoredProcedureQueries = namedStoredProcedureQueries;
+    }
+
+    public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
+        m_namedStoredFunctionQueries = namedStoredFunctionQueries;
     }
     
     /**

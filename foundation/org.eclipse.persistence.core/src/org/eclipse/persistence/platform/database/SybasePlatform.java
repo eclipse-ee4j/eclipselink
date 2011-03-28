@@ -275,7 +275,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
                 dbCall.setResult(resultSet);
                 return dbCall;
             }
-            result = processResultSet(resultSet, dbCall, statement, accessor, session);
+            result = accessor.processResultSet(resultSet, dbCall, statement, session);
 
             if (dbCall.shouldBuildOutputRow()) {
                 AbstractRecord outputRow = accessor.buildOutputRow((CallableStatement)statement, dbCall, session);

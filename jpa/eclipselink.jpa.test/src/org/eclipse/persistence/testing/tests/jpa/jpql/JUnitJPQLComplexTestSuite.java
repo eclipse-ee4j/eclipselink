@@ -3065,23 +3065,20 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     /* Test FUNC with stored function 'StoredFunction_In'*/
-    public void testFuncWithStoredFunc(){
-        if (!supportsStoredFunctions())
-        {
+    public void testFuncWithStoredFunc() {
+        if (!supportsStoredFunctions()) {
             warning("this test is not suitable for running on dbs that don't support stored function");
             return;
-        }else{
+        } else {
             String sqlString = "SELECT e.id FROM Employee e WHERE e.salary = FUNC('StoredFunction_In', 75)";
             EntityManager em = createEntityManager();
             Query query;
-            try{
-            query = em.createQuery(sqlString);
-            List result = query.getResultList();
-            Employee emp = em.find(Employee.class, result.get(0));
-            assertTrue("Func is not working properly with stored function.", emp.getSalary()==75000);
-            }catch(Exception e){
-                e.printStackTrace();
-            }finally{
+            try {
+                query = em.createQuery(sqlString);
+                List result = query.getResultList();
+                Employee emp = em.find(Employee.class, result.get(0));
+                assertTrue("Func is not working properly with stored function.", emp.getSalary()==75000);
+            } finally {
                 closeEntityManager(em);
             }
         }

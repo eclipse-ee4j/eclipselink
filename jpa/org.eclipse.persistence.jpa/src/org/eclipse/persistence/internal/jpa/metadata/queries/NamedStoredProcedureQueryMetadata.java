@@ -45,7 +45,10 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  * @since TopLink 11g
  */
 public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata {
+    private Boolean m_multipleResultSets;
     private Boolean m_returnsResultSet;
+    protected Boolean m_callByIndex;
+
     private List<StoredProcedureParameterMetadata> m_parameters = new ArrayList<StoredProcedureParameterMetadata>();
     private String m_procedureName;
     
@@ -54,12 +57,19 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * Used for XML loading.
      */
     public NamedStoredProcedureQueryMetadata() {
-        super("<named-stored-procedure_query>");
+        super("<named-stored-procedure-query>");
     }
     
     /**
      * INTERNAL:
-     * Used for annotation loading.
+     * Used for OX mapping.
+     */
+    public NamedStoredProcedureQueryMetadata(String elementName) {
+        super(elementName);
+    }
+    
+    /**
+     * INTERNAL:
      */
     public NamedStoredProcedureQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessor accessor) {
         super(namedStoredProcedureQuery, accessor);
@@ -70,6 +80,8 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         
         m_procedureName = (String) namedStoredProcedureQuery.getAttribute("procedureName");
         m_returnsResultSet = (Boolean) namedStoredProcedureQuery.getAttribute("returnsResultSet");
+        m_multipleResultSets = (Boolean) namedStoredProcedureQuery.getAttribute("multipleResultSets");
+        m_callByIndex = (Boolean) namedStoredProcedureQuery.getAttribute("callByIndex");
     }
    
     /**
@@ -83,6 +95,12 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
             if (! valuesMatch(m_returnsResultSet, query.getReturnsResultSet())) {
                 return false;
             }
+            if (! valuesMatch(m_callByIndex, query.getCallByIndex())) {
+                return false;
+            }
+            if (! valuesMatch(m_multipleResultSets, query.getMultipleResultSets())) {
+                return false;
+            }
             
             if (! valuesMatch(m_parameters, query.getParameters())) {
                 return false;
@@ -92,6 +110,14 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         }
         
         return false;
+    }
+
+    public Boolean getCallByIndex() {
+        return m_callByIndex;
+    }
+
+    public void setCallByIndex(Boolean callByIndex) {
+        m_callByIndex = callByIndex;
     }
     
     /**
@@ -117,6 +143,14 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         return m_returnsResultSet;
     }
     
+    public Boolean getMultipleResultSets() {
+        return m_multipleResultSets;
+    }
+
+    public void setMultipleResultSets(Boolean multipleResultSets) {
+        m_multipleResultSets = multipleResultSets;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -138,8 +172,9 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         
         // Process the stored procedure parameters.
         List<String> queryArguments = new ArrayList<String>();
+        boolean callByIndex = (m_callByIndex == null) ? false : m_callByIndex;
         for (StoredProcedureParameterMetadata parameter : m_parameters) {
-            queryArguments.addAll(parameter.process(call, project));
+            queryArguments.addAll(parameter.process(call, project, callByIndex));
         }
         
         // Process the procedure name.
@@ -147,6 +182,8 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         
         // Process the returns result set.
         call.setReturnsResultSet((m_returnsResultSet == null) ? false : m_returnsResultSet);
+        
+        call.setHasMultipleResultSets((m_multipleResultSets == null) ? false : m_multipleResultSets);
         
         // Process the query hints.
         Map<String, Object> hints = processQueryHints(session);

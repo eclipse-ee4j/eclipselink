@@ -31,7 +31,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Struct;
@@ -1515,38 +1514,6 @@ public class DatabasePlatform extends DatasourcePlatform {
         return nBoundParameters;
     }
 
-    protected Object processResultSet(ResultSet resultSet, DatabaseCall dbCall, PreparedStatement statement, DatabaseAccessor accessor, AbstractSession session) throws SQLException {
-        Object result = null;
-        ResultSetMetaData metaData = resultSet.getMetaData();
-
-        session.startOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
-        try {
-            if (dbCall.isOneRowReturned()) {
-                if (resultSet.next()) {
-                    result = accessor.fetchRow(dbCall.getFields(), resultSet, metaData, session);
-                    if (resultSet.next()) {
-                        // Raise more rows event, some apps may interpret as error or warning.
-                        if (session.hasEventManager()) {
-                            session.getEventManager().moreRowsDetected(dbCall);
-                        }
-                    }
-                } else {
-                    result = null;
-                }
-            } else {
-                Vector results = new Vector(20);
-                while (resultSet.next()) {
-                    results.addElement(accessor.fetchRow(dbCall.getFields(), resultSet, metaData, session));
-                }
-                result = results;
-            }
-            resultSet.close();// This must be closed incase the statement is cached and not closed.
-        } finally {
-            session.endOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
-        }
-        return result;
-    }
-
     /**
      * This method is used to register output parameter on Callable Statements for Stored Procedures
      * as each database seems to have a different method.
@@ -2100,7 +2067,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                 dbCall.setResult(resultSet);
                 return dbCall;
             }
-            result = processResultSet(resultSet, dbCall, statement, accessor, session);
+            result = accessor.processResultSet(resultSet, dbCall, statement, session);
 
         }
         return result;

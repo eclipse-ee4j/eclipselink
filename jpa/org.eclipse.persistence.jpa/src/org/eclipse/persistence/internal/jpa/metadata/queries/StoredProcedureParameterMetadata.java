@@ -200,7 +200,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public List<String> process(StoredProcedureCall call, MetadataProject project) {
+    public List<String> process(StoredProcedureCall call, MetadataProject project, boolean callByIndex) {
         List<String> queryArguments = new ArrayList<String>();
                     
         // Process the procedure parameter name, defaults to the 
@@ -215,36 +215,84 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         if (m_direction == null || m_direction.equals(Direction.IN.name())) {
             // TODO: Log a defaulting message if m_direction is null.
             if (hasType()) {
-                call.addNamedArgument(procedureParameterName, m_queryParameter, getJavaClass(m_type));
+                if (!callByIndex) {
+                    call.addNamedArgument(procedureParameterName, m_queryParameter, getJavaClass(m_type));
+                } else {
+                    call.addUnamedArgument(m_queryParameter, getJavaClass(m_type));                    
+                }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
-                call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                if (!callByIndex) {
+                    call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                } else {
+                    call.addUnamedArgument(m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                }
             } else if (hasJdbcType()) {
-                call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType);
+                if (!callByIndex) {
+                    call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType);
+                } else {
+                    call.addUnamedArgument(m_queryParameter, m_jdbcType);
+                }
             } else {
-                call.addNamedArgument(procedureParameterName, m_queryParameter);
+                if (!callByIndex) {
+                    call.addNamedArgument(procedureParameterName, m_queryParameter);
+                } else {
+                    call.addUnamedArgument(m_queryParameter);
+                }
             }
             queryArguments.add(m_queryParameter);
         } else if (m_direction.equals(Direction.OUT.name())) {
             if (hasType()) {
-                call.addNamedOutputArgument(procedureParameterName, m_queryParameter, getJavaClass(m_type));
+                if (!callByIndex) {
+                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter, getJavaClass(m_type));
+                } else {
+                    call.addUnamedOutputArgument(m_queryParameter, getJavaClass(m_type));
+                }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
-                call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                if (!callByIndex) {
+                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                } else {
+                    call.addUnamedOutputArgument(m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                }
             } else if (hasJdbcType()) {
-                call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType);
+                if (callByIndex) {
+                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType);
+                } else {
+                    call.addUnamedOutputArgument(m_queryParameter, m_jdbcType);
+                }
             } else {
-                call.addNamedOutputArgument(procedureParameterName, m_queryParameter);
+                if (!callByIndex) {
+                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter);
+                } else {
+                    call.addUnamedOutputArgument(m_queryParameter);
+                }
             }
             //set the project level settings on the argument's database fields
             setDatabaseFieldSettings((DatabaseField)call.getParameters().lastElement(), project);
         } else if (m_direction.equals(Direction.IN_OUT.name())) {
             if (hasType()) {
-                call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, getJavaClass(m_type));
+                if (!callByIndex) {
+                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, getJavaClass(m_type));
+                } else {
+                    call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, getJavaClass(m_type));
+                }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
-                call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                if (!callByIndex) {
+                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                } else {
+                    call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                }
             } else if (hasJdbcType()) {
-                call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType);
+                if (!callByIndex) {
+                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType);
+                } else {
+                    call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, m_jdbcType);
+                }
             } else {
-                call.addNamedInOutputArgument(procedureParameterName, m_queryParameter);
+                if (!callByIndex) {
+                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter);
+                } else {
+                    call.addUnamedInOutputArgument(m_queryParameter);
+                }
             }
             //set the project level settings on the argument's out database field
             Object[] array = (Object[])call.getParameters().lastElement();
@@ -254,7 +302,19 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             setDatabaseFieldSettings((DatabaseField)array[1], project);
             queryArguments.add(m_queryParameter);
         } else if (m_direction.equals(Direction.OUT_CURSOR.name())) {
-            call.useNamedCursorOutputAsResultSet(m_queryParameter);
+            boolean multipleCursors = false;
+            if (call.getParameterTypes().contains(call.OUT_CURSOR)) {
+                multipleCursors = true;
+            }
+            if (!callByIndex) {
+                call.useNamedCursorOutputAsResultSet(m_queryParameter);
+            } else {
+                call.useUnnamedCursorOutputAsResultSet();
+            }
+            // There are multiple cursor output parameters, then do not use the cursor as the result set.
+            if (multipleCursors) {
+                call.setIsCursorOutputProcedure(false);
+            }
         }
       
         return queryArguments;    

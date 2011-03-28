@@ -14,9 +14,12 @@ package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
 import java.util.*;
 
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.tools.schemaframework.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.testing.models.employee.domain.*;
@@ -209,6 +212,9 @@ public class CustomSQLTestModel extends TestModel {
         suite.addTest(new StoredProcedureVARRAYParametersTest(true));
         suite.addTest(new StoredProcedureORParametersClientSessionTest());
         suite.addTest(buildSQLTransactionTest());
+        suite.addTest(build2OutCursorTest());
+        suite.addTest(buildUnnamedCursorTest());
+        suite.addTest(build2ResultSetTest());
         return suite;
     }
 
@@ -276,6 +282,84 @@ public class CustomSQLTestModel extends TestModel {
             }
         };
         test.setName("SQLTransactionTest");
+        return test;
+    }
+    
+    /**
+     * Test a procedure with 2 out cursors.
+     */
+    public static TestCase build2OutCursorTest() {
+        TestCase test = new TestCase() {
+            public void test() {
+                if (!(getSession().getPlatform().isOracle())) {
+                    throwWarning("This test can only be run in Oracle");
+                }
+                DataReadQuery query = new DataReadQuery();
+                StoredProcedureCall call = new StoredProcedureCall();
+                call.setProcedureName("Read_Emp_Add");
+                call.getProcedureArgumentNames().add("CUR1");
+                call.appendOutCursor(new DatabaseField("CUR1"));
+                call.getProcedureArgumentNames().add("CUR2");
+                call.appendOutCursor(new DatabaseField("CUR2"));
+                query.setCall(call);
+                List<Map> result = (List<Map>)getSession().executeQuery(query);
+                if (!(result.get(0).get("CUR1") instanceof List)) {
+                    throwError("CUR1 not in output");
+                }
+                if (!(result.get(0).get("CUR2") instanceof List)) {
+                    throwError("CUR2 not in output");
+                }
+            }
+        };
+        test.setName("2OutCursorTest");
+        return test;
+    }
+    
+    /**
+     * Test a procedure with unnamed cursor.
+     */
+    public static TestCase buildUnnamedCursorTest() {
+        TestCase test = new TestCase() {
+            public void test() {
+                if (!(getSession().getPlatform().isOracle())) {
+                    throwWarning("This test can only be run in Oracle");
+                }
+                DataReadQuery query = new DataReadQuery();
+                StoredProcedureCall call = new StoredProcedureCall();
+                call.setProcedureName("Read_All_Employees");
+                call.useUnnamedCursorOutputAsResultSet();
+                query.setCall(call);
+                List<Map> result = (List<Map>)getSession().executeQuery(query);
+                result.size();
+                result = (List<Map>)getSession().executeQuery(query);
+            }
+        };
+        test.setName("UnnamedCursorTest");
+        return test;
+    }
+    
+    /**
+     * Test a procedure with multiple result sets
+     */
+    public static TestCase build2ResultSetTest() {
+        TestCase test = new TestCase() {
+            public void test() {
+                if (!(getSession().getPlatform().isMySQL())) {
+                    throwWarning("This test can only be run in MySQL");
+                }
+                DataReadQuery query = new DataReadQuery();
+                StoredProcedureCall call = new StoredProcedureCall();
+                call.setProcedureName("Read_Emp_Add");
+                call.setHasMultipleResultSets(true);
+                query.setCall(call);
+                List<Map> result = (List<Map>)getSession().executeQuery(query);
+                if (result.size() != (getSession().readAllObjects(Employee.class).size() + getSession().readAllObjects(Address.class).size())) {
+                    throwError("Incorrect number of rows returned : " + result);
+                }
+                result = (List<Map>)getSession().executeQuery(query);
+            }
+        };
+        test.setName("2ResultSetTest");
         return test;
     }
 }

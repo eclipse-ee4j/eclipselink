@@ -111,6 +111,9 @@ public abstract class DatabaseCall extends DatasourceCall {
     // Callable statement is required if there is an output parameter
     protected boolean isCallableStatementRequired;
     
+    /** Support multiple result sets. */
+    protected boolean hasMultipleResultSets;
+
     /** The SQL string to execute. */
     protected String sqlString;
     
@@ -125,6 +128,20 @@ public abstract class DatabaseCall extends DatasourceCall {
         this.isCursorOutputProcedure = false;
         this.shouldBuildOutputRow = false;
         this.returnsResultSet = null;
+    }
+    
+    /**
+     * Return if the call returns multiple result sets.
+     */
+    public boolean hasMultipleResultSets() {
+        return hasMultipleResultSets;
+    }
+    
+    /**
+     * Set if the call returns multiple result sets.
+     */
+    public void setHasMultipleResultSets(boolean hasMultipleResultSets) {
+        this.hasMultipleResultSets = hasMultipleResultSets;
     }
 
     /**
@@ -211,26 +228,33 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Return Record containing output fields and values.
      * Called only if shouldBuildOutputRow method returns true.
      */
-    public AbstractRecord buildOutputRow(CallableStatement statement) throws SQLException {
+    public AbstractRecord buildOutputRow(CallableStatement statement, DatabaseAccessor accessor, AbstractSession session) throws SQLException {
         AbstractRecord row = new DatabaseRecord();
-        for (int index = 0; index < parameters.size(); index++) {
-            Object parameter = parameters.elementAt(index);
+        int size = this.parameters.size();
+        for (int index = 0; index < size; index++) {
+            Object parameter = this.parameters.get(index);
             if (parameter instanceof OutputParameterForCallableStatement) {
                 OutputParameterForCallableStatement outParameter = (OutputParameterForCallableStatement)parameter;
-                if (!outParameter.isCursor()) {
+                if (!outParameter.isCursor() || !isCursorOutputProcedure()) {
                     Object value = statement.getObject(index + 1);
                     DatabaseField field = outParameter.getOutputField();
                     if (value instanceof Struct){
-                        ClassDescriptor descriptor = this.getQuery().getSession().getDescriptor(field.getType());
-                        if ((value!=null) && (descriptor!=null) && (descriptor.isObjectRelationalDataTypeDescriptor())){
+                        ClassDescriptor descriptor = session.getDescriptor(field.getType());
+                        if ((value != null) && (descriptor != null) && descriptor.isObjectRelationalDataTypeDescriptor()) {
                             AbstractRecord nestedRow = ((ObjectRelationalDataTypeDescriptor)descriptor).buildRowFromStructure((Struct)value);
                             ReadObjectQuery query = new ReadObjectQuery();
-                            query.setSession(this.getQuery().getSession());
+                            query.setSession(session);
                             value = descriptor.getObjectBuilder().buildNewInstance();
                             descriptor.getObjectBuilder().buildAttributesIntoObject(value, null, nestedRow, query, null, false, this.getQuery().getSession());
                         }
-                    } else if ((value instanceof Array)&&( field.isObjectRelationalDatabaseField() )){
-                        value = ObjectRelationalDataTypeDescriptor.buildContainerFromArray((Array)value, (ObjectRelationalDatabaseField)field, this.getQuery().getSession());
+                    } else if ((value instanceof Array) && (field.isObjectRelationalDatabaseField())) {
+                        value = ObjectRelationalDataTypeDescriptor.buildContainerFromArray((Array)value, (ObjectRelationalDatabaseField)field, session);
+                    } else if (value instanceof ResultSet) {
+                        // Support multiple out cursors, put list of records in row.
+                        ResultSet resultSet = (ResultSet)value;
+                        setFields(null);
+                        matchFieldOrder(resultSet, accessor, session);
+                        value = accessor.processResultSet(resultSet, this, statement, session);                        
                     }
                     row.put(field, value);
                 }

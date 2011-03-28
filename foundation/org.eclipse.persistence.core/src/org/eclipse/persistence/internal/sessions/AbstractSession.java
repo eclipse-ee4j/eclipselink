@@ -1671,7 +1671,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             accessors = query.getPartitioningPolicy().getConnectionsForQuery(this, query, translationRow);
             if (accessors != null) {
                 return accessors;
-    }
+            }
         }
         ClassDescriptor descriptor = query.getDescriptor();
         if ((descriptor != null) && (descriptor.getPartitioningPolicy() != null)) {
