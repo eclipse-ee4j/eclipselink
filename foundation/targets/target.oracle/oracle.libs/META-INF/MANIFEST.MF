@@ -8,7 +8,8 @@ Bundle-ClassPath: xmlparserv2.jar,
  ojdbc5.jar,
  sdoapi.jar,
  xdb.jar,
- xml.jar
+ xml.jar,
+ ucp.jar
 Bundle-Vendor: Oracle Corporation
 Export-Package: javax.xml,
  javax.xml.bind,
@@ -37,6 +38,7 @@ Export-Package: javax.xml,
  oracle.jdbc.util,
  oracle.jdbc.xa,
  oracle.jdbc.xa.client,
+ oracle.ucp,
  oracle.jms,
  oracle.jpub.runtime,
  oracle.net.TNSAddress,
