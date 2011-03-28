@@ -15,16 +15,18 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     03/28/2011-2.3 Guy Pelletier 
+ *       - 341152: From XML cache interceptor and query redirector metadata don't support package specification
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * Object to hold onto cache interceptor metadata.
@@ -41,6 +43,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * @since EclipseLink 1.0
  */
 public class CacheInterceptorMetadata extends ORMetadata {
+    protected MetadataClass m_interceptorClass;
     protected String m_interceptorClassName;
 
     /**
@@ -58,7 +61,7 @@ public class CacheInterceptorMetadata extends ORMetadata {
     public CacheInterceptorMetadata(MetadataAnnotation cacheInterceptor, MetadataAccessor accessor) {
         super(cacheInterceptor, accessor);
         
-        m_interceptorClassName = (String)cacheInterceptor.getAttribute("value");
+        m_interceptorClass = getMetadataClass((String) cacheInterceptor.getAttribute("value"));
     }
     
     /**
@@ -85,14 +88,22 @@ public class CacheInterceptorMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+        
+        m_interceptorClass = initXMLClassName(m_interceptorClassName);
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public void process(MetadataDescriptor descriptor, MetadataClass javaClass) {
         // Set the cache flag on the metadata Descriptor.
         descriptor.setHasCacheInterceptor();
         
         // Process the cache metadata.
-        ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
-        
-        classDescriptor.setCacheInterceptorClassName(m_interceptorClassName);
+        descriptor.getClassDescriptor().setCacheInterceptorClassName(m_interceptorClass.getName());
     }
 
     /**

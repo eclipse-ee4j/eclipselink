@@ -223,7 +223,7 @@
     <entity class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address">
         <change-tracking type="DEFERRED"/>
         <cache shared="true"/>
-        <cache-interceptor class="org.eclipse.persistence.testing.models.jpa.xml.advanced.CacheAuditor"/>
+        <cache-interceptor class="CacheAuditor"/>
         <named-stored-procedure-query name="SProcXMLAddress" result-class="Address" procedure-name="SProc_Read_XMLAddress">
             <parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Integer"/>
             <parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/>
@@ -237,14 +237,14 @@
             <parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/> 
         </named-stored-procedure-query>
         <query-redirectors
-            all-queries="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
-            read-all="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
-            read-object="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
-            report="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
-            insert="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
-            update="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
-            delete="org.eclipse.persistence.testing.models.jpa.xml.advanced.DoNotRedirect"
-       />
+            all-queries="DoNotRedirect"
+            read-all="DoNotRedirect"
+            read-object="DoNotRedirect"
+            report="DoNotRedirect"
+            insert="DoNotRedirect"
+            update="DoNotRedirect"
+            delete="DoNotRedirect"
+        />
         <attributes>
             <basic name="province">
                 <convert>ProvinceConverter</convert>

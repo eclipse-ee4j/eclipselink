@@ -15,6 +15,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     03/28/2011-2.3 Guy Pelletier 
+ *       - 341152: From XML cache interceptor and query redirector metadata don't support package specification
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -23,8 +25,10 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * Object to hold onto Default Redirector metadata.
@@ -41,13 +45,21 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * @since EclipseLink 1.0
  */
 public class QueryRedirectorsMetadata extends ORMetadata {
-    protected String defaultQueryRedirector;
-    protected String defaultReadAllQueryRedirector;
-    protected String defaultReadObjectQueryRedirector;
-    protected String defaultReportQueryRedirector;
-    protected String defaultUpdateObjectQueryRedirector;
-    protected String defaultInsertObjectQueryRedirector;
-    protected String defaultDeleteObjectQueryRedirector;
+    protected MetadataClass defaultQueryRedirector;
+    protected MetadataClass defaultReadAllQueryRedirector;
+    protected MetadataClass defaultReadObjectQueryRedirector;
+    protected MetadataClass defaultReportQueryRedirector;
+    protected MetadataClass defaultUpdateObjectQueryRedirector;
+    protected MetadataClass defaultInsertObjectQueryRedirector;
+    protected MetadataClass defaultDeleteObjectQueryRedirector;
+    
+    protected String defaultQueryRedirectorName;
+    protected String defaultReadAllQueryRedirectorName;
+    protected String defaultReadObjectQueryRedirectorName;
+    protected String defaultReportQueryRedirectorName;
+    protected String defaultUpdateObjectQueryRedirectorName;
+    protected String defaultInsertObjectQueryRedirectorName;
+    protected String defaultDeleteObjectQueryRedirectorName;
 
     /**
      * INTERNAL:
@@ -64,13 +76,13 @@ public class QueryRedirectorsMetadata extends ORMetadata {
     public QueryRedirectorsMetadata(MetadataAnnotation redirectors, MetadataAccessor accessor) {
         super(redirectors, accessor);
         
-        defaultQueryRedirector = (String)redirectors.getAttribute("allQueries");
-        defaultReadAllQueryRedirector = (String)redirectors.getAttribute("readAll");
-        defaultReadObjectQueryRedirector = (String)redirectors.getAttribute("readObject");
-        defaultInsertObjectQueryRedirector = (String)redirectors.getAttribute("insert");
-        defaultDeleteObjectQueryRedirector = (String)redirectors.getAttribute("delete");
-        defaultUpdateObjectQueryRedirector = (String)redirectors.getAttribute("update");
-        defaultReportQueryRedirector = (String)redirectors.getAttribute("report");
+        defaultQueryRedirector = getMetadataClass((String) redirectors.getAttribute("allQueries"));
+        defaultReadAllQueryRedirector = getMetadataClass((String) redirectors.getAttribute("readAll"));
+        defaultReadObjectQueryRedirector = getMetadataClass((String) redirectors.getAttribute("readObject"));
+        defaultInsertObjectQueryRedirector = getMetadataClass((String) redirectors.getAttribute("insert"));
+        defaultDeleteObjectQueryRedirector = getMetadataClass((String) redirectors.getAttribute("delete"));
+        defaultUpdateObjectQueryRedirector = getMetadataClass((String) redirectors.getAttribute("update"));
+        defaultReportQueryRedirector = getMetadataClass((String) redirectors.getAttribute("report"));
     }
 
     /**
@@ -81,31 +93,31 @@ public class QueryRedirectorsMetadata extends ORMetadata {
         if (objectToCompare instanceof QueryRedirectorsMetadata) {
             QueryRedirectorsMetadata queryRedirectors = (QueryRedirectorsMetadata) objectToCompare;
             
-            if (! valuesMatch(defaultQueryRedirector, queryRedirectors.getDefaultQueryRedirector())) {
+            if (! valuesMatch(defaultQueryRedirectorName, queryRedirectors.getDefaultQueryRedirectorName())) {
                 return false;
             }
             
-            if (! valuesMatch(defaultReadAllQueryRedirector, queryRedirectors.defaultReadAllQueryRedirector)) {
+            if (! valuesMatch(defaultReadAllQueryRedirectorName, queryRedirectors.getDefaultReadAllQueryRedirectorName())) {
                 return false;
             }
             
-            if (! valuesMatch(defaultReadObjectQueryRedirector, queryRedirectors.getDefaultReadObjectQueryRedirector())) {
+            if (! valuesMatch(defaultReadObjectQueryRedirectorName, queryRedirectors.getDefaultReadObjectQueryRedirectorName())) {
                 return false;
             }
             
-            if (! valuesMatch(defaultReportQueryRedirector, queryRedirectors.getDefaultReportQueryRedirector())) {
+            if (! valuesMatch(defaultReportQueryRedirectorName, queryRedirectors.getDefaultReportQueryRedirectorName())) {
                 return false;
             }
             
-            if (! valuesMatch(defaultUpdateObjectQueryRedirector, queryRedirectors.getDefaultUpdateObjectQueryRedirector())) {
+            if (! valuesMatch(defaultUpdateObjectQueryRedirectorName, queryRedirectors.getDefaultUpdateObjectQueryRedirectorName())) {
                 return false;
             }
             
-            if (! valuesMatch(defaultInsertObjectQueryRedirector, queryRedirectors.getDefaultInsertObjectQueryRedirector())) {
+            if (! valuesMatch(defaultInsertObjectQueryRedirectorName, queryRedirectors.getDefaultInsertObjectQueryRedirectorName())) {
                 return false;
             }
             
-            return valuesMatch(defaultDeleteObjectQueryRedirector, queryRedirectors.getDefaultDeleteObjectQueryRedirector());
+            return valuesMatch(defaultDeleteObjectQueryRedirectorName, queryRedirectors.getDefaultDeleteObjectQueryRedirectorName());
         }
         
         return false;
@@ -115,56 +127,74 @@ public class QueryRedirectorsMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getDefaultDeleteObjectQueryRedirector() {
-        return defaultDeleteObjectQueryRedirector;
+    public String getDefaultDeleteObjectQueryRedirectorName() {
+        return defaultDeleteObjectQueryRedirectorName;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getDefaultInsertObjectQueryRedirector() {
-        return defaultInsertObjectQueryRedirector;
+    public String getDefaultInsertObjectQueryRedirectorName() {
+        return defaultInsertObjectQueryRedirectorName;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getDefaultQueryRedirector() {
-        return defaultQueryRedirector;
+    public String getDefaultQueryRedirectorName() {
+        return defaultQueryRedirectorName;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getDefaultReadAllQueryRedirector() {
-        return defaultReadAllQueryRedirector;
+    public String getDefaultReadAllQueryRedirectorName() {
+        return defaultReadAllQueryRedirectorName;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getDefaultReadObjectQueryRedirector() {
-        return defaultReadObjectQueryRedirector;
+    public String getDefaultReadObjectQueryRedirectorName() {
+        return defaultReadObjectQueryRedirectorName;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getDefaultReportQueryRedirector() {
-        return defaultReportQueryRedirector;
+    public String getDefaultReportQueryRedirectorName() {
+        return defaultReportQueryRedirectorName;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getDefaultUpdateObjectQueryRedirector() {
-        return defaultUpdateObjectQueryRedirector;
+    public String getDefaultUpdateObjectQueryRedirectorName() {
+        return defaultUpdateObjectQueryRedirectorName;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+
+        // Initialize our classes names to actual classes (taking a package
+        // specification into account.
+        defaultQueryRedirector = initXMLClassName(defaultQueryRedirectorName);
+        defaultReadAllQueryRedirector = initXMLClassName(defaultReadAllQueryRedirectorName);
+        defaultReadObjectQueryRedirector = initXMLClassName(defaultReadObjectQueryRedirectorName);
+        defaultReportQueryRedirector = initXMLClassName(defaultReportQueryRedirectorName);
+        defaultUpdateObjectQueryRedirector = initXMLClassName(defaultUpdateObjectQueryRedirectorName);
+        defaultInsertObjectQueryRedirector = initXMLClassName(defaultInsertObjectQueryRedirectorName);
+        defaultDeleteObjectQueryRedirector = initXMLClassName(defaultDeleteObjectQueryRedirectorName);
     }
     
     /**
@@ -177,68 +207,68 @@ public class QueryRedirectorsMetadata extends ORMetadata {
         // Process the cache metadata.
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
         
-        if (!defaultQueryRedirector.equals(void.class.getName())) classDescriptor.setDefaultQueryRedirectorClassName(defaultQueryRedirector);
-        if (!defaultReadAllQueryRedirector.equals(void.class.getName()))classDescriptor.setDefaultReadAllQueryRedirectorClassName(defaultReadAllQueryRedirector);
-        if (!defaultReadObjectQueryRedirector.equals(void.class.getName()))classDescriptor.setDefaultReadObjectQueryRedirectorClassName(defaultReadObjectQueryRedirector);
-        if (!defaultReportQueryRedirector.equals(void.class.getName()))classDescriptor.setDefaultReportQueryRedirectorClassName(defaultReportQueryRedirector);
-        if (!defaultInsertObjectQueryRedirector.equals(void.class.getName()))classDescriptor.setDefaultInsertObjectQueryRedirectorClassName(defaultInsertObjectQueryRedirector);
-        if (!defaultUpdateObjectQueryRedirector.equals(void.class.getName()))classDescriptor.setDefaultUpdateObjectQueryRedirectorClassName(defaultUpdateObjectQueryRedirector);
-        if (!defaultDeleteObjectQueryRedirector.equals(void.class.getName()))classDescriptor.setDefaultDeleteObjectQueryRedirectorClassName(defaultDeleteObjectQueryRedirector);
+        if (!defaultQueryRedirector.isVoid()) classDescriptor.setDefaultQueryRedirectorClassName(defaultQueryRedirector.getName());
+        if (!defaultReadAllQueryRedirector.isVoid()) classDescriptor.setDefaultReadAllQueryRedirectorClassName(defaultReadAllQueryRedirector.getName());
+        if (!defaultReadObjectQueryRedirector.isVoid()) classDescriptor.setDefaultReadObjectQueryRedirectorClassName(defaultReadObjectQueryRedirector.getName());
+        if (!defaultReportQueryRedirector.isVoid()) classDescriptor.setDefaultReportQueryRedirectorClassName(defaultReportQueryRedirector.getName());
+        if (!defaultInsertObjectQueryRedirector.isVoid()) classDescriptor.setDefaultInsertObjectQueryRedirectorClassName(defaultInsertObjectQueryRedirector.getName());
+        if (!defaultUpdateObjectQueryRedirector.isVoid()) classDescriptor.setDefaultUpdateObjectQueryRedirectorClassName(defaultUpdateObjectQueryRedirector.getName());
+        if (!defaultDeleteObjectQueryRedirector.isVoid()) classDescriptor.setDefaultDeleteObjectQueryRedirectorClassName(defaultDeleteObjectQueryRedirector.getName());
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setDefaultDeleteObjectQueryRedirector(String defaultDeleteObjectQueryRedirector) {
-        this.defaultDeleteObjectQueryRedirector = defaultDeleteObjectQueryRedirector;
+    public void setDefaultDeleteObjectQueryRedirectorName(String defaultDeleteObjectQueryRedirectorName) {
+        this.defaultDeleteObjectQueryRedirectorName = defaultDeleteObjectQueryRedirectorName;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setDefaultInsertObjectQueryRedirector(String defaultInsertObjectQueryRedirector) {
-        this.defaultInsertObjectQueryRedirector = defaultInsertObjectQueryRedirector;
+    public void setDefaultInsertObjectQueryRedirectorName(String defaultInsertObjectQueryRedirectorName) {
+        this.defaultInsertObjectQueryRedirectorName = defaultInsertObjectQueryRedirectorName;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setDefaultQueryRedirector(String defaultQueryRedirector) {
-        this.defaultQueryRedirector = defaultQueryRedirector;
+    public void setDefaultQueryRedirectorName(String defaultQueryRedirectorName) {
+        this.defaultQueryRedirectorName = defaultQueryRedirectorName;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setDefaultReadAllQueryRedirector(String defaultReadAllQueryRedirector) {
-        this.defaultReadAllQueryRedirector = defaultReadAllQueryRedirector;
+    public void setDefaultReadAllQueryRedirectorName(String defaultReadAllQueryRedirectorName) {
+        this.defaultReadAllQueryRedirectorName = defaultReadAllQueryRedirectorName;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setDefaultReadObjectQueryRedirector(String defaultReadObjectQueryRedirector) {
-        this.defaultReadObjectQueryRedirector = defaultReadObjectQueryRedirector;
+    public void setDefaultReadObjectQueryRedirectorName(String defaultReadObjectQueryRedirectorName) {
+        this.defaultReadObjectQueryRedirectorName = defaultReadObjectQueryRedirectorName;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setDefaultReportQueryRedirector(String defaultReportQueryRedirector) {
-        this.defaultReportQueryRedirector = defaultReportQueryRedirector;
+    public void setDefaultReportQueryRedirectorName(String defaultReportQueryRedirectorName) {
+        this.defaultReportQueryRedirectorName = defaultReportQueryRedirectorName;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setDefaultUpdateObjectQueryRedirector(String defaultUpdateObjectQueryRedirector) {
-        this.defaultUpdateObjectQueryRedirector = defaultUpdateObjectQueryRedirector;
+    public void setDefaultUpdateObjectQueryRedirectorName(String defaultUpdateObjectQueryRedirectorName) {
+        this.defaultUpdateObjectQueryRedirectorName = defaultUpdateObjectQueryRedirectorName;
     }
 }
