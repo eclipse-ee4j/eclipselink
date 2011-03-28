@@ -71,6 +71,12 @@ public class XJCJavaModelImpl implements JavaModel {
             componentName = className.replace("[]", "");
         }
 
+        boolean isTyped = className.contains("<");
+        if (isTyped) {
+            // Only keep the generic part
+            componentName = componentName.substring(0, className.indexOf('<'));
+        }
+
         boolean isPrimitive = XMLConversionManager.getPrimitiveClass(componentName) != null;
         try {
             JavaClass jc = new XJCJavaClassImpl(jCodeModel._class(componentName), jCodeModel, dynamicClassLoader, isArray, isPrimitive);
