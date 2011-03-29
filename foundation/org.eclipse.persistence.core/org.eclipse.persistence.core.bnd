@@ -26,6 +26,7 @@ Include-Resource:\
  org/eclipse/persistence/eclipselink_sessions_1.2.xsd=resource/org/eclipse/persistence/eclipselink_sessions_1.2.xsd,\
  org/eclipse/persistence/eclipselink_sessions_2.0.xsd=resource/org/eclipse/persistence/eclipselink_sessions_2.0.xsd,\
  org/eclipse/persistence/eclipselink_sessions_2.1.xsd=resource/org/eclipse/persistence/eclipselink_sessions_2.1.xsd,\
+ org/eclipse/persistence/eclipselink_sessions_2.3.xsd=resource/org/eclipse/persistence/eclipselink_sessions_2.3.xsd,\
  org/eclipse/persistence/object-persistence_1_0.xsd=resource/org/eclipse/persistence/object-persistence_1_0.xsd,\
  org/eclipse/persistence/toplink-object-persistence_10_1_3.xsd=resource/org/eclipse/persistence/toplink-object-persistence_10_1_3.xsd,\
  org/eclipse/persistence/toplink-object-persistence_11_1_1.xsd=resource/org/eclipse/persistence/toplink-object-persistence_11_1_1.xsd,\
