@@ -102,8 +102,11 @@ public class OracleHelper {
             // TODO
         }
         if (methods.size() > 0) {
+            // we only get more than one method on a OPModel if there is overloading
+            boolean overloaded = methods.size() > 1;
             dbStoredProcedures = new ArrayList<DbStoredProcedure>();
-            for (ProcedureMethod m : methods) {
+            for (int j=0; j<methods.size(); j++) {  
+                ProcedureMethod m = methods.get(j);
                 DbStoredProcedure dbStoredProcedure = null;
                 TypeClass returnType = m.getReturnType();
                 if (returnType == null) {
@@ -125,6 +128,11 @@ public class OracleHelper {
                     }
                     dbStoredArgument.setJdbcTypeName(typeName);
                     ((DbStoredFunction)dbStoredProcedure).setReturnArg(dbStoredArgument);
+                }
+                // only set 'overload' on the stored proc if necessary
+                if (overloaded) {
+                    // start overload indicator at 1
+                    dbStoredProcedure.setOverload(j+1);
                 }
                 dbStoredProcedure.setCatalog(packageName);
                 dbStoredProcedure.setSchema(originalSchemaPattern);

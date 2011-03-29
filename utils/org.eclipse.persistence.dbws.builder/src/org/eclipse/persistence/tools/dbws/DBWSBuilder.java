@@ -845,7 +845,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
          * Walk-thru sqlType, building PLSQLCollection/PLSQLrecord helper objects,
          * ObjectRelationalDataTypeDescriptors and mappings, XMLDescriptors and mappings
          */
-        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder(this);
+        PLSQLHelperObjectsBuilder helperObjectsBuilder = new PLSQLHelperObjectsBuilder(this, procOpModel);
         PLSQLORDescriptorBuilder orDescriptorBuilder = new PLSQLORDescriptorBuilder();
         PLSQLOXDescriptorBuilder oxDescriptorBuilder = new PLSQLOXDescriptorBuilder(getTargetNamespace());
         PublisherListenerChainAdapter chain = new PublisherListenerChainAdapter();
@@ -865,10 +865,11 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             }
         }
         if (procOpModel.hasDbStoredProcedures()) {
-            for (DbStoredProcedure storedProcedure : procOpModel.getDbStoredProcedures()) {
+            for (int i=0; i< procOpModel.getDbStoredProcedures().size(); i++) {
+                DbStoredProcedure storedProcedure = procOpModel.getDbStoredProcedures().get(i);
                 boolean isPLSQLStoredProc = false;
                 for (DbStoredArgument arg : storedProcedure.getArguments()) {
-                    if (arg.isPLSQLArgument()) {
+                    if (arg.isPLSQLArgument() || storedProcedure.getOverload() > 0) {
                         isPLSQLStoredProc = true;
                         break;
                     }
@@ -927,11 +928,11 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     dq.bindAllParameters();
                     dq.setName(nameAndModel.name);
                     dq.setCall(call);
-                    DatabaseType[] typesForMethod =
-                        helperObjectsBuilder.getTypesForMethod(storedProcedure.getName());
-                    for (int i = 0, len = typesForMethod.length; i < len; i++) {
-                        DbStoredArgument arg = storedProcedure.getArguments().get(i);
-                        DatabaseType databaseType = typesForMethod[i];
+
+                    DatabaseType[] typesForMethod = procOpModel.getArgumentTypes().get(i);
+                    for (int j=0, len=typesForMethod.length; j<len; j++) {
+                        DbStoredArgument arg = storedProcedure.getArguments().get(j);
+                        DatabaseType databaseType = typesForMethod[j];
                         InOut direction = arg.getInOut();
                         if (direction == OUT) {
                             call.addNamedOutputArgument(arg.getName(), databaseType);

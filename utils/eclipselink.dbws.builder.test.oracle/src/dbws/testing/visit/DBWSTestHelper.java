@@ -78,6 +78,13 @@ public class DBWSTestHelper {
     public static final String PROC7_SERVICE_NAMESPACE = "urn:" + PROC7_SERVICE;
     public static final String PROC7_PORT = PROC7_SERVICE + "Port";
 
+    public static final String PROC8 = "p8";
+    public static final String PROC8_TEST = PROC8 + "Test";
+    public static final String PROC8_SERVICE = PROC8_TEST + "Service";
+    public static final String PROC8_NAMESPACE = "urn:" + PROC8_TEST;
+    public static final String PROC8_SERVICE_NAMESPACE = "urn:" + PROC8_SERVICE;
+    public static final String PROC8_PORT = PROC8_SERVICE + "Port";
+
     public static final String TBL1_COMPATIBLETYPE = "SOMEPACKAGE_TBL1";
     public static final String TBL1_DATABASETYPE = "SOMEPACKAGE.TBL1";
     public static final String TBL1_DESCRIPTOR_ALIAS = TBL1_COMPATIBLETYPE.toLowerCase();

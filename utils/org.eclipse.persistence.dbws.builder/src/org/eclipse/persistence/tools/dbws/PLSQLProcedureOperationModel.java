@@ -67,6 +67,9 @@ public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
                 sb.append(name);
             }
             QueryOperation qo = new QueryOperation();
+            if (storedProcedure.getOverload() != 0) {
+                sb.append(storedProcedure.getOverload());
+            }
             qo.setName(sb.toString());
             SimpleXMLFormat sxf = null;
             if (isSimpleXMLFormat() || getReturnType() == null) {

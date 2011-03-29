@@ -359,6 +359,7 @@
     <RunTestsuite testsuite-name="BuildTbl2TestWebService"/>
     <RunTestsuite testsuite-name="EchoEmpObjectTestWebService"/>
     <RunTestsuite testsuite-name="ORDescriptorBuilderTest"/>
+    <RunTestsuite testsuite-name="OverloadedPLSQLStoredProcedureTest"/>
     <RunTestsuite testsuite-name="OXDescriptorBuilderTest"/>
     <RunTestsuite testsuite-name="P1P4testWebService"/>
     <RunTestsuite testsuite-name="P1testWebService"/>
@@ -372,6 +373,7 @@
     <RunTestsuite testsuite-name="TopLevelStoredProcedureTest"/>
     <RunTestsuite testsuite-name="TypesTest"/>
     <RunTestsuite testsuite-name="LocalTableTypeTest"/>
+    <RunTestsuite testsuite-name="OverloadedPLSQLStoredProcedureSimpleArgsTest"/>
     <RunTestsuite testsuite-name="BuildROWTYPETest"/>
     <TeardownDatabase filename="alltests"/>
     <junitreport

@@ -31,6 +31,7 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherDefaultListener;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+import org.eclipse.persistence.tools.dbws.ProcedureOperationModel;
 
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
@@ -44,9 +45,14 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
     protected String currentMethodName = null;
     protected int currentMethodArgIdx = -1;
     protected DBWSBuilder dbwsBuilder;
+    protected ProcedureOperationModel opModel;
 
     public PLSQLHelperObjectsBuilder(DBWSBuilder dbwsBuilder) {
+        this(dbwsBuilder, null);
+    }
+    public PLSQLHelperObjectsBuilder(DBWSBuilder dbwsBuilder, ProcedureOperationModel opModel) {
         this.dbwsBuilder = dbwsBuilder;
+        this.opModel = opModel;
     }
 
     public String trimOffSchemaName(String s) {
@@ -245,6 +251,9 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
 
     @Override
     public void endMethod(String methodName) {
+        if (opModel != null) {
+            opModel.addArgumentTypes(methodTypeMap.get(methodName));
+        }
         currentMethodName = null;
         currentMethodArgIdx = -1;
     }

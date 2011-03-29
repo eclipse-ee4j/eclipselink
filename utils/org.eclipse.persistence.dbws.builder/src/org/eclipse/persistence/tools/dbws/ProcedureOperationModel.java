@@ -14,6 +14,7 @@
 package org.eclipse.persistence.tools.dbws;
 
 // javase imports
+import java.util.ArrayList;
 import java.util.List;
 import static java.sql.Types.ARRAY;
 import static java.sql.Types.OTHER;
@@ -27,6 +28,7 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
+import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.xr.Attachment;
 import org.eclipse.persistence.internal.xr.CollectionResult;
 import org.eclipse.persistence.internal.xr.NamedQueryHandler;
@@ -68,7 +70,8 @@ public class ProcedureOperationModel extends OperationModel {
     protected int overload; // Oracle-specific
     protected SqlTypeWithMethods typ; // cache JPub description of operation
     protected boolean isAdvancedJDBC = false;
-    protected List<DbStoredProcedure> dbStoredProcedures;
+    protected List<DbStoredProcedure> dbStoredProcedures = null;
+    protected List<DatabaseType[]> argumentTypes = null;
 
     public ProcedureOperationModel() {
         super();
@@ -450,5 +453,60 @@ public class ProcedureOperationModel extends OperationModel {
      */
     public void setDbStoredProcedures(List<DbStoredProcedure> dbStoredProcedures) {
         this.dbStoredProcedures = dbStoredProcedures;
+    }
+
+    /**
+     * Indicates if this ProcedureOperationModel has types set for its
+     * stored procedure arguments, i.e. argumentTypes is non-null.
+     * 
+     * @return true if this ProcedureOperationModel has types set for 
+     *         its stored procedure arguments, false otherwise
+     */
+    public boolean hasArgumentTypes() {
+        return argumentTypes != null;
+    }
+    
+    /**
+     * Return the List of DatabaseType[] entries for this ProcedureOperationModel 
+     * instance's stored procedure arguments, or null if not set.   It is assumed
+     * that each entry in the List corresponds to a  stored procedure at the same
+     * index in the dbStoredProcedures List. It is also assumed the each entry in
+     * a given DatabaseType[] corresponds to an argument in the associated stored
+     * procedure at the same index.
+     * 
+     * @return List of DatabaseType[] entries for this ProcedureOperationModel
+     *         instance's stored procedure arguments, or null if not set 
+     */
+    public List<DatabaseType[]> getArgumentTypes() {
+        return argumentTypes;
+    }
+
+    /**
+     * Add to the List of DatabaseType[] entries  for  this  ProcedureOperationModel 
+     * instance's stored procedures.       It is assumed that each entry in the List 
+     * corresponds to a stored procedure at the same index in the dbStoredProcedures
+     * List. It is also assumed the each entry in a given DatabaseType[] corresponds
+     * to an argument in the associated stored procedure at the same index.
+     * 
+     * @param argumentTypes
+     */
+    public void addArgumentTypes(DatabaseType[] dbTypes) {
+        if (argumentTypes == null) {
+            argumentTypes = new ArrayList<DatabaseType[]>();
+        }
+        argumentTypes.add(dbTypes);
+    }
+
+    /**
+     * Set  the  List of DatabaseType[]  entries  for  this  ProcedureOperationModel 
+     * instance's stored procedures.       It is assumed that each entry in the List 
+     * corresponds to a stored procedure at the same index in the dbStoredProcedures
+     * List. It is also assumed the each entry in a given DatabaseType[] corresponds
+     * to an argument in the associated stored procedure at the same index.
+     * 
+     * @param dbStoredProcedureTypes
+     */
+    public void setArgumentTypes(List<DatabaseType[]> argumentTypes) {
+        this.argumentTypes = argumentTypes;
     }
 }
