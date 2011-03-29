@@ -21,6 +21,7 @@ import java.util.Vector;
 
 public class Employee 
 {
+    public String id;
 	public String firstName;
 	public String lastName;
 	public Address address;

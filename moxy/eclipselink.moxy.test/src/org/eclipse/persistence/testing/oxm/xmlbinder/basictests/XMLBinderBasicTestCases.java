@@ -64,6 +64,18 @@ public class XMLBinderBasicTestCases extends OXTestCase {
         assertXMLIdentical(controlDocument, binder.getXMLNode(emp).getOwnerDocument());
     }
 
+    public void testUpdateNullAttribute() throws Exception {
+        Document sourceDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/basictests/nullattribute_before.xml");
+        Document controlDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/basictests/nullattribute_after.xml");
+        
+        Employee emp = (Employee)binder.unmarshal(sourceDocument);
+
+        emp.id = null;
+        binder.updateXML(emp);
+        
+        assertXMLIdentical(controlDocument, binder.getXMLNode(emp).getOwnerDocument());
+    }
+    
     public void testUpdateXMLCollection() throws Exception {
         Document sourceDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/basictests/updatecollection_before.xml");
         Document controlDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/basictests/updatecollection_after.xml");

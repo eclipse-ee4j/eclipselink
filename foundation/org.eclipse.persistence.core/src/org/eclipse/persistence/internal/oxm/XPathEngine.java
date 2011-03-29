@@ -802,7 +802,11 @@ public class XPathEngine {
                     Node grandParentNode = parentNode.getParentNode();
                     grandParentNode.removeChild(parentNode);
                 } else {
-                    node.setNodeValue((String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING));
+                    if(value == null) {
+                        ((Attr)node).getOwnerElement().removeAttributeNode((Attr)node);
+                    } else {
+                        node.setNodeValue((String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING));
+                    }
                 }
             } else {
                 Element element = (Element)node;

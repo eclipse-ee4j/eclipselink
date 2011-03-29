@@ -50,6 +50,7 @@ public class BasicBinderTestsProject extends Project
 		descriptor.setJavaClass(Employee.class);
         descriptor.setNamespaceResolver(resolver);
         
+        descriptor.addDirectMapping("id","@id");
 		descriptor.addDirectMapping("firstName","getFirstName","setFirstName","first-name/text()");
 
 		XMLDirectMapping lname = new XMLDirectMapping();
