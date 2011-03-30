@@ -180,7 +180,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                     spCall.useUnnamedCursorOutputAsResultSet();
                 }
                 else if (getOutArguments().isEmpty()) {
-                    spCall.useUnnamedCursorOutputAsResultSet();
+                    spCall.setReturnsResultSet(true);
                 }
                 else {
                     for (ProcedureOutputArgument arg : getOutArguments()) {
