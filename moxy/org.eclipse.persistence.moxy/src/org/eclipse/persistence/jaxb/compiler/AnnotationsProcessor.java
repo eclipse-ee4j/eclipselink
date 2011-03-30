@@ -319,7 +319,12 @@ public class AnnotationsProcessor {
                             element.setJavaType(helper.getJavaClass(generatedClass));
                         }
                         if (nextInfo.getElementScope() == TypeMappingInfo.ElementScope.Global) {
-                            this.getGlobalElements().put(element.getElementName(), element);
+                            if(this.getGlobalElements().get(element.getElementName()) == null) {
+                                this.getGlobalElements().put(element.getElementName(), element);
+                            } else {
+                                System.out.println("[el-debug]: Duplicate global element name. Treating as local: " + element.getElementName());
+                                this.localElements.add(element);
+                            }
                         } else {
                             this.localElements.add(element);
                         }
