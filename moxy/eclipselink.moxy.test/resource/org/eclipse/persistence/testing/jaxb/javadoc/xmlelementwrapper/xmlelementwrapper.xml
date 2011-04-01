@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?>
+<NHL-Team>
+<canadian>
+	<team>Habs</team>
+	<team>Leafs</team>
+	<team>Sens</team>
+	<team>Flames</team>
+	<team>Oilers</team>
+	<team>Canucks</team>
+</canadian>
+</NHL-Team>
