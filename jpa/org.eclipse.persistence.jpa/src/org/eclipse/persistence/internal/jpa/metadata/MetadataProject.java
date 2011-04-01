@@ -73,6 +73,8 @@
  *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -160,6 +162,10 @@ public class MetadataProject {
     public static final String DEFAULT_TABLE_GENERATOR = "SEQ_GEN_TABLE";
     public static final String DEFAULT_SEQUENCE_GENERATOR = "SEQ_GEN_SEQUENCE";
     public static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
+    
+    // Boolean to specify if the user intends for the related EMF of this 
+    // project to shared for multi-tenants.
+    private boolean m_multitenantSharedEmf;
     
     // Boolean to specify if we should weave eager relationships.
     private boolean m_weaveEager;
@@ -270,7 +276,8 @@ public class MetadataProject {
      * @param session - the Session
      * @param weavingEnabled - flag for global dynamic weaving state
      */
-    public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weavingEnabled, boolean weaveEager) {
+    public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weavingEnabled, boolean weaveEager, boolean multitenantSharedEmf) {
+        m_multitenantSharedEmf = multitenantSharedEmf; 
         m_isSharedCacheModeInitialized = false;
         
         m_persistenceUnitInfo = puInfo;
@@ -1721,6 +1728,16 @@ public class MetadataProject {
     }
     
     /**
+     * INTERNAL:
+     * Return true if the entity manager factory for this project is intended
+     * to be shared amongst multi-tenants.
+     */
+    public boolean usesMultitenantSharedEmf() {
+        return m_multitenantSharedEmf;
+    }
+    
+    /**
+     * INTERNAL:
      * Return if the project should use indirection for eager relationships.
      */
     public boolean weaveEager() {

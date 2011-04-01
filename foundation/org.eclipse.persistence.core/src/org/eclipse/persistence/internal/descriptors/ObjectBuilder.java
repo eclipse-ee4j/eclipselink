@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     07/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
@@ -205,6 +207,23 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
     }
 
+    /**
+     * Add the tenant discriminator information to the database row. This is 
+     * required when  building a row for an insert or an update of a concrete 
+     * child descriptor.
+     */
+    public void addTenantDiscriminatorFieldToRow(AbstractRecord row, AbstractSession session) {
+        if (getDescriptor().hasTenantDiscriminatorFields()) {
+            Map<DatabaseField, String> tenantDiscriminatorFields = getDescriptor().getTenantDiscriminatorFields();
+        
+            for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
+                String property = tenantDiscriminatorFields.get(discriminatorField);
+                Object propertyValue = session.getProperty(property);
+                row.put(discriminatorField, propertyValue);
+            }
+        }
+    }
+  
     /**
      * Assign the fields in the row back into the object.
      * This is used by returning, as well as events and version locking.
@@ -1165,9 +1184,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
             addPrimaryKeyForNonDefaultTable(databaseRow, object, session);
         }
 
+        // If the session uses multi-tenancy, add the tenant id field.
+        addTenantDiscriminatorFieldToRow(databaseRow, session);
+        
         return databaseRow;
     }
-
     /**
      * Build the row representation of the object for update. The row built does not
      * contain entries for uninstantiated attributes.
@@ -1200,6 +1221,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
             addPrimaryKeyForNonDefaultTable(databaseRow, object, session);
         }
 
+        // If the session uses multi-tenancy, add the tenant id field.
+        addTenantDiscriminatorFieldToRow(databaseRow, session);
+        
         return databaseRow;
     }
 
@@ -1222,6 +1246,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
             this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
 
+        // If the session uses multi-tenancy, add the tenant id field.
+        addTenantDiscriminatorFieldToRow(databaseRow, session);
+        
         return databaseRow;
     }
 
@@ -1286,6 +1313,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
         }
 
+        // If the session uses multi-tenancy, add the tenant id field.
+        addTenantDiscriminatorFieldToRow(databaseRow, query.getExecutionSession());
+        
         return databaseRow;
     }
 
@@ -1396,6 +1426,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
             this.descriptor.getOptimisticLockingPolicy().addLockFieldsToUpdateRow(databaseRow, session);
         }
 
+        // If the session uses multi-tenancy, add the tenant id field.
+        addTenantDiscriminatorFieldToRow(databaseRow, session);
+        
         // remove any fields from the databaseRow
         trimFieldsForInsert(session, databaseRow);
     }

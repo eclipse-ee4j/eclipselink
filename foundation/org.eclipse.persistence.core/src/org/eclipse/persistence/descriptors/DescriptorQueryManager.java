@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -930,30 +932,58 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         // If the additional criteria is specified, append it to the additional
         // join expression. We do this in postInitialize after all the mappings
         // have been fully initialized.
-        if (additionalCriteria != null) {
-            if (getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().hasView()) {
-                throw DescriptorException.additionalCriteriaNotSupportedWithInheritanceViews(getDescriptor());
-            }
+        if (additionalCriteria != null || descriptor.hasTenantDiscriminatorFields()) {
+            // if the additional criteria is only tenant id then we'll need to get by this check.
+            if (additionalCriteria != null) {
+                if (getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().hasView()) {
+                    throw DescriptorException.additionalCriteriaNotSupportedWithInheritanceViews(getDescriptor());
+                }
             
-            String jpql = "select this from " + descriptor.getAlias() + " this where " + additionalCriteria.trim();
+                String jpql = "select this from " + descriptor.getAlias() + " this where " + additionalCriteria.trim();
             
-            JPQLParseTree parseTree = JPQLParser.buildParseTree(jpql);
-            parseTree.setClassLoader(session.getLoader());
-            DatabaseQuery databaseQuery = parseTree.createDatabaseQuery();
-            databaseQuery.setJPQLString(jpql);
-            parseTree.populateQuery(databaseQuery, (AbstractSession) session);
-            parseTree.addParametersToQuery(databaseQuery);
+                JPQLParseTree parseTree = JPQLParser.buildParseTree(jpql);
+                parseTree.setClassLoader(session.getLoader());
+                DatabaseQuery databaseQuery = parseTree.createDatabaseQuery();
+                databaseQuery.setJPQLString(jpql);
+                parseTree.populateQuery(databaseQuery, (AbstractSession) session);
+                parseTree.addParametersToQuery(databaseQuery);
             
-            // Store the arguments and their types.
-            if (databaseQuery.hasArguments()) {
-                additionalCriteriaArguments = new HashMap<String, Class>();
+                // Store the arguments and their types.
+                if (databaseQuery.hasArguments()) {
+                    additionalCriteriaArguments = new HashMap<String, Class>();
                 
-                for (int i = 0; i < databaseQuery.getArguments().size(); i++) {
-                    additionalCriteriaArguments.put(databaseQuery.getArguments().get(i), databaseQuery.getArgumentTypes().get(i));
+                    for (int i = 0; i < databaseQuery.getArguments().size(); i++) {
+                        additionalCriteriaArguments.put(databaseQuery.getArguments().get(i), databaseQuery.getArgumentTypes().get(i));
+                    }
+                }
+                 
+                additionalJoinExpression = databaseQuery.getSelectionCriteria().and(additionalJoinExpression);
+            } 
+            
+            if (descriptor.hasTenantDiscriminatorFields()) {
+                ExpressionBuilder builder = new ExpressionBuilder();
+                
+                // Initialize the arguments if needed.
+                if (additionalCriteriaArguments == null) {
+                    additionalCriteriaArguments = new HashMap<String, Class>();
+                }
+                
+                for (DatabaseField discriminatorField : descriptor.getTenantDiscriminatorFields().keySet()) {
+                    String property = descriptor.getTenantDiscriminatorFields().get(discriminatorField);
+                    
+                    // Add the tenant discriminator field as the parameter ...
+                    // Add the field as the parameter ...
+                    Expression tenantIdExpression = builder.and(builder.getField(discriminatorField).equal(builder.getParameter(discriminatorField)));
+                    additionalCriteriaArguments.put(discriminatorField.getQualifiedName(), discriminatorField.getType());
+                    
+                    if (additionalJoinExpression == null) {
+                        additionalJoinExpression = tenantIdExpression;
+                    } else {
+                        additionalJoinExpression = additionalJoinExpression.and(tenantIdExpression);
+                    }
                 }
             }
             
-            additionalJoinExpression = databaseQuery.getSelectionCriteria().and(additionalJoinExpression);
             // The make sure the additional join expression has the correct 
             // context, rebuild the additional join expression on a new 
             // expression builder.

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     dclarke - Bug 294985: update of comments and addition of connection logging property
  *     cdelahun - Bug 214534: added COORDINATION_JMS_REUSE_PUBLISHER property to enable JMS rcm legacy behavior
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1039,6 +1041,22 @@ public class PersistenceUnitProperties {
      */
     public static final String LOGGING_TIMESTAMP = "eclipselink.logging.timestamp";
 
+    /**
+     * Property <code>"eclipselink.multitenant.shared-emf</code> specifies
+     * that multitenant entities will be used within a shared emf. Setting this
+     * flag to true will force those multitenant entities to have a PROTECTED
+     * cache.
+     * <p>
+     * <b>Java example:</b> <code>
+     * props.put(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, true);</br>
+     * <p>
+     * <b>XML example:</b>
+     * <code>
+     * <property name="eclipselink.multitenant.shared-emf" value="true" />;</br>
+     * </code>
+     */
+    public static final String MULTITENANT_SHARED_EMF = "eclipselink.multitenant.tenants-share-cache";
+    
     /**
      * Property <code>"eclipselink.logging.thread"</code> indicating if current
      * thread should have its identity included in each log message.

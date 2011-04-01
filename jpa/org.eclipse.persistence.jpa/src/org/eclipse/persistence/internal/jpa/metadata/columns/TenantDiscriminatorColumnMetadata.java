@@ -10,6 +10,8 @@
  * Contributors:
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -164,8 +166,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
             m_contextProperty = CONTEXT_PROPERTY_DEFAULT;
         }
 
-        // TODO: Guy update when core is implemented
-        //descriptor.getClassDescriptor().addTenantDiscriminatorField(m_contextProperty, tenantDiscriminatorField);
+        descriptor.getClassDescriptor().addTenantDiscriminatorField(m_contextProperty, tenantDiscriminatorField);
     }
     
     /**

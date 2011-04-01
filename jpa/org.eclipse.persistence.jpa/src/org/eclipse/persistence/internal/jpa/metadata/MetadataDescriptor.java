@@ -86,6 +86,8 @@
  *       - 251554: ExcludeDefaultMapping annotation needed
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1281,9 +1283,7 @@ public class MetadataDescriptor {
      * Indicates if multitenant metadata has been processed for this descriptor.
      */
     public boolean hasMultitenant() { 
-        // TODO: Guy update when core is implemented
-        return false;
-        //return m_descriptor.hasTenantDiscriminatorFields();
+        return m_descriptor.hasTenantDiscriminatorFields();
     }
     
     /**

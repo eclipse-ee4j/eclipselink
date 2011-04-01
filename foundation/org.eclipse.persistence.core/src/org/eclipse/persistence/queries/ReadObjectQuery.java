@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -723,6 +725,10 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 this.translationRow = this.descriptor.getObjectBuilder().buildRowForTranslation(this.selectionObject, getSession());
             }
         }
+        
+        // If we have tenant discriminator fields we need to add them to the 
+        // database row when doing a primary key query.
+        getDescriptor().getObjectBuilder().addTenantDiscriminatorFieldToRow(this.getTranslationRow(), getSession());
     }
 
     /**

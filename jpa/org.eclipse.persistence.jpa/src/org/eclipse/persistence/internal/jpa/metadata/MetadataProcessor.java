@@ -23,6 +23,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     05/14/2010-2.1 Guy Pelletier 
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -90,10 +92,10 @@ public class MetadataProcessor {
      * Called from EntityManagerSetupImpl. The 'real' EJB 3.0 processing
      * that includes XML and annotations.
      */
-    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean enableLazyForOneToOne, boolean weaveEager, Map predeployProperties) {
+    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean enableLazyForOneToOne, boolean weaveEager, boolean multitenantSharedEmf, Map predeployProperties) {
         m_loader = loader;
         m_session = session;
-        m_project = new MetadataProject(puInfo, session, enableLazyForOneToOne, weaveEager);
+        m_project = new MetadataProject(puInfo, session, enableLazyForOneToOne, weaveEager, multitenantSharedEmf);
         m_predeployProperties = predeployProperties;
     }
     

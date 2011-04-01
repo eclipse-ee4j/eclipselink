@@ -10,6 +10,8 @@
  * Contributors:
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -42,6 +44,9 @@ public class Boss extends Mafioso {
 
     public void setUnderboss(Underboss underboss) {
         this.underboss = underboss;
-        underboss.setBoss(this);
+        
+        if (underboss != null) {
+            underboss.setBoss(this);
+        }
     }
 }

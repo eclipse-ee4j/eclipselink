@@ -223,11 +223,11 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.logging.level" value="OFF"/>
-             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.AddTargetCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.AddTargetCustomizer"/>
         </properties>
     </persistence-unit>
     
-    <persistence-unit name="multi-tenant">
+    <persistence-unit name="multi-tenant-shared-emf">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo</class>
@@ -237,7 +237,30 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <!-- properties will be set in code at create entity manager factory time -->
+        <properties>
+            <property name="eclipselink.multitenant.tenants-share-cache" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="createMafia_ddlGeneration.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropMafia_ddlGeneration.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
+        </properties>
+    </persistence-unit>
+    
+    <persistence-unit name="multi-tenant-123">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="tenant.id" value="123"/>
+            <property name="eclipselink.tenant-id" value="123"/>
+            <property name="eclipselink.session-name" value="multi-tenant-123"/>
+        </properties>
     </persistence-unit>
     
 </persistence>

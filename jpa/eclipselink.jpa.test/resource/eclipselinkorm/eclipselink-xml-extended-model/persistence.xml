@@ -115,13 +115,25 @@
         </properties>
     </persistence-unit>
     
-    <persistence-unit name="extended-multi-tenant">
+    <persistence-unit name="extended-multi-tenant-shared-emf">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/advanced-multitenant-entity-mappings.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
         <properties>
             <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
+            <property name="eclipselink.multitenant.tenants-share-cache" value="true"/>
         </properties>        
+    </persistence-unit>
+    
+    <persistence-unit name="extended-multi-tenant-123">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/advanced-multitenant-entity-mappings.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
+            <property name="tenant.id" value="123"/>
+            <property name="eclipselink.tenant-id" value="123"/>
+            <property name="eclipselink.session-name" value="extended-multi-tenant-123"/>
+        </properties>
     </persistence-unit>
 </persistence>

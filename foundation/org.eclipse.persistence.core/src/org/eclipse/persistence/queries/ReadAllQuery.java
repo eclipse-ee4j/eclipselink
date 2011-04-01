@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -668,9 +670,16 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      */
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
-
+        
         this.containerPolicy.prepareForExecution();
-
+        
+        // Modifying the translation row here will modify it on the original 
+        // query which is not good. So we have to clone the translation row if
+        // we are going to append tenant discriminator fields to it.
+        if (descriptor.hasTenantDiscriminatorFields()) {
+            translationRow = translationRow.clone();
+            descriptor.getObjectBuilder().addTenantDiscriminatorFieldToRow(translationRow, getSession());
+        }
     }
 
     /**

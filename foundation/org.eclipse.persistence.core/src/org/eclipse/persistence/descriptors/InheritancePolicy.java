@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -1150,8 +1152,14 @@ public class InheritancePolicy implements Serializable, Cloneable {
     public void preInitialize(AbstractSession session) throws DescriptorException {
         // Make sure that parent is already preinitialized.
         if (isChildDescriptor()) {
-            updateTables();                       
-        
+            updateTables();
+            
+            // Copy down the tenant discriminator fields.
+            for (DatabaseField discriminatorField : getParentDescriptor().getTenantDiscriminatorFields().keySet()) {
+                String property = getParentDescriptor().getTenantDiscriminatorFields().get(discriminatorField);
+                getDescriptor().addTenantDiscriminatorField(property, discriminatorField);
+            }
+            
             setClassIndicatorMapping(getParentDescriptor().getInheritancePolicy().getClassIndicatorMapping());
             setShouldUseClassNameAsIndicator(getParentDescriptor().getInheritancePolicy().shouldUseClassNameAsIndicator());
 

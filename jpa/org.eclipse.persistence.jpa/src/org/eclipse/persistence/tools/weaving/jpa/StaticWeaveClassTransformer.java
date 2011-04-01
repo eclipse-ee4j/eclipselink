@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.tools.weaving.jpa;
 
@@ -155,15 +157,20 @@ public class StaticWeaveClassTransformer {
             weaveEager = true;
         }
         
+        boolean multitenantSharedEmf = false;
+        String multitenantSharedEmfString = (String) unitInfo.getProperties().get(PersistenceUnitProperties.MULTITENANT_SHARED_EMF);
+        if (multitenantSharedEmfString != null && multitenantSharedEmfString.equalsIgnoreCase("true")) {
+            multitenantSharedEmf = true;
+        }
+        
         // Create an instance of MetadataProcessor for specified persistence unit info
-        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, true, weaveEager, null);
+        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, true, weaveEager, multitenantSharedEmf, null);
         
         //bug:299926 - Case insensitive table / column matching with native SQL queries
         EntityManagerSetupImpl.updateCaseSensitivitySettings(unitInfo.getProperties(), processor.getProject(), session);
         // Process the Object/relational metadata from XML and annotations.
         PersistenceUnitProcessor.processORMetadata(processor, false);
 
-        //Collection entities = buildEntityList(persistenceUnitInfo, privateClassLoader);
         Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
 
         boolean weaveLazy = true;

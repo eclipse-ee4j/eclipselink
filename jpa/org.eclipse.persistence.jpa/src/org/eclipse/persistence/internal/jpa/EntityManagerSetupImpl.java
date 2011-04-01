@@ -26,6 +26,8 @@
  *     cdelahun - Bug 214534: changes to allow JMSPublishingTransportManager configuration through properties
  *     05/14/2010-2.1 Guy Pelletier 
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -1110,8 +1112,10 @@ public class EntityManagerSetupImpl {
                 weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
             }
             if (!isSessionLoadedFromSessionsXML ) {
+                boolean usesMultitenantSharedEmf = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, predeployProperties, "false", session));
+                
                 // Create an instance of MetadataProcessor for specified persistence unit info
-                processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving, weaveEager, predeployProperties);
+                processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving, weaveEager, usesMultitenantSharedEmf, predeployProperties);
 
                 //bug:299926 - Case insensitive table / column matching with native SQL queries
                 EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);

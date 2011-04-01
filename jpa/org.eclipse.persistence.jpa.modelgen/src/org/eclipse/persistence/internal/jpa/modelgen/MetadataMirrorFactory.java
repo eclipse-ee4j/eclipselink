@@ -16,6 +16,8 @@
  *       - 309445: CannonicalModelProcessor process all files
  *     11/23/2010-2.2 Guy Pelletier 
  *       - 330660: Canonical model generator throws ClassCastException when using package-info.java
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
@@ -220,7 +222,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     public MetadataProject getMetadataProject(SEPersistenceUnitInfo puInfo) {
         if (! metadataProjects.containsKey(puInfo.getPersistenceUnitName())) {
-            MetadataProject project = new MetadataProject(puInfo, new ServerSession(new Project(new DatabaseLogin())), false, false);
+            MetadataProject project = new MetadataProject(puInfo, new ServerSession(new Project(new DatabaseLogin())), false, false, false);
             metadataProjects.put(puInfo.getPersistenceUnitName(), project);
             return project;
         } else {

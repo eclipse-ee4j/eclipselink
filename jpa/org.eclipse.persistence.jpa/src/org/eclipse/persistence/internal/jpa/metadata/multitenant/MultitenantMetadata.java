@@ -10,6 +10,8 @@
  * Contributors:
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.multitenant;
 
@@ -19,6 +21,7 @@ import java.util.List;
 import org.eclipse.persistence.annotations.MultitenantType;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumns;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
@@ -132,6 +135,13 @@ public class MultitenantMetadata extends ORMetadata {
         } else { 
             // TODO: to be implemented at some point.
             throw new RuntimeException("Unsupported multitenant type: " + m_type);
+        }
+        
+        
+        // If the intention of the user is to use a shared entity manager 
+        // factory with multi-tenant entities, those must use a PROTECTED cache. 
+        if (getProject().usesMultitenantSharedEmf()) {
+            descriptor.getClassDescriptor().setCacheIsolation(CacheIsolationType.PROTECTED);
         }
     }
     

@@ -15,6 +15,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     10/29/2010-2.2 Michael O'Brien 
  *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
@@ -1821,6 +1823,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 
             for (String additionalCriteriaParameter : additionalCriteriaArguments.keySet()) {
                 Object propertyValue = session.getProperty(additionalCriteriaParameter);
+                
+                if (propertyValue == null) {
+                    // Is it a tenant field?
+                    DatabaseField additionalCriteriaField = new DatabaseField(additionalCriteriaParameter);
+                    
+                    if (getDescriptor().getTenantDiscriminatorFields().containsKey(additionalCriteriaField)) {
+                        propertyValue = session.getProperty(getDescriptor().getTenantDiscriminatorFields().get(additionalCriteriaField));
+                    }
+                }
                 
                 if (propertyValue == null) {
                     // If we don't have a property value and the argument field 

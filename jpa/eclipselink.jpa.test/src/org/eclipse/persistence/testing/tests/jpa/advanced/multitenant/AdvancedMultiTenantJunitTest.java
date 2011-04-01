@@ -10,12 +10,15 @@
  * Contributors:
  *     03/23/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -37,18 +40,18 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss;
 
 public class AdvancedMultiTenantJunitTest extends JUnitTestCase { 
-    public static final String PU_707 = "multi-tenant-707";
-    public static final String MULTI_TENANT_PU = "multi-tenant";
+    public static final String MULTI_TENANT_PU = "multi-tenant-shared-emf";
+    public static final String MULTI_TENANT_PU_123 = "multi-tenant-123";
     
     public static int family707;
     public static int family007;
+    public static int family123;
     public static List<Integer> family707Mafiosos = new ArrayList<Integer>();
     public static List<Integer> family707Contracts = new ArrayList<Integer>();
     public static List<Integer> family007Mafiosos = new ArrayList<Integer>();
     public static List<Integer> family007Contracts = new ArrayList<Integer>();
-    
-    public static EntityManagerFactory emf707;
-    public static EntityManagerFactory emf007;
+    public static List<Integer> family123Mafiosos = new ArrayList<Integer>();
+    public static List<Integer> family123Contracts = new ArrayList<Integer>();
     
     public AdvancedMultiTenantJunitTest() {
         super();
@@ -64,50 +67,31 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedMultiTenantJunitTest");
         
-        // TODO: Guy update
-        //suite.addTest(new AdvancedMultiTenantJunitTest("testSetup"));
-        //suite.addTest(new AdvancedMultiTenantJunitTest("testCreateMafiaFamily707"));
-        //suite.addTest(new AdvancedMultiTenantJunitTest("testCreateMafiaFamily007"));
-        //suite.addTest(new AdvancedMultiTenantJunitTest("testValidateMafiaFamily707"));
-        //suite.addTest(new AdvancedMultiTenantJunitTest("testValidateMafiaFamily007"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testSetup"));
+        
+        suite.addTest(new AdvancedMultiTenantJunitTest("testCreateMafiaFamily707"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testCreateMafiaFamily007"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testCreateMafiaFamily123"));
+        
+        suite.addTest(new AdvancedMultiTenantJunitTest("testValidateMafiaFamily707"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testValidateMafiaFamily007"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testValidateMafiaFamily123"));
         
         return suite;
-    }
-    
-    public void clearCache(EntityManagerFactory emf) {
-        ((org.eclipse.persistence.jpa.JpaEntityManager)emf.createEntityManager()).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-    }
-    
-    public HashMap getPUProperties(String tenantId) {
-        HashMap properties = new HashMap();
-        properties.put("eclipselink.session-name", "multi-tenant-"+tenantId);
-        properties.put("tenant.id", tenantId);
-        properties.put("eclipselink.tenant-id", tenantId);
-        properties.put("eclipselink.logging.level", "FINEST");
-        properties.put("javax.persistence.jdbc.driver", "oracle.jdbc.OracleDriver");
-        properties.put("javax.persistence.jdbc.url", "jdbc:oracle:thin:@ottvm028.ca.oracle.com:1521:TOPLINK ");
-        properties.put("javax.persistence.jdbc.user", "gpelleti");
-        properties.put("javax.persistence.jdbc.password", "password");
-        properties.put("eclipselink.ddl-generation", "drop-and-create-tables");
-        properties.put("eclipselink.create-ddl-jdbc-file-name", "createMafia_ddlGeneration.jdbc");
-        properties.put("eclipselink.drop-ddl-jdbc-file-name", "dropMafia_ddlGeneration.jdbc");
-        properties.put("eclipselink.ddl-generation.output-mode", "sql-script");
-        
-        return properties;
     }
     
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        emf707 = Persistence.createEntityManagerFactory(MULTI_TENANT_PU, getPUProperties("707"));
-        emf007 = Persistence.createEntityManagerFactory(MULTI_TENANT_PU, getPUProperties("007"));
-        new AdvancedMultiTenantTableCreator().replaceTables(((org.eclipse.persistence.jpa.JpaEntityManager)emf707.createEntityManager()).getServerSession());    
+        new AdvancedMultiTenantTableCreator().replaceTables(((org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(MULTI_TENANT_PU)).getServerSession());
     }
     
     public void testCreateMafiaFamily707() {
-        EntityManager em = emf707.createEntityManager();
-
+        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        em.setProperty("tenant.id", 707);
+        em.setProperty("eclipselink.tenant-id", 707);
+        
         try {
             beginTransaction(em);
             
@@ -242,7 +226,9 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testCreateMafiaFamily007() {
-        EntityManager em = emf007.createEntityManager();
+        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        em.setProperty("tenant.id", 007);
+        em.setProperty("eclipselink.tenant-id", 007);
 
         try {
             beginTransaction(em);
@@ -393,36 +379,117 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         }
     }
     
-    public void testValidateMafiaFamily707() {
-        EntityManager em = emf707.createEntityManager();
+    public void testCreateMafiaFamily123() {
+        EntityManager em = createEntityManager(MULTI_TENANT_PU_123);
 
         try {
-            clearCache(emf707);
+            beginTransaction(em);
+            
+            MafiaFamily family = new MafiaFamily();
+            family.setName("Galore");
+            family.setRevenue(4321.03);
+            family.addTag("newtag1");
+            
+            Boss boss = new Boss();
+            boss.setFirstName("Kitty");
+            boss.setLastName("Galore");
+            boss.setGender(Mafioso.Gender.Female);
+            
+            Underboss underboss = new Underboss();
+            underboss.setFirstName("Number2");
+            underboss.setLastName("Galore");
+            underboss.setGender(Mafioso.Gender.Male);
+            
+            Capo capo1 = new Capo();
+            capo1.setFirstName("Capo");
+            capo1.setLastName("Galore");
+            capo1.setGender(Mafioso.Gender.Male);
+            
+            Soldier soldier1 = new Soldier();
+            soldier1.setFirstName("Grunt");
+            soldier1.setLastName("Galore");
+            soldier1.setGender(Mafioso.Gender.Male);
+            
+            Contract contract1 = new Contract();
+            contract1.setDescription("Whack all other family boss");
+            
+            Contract contract2 = new Contract();
+            contract2.setDescription("Pillage, pillage, pillage!");
+            
+            // Populate the relationships.
+            contract1.addSoldier(soldier1);
+            
+            contract2.addSoldier(soldier1);
+            
+            boss.setUnderboss(underboss);
+            
+            capo1.setUnderboss(underboss);
+            
+            capo1.addSoldier(soldier1);
+            
+            underboss.addCapo(capo1);
+            
+            family.addMafioso(boss);
+            family.addMafioso(underboss);
+            
+            family.addMafioso(capo1);
+
+            family.addMafioso(soldier1);
+            
+            // Will cascade through the whole family.
+            em.persist(family);
+            family123 = family.getId();
+            family123Mafiosos.add(boss.getId());
+            family123Mafiosos.add(underboss.getId());
+            family123Mafiosos.add(capo1.getId());
+            family123Mafiosos.add(soldier1.getId());
+            family123Contracts.add(contract1.getId());
+            family123Contracts.add(contract2.getId());
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testValidateMafiaFamily707() {
+        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        em.setProperty("tenant.id", 707);
+        em.setProperty("eclipselink.tenant-id", 707);
+
+        try {
+            clearCache(MULTI_TENANT_PU);
             em.clear();
             
             MafiaFamily family = em.find(MafiaFamily.class, family707);
             assertNotNull("The Mafia Family with id: " + family707 + ", was not found", family);
             assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [3]", family.getTags().size() == 3);
             assertNull("The Mafia Family with id: " + family007 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family007));
+            assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
             assertFalse("No mafiosos part of 707 family", family.getMafiosos().isEmpty());
             
             // See if we can find any members of the other family.
             for (Integer id : family007Mafiosos) {
-                assertNull("Found mafioso from other family. ", em.find(Mafioso.class, id));
+                assertNull("Found family 007 mafioso.", em.find(Mafioso.class, id));
             }
             
             // Query directly for the boss from the other family.
             Boss otherBoss = em.find(Boss.class, family007Mafiosos.get(0));
-            assertNull("Found boss of other family.", otherBoss);
+            assertNull("Found family 007 boss.", otherBoss);
             
             // See if we can find any contracts of the other family.
             for (Integer id : family007Contracts) {
-                assertNull("Found contract from other family. ", em.find(Contract.class, id));
+                assertNull("Found family 007 contract.", em.find(Contract.class, id));
             }
             
             // See how many soldiers are returned from a jpql query
             List soldiers = em.createQuery("SELECT s from Soldier s").getResultList();
-            assertTrue("Incorrect number of students were returned [" + soldiers.size() + "], expected [5]",  soldiers.size() == 5);
+            assertTrue("Incorrect number of soldiers were returned [" + soldiers.size() + "], expected [5]",  soldiers.size() == 5);
             
             // We know what the boss's id is for the 007 family to try to update him from the 707 pu.
             // The 007 family is validated after this test.
@@ -445,39 +512,84 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testValidateMafiaFamily007() {
-        EntityManager em = emf007.createEntityManager();
+        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        em.setProperty("tenant.id", 007);
+        em.setProperty("eclipselink.tenant-id", 007);
 
         try {
-            clearCache(emf007);
+            clearCache(MULTI_TENANT_PU);
             em.clear();
             
             MafiaFamily family =  em.find(MafiaFamily.class, family007);
             assertNotNull("The Mafia Family with id: " + family007 + ", was not found", family);
             assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [5]", family.getTags().size() == 5);
             assertNull("The Mafia Family with id: " + family707 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family707));
+            assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
             assertFalse("No mafiosos part of 007 family", family.getMafiosos().isEmpty());
             
             // See if we can find any members of the other family.
             for (Integer id : family707Mafiosos) {
-                assertNull("Found mafioso from other family. ", em.find(Mafioso.class, id));
+                assertNull("Found family 707 mafioso.", em.find(Mafioso.class, id));
             }
             
             // Query directly for the boss from the other family.
             Boss otherBoss = em.find(Boss.class, family707Mafiosos.get(0));
-            assertNull("Found boss of other family.", otherBoss);
+            assertNull("Found family 707 boss.", otherBoss);
             
             // See if we can find any contracts of the other family.
             for (Integer id : family707Contracts) {
-                assertNull("Found contract from other family. ", em.find(Contract.class, id));
+                assertNull("Found family 707 contract.", em.find(Contract.class, id));
             }
             
             // Try a select named query
             List families = em.createNamedQuery("findJPQLMafiaFamilies").getResultList();
-            assertTrue("Incorrect number of schools were returned [" + families.size() + "], expected [1]",  families.size() == 1); 
+            assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1); 
        
             // Find our boss and make sure his name has not been compromised from the 707 family.
             Boss boss = em.find(Boss.class, family007Mafiosos.get(0));
             assertFalse("The Boss name has been compromised", boss.getFirstName().equals("Compromised"));
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testValidateMafiaFamily123() {
+        EntityManager em = createEntityManager(MULTI_TENANT_PU_123);
+
+        try {
+            clearCache(MULTI_TENANT_PU_123);
+            em.clear();
+            
+            MafiaFamily family =  em.find(MafiaFamily.class, family123);
+            assertNotNull("The Mafia Family with id: " + family123 + ", was not found", family);
+            assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [1]", family.getTags().size() == 1);
+            assertNull("The Mafia Family with id: " + family707 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family707));
+            assertNull("The Mafia Family with id: " + family007 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family007));
+            assertFalse("No mafiosos part of 123 family", family.getMafiosos().isEmpty());
+            
+            // See if we can find any members of the other family.
+            for (Integer id : family707Mafiosos) {
+                assertNull("Found family 707 mafioso.", em.find(Mafioso.class, id));
+            }
+            
+            // Query directly for the boss from the other family.
+            Boss otherBoss = em.find(Boss.class, family707Mafiosos.get(0));
+            assertNull("Found family 707 boss.", otherBoss);
+            
+            // See if we can find any contracts of the other family.
+            for (Integer id : family707Contracts) {
+                assertNull("Found family 707 contract. ", em.find(Contract.class, id));
+            }
+            
+            // Try a select named query
+            List families = em.createNamedQuery("findJPQLMafiaFamilies").getResultList();
+            assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1); 
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

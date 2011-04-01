@@ -14,6 +14,8 @@
  *       - 259829: TABLE_PER_CLASS with abstract classes does not work
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     04/01/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 2)
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -76,6 +78,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected transient DatabaseTable defaultTable;
     protected List<DatabaseField> primaryKeyFields;
     protected transient Map<DatabaseTable, Map<DatabaseField, DatabaseField>> additionalTablePrimaryKeyFields;
+    protected transient Map<DatabaseField, String> tenantDiscriminatorFields;
     protected transient List<DatabaseTable> multipleTableInsertOrder;
     protected transient Map<DatabaseTable, Set<DatabaseTable>> multipleTableForeignKeys;
     /** Support delete cascading on the database for multiple and inheritance tables. */
@@ -276,6 +279,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.fields = NonSynchronizedVector.newInstance();
         this.allFields = NonSynchronizedVector.newInstance();
         this.constraintDependencies = NonSynchronizedVector.newInstance(2);
+        this.tenantDiscriminatorFields = new HashMap(5);
         this.multipleTableForeignKeys = new HashMap(5);
         this.queryKeys = new HashMap(5);
         this.initializationStage = UNINITIALIZED;
@@ -530,6 +534,19 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void addTableName(String tableName) {
         addTable(new DatabaseTable(tableName));
+    }
+    
+    /**
+     * INTERNAL:
+     * Return all the tenant id fields.
+     */
+    public void addTenantDiscriminatorField(String property, DatabaseField field) {
+        if (tenantDiscriminatorFields.containsKey(field)) {
+            // TODO: throw exception multiple properties per field
+            // that is, if the property is different (otherwise we have a duplicate)
+        } else {
+            tenantDiscriminatorFields.put(field, property);
+        }
     }
 
     /**
@@ -2557,6 +2574,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Return all the tenant id fields.
+     */
+    public Map<DatabaseField, String> getTenantDiscriminatorFields() {
+        return tenantDiscriminatorFields;
+    }
+
+    /**
+     * INTERNAL:
      * searches first descriptor than its ReturningPolicy for an equal field
      */
     public DatabaseField getTypedField(DatabaseField field) {
@@ -3560,6 +3585,16 @@ public class ClassDescriptor implements Cloneable, Serializable {
         } else {
             // This must be done now, after validate, before init anything else.
             setInternalDefaultTable();
+        }
+        
+        // Once the table information has been settled, we'll need to set tenant 
+        // id fields on the descriptor for each table. These are at least used 
+        // for DDL generation. Doesn't seem to interfere or duplicate anything 
+        // else we have done to support tenant id fields.
+        if (hasTenantDiscriminatorFields()) {
+            for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
+                getFields().add(buildField(discriminatorField));
+            }
         }
         
         verifyTableQualifiers(session.getDatasourcePlatform());
@@ -4909,6 +4944,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean hasTablePerClassPolicy() {
         return hasInterfacePolicy() && interfacePolicy.isTablePerClassPolicy();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if this descriptor has specified some tenant discriminator fields.
+     */
+    public boolean hasTenantDiscriminatorFields() {
+        return ! tenantDiscriminatorFields.isEmpty();
     }
     
     /**
