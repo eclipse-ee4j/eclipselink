@@ -54,7 +54,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  *   equals method.
  * - any metadata mapped from XML to this class must be handled in the merge
  *   method. (merging is done at the accessor/mapping level)
- * - any metadata mapped from XML to this class msst be initialized in the
+ * - any metadata mapped from XML to this class must be initialized in the
  *   initXMLObject  method.
  * - methods should be preserved in alphabetical order.
  * 
