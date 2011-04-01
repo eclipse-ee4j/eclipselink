@@ -322,7 +322,6 @@ public class AnnotationsProcessor {
                             if(this.getGlobalElements().get(element.getElementName()) == null) {
                                 this.getGlobalElements().put(element.getElementName(), element);
                             } else {
-                                System.out.println("[el-debug]: Duplicate global element name. Treating as local: " + element.getElementName());
                                 this.localElements.add(element);
                             }
                         } else {
