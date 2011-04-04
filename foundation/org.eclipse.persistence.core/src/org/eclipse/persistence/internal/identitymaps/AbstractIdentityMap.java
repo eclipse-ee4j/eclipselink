@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.identitymaps;
 import java.util.*;
 import java.io.*;
 
-import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.*;

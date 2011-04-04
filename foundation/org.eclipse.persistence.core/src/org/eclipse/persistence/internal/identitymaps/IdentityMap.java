@@ -14,7 +14,6 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;

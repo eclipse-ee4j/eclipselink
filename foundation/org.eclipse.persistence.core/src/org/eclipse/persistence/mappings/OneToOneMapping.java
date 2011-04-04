@@ -15,7 +15,6 @@ package org.eclipse.persistence.mappings;
 import java.util.*;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
-import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
