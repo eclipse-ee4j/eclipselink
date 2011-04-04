@@ -40,7 +40,9 @@ public class NamespaceURITransformer implements FieldTransformer {
         }
 
         String value = (String) transformationMapping.getAttributeValueFromObject(instance);
-
+        if(value == null){
+        	return null;
+        }
         int index = value.lastIndexOf(HASH);
         if (index > -1) {
             String namespaceURI = value.substring(0, index);

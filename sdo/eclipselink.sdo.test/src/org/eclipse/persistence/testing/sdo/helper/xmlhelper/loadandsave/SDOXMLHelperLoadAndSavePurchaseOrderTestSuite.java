@@ -40,6 +40,8 @@ public class SDOXMLHelperLoadAndSavePurchaseOrderTestSuite {
         suite.addTest(new TestSuite(LoadAndSaveSimpleElementTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveSchemaTypesTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveOpenContentTestCases.class));
+        suite.addTest(new TestSuite(LoadAndSaveSchemaTypesEmptyStringTestCases.class));
+
         
         // test DirectMapping        
         suite.addTest(new TestSuite(LoadAndSaveNillableOptionalNodeNullPolicyTestCases.class));        

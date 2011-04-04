@@ -202,6 +202,14 @@ public interface MyTestType {
 
    public void setMyUnsignedShortTest(int value);
 
+   public java.lang.Long getMyLongWrapperTest();
+
+   public void setMyLongWrapperTest(java.lang.Long value);
+
+   public java.lang.Boolean isMyBooleanWrapperTest();
+
+   public void setMyBooleanWrapperTest(java.lang.Boolean value);
+
 
 }
 

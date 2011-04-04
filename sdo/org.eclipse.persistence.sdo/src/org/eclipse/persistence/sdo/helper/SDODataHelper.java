@@ -590,6 +590,8 @@ public class SDODataHelper implements DataHelper {
             return toDate(value);
         } else if (convertClass == ClassConstants.CALENDAR) {
             return toCalendar(value);
+        } else if(value == SDOConstants.EMPTY_STRING && (convertClass == ClassConstants.LONG || convertClass == ClassConstants.SHORT || convertClass == ClassConstants.INTEGER || convertClass == ClassConstants.FLOAT || convertClass == ClassConstants.DOUBLE || convertClass == ClassConstants.BOOLEAN || convertClass == ClassConstants.CHAR || convertClass == ClassConstants.QNAME )){
+       	    return null;        	
         } else {
             return getXMLConversionManager().convertObject(value, convertClass);
         }

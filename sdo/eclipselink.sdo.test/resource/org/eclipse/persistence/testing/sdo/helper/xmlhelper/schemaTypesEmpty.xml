@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:Test xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <myAnySimpleTypeTest></myAnySimpleTypeTest>
+   <myAnyURITest></myAnyURITest>
+   <myBooleanTest></myBooleanTest>
+   <myByteTest></myByteTest>
+   <myDateTest></myDateTest>
+   <myDateTimeTest></myDateTimeTest>
+   <myDecimalTest></myDecimalTest>
+   <myDoubleTest></myDoubleTest>
+   <myDurationTest></myDurationTest>
+   <myENTITIESTest></myENTITIESTest>
+   <myENTITYTest></myENTITYTest>
+   <myFloatTest></myFloatTest>
+   <myGDayTest></myGDayTest>
+   <myGMonthTest></myGMonthTest>
+   <myGMonthDayTest></myGMonthDayTest>
+   <myGYearTest></myGYearTest>
+   <myGYearMonthTest></myGYearMonthTest>
+   <myIDTest></myIDTest>
+   <myIDREFTest></myIDREFTest>
+   <myIDREFSTest></myIDREFSTest>
+   <myIntTest></myIntTest>
+   <myIntegerTest></myIntegerTest>
+   <myLanguageTest></myLanguageTest>
+   <myLongTest></myLongTest>
+   <myNameTest></myNameTest>
+   <myNCNameTest></myNCNameTest>
+   <myNegativeIntegerTest></myNegativeIntegerTest>
+   <myNonNegativeIntegerTest></myNonNegativeIntegerTest>
+   <myNMTOKENTest></myNMTOKENTest>
+   <myNMTOKENSTest></myNMTOKENSTest>
+   <myNOTATIONTest></myNOTATIONTest>
+   <myNormalizedStringTest></myNormalizedStringTest>
+   <myPositiveIntegerTest></myPositiveIntegerTest>
+   <myNonPositiveIntegerTest></myNonPositiveIntegerTest>
+   <myShort></myShort>
+   <myStringTest></myStringTest>
+   <myTimeTest></myTimeTest>
+   <myTokenTest></myTokenTest>
+   <myUnsignedByteTest></myUnsignedByteTest>
+   <myUnsignedIntTest></myUnsignedIntTest>
+   <myUnsignedLongTest></myUnsignedLongTest>
+   <myUnsignedShortTest></myUnsignedShortTest>
+   <myLongWrapperTest></myLongWrapperTest>
+   <myBooleanWrapperTest></myBooleanWrapperTest>
+</ns0:Test>

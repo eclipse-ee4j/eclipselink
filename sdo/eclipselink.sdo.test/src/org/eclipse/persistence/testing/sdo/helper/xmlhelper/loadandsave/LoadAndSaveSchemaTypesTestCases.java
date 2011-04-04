@@ -128,6 +128,9 @@ public class LoadAndSaveSchemaTypesTestCases extends LoadAndSaveTestCases {
         addProperty(schemaTypesType, "myUnsignedLongTest", SDOConstants.SDO_INTEGER, false, false, true);
         addProperty(schemaTypesType, "myUnsignedShortTest", SDOConstants.SDO_INT, false, false, true);
 
+        addProperty(schemaTypesType, "myLongWrapperTest", SDOConstants.SDO_LONGOBJECT, false, false, true);
+        addProperty(schemaTypesType, "myBooleanWrapperTest", SDOConstants.SDO_BOOLEANOBJECT, false, false, true);
+
         Type schemaTypes = typeHelper.define(schemaTypesType);
         //TODO: workaround since hex is non-spec
 

@@ -6,7 +6,7 @@ public class MyTestTypeImpl extends SDODataObject implements MyTestType {
 
    public static final int START_PROPERTY_INDEX = 0;
 
-   public static final int END_PROPERTY_INDEX = START_PROPERTY_INDEX + 49;
+   public static final int END_PROPERTY_INDEX = START_PROPERTY_INDEX + 51;
 
    public MyTestTypeImpl() {}
 
@@ -408,6 +408,22 @@ public class MyTestTypeImpl extends SDODataObject implements MyTestType {
 
    public void setMyUnsignedShortTest(int value) {
       set(START_PROPERTY_INDEX + 49 , value);
+   }
+
+   public java.lang.Long getMyLongWrapperTest() {
+      return getLong(START_PROPERTY_INDEX + 50);
+   }
+
+   public void setMyLongWrapperTest(java.lang.Long value) {
+      set(START_PROPERTY_INDEX + 50 , value);
+   }
+
+   public java.lang.Boolean isMyBooleanWrapperTest() {
+      return new Boolean(getBoolean(START_PROPERTY_INDEX + 51));
+   }
+
+   public void setMyBooleanWrapperTest(java.lang.Boolean value) {
+      set(START_PROPERTY_INDEX + 51 , value);
    }
 
 
