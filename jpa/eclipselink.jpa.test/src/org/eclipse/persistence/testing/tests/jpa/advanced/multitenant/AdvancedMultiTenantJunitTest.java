@@ -89,8 +89,8 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testCreateMafiaFamily707() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", 707);
-        em.setProperty("eclipselink.tenant-id", 707);
+        em.setProperty("tenant.id", "707");
+        em.setProperty("eclipselink.tenant-id", "707");
         
         try {
             beginTransaction(em);
@@ -227,8 +227,8 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testCreateMafiaFamily007() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", 007);
-        em.setProperty("eclipselink.tenant-id", 007);
+        em.setProperty("tenant.id", "007");
+        em.setProperty("eclipselink.tenant-id", "007");
 
         try {
             beginTransaction(em);
@@ -459,8 +459,8 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testValidateMafiaFamily707() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", 707);
-        em.setProperty("eclipselink.tenant-id", 707);
+        em.setProperty("tenant.id", "707");
+        em.setProperty("eclipselink.tenant-id", "707");
 
         try {
             clearCache(MULTI_TENANT_PU);
@@ -513,8 +513,8 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testValidateMafiaFamily007() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", 007);
-        em.setProperty("eclipselink.tenant-id", 007);
+        em.setProperty("tenant.id", "007");
+        em.setProperty("eclipselink.tenant-id", "007");
 
         try {
             clearCache(MULTI_TENANT_PU);
