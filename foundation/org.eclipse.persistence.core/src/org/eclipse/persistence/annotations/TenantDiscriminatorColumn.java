@@ -16,6 +16,8 @@ package org.eclipse.persistence.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.persistence.DiscriminatorType;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -37,7 +39,7 @@ public @interface TenantDiscriminatorColumn {
      * (Optional) The type of object/column to use as a class discriminator.
      * Defaults to {@link DiscriminatorType#STRING DiscriminatorType.STRING}.
      */
-    TenantDiscriminatorType type() default TenantDiscriminatorType.STRING;
+    DiscriminatorType discriminatorType() default DiscriminatorType.STRING;
 
     /**
      * (Optional) The SQL fragment that is used when generating the DDL
