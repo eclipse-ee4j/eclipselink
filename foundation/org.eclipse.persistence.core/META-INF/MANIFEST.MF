@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Export-Package: xsd,org.eclipse.persistence.tools.schemaframework;uses
+Export-Package: org.eclipse.persistence.tools.schemaframework;uses
  :="org.eclipse.persistence.exceptions,org.eclipse.persistence.interna
  l.sessions,org.eclipse.persistence.queries,org.eclipse.persistence.in
  ternal.helper,org.eclipse.persistence.mappings,org.eclipse.persistenc
@@ -1032,7 +1032,7 @@ Import-Package: javax.activation;resolution:=optional,javax.crypto;res
  l,org.omg.CORBA;resolution:=optional,org.omg.CORBA.portable;resolutio
  n:=optional,org.omg.CORBA_2_3.portable;resolution:=optional,org.w3c.d
  om;resolution:=optional,org.xml.sax;resolution:=optional,org.xml.sax.
- ext;resolution:=optional,org.xml.sax.helpers;resolution:=optional,xsd
+ ext;resolution:=optional,org.xml.sax.helpers;resolution:=optional
 Include-Resource: ../../about.html,../../readme.html,../../license.htm
  l,xsd=resource/xsd,org/eclipse/persistence/internal/helper/VendorName
  ToPlatformMapping.properties=resource/org/eclipse/persistence/interna
