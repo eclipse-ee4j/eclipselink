@@ -18,6 +18,7 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,8 +41,8 @@ public class Child implements Serializable {
     @Column
     private Integer version;
     
-    @ManyToOne(cascade = {CascadeType.ALL})
-    private Parent parent;
+    @ManyToOne(cascade = {CascadeType.ALL}, targetEntity = Parent.class, fetch=FetchType.LAZY)
+    private ParentInterface parent;
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column
@@ -57,7 +58,7 @@ public class Child implements Serializable {
         return this.createdOn;
     }
     
-    public Parent getParent() {
+    public ParentInterface getParent() {
         return parent;
     }
     
@@ -73,7 +74,7 @@ public class Child implements Serializable {
         this.id = id;
     }
     
-    public void setParent(Parent parent) {
+    public void setParent(ParentInterface parent) {
         this.parent = parent;
     }
 }

@@ -263,6 +263,17 @@ public abstract class JUnitTestCase extends TestCase {
             entityManager.close();
         }
     }
+        
+    /**
+     * Close the entity manager.
+     * If a transaction is active, then roll it back.
+     */
+    public void closeEntityManagerAndTransaction(EntityManager entityManager) {
+        if (isTransactionActive(entityManager)) {
+            rollbackTransaction(entityManager);
+        }
+        closeEntityManager(entityManager);
+    }
     
     /**
      * Return if the transaction is active.

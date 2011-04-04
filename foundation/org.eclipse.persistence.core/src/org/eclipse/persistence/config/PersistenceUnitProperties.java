@@ -41,6 +41,7 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
+import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 
 /**
  * The class defines EclipseLink persistence unit property names. These values
@@ -171,7 +172,7 @@ public class PersistenceUnitProperties {
     /**
      * The <code>"eclipselink.jdbc.sql-cast"</code> property specifies is
      * platform specific CAST SQL operations should be used. Casting is normally
-     * not required, and can cause issue when used. Allowed Values (String):
+     * not required, and can cause issues when used. Allowed Values (String):
      * <ul>
      * <li>"true" - enable platform specific cast
      * <li>"false" (DEFAULT) - disable platform specific cast
@@ -1525,6 +1526,17 @@ public class PersistenceUnitProperties {
     public static final String ORM_SCHEMA_VALIDATION = "eclipselink.orm.validate.schema";
 
     /**
+     * The <code>"eclipselink.deploy-on-startup"</code> property allows deployment
+     * to be configured to occur on startup (creation of the EntityManagerFactory),
+     * instead of occurring the first time an EntityManager is created.
+     * This may increase startup time of a JavaEE server, but will avoid the first request from hanging
+     * as the persistence unit is deployed.
+     * <p>
+     * Values: A boolean value of "True" or (default "False").
+     */
+    public static final String DEPLOY_ON_STARTUP = "eclipselink.deploy-on-startup";
+    
+    /**
      * The <code>"eclipselink.validation-only"</code> property validates deployment
      * which includes initializing descriptors but does not connect (no login to the database).
      * <p>
@@ -1754,6 +1766,7 @@ public class PersistenceUnitProperties {
      * Values (case insensitive):
      * <ul>
      * <li>"NoProfiler" (DEFAULT)
+     * <li>"PerformanceMonitor": Use {@link PerformanceMonitor}
      * <li>"PerformanceProfiler": Use {@link PerformanceProfiler}
      * <li>"QueryMonitor": Use {@link QueryMonitor}
      * <li>Custom profiler - Specify a custom profiler class name which

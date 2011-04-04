@@ -156,6 +156,18 @@ public class StaticWeaveClassTransformer {
         if (weaveEagerString != null && weaveEagerString.equalsIgnoreCase("true")) {
             weaveEager = true;
         }
+
+        boolean weaveLazy = true;
+        String weaveL = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_LAZY);
+        if (weaveL != null && weaveL.equalsIgnoreCase("false")) {
+            weaveLazy = false;
+        }
+        
+        boolean weaveFetchGroups = true;
+        String weaveFetchGroupsProperty = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_FETCHGROUPS);
+        if (weaveFetchGroupsProperty != null && weaveFetchGroupsProperty.equalsIgnoreCase("false")) {
+            weaveFetchGroups = false;
+        }
         
         boolean multitenantSharedEmf = false;
         String multitenantSharedEmfString = (String) unitInfo.getProperties().get(PersistenceUnitProperties.MULTITENANT_SHARED_EMF);
@@ -164,7 +176,7 @@ public class StaticWeaveClassTransformer {
         }
         
         // Create an instance of MetadataProcessor for specified persistence unit info
-        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, true, weaveEager, multitenantSharedEmf, null);
+        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, multitenantSharedEmf, null);
         
         //bug:299926 - Case insensitive table / column matching with native SQL queries
         EntityManagerSetupImpl.updateCaseSensitivitySettings(unitInfo.getProperties(), processor.getProject(), session);
@@ -173,22 +185,11 @@ public class StaticWeaveClassTransformer {
 
         Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
 
-        boolean weaveLazy = true;
-        String weaveL = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_LAZY);
-        if (weaveL != null && weaveL.equalsIgnoreCase("false")) {
-            weaveLazy = false;
-        }
         
         boolean weaveChangeTracking = true;
         String weaveCT = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING);
         if (weaveCT != null && weaveCT.equalsIgnoreCase("false")) {
             weaveChangeTracking = false;
-        }
-        
-        boolean weaveFetchGroups = true;
-        String weaveFetchGroupsProperty = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_FETCHGROUPS);
-        if (weaveFetchGroupsProperty != null && weaveFetchGroupsProperty.equalsIgnoreCase("false")) {
-            weaveFetchGroups = false;
         }
         
         boolean weaveFetchInternal = true;

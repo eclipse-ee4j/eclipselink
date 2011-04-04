@@ -824,7 +824,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * This is used for procedures that have multiple cursor output parameters.
      * If the procedure has a single cursor output parameter, then useNamedCursorOutputAsResultSet() should be used.
      */
-    public void addNamedCursorOutput(String argumentName) {
+    public void addNamedCursorOutputArgument(String argumentName) {
         getProcedureArgumentNames().add(argumentName);
         appendOutCursor(new DatabaseField(argumentName));
     }
@@ -835,7 +835,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * This is used for procedures that have multiple cursor output parameters.
      * If the procedure has a single cursor output parameter, then useNamedCursorOutputAsResultSet() should be used.
      */
-    public void addUnnamedCursorOutput(String outputRowFieldName) {
+    public void addUnnamedCursorOutputArgument(String outputRowFieldName) {
         getProcedureArgumentNames().add(null);
         appendOutCursor(new DatabaseField(outputRowFieldName));
     }
@@ -866,8 +866,24 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Set if the call returns multiple result sets.
+     * Some databases support having stored procedures that return multiple result set.
+     * This can be used by data queries, if an object query is used, all of the result sets must return
+     * the required data to build the resulting class.
      */
     public void setHasMultipleResultSets(boolean hasMultipleResultSets) {
         super.setHasMultipleResultSets(hasMultipleResultSets);
+    }
+
+    /**
+     * PUBLIC:
+     * Some database support stored procedures returning result sets.
+     * This default to true in the call has no output parameters, otherwise false.
+     * If the call returns a result set, and has output parameters, this can be set to true.
+     * If the call is used in a modify query, it is assumed to not have a result set,
+     * result sets can only be used by read queries.
+     * For Oracle a cursored output parameter can be used instead of a result set.
+     */
+    public void setReturnsResultSet(boolean returnsResultSet) {
+        this.returnsResultSet = Boolean.valueOf(returnsResultSet);
     }
 }

@@ -18,6 +18,8 @@ import javax.persistence.EntityManager;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
@@ -45,7 +47,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
     
     public void setUp() {
         super.setUp();
-        clearCache("fieldaccess");
+        clearCache();
     }
     
     public static Test suite() {
@@ -59,21 +61,30 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testStringArrayField"));
         suite.addTest(new AdvancedJunitTest("testBUG241388"));
         suite.addTest(new AdvancedJunitTest("testZeroId"));
+        suite.addTest(new AdvancedJunitTest("testLazyToInterface"));
         
         return suite;
+    }
+    
+    /**
+     * Return the name of the persistence context this test uses.
+     * This allow a subclass test to set this only in one place.
+     */
+    public String getPersistenceUnitName() {
+        return "fieldaccess";
     }
     
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+        new AdvancedTableCreator().replaceTables(getDatabaseSession());
 
-        clearCache("fieldaccess");
+        clearCache();
     }
 
     public void testGF1818() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         
         try {
@@ -92,7 +103,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testGF1894() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee emp = new Employee();
         emp.setFirstName("Guy");
@@ -126,7 +137,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
      * Test that a zero id can be used.
      */
     public void testZeroId() {
-        EntityManager entityManager = createEntityManager("fieldaccess");
+        EntityManager entityManager = createEntityManager();
 
         beginTransaction(entityManager);
         Golfer golfer = entityManager.find(Golfer.class, new GolferPK(0));
@@ -147,8 +158,8 @@ public class AdvancedJunitTest extends JUnitTestCase {
         this.assertTrue("Zero id assigned sequence value.", rank.getId() == 0);
 
         closeEntityManager(entityManager);
-        clearCache("fieldaccess");
-        entityManager = createEntityManager("fieldaccess");
+        clearCache();
+        entityManager = createEntityManager();
 
         beginTransaction(entityManager);
         rank = new WorldRank();
@@ -166,7 +177,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testGF894() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         
         try {
@@ -197,7 +208,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testManAndWoman() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         
         try {
@@ -230,7 +241,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
 
     // GF1673, 2674 Java SE 6 classloading error for String[] field
     public void testStringArrayField() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         
         VegetablePK pk = new VegetablePK("Tomato", "Red");
@@ -253,7 +264,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
         
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         Vegetable vegetable;
         try {
@@ -277,7 +288,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         int childCount;
         
         //// PART 1 ////
-        EntityManager em1 = createEntityManager("fieldaccess");
+        EntityManager em1 = createEntityManager();
         beginTransaction(em1);
         
         try {
@@ -313,7 +324,36 @@ public class AdvancedJunitTest extends JUnitTestCase {
         }
         
         //// PART 2 ////
-        Parent chassis = createEntityManager("fieldaccess").find(Parent.class, id);
+        Parent chassis = createEntityManager().find(Parent.class, id);
         assertTrue("The same number of children where not returned from the cache", childCount == chassis.getChildren().size());
     }    
+
+    /**
+     * Test that instantiating a lazy relationship to an interface works.
+     * This requires that the weaving indirection policy find to real field correctly.
+     */
+    public void testLazyToInterface() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Parent parent = null;
+        Child child = null;
+        try {
+            parent = new Parent(false);
+            child = parent.getChildren().get(0);
+            em.persist(parent);
+            commitTransaction(em);
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+        clearCache();
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
+            child = em.find(Child.class, child.getId());
+            ((JpaEntityManager)em.getDelegate()).copy(child, new CopyGroup());
+            commitTransaction(em);
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
 }

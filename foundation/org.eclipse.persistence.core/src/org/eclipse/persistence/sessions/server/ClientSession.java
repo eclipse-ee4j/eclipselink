@@ -227,8 +227,27 @@ public class ClientSession extends AbstractSession {
                 // The session has been already released and this query is likely instantiates a ValueHolder - 
                 // release exclusive connection immediately after the query is executed, otherwise it may never be released.
                 shouldReleaseConnection = !this.isActive;
+                query.setAccessors(getAccessors());
+            } else {
+                // Must use the default write connection if there are multiple connections.
+                if (!isExclusiveIsolatedClientSession() && this.connectionPolicy.isPooled()) {
+                    Accessor defaultWriteConnection = this.writeConnections.get(this.connectionPolicy.getPoolName());
+                    if (defaultWriteConnection == null) {
+                        // No default connection yet, must acquire it.
+                        this.parent.acquireClientConnection(this);                        
+                    }
+                    if (this.writeConnections.size() == 1) {
+                        // Connection is the default, just use it.
+                        query.setAccessors(getAccessors());
+                    } else {
+                        List<Accessor> accessors = new ArrayList(1);
+                        accessors.add(defaultWriteConnection);
+                        query.setAccessors(accessors);                        
+                    }
+                } else {
+                    query.setAccessors(getAccessors());
+                }
             }
-            query.setAccessors(getAccessors());
         }
         try {
             return basicExecuteCall(call, translationRow, query);

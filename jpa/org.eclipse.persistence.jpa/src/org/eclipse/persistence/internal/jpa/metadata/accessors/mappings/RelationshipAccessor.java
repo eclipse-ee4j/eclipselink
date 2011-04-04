@@ -884,7 +884,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     @Override
     protected boolean usesIndirection() {
         // If eager weaving is enabled, indirection is always used.
-        if (getProject().weaveEager()) {
+        if (getProject().isWeavingEagerEnabled()) {
             return true;
         }
         

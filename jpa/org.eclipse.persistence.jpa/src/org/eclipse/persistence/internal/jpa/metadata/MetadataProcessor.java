@@ -92,10 +92,10 @@ public class MetadataProcessor {
      * Called from EntityManagerSetupImpl. The 'real' EJB 3.0 processing
      * that includes XML and annotations.
      */
-    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean enableLazyForOneToOne, boolean weaveEager, boolean multitenantSharedEmf, Map predeployProperties) {
+    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, Map predeployProperties) {
         m_loader = loader;
         m_session = session;
-        m_project = new MetadataProject(puInfo, session, enableLazyForOneToOne, weaveEager, multitenantSharedEmf);
+        m_project = new MetadataProject(puInfo, session, weaveLazy, weaveEager, weaveFetchGroups, multitenantSharedEmf);
         m_predeployProperties = predeployProperties;
     }
     

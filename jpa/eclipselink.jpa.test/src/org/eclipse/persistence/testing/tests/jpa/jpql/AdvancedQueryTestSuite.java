@@ -63,13 +63,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
 import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
-import org.eclipse.persistence.testing.models.jpa.relationships.Item;
-import org.eclipse.persistence.testing.models.jpa.relationships.IsolatedItem;
-import org.eclipse.persistence.testing.models.jpa.relationships.Mattel;
-import org.eclipse.persistence.testing.models.jpa.relationships.Lego;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
-
 
 /**
  * <p>
@@ -146,6 +141,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingJOIN"));
         suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingEXISTS"));
         suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingIN"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingINCache"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapLeftJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetching"));
@@ -1656,6 +1652,49 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (counter != null) {
                 counter.remove();
             }
+        }
+    }
+
+    /**
+     * Test batch fetching with IN and a partial cache.
+     */
+    public void testBatchFetchingINCache() {
+        testBatchFetchingINCache(1);
+        testBatchFetchingINCache(2);
+        testBatchFetchingINCache(3);
+        testBatchFetchingINCache(4);
+        testBatchFetchingINCache(5);
+    }
+
+    /**
+     * Test batch fetching with IN and a partial cache.
+     * This tests that the paging is working correctly for different page sizes and empty and disjoint pages.
+     */
+    public void testBatchFetchingINCache(int batchSize) {
+        clearCache();
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("Select a from Address a where exists (Select e from Employee e where e.address = a and e.gender = :g1)");
+            query.setParameter("g1", Gender.Female);
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e where e.gender = :g1 or e.gender = :g2");
+            query.setHint(QueryHints.BATCH_SIZE, batchSize);
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
+            query.setHint(QueryHints.BATCH, "e.address");
+            query.setHint(QueryHints.BATCH, "e.manager");
+            query.setParameter("g1", Gender.Male);
+            query.setParameter("g2", Gender.Female);
+            List<Employee> results = query.getResultList();
+            for (Employee employee : results) {
+                employee.getAddress();
+                employee.getManager();
+            }
+            clearCache();
+            for (Employee employee : results) {
+                verifyObject(employee);
+            }
+        } finally {
+            closeEntityManagerAndTransaction(em);
         }
     }
 

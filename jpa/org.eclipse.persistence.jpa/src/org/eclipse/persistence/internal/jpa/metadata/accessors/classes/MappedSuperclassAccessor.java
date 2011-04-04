@@ -132,6 +132,7 @@ import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGenerato
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 
 /**
  * INTERNAL:
@@ -1042,7 +1043,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Now process all the fetch groups we found to the descriptor only
         // if weaving is enabled or if the descriptors java class for this 
         // accessor implements the FetchGroupTracker interface.
-        if (getProject().isWeavingEnabled() || getDescriptor().getJavaClass().extendsInterface(org.eclipse.persistence.queries.FetchGroupTracker.class)) {
+        if (getProject().isWeavingFetchGroupsEnabled() || getDescriptor().getJavaClass().extendsInterface(FetchGroupTracker.class)) {
             for (FetchGroupMetadata fetchGroup : fetchGroups.values()) {
                 fetchGroup.process(this);  
             }

@@ -222,7 +222,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     public MetadataProject getMetadataProject(SEPersistenceUnitInfo puInfo) {
         if (! metadataProjects.containsKey(puInfo.getPersistenceUnitName())) {
-            MetadataProject project = new MetadataProject(puInfo, new ServerSession(new Project(new DatabaseLogin())), false, false, false);
+            MetadataProject project = new MetadataProject(puInfo, new ServerSession(new Project(new DatabaseLogin())), false, false, false, false);
             metadataProjects.put(puInfo.getPersistenceUnitName(), project);
             return project;
         } else {

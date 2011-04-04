@@ -162,17 +162,20 @@ public class MetadataProject {
     public static final String DEFAULT_TABLE_GENERATOR = "SEQ_GEN_TABLE";
     public static final String DEFAULT_SEQUENCE_GENERATOR = "SEQ_GEN_SEQUENCE";
     public static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
+
+    // Boolean to specify if we should weave fetch groups.
+    private boolean m_isWeavingFetchGroupsEnabled;
     
     // Boolean to specify if the user intends for the related EMF of this 
     // project to shared for multi-tenants.
     private boolean m_multitenantSharedEmf;
     
     // Boolean to specify if we should weave eager relationships.
-    private boolean m_weaveEager;
+    private boolean m_isWeavingEagerEnabled;
     
-    // Boolean to specify if we should weave for value holders.
-    private boolean m_weavingEnabled;
-    
+    // Boolean to specify if we should weave lazy relationships.
+    private boolean m_isWeavingLazyEnabled;
+        
     // Persistence unit info that is represented by this project.
     private PersistenceUnitInfo m_persistenceUnitInfo;
 
@@ -276,15 +279,15 @@ public class MetadataProject {
      * @param session - the Session
      * @param weavingEnabled - flag for global dynamic weaving state
      */
-    public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weavingEnabled, boolean weaveEager, boolean multitenantSharedEmf) {
-        m_multitenantSharedEmf = multitenantSharedEmf; 
+    public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf) {
         m_isSharedCacheModeInitialized = false;
         
         m_persistenceUnitInfo = puInfo;
         m_session = session;
         m_logger = new MetadataLogger(session);
-        m_weavingEnabled = weavingEnabled;
-        m_weaveEager = weaveEager;
+        m_isWeavingEagerEnabled = weaveEager;
+        m_isWeavingLazyEnabled = weaveLazy;
+        m_isWeavingFetchGroupsEnabled = weaveFetchGroups;
         
         // Using linked collections since their ordering needs to be preserved.
         m_entityMappings = new LinkedHashMap<String, XMLEntityMappings>();
@@ -1261,15 +1264,6 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * This flag represents dynamic weaving state for 1-1, many-1, fetch groups 
-     * and change tracking.
-     */
-    public boolean isWeavingEnabled() {
-        return m_weavingEnabled;
-    }  
-    
-    /**
-     * INTERNAL:
      * Return true if an xml-mapping-metadata-complete setting has been set
      * for this persistence unit.
      */
@@ -1701,16 +1695,6 @@ public class MetadataProject {
     public void setShouldForceFieldNamesToUpperCase(boolean shouldForceFieldNamesToUpperCase){
         m_forceFieldNamesToUpperCase = shouldForceFieldNamesToUpperCase;
     }
-
-    /**
-     * INTERNAL:
-     * This flag represents dynamic weaving state for 1-1, many-1, fetch groups 
-     * and change tracking.  
-     * @param weavingEnabled (false = weaving disabled)
-     */
-    public void setWeavingEnabled(boolean weavingEnabled) {
-        m_weavingEnabled = weavingEnabled;
-    }
   
     /**
      * INTERNAL:
@@ -1728,6 +1712,13 @@ public class MetadataProject {
     }
     
     /**
+     * Return if the project should process fetch groups.
+     */
+    public boolean isWeavingFetchGroupsEnabled() {
+        return m_isWeavingFetchGroupsEnabled;
+    }
+    
+    /**
      * INTERNAL:
      * Return true if the entity manager factory for this project is intended
      * to be shared amongst multi-tenants.
@@ -1740,8 +1731,24 @@ public class MetadataProject {
      * INTERNAL:
      * Return if the project should use indirection for eager relationships.
      */
-    public boolean weaveEager() {
-        return m_weaveEager;
+    public boolean isWeavingEagerEnabled() {
+        return m_isWeavingEagerEnabled;
+    }
+    
+    /**
+     * Return if the project should use indirection for lazy relationships.
+     */
+    public boolean isWeavingLazyEnabled() {
+        return m_isWeavingLazyEnabled;
+    }
+    
+    /**
+     * Set if the project should use indirection for lazy relationships.
+     */
+    public void disableWeaving() {
+        m_isWeavingLazyEnabled = false;
+        m_isWeavingEagerEnabled = false;
+        m_isWeavingFetchGroupsEnabled = false;
     }
  }
 

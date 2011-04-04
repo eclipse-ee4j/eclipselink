@@ -422,7 +422,7 @@ public class PersistenceUnitProcessor {
             AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class_weaving_disabled", loader, project.getPersistenceUnitInfo().getPersistenceUnitName(), className);
             // Disable weaving (for 1->1 and many->1)only if the classLoader 
             // returns a NPE on loadClass()
-            project.setWeavingEnabled(false);
+            project.disableWeaving();
         } catch (Exception exception){
             AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class", exception.getClass().getName(), exception.getLocalizedMessage() , className);
         } catch (Error error){

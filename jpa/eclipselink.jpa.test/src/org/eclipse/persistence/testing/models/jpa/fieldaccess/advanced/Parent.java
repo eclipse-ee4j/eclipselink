@@ -28,7 +28,7 @@ import javax.persistence.Version;
 
 @Entity
 @Table(name="FIELD_PARENT")
-public class Parent implements Serializable {
+public class Parent implements ParentInterface, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column

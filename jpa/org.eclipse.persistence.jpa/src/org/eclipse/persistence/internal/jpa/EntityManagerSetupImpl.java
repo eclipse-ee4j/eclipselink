@@ -1115,7 +1115,7 @@ public class EntityManagerSetupImpl {
                 boolean usesMultitenantSharedEmf = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, predeployProperties, "false", session));
                 
                 // Create an instance of MetadataProcessor for specified persistence unit info
-                processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving, weaveEager, usesMultitenantSharedEmf, predeployProperties);
+                processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, usesMultitenantSharedEmf, predeployProperties);
 
                 //bug:299926 - Case insensitive table / column matching with native SQL queries
                 EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
@@ -1199,9 +1199,24 @@ public class EntityManagerSetupImpl {
         }
     }
     
+    /**
+     * Return if the session should be deployed and connected during the creation of the EtntiyManagerFactory,
+     * or if it should be deferred until createEntityManager().
+     * The default is to defer, but is only validating, or can be configured to deploy upfront to avoid hanging the
+     * application at runtime.
+     */
     public boolean shouldGetSessionOnCreateFactory(Map m) {
         m = mergeWithExistingMap(m);
-        return isValidationOnly(m, false);
+        if (isValidationOnly(m, false)) {
+            return true;
+        }
+
+        String deployString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.DEPLOY_ON_STARTUP, m, this.session);
+        if (deployString != null) {
+            return Boolean.parseBoolean(deployString);
+        } else {
+            return false;
+        }
     }
     
     protected Map mergeWithExistingMap(Map m) {
