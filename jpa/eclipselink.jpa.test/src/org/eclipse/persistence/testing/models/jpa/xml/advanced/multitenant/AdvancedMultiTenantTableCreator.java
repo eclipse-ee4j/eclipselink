@@ -169,7 +169,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldNickname.setSize(30);
         fieldNickname.setShouldAllowNull(true);
         fieldNickname.setIsPrimaryKey(false);
-        fieldNickname.setUnique(true);
+        fieldNickname.setUnique(false);
         fieldNickname.setIsIdentity(false);
         table.addField(fieldNickname);
         
