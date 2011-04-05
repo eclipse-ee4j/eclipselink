@@ -1043,6 +1043,25 @@ public class PersistenceUnitProperties {
     public static final String LOGGING_TIMESTAMP = "eclipselink.logging.timestamp";
 
     /**
+     * The <code>"eclipselink.tenant-id"</code> property specifies the 
+     * default context property used to populate multitenant entities.
+     * 
+     * NOTE: This is merely a default multitenant property than can be used on 
+     * its own or with other properties defined by the user. Users are not 
+     * obligated to use this property and are free to specify their own.
+     * 
+     * @see org.eclipse.persistence.annotations.Multitenant
+     * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
+     * 
+     * Example: persistence.xml file <code>
+     * <property name="eclipselink.tenant-id" value="Oracle"/>
+     * </code> Example: property Map <code>
+     * propertiesMap.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "Oracle");
+     * </code>
+     */
+    public static final String MULTITENANT_PROPERTY_DEFAULT = "eclipselink.tenant-id";
+    
+    /**
      * Property <code>"eclipselink.multitenant.shared-emf</code> specifies
      * that multitenant entities will be used within a shared emf. Setting this
      * flag to true will force those multitenant entities to have a PROTECTED

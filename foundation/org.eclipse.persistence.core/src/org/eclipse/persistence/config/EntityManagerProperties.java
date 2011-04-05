@@ -59,6 +59,25 @@ public class EntityManagerProperties {
     public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE = PersistenceUnitProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE;
 
     /**
+     * The <code>"eclipselink.tenant-id"</code> property specifies the 
+     * default context property used to populate multitenant entities.
+     * 
+     * NOTE: This is merely a default multitenant property than can be used on 
+     * its own or with other properties defined by the user. Users are not 
+     * obligated to use this property and are free to specify their own.
+     * 
+     * Example: persistence.xml file <code>
+     * <property name="eclipselink.tenant-id" value="Oracle"/>
+     * </code> Example: property Map <code>
+     * propertiesMap.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "Oracle");
+     * </code>
+     * 
+     * @see org.eclipse.persistence.annotations.Multitenant
+     * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
+     */
+    public static final String MULTITENANT_PROPERTY_DEFAULT = PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT;
+    
+    /**
      * Specifies that the EntityManager will be closed or not used after commit (not extended).
      * In general this is normally always the case for a container managed EntityManager,
      * and common for application managed.

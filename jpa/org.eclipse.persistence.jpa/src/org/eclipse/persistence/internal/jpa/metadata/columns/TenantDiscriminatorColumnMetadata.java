@@ -23,6 +23,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
+import static org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT;
+
 /**
  * Object to hold onto tenant discriminator metadata.
  * 
@@ -39,7 +41,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  */
 public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetadata {
     public static final String NAME_DEFAULT = "TENANT_ID";
-    public static final String CONTEXT_PROPERTY_DEFAULT = "eclipselink.tenant-id";
     
     private Boolean m_primaryKey;
     private String m_table;
@@ -156,8 +157,8 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
             
         // Set the property name, defaulting where necessary and log a warning.
         if (m_contextProperty == null) {
-            getLogger().logWarningMessage(MetadataLogger.TENANT_DISCRIMINATOR_CONTEXT_PROPERTY, getAccessibleObject(), tenantDiscriminatorField, CONTEXT_PROPERTY_DEFAULT);
-            m_contextProperty = CONTEXT_PROPERTY_DEFAULT;
+            getLogger().logWarningMessage(MetadataLogger.TENANT_DISCRIMINATOR_CONTEXT_PROPERTY, getAccessibleObject(), tenantDiscriminatorField, MULTITENANT_PROPERTY_DEFAULT);
+            m_contextProperty = MULTITENANT_PROPERTY_DEFAULT;
         }
 
         descriptor.getClassDescriptor().addTenantDiscriminatorField(m_contextProperty, tenantDiscriminatorField);
