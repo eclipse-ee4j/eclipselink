@@ -288,6 +288,7 @@ public class MetadataProject {
         m_isWeavingEagerEnabled = weaveEager;
         m_isWeavingLazyEnabled = weaveLazy;
         m_isWeavingFetchGroupsEnabled = weaveFetchGroups;
+        m_multitenantSharedEmf = multitenantSharedEmf;
         
         // Using linked collections since their ordering needs to be preserved.
         m_entityMappings = new LinkedHashMap<String, XMLEntityMappings>();
@@ -815,6 +816,16 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Set if the project should use indirection for lazy relationships.
+     */
+    public void disableWeaving() {
+        m_isWeavingLazyEnabled = false;
+        m_isWeavingEagerEnabled = false;
+        m_isWeavingFetchGroupsEnabled = false;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if an exclude-default-mappings setting have been set for this 
      * persistence unit.
      */
@@ -1260,6 +1271,30 @@ public class MetadataProject {
      */
     public boolean isSharedCacheModeUnspecified() {
         return hasSharedCacheMode() && getSharedCacheModeName().equals(SharedCacheMode.UNSPECIFIED.name());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if the project should use indirection for eager relationships.
+     */
+    public boolean isWeavingEagerEnabled() {
+        return m_isWeavingEagerEnabled;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if the project should process fetch groups.
+     */
+    public boolean isWeavingFetchGroupsEnabled() {
+        return m_isWeavingFetchGroupsEnabled;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if the project should use indirection for lazy relationships.
+     */
+    public boolean isWeavingLazyEnabled() {
+        return m_isWeavingLazyEnabled;
     }
     
     /**
@@ -1712,43 +1747,12 @@ public class MetadataProject {
     }
     
     /**
-     * Return if the project should process fetch groups.
-     */
-    public boolean isWeavingFetchGroupsEnabled() {
-        return m_isWeavingFetchGroupsEnabled;
-    }
-    
-    /**
      * INTERNAL:
      * Return true if the entity manager factory for this project is intended
      * to be shared amongst multi-tenants.
      */
     public boolean usesMultitenantSharedEmf() {
         return m_multitenantSharedEmf;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return if the project should use indirection for eager relationships.
-     */
-    public boolean isWeavingEagerEnabled() {
-        return m_isWeavingEagerEnabled;
-    }
-    
-    /**
-     * Return if the project should use indirection for lazy relationships.
-     */
-    public boolean isWeavingLazyEnabled() {
-        return m_isWeavingLazyEnabled;
-    }
-    
-    /**
-     * Set if the project should use indirection for lazy relationships.
-     */
-    public void disableWeaving() {
-        m_isWeavingLazyEnabled = false;
-        m_isWeavingEagerEnabled = false;
-        m_isWeavingFetchGroupsEnabled = false;
     }
  }
 
