@@ -19,9 +19,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -74,7 +71,6 @@ public class DomHandlerConverter implements XMLConverter {
             elementClass = PrivilegedAccessHelper.getMethodReturnType(getElementMethod);
 
             xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
-            xmlTransformer.setFormattedOutput(true);
         } catch(Exception ex) {
             throw JAXBException.couldNotInitializeDomHandlerConverter(ex, domHandlerClassName, mapping.getAttributeName());
         }
@@ -90,19 +86,24 @@ public class DomHandlerConverter implements XMLConverter {
                 result = domHandler.createUnmarshaller(null);
             }
             xmlTransformer.transform((org.w3c.dom.Element)dataValue, result);
-            Object value = domHandler.getElement(result);
-            return value;
+            return domHandler.getElement(result);
         }
         return dataValue;
     }
 
     public Object convertObjectValueToDataValue(Object objectValue, Session session, XMLMarshaller marshaller) {
         if (objectValue != null && elementClass.isAssignableFrom(objectValue.getClass())) {
-            Element elem = (Element) objectValue;
-            Document d = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
-            Node copy = d.importNode(elem, true);
-            d.appendChild(copy);
-            return d;
+            ErrorHandler handler = marshaller.getErrorHandler();
+            Source source = null;
+            if(handler != null && handler instanceof JAXBErrorHandler) {
+                source = domHandler.marshal(objectValue, ((JAXBErrorHandler)handler).getValidationEventHandler());
+            } else {
+                source = domHandler.marshal(objectValue, null);
+            }
+            DOMResult result = new DOMResult();
+            xmlTransformer.setFormattedOutput(marshaller.isFormattedOutput());
+            xmlTransformer.transform(source, result);
+            return result.getNode().getFirstChild();
         }
         return objectValue;
     }
