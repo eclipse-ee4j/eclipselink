@@ -34,8 +34,9 @@ import javax.persistence.OneToMany;
 	@NamedQuery(name="address.stateField",      query="SELECT c.lastName FROM Address a JOIN a.customerList AS c"),
 	@NamedQuery(name="address.substring",       query="SELECT SUBSTRING(a.state, 0, 1) FROM Address a")
 })
-public class Address implements Serializable
-{
+@SuppressWarnings("unused")
+public class Address implements Serializable {
+
 	private String city;
 	@Id
 	@Column(nullable = false)
@@ -47,99 +48,4 @@ public class Address implements Serializable
 	private ZipCode zip;
 	@OneToMany(mappedBy = "address")
 	private List<Customer> customerList;
-
-	public Address()
-	{
-		super();
-	}
-
-	public Address(String city,
-	               Long id,
-	               String street,
-	               String state,
-	               ZipCode zip)
-	{
-		super();
-
-		this.id     = id;
-		this.city   = city;
-		this.state  = state;
-		this.street = street;
-		this.state  = state;
-		this.zip    = zip;
-	}
-
-	public String getCity()
-	{
-		return city;
-	}
-
-	public void setCity(String city)
-	{
-		this.city = city;
-	}
-
-	public Long getId()
-	{
-		return id;
-	}
-
-	public void setId(Long id)
-	{
-		this.id = id;
-	}
-
-	public String getStreet()
-	{
-		return street;
-	}
-
-	public void setStreet(String street)
-	{
-		this.street = street;
-	}
-
-	public ZipCode getZip()
-	{
-		return zip;
-	}
-
-	public void setZip(ZipCode zip)
-	{
-		this.zip = zip;
-	}
-
-	public List<Customer> getCustomerList()
-	{
-		return customerList;
-	}
-
-	public void setCustomerList(List<Customer> customerList)
-	{
-		this.customerList = customerList;
-	}
-
-	public Customer addCustomer(Customer customer)
-	{
-		getCustomerList().add(customer);
-		customer.setAddress(this);
-		return customer;
-	}
-
-	public Customer removeCustomer(Customer customer)
-	{
-		getCustomerList().remove(customer);
-		customer.setAddress(null);
-		return customer;
-	}
-
-	public String getState()
-	{
-		return state;
-	}
-
-	public void setState(String state)
-	{
-		this.state = state;
-	}
 }

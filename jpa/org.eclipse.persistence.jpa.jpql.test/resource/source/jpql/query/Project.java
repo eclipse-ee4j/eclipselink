@@ -11,7 +11,7 @@ import javax.persistence.NamedQuery;
 @NamedQueries
 ({
 	@NamedQuery(name="project.abs",     query="SELECT ABS(p.id) FROM Project p"),
-//	@NamedQuery(name="product.type1",   query="SELECT p FROM Project p WHERE TYPE(p) = AbstractProduct"),
+	@NamedQuery(name="product.type1",   query="SELECT p FROM Project p WHERE TYPE(p) = AbstractProduct"),
 	@NamedQuery(name="product.type2",   query="SELECT p FROM Project p WHERE TYPE(p) IN(LargeProject, SmallProject)"),
 	@NamedQuery(name="project.update1", query="UPDATE Project SET name = 'JPQL'"),
 	@NamedQuery(name="project.update2", query="UPDATE Project AS p SET p.name = 'JPQL' WHERE p.completed = TRUE"),
@@ -19,26 +19,11 @@ import javax.persistence.NamedQuery;
 	@NamedQuery(name="project.update4", query="UPDATE Project AS p SET p.name = null")
 })
 @SuppressWarnings("unused")
-public class Project
-{
+public class Project {
+
 	private String name;
 	@Id private float id;
 	@ManyToMany
 	private List<Employee> employees;
 	private boolean completed;
-
-	public Project()
-	{
-		super();
-	}
-
-	public int getId()
-	{
-		return (int) id;
-	}
-
-	public String getName()
-	{
-		return name;
-	}
 }

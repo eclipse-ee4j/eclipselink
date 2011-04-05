@@ -16,53 +16,17 @@ import javax.persistence.NamedQuery;
 	@NamedQuery(name="product.min",      query="SELECT MIN(p.quantity) FROM Product p"),
 	@NamedQuery(name="product.null",     query="UPDATE Product AS p SET p.partNumber = NULL"),
 	@NamedQuery(name="product.quantity", query="SELECT AVG(p.quantity) FROM Product p"),
-	@NamedQuery(name="product.update1",  query="UPDATE Product SET shelfLife.soldDate = CURRENT_DATE WHERE shelfLife IS NOT NULL AND shelfLife.soldDate <> CURRENT_DATE")
-//	@NamedQuery(name="product.update2",  query="UPDATE Product SET partNumber = CASE enumType WHEN com.titan.domain.EnumType.FIRST_NAME THEN '1' WHEN com.titan.domain.EnumType.LAST_NAME THEN '2' ELSE '3' END"),
-//	@NamedQuery(name="product.update3",  query="UPDATE Product SET partNumber = CASE TYPE(project) WHEN LargeProject THEN '2' WHEN SmallProject THEN '3' ELSE '4' END")
+	@NamedQuery(name="product.update1",  query="UPDATE Product SET shelfLife.soldDate = CURRENT_DATE WHERE shelfLife IS NOT NULL AND shelfLife.soldDate <> CURRENT_DATE"),
+	@NamedQuery(name="product.update2",  query="UPDATE Product SET partNumber = CASE enumType WHEN com.titan.domain.EnumType.FIRST_NAME THEN '1' WHEN com.titan.domain.EnumType.LAST_NAME THEN '2' ELSE '3' END"),
+	@NamedQuery(name="product.update3",  query="UPDATE Product SET partNumber = CASE TYPE(project) WHEN LargeProject THEN '2' WHEN SmallProject THEN '3' ELSE '4' END")
 })
 @SuppressWarnings("unused")
-public class Product extends AbstractProduct
-{
+public class Product extends AbstractProduct {
+
 	@Id private int id;
-	private String partNumber;
 	private Project project;
 	private int quantity;
 	private Date releaseDate;
 	private ShelfLife shelfLife;
 	private EnumType enumType;
-
-	public Product()
-	{
-		super();
-	}
-
-	public String getPartNumber()
-	{
-		return partNumber;
-	}
-
-	public int getQuantity()
-	{
-		return quantity;
-	}
-
-	public ShelfLife getShelfLife()
-	{
-		return shelfLife;
-	}
-
-	public void setPartNumber(String partNumber)
-	{
-		this.partNumber = partNumber;
-	}
-
-	public void setQuantity(int quantity)
-	{
-		this.quantity = quantity;
-	}
-
-	public void setShelfLife(ShelfLife shelfLife)
-	{
-		this.shelfLife = shelfLife;
-	}
 }

@@ -22,56 +22,11 @@ import javax.persistence.NamedQuery;
    @NamedQuery(name="order.abs",         query="SELECT ABS(o.totalPrice) FROM Order o")
 })
 @SuppressWarnings("unused")
-public class Order
-{
+public class Order {
+
 	private BigInteger price;
 	private BigDecimal realPrice;
 	private double totalPrice;
 	@Id private int id;
 	private String number;
-
-	public Order()
-	{
-		super();
-	}
-
-	public String getNumber()
-	{
-		return number;
-	}
-
-	public BigInteger getPrice()
-	{
-		return price;
-	}
-
-	public BigDecimal getRealPrice()
-	{
-		return realPrice;
-	}
-
-	public double getTotalPrice()
-	{
-		return totalPrice;
-	}
-
-	public void setNumber(String number)
-	{
-		this.number = number;
-	}
-
-	public void setPrice(BigInteger price)
-	{
-		this.price = price;
-	}
-
-	public void setRealPrice(BigDecimal realPrice)
-	{
-		this.realPrice = realPrice;
-	}
-
-	public void setTotalPrice(double totalPrice)
-	{
-		this.totalPrice = totalPrice;
-	}
 }

@@ -81,8 +81,9 @@ import javax.persistence.OneToMany;
 	@NamedQuery(name="employee.update.positional", query="UPDATE Employee e SET e.manager = ?1 WHERE e.department = ?2"),
 	@NamedQuery(name="employee.upper",             query="SELECT UPPER(e.name) FROM Employee e")
 })
-public class Employee implements Serializable
-{
+@SuppressWarnings("unused")
+public class Employee implements Serializable {
+
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
 	@JoinColumn(name = "ADDR_ID")
 	private Address address;
@@ -103,119 +104,12 @@ public class Employee implements Serializable
 	private Long salary;
 	private Boolean working;
 
-	public Employee()
-	{
+	public Employee() {
 		super();
 	}
 
-	public Employee(Long empId)
-	{
+	public Employee(Long empId) {
 		super();
 		this.empId = empId;
-	}
-
-	public Address getAddress()
-	{
-		return address;
-	}
-
-	public String getDepartment()
-	{
-		return department;
-	}
-
-	public Dept getDept()
-	{
-		return dept;
-	}
-
-	public Long getEmpId()
-	{
-		return empId;
-	}
-
-	public String getManager()
-	{
-		return manager;
-	}
-
-	public Employee getManagerEmployee()
-	{
-		return managerEmployee;
-	}
-
-	public String getName()
-	{
-		return name;
-	}
-
-	public Collection<Phone> getPhoneNumbers()
-	{
-		return phoneNumbers;
-	}
-
-	public int getRoomNumber()
-	{
-		return roomNumber;
-	}
-
-	public Long getSalary()
-	{
-		return salary;
-	}
-
-	public Boolean isWorking()
-	{
-		return working;
-	}
-
-	public void setAddress(Address address)
-	{
-		this.address = address;
-	}
-
-	public void setDepartment(String department)
-	{
-		this.department = department;
-	}
-
-	public void setDept(Dept dept)
-	{
-		this.dept = dept;
-	}
-
-	public void setEmpId(Long empId)
-	{
-		this.empId = empId;
-	}
-
-	public void setManager(String manager)
-	{
-		this.manager = manager;
-	}
-
-	public void setManagerEmployee(Employee managerEmployee)
-	{
-		this.managerEmployee = managerEmployee;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	public void setPhoneNumbers(Collection<Phone> phoneNumbers)
-	{
-		this.phoneNumbers = phoneNumbers;
-	}
-
-	public void setSalary(Long salary)
-	{
-		this.salary = salary;
-	}
-
-	public void setWorking(Boolean working)
-	{
-		this.working = working;
 	}
 }

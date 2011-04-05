@@ -23,8 +23,8 @@ import javax.persistence.TemporalType;
    @NamedQuery(name="alias.entry",  query="SELECT ENTRY(e) FROM Alias a JOIN a.ids e")
 })
 @SuppressWarnings("unused")
-public class Alias
-{
+public class Alias {
+
 	@Id
 	private int id;
 	private String alias;
@@ -34,19 +34,4 @@ public class Alias
 	private Customer customer;
 	@JoinColumn(name="ID", referencedColumnName="ALIAS.ALIAS")
 	private Map<Customer, Address> addresses;
-
-	public Alias()
-	{
-		super();
-	}
-
-	public String getAlias()
-	{
-		return alias;
-	}
-
-	public void setAlias(String alias)
-	{
-		this.alias = alias;
-	}
 }

@@ -1,4 +1,4 @@
-package org.eclipse.persistence.jpa.jpql;
+package jpql.query;
 
 public enum EnumType {
 	FIRST_NAME,
