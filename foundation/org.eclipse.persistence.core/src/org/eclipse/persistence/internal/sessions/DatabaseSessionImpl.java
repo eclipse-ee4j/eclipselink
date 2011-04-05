@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sequencing.SequencingHome;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.SequencingControl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Login;
@@ -152,6 +153,15 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * INTERNAL:
+     * If sequencing is connected then initializes sequences referenced by the passed descriptors,
+     * otherwise connects sequencing.
+     */
+    public void addDescriptorsToSequencing(Collection descriptors) {
+        getSequencingHome().onAddDescriptors(descriptors);
+    }
+
+    /**
+     * INTERNAL:
      * Called in the end of beforeCompletion of external transaction synchronization listener.
      * Close the managed sql connection corresponding to the external transaction.
      */
@@ -238,6 +248,21 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         this.lastDescriptorAccessed = null;
 
         getProject().addDescriptors(project, this);
+    }
+
+    /**
+     * PUBLIC:
+     * Add the sequence to the session.
+     * Allows to add a new sequence to the session even if the session is connected.
+     * If the session is connected then the sequence is added only 
+     * if there is no sequence with the same name already in use.
+     * Call this method before addDescriptor(s) if need to add new descriptor 
+     * with a new non-default sequence to connected session.
+     *
+     * @see #addSequences(Collection)
+     */
+    public void addSequence(Sequence sequence) {
+        getProject().getLogin().getDatasourcePlatform().addSequence(sequence, this.getSequencingHome().isConnected());        
     }
 
     /**
@@ -378,7 +403,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (isConnected() && (descriptor.requiresInitialization())) {
             try {
                 try {
-                    initializeSequencing();
+                    Collection descriptorsToAdd = new ArrayList(1);
+                    descriptorsToAdd.add(descriptor);
+                    addDescriptorsToSequencing(descriptorsToAdd);
                     descriptor.preInitialize(this);
                     descriptor.initialize(this);
                     descriptor.postInitialize(this);
@@ -405,7 +432,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      */
     public void initializeDescriptors() {
         // Must clone to avoid modification of the map while enumerating.
-        initializeDescriptors((Map)((HashMap)getDescriptors()).clone());
+        initializeDescriptors((Map)((HashMap)getDescriptors()).clone(), true);
         // Initialize partitioning policies.
         for (PartitioningPolicy policy : getProject().getPartitioningPolicies().values()) {
             policy.initialize(this);
@@ -421,12 +448,43 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * This is done in two passes to allow the inheritance to be resolved first.
      * Normally the descriptors are added before login, then initialized on login.
      * The descriptors session must be used, not the broker.
+     * Sequencing is (re)initialized: disconnected (if has been already connected), then connected.
      */
     public void initializeDescriptors(Map descriptors) {
-        initializeSequencing();
+        initializeDescriptors(descriptors.values(), false);
+    }
+    public void initializeDescriptors(Collection descriptors) {
+        initializeDescriptors(descriptors, false);
+    }
+
+    /**
+     * INTERNAL:
+     * Allow each descriptor to initialize any dependencies on this session.
+     * This is done in two passes to allow the inheritance to be resolved first.
+     * Normally the descriptors are added before login, then initialized on login.
+     * The descriptors session must be used, not the broker.
+     * If shouldInitializeSequencing parameter is true then sequencing is (re)initialized:
+     * disconnected (if has been connected), then connected.
+     * If shouldInitializeSequencing parameter is false then
+     *   if sequencing has been already connected, then it stays connected:
+     *     only the new sequences used by the passed descriptors are initialized;
+     *   otherwise, if sequencing has NOT been connected then it is connected 
+     *     (just like in shouldInitializeSequencing==true case);
+     *   disconnected (if has been connected), then connected.
+     */
+    public void initializeDescriptors(Map descriptors, boolean shouldInitializeSequencing) {
+        initializeDescriptors(descriptors.values(), shouldInitializeSequencing);
+    }
+    public void initializeDescriptors(Collection descriptors, boolean shouldInitializeSequencing) {
+        if (shouldInitializeSequencing) {
+            initializeSequencing();
+        } else {
+            addDescriptorsToSequencing(descriptors);
+        }
+        
         try {
             // First initialize basic properties (things that do not depend on anything else)
-            Iterator iterator = descriptors.values().iterator();
+            Iterator iterator = descriptors.iterator();
             while (iterator.hasNext()) {
                 ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
                 try {
@@ -445,7 +503,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
 
             // Second initialize basic mappings
-            iterator = descriptors.values().iterator();
+            iterator = descriptors.iterator();
             while (iterator.hasNext()) {
                 ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
                 try {
@@ -459,7 +517,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
 
             // Third initialize child dependencies
-            iterator = descriptors.values().iterator();
+            iterator = descriptors.iterator();
             while (iterator.hasNext()) {
                 ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
                 try {
@@ -481,75 +539,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         }
 
         getCommitManager().initializeCommitOrder();
-    }
-
-    /**
-     * INTERNAL:
-     * Allow each descriptor to initialize any dependencies on this session.
-     * This is done in two passes to allow the inheritance to be resolved first.
-     * Normally the descriptors are added before login, then initialized on login.
-     * The descriptors session must be used, not the broker.
-     */
-    public void initializeDescriptors(Collection descriptors) {
-        initializeSequencing();
-        try {
-            // First initialize basic properties (things that do not depend on anything else)
-            for (Iterator descriptorEnum = descriptors.iterator(); descriptorEnum.hasNext();) {
-                try {
-                    ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.next();
-                    AbstractSession session = getSessionForClass(descriptor.getJavaClass());
-                    if (descriptor.requiresInitialization()) {
-                        descriptor.preInitialize(session);
-                    }
-
-                    //check if inheritance is involved in aggregate relationship, and let the parent know the child descriptor
-                    if (descriptor.isAggregateDescriptor() && descriptor.isChildDescriptor()) {
-                        descriptor.initializeAggregateInheritancePolicy(session);
-                    }
-                } catch (RuntimeException exception) {
-                    getIntegrityChecker().handleError(exception);
-                }
-            }
-
-            // Second basic initialize mappings
-            for (Iterator descriptorEnum = descriptors.iterator(); descriptorEnum.hasNext();) {
-                try {
-                    ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.next();
-                    AbstractSession session = getSessionForClass(descriptor.getJavaClass());
-                    if (descriptor.requiresInitialization()) {
-                        descriptor.initialize(session);
-                    }
-                } catch (RuntimeException exception) {
-                    getIntegrityChecker().handleError(exception);
-                }
-            }
-
-            // Third initialize child dependencies
-            for (Iterator descriptorEnum = descriptors.iterator(); descriptorEnum.hasNext();) {
-                try {
-                    ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.next();
-                    AbstractSession session = getSessionForClass(descriptor.getJavaClass());
-                    if (descriptor.requiresInitialization()) {
-                        descriptor.postInitialize(session);
-                    }
-                } catch (RuntimeException exception) {
-                    getIntegrityChecker().handleError(exception);
-                }
-            }
-
-            try {
-                getCommitManager().initializeCommitOrder();
-            } catch (RuntimeException exception) {
-                getIntegrityChecker().handleError(exception);
-            }
-
-            if (getIntegrityChecker().hasErrors()) {
-                //CR#4011
-                handleException(new IntegrityException(getIntegrityChecker()));
-            }
-        } finally {
-            clearIntegrityChecker();
-        }
     }
 
     /**

@@ -122,6 +122,9 @@ public class Project implements Serializable, Cloneable {
     
     /** Map of named partitioning policies, keyed by their name. */
     protected Map<String, PartitioningPolicy> partitioningPolicies;
+    
+    /** Ensures that only one thread at a time can add/remove descriptors */
+    protected Object descriptorsLock = new Boolean(true);
 
     /**
      * PUBLIC:
@@ -261,17 +264,33 @@ public class Project implements Serializable, Cloneable {
      * INTERNAL: Used by the BuilderInterface when reading a Project from INI files.
      */
     public void addDescriptor(ClassDescriptor descriptor, DatabaseSessionImpl session) {
-        getOrderedDescriptors().add(descriptor);
-        String alias = descriptor.getAlias();
-        if (alias != null) {
-            addAlias(alias, descriptor);
+        synchronized (this.descriptorsLock) {
+            if (session.isConnected()) {
+                getOrderedDescriptors().add(descriptor);
+                String alias = descriptor.getAlias();
+                // descriptor aliases may be concurrently accessed by other threads.
+                // make a clone, add new descriptor to the clone, override original with the clone.
+                if (alias != null) {
+                    Map aliasDescriptorsClone = null;
+                    if (getAliasDescriptors() != null) {
+                        aliasDescriptorsClone = (Map)((HashMap)getAliasDescriptors()).clone();
+                    } else {
+                        aliasDescriptorsClone = new HashMap();
+                    }
+                    aliasDescriptorsClone.put(alias, descriptor);
+                    setAliasDescriptors(aliasDescriptorsClone);
+                }
+                // descriptors may be concurrently accessed by other threads.
+                // make a clone, add new descriptor to the clone, override original with the clone.
+                Map<Class, ClassDescriptor> descriptorsClone = (Map)((HashMap)getDescriptors()).clone();
+                descriptorsClone.put(descriptor.getJavaClass(), descriptor);
+                setDescriptors(descriptorsClone);
+                session.copyDescriptorsFromProject();    
+                session.initializeDescriptorIfSessionAlive(descriptor);
+            } else {
+                addDescriptor(descriptor);
+            }
         }
-
-        // Avoid loading class definition at this point if we haven't done so yet.
-        if ((descriptors != null) && !descriptors.isEmpty()) {
-            getDescriptors().put(descriptor.getJavaClass(), descriptor);
-        }
-        session.initializeDescriptorIfSessionAlive(descriptor);
     }
 
     /**
@@ -282,22 +301,47 @@ public class Project implements Serializable, Cloneable {
      * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
     public void addDescriptors(Collection descriptors, DatabaseSessionImpl session) {
-        for (Iterator enumeration = descriptors.iterator(); enumeration.hasNext();) {
-            ClassDescriptor descriptor = (ClassDescriptor)enumeration.next();
-            getDescriptors().put(descriptor.getJavaClass(), descriptor);
-            String alias = descriptor.getAlias();
-            if (alias != null) {
-                addAlias(alias, descriptor);
+        synchronized (this.descriptorsLock) {
+            if (session.isConnected()) {
+                // descriptor aliases may be concurrently accessed by other threads.
+                // make a clone, add new descriptors to the clone, override original with the clone.
+                Map aliasDescriptorsClone = null;
+                if (getAliasDescriptors() != null) {
+                    aliasDescriptorsClone = (Map)((HashMap)getAliasDescriptors()).clone();
+                } else {
+                    aliasDescriptorsClone = new HashMap();
+                }
+                // descriptors may be concurrently accessed by other threads.
+                // make a clone, add new descriptors to the clone, override original with the clone.
+                Map<Class, ClassDescriptor> descriptorsClone = (Map)((HashMap)getDescriptors()).clone();
+                Iterator it = descriptors.iterator();
+                while (it.hasNext()) {
+                    ClassDescriptor descriptor = (ClassDescriptor)it.next();
+                    descriptorsClone.put(descriptor.getJavaClass(), descriptor);
+                    String alias = descriptor.getAlias();
+                    if (alias != null) {
+                        aliasDescriptorsClone.put(alias, descriptor);
+                    }
+                }
+                if (!aliasDescriptorsClone.isEmpty()) {
+                    setAliasDescriptors(aliasDescriptorsClone);
+                }
+                setDescriptors(descriptorsClone);
+                session.copyDescriptorsFromProject();    
+                session.initializeDescriptors(descriptors);        
+            } else {
+                Iterator it = descriptors.iterator();
+                while (it.hasNext()) {
+                    ClassDescriptor descriptor = (ClassDescriptor)it.next();
+                    getDescriptors().put(descriptor.getJavaClass(), descriptor);
+                    String alias = descriptor.getAlias();
+                    if (alias != null) {
+                        addAlias(alias, descriptor);
+                    }
+                }        
             }
+            getOrderedDescriptors().addAll(descriptors);
         }
-
-        if (session.isConnected()) {
-            session.initializeDescriptors(descriptors);
-            // The commit order must be maintain whenever new descriptors are added.
-            session.getCommitManager().initializeCommitOrder();
-        }
-
-        getOrderedDescriptors().addAll(descriptors);
     }
 
     /**
@@ -308,23 +352,7 @@ public class Project implements Serializable, Cloneable {
      * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
     public void addDescriptors(Project project, DatabaseSessionImpl session) {
-        Iterator descriptors = project.getDescriptors().values().iterator();
-        while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
-            getDescriptors().put(descriptor.getJavaClass(), descriptor);
-            String alias = descriptor.getAlias();
-            if (alias != null) {
-                addAlias(alias, descriptor);
-            }
-        }
-
-        if (session.isConnected()) {
-            session.initializeDescriptors(project.getDescriptors());
-            // The commit order must be maintained whenever new descriptors are added.
-            session.getCommitManager().initializeCommitOrder();
-        }
-
-        getOrderedDescriptors().addAll(project.getOrderedDescriptors());
+        addDescriptors(project.getDescriptors().values(), session);
     }
 
     /**

@@ -58,6 +58,16 @@ public class SimultaneousTestsModel extends TestModel {
         addTest(new ConcurrentReadOneToOneInheritanceTest());
         addTest(new ConcurrentReadFetchJoinTest());
         addTest(new ConcurrentReadFetchJoinWithUOWLocksTest());
+        // int nAddDescriptorsTests, long timeToSleepBetweenAddingDescriptors
+        addTest(AddDescriptorsMultithreadedTest.AddDescriptorsTest.createMultithreadedTest(3, 0));
+        // int numberOfSequencePreallocationThreads, long timeToStopTests
+        addTest(AddDescriptorsMultithreadedTest.SequencePreallocationTest.createMultithreadedTest(10, 10000));
+        // int numberOfAddDescriptorsThreads, long timeToSleepBetweenAddingDescriptors, int numberOfSequencePreallocationThreads
+        addTest(AddDescriptorsMultithreadedTest.SequencePreallocationTest.createMultithreadedTestWithAddDescriptors(1, 100, 10));
+        // int numberOfInsertThreads, long timeToStopTests
+        addTest(AddDescriptorsMultithreadedTest.InsertTest.createMultithreadedTest(10, 10000));
+        // int numberOfAddDescriptorsThreads, long timeToSleepBetweenAddingDescriptors, int numberOfInsertThreads
+        addTest(AddDescriptorsMultithreadedTest.InsertTest.createMultithreadedTestWithAddDescriptors(1, 100, 10));
     }
 
     public static TestSuite getReadEmployeeTestSuite() {

@@ -245,7 +245,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.shouldOptimizeDataConversion = true;
         this.statementCacheSize = 50;
         this.shouldForceFieldNamesToUpperCase = false;
-        this.maxBatchWritingSize = DEFAULT_MAX_BATCH_WRITING_SIZE;
+        this.maxBatchWritingSize = 0;
         this.usesJDBCBatchWriting = true;
         this.transactionIsolation = -1;
         this.cursorCode = -10;
@@ -1454,7 +1454,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * 
      * @return - statement to be used for batch writing
      */
-    public Statement prepareBatchStatement(Statement statement) throws java.sql.SQLException {
+    public Statement prepareBatchStatement(Statement statement, int maxBatchWritingSize) throws java.sql.SQLException {
         return statement;
     }
 

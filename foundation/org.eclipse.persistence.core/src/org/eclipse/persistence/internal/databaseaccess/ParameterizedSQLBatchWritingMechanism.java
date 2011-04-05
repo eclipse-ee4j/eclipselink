@@ -56,6 +56,11 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
     public ParameterizedSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
         this.databaseAccessor = databaseAccessor;
         this.parameters = new ArrayList(10);
+        this.maxBatchSize = this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize();
+        if (this.maxBatchSize == 0) {
+            // the max size was not set on the platform - use default
+            this.maxBatchSize = DatabasePlatform.DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE;
+        }
     }
 
     /**
@@ -77,7 +82,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                 this.previousCall = dbCall;
                 this.parameters.add(dbCall.getParameters());
             } else {
-                if (this.previousCall.getSQLString().equals(dbCall.getSQLString()) && (this.parameters.size() < this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize())) {
+                if (this.previousCall.getSQLString().equals(dbCall.getSQLString()) && (this.parameters.size() < this.maxBatchSize)) {
                     this.parameters.add(dbCall.getParameters());
                 } else {
                     executeBatchedStatements(session);
@@ -171,7 +176,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                 boolean shouldUnwrapConnection = session.getPlatform().usesNativeBatchWriting();
                 statement = (PreparedStatement)this.databaseAccessor.prepareStatement(this.previousCall, session, shouldUnwrapConnection);
                 // Perform platform specific preparations
-                databaseAccessor.getPlatform().prepareBatchStatement(statement);
+                databaseAccessor.getPlatform().prepareBatchStatement(statement, maxBatchSize);
                	if(queryTimeoutCache > DescriptorQueryManager.NoTimeout) {
                 	// Set the query timeout that was cached during the multiple calls to appendCall
                		statement.setQueryTimeout(queryTimeoutCache);

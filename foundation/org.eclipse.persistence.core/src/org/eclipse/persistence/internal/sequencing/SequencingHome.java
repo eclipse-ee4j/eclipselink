@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sequencing;
 
+import java.util.Collection;
+
 import org.eclipse.persistence.sequencing.SequencingControl;
 
 /**
@@ -39,4 +41,6 @@ public interface SequencingHome extends SequencingLogInOut {
     public SequencingServer getSequencingServer();
 
     public boolean isSequencingCallbackRequired();
+    
+    public void onAddDescriptors(Collection descriptors);
 }

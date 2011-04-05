@@ -4377,6 +4377,15 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
+     * Copies descriptors cached on the Project.
+     * Used after Project.descriptors has been reset by addDescriptor(s) when the session is connected.
+     */
+   public void copyDescriptorsFromProject() {
+       this.descriptors = getDescriptors();
+   }
+
+    /**
+     * INTERNAL:
      * This method will be used to copy all EclipseLink named queries defined in descriptors into the session.
      * @param allowSameQueryNameDiffArgsCopyToSession  if the value is true, it allow
      * multiple queries of the same name but different arguments to be copied to the session.

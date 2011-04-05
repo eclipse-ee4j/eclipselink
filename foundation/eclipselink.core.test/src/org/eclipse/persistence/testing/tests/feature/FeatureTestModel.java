@@ -299,6 +299,7 @@ public class FeatureTestModel extends TestModel {
         suite.addTest(new SequencingTableQualifierTest(SequencingTableQualifierTest.TABLE_SEQUENCE));
         suite.addTest(new SequencingTableQualifierTest(SequencingTableQualifierTest.UNARY_TABLE_SEQUENCE));
         suite.addTest(new SequenceFieldRemovalForAcquireValueAfterInsertTest());
+        suite.addTest(new CannotOverrideConnectedSequenceTest());
         return suite;
     }
 

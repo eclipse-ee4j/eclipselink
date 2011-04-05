@@ -756,10 +756,10 @@ public class Oracle9Platform extends Oracle8Platform {
      * 
      * @return - statement to be used for batch writing
      */
-    public Statement prepareBatchStatement(Statement statement) throws java.sql.SQLException {
+    public Statement prepareBatchStatement(Statement statement, int maxBatchWritingSize) throws java.sql.SQLException {
         if (usesNativeBatchWriting()){
             //add max statement setting
-            ((OraclePreparedStatement) statement).setExecuteBatch(getMaxBatchWritingSize()); 
+            ((OraclePreparedStatement) statement).setExecuteBatch(maxBatchWritingSize); 
         }
         return statement;
     }

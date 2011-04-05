@@ -182,6 +182,14 @@ public class DefaultSequence extends Sequence {
     }
 
     /**
+     * PUBLIC:
+     * Indicates that Sequence is connected.
+     */
+    public boolean isConnected() {
+        return getDefaultSequence().isConnected();
+    }
+    
+    /**
      * INTERNAL:
      * Ignored, getDefaultSequence().getQualifier() used instead.
      */

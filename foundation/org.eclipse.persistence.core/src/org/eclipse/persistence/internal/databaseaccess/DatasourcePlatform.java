@@ -59,6 +59,9 @@ public class DatasourcePlatform implements Platform {
     /** Delimiter to use for fields and tables using spaces or other special values */
     protected String startDelimiter = null;
     protected String endDelimiter = null;
+    
+    /** Ensures that only one thread at a time can add/remove sequences */
+    protected Object sequencesLock = new Boolean(true);
 
     public DatasourcePlatform() {
         this.tableQualifier = "";
@@ -123,10 +126,10 @@ public class DatasourcePlatform implements Platform {
             defaultSequenceClone = (Sequence)getDefaultSequence().clone();
             setDefaultSequence(defaultSequenceClone);
         }
-        HashMap sequencesDeepClone = null;
         if (getSequences() != null) {
-            sequencesDeepClone = new HashMap(getSequences().size());
-            Iterator it = getSequences().values().iterator();
+            HashMap sequencesCopy = new HashMap(getSequences());
+            HashMap sequencesDeepClone = new HashMap(getSequences().size());
+            Iterator it = sequencesCopy.values().iterator();
             while (it.hasNext()) {
                 Sequence sequence = (Sequence)it.next();
                 if ((defaultSequenceClone != null) && (sequence == getDefaultSequence())) {
@@ -625,10 +628,36 @@ public class DatasourcePlatform implements Platform {
      * Add sequence corresponding to the name
      */
     public void addSequence(Sequence sequence) {
-        if (getSequences() == null) {
-            createSequences();
+        addSequence(sequence, false);
+    }
+
+    /**
+     * Add sequence corresponding to the name.
+     * Use this method with isSessionConnected parameter set to true
+     * to add a sequence to connected session.
+     * If the session is connected then the sequence is added only 
+     * if there is no sequence with the same name already in use.
+     */
+    public void addSequence(Sequence sequence, boolean isSessionConnected) {
+        synchronized(sequencesLock) {
+            if (isSessionConnected) {
+                if (this.sequences == null) {
+                    this.sequences = new HashMap();
+                    this.sequences.put(sequence.getName(), sequence);
+                } else {
+                    if (!this.sequences.containsKey(sequence.getName())) {
+                        Map newSequences = (Map)((HashMap)this.sequences).clone();
+                        newSequences.put(sequence.getName(), sequence);
+                        this.sequences = newSequences;
+                    }
+                }
+            } else {
+                if (this.sequences == null) {
+                    this.sequences = new HashMap();
+                }
+                this.sequences.put(sequence.getName(), sequence);
+            }
         }
-        getSequences().put(sequence.getName(), sequence);
     }
 
     /**
@@ -639,7 +668,7 @@ public class DatasourcePlatform implements Platform {
             return getDefaultSequence();
         } else {
             if (getSequences() != null) {
-                return (Sequence)getSequences().get(seqName);
+                return (Sequence)this.sequences.get(seqName);
             } else {
                 return null;
             }
@@ -654,23 +683,15 @@ public class DatasourcePlatform implements Platform {
         throw ValidationException.createPlatformDefaultSequenceUndefined(Helper.getShortClassName(this));
     }
 
-    protected void createSequences() {
-        if (getSequences() == null) {
-            synchronized (this) {
-                if (getSequences() == null) {
-                    setSequences(new HashMap());
-                }
-            }
-        }
-    }
-
     /**
      * Remove sequence corresponding to name.
      * Doesn't remove default sequence.
      */
     public Sequence removeSequence(String seqName) {
-        if (getSequences() != null) {
-            return (Sequence)getSequences().remove(seqName);
+        if (this.sequences != null) {
+            synchronized(sequencesLock) {
+                return (Sequence)this.sequences.remove(seqName);
+            }
         } else {
             return null;
         }
@@ -680,7 +701,7 @@ public class DatasourcePlatform implements Platform {
      * Remove all sequences, but the default one.
      */
     public void removeAllSequences() {
-        sequences = null;
+        this.sequences = null;
     }
 
     /**
@@ -688,7 +709,7 @@ public class DatasourcePlatform implements Platform {
      * Returns a map of sequence names to Sequences (may be null).
      */
     public Map getSequences() {
-        return sequences;
+        return this.sequences;
     }
 
     /**
@@ -699,8 +720,9 @@ public class DatasourcePlatform implements Platform {
         if ((getSequences() == null) || getSequences().isEmpty()) {
             return null;
         }
+        Map sequencesCopy = new HashMap(getSequences());
         Map sequencesToWrite = new HashMap();
-        Iterator it = getSequences().values().iterator();
+        Iterator it = sequencesCopy.values().iterator();
         while (it.hasNext()) {
             Sequence sequence = (Sequence)it.next();
             if (!(sequence instanceof DefaultSequence) || ((DefaultSequence)sequence).hasPreallocationSize()) {

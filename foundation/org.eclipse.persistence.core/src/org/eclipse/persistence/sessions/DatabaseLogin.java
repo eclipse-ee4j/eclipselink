@@ -356,6 +356,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * PUBLIC:
      * Allow for the max batch writing size to be set.
      * This allows for the batch size to be limited as most database have strict limits.
+     * If returns 0 then default size value is used.
      * The size is in characters, the default is 32000 but the real value depends on the database configuration.
      */
     public int getMaxBatchWritingSize() {
@@ -830,6 +831,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * PUBLIC:
      * Allow for the max batch writing size to be set.
      * This allows for the batch size to be limited as most database have strict limits.
+     * If set to 0 then default value is used.
      * The size is in characters, the default is 32000 but the real value depends on the database configuration.
      */
     public void setMaxBatchWritingSize(int maxBatchWritingSize) {

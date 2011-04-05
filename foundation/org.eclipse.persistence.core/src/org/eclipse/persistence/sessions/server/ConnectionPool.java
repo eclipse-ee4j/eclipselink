@@ -211,10 +211,9 @@ public class ConnectionPool {
      * Create a new connection, accessors are used as connections.
      */
     protected Accessor buildConnection() {
-        Login localLogin = this.login.clone();
-        Accessor connection = localLogin.buildAccessor();
+        Accessor connection = this.login.buildAccessor();
         connection.setPool(this);
-        connection.connect(localLogin, this.owner);
+        connection.connect(this.login, this.owner);
 
         return connection;
     }

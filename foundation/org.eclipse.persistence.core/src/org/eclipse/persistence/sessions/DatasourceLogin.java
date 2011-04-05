@@ -774,6 +774,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
 
     /**
      * Add sequence corresponding to the name
+     * Don't use if the session is connected.
      */
     public void addSequence(Sequence sequence) {
         getDatasourcePlatform().addSequence(sequence);
@@ -796,6 +797,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * Remove sequence corresponding to name.
      * Doesn't remove default sequence.
+     * Don't use if the session is connected.
      */
     public Sequence removeSequence(String seqName) {
         return getDatasourcePlatform().removeSequence(seqName);

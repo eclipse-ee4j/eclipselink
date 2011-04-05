@@ -47,6 +47,9 @@ public abstract class BatchWritingMechanism {
     //bug 4241441: increments with each addBatch call.  Used to compare against value returned from driver for 
     //  optimistic locking
     protected int statementCount;
+    
+    /** Allow for the batch size to be set as many database have strict limits. **/
+    protected int maxBatchSize;
 
     /**
      * INTERNAL:

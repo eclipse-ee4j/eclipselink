@@ -16,6 +16,7 @@ import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.SequencingControl;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 
@@ -48,6 +49,19 @@ public interface DatabaseSession extends Session {
      * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
     public void addDescriptors(Collection descriptors);
+
+    /**
+     * PUBLIC:
+     * Add the sequence to the session.
+     * Allows to add a new sequence to the session even if the session is connected.
+     * If the session is connected then the sequence is added only 
+     * if there is no sequence with the same name already in use.
+     * Call this method before addDescriptor(s) if need to add new descriptor 
+     * with a new non-default sequence to connected session.
+     *
+     * @see #addSequences(Collection)
+     */
+    public void addSequence(Sequence sequence);
 
     /**
      * PUBLIC:

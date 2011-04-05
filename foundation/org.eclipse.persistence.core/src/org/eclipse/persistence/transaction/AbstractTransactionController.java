@@ -444,18 +444,20 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     /**
      * INTERNAL:
      * Initializes sequencing listeners.
-     * Always clears sequencing listeners first.
      * There are two methods calling this method:
      * 1. setSession method - this could lead to initialization of sequencing listeners
      * only if sequencing already connected (that would happen if setSession is called
      * after session.login, which is normally not the case).
-     * 2. in the very end of connecting sequencing,
+     * 2. in the very end of connecting sequencing or adding descriptors to sequencing,
      * after it's determined whether sequencing callbacks (and therefore listeners)
      * will be required.
+     * 
+     * In SessionBroker case each member's sequencing may call this method.
+     * Note that the number of sessions requiring callbacks may never decrease,
+     * therefore if isSequencingCallbackRequired method has returned true once,
+     * it will always return true after that (unless clearSequencingListeners method is called).
      */
     public void initializeSequencingListeners() {
-        // sets numSessionsRequiringSequencingCallback to 0; removes sequenceListeners.
-        clearSequencingListeners();
         if(session == null) {
             return;
         }
@@ -463,19 +465,28 @@ public abstract class AbstractTransactionController implements ExternalTransacti
         while(parentSession.getParent() != null) {
             parentSession = parentSession.getParent();
         }
+        int newNumSessionsRequiringSequencingCallback = 0;
         // top parentSession must be DatabaseSessionImpl
         if(parentSession.isBroker()) {
             // it could be either SessionBroker
-            numSessionsRequiringSequencingCallback = ((SessionBroker)parentSession).howManySequencingCallbacks();
+            newNumSessionsRequiringSequencingCallback = ((SessionBroker)parentSession).howManySequencingCallbacks();
         } else {
             // or DatabaseSessionImpl or ServerSession
             if(((DatabaseSessionImpl)parentSession).isSequencingCallbackRequired()) {
-                numSessionsRequiringSequencingCallback = 1;
+                newNumSessionsRequiringSequencingCallback = 1;
             }
         }
-        if(numSessionsRequiringSequencingCallback != 0) {
-            this.sequencingListeners = JavaPlatform.getConcurrentMap();
-            this.currentlyProcessedListeners = JavaPlatform.getConcurrentMap();
+        // number of required sessions in not allowed to decrease.
+        if (newNumSessionsRequiringSequencingCallback > numSessionsRequiringSequencingCallback) {
+            // keep the old map if already exists, never remove existing map
+            if (this.sequencingListeners == null) {
+                this.sequencingListeners = JavaPlatform.getConcurrentMap();
+            }
+            // keep the old map if already exists, never remove existing map
+            if (this.currentlyProcessedListeners == null) {
+                this.currentlyProcessedListeners = JavaPlatform.getConcurrentMap();
+            }
+            this.numSessionsRequiringSequencingCallback = newNumSessionsRequiringSequencingCallback;
         }
     }
 
@@ -518,9 +529,9 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * Called by initializeSequencingListeners and by sequencing on disconnect.
      */
     public void clearSequencingListeners() {
+        this.numSessionsRequiringSequencingCallback = 0;
         this.sequencingListeners = null;
         this.currentlyProcessedListeners = null;
-        this.numSessionsRequiringSequencingCallback = 0;
     }
 
     /**

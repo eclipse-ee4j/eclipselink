@@ -94,6 +94,8 @@ public interface Platform extends Serializable, Cloneable {
 
     public boolean isInformix();
 
+    public boolean isMaxDB();
+    
     public boolean isMySQL();
 
     public boolean isODBC();
@@ -189,8 +191,21 @@ public interface Platform extends Serializable, Cloneable {
      * The sequence should have a unique name
      * that shouldn't be altered after the sequence has been added -
      * don't do: getSequence(name).setName(newName))
+     * Don't use if the session is connected.
      */
     public void addSequence(Sequence sequence);
+
+    /**
+     * Add sequence.
+     * The sequence should have a unique name
+     * that shouldn't be altered after the sequence has been added -
+     * don't do: getSequence(name).setName(newName))
+     * Use this method with isConnected parameter set to true
+     * to add a sequence to connected session.
+     * If sequencing is connected then the sequence is added only 
+     * if there is no sequence with the same name already in use.
+     */
+    public void addSequence(Sequence sequence, boolean isConnected);
 
     /**
      * Get sequence corresponding to the name.
@@ -202,11 +217,12 @@ public interface Platform extends Serializable, Cloneable {
     /**
      * Remove sequence corresponding to the name
      * (the sequence was added through addSequence method)
+     * Don't use if the session is connected.
      */
     public Sequence removeSequence(String seqName);
 
     /**
-     * Remove all sequences that were added throud addSequence method.
+     * Remove all sequences that were added through addSequence method.
      */
     public void removeAllSequences();
 

@@ -58,7 +58,11 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
         this.databaseAccessor = databaseAccessor;
         this.sqlStrings = new ArrayList(10);
         this.batchSize = 0;
-        
+        this.maxBatchSize = this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize();
+        if (this.maxBatchSize == 0) {
+            // the max size was not set on the platform - use default
+            this.maxBatchSize = DatabasePlatform.DEFAULT_MAX_BATCH_WRITING_SIZE;
+        }
     }
 
     /**
@@ -74,12 +78,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
         }
     	
         if (!dbCall.hasParameters()) {
-            // Bug#3214927-fix - Also the size must be switched back when switch back from param to dynamic.
-            // This must also be checked here, as the dynamic is the default, so the mechanism may have not have been switched.
-            if (this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize() == DatabasePlatform.DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE) {
-                this.databaseAccessor.getLogin().getPlatform().setMaxBatchWritingSize(DatabasePlatform.DEFAULT_MAX_BATCH_WRITING_SIZE);
-            }
-            if ((batchSize + dbCall.getSQLString().length()) > this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize()) {
+            if ((batchSize + dbCall.getSQLString().length()) > this.maxBatchSize) {
                 executeBatchedStatements(session);
             }
             if (this.usesOptimisticLocking != dbCall.hasOptimisticLock){
