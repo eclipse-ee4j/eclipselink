@@ -22,12 +22,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalBetweenExpressionBNF extends JPQLQueryBNF {
+public final class InternalBetweenExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "internal_between_expression";
+	public static final String ID = "internal_between_expression";
 
 	/**
 	 * Creates a new <code>InternalBetweenExpressionBNF</code>.

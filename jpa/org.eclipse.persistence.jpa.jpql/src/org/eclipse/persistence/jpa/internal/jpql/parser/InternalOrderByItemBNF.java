@@ -25,12 +25,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalOrderByItemBNF extends JPQLQueryBNF {
+public final class InternalOrderByItemBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier for this <code>InternalOrderByItemBNF</code>.
 	 */
-	static final String ID = "internal_orderby_item";
+	public static final String ID = "internal_orderby_item";
 
 	/**
 	 * Creates a new <code>InternalOrderByItemBNF</code>.

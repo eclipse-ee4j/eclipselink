@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * A result variable may be used to name a select item in the query result.
@@ -118,7 +119,7 @@ public final class ResultVariable extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(ResultVariableBNF.ID);
 	}
 
@@ -217,11 +218,11 @@ public final class ResultVariable extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// Select expression
 		if (selectExpression != null) {
-			selectExpression.toParsedText(writer);
+			selectExpression.toParsedText(writer, includeVirtual);
 			writer.append(SPACE);
 		}
 
@@ -236,7 +237,7 @@ public final class ResultVariable extends AbstractExpression {
 
 		// Result variable
 		if (resultVariable != null) {
-			resultVariable.toParsedText(writer);
+			resultVariable.toParsedText(writer, includeVirtual);
 		}
 	}
 }

@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class JoinFetchBNF extends JPQLQueryBNF {
+public final class JoinFetchBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "fetch_join";
+	public static final String ID = "fetch_join";
 
 	/**
 	 * Creates a new <code>JoinFetchBNF</code>.

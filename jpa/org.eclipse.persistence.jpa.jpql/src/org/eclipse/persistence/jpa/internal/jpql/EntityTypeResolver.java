@@ -15,15 +15,16 @@ package org.eclipse.persistence.jpa.internal.jpql;
 
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
- * This resolver retrieve the type for an abstract schema name (entity name).
+ * This {@link Resolver} retrieves the type for an abstract schema name (entity name).
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
-final class EntityTypeResolver extends AbstractTypeResolver {
+final class EntityResolver extends Resolver {
 
 	/**
 	 * The abstract schema name is the name of the entity.
@@ -31,12 +32,17 @@ final class EntityTypeResolver extends AbstractTypeResolver {
 	private final String abstractSchemaName;
 
 	/**
-	 * Creates a new <code>EntityTypeResolver</code>.
+	 * The {@link IManagedType} with the same abstract schema name.
+	 */
+	private IManagedType managedType;
+
+	/**
+	 * Creates a new <code>EntityResolver</code>.
 	 *
-	 * @param parent The parent of this resolver, which is never <code>null</code>
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
 	 * @param abstractSchemaName The name of the entity
 	 */
-	EntityTypeResolver(TypeResolver parent, String abstractSchemaName) {
+	EntityResolver(Resolver parent, String abstractSchemaName) {
 		super(parent);
 		this.abstractSchemaName = abstractSchemaName;
 	}
@@ -45,15 +51,8 @@ final class EntityTypeResolver extends AbstractTypeResolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType getManagedType() {
-		return resolveManagedType(abstractSchemaName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IType getType() {
-		IManagedType entity = resolveManagedType(abstractSchemaName);
+	IType buildType() {
+		IManagedType entity = getManagedType();
 		return (entity != null) ? entity.getType() : getTypeHelper().objectType();
 	}
 
@@ -61,7 +60,18 @@ final class EntityTypeResolver extends AbstractTypeResolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType resolveManagedType(String abstractSchemaName) {
-		return getProvider().getManagedType(abstractSchemaName);
+	ITypeDeclaration buildTypeDeclaration() {
+		return getType().getTypeDeclaration();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	IManagedType getManagedType() {
+		if (managedType == null) {
+			managedType = getProvider().getManagedType(abstractSchemaName);
+		}
+		return managedType;
 	}
 }

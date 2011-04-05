@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * The <code>new_value</code> specified for an update operation must be compatible in type with the
@@ -135,7 +136,7 @@ public final class UpdateItem extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(UpdateItemBNF.ID);
 	}
 
@@ -246,11 +247,11 @@ public final class UpdateItem extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// State field expression
 		if (stateFieldExpression != null) {
-			stateFieldExpression.toParsedText(writer);
+			stateFieldExpression.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterStateFieldPathExpression) {
@@ -268,7 +269,7 @@ public final class UpdateItem extends AbstractExpression {
 
 		// New value
 		if (newValue != null) {
-			newValue.toParsedText(writer);
+			newValue.toParsedText(writer, includeVirtual);
 		}
 	}
 }

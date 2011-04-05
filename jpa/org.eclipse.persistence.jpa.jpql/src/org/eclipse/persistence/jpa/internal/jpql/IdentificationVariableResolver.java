@@ -19,32 +19,47 @@ import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
- * This resolver resolves the type of an identification variable.
+ * This {@link Resolver} is responsible to resolve the type of an identification variable.
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
-final class IdentificationVariableResolver extends AbstractTypeResolver {
+final class IdentificationVariableResolver extends Resolver {
 
 	/**
-	 * The name of the identification variable, which is never <code>null</code> or an empty string.
+	 * The name of the identification variable, which is never <code>null</code> nor an empty string.
 	 */
 	private final String variableName;
 
 	/**
 	 * Creates a new <code>IdentificationVariableResolver</code>.
 	 *
-	 * @param parent The parent of this resolver, which is never <code>null</code>
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
 	 * @param variableName The name of the identification variable, which should never be
 	 * <code>null</code> and it should not be an empty string
 	 */
-	IdentificationVariableResolver(TypeResolver parent, String variableName) {
+	IdentificationVariableResolver(DeclarationResolver parent, String variableName) {
 		super(parent);
+		this.variableName = variableName;
+	}
 
-		// Always make the identification variable be lower case since it's
-		// case insensitive, the get will also use lower case
-		this.variableName = variableName.toLowerCase();
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IType buildType() {
+		Resolver resolver = getParent().getResolver(variableName);
+		return (resolver == null) ? null : resolver.getType();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ITypeDeclaration buildTypeDeclaration() {
+		Resolver resolver = getParent().getResolver(variableName);
+		return (resolver == null) ? null : resolver.getTypeDeclaration();
 	}
 
 	/**
@@ -52,7 +67,8 @@ final class IdentificationVariableResolver extends AbstractTypeResolver {
 	 */
 	@Override
 	public IManagedType getManagedType() {
-		return resolveManagedType(variableName);
+		Resolver resolver = getParent().getResolver(variableName);
+		return (resolver == null) ? null : resolver.getManagedType();
 	}
 
 	/**
@@ -60,21 +76,11 @@ final class IdentificationVariableResolver extends AbstractTypeResolver {
 	 */
 	@Override
 	public IMapping getMapping() {
-		return resolveMapping(variableName);
+		Resolver resolver = getParent().getResolver(variableName);
+		return (resolver == null) ? null : resolver.getMapping();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IType getType() {
-		return resolveType(variableName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ITypeDeclaration getTypeDeclaration() {
-		return resolveTypeDeclaration(variableName);
+	private DeclarationResolver getParent() {
+		return (DeclarationResolver) parent;
 	}
 }

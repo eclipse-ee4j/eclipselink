@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * Bulk delete operation apply to entities of a single entity class (together with its subclasses,
@@ -111,7 +112,7 @@ public final class DeleteStatement extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(DeleteStatementBNF.ID);
 	}
 
@@ -174,16 +175,16 @@ public final class DeleteStatement extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
-	    deleteClause.toParsedText(writer);
+	    deleteClause.toParsedText(writer, includeVirtual);
 
 		if (hasSpace) {
 			writer.append(SPACE);
 		}
 
 		if (whereClause != null) {
-			whereClause.toParsedText(writer);
+			whereClause.toParsedText(writer, includeVirtual);
 		}
 	}
 }

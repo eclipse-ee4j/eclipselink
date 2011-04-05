@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * The <b>WHERE</b> clause of a query consists of a conditional expression used to select objects or
@@ -104,7 +105,7 @@ public final class UpdateStatement extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(UpdateStatementBNF.ID);
 	}
 
@@ -176,10 +177,10 @@ public final class UpdateStatement extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// Update clause
-		updateClause.toParsedText(writer);
+		updateClause.toParsedText(writer, includeVirtual);
 
 		if (hasSpaceAfterUpdateClause) {
 			writer.append(SPACE);
@@ -187,7 +188,7 @@ public final class UpdateStatement extends AbstractExpression {
 
 		// Where clause
 		if (whereClause != null) {
-			whereClause.toParsedText(writer);
+			whereClause.toParsedText(writer, includeVirtual);
 		}
 	}
 }

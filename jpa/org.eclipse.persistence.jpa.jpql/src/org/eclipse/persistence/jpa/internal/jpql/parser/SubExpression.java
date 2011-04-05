@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 /**
@@ -27,9 +28,10 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 
 	/**
-	 * The {@link JPQLQueryBNF} coming from the parent that is used to parse the next portion of the query.
+	 * The unique identifier of the {@link JPQLQueryBNF} coming from the parent that is used to parse
+	 * the next portion of the query.
 	 */
-	private JPQLQueryBNF queryBNF;
+	private String queryBNF;
 
 	/**
 	 * Creates a new <code>SubExpression</code>.
@@ -37,7 +39,7 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 	 * @param parent The parent of this expression
 	 * @param queryBNF The BNF coming from the parent that is used to parse the next portion of the query
 	 */
-	SubExpression(AbstractExpression parent, JPQLQueryBNF queryBNF) {
+	SubExpression(AbstractExpression parent, String queryBNF) {
 		super(parent);
 		this.queryBNF = queryBNF;
 	}
@@ -61,7 +63,7 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
+	public String encapsulatedExpressionBNF() {
 		return queryBNF;
 	}
 
@@ -69,9 +71,9 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
 		if (hasExpression() && (getExpression() == expression)) {
-			return queryBNF;
+			return queryBNF(queryBNF);
 		}
 		return getParent().findQueryBNF(expression);
 	}
@@ -80,8 +82,8 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
-		return queryBNF;
+	public JPQLQueryBNF getQueryBNF() {
+		return queryBNF(queryBNF);
 	}
 
 	/**

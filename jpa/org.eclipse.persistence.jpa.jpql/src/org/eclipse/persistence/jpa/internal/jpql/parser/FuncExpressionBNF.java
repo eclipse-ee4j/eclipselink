@@ -22,12 +22,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @since 2.3
  * @author Pascal Filion
  */
-final class FuncExpressionBNF extends JPQLQueryBNF {
+public final class FuncExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier for this {@link FuncExpressionBNF}.
 	 */
-	static final String ID = FuncExpression.FUNC;
+	public static final String ID = FuncExpression.FUNC;
 
 	/**
 	 * Creates a new <code>FuncExpressionBNF</code>.

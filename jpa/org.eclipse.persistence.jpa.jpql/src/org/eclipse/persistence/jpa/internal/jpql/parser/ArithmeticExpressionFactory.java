@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link ExpressionFactory} creates a new expression when the portion of the query to parse
  * starts with an arithmetic identifier. It is possible the expression to parse is also a {@link
@@ -116,7 +118,7 @@ final class ArithmeticExpressionFactory extends ExpressionFactory {
 			expression.accept(visitor());
 		}
 
-		if (visitor.found) {
+		if ((visitor != null) && visitor.found) {
 			visitor.found = false;
 			ArithmeticExpression arithmeticException = (ArithmeticExpression) expression;
 

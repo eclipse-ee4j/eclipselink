@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class NumericLiteralBNF extends JPQLQueryBNF {
+public final class NumericLiteralBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "numeric_literal";
+	public static final String ID = "numeric_literal";
 
 	/**
 	 * Creates a new <code>NumericLiteralExpressionBNF</code>.

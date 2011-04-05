@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * TODO:
@@ -136,7 +137,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(TreatExpressionBNF.ID);
 	}
 
@@ -153,7 +154,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean hasEncapsulatedExpression() {
+	public boolean hasEncapsulatedExpression() {
 		return hasExpression() || hasAs || hasEntityType();
 	}
 
@@ -228,7 +229,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedTextEncapsulatedExpression(StringBuilder writer) {
+	void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean includeVirtual) {
 
 		// Collection-valued path expression
 		if (expression != null) {

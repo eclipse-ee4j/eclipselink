@@ -17,8 +17,8 @@ import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
- * This resolver is responsible to calculate the type based on the type of the <b>ABS</b>
- * expression. The valid type is a <code>Number</code> type.
+ * This {@link Resolver} is responsible to calculate the {@link IType} based on the type of the
+ * <b>ABS</b> expression. The valid type is a <code>Number</code> type.
  * <p>
  * The <b>ABS</b> function takes a numeric argument and returns a number (integer, float, or double)
  * of the same type as the argument to the function.
@@ -27,31 +27,24 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * @since 2.3
  * @author Pascal Filion
  */
-final class AbsFunctionResolver extends AbstractTypeResolver {
-
-	/**
-	 * The resolver used to find the type of the state field path.
-	 */
-	private final TypeResolver typeResolver;
+final class AbsFunctionResolver extends Resolver {
 
 	/**
 	 * Creates a new <code>AbsFunctionResolver</code>.
 	 *
-	 * @param parent The parent of this resolver, which is never <code>null</code>
-	 * @param typeResolver The resolver used to find the type of the state field path
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
 	 */
-	AbsFunctionResolver(TypeResolver parent, TypeResolver typeResolver) {
+	AbsFunctionResolver(Resolver parent) {
 		super(parent);
-		this.typeResolver = typeResolver;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IType getType() {
+	@Override
+	IType buildType() {
 
-		IType type = typeResolver.getType();
-		type = getTypeHelper().convertPrimitive(type);
+		IType type = getParentType();
 
 		// Anything else is an invalid type
 		if (!getTypeHelper().isNumericType(type)) {
@@ -65,7 +58,7 @@ final class AbsFunctionResolver extends AbstractTypeResolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ITypeDeclaration getTypeDeclaration() {
-		return typeResolver.getTypeDeclaration();
+	ITypeDeclaration buildTypeDeclaration() {
+		return getParentTypeDeclaration();
 	}
 }

@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * A <b>WHEN</b> predicate is used to calculate a condition and when it's true, its <b>THEN</b> will
@@ -135,7 +136,7 @@ public final class WhenClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(WhenClauseBNF.ID);
 	}
 
@@ -268,18 +269,14 @@ public final class WhenClause extends AbstractExpression {
 		hasSpaceAfterThen = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the then expression
-		thenExpression = parse(
-			wordParser,
-			queryBNF(ScalarExpressionBNF.ID),
-			tolerant
-		);
+		thenExpression = parse(wordParser, queryBNF(ScalarExpressionBNF.ID), tolerant);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// 'WHEN'
 		writer.append(WHEN);
@@ -290,7 +287,7 @@ public final class WhenClause extends AbstractExpression {
 
 		// Expression
 		if (whenExpression != null) {
-			whenExpression.toParsedText(writer);
+			whenExpression.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterWhenExpression) {
@@ -308,7 +305,7 @@ public final class WhenClause extends AbstractExpression {
 
 		// Then expression
 		if (thenExpression != null) {
-			thenExpression.toParsedText(writer);
+			thenExpression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

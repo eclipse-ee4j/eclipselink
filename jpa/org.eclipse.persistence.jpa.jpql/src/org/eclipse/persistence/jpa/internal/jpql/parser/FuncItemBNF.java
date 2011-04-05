@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class FuncItemBNF extends JPQLQueryBNF {
+public final class FuncItemBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this {@link InternalFuncExpressionBNF}.
 	 */
-	static final String ID = "internal_func";
+	public static final String ID = "internal_func";
 
 	/**
 	 * Creates a new <code>FuncItemBNF</code>.
@@ -55,7 +55,7 @@ final class FuncItemBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		return true;
 	}
 

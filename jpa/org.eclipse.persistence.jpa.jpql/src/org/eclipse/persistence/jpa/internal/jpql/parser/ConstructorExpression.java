@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 /**
@@ -131,11 +132,11 @@ public final class ConstructorExpression extends AbstractExpression {
 	}
 
 	/**
-	 * Creates
+	 * Creates a new {@link CollectionExpression} that will wrap the single constructor item.
 	 *
-	 * @return
+	 * @return The single constructor item represented by a temporary collection
 	 */
-	CollectionExpression buildCollectionExpression() {
+	public CollectionExpression buildCollectionExpression() {
 
 		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
 		children.add((AbstractExpression) getConstructorItems());
@@ -175,7 +176,7 @@ public final class ConstructorExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(ConstructorExpressionBNF.ID);
 	}
 
@@ -291,7 +292,7 @@ public final class ConstructorExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// 'NEW'
 		writer.append(getText());
@@ -313,7 +314,7 @@ public final class ConstructorExpression extends AbstractExpression {
 
 		// Constructor items
 		if (constructorItems != null) {
-			constructorItems.toParsedText(writer);
+			constructorItems.toParsedText(writer, includeVirtual);
 		}
 
 		// ')'

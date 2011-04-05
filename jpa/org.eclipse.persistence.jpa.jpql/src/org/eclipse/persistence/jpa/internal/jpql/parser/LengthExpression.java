@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * The <b>LENGTH</b> function returns the length of the string in characters as an integer.
  * <p>
@@ -44,15 +46,15 @@ public final class LengthExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(StringPrimaryBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return StringPrimaryBNF.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(FunctionsReturningNumericsBNF.ID);
 	}
 

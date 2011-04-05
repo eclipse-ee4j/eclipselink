@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * A <code>null</code> {@link Expression} is used instead of a true <code>null</code>,
  * allowing operations to be performed without doing a <code>null</code> check.
@@ -50,7 +52,7 @@ public final class NullExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
 		return getParent().findQueryBNF(expression);
 	}
 
@@ -58,7 +60,7 @@ public final class NullExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return getParent().getQueryBNF();
 	}
 
@@ -66,7 +68,7 @@ public final class NullExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isNull() {
+	public boolean isNull() {
 		return true;
 	}
 
@@ -82,6 +84,6 @@ public final class NullExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 	}
 }

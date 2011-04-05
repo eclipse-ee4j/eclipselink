@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 /**
@@ -67,7 +68,7 @@ public final class StringLiteral extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(StringLiteralBNF.ID);
 	}
 
@@ -85,7 +86,7 @@ public final class StringLiteral extends AbstractExpression {
 	 * @return The unquoted text
 	 */
 	public String getUnquotedText() {
-		return ExpressionTools.unquotedText(getText());
+		return ExpressionTools.unquote(getText());
 	}
 
 	/**
@@ -122,7 +123,7 @@ public final class StringLiteral extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 		writer.append(getText());
 	}
 }

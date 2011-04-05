@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This expression represents an arithmetic expression, which means the first and second expressions
  * are aggregated with an arithmetic sign.
@@ -51,7 +53,7 @@ public abstract class ArithmeticExpression extends CompoundExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	final JPQLQueryBNF getQueryBNF() {
+	public final JPQLQueryBNF getQueryBNF() {
 		return queryBNF(ArithmeticTermBNF.ID);
 	}
 
@@ -68,16 +70,11 @@ public abstract class ArithmeticExpression extends CompoundExpression {
 			return true;
 		}
 
-		if ((expression != null) && character == '+' || character == '-') {
+		if (character == '+' || character == '-') {
 			return false;
 		}
 
-		return word.equalsIgnoreCase(OR)   ||
-		       word.equalsIgnoreCase(AND)  ||
-		       word.equalsIgnoreCase(WHEN) ||
-		       word.equalsIgnoreCase(SET)  ||
-		       word.equalsIgnoreCase(AS)   ||
-		       super.isParsingComplete(wordParser, word, expression);
+		return (expression != null);
 	}
 
 	/**
@@ -92,7 +89,7 @@ public abstract class ArithmeticExpression extends CompoundExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	final JPQLQueryBNF rightExpressionBNF() {
+	public final JPQLQueryBNF rightExpressionBNF() {
 		return queryBNF(ArithmeticTermBNF.ID);
 	}
 }

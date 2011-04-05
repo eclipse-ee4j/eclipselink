@@ -15,31 +15,32 @@ package org.eclipse.persistence.jpa.internal.jpql;
 
 import java.util.Collection;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
- * This {@link TypeResolver} calculates the type of a <b>FUNC</b> function by calculating the type
- * of each parameters.
+ * This {@link Resolver} is responsible to calculate the type of a <b>FUNC</b> function by
+ * calculating the type of each parameters.
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
-final class FuncTypeResolver extends AbstractTypeResolver {
+final class FuncResolver extends Resolver {
 
 	/**
-	 * The collection of {@link TypeResolver TypeResolvers} that will be used to
+	 * The collection of {@link Resolver Resolvers} that will be used to
 	 * calculate the actual type.
 	 */
-	private final Collection<TypeResolver> resolvers;
+	private final Collection<Resolver> resolvers;
 
 	/**
-	 * Creates a new <code>FuncTypeResolver</code>.
+	 * Creates a new <code>FuncResolver</code>.
 	 *
-	 * @param parent The parent of this resolver
-	 * @param resolvers The collection of {@link TypeResolver TypeResolvers} that will be used to
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
+	 * @param resolvers The collection of {@link Resolver Resolvers} that will be used to
 	 * calculate the actual type
 	 */
-	FuncTypeResolver(TypeResolver parent, Collection<TypeResolver> resolvers) {
+	FuncResolver(Resolver parent, Collection<Resolver> resolvers) {
 		super(parent);
 		this.resolvers = resolvers;
 	}
@@ -47,7 +48,8 @@ final class FuncTypeResolver extends AbstractTypeResolver {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IType getType() {
+	@Override
+	IType buildType() {
 
 		IType stringType   = null;
 		IType numericType  = null;
@@ -55,7 +57,7 @@ final class FuncTypeResolver extends AbstractTypeResolver {
 		IType numericClass = getTypeHelper().numberType();
 		IType dateClass    = getTypeHelper().dateType();
 
-		for (TypeResolver resolver : resolvers) {
+		for (Resolver resolver : resolvers) {
 			IType parameterType = resolver.getType();
 
 			// String parameter type
@@ -89,5 +91,13 @@ final class FuncTypeResolver extends AbstractTypeResolver {
 
 		// Unknown type
 		return getTypeHelper().objectType();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	ITypeDeclaration buildTypeDeclaration() {
+		return getType().getTypeDeclaration();
 	}
 }

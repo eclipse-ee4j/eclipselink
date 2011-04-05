@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class DeleteStatementBNF extends JPQLQueryBNF {
+public final class DeleteStatementBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "delete_statement";
+	public static final String ID = "delete_statement";
 
 	/**
 	 * Creates a new <code>DeleteStatementBNF</code>.

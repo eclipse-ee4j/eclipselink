@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link NotExpressionFactory} creates a new {@link NotExpression} when
  * the portion of the query to parse starts with <b>NOT</b>. If the text has

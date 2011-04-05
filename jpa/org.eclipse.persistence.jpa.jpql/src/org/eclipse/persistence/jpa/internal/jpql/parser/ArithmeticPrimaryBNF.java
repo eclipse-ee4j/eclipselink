@@ -25,12 +25,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ArithmeticPrimaryBNF extends JPQLQueryBNF {
+public final class ArithmeticPrimaryBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "arithmetic_primary";
+	public static final String ID = "arithmetic_primary";
 
 	/**
 	 * Creates a new <code>ArithmeticPrimaryBNF</code>.

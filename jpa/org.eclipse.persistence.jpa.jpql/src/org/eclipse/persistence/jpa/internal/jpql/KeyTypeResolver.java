@@ -18,51 +18,38 @@ import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
- * This resolver is responsible to return the map key, which means that for identification variables
- * referring to an instance of an association or collection represented as a {@link java.util.Map
- * Map}, the identification variable is of the abstract schema type of the map key.
+ * This {@link Resolver} is responsible to return the map key, which means that for identification
+ * variables referring to an instance of an association or collection represented as a {@link
+ * java.util.Map Map}, the identification variable is of the abstract schema type of the map key.
  *
- * @see ValueTypeResolver
+ * @see ValueResolver
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
-final class KeyTypeResolver extends AbstractTypeResolver {
+final class KeyResolver extends Resolver {
 
 	/**
-	 * The resolver used to find the type of the identification variable.
-	 */
-	private final TypeResolver typeResolver;
-
-	/**
-	 * Creates a new <code>KeyTypeResolver</code>.
+	 * Creates a new <code>KeyResolver</code>.
 	 *
-	 * @param parent The parent of this resolver, which is never <code>null</code>
-	 * @param typeResolver The resolver used to find the type of the identification variable
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
 	 */
-	KeyTypeResolver(TypeResolver parent, TypeResolver typeResolver) {
+	KeyResolver(Resolver parent) {
 		super(parent);
-		this.typeResolver = typeResolver;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType getManagedType() {
-		return typeResolver.resolveManagedType(getType());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IType getType() {
+	IType buildType() {
 
 		ITypeDeclaration typeDeclaration = getTypeDeclaration();
 
 		if (getTypeHelper().isMapType(typeDeclaration.getType())) {
 			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+
 			if (typeParameters.length > 0) {
 				return typeParameters[0].getType();
 			}
@@ -75,7 +62,15 @@ final class KeyTypeResolver extends AbstractTypeResolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ITypeDeclaration getTypeDeclaration() {
-		return typeResolver.getTypeDeclaration();
+	ITypeDeclaration buildTypeDeclaration() {
+		return getParentTypeDeclaration();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IManagedType getManagedType() {
+		return getProvider().getManagedType(getType());
 	}
 }

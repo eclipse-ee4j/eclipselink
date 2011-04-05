@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class OrderByItemBNF extends JPQLQueryBNF {
+public final class OrderByItemBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "orderby_item";
+	public static final String ID = "orderby_item";
 
 	/**
 	 * Creates a new <code>OrderByItemBNF</code>.
@@ -57,7 +57,7 @@ final class OrderByItemBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate() {
+	public boolean handleAggregate() {
 		return true;
 	}
 
@@ -65,7 +65,7 @@ final class OrderByItemBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		// Technically, this BNF does not support collection but it's parent
 		// orderby_clause does. But this BNF is used by OrderByClause directly
 		// to parse the query so the flag has to be turned on here

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -117,6 +117,9 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"COALESCE_EXPRESSION_MISSING_EXPRESSION",        "The encapsulated expressions must be provided for a COALESCE expression."},
 			{"COALESCE_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the COALESCE expression."},
 			{"COALESCE_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the COALESCE expression."},
+
+			// CollectionExpression - Grammar
+			{"COLLECTION_EXPRESSION_MISSING_EXPRESSION", "An expression at position {0} must be defined."},
 
 			// CollectionMemberExpression - Grammar
 			{"COLLECTION_MEMBER_EXPRESSION_MISSING_ENTITY_EXPRESSION",                 "A collection member expression must define an entity expression."},
@@ -354,9 +357,9 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"NOT_EXPRESSION_WRONG_TYPE",         "The expression is not of boolean type."},
 
 			// NullComparisonExpression - Grammar
-			{"NULL_COMPARISON_EXPRESSION_MISSING_EXPRESSION",            "The expression is missing from the null comparison expression."},
+			{"NULL_COMPARISON_EXPRESSION_MISSING_EXPRESSION", "The expression is missing from the null comparison expression."},
 			// NullComparisonExpression - Semantic
-			{"NULL_COMPARISON_EXPRESSION_INVALID_COLLECTION_EXPRESSION", "''{0}'' cannot be resolved to a collection type."},
+			{"NULL_COMPARISON_EXPRESSION_INVALID_TYPE",       "''{0}'' cannot be resolved to an embeddable."},
 
 			// NullIfExpression - Grammar
 			{"NULL_IF_EXPRESSION_INVALID_FIRST_EXPRESSION",  "The first argument is not a valid expression."},
@@ -415,7 +418,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 
 			// StateFieldPathExpression - Semantic
 			{"STATE_FIELD_PATH_EXPRESSION_ASSOCIATION_FIELD",     "The association field ''{0}'' cannot be used as a state field path."},
-			{"STATE_FIELD_PATH_EXPRESSION_COLLECTION_TYPE",       "The state field path ''{0}'' cannot resolve to a collection type."},
+			{"STATE_FIELD_PATH_EXPRESSION_COLLECTION_TYPE",       "The state field path ''{0}'' cannot be resolved to a collection type."},
 			{"STATE_FIELD_PATH_EXPRESSION_INVALID_ENUM_CONSTANT", "''{0}'' cannot be resolved to an Enum constant."},
 			{"STATE_FIELD_PATH_EXPRESSION_NO_MAPPING",            "No mapping is associated with the state field path ''{0}''."},
 			{"STATE_FIELD_PATH_EXPRESSION_NOT_RESOLVABLE",        "The state field path ''{0}'' cannot be resolved to a valid type."},

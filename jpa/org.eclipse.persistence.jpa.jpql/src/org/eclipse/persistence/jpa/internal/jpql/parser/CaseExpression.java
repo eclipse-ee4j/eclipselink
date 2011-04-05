@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * <div nowrap><b>BNF:</b> <code>general_case_expression ::= CASE when_clause {when_clause}* ELSE scalar_expression END</code>
@@ -200,7 +201,7 @@ public final class CaseExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(GeneralCaseExpressionBNF.ID);
 	}
 
@@ -410,7 +411,7 @@ public final class CaseExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// 'CASE'
 		writer.append(CASE);
@@ -421,7 +422,7 @@ public final class CaseExpression extends AbstractExpression {
 
 		// Case Operand
 		if (caseOperand != null) {
-			caseOperand.toParsedText(writer);
+			caseOperand.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterCaseOperand) {
@@ -430,7 +431,7 @@ public final class CaseExpression extends AbstractExpression {
 
 		// When clauses
 		if (whenClauses != null) {
-			whenClauses.toParsedText(writer);
+			whenClauses.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterWhenClauses) {
@@ -448,7 +449,7 @@ public final class CaseExpression extends AbstractExpression {
 
 		// Else expression
 		if (elseExpression != null) {
-			elseExpression.toParsedText(writer);
+			elseExpression.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterElseExpression) {

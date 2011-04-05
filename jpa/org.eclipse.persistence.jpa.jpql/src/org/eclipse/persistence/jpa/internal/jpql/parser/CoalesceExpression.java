@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * A <b>COALESCE</b> expression returns <code>null</code> if all its arguments evaluate to
  * <code>null</code>, and the value of the first non-<code>null</code> argument otherwise.
@@ -48,14 +50,15 @@ public final class CoalesceExpression extends AbstractSingleEncapsulatedExpressi
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(InternalCoalesceExpressionBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return InternalCoalesceExpressionBNF.ID;
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(CoalesceExpressionBNF.ID);
 	}
 

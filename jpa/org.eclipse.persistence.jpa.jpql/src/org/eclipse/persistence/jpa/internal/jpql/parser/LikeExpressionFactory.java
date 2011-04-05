@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link LikeExpressionFactory} creates a new {@link LikeExpression} when the portion of the
  * query to parse starts with <b>LIKE</b> or <b>NOT LIKE</b>.

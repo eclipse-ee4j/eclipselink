@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class CaseOperandBNF extends JPQLQueryBNF {
+public final class CaseOperandBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "case_operand";
+	public static final String ID = "case_operand";
 
 	/**
 	 * Creates a new <code>CaseOperandBNF</code>.

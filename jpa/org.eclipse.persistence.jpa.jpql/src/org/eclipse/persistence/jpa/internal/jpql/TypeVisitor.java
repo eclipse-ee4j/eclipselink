@@ -109,12 +109,7 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
-import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
-import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
-import org.eclipse.persistence.jpa.jpql.spi.IMapping;
-import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
-import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
  * Calculates the type of an {@link Expression}.
@@ -173,17 +168,23 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class TypeVisitor implements ExpressionVisitor, TypeResolver {
+final class TypeVisitor implements ExpressionVisitor {
 
 	/**
-	 * The external form representing the JPA query.
+	 * This visitor is responsible to retrieve the {@link CollectionExpression} if it is visited.
 	 */
-	private IQuery query;
+	private CollectionExpressionVisitor collectionExpressionVisitor;
 
 	/**
-	 * This resolver returns the type for the expression that was visited.
+	 * The context used to query information about the query.
 	 */
-	private TypeResolver resolver;
+	private final JPQLQueryContext queryContext;
+
+	/**
+	 * The {@link Resolver} that will return the closest type for the {@link Expression} that was
+	 * visited.
+	 */
+	Resolver resolver;
 
 	/**
 	 * The {@link Pattern} representing the regular expression of a numerical value as a double.
@@ -208,269 +209,187 @@ public final class TypeVisitor implements ExpressionVisitor, TypeResolver {
 	/**
 	 * Creates a new <code>TypeVisitor</code>.
 	 *
-	 * @param query The external form representing the JPA query
+	 * @param queryContext The external form representing the JPA query
 	 */
-	public TypeVisitor(IQuery query) {
+	TypeVisitor(JPQLQueryContext queryContext) {
 		super();
-		initialize(query);
+		this.queryContext = queryContext;
 	}
 
 	/**
-	 * Creates a new {link TypeResolver} that simply wraps the already determined type by using its
+	 * Creates a new {link Resolver} that simply wraps the already determined type by using its
 	 * fully qualified class name.
 	 *
 	 * @param typeName The fully qualified name of the class
-	 * @return A new {@link TypeResolver}
+	 * @return A new {@link Resolver}
 	 */
-	final TypeResolver buildClassNameTypeResolver(String typeName) {
-		return new ClassNameTypeResolver(this, typeName);
+	private Resolver buildClassNameResolver(String typeName) {
+		return new ClassNameResolver(getDeclarationResolver(), typeName);
 	}
 
 	/**
-	 * Creates a new {link TypeResolver} that simply wraps the already determined type.
+	 * Creates a new {link Resolver} that simply wraps the already determined type.
 	 *
 	 * @param type The class type
-	 * @return A new {@link TypeResolver}
+	 * @return A new {@link Resolver}
 	 */
-	final TypeResolver buildClassTypeResolver(Class<?> type) {
-		return new ClassTypeResolver(this, type);
+	private Resolver buildClassResolver(Class<?> type) {
+		return new ClassResolver(getDeclarationResolver(), type);
 	}
 
-	/**
-	 * Creates a {@link TypeResolver} that will be able to resolve any identification variable to
-	 * an entity or collection-valued to a collection field member.
-	 *
-	 * @param expression The {@link Expression} used to traverse the declaration clause
-	 * @return A {@link TypeResolver} that can resolve identification variables
-	 */
-	final TypeResolver buildDeclarationVisitor(Expression expression) {
+	private Resolver buildCollectionValuedFieldResolver(String variableName,
+	                                                    String collectionValuedField) {
 
-		// Locate the declaration expression
-		DeclarationExpressionLocator locator = new DeclarationExpressionLocator(true);
-		expression.accept(locator);
+		Resolver resolver = this.resolver.getChild(variableName);
 
-		// Create the resolver/visitor that will be able to resolve the variables
-		DeclarationTypeResolver declarationResolver = null;
-
-		for (Expression declarationExpression : locator.reversedDeclarationExpresions()) {
-			if (declarationResolver == null) {
-				declarationResolver = new DeclarationTypeResolver(this);
-			}
-			else {
-				declarationResolver = new DeclarationTypeResolver(declarationResolver);
-			}
-			declarationExpression.accept(declarationResolver);
-		}
-
-		return declarationResolver;
-	}
-
-	/**
-	 * Creates a new {link TypeResolver} that simply wraps the entity type name.
-	 *
-	 * @param entityTypeName The name of the entity type
-	 * @return A new {@link TypeResolver}
-	 */
-	final TypeResolver buildEntityTypeResolver(String entityTypeName) {
-		return new EntityTypeResolver(this, entityTypeName);
-	}
-
-	private IQuery checkQuery(IQuery query) {
-		if (query == null) {
-			throw new IllegalArgumentException("IQuery cannot be null");
-		}
-
-		return query;
-	}
-
-	private void checkResolver(TypeResolver resolver) {
 		if (resolver == null) {
-			throw new IllegalArgumentException("TypeResolver cannot be null");
+			resolver = new CollectionValuedFieldResolver(this.resolver, variableName, collectionValuedField);
 		}
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IManagedType getManagedType() {
-		return resolver.getManagedType();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IMapping getMapping() {
-		return resolver.getMapping();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final IQuery getQuery() {
-		return query;
-	}
-
-	/**
-	 * Returns the {@link TypeResolver} for the expression that got visited.
-	 *
-	 * @return The resolver of the type of an expression
-	 */
-	final TypeResolver getResolver() {
 		return resolver;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public final IType getType() {
-		return resolver.getType();
+	private Resolver buildNullResolver() {
+		return new NullResolver(getDeclarationResolver());
+	}
+
+	private Resolver buildSingleValuedObjectFieldResolver(String variableName) {
+
+		Resolver resolver = this.resolver.getChild(variableName);
+
+		if (resolver == null) {
+			resolver = new SingleValuedObjectFieldResolver(this.resolver, variableName);
+		}
+
+		return resolver;
+	}
+
+	private Resolver buildStateFieldResolver(String variableName, String stateFieldPath) {
+
+		Resolver resolver = this.resolver.getChild(variableName);
+
+		if (resolver == null) {
+			resolver = new StateFieldResolver(this.resolver, variableName, stateFieldPath);
+		}
+
+		return resolver;
+	}
+
+	private CollectionExpression collectionExpression(Expression expression) {
+		CollectionExpressionVisitor visitor = collectionExpressionVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.expression;
+		}
+		finally {
+			visitor.expression = null;
+		}
+	}
+
+	private CollectionExpressionVisitor collectionExpressionVisitor() {
+		if (collectionExpressionVisitor == null) {
+			collectionExpressionVisitor = new CollectionExpressionVisitor();
+		}
+		return collectionExpressionVisitor;
+	}
+
+	private DeclarationResolver getDeclarationResolver() {
+		return queryContext.getDeclarationResolver();
+	}
+
+	private DeclarationResolver getDeclarationResolver(Expression expression) {
+		return queryContext.getDeclarationResolver(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public final ITypeDeclaration getTypeDeclaration() {
-		return resolver.getTypeDeclaration();
-	}
-
-	private void initialize(IQuery query) {
-		this.query    = checkQuery(query);
-		this.resolver = buildClassTypeResolver(Object.class);
-	}
-
-	private IManagedTypeProvider provider() {
-		return query.getProvider();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final IManagedType resolveManagedType(IType type) {
-		return provider().getManagedType(type);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final IManagedType resolveManagedType(String abstractSchemaName) {
-		return null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IMapping resolveMapping(String variableName) {
-		return resolver.resolveMapping(variableName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final IType resolveType(String variableName) {
-		return resolver.resolveType(variableName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final ITypeDeclaration resolveTypeDeclaration(String variableName) {
-		return resolver.resolveTypeDeclaration(variableName);
-	}
-
-	/**
-	 * Sets the resolver to be the following one.
-	 *
-	 * @param resolver The resolver used to determine the type; which cannot be
-	 * <code>null</code>
-	 */
-	final void setResolver(TypeResolver resolver) {
-		checkResolver(resolver);
-		this.resolver = resolver;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(final AbsExpression expression) {
+	public void visit(AbsExpression expression) {
 
 		// Visit the child expression in order to create the resolver
 		expression.getExpression().accept(this);
 
-		// Wrap the TypeResolver used to determine the type of the state field
+		// Wrap the Resolver used to determine the type of the state field
 		// path expression so we can return the actual type
-		resolver = new AbsFunctionResolver(this, resolver);
+		resolver = new AbsFunctionResolver(resolver);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final AbstractSchemaName expression) {
+	public void visit(AbstractSchemaName expression) {
 
-		String entityName = expression.toParsedText();
+		String abstractSchemaName = expression.getText();
 
-		if (ExpressionTools.stringIsNotEmpty(entityName)) {
-			resolver = buildClassNameTypeResolver(entityName);
+		// If the abstract schema name exists, then map it to its entity
+		if (ExpressionTools.stringIsNotEmpty(abstractSchemaName)) {
+			DeclarationResolver parent = getDeclarationResolver(expression);
+			resolver = new EntityResolver(parent, abstractSchemaName);
+		}
+		else {
+			resolver = buildNullResolver();
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final AdditionExpression expression) {
+	public void visit(AdditionExpression expression) {
 		visitArithmeticExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final AllOrAnyExpression expression) {
+	public void visit(AllOrAnyExpression expression) {
 		expression.getExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final AndExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
+	public void visit(AndExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final ArithmeticFactor expression) {
+	public void visit(ArithmeticFactor expression) {
 
 		// First traverse the expression
 		expression.getExpression().accept(this);
 
 		// Make sure the type is a numeric type
-		resolver = new NumericTypeResolver(this, resolver);
+		DeclarationResolver parent = getDeclarationResolver(expression);
+		resolver = new NumericResolver(parent, resolver);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final AvgFunction expression) {
-		resolver = buildClassTypeResolver(Double.class);
+	public void visit(AvgFunction expression) {
+		resolver = buildClassResolver(Double.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final BadExpression expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(BadExpression expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final BetweenExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
+	public void visit(BetweenExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final CaseExpression expression) {
+	public void visit(CaseExpression expression) {
 		visitCollectionEquivalentExpression(
 			expression.getWhenClauses(),
 			expression.getElseExpression()
@@ -480,104 +399,120 @@ public final class TypeVisitor implements ExpressionVisitor, TypeResolver {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final CoalesceExpression expression) {
+	public void visit(CoalesceExpression expression) {
 		visitCollectionEquivalentExpression(expression.getExpression(), null);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final CollectionExpression expression) {
+	public void visit(CollectionExpression expression) {
 		expression.acceptChildren(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final CollectionMemberDeclaration expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(CollectionMemberDeclaration expression) {
+		expression.getCollectionValuedPathExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final CollectionMemberExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
+	public void visit(CollectionMemberExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final CollectionValuedPathExpression expression) {
+	public void visit(CollectionValuedPathExpression expression) {
 
-		// Resolve the FROM clause so abstract schema names are resolvable
-		TypeResolver visitor = buildDeclarationVisitor(expression);
+		// If the path ends with '.', then the path is incomplete
+		// so we can't resolve the type
+		if (!expression.endsWithDot()) {
 
-		// Visit the collection-valued path expression so the resolver tree can be created
-		PathDeclarationVisitor pathVisitor = new PathDeclarationVisitor(visitor);
-		expression.accept(pathVisitor);
+			expression.getIdentificationVariable().accept(this);
 
-		resolver = pathVisitor.resolver();
+			for (int index = expression.hasVirtualIdentificationVariable() ? 0 : 1, count = expression.pathSize(); index < count; index++) {
+				if (index + 1 < count) {
+					resolver = buildSingleValuedObjectFieldResolver(expression.getPath(index));
+				}
+				else {
+					resolver = buildCollectionValuedFieldResolver(expression.getPath(index), expression.toParsedText());
+				}
+			}
+		}
+		else {
+			resolver = buildNullResolver();
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final ComparisonExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
+	public void visit(ComparisonExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final ConcatExpression expression) {
-		resolver = buildClassTypeResolver(String.class);
+	public void visit(ConcatExpression expression) {
+		resolver = buildClassResolver(String.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final ConstructorExpression expression) {
+	public void visit(ConstructorExpression expression) {
 
 		String className = expression.getClassName();
 
 		if (ExpressionTools.stringIsNotEmpty(className)) {
-			resolver = buildClassNameTypeResolver(className);
+			resolver = buildClassNameResolver(className);
+		}
+		else {
+			resolver = buildNullResolver();
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final CountFunction expression) {
-		resolver = buildClassTypeResolver(Long.class);
+	public void visit(CountFunction expression) {
+		resolver = buildClassResolver(Long.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final DateTime expression) {
+	public void visit(DateTime expression) {
 
 		if (expression.isCurrentDate()) {
-			resolver = buildClassTypeResolver(Date.class);
+			resolver = buildClassResolver(Date.class);
 		}
 		else if (expression.isCurrentTime()) {
-			resolver = buildClassTypeResolver(Time.class);
+			resolver = buildClassResolver(Time.class);
 		}
 		else if (expression.isCurrentTimestamp()) {
-			resolver = buildClassTypeResolver(Timestamp.class);
+			resolver = buildClassResolver(Timestamp.class);
 		}
 		else {
 			String text = expression.getText();
 
 			if (text.startsWith("{d")) {
-				resolver = buildClassTypeResolver(Date.class);
+				resolver = buildClassResolver(Date.class);
 			}
 			else if (text.startsWith("{ts")) {
-				resolver = buildClassTypeResolver(Timestamp.class);
+				resolver = buildClassResolver(Timestamp.class);
 			}
 			else if (text.startsWith("{t")) {
-				resolver = buildClassTypeResolver(Time.class);
+				resolver = buildClassResolver(Time.class);
+			}
+			else {
+				resolver = buildNullResolver();
 			}
 		}
 	}
@@ -585,283 +520,278 @@ public final class TypeVisitor implements ExpressionVisitor, TypeResolver {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final DeleteClause expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(DeleteClause expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final DeleteStatement expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(DeleteStatement expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final DivisionExpression expression) {
+	public void visit(DivisionExpression expression) {
 		visitArithmeticExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final EmptyCollectionComparisonExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
+	public void visit(EmptyCollectionComparisonExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final EntityTypeLiteral expression) {
+	public void visit(EntityTypeLiteral expression) {
 
 		String entityTypeName = expression.getEntityTypeName();
 
 		if (ExpressionTools.stringIsNotEmpty(entityTypeName)) {
-			resolver = buildEntityTypeResolver(entityTypeName);
+			DeclarationResolver parent = getDeclarationResolver(expression);
+			resolver = new EntityResolver(parent, entityTypeName);
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(final EntryExpression expression) {
-		resolver = buildClassTypeResolver(Map.Entry.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(final ExistsExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(final FromClause expression) {
-		resolver = buildClassTypeResolver(Object.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(final FuncExpression expression) {
-		resolver = buildClassTypeResolver(Object.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(final GroupByClause expression) {
-		resolver = buildClassTypeResolver(Object.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(final HavingClause expression) {
-		resolver = buildClassTypeResolver(Object.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(final IdentificationVariable expression) {
-
-		// Build the visitor/resolver that will be able to find the type of the identification
-		// variable, which is found in the declaration expression
-		TypeResolver visitor = buildDeclarationVisitor(expression);
-
-		// The declaration clause is not defined or is malformed
-		if (visitor == null) {
-			resolver = new NullTypeResolver(this);
-		}
-		// Now create the resolver of the identification variable
 		else {
-			resolver = new IdentificationVariableResolver(visitor, expression.getText());
+			resolver = buildNullResolver();
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final IdentificationVariableDeclaration expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(EntryExpression expression) {
+		resolver = buildClassResolver(Map.Entry.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final IndexExpression expression) {
-		resolver = buildClassTypeResolver(Integer.class);
+	public void visit(ExistsExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final InExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
+	public void visit(FromClause expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final InputParameter expression) {
-		resolver = buildClassNameTypeResolver(IType.UNRESOLVABLE_TYPE);
+	public void visit(FuncExpression expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final Join expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(GroupByClause expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final JoinFetch expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(HavingClause expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final JPQLExpression expression) {
+	public void visit(IdentificationVariable expression) {
+		DeclarationResolver parent = getDeclarationResolver(expression);
+		resolver = parent.getResolver(expression.getText());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(IdentificationVariableDeclaration expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(IndexExpression expression) {
+		resolver = buildClassResolver(Integer.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(InExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(InputParameter expression) {
+		resolver = buildClassNameResolver(IType.UNRESOLVABLE_TYPE);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(Join expression) {
+		expression.getJoinAssociationPath().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(JoinFetch expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(JPQLExpression expression) {
 		expression.getQueryStatement().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final KeyExpression expression) {
+	public void visit(KeyExpression expression) {
 
 		// Visit the identification variable in order to create the resolver
 		expression.getExpression().accept(this);
 
-		// Wrap the TypeResolver used to determine the type of the identification
+		// Wrap the Resolver used to determine the type of the identification
 		// variable so we can return the actual type
-		resolver = new KeyTypeResolver(this, resolver);
+		resolver = new KeyResolver(resolver);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final KeywordExpression expression) {
+	public void visit(KeywordExpression expression) {
 
 		String text = expression.toParsedText();
 
 		if (KeywordExpression.FALSE.equalsIgnoreCase(text) ||
 		    KeywordExpression.TRUE .equalsIgnoreCase(text))
 		{
-			resolver = buildClassTypeResolver(Boolean.class);
+			resolver = buildClassResolver(Boolean.class);
 		}
 		else {
-			resolver = buildClassTypeResolver(Object.class);
+			resolver = buildClassResolver(Object.class);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final LengthExpression expression) {
-		resolver = buildClassTypeResolver(Integer.class);
+	public void visit(LengthExpression expression) {
+		resolver = buildClassResolver(Integer.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final LikeExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
+	public void visit(LikeExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final LocateExpression expression) {
-		resolver = buildClassTypeResolver(Integer.class);
+	public void visit(LocateExpression expression) {
+		resolver = buildClassResolver(Integer.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final LowerExpression expression) {
-		resolver = buildClassTypeResolver(String.class);
+	public void visit(LowerExpression expression) {
+		resolver = buildClassResolver(String.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final MaxFunction expression) {
+	public void visit(MaxFunction expression) {
 
 		// Visit the state field path expression in order to create the resolver
 		expression.getExpression().accept(this);
 
-		// Wrap the TypeResolver used to determine the type of the state field
+		// Wrap the Resolver used to determine the type of the state field
 		// path expression so we can return the actual type
-		resolver = new NumericTypeResolver(this, resolver);
+		DeclarationResolver parent = getDeclarationResolver(expression);
+		resolver = new NumericResolver(parent, resolver);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final MinFunction expression) {
+	public void visit(MinFunction expression) {
 
 		// Visit the state field path expression in order to create the resolver
 		expression.getExpression().accept(this);
 
-		// Wrap the TypeResolver used to determine the type of the state field
+		// Wrap the Resolver used to determine the type of the state field
 		// path expression so we can return the actual type
-		resolver = new NumericTypeResolver(this, resolver);
+		DeclarationResolver parent = getDeclarationResolver(expression);
+		resolver = new NumericResolver(parent, resolver);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final ModExpression expression) {
-		resolver = buildClassTypeResolver(Integer.class);
+	public void visit(ModExpression expression) {
+		resolver = buildClassResolver(Integer.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final MultiplicationExpression expression) {
+	public void visit(MultiplicationExpression expression) {
 		visitArithmeticExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final NotExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
+	public void visit(NotExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final NullComparisonExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
+	public void visit(NullComparisonExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final NullExpression expression) {
-		resolver = buildClassNameTypeResolver(IType.UNRESOLVABLE_TYPE);
+	public void visit(NullExpression expression) {
+		resolver = buildClassNameResolver(IType.UNRESOLVABLE_TYPE);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final NullIfExpression expression) {
+	public void visit(NullIfExpression expression) {
 		expression.getFirstExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final NumericLiteral expression) {
+	public void visit(NumericLiteral expression) {
 		try {
 			String text = expression.getText();
 
@@ -873,303 +803,307 @@ public final class TypeVisitor implements ExpressionVisitor, TypeResolver {
 				Long value = Long.parseLong(text);
 
 				if (value <= Integer.MAX_VALUE) {
-					resolver = buildClassTypeResolver(Integer.class);
+					resolver = buildClassResolver(Integer.class);
 				}
 				else {
-					resolver = buildClassTypeResolver(Long.class);
+					resolver = buildClassResolver(Long.class);
 				}
 			}
 			// Float
 			else if (FLOAT_REGEXP.matcher(text).matches()) {
-				resolver = buildClassTypeResolver(Float.class);
+				resolver = buildClassResolver(Float.class);
 			}
 			// Decimal
 			else if (DOUBLE_REGEXP.matcher(text).matches()) {
 
-				resolver = buildClassTypeResolver(Double.class);
+				resolver = buildClassResolver(Double.class);
 //				// 1000D is parsed as a Long
 //				if (text.endsWith("d") || text.endsWith("D")) {
-//					resolver = buildClassTypeResolver(Double.class);
+//					resolver = buildClassResolver(Double.class);
 //				}
 //				else {
 //					Number number = DecimalFormat.getInstance().parse(text);
 //
 //					if (number instanceof Double) {
 //						if (number.doubleValue() <= Float.MAX_VALUE) {
-//							resolver = buildClassTypeResolver(Float.class);
+//							resolver = buildClassResolver(Float.class);
 //						}
 //						else {
-//							resolver = buildClassTypeResolver(Double.class);
+//							resolver = buildClassResolver(Double.class);
 //						}
 //					}
 //					else {
-//						resolver = buildClassTypeResolver(number.getClass());
+//						resolver = buildClassResolver(number.getClass());
 //					}
 //				}
 			}
 		}
 		catch (Exception e) {
-			resolver = buildClassTypeResolver(Object.class);
+			resolver = buildClassResolver(Object.class);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final ObjectExpression expression) {
+	public void visit(ObjectExpression expression) {
 		expression.getExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final OrderByClause expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(OrderByClause expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final OrderByItem expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(OrderByItem expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final OrExpression expression) {
-		resolver = buildClassTypeResolver(Boolean.class);
+	public void visit(OrExpression expression) {
+		resolver = buildClassResolver(Boolean.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final RangeVariableDeclaration expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(RangeVariableDeclaration expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final ResultVariable expression) {
+	public void visit(ResultVariable expression) {
 		expression.getSelectExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final SelectClause expression) {
+	public void visit(SelectClause expression) {
+
+		Expression selectExpression = expression.getSelectExpression();
 
 		// visit(CollectionExpression) iterates through the children but for a
 		// SELECT clause, a CollectionExpression means the result type is Object[]
-		CollectionExpressionVisitor visitor = new CollectionExpressionVisitor();
-		expression.getSelectExpression().accept(visitor);
+		CollectionExpression collectionExpression = collectionExpression(selectExpression);
 
-		if (visitor.expression != null) {
-			resolver = buildClassTypeResolver(Object[].class);
+		if (collectionExpression != null) {
+			resolver = buildClassResolver(Object[].class);
 		}
 		else {
-			expression.getSelectExpression().accept(this);
+			selectExpression.accept(this);
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final SelectStatement expression) {
+	public void visit(SelectStatement expression) {
 		expression.getSelectClause().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final SimpleFromClause expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(SimpleFromClause expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final SimpleSelectClause expression) {
+	public void visit(SimpleSelectClause expression) {
 		expression.getSelectExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final SimpleSelectStatement expression) {
-		expression.getSelectClause().accept(this);
+	public void visit(SimpleSelectStatement expression) {
+		queryContext.newSubQueryContext(expression);
+		try {
+			expression.getSelectClause().accept(this);
+		}
+		finally {
+			queryContext.disposeSubQueryContext();
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final SizeExpression expression) {
-		resolver = buildClassTypeResolver(Integer.class);
+	public void visit(SizeExpression expression) {
+		resolver = buildClassResolver(Integer.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final SqrtExpression expression) {
-		resolver = buildClassTypeResolver(Double.class);
+	public void visit(SqrtExpression expression) {
+		resolver = buildClassResolver(Double.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final StateFieldPathExpression expression) {
+	public void visit(StateFieldPathExpression expression) {
 
 		// If the path ends with '.', then the path is incomplete
 		// so we can't resolve the type
 		if (!expression.endsWithDot()) {
 
-			// The first path is always a general identification variable
 			expression.getIdentificationVariable().accept(this);
 
-			// The rest of the path is always a property
 			for (int index = expression.hasVirtualIdentificationVariable() ? 0 : 1, count = expression.pathSize(); index < count; index++) {
-
 				if (index + 1 < count) {
-					resolver = new SingleValuedObjectFieldTypeResolver(resolver, expression.getPath(index));
+					resolver = buildSingleValuedObjectFieldResolver(expression.getPath(index));
 				}
 				else {
-					resolver = new StateFieldTypeResolver(resolver, expression.getPath(index));
+					resolver = buildStateFieldResolver(expression.getPath(index), expression.toParsedText());
 				}
 			}
-
-			// Wrap the TypeResolver so it can check for an enum type
-			resolver = new EnumTypeResolver(resolver, expression.toParsedText());
+		}
+		else {
+			resolver = buildNullResolver();
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final StringLiteral expression) {
-		resolver = buildClassTypeResolver(String.class);
+	public void visit(StringLiteral expression) {
+		resolver = buildClassResolver(String.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final SubExpression expression) {
+	public void visit(SubExpression expression) {
 		expression.getExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final SubtractionExpression expression) {
+	public void visit(SubstringExpression expression) {
+		resolver = buildClassResolver(String.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(SubtractionExpression expression) {
 		visitArithmeticExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final SubstringExpression expression) {
-		resolver = buildClassTypeResolver(String.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(final SumFunction expression) {
+	public void visit(SumFunction expression) {
 
 		// Visit the state field path expression in order to create the resolver
 		expression.getExpression().accept(this);
 
-		// Wrap the TypeResolver used to determine the type of the state field
+		// Wrap the Resolver used to determine the type of the state field
 		// path expression so we can return the actual type
-		resolver = new SumFunctionResolver(this, resolver);
+		resolver = new SumFunctionResolver(resolver);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(TreatExpression expression) {
-		resolver = buildClassTypeResolver(Object.class);
+		expression.getEntityType().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final TrimExpression expression) {
-		resolver = buildClassTypeResolver(String.class);
+	public void visit(TrimExpression expression) {
+		resolver = buildClassResolver(String.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final TypeExpression expression) {
+	public void visit(TypeExpression expression) {
 		expression.getExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final UnknownExpression expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(UnknownExpression expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final UpdateClause expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(UpdateClause expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final UpdateItem expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(UpdateItem expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final UpdateStatement expression) {
-		resolver = buildClassTypeResolver(Object.class);
+	public void visit(UpdateStatement expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final UpperExpression expression) {
-		resolver = buildClassTypeResolver(String.class);
+	public void visit(UpperExpression expression) {
+		resolver = buildClassResolver(String.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final ValueExpression expression) {
+	public void visit(ValueExpression expression) {
 
 		// Visit the identification variable in order to create the resolver
 		expression.getExpression().accept(this);
 
-		// Wrap the TypeResolver used to determine the type of the identification
+		// Wrap the Resolver used to determine the type of the identification
 		// variable so we can return the actual type
-		resolver = new ValueTypeResolver(this, resolver);
+		resolver = new ValueResolver(resolver);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final WhenClause expression) {
+	public void visit(WhenClause expression) {
 		expression.getThenExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(final WhereClause expression) {
+	public void visit(WhereClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}
 
 	private void visitArithmeticExpression(ArithmeticExpression expression) {
 
-		List<TypeResolver> resolvers = new ArrayList<TypeResolver>(2);
+		List<Resolver> resolvers = new ArrayList<Resolver>(2);
 
 		// Visit the first expression
 		expression.getLeftExpression().accept(this);
@@ -1180,28 +1114,21 @@ public final class TypeVisitor implements ExpressionVisitor, TypeResolver {
 		resolvers.add(resolver);
 
 		// This will resolve the correct numeric type
-		resolver = new NumericTypeResolver(this, resolvers);
+		DeclarationResolver parent = getDeclarationResolver(expression);
+		resolver = new NumericResolver(parent, resolvers);
 	}
 
 	private void visitCollectionEquivalentExpression(Expression expression,
 	                                                 Expression extraExpression) {
 
-		List<TypeResolver> resolvers = new ArrayList<TypeResolver>();
-
-		CollectionExpressionVisitor visitor = new CollectionExpressionVisitor();
-		expression.accept(visitor);
+		List<Resolver> resolvers = new ArrayList<Resolver>();
+		CollectionExpression collectionExpression = collectionExpression(expression);
 
 		// Gather the resolver for all children
-		if (visitor.expression != null) {
-			for (Expression child : visitor.expression.getChildren()) {
-				// Ignore InputParameter since its type is always Object
-				InputParameterVisitor inputParameterVisitor = new InputParameterVisitor();
-				child.accept(inputParameterVisitor);
-
-				if (inputParameterVisitor.expression == null) {
-					child.accept(this);
-					resolvers.add(resolver);
-				}
+		if (collectionExpression != null) {
+			for (Expression child : collectionExpression.getChildren()) {
+				child.accept(this);
+				resolvers.add(resolver);
 			}
 		}
 		// Otherwise visit the actual expression
@@ -1212,17 +1139,12 @@ public final class TypeVisitor implements ExpressionVisitor, TypeResolver {
 
 		// Add the resolver for the other expression
 		if (extraExpression != null) {
-			// Ignore InputParameter since its type is always Object
-			InputParameterVisitor inputParameterVisitor = new InputParameterVisitor();
-			extraExpression.accept(inputParameterVisitor);
-
-			if (inputParameterVisitor.expression == null) {
-				extraExpression.accept(this);
-				resolvers.add(resolver);
-			}
+			extraExpression.accept(this);
+			resolvers.add(resolver);
 		}
 
-		resolver = new CollectionEquivalentTypeResolver(this, resolvers);
+		DeclarationResolver parent = getDeclarationResolver(expression);
+		resolver = new CollectionEquivalentResolver(parent, resolvers);
 	}
 
 	/**
@@ -1239,26 +1161,7 @@ public final class TypeVisitor implements ExpressionVisitor, TypeResolver {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(final CollectionExpression expression) {
-			this.expression = expression;
-		}
-	}
-
-	/**
-	 * This visitor is used to check if the expression visited is a {@link InputParameter}.
-	 */
-	private static final class InputParameterVisitor extends AbstractExpressionVisitor {
-
-		/**
-		 * The {@link InputParameter} that was visited, otherwise <code>null</code>.
-		 */
-		InputParameter expression;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(final InputParameter expression) {
+		public void visit(CollectionExpression expression) {
 			this.expression = expression;
 		}
 	}

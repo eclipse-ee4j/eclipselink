@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InputParameterBNF extends JPQLQueryBNF {
+public final class InputParameterBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "input_parameter";
+	public static final String ID = "input_parameter";
 
 	/**
 	 * Creates a new <code>InputParameterBNF</code>.

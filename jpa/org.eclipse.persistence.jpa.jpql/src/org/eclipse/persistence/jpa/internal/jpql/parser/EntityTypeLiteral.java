@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * This {@link Expression} wraps the name of an entity type.
@@ -68,7 +69,7 @@ public final class EntityTypeLiteral extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(EntityTypeExpressionBNF.ID);
 	}
 
@@ -92,7 +93,7 @@ public final class EntityTypeLiteral extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 		writer.append(getText());
 	}
 }

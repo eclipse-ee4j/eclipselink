@@ -25,12 +25,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalWhenClauseBNF extends JPQLQueryBNF {
+public final class InternalWhenClauseBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "internal_when_clause*";
+	public static final String ID = "internal_when_clause*";
 
 	/**
 	 * Creates a new <code>InternalWhenClauseBNF</code>.

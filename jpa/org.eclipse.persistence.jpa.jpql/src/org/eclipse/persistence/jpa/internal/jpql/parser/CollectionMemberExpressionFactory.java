@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link CollectionMemberExpressionFactory} creates a new {@link CollectionMemberExpression}
  * when the portion of the query to parse starts with <b>MEMBER</b>, <b>MEMBER OF</b>, <b>NOT

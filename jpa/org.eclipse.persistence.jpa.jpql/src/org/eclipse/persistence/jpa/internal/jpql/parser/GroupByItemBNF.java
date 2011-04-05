@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class GroupByItemBNF extends JPQLQueryBNF {
+public final class GroupByItemBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "groupby_item";
+	public static final String ID = "groupby_item";
 
 	/**
 	 * Creates a new <code>GroupByItemBNF</code>.
@@ -57,7 +57,7 @@ final class GroupByItemBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate() {
+	public boolean handleAggregate() {
 		return true;
 	}
 
@@ -65,7 +65,7 @@ final class GroupByItemBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		// Technically, this BNF does not support collection but it's parent
 		// groupby_clause does. But this BNF is used by GroupByClause directly
 		// to parse the query so the flag has to be turned on here

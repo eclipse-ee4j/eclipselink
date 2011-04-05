@@ -91,21 +91,6 @@ public final class TypeHelper {
 	}
 
 	/**
-	 * Converts the given {@link IType}, if it's the primitive boolean, into the <code>Boolean</code>
-	 * type.
-	 *
-	 * @param type The {@link IType} to possibly convert
-	 * @return The given type if it's not the primitive boolean or the {@link IType} for the class
-	 * <code>Boolean</code>
-	 */
-	public IType booleanType(IType type) {
-		if (type.equals(primitiveBoolean())) {
-			return booleanType();
-		}
-		return type;
-	}
-
-	/**
 	 * Retrieves the {@link IType} for {@link Byte}.
 	 *
 	 * @return The external form of the <code>Byte</code> class
@@ -115,35 +100,12 @@ public final class TypeHelper {
 	}
 
 	/**
-	 * Converts the given {@link IType}, if it's the primitive byte, into the <code>Byte</code>
-	 * type.
-	 *
-	 * @param type The {@link IType} to possibly convert
-	 * @return The given type if it's not the primitive byte or the {@link IType} for the class
-	 * <code>Byte</code>
-	 */
-	public IType byteType(IType type) {
-		if (type.equals(primitiveByte())) {
-			return byteType();
-		}
-		return type;
-	}
-
-	/**
 	 * Retrieves the {@link IType} for {@link Collection}.
 	 *
 	 * @return The external form of the <code>Collection</code> class
 	 */
 	public IType collectionType() {
 		return getType(Collection.class);
-	}
-
-	public IType convertNotNumberType(IType type) {
-		if (!type.isAssignableTo(numberType())) {
-			type = objectType();
-		}
-
-		return type;
 	}
 
 	/**
@@ -157,19 +119,19 @@ public final class TypeHelper {
 	public IType convertPrimitive(IType type) {
 
 		// byte
-		IType newType = byteType(type);
+		IType newType = toByteType(type);
 		if (newType != type) {
 			return newType;
 		}
 
 		// short
-		newType = shortType(type);
+		newType = toShortType(type);
 		if (newType != type) {
 			return newType;
 		}
 
 		// int
-		newType = integerType(type);
+		newType = toIntegerType(type);
 		if (newType != type) {
 			return newType;
 		}
@@ -181,19 +143,19 @@ public final class TypeHelper {
 		}
 
 		// float
-		newType = floatType(type);
+		newType = toFloatType(type);
 		if (newType != type) {
 			return newType;
 		}
 
 		// double
-		newType = doubleType(type);
+		newType = toDoubleType(type);
 		if (newType != type) {
 			return newType;
 		}
 
 		// boolean
-		newType = booleanType(type);
+		newType = toBooleanType(type);
 		if (newType != type) {
 			return newType;
 		}
@@ -220,21 +182,6 @@ public final class TypeHelper {
 	}
 
 	/**
-	 * Converts the given {@link IType}, if it's the primitive double, into the <code>Double</code>
-	 * type.
-	 *
-	 * @param type The {@link IType} to possibly convert
-	 * @return The given type if it's not the primitive double or the {@link IType} for the class
-	 * <code>Double</code>
-	 */
-	public IType doubleType(IType type) {
-		if (type.equals(primitiveDouble())) {
-			return doubleType();
-		}
-		return type;
-	}
-
-	/**
 	 * Retrieves the {@link IType} for {@link Enum}.
 	 *
 	 * @return The external form of the <code>Enum</code> class
@@ -250,21 +197,6 @@ public final class TypeHelper {
 	 */
 	public IType floatType() {
 		return getType(Float.class);
-	}
-
-	/**
-	 * Converts the given {@link IType}, if it's the primitive float, into the <code>Float</code>
-	 * type.
-	 *
-	 * @param type The {@link IType} to possibly convert
-	 * @return The given type if it's not the primitive float or the {@link IType} for the class
-	 * <code>Float</code>
-	 */
-	public IType floatType(IType type) {
-		if (type.equals(primitiveFloat())) {
-			return floatType();
-		}
-		return type;
 	}
 
 	/**
@@ -287,6 +219,11 @@ public final class TypeHelper {
 		return typeRepository.getType(typeName);
 	}
 
+	/**
+	 * Returns the {@link ITypeRepository} used by this helper
+	 *
+	 * @return The external form of the provider of {@link IType ITypes}.
+	 */
 	public ITypeRepository getTypeRepository() {
 		return typeRepository;
 	}
@@ -301,20 +238,12 @@ public final class TypeHelper {
 	}
 
 	/**
-	 * Converts the given {@link IType}, if it's the primitive int, into the <code>Integer</code>
-	 * type.
+	 * Determines whether the given {@link IType} is a {@link Boolean}.
 	 *
-	 * @param type The {@link IType} to possibly convert
-	 * @return The given type if it's not the primitive int or the {@link IType} for the class
-	 * <code>Integer</code>
+	 * @param type The type to check it's assignability
+	 * @return <code>true</code> if the given {@link IType} is a {@link Boolean}; <code>false</code>
+	 * otherwise
 	 */
-	public IType integerType(IType type) {
-		if (type.equals(primitiveInteger())) {
-			return integerType();
-		}
-		return type;
-	}
-
 	public boolean isBooleanType(IType type) {
 		return type.equals(booleanType());
 	}
@@ -330,22 +259,29 @@ public final class TypeHelper {
 		return type.isAssignableTo(collectionType());
 	}
 
+	/**
+	 * Determines whether the given {@link IType} is a {@link Date}, {@link Timestamp} or
+	 * {@link Calendar}.
+	 *
+	 * @param type The type to check it's assignability
+	 * @return <code>true</code> if the given {@link IType} is a {@link Date}, {@link Timestamp} or
+	 * {@link Calendar}
+	 */
 	public boolean isDateType(IType type) {
 		return type.equals(dateType())      ||
 		       type.equals(timestampType()) ||
 		       type.equals(getType(Calendar.class));
 	}
 
+	/**
+	 * Determines whether the given {@link IType} is an instance of {@link Enum}.
+	 *
+	 * @param type The type to check it's assignability
+	 * @return <code>true</code> if the given {@link IType} is an instance of {@link Enum};
+	 * <code>false</code> otherwise
+	 */
 	public boolean isEnumType(IType type) {
 		return type.isAssignableTo(enumType());
-	}
-
-	public boolean isEquivalentType(IType type1, IType type2) {
-		return isNumericType(type1) && isNumericType(type2) ||
-		       isBooleanType(type1) && isBooleanType(type2) ||
-		       isStringType(type1)  && isStringType(type2)  ||
-		       isEnumType(type1)    && isEnumType(type2)    ||
-		       isDateType(type1)    && isDateType(type2);
 	}
 
 	/**
@@ -389,10 +325,23 @@ public final class TypeHelper {
 		return type.isAssignableTo(mapType());
 	}
 
+	/**
+	 * Determines whether the given {@link IType} is an instance of {@link Numeric}.
+	 *
+	 * @param type The type to check it's assignability
+	 * @return <code>true</code> if the given {@link IType} is an instance of {@link Numeric};
+	 * <code>false</code> otherwise
+	 */
 	public boolean isNumericType(IType type) {
 		return type.isAssignableTo(numberType());
 	}
 
+	/**
+	 * Determines whether the given {@link IType} is the external form of {@link Object}.
+	 *
+	 * @param type The type to check it's assignability
+	 * @return <code>true</code> if the given {@link IType} is the external form of {@link Object}
+	 */
 	public boolean isObjectType(IType type) {
 		return type.equals(objectType());
 	}
@@ -544,21 +493,6 @@ public final class TypeHelper {
 	}
 
 	/**
-	 * Converts the given {@link IType}, if it's the primitive short, into the <code>Short</code>
-	 * type.
-	 *
-	 * @param type The {@link IType} to possibly convert
-	 * @return The given type if it's not the primitive short or the {@link IType} for the class
-	 * <code>Short</code>
-	 */
-	public IType shortType(IType type) {
-		if (type.equals(primitiveShort())) {
-			return shortType();
-		}
-		return type;
-	}
-
-	/**
 	 * Retrieves the {@link IType} for {@link String}.
 	 *
 	 * @return The external form of the <code>String</code> class
@@ -577,6 +511,96 @@ public final class TypeHelper {
 	 */
 	public IType timestampType() {
 		return getType(Timestamp.class);
+	}
+
+	/**
+	 * Converts the given {@link IType}, if it's the primitive boolean, into the <code>Boolean</code>
+	 * type.
+	 *
+	 * @param type The {@link IType} to possibly convert
+	 * @return The given type if it's not the primitive boolean or the {@link IType} for the class
+	 * <code>Boolean</code>
+	 */
+	public IType toBooleanType(IType type) {
+		if (type.equals(primitiveBoolean())) {
+			return booleanType();
+		}
+		return type;
+	}
+
+	/**
+	 * Converts the given {@link IType}, if it's the primitive byte, into the <code>Byte</code>
+	 * type.
+	 *
+	 * @param type The {@link IType} to possibly convert
+	 * @return The given type if it's not the primitive byte or the {@link IType} for the class
+	 * <code>Byte</code>
+	 */
+	public IType toByteType(IType type) {
+		if (type.equals(primitiveByte())) {
+			return byteType();
+		}
+		return type;
+	}
+
+	/**
+	 * Converts the given {@link IType}, if it's the primitive double, into the <code>Double</code>
+	 * type.
+	 *
+	 * @param type The {@link IType} to possibly convert
+	 * @return The given type if it's not the primitive double or the {@link IType} for the class
+	 * <code>Double</code>
+	 */
+	public IType toDoubleType(IType type) {
+		if (type.equals(primitiveDouble())) {
+			return doubleType();
+		}
+		return type;
+	}
+
+	/**
+	 * Converts the given {@link IType}, if it's the primitive float, into the <code>Float</code>
+	 * type.
+	 *
+	 * @param type The {@link IType} to possibly convert
+	 * @return The given type if it's not the primitive float or the {@link IType} for the class
+	 * <code>Float</code>
+	 */
+	public IType toFloatType(IType type) {
+		if (type.equals(primitiveFloat())) {
+			return floatType();
+		}
+		return type;
+	}
+
+	/**
+	 * Converts the given {@link IType}, if it's the primitive int, into the <code>Integer</code>
+	 * type.
+	 *
+	 * @param type The {@link IType} to possibly convert
+	 * @return The given type if it's not the primitive int or the {@link IType} for the class
+	 * <code>Integer</code>
+	 */
+	public IType toIntegerType(IType type) {
+		if (type.equals(primitiveInteger())) {
+			return integerType();
+		}
+		return type;
+	}
+
+	/**
+	 * Converts the given {@link IType}, if it's the primitive short, into the <code>Short</code>
+	 * type.
+	 *
+	 * @param type The {@link IType} to possibly convert
+	 * @return The given type if it's not the primitive short or the {@link IType} for the class
+	 * <code>Short</code>
+	 */
+	public IType toShortType(IType type) {
+		if (type.equals(primitiveShort())) {
+			return shortType();
+		}
+		return type;
 	}
 
 	/**

@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalUpdateClauseBNF extends JPQLQueryBNF {
+public final class InternalUpdateClauseBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "update_item*";
+	public static final String ID = "update_item*";
 
 	/**
 	 * Creates a new <code>InternalUpdateClauseBNF</code>.
@@ -47,7 +47,7 @@ final class InternalUpdateClauseBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate() {
+	public boolean handleAggregate() {
 		// In order to parse invalid queries
 		return true;
 	}
@@ -56,7 +56,7 @@ final class InternalUpdateClauseBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		return true;
 	}
 }

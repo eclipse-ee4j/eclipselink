@@ -25,12 +25,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class BetweenExpressionBNF extends JPQLQueryBNF {
+public final class BetweenExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this {@link BetweenExpressionBNF}.
 	 */
-	static final String ID = "between_expression";
+	public static final String ID = "between_expression";
 
 	/**
 	 * Creates a new <code>BetweenExpressionBNF</code>.
@@ -57,7 +57,7 @@ final class BetweenExpressionBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isCompound() {
+	public boolean isCompound() {
 		return true;
 	}
 }

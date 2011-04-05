@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link UpdateItemStateFieldPathExpressionFactory} is meant to handle the parsing of a
  * portion of the query when it's expected to be a state field path. By default a word without a dot
@@ -57,13 +59,5 @@ final class UpdateItemStateFieldPathExpressionFactory extends AbstractLiteralExp
 		expression = new StateFieldPathExpression(parent, word);
 		expression.parse(wordParser, tolerant);
 		return expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	boolean shouldSkip(AbstractExpression expression) {
-		return false;
 	}
 }

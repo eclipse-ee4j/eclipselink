@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link AllOrAnyExpressionFactory} creates a new {@link AllOrAnyExpression} when the portion
  * of the query to parse starts with <b>ALL</b>, <b>ANY</b> or <b>SOME</b>.

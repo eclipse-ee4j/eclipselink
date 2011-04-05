@@ -26,7 +26,7 @@ public class BadExpressionBNF extends JPQLQueryBNF {
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "bad";
+	public static final String ID = "bad";
 
 	/**
 	 * Creates a new <code>BadExpressionBNF</code>.
@@ -55,7 +55,7 @@ public class BadExpressionBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		return true;
 	}
 }

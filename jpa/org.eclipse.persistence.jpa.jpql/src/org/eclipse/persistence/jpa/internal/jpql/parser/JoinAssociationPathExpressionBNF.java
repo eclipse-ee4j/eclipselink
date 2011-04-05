@@ -24,12 +24,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class JoinAssociationPathExpressionBNF extends JPQLQueryBNF {
+public final class JoinAssociationPathExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "join_association_path_expression*";
+	public static final String ID = "join_association_path_expression*";
 
 	/**
 	 * Creates a new <code>JoinAssociationPathExpressionBNF</code>.

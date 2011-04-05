@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * Either positional or named parameters may be used. Positional and named parameters may not be
@@ -70,7 +71,7 @@ public final class InputParameter extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(InputParameterBNF.ID);
 	}
 
@@ -112,7 +113,7 @@ public final class InputParameter extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 		writer.append(getText());
 	}
 }

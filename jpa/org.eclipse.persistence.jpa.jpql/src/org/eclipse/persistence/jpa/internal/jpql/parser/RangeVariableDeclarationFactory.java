@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link RangeVariableDeclaration} creates a new {@link RangeVariableDeclaration}.
  *
@@ -47,6 +49,7 @@ final class RangeVariableDeclarationFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new RangeVariableDeclaration(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

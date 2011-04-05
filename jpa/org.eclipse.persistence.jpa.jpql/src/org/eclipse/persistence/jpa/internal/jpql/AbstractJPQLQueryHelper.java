@@ -13,16 +13,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import org.eclipse.persistence.jpa.internal.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.internal.jpql.parser.JPQLExpression;
-import org.eclipse.persistence.jpa.jpql.ContentAssistItems;
+import org.eclipse.persistence.jpa.internal.jpql.parser.QueryPosition;
+import org.eclipse.persistence.jpa.jpql.ContentAssistProposals;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.TypeHelper;
-import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
@@ -46,77 +47,86 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
  * @since 2.3
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
-public abstract class AbstractJPQLQueryHelper<T> {
+public abstract class AbstractJPQLQueryHelper {
 
 	/**
-	 * The external form wrapping the object representation of the Java Persistence query.
+	 * This visitor is responsible to gather the possible proposals based on the position of the
+	 * caret within the JPQL query.
 	 */
-	private IQuery externalQuery;
+	private ContentAssistVisitor contentAssistVisitor;
 
 	/**
-	 * The parsed tree representation of the JPQL query.
+	 * This visitor is responsible to visit the entire parsed tree representation of the JPQL query
+	 * and to validate its content based on the JPQL grammar.
 	 */
-	private JPQLExpression jpqlExpression;
+	private GrammarValidator grammarValidator;
 
 	/**
-	 * The external form representing the Java Persistence query.
+	 * The context used to query information about the query.
 	 */
-	private T query;
+	private final JPQLQueryContext queryContext;
 
 	/**
-	 * The visitor used to calculate the type of an {@link Expression}.
+	 * This visitor is responsible to visit the entire parsed tree representation of the JPQL query
+	 * and to validate the semantic of the information.
 	 */
-	private TypeVisitor typeVisitor;
+	private SemanticValidator semanticValidator;
 
 	/**
 	 * Creates a new <code>AbstractJPQLQueryHelper</code>.
-	 *
-	 * @param query The query object to wrap with the external form
-	 * @exception NullPointerException If the given query is <code>null</code>
 	 */
-	protected AbstractJPQLQueryHelper(T query) {
+	protected AbstractJPQLQueryHelper() {
 		super();
-		initialize(query);
+		queryContext = new JPQLQueryContext();
 	}
 
 	/**
 	 * Retrieves the possibles choices that can complete the query from the given position within
 	 * the query.
+	 * <p>
+	 * <b>Note:</b> Disposing of the internal data is not done automatically.
 	 *
 	 * @param position The position within the query for which a list of possible choices are created
 	 * for completing the query
-	 * @return The list of choices regrouped by categories
+	 * @return The list of valid proposals regrouped by categories
 	 */
-	protected ContentAssistItems buildContentAssistItems(int position) {
-		ContentAssistProvider provider = new ContentAssistProvider(getQuery(), position);
-		return provider.items();
+	protected ContentAssistProposals buildContentAssistProposals(int position) {
+
+		// Create a map of the positions within the parsed tree
+		QueryPosition queryPosition = getJPQLExpression().buildPosition(
+			queryContext.getQuery().getExpression(),
+			position
+		);
+
+		// Visit the expression, which will collect the possible proposals
+		ContentAssistVisitor visitor = contentAssistVisitor();
+
+		try {
+			visitor.prepare(queryPosition);
+			queryPosition.getExpression().accept(visitor);
+			return visitor.getProposals();
+		}
+		finally {
+			visitor.dispose();
+		}
+	}
+
+	private ContentAssistVisitor contentAssistVisitor() {
+		if (contentAssistVisitor == null) {
+			contentAssistVisitor = new ContentAssistVisitor(queryContext);
+		}
+		return contentAssistVisitor;
 	}
 
 	/**
-	 * Creates the external form wrapping the given query object.
-	 *
-	 * @param query The query to wrap with the external form
-	 * @return A new concrete implementation representing the given query object
+	 * Disposes of the internal data.
 	 */
-	protected abstract IQuery buildQuery(T query);
+	protected void dispose() {
+		queryContext.dispose();
+	}
 
-	/**
-	 * Creates a new parsed representation of the JPQL query.
-	 *
-	 * @return The parsed tree representation of the JPQL query
-	 * @see Expression
-	 * @see JPQLExpression
-	 */
-	protected JPQLExpression getJPQLExpression() {
-		if (jpqlExpression == null) {
-			jpqlExpression = new JPQLExpression(
-				getQuery().getExpression(),
-				IJPAVersion.DEFAULT_VERSION,
-				true
-			);
-		}
-		return jpqlExpression;
+	private JPQLExpression getJPQLExpression() {
+		return queryContext.getJPQLExpression();
 	}
 
 	/**
@@ -131,7 +141,7 @@ public abstract class AbstractJPQLQueryHelper<T> {
 	 * @return Either the closest type of the input parameter or <code>null</code> if the type
 	 * couldn't be determined
 	 */
-	public IType getParameterType(JPQLExpression expression, String parameterName) {
+	protected IType getParameterType(JPQLExpression expression, String parameterName) {
 
 		// Retrieve the input parameter's qualifier (':' or '?')
 		char character = parameterName.length() > 0 ? parameterName.charAt(0) : '\0';
@@ -155,17 +165,12 @@ public abstract class AbstractJPQLQueryHelper<T> {
 		TreeSet<IType> types = new TreeSet<IType>(new NumericTypeComparator(getTypeHelper()));
 
 		for (InputParameter inputParameter : inputParameters) {
-
-			// Determine the closest type
-			ParameterTypeVisitor visitor2 = new ParameterTypeVisitor(getQuery(), inputParameter);
-			inputParameter.accept(visitor2);
+			IType type = queryContext.getParameterType(inputParameter);
 
 			// A type is ignored if it cannot be determined and it can't affect the calculation
 			// if the same input parameter is used elsewhere. Example:
 			// SELECT e FROM Employee e WHERE :name IS NOT NULL AND e.name = 'JPQL'
 			// The first :name cannot be used to calculate the type
-			IType type = visitor2.getType(getTypeVisitor());
-
 			if (type.isResolvable()) {
 				types.add(type);
 			}
@@ -212,11 +217,17 @@ public abstract class AbstractJPQLQueryHelper<T> {
 	 *
 	 * @return The external form representing a named query
 	 */
-	public IQuery getQuery() {
-		if (externalQuery == null) {
-			externalQuery = buildQuery(query);
-		}
-		return externalQuery;
+	protected IQuery getQuery() {
+		return queryContext.getQuery();
+	}
+
+	/**
+	 * Returns
+	 *
+	 * @return
+	 */
+	protected JPQLQueryContext getQueryContext() {
+		return queryContext;
 	}
 
 	/**
@@ -229,9 +240,7 @@ public abstract class AbstractJPQLQueryHelper<T> {
 	 */
 	protected IType getResultType() {
 
-		TypeVisitor visitor = getTypeVisitor();
-		getJPQLExpression().accept(visitor);
-		IType type = visitor.getType();
+		IType type = queryContext.getType(getJPQLExpression());
 
 		if (!type.isResolvable()) {
 			type = getTypeHelper().objectType();
@@ -264,110 +273,124 @@ public abstract class AbstractJPQLQueryHelper<T> {
 	 *
 	 * @return The repository for classes, interfaces, enum types and annotations
 	 */
-	public ITypeRepository getTypeRepository() {
+	protected ITypeRepository getTypeRepository() {
 		return getProvider().getTypeRepository();
 	}
 
-	/**
-	 * Returns the visitor used to calculate the type of an {@link Expression}.
-	 *
-	 * @return The visitor used to calculate the type of an {@link Expression}
-	 */
-	protected TypeVisitor getTypeVisitor() {
-		if (typeVisitor == null) {
-			typeVisitor = new TypeVisitor(getQuery());
+	private GrammarValidator grammarValidator() {
+		if (grammarValidator == null) {
+			grammarValidator = new GrammarValidator(queryContext);
 		}
-		return typeVisitor;
+		return grammarValidator;
+	}
+
+	private SemanticValidator semanticValidator() {
+		if (semanticValidator == null) {
+			semanticValidator = new SemanticValidator(queryContext);
+		}
+		return semanticValidator;
 	}
 
 	/**
-	 * Initializes this helper and creates the external form of the named query.
+	 * Sets
 	 *
-	 * @param query The query to wrap with the external form
-	 * @exception NullPointerException If the given query is <code>null</code>
+	 * @param jpqlExpression
 	 */
-	protected void initialize(T query) {
-		if (query == null) {
-			throw new NullPointerException("The query cannot be null");
-		}
-		this.query = query;
+	public final void setJPQLExpression(JPQLExpression jpqlExpression) {
+		queryContext.setJPQLExpression(jpqlExpression);
 	}
 
 	/**
-	 * Sets the visitor used to calculate the type of an {@link Expression}.
+	 * Sets the external form of the JPQL query, which will be parsed and information will be
+	 * extracted for later access.
 	 *
-	 * @param typeVisitor The visitor used to calculate the type of an {@link Expression}
+	 * @param query The external form of the JPQL query
 	 */
-	protected void setTypeVisitor(TypeVisitor typeVisitor) {
-		this.typeVisitor = typeVisitor;
+	protected void setQuery(IQuery query) {
+		queryContext.setQuery(query);
 	}
 
 	/**
 	 * Validates the query by introspecting it grammatically and semantically.
 	 *
-	 * @return The list of {@link QueryProblem QueryProblems} describing grammatical and semantic
-	 * issues found in the query
+	 * @return The non-<code>null</code> list that will be used to store the {@link JPQLQueryProblem
+	 * problems} if any was found
 	 */
 	protected List<JPQLQueryProblem> validate() {
-		return validate(getJPQLExpression());
+		List<JPQLQueryProblem> problems = new ArrayList<JPQLQueryProblem>();
+		validate(getJPQLExpression(), problems);
+		return problems;
 	}
 
 	/**
 	 * Validates the query by introspecting it grammatically and semantically.
 	 *
 	 * @param jpqlExpression The parsed tree representation of the query
-	 * @return The list of {@link QueryProblem QueryProblems} describing grammatical and semantic
-	 * issues found in the query
+	 * @param problems A non-<code>null</code> list that will be used to store the {@link
+	 * JPQLQueryProblem problems} if any was found
 	 */
-	public List<JPQLQueryProblem> validate(Expression expression) {
-		List<JPQLQueryProblem> problems = validateGrammar(expression);
-		problems.addAll(validateSemantic(expression));
+	protected void validate(Expression expression, List<JPQLQueryProblem> problems) {
+		validateGrammar(expression, problems);
+		validateSemantic(expression, problems);
+	}
+
+	/**
+	 * Validates the query by only introspecting it grammatically.
+	 *
+	 * @return The non-<code>null</code> list that will be used to store the {@link JPQLQueryProblem
+	 * problems} if any was found
+	 */
+	protected List<JPQLQueryProblem> validateGrammar() {
+		List<JPQLQueryProblem> problems = new ArrayList<JPQLQueryProblem>();
+		validateGrammar(getJPQLExpression(), problems);
 		return problems;
 	}
 
 	/**
 	 * Validates the query by only introspecting it grammatically.
 	 *
-	 * @return The list of {@link QueryProblem QueryProblems} describing grammatical issues found
-	 * in the query
-	 */
-	protected List<JPQLQueryProblem> validateGrammar() {
-		return validateGrammar(getJPQLExpression());
-	}
-
-	/**
-	 * Validates the query by only introspecting it grammatically.
-	 *
 	 * @param expression The parsed tree representation of the query
-	 * @return The list of {@link QueryProblem QueryProblems} describing grammatical issues found
-	 * in the query
+	 * @param problems A non-<code>null</code> list that will be used to store the {@link
+	 * JPQLQueryProblem problems} if any was found
 	 */
-	public List<JPQLQueryProblem> validateGrammar(Expression expression) {
-		GrammarValidator visitor = new GrammarValidator(getQuery());
-		expression.accept(visitor);
-		return visitor.problems();
+	protected void validateGrammar(Expression expression, List<JPQLQueryProblem> problems) {
+		GrammarValidator visitor = grammarValidator();
+		try {
+			visitor.setProblems(problems);
+			expression.accept(visitor);
+		}
+		finally {
+			visitor.dispose();
+		}
 	}
 
 	/**
 	 * Validates the query by only introspecting it semantically.
 	 *
-	 * @return The list of {@link QueryProblem QueryProblems} describing semantic issues found
-	 * in the query
+	 * @return The non-<code>null</code> list that will be used to store the {@link JPQLQueryProblem
+	 * problems} if any was found
 	 */
 	protected List<JPQLQueryProblem> validateSemantic() {
-		return validateSemantic(getJPQLExpression());
+		List<JPQLQueryProblem> problems = new ArrayList<JPQLQueryProblem>();
+		validateSemantic(getJPQLExpression(), problems);
+		return problems;
 	}
 
 	/**
 	 * Validates the query by only introspecting it semantically.
 	 *
 	 * @param expression The parsed tree representation of the query
-	 * @return The list of {@link QueryProblem QueryProblems} describing semantic issues found
-	 * in the query
+	 * @param problems A non-<code>null</code> list that will be used to store the {@link
+	 * JPQLQueryProblem problems} if any was found
 	 */
-	public List<JPQLQueryProblem> validateSemantic(Expression expression) {
-		SemanticValidator visitor = new SemanticValidator(getTypeVisitor());
-		expression.accept(visitor);
-		return visitor.problems();
+	protected void validateSemantic(Expression expression, List<JPQLQueryProblem> problems) {
+		SemanticValidator visitor = semanticValidator();
+		try {
+			visitor.setProblems(problems);
+			expression.accept(visitor);
+		}
+		finally {
+			visitor.dispose();
+		}
 	}
 }

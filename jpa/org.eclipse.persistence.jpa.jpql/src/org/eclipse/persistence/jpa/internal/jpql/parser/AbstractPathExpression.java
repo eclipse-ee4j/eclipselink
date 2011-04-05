@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * An identification variable followed by the navigation operator (.) and a state field or
@@ -299,7 +300,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	final void toParsedText(StringBuilder writer) {
+	final void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		checkPaths();
 

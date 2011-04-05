@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ArithmeticTermBNF extends JPQLQueryBNF {
+public final class ArithmeticTermBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "arithmetic_term";
+	public static final String ID = "arithmetic_term";
 
 	/**
 	 * Creates a new <code>ArithmeticTermBNF</code>.
@@ -49,7 +49,7 @@ final class ArithmeticTermBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate() {
+	public boolean handleAggregate() {
 		return true;
 	}
 

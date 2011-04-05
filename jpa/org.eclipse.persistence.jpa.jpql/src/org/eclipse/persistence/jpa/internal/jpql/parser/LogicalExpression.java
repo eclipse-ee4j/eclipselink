@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This expression represents a logical expression, which means the first and second expressions are
  * aggregated with either <b>AND</b> or <b>OR</b>.
@@ -47,7 +49,7 @@ public abstract class LogicalExpression extends CompoundExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	final JPQLQueryBNF getQueryBNF() {
+	public final JPQLQueryBNF getQueryBNF() {
 		return queryBNF(ConditionalExpressionBNF.ID);
 	}
 

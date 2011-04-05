@@ -14,10 +14,9 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 /**
- * The <b>WHERE</b> clause of a query consists of a conditional expression used
- * to select objects or values that satisfy the expression. The <b>WHERE</b>
- * clause restricts the result of a select statement or the scope of an update
- * or delete operation.
+ * The <b>WHERE</b> clause of a query consists of a conditional expression used to select objects or
+ * values that satisfy the expression. The <b>WHERE</b> clause restricts the result of a select
+ * statement or the scope of an update or delete operation.
  * <p>
  * <div nowrap><b>BNF:</b> <code>where_clause ::= WHERE conditional_expression</code><p>
  *
@@ -47,7 +46,7 @@ public final class WhereClause extends AbstractConditionalClause {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(WhereClauseBNF.ID);
 	}
 }

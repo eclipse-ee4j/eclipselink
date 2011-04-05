@@ -45,7 +45,7 @@ public final class HavingClause extends AbstractConditionalClause {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(WhereClauseBNF.ID);
 	}
 }

@@ -13,74 +13,70 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql;
 
+import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
- * This resolver is responsible to calculate the type based on the type of the state field path.
+ * This {@link Resolver} is responsible to calculate the type based on the type of the state field.
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
-final class SumFunctionResolver extends AbstractTypeResolver {
-
-	/**
-	 * The resolver used to find the type of the state field path.
-	 */
-	private final TypeResolver typeResolver;
+final class SumFunctionResolver extends Resolver {
 
 	/**
 	 * Creates a new <code>SumFunctionResolver</code>.
 	 *
-	 * @param parent The parent of this resolver, which is never <code>null</code>
-	 * @param typeResolver The resolver used to find the type of the state field path
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
 	 */
-	SumFunctionResolver(TypeResolver parent, TypeResolver typeResolver) {
+	SumFunctionResolver(Resolver parent) {
 		super(parent);
-		this.typeResolver = typeResolver;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IType getType() {
-
-		IType type = getTypeDeclaration().getType();
-
-		// Integral types: int/Integer, long/Long => the result is a Long
-		if (getTypeHelper().isIntegralType(type)) {
-			return getTypeHelper().longType();
-		}
-
-		// Floating types: float/Float, double/Double => the result is a Double
-		if (getTypeHelper().isFloatingType(type)) {
-			return getTypeHelper().doubleType();
-		}
-
-		// BigInteger, the result is the same
-		IType bigIntegerType = getTypeHelper().bigInteger();
-
-		if (type.equals(bigIntegerType)) {
-			return bigIntegerType;
-		}
-
-		// BigDecimal, the result is the same
-		IType bigDecimalType = getTypeHelper().bigDecimal();
-
-		if (type.equals(bigDecimalType)) {
-			return bigDecimalType;
-		}
-
-		// Anything else is an invalid type
-		return getTypeHelper().objectType();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ITypeDeclaration getTypeDeclaration() {
-		return typeResolver.getTypeDeclaration();
+	IType buildType() {
+
+		IType type = getTypeDeclaration().getType();
+		TypeHelper helper = getTypeHelper();
+
+		// Integral types: int/Integer, long/Long => the result is a Long
+		if (helper.isIntegralType(type)) {
+			return helper.longType();
+		}
+
+		// Floating types: float/Float, double/Double => the result is a Double
+		if (helper.isFloatingType(type)) {
+			return helper.doubleType();
+		}
+
+		// BigInteger, the result is the same
+		IType bigIntegerType = helper.bigInteger();
+
+		if (type.equals(bigIntegerType)) {
+			return bigIntegerType;
+		}
+
+		// BigDecimal, the result is the same
+		IType bigDecimalType = helper.bigDecimal();
+
+		if (type.equals(bigDecimalType)) {
+			return bigDecimalType;
+		}
+
+		// Anything else is an invalid type
+		return helper.objectType();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	ITypeDeclaration buildTypeDeclaration() {
+		return getParentTypeDeclaration();
 	}
 }

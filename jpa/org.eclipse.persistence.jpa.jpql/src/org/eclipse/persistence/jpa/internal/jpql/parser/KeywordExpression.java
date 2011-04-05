@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * The expression representing some keywords: <code>TRUE</code>, <code>FALSE</code> or <code>NULL</code>.
@@ -58,7 +59,7 @@ public final class KeywordExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(BooleanLiteralBNF.ID);
 	}
 
@@ -93,7 +94,7 @@ public final class KeywordExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 		writer.append(getText());
 	}
 }

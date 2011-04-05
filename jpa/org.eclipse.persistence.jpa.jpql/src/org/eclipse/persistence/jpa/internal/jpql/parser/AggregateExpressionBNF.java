@@ -24,12 +24,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class AggregateExpressionBNF extends JPQLQueryBNF {
+public final class AggregateExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "aggregate_expression";
+	public static final String ID = "aggregate_expression";
 
 	/**
 	 * Creates a new <code>AggregateExpressionBNF</code>.

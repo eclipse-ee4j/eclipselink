@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * A compound expression has a left and right expressions combined by an identifier.
@@ -169,11 +170,7 @@ public abstract class CompoundExpression extends AbstractExpression {
 		hasSpaceAfterIdentifier = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the right expression
-		rightExpression = parse(
-			wordParser,
-			rightExpressionBNF(),
-			tolerant
-		);
+		rightExpression = parse(wordParser, rightExpressionBNF(), tolerant);
 
 		if (!hasSpaceAfterIdentifier && hasRightExpression()) {
 			hasSpaceAfterIdentifier = true;
@@ -193,7 +190,7 @@ public abstract class CompoundExpression extends AbstractExpression {
 	 *
 	 * @return The BNF used when parsing the expression after the identifier
 	 */
-	abstract JPQLQueryBNF rightExpressionBNF();
+	public abstract JPQLQueryBNF rightExpressionBNF();
 
 	/**
 	 * Sets the given {@link Expression} to be the first expression of this compound one.
@@ -221,11 +218,11 @@ public abstract class CompoundExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	final void toParsedText(StringBuilder writer) {
+	final void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// Left expression
 		if (leftExpression != null) {
-			leftExpression.toParsedText(writer);
+			leftExpression.toParsedText(writer, includeVirtual);
 		}
 
 		// Make sure the whitespace is not part of the left expression
@@ -242,7 +239,7 @@ public abstract class CompoundExpression extends AbstractExpression {
 
 		// Right expression
 		if (rightExpression != null) {
-			rightExpression.toParsedText(writer);
+			rightExpression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

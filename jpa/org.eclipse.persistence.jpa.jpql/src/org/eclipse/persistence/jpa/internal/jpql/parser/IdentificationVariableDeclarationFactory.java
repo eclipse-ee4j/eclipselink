@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link IdentificationVariableDeclarationFactory} is meant to handle the
  * parsing of a portion of the query when it's expected to be an identification

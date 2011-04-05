@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class SimpleSelectClauseBNF extends JPQLQueryBNF {
+public final class SimpleSelectClauseBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "simple_select_clause";
+	public static final String ID = "simple_select_clause";
 
 	/**
 	 * Creates a new <code>SimpleSelectClauseBNF</code>.

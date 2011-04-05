@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * In the <b>SELECT</b> clause the result of a query may be the result of an aggregate function
@@ -98,16 +99,16 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(ScalarExpressionBNF.ID);
-//		return queryBNF(StateFieldPathExpressionBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return ScalarExpressionBNF.ID;
+//		return StateFieldPathExpressionBNF.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(AggregateExpressionBNF.ID);
 	}
 
@@ -160,7 +161,7 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedTextEncapsulatedExpression(StringBuilder writer) {
+	void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean includeVirtual) {
 
 		if (hasDistinct) {
 			writer.append(DISTINCT);
@@ -170,6 +171,6 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 			writer.append(SPACE);
 		}
 
-		super.toParsedTextEncapsulatedExpression(writer);
+		super.toParsedTextEncapsulatedExpression(writer, includeVirtual);
 	}
 }

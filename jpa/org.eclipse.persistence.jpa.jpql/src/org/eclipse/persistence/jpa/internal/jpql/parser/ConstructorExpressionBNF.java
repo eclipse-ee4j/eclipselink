@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ConstructorExpressionBNF extends JPQLQueryBNF {
+public final class ConstructorExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "constructor_expression";
+	public static final String ID = "constructor_expression";
 
 	/**
 	 * Creates a new <code>ConstructorExpressionBNF</code>.

@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * This {@link Expression} takes care of parsing an expression that encapsulates two expressions
@@ -106,11 +107,11 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	}
 
 	/**
-	 * Creates
+	 * Creates a new {@link CollectionExpression} that will wrap the first and second expressions.
 	 *
-	 * @return
+	 * @return The first and second expressions wrapped by a temporary collection
 	 */
-	final CollectionExpression buildCollectionExpression() {
+	public final CollectionExpression buildCollectionExpression() {
 
 		List<AbstractExpression> children = new ArrayList<AbstractExpression>(3);
 		children.add((AbstractExpression) getFirstExpression());
@@ -165,7 +166,7 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean hasEncapsulatedExpression() {
+	public boolean hasEncapsulatedExpression() {
 		return hasFirstExpression() || hasComma || hasSecondExpression();
 	}
 
@@ -222,7 +223,7 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * within the parenthesis
 	 * @return The BNF to be used to parse one of the encapsulated expression
 	 */
-	abstract JPQLQueryBNF parameterExpressionBNF(int index);
+	public abstract JPQLQueryBNF parameterExpressionBNF(int index);
 
 	/**
 	 * {@inheritDoc}
@@ -272,11 +273,11 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedTextEncapsulatedExpression(StringBuilder writer) {
+	void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean includeVirtual) {
 
 		// First expression
 		if (firstExpression != null) {
-			firstExpression.toParsedText(writer);
+			firstExpression.toParsedText(writer, includeVirtual);
 		}
 
 		// ','
@@ -290,7 +291,7 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 
 		// Second expression
 		if (secondExpression != null) {
-			secondExpression.toParsedText(writer);
+			secondExpression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

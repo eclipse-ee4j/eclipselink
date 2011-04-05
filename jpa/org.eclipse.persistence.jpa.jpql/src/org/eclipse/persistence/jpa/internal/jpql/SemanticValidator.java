@@ -26,16 +26,18 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractSchemaName;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractTraverseChildrenVisitor;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractTraverseParentVisitor;
-import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractValidator;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AdditionExpression;
+import org.eclipse.persistence.jpa.internal.jpql.parser.AggregateExpressionBNF;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AllOrAnyExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AndExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.internal.jpql.parser.ArithmeticExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.ArithmeticFactor;
+import org.eclipse.persistence.jpa.internal.jpql.parser.ArithmeticPrimaryBNF;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.internal.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.BetweenExpression;
+import org.eclipse.persistence.jpa.internal.jpql.parser.BooleanPrimaryBNF;
 import org.eclipse.persistence.jpa.internal.jpql.parser.CaseExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.CollectionExpression;
@@ -56,7 +58,6 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.internal.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.Expression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.ExpressionVisitor;
 import org.eclipse.persistence.jpa.internal.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.FuncExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.GroupByClause;
@@ -73,6 +74,7 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.LikeExpression;
+import org.eclipse.persistence.jpa.internal.jpql.parser.LiteralBNF;
 import org.eclipse.persistence.jpa.internal.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.LowerExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.MaxFunction;
@@ -92,6 +94,7 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.RangeVariableDeclaration
 import org.eclipse.persistence.jpa.internal.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SelectStatement;
+import org.eclipse.persistence.jpa.internal.jpql.parser.SimpleArithmeticExpressionBNF;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SimpleFromClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SimpleSelectStatement;
@@ -99,6 +102,7 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.StringLiteral;
+import org.eclipse.persistence.jpa.internal.jpql.parser.StringPrimaryBNF;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SubtractionExpression;
@@ -114,12 +118,12 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.MappingTypeHelper;
 import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IConstructor;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
-import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
@@ -143,28 +147,12 @@ import static org.eclipse.persistence.jpa.internal.jpql.JPQLQueryProblemMessages
 public final class SemanticValidator extends AbstractValidator {
 
 	/**
-	 * The single instance of the {@link TypeVisitor} that is used to calculate the type of an
-	 * {@link Expression}.
-	 */
-	private final TypeVisitor typeResolver;
-
-	/**
 	 * Creates a new <code>SemanticValidator</code>.
 	 *
-	 * @param query The external form of the query to validate, cannot be <code>null</code>
+	 * @param queryContext The context used to query information about the query
 	 */
-	SemanticValidator(IQuery query) {
-		this(new TypeVisitor(query));
-	}
-
-	/**
-	 * Creates a new <code>SemanticValidator</code>.
-	 *
-	 * @param query The external form of the query to validate, cannot be <code>null</code>
-	 */
-	public SemanticValidator(TypeVisitor typeVisitor) {
-		super(typeVisitor.getQuery());
-		this.typeResolver = typeVisitor;
+	public SemanticValidator(JPQLQueryContext queryContext) {
+		super(queryContext);
 	}
 
 	private void addProblem(Expression expression, String messageKey) {
@@ -201,6 +189,14 @@ public final class SemanticValidator extends AbstractValidator {
 		return true;
 	}
 
+	private IMapping getMapping(Expression expression) {
+		return queryContext.getMapping(expression);
+	}
+
+	private Resolver getResolver(Expression expression) {
+		return queryContext.getResolver(expression);
+	}
+
 	private boolean isBooleanType(Expression expression) {
 		BooleanTypeValidator validator = new BooleanTypeValidator();
 		expression.accept(validator);
@@ -209,8 +205,8 @@ public final class SemanticValidator extends AbstractValidator {
 
 	private boolean isComparisonEquivalentType(Expression expression1, Expression expression2) {
 
-		IType type1 = type(expression1);
-		IType type2 = type(expression2);
+		IType type1 = getType(expression1);
+		IType type2 = getType(expression2);
 
 		// 1. The types are the same
 		// 2. The type cannot be determined, pretend they are equivalent,
@@ -235,8 +231,8 @@ public final class SemanticValidator extends AbstractValidator {
 
 	private boolean isEquivalentBetweenType(Expression expression1, Expression expression2) {
 
-		IType type1 = type(expression1);
-		IType type2 = type(expression2);
+		IType type1 = getType(expression1);
+		IType type2 = getType(expression2);
 
 		// The type cannot be determined, pretend they are equivalent,
 		// another rule will validate it
@@ -270,8 +266,8 @@ public final class SemanticValidator extends AbstractValidator {
 				return true;
 			}
 
-			expression.accept(typeResolver);
-			return getTypeHelper().isIntegralType(typeResolver.getType());
+			IType type = getType(expression);
+			return getTypeHelper().isIntegralType(type);
 		}
 
 		return false;
@@ -289,20 +285,6 @@ public final class SemanticValidator extends AbstractValidator {
 		return validator.valid;
 	}
 
-	private IType type(Expression expression) {
-		expression.accept(typeResolver);
-		return typeResolver.getType();
-	}
-
-	private ITypeDeclaration typeDeclaration(Expression expression) {
-
-		// Create the root resolver, which holds onto the query
-		expression.accept(typeResolver);
-
-		// Retrieve the path expression's type
-		return typeResolver.getTypeDeclaration();
-	}
-
 	private void validateArithmeticExpression(ArithmeticExpression expression,
 	                                          String leftExpressionWrongType,
 	                                          String rightExpressionWrongType) {
@@ -318,13 +300,8 @@ public final class SemanticValidator extends AbstractValidator {
 
 	private void validateBooleanType(Expression expression, String messageKey) {
 
-		ExpressionValidator validator = booleanPrimaryBNFValidator();
-		expression.accept(validator);
-
-		if (validator.valid && !isBooleanType(expression)) {
-			int startPosition = position(expression);
-			int endPosition   = startPosition + length(expression);
-			addProblem(expression, startPosition, endPosition, messageKey);
+		if (isValid(expression, BooleanPrimaryBNF.ID) && !isBooleanType(expression)) {
+			addProblem(expression, messageKey);
 		}
 	}
 
@@ -343,9 +320,9 @@ public final class SemanticValidator extends AbstractValidator {
 			if (collectionValuedPathExpression.hasIdentificationVariable() &&
 			   !collectionValuedPathExpression.endsWithDot()) {
 
-				expression.accept(typeResolver);
-				IType type = typeResolver.getType();
-				IMapping mapping = typeResolver.getMapping();
+				Resolver resolver = getResolver(expression);
+				IType type = resolver.getType();
+				IMapping mapping = resolver.getMapping();
 
 				// Does not resolve to a valid path
 				if (!type.isResolvable() || (mapping == null)) {
@@ -380,14 +357,8 @@ public final class SemanticValidator extends AbstractValidator {
 
 	private void validateIntegerType(Expression expression, String messageKey) {
 
-		ExpressionValidator validator = simpleArithmeticExpressionBNFValidator();
-		expression.accept(validator);
-
-		if (validator.valid && !isIntegralType(expression)) {
-			int startPosition = position(expression);
-			int endPosition   = startPosition + length(expression);
-
-			addProblem(expression, startPosition, endPosition, messageKey);
+		if (isValid(expression, SimpleArithmeticExpressionBNF.ID) && !isIntegralType(expression)) {
+			addProblem(expression, messageKey);
 		}
 	}
 
@@ -404,7 +375,7 @@ public final class SemanticValidator extends AbstractValidator {
 
 			if (visitor.expression != null) {
 				// Retrieve the identification variable's type without traversing the type parameters
-				ITypeDeclaration typeDeclaration = typeDeclaration(visitor.expression);
+				ITypeDeclaration typeDeclaration = getTypeDeclaration(visitor.expression);
 
 				if (!getTypeHelper().isMapType(typeDeclaration.getType())) {
 					addProblem(
@@ -419,10 +390,7 @@ public final class SemanticValidator extends AbstractValidator {
 
 	private void validateNumericType(Expression expression, String messageKey) {
 
-		ExpressionValidator validator = simpleArithmeticExpressionBNFValidator();
-		expression.accept(validator);
-
-		if (validator.valid && !isNumericType(expression)) {
+		if (isValid(expression, SimpleArithmeticExpressionBNF.ID) && !isNumericType(expression)) {
 			addProblem(expression, messageKey);
 		}
 	}
@@ -435,8 +403,8 @@ public final class SemanticValidator extends AbstractValidator {
 		if (expression.hasIdentificationVariable() &&
 		   !expression.endsWithDot()) {
 
-			IType type = type(expression);
-			IMapping mapping = typeResolver.getMapping();
+			IType type = getType(expression);
+			IMapping mapping = getMapping(expression);
 
 			// Does not resolve to a valid path
 			if (!type.isResolvable()) {
@@ -444,7 +412,6 @@ public final class SemanticValidator extends AbstractValidator {
 			}
 			// Make sure an enum constant was parsed as a state field path
 			// expression before checking for a mapping
-			// TODO: Make sure an enum constant is valid where it was defined
 			else if ((mapping == null) && type.isEnum()) {
 				String enumConstant = expression.getPath(expression.pathSize() - 1);
 				boolean found = false;
@@ -482,10 +449,7 @@ public final class SemanticValidator extends AbstractValidator {
 
 	private void validateStringType(Expression expression, String messageKey) {
 
-		ExpressionValidator validator = stringPrimaryBNFValidator();
-		expression.accept(validator);
-
-		if (validator.valid && !isStringType(expression)) {
+		if (isValid(expression, StringPrimaryBNF.ID) && !isStringType(expression)) {
 			addProblem(expression, messageKey, expression.toParsedText());
 		}
 	}
@@ -502,7 +466,7 @@ public final class SemanticValidator extends AbstractValidator {
 			}
 
 			TypeHelper helper = getTypeHelper();
-			IType newValueType = type(newValue);
+			IType newValueType = getType(newValue);
 
 			if (!newValueType.isResolvable() ||
 			    helper.isDateType(type)    && helper.isDateType(newValueType) ||
@@ -515,7 +479,7 @@ public final class SemanticValidator extends AbstractValidator {
 				addProblem(
 					expression,
 					UpdateItem_NotAssignable,
-					typeResolver.getType().getName(),
+					newValueType.getName(),
 					type.getName()
 				);
 			}
@@ -566,9 +530,9 @@ public final class SemanticValidator extends AbstractValidator {
 						String variable = visitor3.expression.getText();
 
 						if (ExpressionTools.stringIsNotEmpty(variable)) {
-							visitor3.expression.accept(typeResolver);
+							Resolver resolver = queryContext.getResolver(visitor3.expression);
 
-							StateFieldTypeResolver stateFieldResolver = new StateFieldTypeResolver(typeResolver.getResolver(), abstractSchemaName);
+							StateFieldResolver stateFieldResolver = new StateFieldResolver(resolver, abstractSchemaName, null);
 							IType type = stateFieldResolver.getType();
 
 							// Does not resolve to a valid path
@@ -649,15 +613,12 @@ public final class SemanticValidator extends AbstractValidator {
 	@Override
 	public void visit(ArithmeticFactor expression) {
 
-		if (expression.hasExpression()) {
-			ExpressionValidator validator = arithmeticPrimaryBNFValidator();
-			expression.getExpression().accept(validator);
+		if (expression.hasExpression() &&
+		    !isValid(expression.getExpression(), ArithmeticPrimaryBNF.ID)) {
 
-			if (!validator.valid) {
-				int startPosition = position(expression) + 1;
-				int endPosition   = startPosition;
-				addProblem(expression, startPosition, endPosition, ArithmeticFactor_InvalidExpression);
-			}
+			int startPosition = position(expression) + 1;
+			int endPosition   = startPosition;
+			addProblem(expression, startPosition, endPosition, ArithmeticFactor_InvalidExpression);
 		}
 
 		super.visit(expression);
@@ -759,7 +720,7 @@ public final class SemanticValidator extends AbstractValidator {
 			Expression entityExpression = expression.getEntityExpression();
 
 			// Check for embeddable type
-			IType type = type(entityExpression);
+			IType type = getType(entityExpression);
 			IManagedType managedType = getManagedType(type);
 
 			if (managedType != null) {
@@ -875,7 +836,7 @@ public final class SemanticValidator extends AbstractValidator {
 							calculatedTypes = new IType[visitor.expressions.size()];
 
 							for (int index = visitor.expressions.size(); --index >= 0; ) {
-								calculatedTypes[index] = type(visitor.expressions.get(index));
+								calculatedTypes[index] = getType(visitor.expressions.get(index));
 							}
 						}
 
@@ -914,7 +875,7 @@ public final class SemanticValidator extends AbstractValidator {
 			Expression stateFieldPathExpression = expression.getExpression();
 
 			// Check for embeddable type
-			IType type = type(stateFieldPathExpression);
+			IType type = getType(stateFieldPathExpression);
 			IManagedType managedType = getManagedType(type);
 
 			if (managedType != null) {
@@ -1100,10 +1061,7 @@ public final class SemanticValidator extends AbstractValidator {
 
 						// An identification variable could represent an entity type literal,
 						// validate the parent to make sure it allows it
-						ExpressionValidator validator = literalBNFValidator();
-						validateExpression(expression, validator);
-
-						if (!validator.valid) {
+						if (!isValidWithFindQueryBNF(expression, LiteralBNF.ID)) {
 							int startPosition = position(expression);
 							int endPosition   = startPosition + variable.length();
 							addProblem(expression, startPosition, endPosition, IdentificationVariable_EntityName);
@@ -1144,32 +1102,16 @@ public final class SemanticValidator extends AbstractValidator {
 		// which an order column has been specified
 		if (expression.hasExpression()) {
 
-			Expression childExpression = expression.getExpression();
+			String variableName = queryContext.variableName(
+				expression.getExpression(),
+				VariableNameType.IDENTIFICATION_VARIABLE
+			);
 
-			IdentificationVariableVisitor visitor = new IdentificationVariableVisitor();
-			childExpression.accept(visitor);
+			if (ExpressionTools.stringIsNotEmpty(variableName)) {
 
-			if (visitor.expression != null) {
-
-				String variable = visitor.expression.toParsedText().toLowerCase();
-
-				if (ExpressionTools.stringIsNotEmpty(variable)) {
-
-					// Locate the declaration expression
-					DeclarationExpressionLocator locator = new DeclarationExpressionLocator();
-					expression.accept(locator);
-
-					// Create the resolver/visitor that will be able to resolve the variables
-					JoinExpressionVisitor joinVisitor = new JoinExpressionVisitor();
-
-					for (Expression declarationExpression : locator.declarationExpresions()) {
-						declarationExpression.accept(joinVisitor);
-					}
-
-					// The identification variable is not defined in a JOIN or IN expression
-					if (!joinVisitor.variables.contains(variable)) {
-						addProblem(childExpression, IndexExpression_WrongVariable, variable);
-					}
+				// The identification variable is not defined in a JOIN or IN expression
+				if (!queryContext.isCollectionVariableName(variableName)) {
+					addProblem(expression.getExpression(), IndexExpression_WrongVariable, variableName);
 				}
 			}
 		}
@@ -1187,15 +1129,15 @@ public final class SemanticValidator extends AbstractValidator {
 //		if (expression.hasInItems()) {
 //			Expression inItems = expression.getInItems();
 //
-//			InItemTypeResolver inTypeTypeResolver = new InItemTypeResolver();
-//			inItems.accept(inTypeTypeResolver);
+//			InItemResolver inTypeResolver = new InItemResolver();
+//			inItems.accept(inTypeResolver);
 //
-//			if (!inTypeTypeResolver.types.isEmpty()) {
-//				IType inItemType = inTypeTypeResolver.types.get(0);
+//			if (!inTypeResolver.types.isEmpty()) {
+//				IType inItemType = inTypeResolver.types.get(0);
 //				boolean sameType = true;
 //
-//				for (int index = 1, count = inTypeTypeResolver.types.size(); index < count; index++) {
-//					sameType = isEquivalentType(inItemType, inTypeTypeResolver.types.get(index));
+//				for (int index = 1, count = inTypeResolver.types.size(); index < count; index++) {
+//					sameType = isEquivalentType(inItemType, inTypeResolver.types.get(index));
 //
 //					if (!sameType) {
 //						break;
@@ -1466,7 +1408,7 @@ public final class SemanticValidator extends AbstractValidator {
 
 			if (visitor.expression != null) {
 				// Check for embeddable type
-				IType type = type(visitor.expression);
+				IType type = getType(visitor.expression);
 				IManagedType managedType = getManagedType(type);
 
 				if (managedType != null) {
@@ -1481,7 +1423,8 @@ public final class SemanticValidator extends AbstractValidator {
 							expression,
 							startPosition,
 							endPosition,
-							NullComparisonExpression_InvalidCollectionExpression
+							NullComparisonExpression_InvalidType,
+							visitor.expression.toParsedText()
 						);
 					}
 				}
@@ -1602,15 +1545,11 @@ public final class SemanticValidator extends AbstractValidator {
 		// If there is no GROUP BY clause and the HAVING clause is used, the result is treated as a
 		// single group, and the select list can only consist of aggregate functions. (page 159)
 		if (!expression.hasGroupByClause() &&
-		     expression.hasHavingClause())
-		{
+		     expression.hasHavingClause()) {
+
 			Expression selectExpression = expression.getSelectClause().getSelectExpression();
 
-			ExpressionValidator validator = aggregateExpressionBNFValidator();
-			ExpressionVisitor visitor = bypassChildCollectionExpression(validator);
-			selectExpression.accept(visitor);
-
-			if (!validator.valid) {
+			if (!isValidWithChildBypass(selectExpression, AggregateExpressionBNF.ID)) {
 				int startPosition = position(selectExpression);
 				int endPosition   = startPosition + length(selectExpression);
 
@@ -1712,21 +1651,6 @@ public final class SemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SubtractionExpression expression) {
-
-		validateArithmeticExpression(
-			expression,
-			SubtractionExpression_LeftExpression_WrongType,
-			SubtractionExpression_RightExpression_WrongType
-		);
-
-		super.visit(expression);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void visit(SubstringExpression expression) {
 
 		if (expression.hasFirstExpression()) {
@@ -1744,6 +1668,21 @@ public final class SemanticValidator extends AbstractValidator {
 		if (expression.hasThirdExpression()) {
 			validateIntegerType(expression.getThirdExpression(),  SubstringExpression_ThirdExpression_WrongType);
 		}
+
+		super.visit(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(SubtractionExpression expression) {
+
+		validateArithmeticExpression(
+			expression,
+			SubtractionExpression_LeftExpression_WrongType,
+			SubtractionExpression_RightExpression_WrongType
+		);
 
 		super.visit(expression);
 	}
@@ -1782,7 +1721,7 @@ public final class SemanticValidator extends AbstractValidator {
 //			String className = childExpression.toParsedText();
 //
 //			if (ExpressionTools.stringIsNotEmpty(className)) {
-//				TypeVisitor visitor = buildTypeResolver();
+//				TypeVisitor visitor = buildResolver();
 //				expression.accept(visitor);
 //				IType type = visitor.getType();
 //
@@ -1870,8 +1809,7 @@ public final class SemanticValidator extends AbstractValidator {
 		 						}
 	 						}
 	 						else {
-	 							stateFieldPathExpression.accept(typeResolver);
-	 							IType type = typeResolver.getType();
+	 							IType type = getType(stateFieldPathExpression);
 
 	 							if (!type.isResolvable()) {
 		 							addProblem(
@@ -2058,8 +1996,8 @@ public final class SemanticValidator extends AbstractValidator {
 		 */
 		@Override
 		public final void visit(CaseExpression expression) {
-			expression.accept(typeResolver);
-			valid = isRightType(typeResolver.getType());
+			IType type = getType(expression);
+			valid = isRightType(type);
 		}
 
 		/**
@@ -2067,8 +2005,8 @@ public final class SemanticValidator extends AbstractValidator {
 		 */
 		@Override
 		public final void visit(CoalesceExpression expression) {
-			expression.accept(typeResolver);
-			valid = isRightType(typeResolver.getType());
+			IType type = getType(expression);
+			valid = isRightType(type);
 		}
 
 		/**
@@ -2076,8 +2014,8 @@ public final class SemanticValidator extends AbstractValidator {
 		 */
 		@Override
 		public final void visit(FuncExpression expression) {
-			expression.accept(typeResolver);
-			valid = isRightType(typeResolver.getType());
+			IType type = getType(expression);
+			valid = isRightType(type);
 		}
 
 		/**
@@ -2104,7 +2042,7 @@ public final class SemanticValidator extends AbstractValidator {
 		 */
 		@Override
 		public final void visit(StateFieldPathExpression expression) {
-			IType type = type(expression);
+			IType type = getType(expression);
 			valid = isRightType(type);
 		}
 
@@ -2360,85 +2298,6 @@ public final class SemanticValidator extends AbstractValidator {
 		@Override
 		protected void visit(Expression expression) {
 			expressions.add(expression);
-		}
-	}
-
-	/**
-	 *
-	 */
-	private class JoinExpressionVisitor extends AbstractExpressionVisitor {
-
-		/**
-		 *
-		 */
-		private final Set<String> variables;
-
-		/**
-		 * Creates a new <code>JoinExpressionVisitor</code>.
-		 */
-		JoinExpressionVisitor() {
-			super();
-			variables = new HashSet<String>();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionExpression expression) {
-			expression.acceptChildren(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionMemberDeclaration expression) {
-			expression.getIdentificationVariable().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(FromClause expression) {
-			expression.getDeclaration().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
-			String variable = expression.toParsedText();
-
-			if (ExpressionTools.stringIsNotEmpty(variable)) {
-				variables.add(variable.toLowerCase());
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariableDeclaration expression) {
-			expression.getJoins().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(Join expression) {
-			expression.getIdentificationVariable().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SimpleFromClause expression) {
-			expression.getDeclaration().accept(this);
 		}
 	}
 

@@ -22,8 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.persistence.jpa.internal.jpql.parser.WordParser;
-import org.eclipse.persistence.jpa.jpql.ContentAssistItems;
+import org.eclipse.persistence.jpa.jpql.ContentAssistProposals;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.ResultQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
@@ -32,14 +31,14 @@ import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
 
 /**
- * The default implementation of {@link ContentAssistItems} which stores the valid choices.
+ * The default implementation of {@link ContentAssistProposals} which stores the valid proposals.
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class DefaultContentAssistItems implements ContentAssistItems {
+public final class DefaultContentAssistProposals implements ContentAssistProposals {
 
 	/**
 	 * The set of possible abstract schema types.
@@ -68,19 +67,19 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	private Map<String, IEntity> rangeIdentificationVariables;
 
 	/**
-	 * An JPQL identifier that is mapped to its longest counterpart.
+	 * A JPQL identifier that is mapped to its longest counterpart.
 	 */
 	private static final Map<String, String> LONGUEST_IDENTIFIERS = buildLonguestIdentifiers();
 
 	/**
-	 * An JPQL identifier that is mapped to the list of counterparts used to find them in the query.
+	 * A JPQL identifier that is mapped to the list of counterparts used to find them in the query.
 	 */
 	private static final Map<String, List<String>> ORDERED_IDENTIFIERS = buildOrderedIdentifiers();
 
 	/**
-	 * Creates a new <code>DefaultContentAssistItems</code>.
+	 * Creates a new <code>DefaultContentAssistProposals</code>.
 	 */
-	DefaultContentAssistItems() {
+	public DefaultContentAssistProposals() {
 		super();
 		initialize();
 	}
@@ -104,6 +103,9 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 		identifiers.put(INNER_JOIN,       LEFT_OUTER_JOIN_FETCH);
 		identifiers.put(INNER_JOIN_FETCH, LEFT_OUTER_JOIN_FETCH);
 
+		identifiers.put(SELECT, DELETE_FROM);
+		identifiers.put(UPDATE, DELETE_FROM);
+
 		return identifiers;
 	}
 
@@ -111,10 +113,10 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 
 		Map<String, List<String>> identifiers = new HashMap<String, List<String>>();
 
-		identifiers.put(IS_NOT_EMPTY,         Collections.singletonList(IS_NOT_EMPTY));
-		identifiers.put(IS_NOT_NULL,          Collections.singletonList(IS_NOT_NULL));
-		identifiers.put(NOT_IN,               Collections.singletonList(NOT_IN));
-		identifiers.put(NOT_BETWEEN,          Collections.singletonList(NOT_BETWEEN));
+		identifiers.put(IS_NOT_EMPTY, Collections.singletonList(IS_NOT_EMPTY));
+		identifiers.put(IS_NOT_NULL,  Collections.singletonList(IS_NOT_NULL));
+		identifiers.put(NOT_IN,       Collections.singletonList(NOT_IN));
+		identifiers.put(NOT_BETWEEN,  Collections.singletonList(NOT_BETWEEN));
 
 		List<String> members = new ArrayList<String>();
 		members.add(MEMBER_OF);
@@ -132,6 +134,11 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 		joins.add(JOIN);
 		identifiers.put(LEFT_OUTER_JOIN_FETCH, joins);
 
+		List<String> clauses = new ArrayList<String>();
+		clauses.add(SELECT);
+		clauses.add(UPDATE);
+		identifiers.put(DELETE_FROM, clauses);
+
 		return identifiers;
 	}
 
@@ -145,25 +152,25 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	/**
 	 * Adds the given {@link IEntity} as a possible abstract schema type.
 	 *
-	 * @param abstractSchemaType The abstract schema type that is a valid choice
+	 * @param abstractSchemaType The abstract schema type that is a valid proposal
 	 */
 	public void addAbstractSchemaType(IEntity abstractSchemaType) {
 		abstractSchemaTypes.add(abstractSchemaType);
 	}
 
 	/**
-	 * Adds the given identification variable as a choice.
+	 * Adds the given identification variable as a proposal.
 	 *
-	 * @param identificationVariable The identification variable that is a valid choice
+	 * @param identificationVariable The identification variable that is a valid proposal
 	 */
 	public void addIdentificationVariable(String identificationVariable) {
 		identificationVariables.add(identificationVariable);
 	}
 
 	/**
-	 * Adds the given JPQL identifier as a choice.
+	 * Adds the given JPQL identifier as a proposal.
 	 *
-	 * @param identifier The JPQL identifier that is a valid choice
+	 * @param identifier The JPQL identifier that is a valid proposal
 	 */
 	public void addIdentifier(String identifier) {
 		identifiers.add(identifier);
@@ -171,7 +178,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 
 	/**
 	 * Adds the given {@link IMapping mapping} (state field, association field or collection field)
-	 * as a valid choice.
+	 * as a valid proposal.
 	 *
 	 * @param mapping The {@link IMapping} of the state field, association field or collection field
 	 */
@@ -181,7 +188,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 
 	/**
 	 * Adds the given {@link IMapping mappings} (state fields, association fields or collection fields)
-	 * as valid choices.
+	 * as valid proposals.
 	 *
 	 * @param mappings The {@link IMapping mappings} of the state fields, association fields or
 	 * collection fields
@@ -205,9 +212,9 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Result buildEscapedQuery(String jpqlQuery, String choice, int position, boolean insert) {
+	public Result buildEscapedQuery(String jpqlQuery, String proposal, int position, boolean insert) {
 
-		Result result = buildQuery(jpqlQuery, choice, position, insert);
+		Result result = buildQuery(jpqlQuery, proposal, position, insert);
 
 		// Escape the JPQL query and adjust the position accordingly
 		int[] positions = { result.position };
@@ -218,21 +225,21 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	}
 
 	/**
-	 * Calculates the start and end position for correctly inserting the choice into the query.
+	 * Calculates the start and end position for correctly inserting the proposal into the query.
 	 *
 	 * @param wordParser This parser can be used to retrieve words from the cursor position
-	 * @param choice The choice to be inserted into the query
-	 * @param insert Flag that determines if the choice is simply inserted or it should also replace
+	 * @param proposal The proposal to be inserted into the query
+	 * @param insert Flag that determines if the proposal is simply inserted or it should also replace
 	 * the partial word following the position of the cursor
 	 * @return The start and end positions
 	 */
-	private int[] buildPositions(WordParser wordParser, String choice, boolean insert) {
+	private int[] buildPositions(WordParser wordParser, String proposal, boolean insert) {
 
 		int index;
 		String wordsToReplace = null;
 
 		// Special case for arithmetic symbol (<, <=, =, <>, >, >=, +, -, *, /)
-		if (wordParser.isArithmeticSymbol(choice.charAt(0))) {
+		if (wordParser.isArithmeticSymbol(proposal.charAt(0))) {
 			int startIndex = wordParser.position();
 			int endIndex   = startIndex;
 			char character;
@@ -249,15 +256,15 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 			}
 			while (wordParser.isArithmeticSymbol(character));
 
-			// Increment the start index because the loop always decremements it by one before stopping
+			// Increment the start index because the loop always decrements it by one before stopping
 			// and decrement the end position because it's always incremented by one before stopping
 			index = ++startIndex;
 			wordsToReplace = wordParser.substring(index, --endIndex);
 		}
 		else {
 			// Always try to find the start position using the longest JPQL identifier
-			// if the choice has more than one word
-			wordsToReplace = longuestIdentifier(choice);
+			// if the proposal has more than one word
+			wordsToReplace = longuestIdentifier(proposal);
 			index = startPositionImp(wordParser, wordsToReplace);
 
 			// Now check with the other possibilities
@@ -289,8 +296,12 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 				wordsToReplace = entireWord.substring(dotIndex + 1);
 				startPosition = wordParser.position() - partialWord.length() + dotIndex + 1;
 			}
-			else {
+			else if (insert) {
 				wordsToReplace = wordParser.potentialWord();
+				startPosition = wordParser.position() - partialWord.length();
+			}
+			else {
+				wordsToReplace = entireWord;
 				startPosition = wordParser.position() - partialWord.length();
 			}
 		}
@@ -304,7 +315,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 			String partialWord = wordParser.substring(startPosition, wordParser.position());
 			length = partialWord.length();
 		}
-		else if (choice != wordsToReplace) {
+		else if (proposal != wordsToReplace) {
 			length = wordsToReplace.length();
 		}
 		else {
@@ -314,7 +325,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 			     startPosition + index < wordLength && charIndex < count;
 			     index++, charIndex++) {
 
-				// Find the end position by matching the choice with the content of the query by
+				// Find the end position by matching the proposal with the content of the query by
 				// scanning every character starting at the start position, the end position will be
 				// the position of the first character that is different or at the end of the query
 				if (wordParser.character(startPosition + charIndex) !=
@@ -333,10 +344,10 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Result buildQuery(String jpqlQuery, String choice, int position, boolean insert) {
+	public Result buildQuery(String jpqlQuery, String proposal, int position, boolean insert) {
 
 		// Nothing to replace
-		if (ExpressionTools.stringIsEmpty(choice)) {
+		if (ExpressionTools.stringIsEmpty(proposal)) {
 			return new Result(jpqlQuery, position);
 		}
 
@@ -344,14 +355,14 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 		wordParser.setPosition(position);
 
 		// Calculate the start and end positions
-		int[] positions = buildPositions(wordParser, choice, insert);
+		int[] positions = buildPositions(wordParser, proposal, insert);
 
 		// Create the new query
 		StringBuilder sb = new StringBuilder(jpqlQuery);
-		sb.replace(positions[0], positions[1], choice);
+		sb.replace(positions[0], positions[1], proposal);
 
 		// Return the result
-		return new Result(sb.toString(), positions[0] + choice.length());
+		return new Result(sb.toString(), positions[0] + proposal.length());
 	}
 
 	/**
@@ -364,7 +375,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean hasItems() {
+	public boolean hasProposals() {
 		return !mappings.isEmpty()            ||
 		       !identifiers.isEmpty()         ||
 		       !abstractSchemaTypes.isEmpty() ||
@@ -375,7 +386,10 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	 * {@inheritDoc}
 	 */
 	public Iterable<String> identificationVariables() {
-		return Collections.unmodifiableSet(identificationVariables);
+		List<String> variables = new ArrayList<String>(identificationVariables.size() + rangeIdentificationVariables.size());
+		variables.addAll(identificationVariables);
+		variables.addAll(rangeIdentificationVariables.keySet());
+		return variables;
 	}
 
 	/**
@@ -393,8 +407,8 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 		rangeIdentificationVariables = new HashMap<String, IEntity>();
 	}
 
-	private String longuestIdentifier(String choice) {
-		return LONGUEST_IDENTIFIERS.containsKey(choice) ? LONGUEST_IDENTIFIERS.get(choice) : choice;
+	private String longuestIdentifier(String proposal) {
+		return LONGUEST_IDENTIFIERS.containsKey(proposal) ? LONGUEST_IDENTIFIERS.get(proposal) : proposal;
 	}
 
 	/**
@@ -405,23 +419,23 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	}
 
 	/**
-	 * This is only used by the unit-tests, it removes the given choice from one of the collection
-	 * of possible choices.
+	 * This is only used by the unit-tests, it removes the given proposal from one of the collection
+	 * of possible proposals.
 	 *
-	 * @param choice The choice to remove
-	 * @return <code>true</code> the given choice was removed from one of the collections;
+	 * @param proposal The proposal to remove
+	 * @return <code>true</code> the given proposal was removed from one of the collections;
 	 * <code>false</code> if it could not be found, thus not removed
 	 */
-	public boolean remove(String choice) {
+	public boolean remove(String proposal) {
 
-		boolean removed = identifiers.remove(choice)             ||
-		                  identificationVariables.remove(choice) ||
-		                  rangeIdentificationVariables.remove(choice) != null;
+		boolean removed = identifiers.remove(proposal)             ||
+		                  identificationVariables.remove(proposal) ||
+		                  rangeIdentificationVariables.remove(proposal) != null;
 
 		if (!removed) {
 			for (Iterator<IMapping> iter = mappings.iterator(); iter.hasNext(); ) {
 				IMapping mapping = iter.next();
-				if (mapping.getName().equals(choice)) {
+				if (mapping.getName().equals(proposal)) {
 					iter.remove();
 					removed = true;
 					break;
@@ -432,7 +446,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 		if (!removed) {
 			for (Iterator<IEntity> iter = abstractSchemaTypes.iterator(); iter.hasNext(); ) {
 				IEntity entity = iter.next();
-				if (entity.getName().equals(choice)) {
+				if (entity.getName().equals(proposal)) {
 					iter.remove();
 					removed = true;
 					break;
@@ -443,13 +457,13 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 		return removed;
 	}
 
-	private int startPositionImp(WordParser wordParser, String choice) {
+	private int startPositionImp(WordParser wordParser, String proposal) {
 
 		int index = wordParser.position();
-		int maxMoveLength = choice.length();
+		int maxMoveLength = proposal.length();
 
 		while (index >= 0 && maxMoveLength > 0) {
-			if (wordParser.startsWith(choice, index)) {
+			if (wordParser.startsWith(proposal, index)) {
 				return index;
 			}
 			index--;
@@ -503,7 +517,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	}
 
 	/**
-	 * This contains the result of inserting a choice into a JPQL query at a given position.
+	 * This contains the result of inserting a proposal into a JPQL query at a given position.
 	 *
 	 * @see ContentAssistItems#buildEscapedQuery(String, String, int, boolean)
 	 * @see ContentAssistItems#buildQuery(String, String, int, boolean)
@@ -511,7 +525,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 	private final class Result implements ResultQuery {
 
 		/**
-		 * The new JPQL query after insertion of the choice.
+		 * The new JPQL query after insertion of the proposal.
 		 */
 		private String jpqlQuery;
 
@@ -523,7 +537,7 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 		/**
 		 * Creates a new <code>Result</code>.
 		 *
-		 * @param jpqlQuery The new JPQL query after insertion of the choice
+		 * @param jpqlQuery The new JPQL query after insertion of the proposal
 		 * @param position The position of the cursor within the new query
 		 */
 		public Result(String jpqlQuery, int position) {
@@ -544,6 +558,17 @@ public final class DefaultContentAssistItems implements ContentAssistItems {
 		 */
 		public String getQuery() {
 			return jpqlQuery;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Query=[").append(jpqlQuery);
+			sb.append("], position=").append(position);
+			return sb.toString();
 		}
 	}
 }

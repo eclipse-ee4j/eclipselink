@@ -11,9 +11,10 @@
  *     Oracle - initial API and implementation
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.internal.jpql.parser;
+package org.eclipse.persistence.jpa.internal.jpql;
 
 import java.util.Arrays;
+import org.eclipse.persistence.jpa.internal.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 

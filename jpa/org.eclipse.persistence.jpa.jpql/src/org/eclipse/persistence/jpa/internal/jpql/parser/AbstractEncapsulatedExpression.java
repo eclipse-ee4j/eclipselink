@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * This expression handles parsing the identifier followed by an expression encapsulated within
@@ -104,7 +105,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	 *
 	 * @return <code>true</code> if something was parsed; <code>false</code> otherwise
 	 */
-	abstract boolean hasEncapsulatedExpression();
+	public abstract boolean hasEncapsulatedExpression();
 
 	/**
 	 * Determines whether the open parenthesis was parsed or not.
@@ -219,7 +220,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	final void toParsedText(StringBuilder writer) {
+	final void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// Identifier
 		writer.append(getText());
@@ -233,7 +234,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 		}
 
 		// Encapsulated expression
-		toParsedTextEncapsulatedExpression(writer);
+		toParsedTextEncapsulatedExpression(writer, includeVirtual);
 
 		// ')'
 		if (hasRightParenthesis) {
@@ -242,10 +243,13 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	}
 
 	/**
-	 * Prints the string representation of the encapsulated {@link Expression}.
+	 * Generates a string representation of the encapsulated {@link Expression}.
 	 *
 	 * @param writer The buffer used to append the encapsulated {@link Expression}'s string
 	 * representation
+	 * @param includeVirtual Determines whether to include any characters that are considered
+	 * virtual, i.e. that was parsed when the query is incomplete and is needed for functionality
+	 * like content assist
 	 */
-	abstract void toParsedTextEncapsulatedExpression(StringBuilder writer);
+	abstract void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean includeVirtual);
 }

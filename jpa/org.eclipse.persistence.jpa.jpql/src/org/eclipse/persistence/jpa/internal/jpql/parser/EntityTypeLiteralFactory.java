@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This factory creates an {@link EntityTypeLiteral}, which wraps an entity name.
  *
@@ -50,13 +52,5 @@ final class EntityTypeLiteralFactory extends AbstractLiteralExpressionFactory {
 		expression = new EntityTypeLiteral(parent, word);
 		expression.parse(wordParser, tolerant);
 		return expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	boolean shouldSkip(AbstractExpression expression) {
-		return false;
 	}
 }

@@ -13,18 +13,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql;
 
-import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
- * This default resolver simply holds onto the fully qualified class name since it is already
- * determined.
+ * This {@link Resolver} simply holds onto the fully qualified class name of the {@link IType}.
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
-final class ClassNameTypeResolver extends AbstractTypeResolver {
+final class ClassNameResolver extends Resolver {
 
 	/**
 	 * The fully qualified name of the type.
@@ -32,12 +31,12 @@ final class ClassNameTypeResolver extends AbstractTypeResolver {
 	private final String className;
 
 	/**
-	 * Creates a new <code>ClassNameTypeResolver</code>.
+	 * Creates a new <code>ClassNameResolver</code>.
 	 *
-	 * @param parent The parent of this resolver, which is never <code>null</code>
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
 	 * @param type The fully qualified name of the type
 	 */
-	ClassNameTypeResolver(TypeResolver parent, String className) {
+	ClassNameResolver(Resolver parent, String className) {
 		super(parent);
 		this.className = className;
 	}
@@ -46,17 +45,15 @@ final class ClassNameTypeResolver extends AbstractTypeResolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType getManagedType() {
-		if (className == IType.UNRESOLVABLE_TYPE) {
-			return null;
-		}
-		return resolveManagedType(getType(className));
+	IType buildType() {
+		return getType(className);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IType getType() {
-		return getType(className);
+	@Override
+	ITypeDeclaration buildTypeDeclaration() {
+		return getType().getTypeDeclaration();
 	}
 }

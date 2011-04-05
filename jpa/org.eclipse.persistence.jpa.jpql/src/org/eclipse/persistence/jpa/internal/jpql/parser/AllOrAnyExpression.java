@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * An <b>ALL</b> conditional expression is a predicate that is <code>true</code> if the comparison
  * operation is <code>true</code> for all values in the result of the subquery or the result of the
@@ -57,15 +59,15 @@ public final class AllOrAnyExpression extends AbstractSingleEncapsulatedExpressi
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(SubQueryBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return SubQueryBNF.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(AllOrAnyExpressionBNF.ID);
 	}
 

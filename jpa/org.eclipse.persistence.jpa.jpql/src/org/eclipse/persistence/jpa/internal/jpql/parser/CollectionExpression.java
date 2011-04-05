@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * A <code>CollectionExpression</code> wraps many expression which they are separated by spaces
@@ -157,15 +158,6 @@ public final class CollectionExpression extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the count of flags used to determine if two child expression are separated by a comma.
-	 *
-	 * @return The total count of flags used to add a comma between two children
-	 */
-	int commasSize() {
-		return commas.size();
-	}
-
-	/**
 	 * Determines whether this {@link CollectionExpression} ends with a comma, which means the last
 	 * {@link Expression} is a "<code>null</code>" expression.
 	 *
@@ -205,7 +197,7 @@ public final class CollectionExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
 		return getParent().findQueryBNF(expression);
 	}
 
@@ -235,7 +227,7 @@ public final class CollectionExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return getParent().getQueryBNF();
 	}
 
@@ -287,25 +279,34 @@ public final class CollectionExpression extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the count of flags used to determine if two child expression are separated by a space.
-	 *
-	 * @return The total count of flags used to add a whitespace between two children
-	 */
-	int spacesSize() {
-		return commas.size();
-	}
-
-	/**
-	 * Prints the string representation of this {@link CollectionExpression}.
+	 * Returns a string representation of this {@link Expression} and its children. The expression
+	 * should contain whitespace even if the beautified version would not have any. For instance,
+	 * "SELECT e " should be returned where {@link Expression#toText()} would return "SELECT e".
 	 *
 	 * @param endIndex The index used to determine when to create the string representation, which
 	 * is exclusive
 	 * @param writer The buffer used to append this {@link CollectionExpression}'s string
 	 * representation
+	 * @return The string representation of this {@link Expression}
+	 */
+	public String toActualText(int endIndex) {
+		StringBuilder writer = new StringBuilder();
+		toParsedText(writer, endIndex, true);
+		return writer.toString();
+	}
+
+	/**
+	 * Generates a string representation of this {@link CollectionExpression}.
+	 *
+	 * @param endIndex The index used to determine when to create the string representation, which
+	 * is exclusive
+	 * @param writer The buffer used to append this {@link CollectionExpression}'s string
+	 * representation
+	 * @return The string representation of this {@link Expression}
 	 */
 	public String toParsedText(int endIndex) {
 		StringBuilder writer = new StringBuilder();
-		toParsedText(writer, endIndex);
+		toParsedText(writer, endIndex, false);
 		return writer.toString();
 	}
 
@@ -313,11 +314,11 @@ public final class CollectionExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
-		toParsedText(writer, childrenSize());
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
+		toParsedText(writer, childrenSize(), includeVirtual);
 	}
 
-	private void toParsedText(StringBuilder writer, int endIndex) {
+	private void toParsedText(StringBuilder writer, int endIndex, boolean includeVirtual) {
 
 		for (int index = 0, count = children.size(); index < count; index++) {
 
@@ -325,7 +326,7 @@ public final class CollectionExpression extends AbstractExpression {
 
 			// Write the child expression
 			if (expression != null) {
-				expression.toParsedText(writer);
+				expression.toParsedText(writer, includeVirtual);
 			}
 
 			// Write ','

@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ConditionalFactorBNF extends JPQLQueryBNF {
+public final class ConditionalFactorBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "conditional_factor";
+	public static final String ID = "conditional_factor";
 
 	/**
 	 * Creates a new <code>ConditionalFactorBNF</code>.

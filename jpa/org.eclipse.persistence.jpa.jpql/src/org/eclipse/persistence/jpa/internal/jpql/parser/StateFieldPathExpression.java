@@ -66,7 +66,7 @@ public final class StateFieldPathExpression extends AbstractPathExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(StateFieldPathExpressionBNF.ID);
 	}
 }

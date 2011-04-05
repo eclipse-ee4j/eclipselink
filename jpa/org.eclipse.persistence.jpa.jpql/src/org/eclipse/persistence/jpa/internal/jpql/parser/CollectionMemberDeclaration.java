@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * An identification variable declared by a collection member declaration ranges over values of a
@@ -191,7 +192,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(CollectionMemberDeclarationBNF.ID);
 	}
 
@@ -322,12 +323,13 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 			count = wordParser.skipLeadingWhitespace();
 		}
 
-		// Remove ')'
+		// Parse ')'
 		hasRightParenthesis = wordParser.startsWith(RIGHT_PARENTHESIS);
 
 		if (hasRightParenthesis) {
 			wordParser.moveForward(1);
-			hasSpaceAfterRightParenthesis = wordParser.skipLeadingWhitespace() > 0;
+			count = wordParser.skipLeadingWhitespace();
+			hasSpaceAfterRightParenthesis = count > 0;
 		}
 		else {
 			hasSpaceAfterRightParenthesis = (count > 0);
@@ -347,13 +349,19 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 			queryBNF(IdentificationVariableBNF.ID),
 			tolerant
 		);
+
+		if (!hasLeftParenthesis && hasRightParenthesis && !hasAs && !hasIdentificationVariable()) {
+			hasRightParenthesis = false;
+			hasSpaceAfterRightParenthesis = false;
+			wordParser.moveBackward(count + 1);
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// 'IN'
 		writer.append(getText());
@@ -368,7 +376,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 
 		// Collection-valued path expression
 		if (collectionValuedPathExpression != null) {
-			collectionValuedPathExpression.toParsedText(writer);
+			collectionValuedPathExpression.toParsedText(writer, includeVirtual);
 		}
 
 		// ')'
@@ -391,12 +399,12 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 
 		// Identification variable
 		if (identificationVariable != null) {
-			identificationVariable.toParsedText(writer);
+			identificationVariable.toParsedText(writer, includeVirtual);
 		}
 	}
 
 	/**
-	 * Creates a string representation of this expression up and excluing the
+	 * Creates a string representation of this expression up and excluding the
 	 * <b>AS</b> identifier.
 	 *
 	 * @return The string representation of a section of this expression
@@ -418,7 +426,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 
 		// Collection-valued path expression
 		if (collectionValuedPathExpression != null) {
-			collectionValuedPathExpression.toParsedText(writer);
+			collectionValuedPathExpression.toParsedText(writer, false);
 		}
 
 		// ')'

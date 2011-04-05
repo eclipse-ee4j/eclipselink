@@ -23,17 +23,17 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class CollectionValuedPathExpressionBNF extends JPQLQueryBNF {
+public final class CollectionValuedPathExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "collection_valued_path_expression";
+	public static final String ID = "collection_valued_path_expression";
 
 	/**
 	 * Creates a new <code>CollectionValuedPathExpressionBNF</code>.
 	 */
-	CollectionValuedPathExpressionBNF() {
+	public CollectionValuedPathExpressionBNF() {
 		super(ID);
 	}
 

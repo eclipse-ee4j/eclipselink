@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
@@ -83,6 +82,8 @@ final class ExpressionRegistry {
 	 */
 	ExpressionFactory expressionFactoryForIdentifier(String identifier) {
 
+		identifier = identifier.toUpperCase();
+
 		if (Expression.SELECT.equalsIgnoreCase(identifier)) {
 			return expressionFactory(SimpleSelectStatementFactory.ID);
 		}
@@ -106,7 +107,7 @@ final class ExpressionRegistry {
 	 * @return The role of the given identifier
 	 */
 	IdentifierRole identifierRole(String identifier) {
-		return identifiers.get(identifier);
+		return identifiers.get(identifier.toUpperCase());
 	}
 
 	/**
@@ -125,7 +126,7 @@ final class ExpressionRegistry {
 	 * requested
 	 * @return The list of JPQL identifiers that can be used with the BNF
 	 */
-	Iterator<String> identifiers(String queryBNFId) {
+	Iterable<String> identifiers(String queryBNFId) {
 		return queryBNF(queryBNFId).identifiers();
 	}
 
@@ -135,7 +136,7 @@ final class ExpressionRegistry {
 	 * @return The version in which the identifier was introduced
 	 */
 	IJPAVersion identifierVersion(String identifier) {
-		IJPAVersion version = identifiersVersions.get(identifier);
+		IJPAVersion version = identifiersVersions.get(identifier.toUpperCase());
 		return (version != null) ? version : IJPAVersion.VERSION_1_0;
 	}
 
@@ -296,7 +297,6 @@ final class ExpressionRegistry {
 		registerFactory(new ArithmeticExpressionFactory());
 		registerFactory(new AvgFunctionFactory());
 		registerFactory(new BadExpressionFactory());
-		registerFactory(new BasicLiteralExpressionFactory());
 		registerFactory(new BetweenExpressionFactory());
 		registerFactory(new CollectionMemberDeclarationFactory());
 		registerFactory(new CollectionMemberExpressionFactory());
@@ -407,7 +407,7 @@ final class ExpressionRegistry {
 		identifiers.put(Expression.FALSE,                 IdentifierRole.FUNCTION);
 		identifiers.put(Expression.FETCH,                 IdentifierRole.COMPOUND_FUNCTION);
 		identifiers.put(Expression.FROM,                  IdentifierRole.CLAUSE);
-		identifiers.put(Expression.HAVING,                IdentifierRole.AGGREGATE);
+		identifiers.put(Expression.HAVING,                IdentifierRole.CLAUSE);
 		identifiers.put(Expression.IN,                    IdentifierRole.COMPOUND_FUNCTION);  // x IN { (y {, z}* | (s) | t }
 		identifiers.put(Expression.INNER,                 IdentifierRole.COMPOUND_FUNCTION);  // Part of JOIN
 		identifiers.put(Expression.IS,                    IdentifierRole.COMPOUND_FUNCTION);
@@ -419,7 +419,7 @@ final class ExpressionRegistry {
 		identifiers.put(Expression.LOCATE,                IdentifierRole.FUNCTION);           // LOCATE(x, y [, z]))
 		identifiers.put(Expression.LOWER,                 IdentifierRole.FUNCTION);           // LOWER(x)
 		identifiers.put(Expression.MAX,                   IdentifierRole.FUNCTION);           // MAX(x)
-		identifiers.put(Expression.MEMBER,                IdentifierRole.COMPOUND_FUNCTION);
+		identifiers.put(Expression.MEMBER,                IdentifierRole.COMPOUND_FUNCTION);  // x MEMBER y
 		identifiers.put(Expression.MIN,                   IdentifierRole.FUNCTION);           // MIN(x)
 		identifiers.put(Expression.MOD,                   IdentifierRole.FUNCTION);           // MOD(x, y)
 		identifiers.put(Expression.NEW,                   IdentifierRole.FUNCTION);           // NEW x (y {, z}*)
@@ -443,7 +443,6 @@ final class ExpressionRegistry {
 		identifiers.put(Expression.UNKNOWN,               IdentifierRole.UNUSED);
 		identifiers.put(Expression.UPDATE,                IdentifierRole.CLAUSE);
 		identifiers.put(Expression.UPPER,                 IdentifierRole.FUNCTION);           // UPPER(x)
-		identifiers.put(Expression.WHEN,                  IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
 		identifiers.put(Expression.WHERE,                 IdentifierRole.CLAUSE);
 		identifiers.put(Expression.PLUS,                  IdentifierRole.AGGREGATE);
 		identifiers.put(Expression.MINUS,                 IdentifierRole.AGGREGATE);
@@ -496,6 +495,7 @@ final class ExpressionRegistry {
 		identifiers.put(Expression.THEN,                  IdentifierRole.COMPOUND_FUNCTION);
 		identifiers.put(Expression.TYPE,                  IdentifierRole.FUNCTION);           // TYPE(x)
 		identifiers.put(Expression.VALUE,                 IdentifierRole.FUNCTION);           // VALUE(x)
+		identifiers.put(Expression.WHEN,                  IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
 
 		identifiersVersions.put(Expression.CASE,          IJPAVersion.VERSION_2_0);
 		identifiersVersions.put(Expression.COALESCE,      IJPAVersion.VERSION_2_0);
@@ -508,8 +508,9 @@ final class ExpressionRegistry {
 		identifiersVersions.put(Expression.THEN,          IJPAVersion.VERSION_2_0);
 		identifiersVersions.put(Expression.TYPE,          IJPAVersion.VERSION_2_0);
 		identifiersVersions.put(Expression.VALUE,         IJPAVersion.VERSION_2_0);
+		identifiersVersions.put(Expression.WHEN,          IJPAVersion.VERSION_2_0);
 
-		// EclipseLink's extension
+		// EclipseLink's extensions
 		identifiers.put(Expression.FUNC,                  IdentifierRole.FUNCTION);          // FUNC(n, x1, ..., x2)
 		identifiers.put(Expression.TREAT,                 IdentifierRole.FUNCTION);          // TREAT(x TODO)
 

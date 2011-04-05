@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link AndExpression} creates a new {@link AdditionExpression} when the portion of the query
  * to parse starts with <b>AND</b>.
@@ -59,7 +61,7 @@ final class AndExpressionFactory extends ExpressionFactory {
 			expression.accept(visitor());
 		}
 
-		if (visitor.found) {
+		if ((visitor != null) && visitor.found) {
 			visitor.found = false;
 			OrExpression orExpression = (OrExpression) expression;
 

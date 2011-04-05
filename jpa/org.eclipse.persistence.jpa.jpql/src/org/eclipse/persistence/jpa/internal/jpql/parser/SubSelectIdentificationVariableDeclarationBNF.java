@@ -26,12 +26,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class SubSelectIdentificationVariableDeclarationBNF extends JPQLQueryBNF {
+public final class SubSelectIdentificationVariableDeclarationBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "subselect_identification_variable_declaration";
+	public static final String ID = "subselect_identification_variable_declaration";
 
 	/**
 	 * Creates a new <code>SubSelectIdentificationVariableDeclarationBNF</code>.

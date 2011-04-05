@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class DateTimeTimestampLiteralBNF extends JPQLQueryBNF {
+public final class DateTimeTimestampLiteralBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "date_time_timestamp_literal";
+	public static final String ID = "date_time_timestamp_literal";
 
 	/**
 	 * Creates a new <code>DateTimeTimestampLiteralBNF</code>.

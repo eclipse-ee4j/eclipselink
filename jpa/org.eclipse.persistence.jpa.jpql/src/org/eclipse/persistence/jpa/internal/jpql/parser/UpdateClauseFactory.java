@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link UpdateClauseFactory} creates a new {@link UpdateClause} when the
  * portion of the query to parse starts with <b>UPDATE</b>.
@@ -47,6 +49,7 @@ final class UpdateClauseFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new UpdateClause(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

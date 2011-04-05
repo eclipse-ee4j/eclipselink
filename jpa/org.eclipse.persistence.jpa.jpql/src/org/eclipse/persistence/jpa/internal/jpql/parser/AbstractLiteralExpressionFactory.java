@@ -13,10 +13,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 /**
- * This {@link LiteralExpressionFactory} is responsible to return the right literal expression.
+ * This factory is responsible to return the right literal expression.
  *
  * @see StringLiteral
  * @see InputParameter
@@ -29,7 +30,6 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
  * @since 2.3
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
 abstract class AbstractLiteralExpressionFactory extends ExpressionFactory {
 
 	/**
@@ -42,7 +42,7 @@ abstract class AbstractLiteralExpressionFactory extends ExpressionFactory {
 	}
 
 	/**
-	 * Creates the actual {@link Expression} this factory manages.
+	 * Creates the actual {@link AbstractExpression} this factory manages.
 	 *
 	 * @param parent The parent expression
 	 * @param wordParser The text to parse based on the current position of the cursor
@@ -50,7 +50,7 @@ abstract class AbstractLiteralExpressionFactory extends ExpressionFactory {
 	 * @param expression During the parsing, it is possible the first part of
 	 * an expression was parsed which needs to be used as a sub-expression of the newly created
 	 * expression
-	 * @return A new {@link Expression} representing a portion or the totality of the given text
+	 * @return A new {@link AbstractExpression} representing the given word
 	 */
 	abstract AbstractExpression buildExpression(AbstractExpression parent,
 	                                            WordParser wordParser,
@@ -68,12 +68,6 @@ abstract class AbstractLiteralExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
-
-		// Empty word, simply return a null expression
-		// Check to see if we need to parse something
-		if ((word.length() == 0) || ((expression != null) && shouldSkip(expression))) {
-			return null;
-		}
 
 		char character = word.charAt(0);
 
@@ -101,7 +95,7 @@ abstract class AbstractLiteralExpressionFactory extends ExpressionFactory {
 		// StateFieldPathExpression
 		if (word.indexOf(AbstractExpression.DOT) > -1) {
 
-			if ((expression != null) && word.startsWith(".")) {
+			if ((expression != null) && (character == AbstractExpression.DOT)) {
 				expression = new StateFieldPathExpression(parent, expression);
 			}
 			else {
@@ -114,14 +108,4 @@ abstract class AbstractLiteralExpressionFactory extends ExpressionFactory {
 
 		return buildExpression(parent, wordParser, word, expression, tolerant);
 	}
-
-	/**
-	 * Determines whether the creation of an {@link Expression} should be skipped or not when the
-	 * given expression is not <code>null</code>.
-	 *
-	 * @param expression The {@link Expression} to test
-	 * @return <code>true</code> if the creation of the {@link Expression} should be skipped;
-	 * <code>false</code> to create it
-	 */
-	abstract boolean shouldSkip(AbstractExpression expression);
 }

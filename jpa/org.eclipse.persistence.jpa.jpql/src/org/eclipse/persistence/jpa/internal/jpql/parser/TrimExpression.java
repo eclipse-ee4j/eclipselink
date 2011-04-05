@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * The <b>TRIM</b> function trims the specified character from a string. If the character to be
@@ -130,15 +131,15 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(StringPrimaryBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return StringPrimaryBNF.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(FunctionsReturningStringsBNF.ID);
 	}
 
@@ -168,7 +169,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean hasEncapsulatedExpression() {
+	public boolean hasEncapsulatedExpression() {
 		return hasSpecification() || hasTrimCharacter() || hasFrom || hasExpression();
 	}
 
@@ -313,7 +314,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedTextEncapsulatedExpression(StringBuilder writer) {
+	void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean includeVirtual) {
 
 		// Trim specification
 		if (hasSpecification()) {
@@ -326,7 +327,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 
 		// Trim character
 		if (hasTrimCharacter()) {
-			trimCharacter.toParsedText(writer);
+			trimCharacter.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterTrimCharacter) {
@@ -343,7 +344,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 		}
 
 		// String primary
-		super.toParsedTextEncapsulatedExpression(writer);
+		super.toParsedTextEncapsulatedExpression(writer, includeVirtual);
 	}
 
 	/**

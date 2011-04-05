@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalCountBNF extends JPQLQueryBNF {
+public final class InternalCountBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "internal-count";
+	public static final String ID = "internal-count";
 
 	/**
 	 * Creates a new <code>StateFieldPathExpressionBNF</code>.

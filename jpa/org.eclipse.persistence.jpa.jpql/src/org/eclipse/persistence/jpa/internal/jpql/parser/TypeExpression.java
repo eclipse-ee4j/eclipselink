@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * An entity type expression can be used to restrict query polymorphism. The <b>TYPE</b> operator
  * returns the exact type of the argument.
@@ -49,15 +51,15 @@ public final class TypeExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(InternalEntityTypeExpressionBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return InternalEntityTypeExpressionBNF.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(TypeExpressionBNF.ID);
 	}
 

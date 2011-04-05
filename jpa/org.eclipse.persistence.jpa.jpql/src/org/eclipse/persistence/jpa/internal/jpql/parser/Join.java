@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * A <b>JOIN</b> enables the fetching of an association as a side effect of the execution of a query.
@@ -182,7 +183,7 @@ public final class Join extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(JoinBNF.ID);
 	}
 
@@ -314,7 +315,7 @@ public final class Join extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// Join identifier
 		writer.append(getText());
@@ -325,7 +326,7 @@ public final class Join extends AbstractExpression {
 
 		// Join association path
 		if (joinAssociationPath != null) {
-			joinAssociationPath.toParsedText(writer);
+			joinAssociationPath.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterJoinAssociation) {
@@ -343,7 +344,7 @@ public final class Join extends AbstractExpression {
 
 		// Identification variable
 		if (identificationVariable != null) {
-			identificationVariable.toParsedText(writer);
+			identificationVariable.toParsedText(writer, includeVirtual);
 		}
 	}
 }

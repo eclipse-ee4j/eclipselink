@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class PatternValueBNF extends JPQLQueryBNF {
+public final class PatternValueBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "pattern_value";
+	public static final String ID = "pattern_value";
 
 	/**
 	 * Creates a new <code>PatternValueBNF</code>.

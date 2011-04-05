@@ -13,7 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-import org.eclipse.persistence.jpa.internal.jpql.parser.WordParser;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * A utility class containing various methods related to the Hermes parser.
@@ -49,38 +49,39 @@ public final class ExpressionTools {
 	}
 
 	/**
-	 * Converts the escape characters contained by the given {@link CharSequence} to non-escape
-	 * characters. For example, the character '\b' is converted into the string value '\\b'.
+	 * Converts the escape characters contained in the given {@link CharSequence} to their literal
+	 * representation. For example, '\b' is converted to '\\b'.
 	 *
-	 * @param value The sequence of characters to convert to a non-escape version
+	 * @param value The sequence of characters to convert any escape character
 	 * @param position This is a one element array that needs to be adjusted when an escape
 	 * character is converted
 	 * @return The new sequence of characters that does not contain any escape character but it's
-	 * string representation
+	 * literal representation
 	 */
 	public static String escape(CharSequence value, int[] position) {
 
 		StringBuilder sb = new StringBuilder(value.length());
+		int originalPosition = position[0];
 
 		for (int index = 0, count = value.length(); index < count; index++) {
 			char character = value.charAt(index);
 
 			switch(character) {
-				case '\b': sb.append("\\b");  if (index <= position[0]) position[0]++; break;
-				case '\t': sb.append("\\t");  if (index <= position[0]) position[0]++; break;
-				case '\n': sb.append("\\n");  if (index <= position[0]) position[0]++; break;
-				case '\f': sb.append("\\f");  if (index <= position[0]) position[0]++; break;
-				case '\r': sb.append("\\r");  if (index <= position[0]) position[0]++; break;
-				case '\"': sb.append("\\\""); if (index <= position[0]) position[0]++; break;
-				case '\\': sb.append("\\\\"); if (index <= position[0]) position[0]++; break;
-				case '\0': sb.append("\\0");  if (index <= position[0]) position[0]++; break;
-				case '\1': sb.append("\\1");  if (index <= position[0]) position[0]++; break;
-				case '\2': sb.append("\\2");  if (index <= position[0]) position[0]++; break;
-				case '\3': sb.append("\\3");  if (index <= position[0]) position[0]++; break;
-				case '\4': sb.append("\\4");  if (index <= position[0]) position[0]++; break;
-				case '\5': sb.append("\\5");  if (index <= position[0]) position[0]++; break;
-				case '\6': sb.append("\\6");  if (index <= position[0]) position[0]++; break;
-				case '\7': sb.append("\\7");  if (index <= position[0]) position[0]++; break;
+				case '\b': sb.append("\\b");  if (index < originalPosition) position[0]++; break;
+				case '\t': sb.append("\\t");  if (index < originalPosition) position[0]++; break;
+				case '\n': sb.append("\\n");  if (index < originalPosition) position[0]++; break;
+				case '\f': sb.append("\\f");  if (index < originalPosition) position[0]++; break;
+				case '\r': sb.append("\\r");  if (index < originalPosition) position[0]++; break;
+				case '\"': sb.append("\\\""); if (index < originalPosition) position[0]++; break;
+				case '\\': sb.append("\\\\"); if (index < originalPosition) position[0]++; break;
+				case '\0': sb.append("\\0");  if (index < originalPosition) position[0]++; break;
+				case '\1': sb.append("\\1");  if (index < originalPosition) position[0]++; break;
+				case '\2': sb.append("\\2");  if (index < originalPosition) position[0]++; break;
+				case '\3': sb.append("\\3");  if (index < originalPosition) position[0]++; break;
+				case '\4': sb.append("\\4");  if (index < originalPosition) position[0]++; break;
+				case '\5': sb.append("\\5");  if (index < originalPosition) position[0]++; break;
+				case '\6': sb.append("\\6");  if (index < originalPosition) position[0]++; break;
+				case '\7': sb.append("\\7");  if (index < originalPosition) position[0]++; break;
 				default:   sb.append(character);
 			}
 		}
@@ -195,17 +196,16 @@ public final class ExpressionTools {
 
 			if (character1 != character2) {
 
-				// Query 2 does not have a whitespace but query 1 does
-				if (Character.isWhitespace(character1) &&
-				   !Character.isWhitespace(character2)) {
+				boolean whitespace1 = Character.isWhitespace(character1);
+				boolean whitespace2 = Character.isWhitespace(character2);
 
+				// Query 2 does not have a whitespace but query 1 does
+				if (whitespace1 && !whitespace2) {
 					index1++;
 					position2--;
 				}
 				// Query 1 does not have a whitespace but the query 2 does
-				else if (!Character.isWhitespace(character1) &&
-				          Character.isWhitespace(character2)) {
-
+				else if (!whitespace1 && whitespace2) {
 					index2++;
 					position2++;
 				}
@@ -224,18 +224,20 @@ public final class ExpressionTools {
 			// The new position is most likely adjusted
 			if (position2 == index2) {
 
-				// Now verify that query2 doesn't have more whitespace
-				while ((index1 < queryLength1) && (index2 < queryLength2)) {
+				// Nothing more to adjust
+				if (character1 == character2) {
+					break;
+				}
 
-					character1 = Character.toUpperCase(query1.charAt(index1));
+				// Now verify that query2 doesn't have more whitespace
+				while (index2 < queryLength2) {
+
 					character2 = Character.toUpperCase(query2.charAt(index2));
 
 					// Query 2 does not have a whitespace but query 1 does
-					if (Character.isWhitespace(character1) &&
-					   !Character.isWhitespace(character2)) {
-
-						position2--;
-						break;
+					if (Character.isWhitespace(character2)) {
+						position2++;
+						index2++;
 					}
 					else {
 						break;
@@ -246,7 +248,7 @@ public final class ExpressionTools {
 			}
 		}
 
-		return position2;
+		return Math.min(position2, queryLength2);
 	}
 
 	/**
@@ -309,7 +311,7 @@ public final class ExpressionTools {
 			if ((character == '\\') && (index + 1 < count)) {
 				character = value.charAt(++index);
 
-				switch(character) {
+				switch (character) {
 					// Standard escape character
 					case 'b':  sb.append("\b"); if (index <= originalPosition) position[0]--; break;
 					case 't':  sb.append("\t"); if (index <= originalPosition) position[0]--; break;
@@ -336,8 +338,8 @@ public final class ExpressionTools {
 
 						// Adjust the position and make sure if the position is within the unicode
 						// value, then it's only adjusted to be at the beginning of the unicode value
-						if ((index - 1 > originalPosition) && (index + 5 <= originalPosition)) {
-							position[0] -= (index + 5 - position[0]);
+						if ((originalPosition > index - 1) && (originalPosition <= index + 5)) {
+							position[0] -= (originalPosition - index + 1);
 						}
 						else if (index <= originalPosition) {
 							position[0] -= 5;
@@ -361,13 +363,13 @@ public final class ExpressionTools {
 	}
 
 	/**
-	 * Returns the string literal without the single quotes. Any two consecutive single quotes will
-	 * be converted into a single quote.
+	 * Returns the string literal without the single or double quotes. Any two consecutive single
+	 * quotes will be converted into a single quote.
 	 *
 	 * @param text The original text to unquote if it has ' at the beginning and the end
 	 * @return The unquoted text
 	 */
-	public static String unquotedText(String text) {
+	public static String unquote(String text) {
 
 		int startIndex = 0;
 		int endIndex = text.length();

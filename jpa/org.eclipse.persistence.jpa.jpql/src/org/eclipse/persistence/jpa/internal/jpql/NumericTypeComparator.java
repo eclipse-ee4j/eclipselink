@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IType;
  * @since 2.3
  * @author Pascal Filion
  */
-public final class NumericTypeComparator implements Comparator<IType> {
+final class NumericTypeComparator implements Comparator<IType> {
 
 	/**
 	 * The helper that gives access to the most common {@link IType types}.

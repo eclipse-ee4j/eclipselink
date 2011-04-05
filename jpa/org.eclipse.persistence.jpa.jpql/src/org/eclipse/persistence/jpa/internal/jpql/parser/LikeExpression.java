@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * The <b>LIKE</b> condition is used to specify a search for a pattern.
@@ -205,7 +206,7 @@ public final class LikeExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(LikeExpressionBNF.ID);
 	}
 
@@ -396,11 +397,11 @@ public final class LikeExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// String expression
 		if (stringExpression != null) {
-			stringExpression.toParsedText(writer);
+			stringExpression.toParsedText(writer, includeVirtual);
 			writer.append(SPACE);
 		}
 
@@ -413,7 +414,7 @@ public final class LikeExpression extends AbstractExpression {
 
 		// Pattern value
 		if (patternValue != null) {
-			patternValue.toParsedText(writer);
+			patternValue.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterPatternValue) {
@@ -431,7 +432,7 @@ public final class LikeExpression extends AbstractExpression {
 
 		// Escape character
 		if (escapeCharacter != null) {
-			escapeCharacter.toParsedText(writer);
+			escapeCharacter.toParsedText(writer, includeVirtual);
 		}
 	}
 }

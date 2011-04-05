@@ -42,7 +42,7 @@ public final class OrExpression extends LogicalExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF rightExpressionBNF() {
+	public JPQLQueryBNF rightExpressionBNF() {
 		return queryBNF(ConditionalTermBNF.ID);
 	}
 }

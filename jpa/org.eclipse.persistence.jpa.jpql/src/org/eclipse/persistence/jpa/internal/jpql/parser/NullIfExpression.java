@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * <b>NULLIF</b> returns the first expression if the two expressions are not equal. If the
  * expressions are equal, <b>NULLIF</b> returns a null value of the type of the first expression.
@@ -50,7 +52,7 @@ public final class NullIfExpression extends AbstractDoubleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(NullIfExpressionBNF.ID);
 	}
 
@@ -58,7 +60,7 @@ public final class NullIfExpression extends AbstractDoubleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF parameterExpressionBNF(int index) {
+	public JPQLQueryBNF parameterExpressionBNF(int index) {
 		return queryBNF(ScalarExpressionBNF.ID);
 	}
 

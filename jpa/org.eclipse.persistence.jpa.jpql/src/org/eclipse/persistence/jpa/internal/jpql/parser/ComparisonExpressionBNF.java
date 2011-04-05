@@ -29,17 +29,17 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ComparisonExpressionBNF extends JPQLQueryBNF {
+public final class ComparisonExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "comparison_expression";
+	public static final String ID = "comparison_expression";
 
 	/**
 	 * Creates a new <code>ComparisonExpressionBNF</code>.
 	 */
-	ComparisonExpressionBNF() {
+	public ComparisonExpressionBNF() {
 		super(ID);
 	}
 
@@ -82,7 +82,7 @@ final class ComparisonExpressionBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isCompound() {
+	public boolean isCompound() {
 		return true;
 	}
 }

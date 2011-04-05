@@ -14,33 +14,35 @@
 package org.eclipse.persistence.jpa.internal.jpql;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
- * This {@link TypeResolver} compares each {@link IType} retrieves from the {@link TypeResolver type
- * resolvers} that were gathered for a given {@link Expression} and returns that type if they are
+ * This {@link Resolver} compares each {@link IType} retrieved from the list of {@link Resolver
+ * Resolvers} that were gathered for a given {@link Expression} and returns that type if they are
  * all the same type otherwise the {@link IType} for <code>Object</code> is returned.
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
-final class CollectionEquivalentTypeResolver extends AbstractTypeResolver {
+final class CollectionEquivalentResolver extends Resolver {
 
 	/**
-	 * The list of {@link TypeResolver resolvers} that were created for each of the encapsulated
+	 * The list of {@link Resolver resolvers} that were created for each of the encapsulated
 	 * expressions.
 	 */
-	private List<TypeResolver> resolvers;
+	private List<Resolver> resolvers;
 
 	/**
-	 * Creates a new <code>CollectionEquivalentTypeResolver</code>.
+	 * Creates a new <code>CollectionEquivalentResolver</code>.
 	 *
-	 * @param parent The parent of this resolver
-	 * @param resolvers The list of {@link TypeResolver resolvers} that were created for each of
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
+	 * @param resolvers The list of {@link Resolver resolvers} that were created for each of
 	 * the encapsulated expressions
 	 */
-	CollectionEquivalentTypeResolver(TypeVisitor parent, List<TypeResolver> resolvers) {
+	CollectionEquivalentResolver(Resolver parent, List<Resolver> resolvers) {
 		super(parent);
 		this.resolvers = resolvers;
 	}
@@ -48,20 +50,41 @@ final class CollectionEquivalentTypeResolver extends AbstractTypeResolver {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IType getType() {
+	@Override
+	IType buildType() {
 
-		// Retrieve the first type so it can be compared with the others
-		IType type = resolvers.get(0).getType();
+		TypeHelper helper = getTypeHelper();
+		IType unknownType = helper.unknownType();
+		IType type = null;
 
-		for (int index = 1, count = resolvers.size(); index < count; index++) {
+		for (int index = 0, count = resolvers.size(); index < count; index++) {
 			IType anotherType = resolvers.get(index).getType();
 
+			if (anotherType == unknownType) {
+				continue;
+			}
+
+			if (type == null) {
+				type = anotherType;
+			}
 			// Two types are not the same, then the type is Object
-			if (!type.equals(anotherType)) {
-				return getType(Object.class);
+			else if (!type.equals(anotherType)) {
+				return helper.objectType();
 			}
 		}
 
+		if (type == null) {
+			type = unknownType;
+		}
+
 		return type;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	ITypeDeclaration buildTypeDeclaration() {
+		return getType().getTypeDeclaration();
 	}
 }

@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * A select statement must always have a <b>SELECT</b> and a <b>FROM</b> clause.
@@ -136,7 +137,7 @@ public final class SelectStatement extends AbstractSelectStatement {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(SelectStatementBNF.ID);
 	}
 
@@ -190,9 +191,9 @@ public final class SelectStatement extends AbstractSelectStatement {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
-		super.toParsedText(writer);
+		super.toParsedText(writer, includeVirtual);
 
 		if (hasSpaceBeforeOrderBy) {
 			writer.append(SPACE);
@@ -200,7 +201,7 @@ public final class SelectStatement extends AbstractSelectStatement {
 
 		// 'ORDER BY' clause
 		if (hasOrderByClause()) {
-			orderByClause.toParsedText(writer);
+			orderByClause.toParsedText(writer, includeVirtual);
 		}
 	}
 }

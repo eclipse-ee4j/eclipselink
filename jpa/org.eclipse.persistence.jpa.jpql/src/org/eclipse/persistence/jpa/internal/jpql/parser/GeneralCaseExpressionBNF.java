@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class GeneralCaseExpressionBNF extends JPQLQueryBNF {
+public final class GeneralCaseExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "general_case_expression";
+	public static final String ID = "general_case_expression";
 
 	/**
 	 * Creates a new <code>GeneralCaseExpressionBNF</code>.

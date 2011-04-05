@@ -13,11 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
- * The <b>INDEX</b> function returns an integer value corresponding to the
- * position of its argument in an ordered list. The <b>INDEX</b> function can
- * only be applied to identification variables denoting types for which an order
- * column has been specified.
+ * The <b>INDEX</b> function returns an integer value corresponding to the position of its argument
+ * in an ordered list. The <b>INDEX</b> function can only be applied to identification variables
+ * denoting types for which an order column has been specified.
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= INDEX(identification_variable)</code><p>
  *
@@ -47,15 +48,15 @@ public final class IndexExpression extends AbstractSingleEncapsulatedExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(PreLiteralExpressionBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return PreLiteralExpressionBNF.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(FunctionsReturningNumericsBNF.ID);
 	}
 

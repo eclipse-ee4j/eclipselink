@@ -13,46 +13,47 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql;
 
-import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
- * This default resolver simply holds onto the actual type since it is already determined.
+ * This {@link Resolver} simply holds onto the actual type since it is already determined.
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
-final class ClassTypeResolver extends AbstractTypeResolver {
+final class ClassResolver extends Resolver {
 
 	/**
 	 * The actual Java type for which its {@link IType} will be returned.
 	 */
-	private final Class<?> type;
+	private final Class<?> javaType;
 
 	/**
-	 * Creates a new <code>ClassTypeResolver</code>.
+	 * Creates a new <code>ClassResolver</code>.
 	 *
-	 * @param parent The parent of this resolver, which is never <code>null</code>
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
 	 * @param type The actual Java type for which its {@link IType} will be returned
 	 */
-	ClassTypeResolver(TypeResolver parent, Class<?> type) {
+	ClassResolver(Resolver parent, Class<?> javaType) {
 		super(parent);
-		this.type = type;
+		this.javaType = javaType;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IManagedType getManagedType() {
-		return resolveManagedType(getType(type));
+	IType buildType() {
+		return getType(javaType);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IType getType() {
-		return getType(type);
+	@Override
+	ITypeDeclaration buildTypeDeclaration() {
+		return getType().getTypeDeclaration();
 	}
 }

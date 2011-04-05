@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
@@ -187,19 +188,6 @@ public final class JPQLExpression extends AbstractExpression {
 	/**
 	 * Creates an object where the {@link Expression} is the leaf at the given position.
 	 *
-	 * @param position The position of the cursor that will be used to retrieve the deepest
-	 * {@link Expression}
-	 * @return A new {@link QueryPosition}
-	 */
-	public QueryPosition buildPosition(int position) {
-		QueryPosition queryPosition = new QueryPosition(position);
-		populatePosition(queryPosition, position);
-		return queryPosition;
-	}
-
-	/**
-	 * Creates an object where the {@link Expression} is the leaf at the given position.
-	 *
 	 * @param actualQuery The actual query is a string representation of the query that may contain
 	 * extra whitespace
 	 * @param position The position of the cursor in the actual query, which is used to retrieve the
@@ -210,11 +198,10 @@ public final class JPQLExpression extends AbstractExpression {
 	public QueryPosition buildPosition(String actualQuery, int position) {
 
 		// Adjust the position by not counting extra whitespace
-		position = ExpressionTools.repositionCursor(actualQuery, position, toParsedText());
+		position = ExpressionTools.repositionCursor(actualQuery, position, toActualText());
 
 		QueryPosition queryPosition = new QueryPosition(position);
 		populatePosition(queryPosition, position);
-
 		return queryPosition;
 	}
 
@@ -263,7 +250,7 @@ public final class JPQLExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(JPQLStatementBNF.ID);
 	}
 
@@ -370,14 +357,14 @@ public final class JPQLExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		if (queryStatement != null) {
-			queryStatement.toParsedText(writer);
+			queryStatement.toParsedText(writer, includeVirtual);
 		}
 
 		if (unknownEndingStatement != null) {
-			unknownEndingStatement.toParsedText(writer);
+			unknownEndingStatement.toParsedText(writer, includeVirtual);
 		}
 	}
 }

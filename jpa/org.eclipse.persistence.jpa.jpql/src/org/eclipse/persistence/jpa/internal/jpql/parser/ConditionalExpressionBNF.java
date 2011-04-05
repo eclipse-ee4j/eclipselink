@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ConditionalExpressionBNF extends JPQLQueryBNF {
+public final class ConditionalExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "conditional_expression";
+	public static final String ID = "conditional_expression";
 
 	/**
 	 * Creates a new <code>ConditionalExpressionBNF</code>.
@@ -57,7 +57,7 @@ final class ConditionalExpressionBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate() {
+	public boolean handleAggregate() {
 		return true;
 	}
 

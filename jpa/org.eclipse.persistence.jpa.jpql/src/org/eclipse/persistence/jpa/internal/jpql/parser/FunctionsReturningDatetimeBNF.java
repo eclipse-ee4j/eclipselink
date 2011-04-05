@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class FunctionsReturningDatetimeBNF extends JPQLQueryBNF {
+public final class FunctionsReturningDatetimeBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "functions_returning_datetime";
+	public static final String ID = "functions_returning_datetime";
 
 	/**
 	 * Creates a new <code>FunctionsReturningDatetimeBNF</code>.

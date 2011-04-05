@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class EmptyCollectionComparisonExpressionBNF extends JPQLQueryBNF {
+public final class EmptyCollectionComparisonExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "empty_collection_comparison_expression";
+	public static final String ID = "empty_collection_comparison_expression";
 
 	/**
 	 * Creates a new <code>EmptyCollectionComparisonExpressionBNF</code>.

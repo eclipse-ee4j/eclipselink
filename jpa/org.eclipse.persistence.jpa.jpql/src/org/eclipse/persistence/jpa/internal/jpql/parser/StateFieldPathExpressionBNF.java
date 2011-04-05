@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class StateFieldPathExpressionBNF extends JPQLQueryBNF {
+public final class StateFieldPathExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "state_field_path_expression";
+	public static final String ID = "state_field_path_expression";
 
 	/**
 	 * Creates a new <code>StateFieldPathExpressionBNF</code>.

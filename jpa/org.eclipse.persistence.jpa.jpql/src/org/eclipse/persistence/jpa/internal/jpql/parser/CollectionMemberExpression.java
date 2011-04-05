@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * This expression tests whether the designated value is a member of the collection specified by the
@@ -189,7 +190,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(CollectionMemberExpressionBNF.ID);
 	}
 
@@ -291,11 +292,11 @@ public final class CollectionMemberExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// Entity expression
 		if (entityExpression != null) {
-			entityExpression.toParsedText(writer);
+			entityExpression.toParsedText(writer, includeVirtual);
 		}
 
 		// 'NOT'
@@ -329,7 +330,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 
 		// Collection-valued path expression
 		if (collectionValuedPathExpression != null) {
-			collectionValuedPathExpression.toParsedText(writer);
+			collectionValuedPathExpression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

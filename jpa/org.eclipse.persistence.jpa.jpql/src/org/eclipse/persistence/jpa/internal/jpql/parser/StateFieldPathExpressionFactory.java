@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link StateFieldPathExpressionFactory} is meant to handle the parsing of a portion of the
  * query when it's expected to be a state field path.
@@ -55,13 +57,5 @@ final class StateFieldPathExpressionFactory extends AbstractLiteralExpressionFac
 		expression = new IdentificationVariable(parent, word);
 		expression.parse(wordParser, tolerant);
 		return expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	boolean shouldSkip(AbstractExpression expression) {
-		return false;
 	}
 }

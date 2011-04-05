@@ -19,12 +19,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InExpressionExpressionBNF extends JPQLQueryBNF {
+public final class InExpressionExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this <code>InExpressionExpressionBNF</code>.
 	 */
-	static final String ID = "in_expression_expression";
+	public static final String ID = "in_expression_expression";
 
 	/**
 	 * Creates a new <code>InExpressionExpressionBNF</code>.

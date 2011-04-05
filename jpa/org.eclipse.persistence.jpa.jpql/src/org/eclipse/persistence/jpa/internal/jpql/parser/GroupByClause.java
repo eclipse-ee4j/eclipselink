@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * The <b>GROUP BY</b> construct enables the aggregation of values according to the properties of an
@@ -88,11 +89,11 @@ public final class GroupByClause extends AbstractExpression {
 	}
 
 	/**
-	 * Creates
+	 * Creates a new {@link CollectionExpression} that will wrap the single group by item.
 	 *
-	 * @return
+	 * @return The single group by item represented by a temporary collection
 	 */
-	CollectionExpression buildCollectionExpression() {
+	public CollectionExpression buildCollectionExpression() {
 
 		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
 		children.add((AbstractExpression) getGroupByItems());
@@ -122,7 +123,7 @@ public final class GroupByClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(GroupByClauseBNF.ID);
 	}
 
@@ -179,7 +180,7 @@ public final class GroupByClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// 'GROUP BY'
 		writer.append(getText());
@@ -190,7 +191,7 @@ public final class GroupByClause extends AbstractExpression {
 
 		// Group by items
 		if (groupByItems != null) {
-			groupByItems.toParsedText(writer);
+			groupByItems.toParsedText(writer, includeVirtual);
 		}
 	}
 }

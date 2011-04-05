@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -77,6 +77,7 @@ public interface JPQLQueryProblemMessages {
 	String CoalesceExpression_MissingExpression = "COALESCE_EXPRESSION_MISSING_EXPRESSION";
 	String CoalesceExpression_MissingLeftParenthesis = "COALESCE_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String CoalesceExpression_MissingRightParenthesis = "COALESCE_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+	String CollectionExpression_MissingExpression = "COLLECTION_EXPRESSION_MISSING_EXPRESSION";
 	String CollectionMemberDeclaration_MissingCollectionValuedPathExpression = "COLLECTION_MEMBER_DECLARATION_MISSING_COLLECTION_VALUED_PATH_EXPRESSION";
 	String CollectionMemberDeclaration_MissingIdentificationVariable = "COLLECTION_MEMBER_DECLARATION_MISSING_IDENTIFICATION_VARIABLE";
 	String CollectionMemberDeclaration_MissingLeftParenthesis = "COLLECTION_MEMBER_DECLARATION_MISSING_LEFT_PARENTHESIS";
@@ -224,7 +225,7 @@ public interface JPQLQueryProblemMessages {
 	String MultiplicationExpression_RightExpression_WrongType = "MULTIPLICATION_EXPRESSION_RIGHT_EXPRESSION_WRONG_TYPE";
 	String NotExpression_MissingExpression = "NOT_EXPRESSION_MISSING_EXPRESSION";
 	String NotExpression_WrongType = "NOT_EXPRESSION_WRONG_TYPE";
-	String NullComparisonExpression_InvalidCollectionExpression = "NULL_COMPARISON_EXPRESSION_INVALID_COLLECTION_EXPRESSION";
+	String NullComparisonExpression_InvalidType = "NULL_COMPARISON_EXPRESSION_INVALID_TYPE";
 	String NullComparisonExpression_MissingExpression = "NULL_COMPARISON_EXPRESSION_MISSING_EXPRESSION";
 	String NullIfExpression_InvalidFirstExpression = "NULL_IF_EXPRESSION_INVALID_FIRST_EXPRESSION";
 	String NullIfExpression_InvalidSecondExpression = "NULL_IF_EXPRESSION_INVALID_SECOND_EXPRESSION";
@@ -266,8 +267,6 @@ public interface JPQLQueryProblemMessages {
 	String StateFieldPathExpression_NotResolvable = "STATE_FIELD_PATH_EXPRESSION_NOT_RESOLVABLE";
 	String SubExpression_MissingExpression = "SUB_EXPRESSION_MISSING_EXPRESSION";
 	String SubExpression_MissingRightParenthesis = "SUB_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
-	String SubtractionExpression_LeftExpression_WrongType = "SUBTRACTION_EXPRESSION_LEFT_EXPRESSION_WRONG_TYPE";
-	String SubtractionExpression_RightExpression_WrongType = "SUBTRACTION_EXPRESSION_RIGHT_EXPRESSION_WRONG_TYPE";
 	String SubstringExpression_FirstExpression_WrongType = "SUBSTRING_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE";
 	String SubstringExpression_InvalidFirstExpression = "SUBSTRING_EXPRESSION_INVALID_FIRST_EXPRESSION";
 	String SubstringExpression_InvalidSecondExpression = "SUBSTRING_EXPRESSION_INVALID_SECOND_EXPRESSION";
@@ -281,6 +280,8 @@ public interface JPQLQueryProblemMessages {
 	String SubstringExpression_MissingThirdExpression = "SUBSTRING_EXPRESSION_MISSING_THIRD_EXPRESSION";
 	String SubstringExpression_SecondExpression_WrongType = "SUBSTRING_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE";
 	String SubstringExpression_ThirdExpression_WrongType = "SUBSTRING_EXPRESSION_THIRD_EXPRESSION_WRONG_TYPE";
+	String SubtractionExpression_LeftExpression_WrongType = "SUBTRACTION_EXPRESSION_LEFT_EXPRESSION_WRONG_TYPE";
+	String SubtractionExpression_RightExpression_WrongType = "SUBTRACTION_EXPRESSION_RIGHT_EXPRESSION_WRONG_TYPE";
 	String SumFunction_InvalidExpression = "SUM_FUNCTION_INVALID_EXPRESSION";
 	String SumFunction_MissingExpression = "SUM_FUNCTION_MISSING_EXPRESSION";
 	String SumFunction_MissingLeftParenthesis = "SUM_FUNCTION_MISSING_LEFT_PARENTHESIS";

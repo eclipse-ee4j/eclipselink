@@ -13,9 +13,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
- * This {@link SqrtExpressionFactory} creates a new {@link SqrtExpression} when
- * the portion of the query to parse starts with <b>SQRT</b>.
+ * This {@link SqrtExpressionFactory} creates a new {@link SqrtExpression} when the portion of the
+ * query to parse starts with <b>SQRT</b>.
  *
  * @see SqrtExpression
  *
@@ -47,6 +49,7 @@ final class SqrtExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new SqrtExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

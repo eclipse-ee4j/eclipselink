@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class EntityTypeLiteralBNF extends JPQLQueryBNF {
+public final class EntityTypeLiteralBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "entity_type_literal";
+	public static final String ID = "entity_type_literal";
 
 	/**
 	 * Creates a new <code>EntityTypeLiteralBNF</code>.

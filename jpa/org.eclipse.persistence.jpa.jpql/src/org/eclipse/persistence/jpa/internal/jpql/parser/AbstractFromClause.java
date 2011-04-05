@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * The <b>FROM</b> clause of a query defines the domain of the query by declaring identification
@@ -88,11 +89,11 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	}
 
 	/**
-	 * Creates
+	 * Creates a new {@link CollectionExpression} that will wrap the single declaration.
 	 *
-	 * @return
+	 * @return The single declaration represented by a temporary collection
 	 */
-	final CollectionExpression buildCollectionExpression() {
+	public final CollectionExpression buildCollectionExpression() {
 
 		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
 		children.add((AbstractExpression) getDeclaration());
@@ -111,7 +112,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 *
 	 * @return The BNF of the declaration part of this clause
 	 */
-	abstract JPQLQueryBNF declarationBNF();
+	public abstract JPQLQueryBNF declarationBNF();
 
 	/**
 	 * Returns the {@link Expression} that represents the declaration of this clause.
@@ -286,7 +287,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	final void toParsedText(StringBuilder writer) {
+	final void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// 'FROM'
 		writer.append(FROM);
@@ -297,7 +298,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 
 		// Declaration
 		if (declaration != null) {
-			declaration.toParsedText(writer);
+			declaration.toParsedText(writer, includeVirtual);
 		}
 	}
 }

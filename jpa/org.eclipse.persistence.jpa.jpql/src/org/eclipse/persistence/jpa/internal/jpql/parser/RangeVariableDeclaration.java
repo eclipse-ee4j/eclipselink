@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * Range variable declarations allow the developer to designate a "root" for objects which may not
@@ -154,7 +155,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(RangeVariableDeclarationBNF.ID);
 	}
 
@@ -354,11 +355,11 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// Abstract schema name
 		if (abstractSchemaName != null) {
-			abstractSchemaName.toParsedText(writer);
+			abstractSchemaName.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterSchemaName) {
@@ -376,7 +377,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 
 		// Identification variable
 		if ((identificationVariable != null) && !virtualIdentificationVariable) {
-			identificationVariable.toParsedText(writer);
+			identificationVariable.toParsedText(writer, includeVirtual);
 		}
 	}
 }

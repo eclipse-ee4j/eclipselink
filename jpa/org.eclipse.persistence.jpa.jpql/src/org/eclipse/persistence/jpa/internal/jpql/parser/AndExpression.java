@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * <div nowrap><b>BNF:</b> <code>conditional_term ::= conditional_term AND conditional_factor</code><p>
  *
@@ -52,7 +54,7 @@ public final class AndExpression extends LogicalExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF rightExpressionBNF() {
+	public JPQLQueryBNF rightExpressionBNF() {
 		return queryBNF(ConditionalFactorBNF.ID);
 	}
 }

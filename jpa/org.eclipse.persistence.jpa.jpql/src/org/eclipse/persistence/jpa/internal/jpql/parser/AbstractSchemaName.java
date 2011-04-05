@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * An abstract schema name designates the abstract schema type over which the query ranges.
@@ -59,7 +60,7 @@ public final class AbstractSchemaName extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(AbstractSchemaNameBNF.ID);
 	}
 
@@ -91,7 +92,7 @@ public final class AbstractSchemaName extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 		writer.append(getText());
 	}
 }

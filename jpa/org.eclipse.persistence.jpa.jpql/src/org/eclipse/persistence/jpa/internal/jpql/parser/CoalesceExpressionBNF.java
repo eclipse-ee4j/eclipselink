@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class CoalesceExpressionBNF extends JPQLQueryBNF {
+public final class CoalesceExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "coalesce_expression";
+	public static final String ID = "coalesce_expression";
 
 	/**
 	 * Creates a new <code>CoalesceExpressionBNF</code>.

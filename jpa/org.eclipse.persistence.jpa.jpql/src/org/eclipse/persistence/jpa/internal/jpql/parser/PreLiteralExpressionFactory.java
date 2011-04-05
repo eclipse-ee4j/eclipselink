@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link PreLiteralExpressionFactory} is used to verify the next word in the query is not an
  * identifier before delegating the creation to {@link LiteralExpressionFactory}.

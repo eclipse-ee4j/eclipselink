@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * An <b>EXISTS</b> expression is a predicate that is <code>true</code> only if the result of the
  * subquery consists of one or more values and that is <code>false</code> otherwise.
@@ -45,15 +47,15 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(SubQueryBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return SubQueryBNF.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(ExistsExpressionBNF.ID);
 	}
 

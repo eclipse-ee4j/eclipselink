@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class SingleValuedObjectPathExpressionBNF extends JPQLQueryBNF {
+public final class SingleValuedObjectPathExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "single_valued_object_path_expression";
+	public static final String ID = "single_valued_object_path_expression";
 
 	/**
 	 * Creates a new <code>SingleValuedObjectPathExpressionBNF</code>.

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -216,7 +215,7 @@ public abstract class JPQLQueryBNF {
 	 * @return The {@link ExpressionFactory} responsible to parse a portion of the query starting
 	 * with the given identifier; <code>null</code> if nothing was registered for it
 	 */
-	final ExpressionFactory expressionFactory(String identifier) {
+	public final ExpressionFactory expressionFactory(String identifier) {
 		populateIdentifiers();
 		return cachedIdentifiers.get(identifier.toUpperCase());
 	}
@@ -227,7 +226,7 @@ public abstract class JPQLQueryBNF {
 	 *
 	 * @return The list of unique identifiers for each {@link ExpressionFactory}
 	 */
-	final Set<String> expressionFactoryIds() {
+	public final Set<String> expressionFactoryIds() {
 
 		if (cachedFactories == null) {
 
@@ -273,7 +272,7 @@ public abstract class JPQLQueryBNF {
 	 *
 	 * @return The identifier used to register this {@link JPQLQueryBNF} with {@link AbstractExpression}
 	 */
-	final String getId() {
+	public final String getId() {
 		return id;
 	}
 
@@ -284,7 +283,7 @@ public abstract class JPQLQueryBNF {
 	 * @return <code>true</code> if the sub-expression to parse might have several logical and/or
 	 * arithmetic expressions; <code>false</code> otherwise
 	 */
-	boolean handleAggregate() {
+	public boolean handleAggregate() {
 		if (handleAggregate == null) {
 			handleAggregate = calculateHandleAggregate();
 		}
@@ -298,7 +297,7 @@ public abstract class JPQLQueryBNF {
 	 * @return <code>true</code> if the sub-expression to parse might have several sub-expressions
 	 * separated by commas; <code>false</code> otherwise
 	 */
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		if (handleCollection == null) {
 			handleCollection = calculateHandleCollection();
 		}
@@ -312,7 +311,7 @@ public abstract class JPQLQueryBNF {
 	 * @return <code>true</code> if the given word is a JPQL identifier and it is supported by this
 	 * BNF; <code>false</code> otherwise
 	 */
-	final boolean hasIdentifier(String word) {
+	public final boolean hasIdentifier(String word) {
 		populateIdentifiers();
 		return cachedIdentifiers.containsKey(word);
 	}
@@ -322,9 +321,9 @@ public abstract class JPQLQueryBNF {
 	 *
 	 * @return The list of JPQL identifiers that are supported by this BNF
 	 */
-	final Iterator<String> identifiers() {
+	public final Iterable<String> identifiers() {
 		populateIdentifiers();
-		return cachedIdentifiers.keySet().iterator();
+		return cachedIdentifiers.keySet();
 	}
 
 	/**
@@ -342,7 +341,7 @@ public abstract class JPQLQueryBNF {
 	 *
 	 * @return <code>false</code> by default
 	 */
-	boolean isCompound() {
+	public boolean isCompound() {
 		return false;
 	}
 
@@ -354,7 +353,7 @@ public abstract class JPQLQueryBNF {
 	 * to complete a BNF, such as the BNF rules defined for <b>BETWEEN</b> since they are required
 	 * to properly parse the query
 	 */
-	final Set<JPQLQueryBNF> nonCompoundChildren() {
+	public final Set<JPQLQueryBNF> nonCompoundChildren() {
 		if (childNonCompoundQueryBNFs == null) {
 			childNonCompoundQueryBNFs = buildChildren(buildNonCompoundFilter());
 		}

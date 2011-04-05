@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class AllOrAnyExpressionBNF extends JPQLQueryBNF {
+public final class AllOrAnyExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "all_or_any_expression";
+	public static final String ID = "all_or_any_expression";
 
 	/**
 	 * Creates a new <code>AllOrAnyExpressionBNF</code>.

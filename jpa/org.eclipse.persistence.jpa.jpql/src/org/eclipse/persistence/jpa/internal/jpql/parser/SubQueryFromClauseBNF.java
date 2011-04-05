@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class SubQueryFromClauseBNF extends JPQLQueryBNF {
+public final class SubQueryFromClauseBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "subquery_from_clause";
+	public static final String ID = "subquery_from_clause";
 
 	/**
 	 * Creates a new <code>SubQueryFromClauseBNF</code>.

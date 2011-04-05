@@ -22,12 +22,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class LiteralBNF extends JPQLQueryBNF {
+public final class LiteralBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this <code>LiteralBNF</code>.
 	 */
-	static final String ID = "literal";
+	public static final String ID = "literal";
 
 	/**
 	 * Creates a new <code>LiteralBNF</code>.
@@ -35,6 +35,10 @@ final class LiteralBNF extends JPQLQueryBNF {
 	LiteralBNF() {
 		super(ID);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	void initialize() {
 		super.initialize();

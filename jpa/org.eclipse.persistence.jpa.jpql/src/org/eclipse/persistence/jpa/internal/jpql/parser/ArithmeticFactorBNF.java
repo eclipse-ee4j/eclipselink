@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ArithmeticFactorBNF extends JPQLQueryBNF {
+public final class ArithmeticFactorBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "arithmetic_factor";
+	public static final String ID = "arithmetic_factor";
 
 	/**
 	 * Creates a new <code>ArithmeticFactorBNF</code>.

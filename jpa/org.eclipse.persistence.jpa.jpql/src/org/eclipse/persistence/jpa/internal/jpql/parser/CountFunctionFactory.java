@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link CountFunctionFactory} creates a new {@link CountFunction}
  * when the portion of the query to parse starts with <b>COUNT</b>.

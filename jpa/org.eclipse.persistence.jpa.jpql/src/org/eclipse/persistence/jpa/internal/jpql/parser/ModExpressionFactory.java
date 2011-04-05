@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link ModExpressionFactory} creates a new {@link ModExpression} when
  * the portion of the query to parse starts with <b>MOD</b>.

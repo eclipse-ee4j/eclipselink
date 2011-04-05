@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ExistsExpressionBNF extends JPQLQueryBNF {
+public final class ExistsExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "exists_expression";
+	public static final String ID = "exists_expression";
 
 	/**
 	 * Creates a new <code>ExistsExpressionBNF</code>.

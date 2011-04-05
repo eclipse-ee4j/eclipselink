@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalCoalesceExpressionBNF extends JPQLQueryBNF {
+public final class InternalCoalesceExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "coalesce_expression*";
+	public static final String ID = "coalesce_expression*";
 
 	/**
 	 * Creates a new <code>InternalCoalesceExpressionBNF</code>.
@@ -49,7 +49,7 @@ final class InternalCoalesceExpressionBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		return true;
 	}
 
@@ -59,7 +59,6 @@ final class InternalCoalesceExpressionBNF extends JPQLQueryBNF {
 	@Override
 	void initialize() {
 		super.initialize();
-
 		registerChild(ScalarExpressionBNF.ID);
 	}
 }

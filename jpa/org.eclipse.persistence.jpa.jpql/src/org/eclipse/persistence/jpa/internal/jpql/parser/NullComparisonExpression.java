@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * A null comparison tests whether or not the single-valued path expression or input parameter is a
@@ -58,6 +59,7 @@ public final class NullComparisonExpression extends AbstractExpression {
 	NullComparisonExpression(AbstractExpression parent,
 	                         String identifier,
 	                         AbstractExpression expression) {
+
 		super(parent, identifier);
 		updateExpression(expression);
 	}
@@ -97,7 +99,7 @@ public final class NullComparisonExpression extends AbstractExpression {
 		}
 
 		// Identifier
-		children.add(buildStringExpression(getIdentifier().toString()));
+		children.add(buildStringExpression(getIdentifier()));
 	}
 
 	/**
@@ -117,15 +119,15 @@ public final class NullComparisonExpression extends AbstractExpression {
 	 *
 	 * @return Either <b>IS NULL</b> or <b>IS NOT NULL</b>
 	 */
-	public Type getIdentifier() {
-		return hasNot ? Type.IS_NOT_NULL : Type.IS_NULL;
+	public String getIdentifier() {
+		return hasNot ? IS_NOT_NULL : IS_NULL;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(NullComparisonExpressionBNF.ID);
 	}
 
@@ -184,10 +186,10 @@ public final class NullComparisonExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		if (hasExpression()) {
-			expression.toParsedText(writer);
+			expression.toParsedText(writer, includeVirtual);
 			writer.append(SPACE);
 		}
 
@@ -198,30 +200,6 @@ public final class NullComparisonExpression extends AbstractExpression {
 		if (expression != null) {
 			this.expression = expression;
 			this.expression.setParent(this);
-		}
-	}
-
-	/**
-	 * This enumeration lists all the possible choices when using a null comparison expression.
-	 */
-	public enum Type {
-
-		/**
-		 * The constant for 'IS NOT NULL'.
-		 */
-		IS_NOT_NULL,
-
-		/**
-		 * The constant for 'IS NULL'.
-		 */
-		IS_NULL;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public String toString() {
-			return name().replace(UNDERSCORE, SPACE);
 		}
 	}
 }

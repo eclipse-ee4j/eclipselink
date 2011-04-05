@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link JoinFactory} creates a new {@link Join} or {@link FetchJoin} when the portion of the
  * query to parse starts with <b>JOIN</b> or <b>FETCH JOIN</b>, respectively.

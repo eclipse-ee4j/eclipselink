@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 /**
@@ -85,8 +86,8 @@ public final class FuncExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(FuncItemBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return FuncItemBNF.ID;
 	}
 
 	/**
@@ -102,7 +103,7 @@ public final class FuncExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(FuncExpressionBNF.ID);
 	}
 
@@ -112,7 +113,7 @@ public final class FuncExpression extends AbstractSingleEncapsulatedExpression {
 	 * @return The name of the SQL function
 	 */
 	public String getUnquotedFunctionName() {
-		return ExpressionTools.unquotedText(functionName);
+		return ExpressionTools.unquote(functionName);
 	}
 
 	public boolean hasComma() {
@@ -123,7 +124,7 @@ public final class FuncExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean hasEncapsulatedExpression() {
+	public boolean hasEncapsulatedExpression() {
 		return hasFunctionName() || hasComma || super.hasEncapsulatedExpression();
 	}
 
@@ -180,7 +181,7 @@ public final class FuncExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedTextEncapsulatedExpression(StringBuilder writer) {
+	void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean includeVirtual) {
 
 		if (functionName != null) {
 			writer.append(functionName);
@@ -194,6 +195,6 @@ public final class FuncExpression extends AbstractSingleEncapsulatedExpression {
 			writer.append(SPACE);
 		}
 
-		super.toParsedTextEncapsulatedExpression(writer);
+		super.toParsedTextEncapsulatedExpression(writer, includeVirtual);
 	}
 }

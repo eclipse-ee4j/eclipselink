@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalJoinBNF extends JPQLQueryBNF {
+public final class InternalJoinBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "join*";
+	public static final String ID = "join*";
 
 	/**
 	 * Creates a new <code>InternalJoinBNF</code>.
@@ -47,7 +47,7 @@ final class InternalJoinBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		// To support invalid queries
 		return false;
 	}

@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * This {@link Expression} takes care of parsing an expression that encapsulates three expressions
@@ -136,11 +137,12 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	}
 
 	/**
-	 * Creates
+	 * Creates a new {@link CollectionExpression} that will wrap the first, second and third
+	 * expressions.
 	 *
-	 * @return
+	 * @return The first, second and third expressions represented by a temporary collection
 	 */
-	final CollectionExpression buildCollectionExpression() {
+	public final CollectionExpression buildCollectionExpression() {
 
 		List<AbstractExpression> children = new ArrayList<AbstractExpression>(3);
 		children.add((AbstractExpression) getFirstExpression());
@@ -203,7 +205,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean hasEncapsulatedExpression() {
+	public boolean hasEncapsulatedExpression() {
 		return hasFirstExpression()  || hasFirstComma  ||
 		       hasSecondExpression() || hasSecondComma ||
 		       hasThirdExpression();
@@ -298,7 +300,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * needs to be parsed within the parenthesis
 	 * @return The BNF to be used to parse one of the encapsulated expression
 	 */
-	abstract JPQLQueryBNF parameterExpressionBNF(int index);
+	public abstract JPQLQueryBNF parameterExpressionBNF(int index);
 
 	/**
 	 * {@inheritDoc}
@@ -366,11 +368,11 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	final void toParsedTextEncapsulatedExpression(StringBuilder writer) {
+	final void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean includeVirtual) {
 
 		// First expression
 		if (firstExpression != null) {
-			firstExpression.toParsedText(writer);
+			firstExpression.toParsedText(writer, includeVirtual);
 		}
 
 		// ','
@@ -384,7 +386,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 
 		// Second expression
 		if (secondExpression != null) {
-			secondExpression.toParsedText(writer);
+			secondExpression.toParsedText(writer, includeVirtual);
 		}
 
 		// ','
@@ -398,7 +400,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 
 		// Third expression
 		if (thirdExpression != null) {
-			thirdExpression.toParsedText(writer);
+			thirdExpression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

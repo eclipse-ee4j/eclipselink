@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * The <b>LOWER</b> function converts a string to lower case and it returns a string.
  * <p>
@@ -44,15 +46,15 @@ public final class LowerExpression extends AbstractSingleEncapsulatedExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(StringPrimaryBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return StringPrimaryBNF.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(FunctionsReturningStringsBNF.ID);
 	}
 

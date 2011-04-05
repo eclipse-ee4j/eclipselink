@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * This expression tests whether or not the collection designated by the collection-valued path
@@ -166,7 +167,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(EmptyCollectionComparisonExpressionBNF.ID);
 	}
 
@@ -239,11 +240,11 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// Expression
 		if (expression != null) {
-			expression.toParsedText(writer);
+			expression.toParsedText(writer, includeVirtual);
 			writer.append(SPACE);
 		}
 

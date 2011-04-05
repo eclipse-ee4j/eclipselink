@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class BooleanLiteralBNF extends JPQLQueryBNF {
+public final class BooleanLiteralBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "boolean_literal";
+	public static final String ID = "boolean_literal";
 
 	/**
 	 * Creates a new <code>BooleanLiteralBNF</code>.

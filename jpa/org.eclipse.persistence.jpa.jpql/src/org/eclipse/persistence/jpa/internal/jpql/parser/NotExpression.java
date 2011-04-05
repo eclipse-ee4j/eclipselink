@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * <div nowrap><b>BNF:</b> <code>expression ::= NOT conditional_primary</code><p>
@@ -106,7 +107,7 @@ public final class NotExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF;
 	}
 
@@ -145,7 +146,7 @@ public final class NotExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// NOT
 		writer.append(getText());
@@ -156,7 +157,7 @@ public final class NotExpression extends AbstractExpression {
 
 		// Expression
 		if (expression != null) {
-			expression.toParsedText(writer);
+			expression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * The second and third arguments of the <b>SUBSTRING</b> function denote the starting position and
  * length of the substring to be returned. These arguments are integers. The first position of a
@@ -51,7 +53,7 @@ public final class SubstringExpression extends AbstractTripleEncapsulatedExpress
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(FunctionsReturningStringsBNF.ID);
 	}
 
@@ -67,7 +69,7 @@ public final class SubstringExpression extends AbstractTripleEncapsulatedExpress
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF parameterExpressionBNF(int index) {
+	public JPQLQueryBNF parameterExpressionBNF(int index) {
 		switch (index) {
 			case 1:  return queryBNF(StringPrimaryBNF.ID);
 			default: return queryBNF(SimpleArithmeticExpressionBNF.ID);

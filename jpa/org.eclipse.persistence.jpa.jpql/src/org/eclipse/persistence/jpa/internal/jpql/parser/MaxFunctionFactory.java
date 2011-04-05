@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link MaxFunctionFactory} creates a new {@link MaxFunction} when the
  * portion of the query to parse starts with <b>MAX</b>.

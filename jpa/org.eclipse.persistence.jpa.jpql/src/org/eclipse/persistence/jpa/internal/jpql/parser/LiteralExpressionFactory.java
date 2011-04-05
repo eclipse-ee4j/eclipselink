@@ -13,7 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * This {@link LiteralExpressionFactory} is responsible to return the right literal expression.
@@ -38,12 +38,6 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory {
 	static final String ID = "literal";
 
 	/**
-	 * This {@link ExpressionVisitor} is used to check if the {@link Expression}
-	 * passed to this factory is an a literal type expression.
-	 */
-	private static LiteralExpressionVisitor visitor;
-
-	/**
 	 * Creates a new <code>LiteralExpressionFactory</code>.
 	 */
 	LiteralExpressionFactory() {
@@ -63,102 +57,5 @@ final class LiteralExpressionFactory extends AbstractLiteralExpressionFactory {
 		expression = new IdentificationVariable(parent, word);
 		expression.parse(wordParser, tolerant);
 		return expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	boolean shouldSkip(AbstractExpression expression) {
-
-		if ((expression == null) ||
-		    (expression.getJPAVersion() == IJPAVersion.VERSION_1_0)) {
-
-			return false;
-		}
-
-		expression.accept(visitor());
-
-		if (visitor.found) {
-			visitor.found = false;
-			return true;
-		}
-
-		return false;
-	}
-
-	private LiteralExpressionVisitor visitor() {
-		if (visitor == null) {
-			visitor = new LiteralExpressionVisitor();
-		}
-		return visitor;
-	}
-
-	/**
-	 * This {@link ExpressionVisitor} is used to check if the {@link Expression} passed to this
-	 * factory is an a literal type expression.
-	 */
-	private class LiteralExpressionVisitor extends AnonymousExpressionVisitor {
-
-		/**
-		 * This flag is turned on if the {@link Expression} visited is a literal type expression.
-		 */
-		private boolean found;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected void visit(Expression expression) {
-			found = false;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
-			found = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(InputParameter expression) {
-			found = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(KeywordExpression expression) {
-			found = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NumericLiteral expression) {
-			found = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StateFieldPathExpression expression) {
-			found = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StringLiteral expression) {
-			found = true;
-		}
 	}
 }

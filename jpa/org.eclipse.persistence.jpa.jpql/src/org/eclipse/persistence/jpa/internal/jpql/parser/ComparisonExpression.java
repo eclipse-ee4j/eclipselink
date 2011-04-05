@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 /**
@@ -85,7 +86,7 @@ public final class ComparisonExpression extends CompoundExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(ComparisonExpressionBNF.ID);
 	}
 
@@ -97,6 +98,10 @@ public final class ComparisonExpression extends CompoundExpression {
 		return wordParser.character() == RIGHT_PARENTHESIS ||
 		       word.equalsIgnoreCase(OR)                   ||
 		       word.equalsIgnoreCase(AND)                  ||
+		       word.equalsIgnoreCase(WHEN)                 ||
+		       word.equalsIgnoreCase(THEN)                 ||
+		       word.equalsIgnoreCase(ELSE)                 ||
+		       word.equalsIgnoreCase(END)                  ||
 		       super.isParsingComplete(wordParser, word, expression);
 	}
 
@@ -132,7 +137,7 @@ public final class ComparisonExpression extends CompoundExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF rightExpressionBNF() {
+	public JPQLQueryBNF rightExpressionBNF() {
 		return getQueryBNF();
 	}
 }

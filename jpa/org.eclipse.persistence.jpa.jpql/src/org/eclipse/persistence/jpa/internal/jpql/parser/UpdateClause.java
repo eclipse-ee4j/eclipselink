@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * This is the update clause of the update statement.
@@ -136,11 +137,11 @@ public final class UpdateClause extends AbstractExpression {
 	}
 
 	/**
-	 * Creates
+	 * Creates a new {@link CollectionExpression} that will wrap the single update item.
 	 *
-	 * @return
+	 * @return The single update item represented by a temporary collection
 	 */
-	CollectionExpression buildCollectionExpression() {
+	public CollectionExpression buildCollectionExpression() {
 
 		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
 		children.add((AbstractExpression) getUpdateItems());
@@ -158,7 +159,7 @@ public final class UpdateClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(UpdateClauseBNF.ID);
 	}
 
@@ -303,7 +304,7 @@ public final class UpdateClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// 'UPDATE'
 		writer.append(UPDATE);
@@ -314,7 +315,7 @@ public final class UpdateClause extends AbstractExpression {
 
 		// Range variable declaration
 		if (rangeVariableDeclaration != null) {
-			rangeVariableDeclaration.toParsedText(writer);
+			rangeVariableDeclaration.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterRangeVariableDeclaration) {
@@ -332,7 +333,7 @@ public final class UpdateClause extends AbstractExpression {
 
 		// Update items
 		if (updateItems != null) {
-			updateItems.toParsedText(writer);
+			updateItems.toParsedText(writer, includeVirtual);
 		}
 	}
 }

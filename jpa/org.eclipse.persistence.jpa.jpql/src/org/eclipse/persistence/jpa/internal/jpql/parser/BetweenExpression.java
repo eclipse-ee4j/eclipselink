@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * Used in conditional expression to determine whether the result of an expression falls within an
@@ -200,7 +201,7 @@ public final class BetweenExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(BetweenExpressionBNF.ID);
 	}
 
@@ -357,11 +358,11 @@ public final class BetweenExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// Expression
 		if (expression != null) {
-			expression.toParsedText(writer);
+			expression.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasExpression()) {
@@ -383,7 +384,7 @@ public final class BetweenExpression extends AbstractExpression {
 
 		// Lower bound expression
 		if (lowerBoundExpression != null) {
-			lowerBoundExpression.toParsedText(writer);
+			lowerBoundExpression.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterLowerBound) {
@@ -401,7 +402,7 @@ public final class BetweenExpression extends AbstractExpression {
 
 		// Upper bound expression
 		if (upperBoundExpression != null) {
-			upperBoundExpression.toParsedText(writer);
+			upperBoundExpression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

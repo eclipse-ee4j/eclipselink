@@ -48,7 +48,7 @@ public final class FromClause extends AbstractFromClause {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF declarationBNF() {
+	public JPQLQueryBNF declarationBNF() {
 		return queryBNF(InternalFromClauseBNF.ID);
 	}
 
@@ -56,7 +56,7 @@ public final class FromClause extends AbstractFromClause {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(FromClauseBNF.ID);
 	}
 }

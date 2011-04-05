@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  *
@@ -85,7 +86,7 @@ public final class BadExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
 		return getParent().findQueryBNF(expression);
 	}
 
@@ -101,7 +102,7 @@ public final class BadExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(BadExpressionBNF.ID);
 	}
 
@@ -134,9 +135,9 @@ public final class BadExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 		if (expression != null) {
-			expression.toParsedText(writer);
+			expression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

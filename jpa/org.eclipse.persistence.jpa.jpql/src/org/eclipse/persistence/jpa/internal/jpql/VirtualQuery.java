@@ -17,13 +17,20 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 
 /**
- * This implementation of an {@link IQuery} simply holds onto the string representation of the JPQL.
+ * This implementation of an {@link IQuery} simply holds onto the string representation of the JPQL
+ * query.
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public final class VirtualQuery implements IQuery {
+
+	/**
+	 * A non-<code>null</code> string representation of the JPQL query
+	 */
+	private String jpqlQuery;
 
 	/**
 	 * The provider of managed types.
@@ -31,27 +38,22 @@ public final class VirtualQuery implements IQuery {
 	private final IManagedTypeProvider provider;
 
 	/**
-	 * A non-<code>null</code> string representation of the JPQL query
-	 */
-	private final String query;
-
-	/**
 	 * Creates a new <code>VirtualQuery</code>.
 	 *
 	 * @param provider The provider of managed types
 	 * @param query A non-<code>null</code> string representation of the JPQL query
 	 */
-	public VirtualQuery(IManagedTypeProvider provider, String query) {
+	public VirtualQuery(IManagedTypeProvider provider, String jpqlQuery) {
 		super();
-		this.provider = provider;
-		this.query    = query;
+		this.provider  = provider;
+		this.jpqlQuery = jpqlQuery;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public String getExpression() {
-		return query;
+		return jpqlQuery;
 	}
 
 	/**
@@ -59,5 +61,26 @@ public final class VirtualQuery implements IQuery {
 	 */
 	public IManagedTypeProvider getProvider() {
 		return provider;
+	}
+
+	/**
+	 * Sets the string representation of the JPQL query.
+	 *
+	 * @param jpqlQuery A non-<code>null</code> string representation of the JPQL query
+	 */
+	public void setExpression(String jpqlQuery) {
+		this.jpqlQuery = jpqlQuery;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(super.toString());
+		sb.append(", query=");
+		sb.append(jpqlQuery);
+		return sb.toString();
 	}
 }

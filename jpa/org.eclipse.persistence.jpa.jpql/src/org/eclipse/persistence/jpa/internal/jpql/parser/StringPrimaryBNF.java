@@ -28,12 +28,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class StringPrimaryBNF extends JPQLQueryBNF {
+public final class StringPrimaryBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "string_primary";
+	public static final String ID = "string_primary";
 
 	/**
 	 * Creates a new <code>StringPrimaryBNF</code>.

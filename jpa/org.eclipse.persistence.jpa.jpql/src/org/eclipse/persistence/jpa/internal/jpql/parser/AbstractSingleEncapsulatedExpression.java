@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * This expression handles parsing a JPQL identifier followed by an expression encapsulated within
@@ -72,7 +73,7 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	 *
 	 * @return The BNF used to parse the encapsulated expression
 	 */
-	abstract JPQLQueryBNF encapsulatedExpressionBNF();
+	public abstract String encapsulatedExpressionBNF();
 
 	/**
 	 * Returns the {@link Expression} that is encapsulated within parenthesis.
@@ -90,7 +91,7 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean hasEncapsulatedExpression() {
+	public boolean hasEncapsulatedExpression() {
 		return hasExpression();
 	}
 
@@ -110,7 +111,7 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	 */
 	@Override
 	void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
-		expression = parse(wordParser, encapsulatedExpressionBNF(), tolerant);
+		expression = parse(wordParser, queryBNF(encapsulatedExpressionBNF()), tolerant);
 	}
 
 	/**
@@ -127,9 +128,9 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedTextEncapsulatedExpression(StringBuilder writer) {
+	void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean includeVirtual) {
 		if (expression != null) {
-			expression.toParsedText(writer);
+			expression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

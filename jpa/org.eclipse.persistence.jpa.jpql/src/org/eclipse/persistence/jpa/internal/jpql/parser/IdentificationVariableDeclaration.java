@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * An identification variable is a valid identifier declared in the <b>FROM</b> clause of a query.
@@ -107,11 +108,11 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 	}
 
 	/**
-	 * Creates
+	 * Creates a new {@link CollectionExpression} that will wrap the single join expression.
 	 *
-	 * @return
+	 * @return The single join expression represented by a temporary collection
 	 */
-	CollectionExpression buildCollectionExpression() {
+	public CollectionExpression buildCollectionExpression() {
 
 		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
 		children.add((AbstractExpression) getJoins());
@@ -141,7 +142,7 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(IdentificationVariableDeclarationBNF.ID);
 	}
 
@@ -235,16 +236,13 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 
 		// Parse the JOIN expressions
 		parsingJoinExpression = true;
+		joins = parse(wordParser, queryBNF(InternalJoinBNF.ID), tolerant);
 
-		joins = parse(
-			wordParser,
-			queryBNF(InternalJoinBNF.ID),
-			tolerant
-		);
-
-		// If there are no JOIN expressions and there is more text to parse, then
-		// re-add the space so it can belong to a parent expression
-		if (!hasJoins()/* && !wordParser.isTail() && (wordParser.character() != COMMA)*/) {
+		// If there are no JOIN expressions and there is more text to parse, then re-add the space so
+		// it can be owned by a parent expression. The only exception to that is if it's followed by
+		// a comma, the space will be kept as a virtual space (it will not be part of the string
+		// representation)
+		if (!hasJoins() && (wordParser.character() != COMMA)) {
 			wordParser.moveBackward(count);
 		}
 		else {
@@ -276,20 +274,20 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// Range Variable Declaration
 		if (rangeVariableDeclaration != null) {
-			rangeVariableDeclaration.toParsedText(writer);
+			rangeVariableDeclaration.toParsedText(writer, includeVirtual);
 		}
 
-		if (hasSpace) {
+		if (hasSpace && (includeVirtual || hasJoins())) {
 			writer.append(SPACE);
 		}
 
 		// Joins
 		if (joins != null) {
-			joins.toParsedText(writer);
+			joins.toParsedText(writer, includeVirtual);
 		}
 	}
 }

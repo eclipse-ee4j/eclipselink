@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * This is the delete clause of the delete statement.
@@ -116,7 +117,7 @@ public final class DeleteClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(DeleteClauseBNF.ID);
 	}
 
@@ -210,7 +211,7 @@ public final class DeleteClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// 'DELETE'
 		writer.append(DELETE);
@@ -230,7 +231,7 @@ public final class DeleteClause extends AbstractExpression {
 
 		// Range variable declaration
 		if (rangeVariableDeclaration != null) {
-			rangeVariableDeclaration.toParsedText(writer);
+			rangeVariableDeclaration.toParsedText(writer, includeVirtual);
 		}
 	}
 }

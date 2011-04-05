@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalOrderByClauseBNF extends JPQLQueryBNF {
+public final class InternalOrderByClauseBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "orderby_item*";
+	public static final String ID = "orderby_item*";
 
 	/**
 	 * Creates a new <code>InternalOrderByClauseBNF</code>.
@@ -55,7 +55,7 @@ final class InternalOrderByClauseBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		return true;
 	}
 }

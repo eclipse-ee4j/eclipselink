@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalFromClauseBNF extends JPQLQueryBNF {
+public final class InternalFromClauseBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "internal_from_clause";
+	public static final String ID = "internal_from_clause";
 
 	/**
 	 * Creates a new <code>InternalFromClauseBNF</code>.
@@ -49,7 +49,7 @@ final class InternalFromClauseBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate() {
+	public boolean handleAggregate() {
 		// To support invalid queries
 		return true;
 	}
@@ -58,7 +58,7 @@ final class InternalFromClauseBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		return true;
 	}
 

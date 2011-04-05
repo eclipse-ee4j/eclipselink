@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link UnknownExpressionFactory} creates a new {@link UnknownExpression}
  * when the portion of the query to parse is unknown.

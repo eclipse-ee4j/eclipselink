@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * One of the aggregate functions. The arguments must correspond to orderable state-field types
  * (i.e., numeric types, string types, character types, or date types). The return type of this

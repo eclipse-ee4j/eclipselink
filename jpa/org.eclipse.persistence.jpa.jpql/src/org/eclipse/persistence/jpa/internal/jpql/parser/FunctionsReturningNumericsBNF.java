@@ -28,12 +28,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class FunctionsReturningNumericsBNF extends JPQLQueryBNF {
+public final class FunctionsReturningNumericsBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "functions_returning_numerics";
+	public static final String ID = "functions_returning_numerics";
 
 	/**
 	 * Creates a new <code>FunctionsReturningNumericsBNF</code>.

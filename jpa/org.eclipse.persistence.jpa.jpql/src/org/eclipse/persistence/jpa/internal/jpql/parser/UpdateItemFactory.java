@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link UpdateItemFactory} creates a new {@link UpdateItem}.
  *
@@ -47,6 +49,7 @@ final class UpdateItemFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new UpdateItem(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

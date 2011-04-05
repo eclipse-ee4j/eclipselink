@@ -19,10 +19,11 @@ import java.util.Collections;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
- * This resolver is responsible to return the numeric type for a list of {@link TypeResolver
- * TypeResolvers}.
+ * This {@link Resolver} is responsible to return the numeric type for a list of {@link Resolver
+ * Resolvers}.
  * <p>
  * The result of a <b>CASE</b> expression, <b>COALESCE</b> expression, <b>NULLIF</b> expression, or
  * arithmetic expression (+, -, *, /) is determined by applying the following rule to its operands.
@@ -49,51 +50,55 @@ import org.eclipse.persistence.jpa.jpql.spi.IType;
  * @since 2.3
  * @author Pascal Filion
  */
-final class NumericTypeResolver extends AbstractTypeResolver {
+final class NumericResolver extends Resolver {
 
 	/**
-	 * The resolvers used to calculate the numeric type.
+	 * The {@link Resolver resolvers} used to calculate the numeric type.
 	 */
-	private final Collection<TypeResolver> typeResolvers;
+	private final Collection<Resolver> resolvers;
 
 	/**
-	 * Creates a new <code>NumericTypeResolver</code>.
+	 * Creates a new <code>NumericResolver</code>.
 	 *
-	 * @param parent The parent of this resolver, which is never <code>null</code>
-	 * @param typeResolvers The resolvers used to calculate the numeric type
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
+	 * @param resolvers The {@link Resolver resolvers} used to calculate the numeric type
 	 */
-	NumericTypeResolver(TypeResolver parent, Collection<TypeResolver> typeResolvers) {
+	NumericResolver(Resolver parent, Collection<Resolver> typeResolvers) {
 		super(parent);
-		this.typeResolvers = typeResolvers;
+		this.resolvers = typeResolvers;
 	}
 
 	/**
-	 * Creates a new <code>NumericTypeResolver</code>.
+	 * Creates a new <code>NumericResolver</code>.
 	 *
-	 * @param parent The parent of this resolver, which is never <code>null</code>
-	 * @param typeResolver The resolver used to calculate the numeric type
+	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
+	 * @param resolver The {@link Resolver} used to calculate the numeric type
 	 */
-	NumericTypeResolver(TypeResolver parent, TypeResolver typeResolver) {
-		this(parent, Collections.singleton(typeResolver));
+	NumericResolver(Resolver parent, Resolver resolver) {
+		this(parent, Collections.singleton(resolver));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IType getType() {
+	@Override
+	IType buildType() {
 
-		List<IType> types = new ArrayList<IType>(typeResolvers.size());
+		List<IType> types = new ArrayList<IType>(resolvers.size());
 		TypeHelper helper = getTypeHelper();
-		IType unresolvableType = getType(IType.UNRESOLVABLE_TYPE);
+		IType unresolvableType = helper.unknownType();
 
 		// Convert any primitive types into its Class type and any non-number into Object
-		for (TypeResolver typeResolver : typeResolvers) {
+		for (Resolver typeResolver : resolvers) {
 
 			IType type = typeResolver.getType();
 
+			// Only a resolvable type will be added to the list
 			if (type != unresolvableType) {
-				type = helper.convertPrimitive(type);
-				type = helper.convertNotNumberType(type);
+				// Non-numeric type cannot be added
+				if (!helper.isNumericType(type)) {
+					type = helper.objectType();
+				}
 				types.add(type);
 			}
 		}
@@ -107,5 +112,13 @@ final class NumericTypeResolver extends AbstractTypeResolver {
 		Collections.sort(types, new NumericTypeComparator(helper));
 
 		return types.get(0);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	ITypeDeclaration buildTypeDeclaration() {
+		return getType().getTypeDeclaration();
 	}
 }

@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * The <b>SELECT</b> clause denotes the query result. More than one value may be returned from the
@@ -201,7 +202,7 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// 'SELECT'
 		writer.append(SELECT);
@@ -221,7 +222,7 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 
 		// Select expression
 		if (selectExpression != null) {
-			selectExpression.toParsedText(writer);
+			selectExpression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

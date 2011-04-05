@@ -26,12 +26,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class SimpleConditionalExpressionBNF extends JPQLQueryBNF {
+public final class SimpleConditionalExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "simple_cond_expression";
+	public static final String ID = "simple_cond_expression";
 
 	/**
 	 * Creates a new <code>SimpleCondExpressionBNF</code>.

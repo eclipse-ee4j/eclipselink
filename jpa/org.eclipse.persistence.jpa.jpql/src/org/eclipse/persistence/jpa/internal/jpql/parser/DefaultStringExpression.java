@@ -44,7 +44,6 @@ final class DefaultStringExpression extends StringExpression {
 	 */
 	DefaultStringExpression(AbstractExpression owningExpression, String value) {
 		super();
-
 		this.value            = value;
 		this.owningExpression = owningExpression;
 	}
@@ -69,6 +68,14 @@ final class DefaultStringExpression extends StringExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public String toActualText() {
+		return value;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String toParsedText() {
 		return value;
 	}
@@ -78,6 +85,6 @@ final class DefaultStringExpression extends StringExpression {
 	 */
 	@Override
 	public String toString() {
-		return toParsedText();
+		return value;
 	}
 }

@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.internal.jpql.parser;
+package org.eclipse.persistence.jpa.internal.jpql;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 

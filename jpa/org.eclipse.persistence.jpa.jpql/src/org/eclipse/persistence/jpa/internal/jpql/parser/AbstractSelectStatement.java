@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * A select statement must always have a <b>SELECT</b> and a <b>FROM</b> clause.
@@ -431,11 +432,11 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// SELECT ...
 		if (selectClause != null) {
-			selectClause.toParsedText(writer);
+			selectClause.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterSelect) {
@@ -444,7 +445,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 
 		// FROM ...
 		if (hasFromClause()) {
-			fromClause.toParsedText(writer);
+			fromClause.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterFrom) {
@@ -453,7 +454,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 
 		// WHERE ...
 		if (hasWhereClause()) {
-			whereClause.toParsedText(writer);
+			whereClause.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterWhere) {
@@ -462,7 +463,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 
 		// GROUP BY ...
 		if (hasGroupByClause()) {
-			groupByClause.toParsedText(writer);
+			groupByClause.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasSpaceAfterGroupBy) {
@@ -471,7 +472,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 
 		// HAVING ...
 		if (hasHavingClause()) {
-			havingClause.toParsedText(writer);
+			havingClause.toParsedText(writer, includeVirtual);
 		}
 	}
 }

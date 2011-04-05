@@ -24,12 +24,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class DeleteClauseRangeVariableDeclarationBNF extends JPQLQueryBNF {
+public final class DeleteClauseRangeVariableDeclarationBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "default_clause_range_variable_declaration";
+	public static final String ID = "default_clause_range_variable_declaration";
 
 	/**
 	 * Creates a new <code>DeleteClauseRangeVariableDeclarationBNF</code>.
@@ -50,7 +50,7 @@ final class DeleteClauseRangeVariableDeclarationBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate() {
+	public boolean handleAggregate() {
 		// True only to support invalid query
 		return true;
 	}
@@ -59,7 +59,7 @@ final class DeleteClauseRangeVariableDeclarationBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		// True only to support invalid query
 		return true;
 	}

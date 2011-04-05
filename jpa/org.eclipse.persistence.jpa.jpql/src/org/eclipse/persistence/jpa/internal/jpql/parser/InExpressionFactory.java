@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link InExpressionFactory} creates a new {@link InExpression} when the portion of the query
  * to parse starts with <b>IN</b> or <b>NOT IN</b>.

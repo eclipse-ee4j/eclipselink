@@ -15,9 +15,9 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
@@ -36,6 +36,15 @@ import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 @SuppressWarnings("nls")
 public abstract class AbstractExpression extends StringExpression
                                          implements Expression {
+
+	/**
+	 * The string representation of this {@link Expression}, which needs to include any characters
+	 * that are considered virtual, i.e. that was parsed when the query is incomplete and is needed
+	 * for functionality like content assist.
+	 *
+	 * @see #toActualText()
+	 */
+	private String actualText;
 
 	/**
 	 * The children of this {@link AbstractExpression}.
@@ -73,32 +82,32 @@ public abstract class AbstractExpression extends StringExpression
 	/**
 	 * The constant for ','.
 	 */
-	static final char COMMA = ',';
+	public static final char COMMA = ',';
 
 	/**
 	 * The constant for '.'.
 	 */
-	static final char DOT = '.';
+	public static final char DOT = '.';
 
 	/**
 	 * The constant for '"'.
 	 */
-	static final char DOUBLE_QUOTE = '\"';
+	public static final char DOUBLE_QUOTE = '\"';
 
 	/**
 	 * The constant for '{'.
 	 */
-	static final char LEFT_CURLY_BRACKET = '{';
+	public static final char LEFT_CURLY_BRACKET = '{';
 
 	/**
 	 * The constant for '('.
 	 */
-	static final char LEFT_PARENTHESIS = '(';
+	public static final char LEFT_PARENTHESIS = '(';
 
 	/**
 	 * The constant for a character that is not defined.
 	 */
-	static final char NOT_DEFINED = '\0';
+	public static final char NOT_DEFINED = '\0';
 
 	/**
 	 * This registry keeps the single instances of various portion of the parser, which should
@@ -109,27 +118,27 @@ public abstract class AbstractExpression extends StringExpression
 	/**
 	 * The constant for '}'.
 	 */
-	static final char RIGHT_CURLY_BRACKET = '}';
+	public static final char RIGHT_CURLY_BRACKET = '}';
 
 	/**
 	 * The constant for ')'.
 	 */
-	static final char RIGHT_PARENTHESIS = ')';
+	public static final char RIGHT_PARENTHESIS = ')';
 
 	/**
 	 * The constant for '''.
 	 */
-	static final char SINGLE_QUOTE = '\'';
+	public static final char SINGLE_QUOTE = '\'';
 
 	/**
 	 * The constant for ' '.
 	 */
-	static final char SPACE = ' ';
+	public static final char SPACE = ' ';
 
 	/**
 	 * The constant for '_'.
 	 */
-	static final char UNDERSCORE = '_';
+	public static final char UNDERSCORE = '_';
 
 	/**
 	 * Creates a new <code>AbstractExpression</code>.
@@ -220,7 +229,7 @@ public abstract class AbstractExpression extends StringExpression
 	 * @param queryBNFID The unique identifier of the {@link JPQLQueryBNF} to retrieve
 	 * @return The {@link JPQLQueryBNF} representing a section of the grammar
 	 */
-	static <T extends JPQLQueryBNF> T queryBNF(String queryBNFID) {
+	public static <T extends JPQLQueryBNF> T queryBNF(String queryBNFID) {
 		return registry.<T>queryBNF(queryBNFID);
 	}
 
@@ -249,6 +258,17 @@ public abstract class AbstractExpression extends StringExpression
 		ExpressionFactory factory = findFallBackExpressionFactory(queryBNF);
 
 		if (factory == null) {
+			return null;
+		}
+
+		// When parsing an invalid or incomplete query, it is possible two literals would be parsed
+		// but in some cases, a CollectionExpression should not be created and the parsing should
+		// actually stop here. Example: BETWEEN 10 20, when parsing 20, it should not be parsed as
+		// part of the lower bound expression
+		if (tolerant &&
+		    (factory.getId() == PreLiteralExpressionFactory.ID) &&
+		    shouldSkipLiteral(expression)) {
+
 			return null;
 		}
 
@@ -335,7 +355,7 @@ public abstract class AbstractExpression extends StringExpression
 	 * @param expression The expression for which its BNF is needed
 	 * @return The {@link JPQLQueryBNF} that was used to parse the given expression
 	 */
-	JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
 		return getQueryBNF();
 	}
 
@@ -371,7 +391,7 @@ public abstract class AbstractExpression extends StringExpression
 	 *
 	 * @return The {@link JPQLQueryBNF}, which represents the grammar of this {@link Expression}
 	 */
-	abstract JPQLQueryBNF getQueryBNF();
+	public abstract JPQLQueryBNF getQueryBNF();
 
 	/**
 	 * {@inheritDoc}
@@ -409,7 +429,7 @@ public abstract class AbstractExpression extends StringExpression
 	 * requested
 	 * @return The list of JPQL identifiers that can be used with the BNF
 	 */
-	final Iterator<String> identifiers(String queryBNFId) {
+	final Iterable<String> identifiers(String queryBNFId) {
 		return registry.identifiers(queryBNFId);
 	}
 
@@ -435,7 +455,7 @@ public abstract class AbstractExpression extends StringExpression
 	 *
 	 * @return <code>false</code> by default
 	 */
-	boolean isNull() {
+	public boolean isNull() {
 		return false;
 	}
 
@@ -490,7 +510,7 @@ public abstract class AbstractExpression extends StringExpression
 	 * @return <code>true</code> if this identification variable was virtually created to fully
 	 * qualify path expression; <code>false</code> if it was parsed
 	 */
-	boolean isVirtual() {
+	public boolean isVirtual() {
 		return false;
 	}
 
@@ -550,7 +570,7 @@ public abstract class AbstractExpression extends StringExpression
 
 			// Right away create a SubExpression and parse the encapsulated expression
 			if (wordParser.startsWith(LEFT_PARENTHESIS)) {
-				expression = new SubExpression(this, queryBNF);
+				expression = new SubExpression(this, queryBNF.getId());
 				expression.parse(wordParser, tolerant);
 
 				beginning = false;
@@ -880,24 +900,53 @@ public abstract class AbstractExpression extends StringExpression
 	}
 
 	/**
+	 * When parsing an invalid or incomplete query, it is possible two literals would be parsed but
+	 * in some cases, a CollectionExpression should not be created and the parsing should actually
+	 * stop here. Example: BETWEEN 10 20, when parsing 20, it should not be parsed as part of the
+	 * lower bound expression.
+	 *
+	 * @param expression
+	 * @return
+	 */
+	boolean shouldSkipLiteral(AbstractExpression expression) {
+		return (expression != null);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toActualText() {
+		if (actualText == null) {
+			StringBuilder writer = new StringBuilder();
+			toParsedText(writer, true);
+			actualText = writer.toString();
+		}
+		return actualText;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String toParsedText() {
 		if (parsedText == null) {
 			StringBuilder writer = new StringBuilder();
-			toParsedText(writer);
+			toParsedText(writer, false);
 			parsedText = writer.toString();
 		}
 		return parsedText;
 	}
 
 	/**
-	 * Prints the string representation of this {@link Expression}.
+	 * Generates a string representation of this {@link Expression}.
 	 *
 	 * @param writer The buffer used to append this {@link Expression}'s string representation
+	 * @param includeVirtual Determines whether to include any characters that are considered
+	 * virtual, i.e. that was parsed when the query is incomplete and is needed for functionality
+	 * like content assist
 	 */
-	abstract void toParsedText(StringBuilder writer);
+	abstract void toParsedText(StringBuilder writer, boolean includeVirtual);
 
 	/**
 	 * {@inheritDoc}

@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class AbstractSchemaNameBNF extends JPQLQueryBNF {
+public final class AbstractSchemaNameBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "abstract_schema_name";
+	public static final String ID = "abstract_schema_name";
 
 	/**
 	 * Creates a new <code>AbstractSchemaNameBNF</code>.

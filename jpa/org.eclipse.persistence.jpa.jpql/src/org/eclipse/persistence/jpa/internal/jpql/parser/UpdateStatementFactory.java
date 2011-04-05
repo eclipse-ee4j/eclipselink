@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link UpdateStatementFactory} creates a new {@link UpdateStatement}
  * when the portion of the query to parse starts with <b>UPDATE</b>.

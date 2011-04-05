@@ -13,16 +13,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
- * The <b>LOCATE</b> function returns the position of a given string within a
- * string, starting the search at a specified position. It returns the first
- * position at which the string was found as an integer. The first argument is
- * the string to be located; the second argument is the string to be searched;
- * the optional third argument is an integer that represents the string position
- * at which the search is started (by default, the beginning of the string to be
- * searched). The first position in a string is denoted by 1. If the string is
- * not found, 0 is returned. The <b>LENGTH</b> function returns the length of
- * the string in characters as an integer.
+ * The <b>LOCATE</b> function returns the position of a given string within a string, starting the
+ * search at a specified position. It returns the first position at which the string was found as an
+ * integer. The first argument is the string to be located; the second argument is the string to be
+ * searched; the optional third argument is an integer that represents the string position at which
+ * the search is started (by default, the beginning of the string to be searched). The first
+ * position in a string is denoted by 1. If the string is not found, 0 is returned. The <b>LENGTH</b>
+ * function returns the length of the string in characters as an integer.
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= LOCATE(string_primary, string_primary [, simple_arithmetic_expression])</code><p>
  *
@@ -52,7 +52,7 @@ public final class LocateExpression extends AbstractTripleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(FunctionsReturningNumericsBNF.ID);
 	}
 
@@ -68,7 +68,7 @@ public final class LocateExpression extends AbstractTripleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF parameterExpressionBNF(int index) {
+	public JPQLQueryBNF parameterExpressionBNF(int index) {
 		switch (index) {
 			case 3:  return queryBNF(SimpleArithmeticExpressionBNF.ID);
 			default: return queryBNF(StringPrimaryBNF.ID);

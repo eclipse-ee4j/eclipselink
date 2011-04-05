@@ -24,12 +24,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class EnumPrimaryBNF extends JPQLQueryBNF {
+public final class EnumPrimaryBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "enum_primary";
+	public static final String ID = "enum_primary";
 
 	/**
 	 * Creates a new <code>EnumPrimaryBNF</code>.

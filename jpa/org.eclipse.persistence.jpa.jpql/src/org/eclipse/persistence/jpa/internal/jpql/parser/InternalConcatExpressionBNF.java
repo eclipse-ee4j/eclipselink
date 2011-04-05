@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class InternalConcatExpressionBNF extends JPQLQueryBNF {
+public final class InternalConcatExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this <code>InternalConcatExpressionBNF</code>.
@@ -47,7 +47,7 @@ final class InternalConcatExpressionBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate() {
+	public boolean handleAggregate() {
 		// For invalid or incomplete queries
 		return true;
 	}
@@ -56,7 +56,7 @@ final class InternalConcatExpressionBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		return true;
 	}
 

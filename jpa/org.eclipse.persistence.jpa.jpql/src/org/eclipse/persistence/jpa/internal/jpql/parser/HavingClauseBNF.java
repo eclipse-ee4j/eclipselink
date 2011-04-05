@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class HavingClauseBNF extends JPQLQueryBNF {
+public final class HavingClauseBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "having_clause";
+	public static final String ID = "having_clause";
 
 	/**
 	 * Creates a new <code>HavingClauseBNF</code>.

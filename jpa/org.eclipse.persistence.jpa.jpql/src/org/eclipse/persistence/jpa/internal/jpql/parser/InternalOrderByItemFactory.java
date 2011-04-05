@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link InternalOrderByItemFactory} creates either a {@link StateFieldPathExpression} or
  * an {@link IdentificationVariable}.

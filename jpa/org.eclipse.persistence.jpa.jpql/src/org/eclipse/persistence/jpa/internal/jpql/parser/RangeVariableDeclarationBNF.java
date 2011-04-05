@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class RangeVariableDeclarationBNF extends JPQLQueryBNF {
+public final class RangeVariableDeclarationBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "range_variable_declaration";
+	public static final String ID = "range_variable_declaration";
 
 	/**
 	 * Creates a new <code>SubselectIdentificationVariableDeclarationBNF</code>.

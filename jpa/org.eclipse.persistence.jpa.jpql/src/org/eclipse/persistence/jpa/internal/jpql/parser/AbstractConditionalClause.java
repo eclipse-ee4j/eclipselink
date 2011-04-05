@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * Conditional expressions are composed of other conditional expressions, comparison operations,
@@ -104,6 +105,15 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 	}
 
 	/**
+	 * Returns the JPQL identifier of this expression.
+	 *
+	 * @return The JPQL identifier
+	 */
+	public final String getIdentifier() {
+		return getText();
+	}
+
+	/**
 	 * Determines whether the conditional expression was parsed.
 	 *
 	 * @return <code>true</code> if there is a conditional expression; <code>false</code> otherwise
@@ -173,7 +183,15 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	final void toParsedText(StringBuilder writer) {
+	boolean shouldSkipLiteral(AbstractExpression expression) {
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	final void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		writer.append(getText());
 
@@ -182,7 +200,7 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 		}
 
 		if (conditionalExpression != null) {
-			conditionalExpression.toParsedText(writer);
+			conditionalExpression.toParsedText(writer, includeVirtual);
 		}
 	}
 }

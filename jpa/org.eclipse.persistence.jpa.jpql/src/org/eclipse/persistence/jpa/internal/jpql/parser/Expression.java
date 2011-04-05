@@ -927,24 +927,24 @@ public interface Expression {
 	/**
 	 * Returns the children of this {@link Expression}.
 	 *
-	 * @return The children of this {@link Expression} or an empty list if this
-	 * {@link Expression} does not have children
+	 * @return The children of this {@link Expression} or an empty list if this {@link Expression}
+	 * does not have children
 	 */
 	ListIterator<Expression> children();
 
 	/**
 	 * Returns the children of this {@link Expression}.
 	 *
-	 * @return The children of this {@link Expression} or an empty list if this
-	 * {@link Expression} does not have children
+	 * @return The children of this {@link Expression} or an empty list if this {@link Expression}
+	 * does not have children
 	 */
 	Expression[] getChildren();
 
 	/**
 	 * Returns the parent of this {@link Expression}.
 	 *
-	 * @return The parent of this {@link Expression, which is never <code>null</code>
-	 * except for the root of the tree
+	 * @return The parent of this {@link Expression, which is never <code>null</code> except for the
+	 * root of the tree
 	 */
 	Expression getParent();
 
@@ -956,23 +956,29 @@ public interface Expression {
 	JPQLExpression getRoot();
 
 	/**
-	 * Determines whether this {@link Expression} is a parent of the given
-	 * {@link Expression}.
+	 * Determines whether this {@link Expression} is a parent of the given {@link Expression}.
 	 *
-	 * @param expression The {@link Expression} to verify its paternity with
-	 * this {@link Expression}
-	 * @return <code>true</code> if this {@link Expression} is the same as
-	 * the given {@link Expression} or one of its parent; <code>false</code>
-	 * otherwise
+	 * @param expression The {@link Expression} to verify its paternity with this {@link Expression}
+	 * @return <code>true</code> if this {@link Expression} is the same as the given {@link Expression}
+	 * or one of its parent; <code>false</code> otherwise
 	 */
 	boolean isAncestor(Expression expression);
 
 	/**
-	 * Returns a string representation of this {@link Expression} and its children.
-	 * The expression should contain whitespace even if the beautified version
-	 * would not have any.
+	 * Generates a string representation of this {@link Expression}, which needs to include any
+	 * characters that are considered virtual, i.e. that was parsed when the query is incomplete and
+	 * is needed for functionality like content assist.
 	 *
-	 * @return The portion of the query represented by this {@link Expression}
+	 * @return The string representation of this {@link Expression}
+	 */
+	String toActualText();
+
+	/**
+	 * Returns a string representation of this {@link Expression} and its children. The expression
+	 * should contain whitespace even if the beautified version would not have any. For instance,
+	 * "SELECT e " should be returned where {@link Expression#toText()} would return "SELECT e".
+	 *
+	 * @return The string representation of this {@link Expression}
 	 */
 	String toParsedText();
 }

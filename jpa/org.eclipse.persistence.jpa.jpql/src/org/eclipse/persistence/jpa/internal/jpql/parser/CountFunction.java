@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * One of the aggregate functions. The return type of this function is a <code>Long</code>.
  * <p>
@@ -70,8 +72,8 @@ public final class CountFunction extends AggregateFunction {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF encapsulatedExpressionBNF() {
-		return queryBNF(InternalCountBNF.ID);
+	public String encapsulatedExpressionBNF() {
+		return InternalCountBNF.ID;
 	}
 
 	/**

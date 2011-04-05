@@ -13,11 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 /**
- * This {@link CaseExpressionFactory} creates a new {@link CaseExpression} when
- * the portion of the query to parse starts with <b>CASE</b>.
+ * This {@link CaseExpressionFactory} creates a new {@link CaseExpression} when the portion of the
+ * query to parse starts with <b>CASE</b>.
  *
  * @see CaseExpression
  *
@@ -49,6 +50,7 @@ final class CaseExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new CaseExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

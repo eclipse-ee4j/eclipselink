@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link EmptyCollectionComparisonExpressionFactory} creates a new {@link
  * EmptyCollectionComparisonExpression} when the portion of the query to parse

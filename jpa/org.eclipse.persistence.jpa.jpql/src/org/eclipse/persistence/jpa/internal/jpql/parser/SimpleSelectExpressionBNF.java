@@ -24,12 +24,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class SimpleSelectExpressionBNF extends JPQLQueryBNF {
+public final class SimpleSelectExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "simple_select_expression";
+	public static final String ID = "simple_select_expression";
 
 	/**
 	 * Creates a new <code>SimpleSelectExpressionBNF</code>.
@@ -62,7 +62,7 @@ final class SimpleSelectExpressionBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		// True only to support an invalid query
 		return true;
 	}

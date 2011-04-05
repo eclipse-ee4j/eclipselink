@@ -24,12 +24,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class GeneralIdentificationVariableBNF extends JPQLQueryBNF {
+public final class GeneralIdentificationVariableBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "general_identification_variable";
+	public static final String ID = "general_identification_variable";
 
 	/**
 	 * Creates a new <code>GeneralIdentificationVariableBNF</code>.

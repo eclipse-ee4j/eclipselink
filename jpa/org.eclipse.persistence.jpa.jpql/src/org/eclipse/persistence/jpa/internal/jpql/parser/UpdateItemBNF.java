@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class UpdateItemBNF extends JPQLQueryBNF {
+public final class UpdateItemBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "update_item";
+	public static final String ID = "update_item";
 
 	/**
 	 * Creates a new <code>UpdateItemBNF</code>.

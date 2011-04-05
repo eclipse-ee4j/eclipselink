@@ -21,12 +21,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class PreLiteralExpressionBNF extends JPQLQueryBNF {
+public final class PreLiteralExpressionBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier for this <code>PreLiteralExpressionQueryBNF</code>.
 	 */
-	static final String ID = "pre_literal";
+	public static final String ID = "pre_literal";
 
 	/**
 	 * Creates a new <code>PreLiteralExpressionQueryBNF</code>.

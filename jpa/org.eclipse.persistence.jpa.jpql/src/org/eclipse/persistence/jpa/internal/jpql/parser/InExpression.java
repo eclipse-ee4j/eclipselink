@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * The <code>state_field_path_expression</code> must have a string, numeric, or enum value. The
@@ -155,7 +156,7 @@ public final class InExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
 
 		if (this.expression == expression) {
 			return queryBNF(InExpressionExpressionBNF.ID);
@@ -207,7 +208,7 @@ public final class InExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(InExpressionBNF.ID);
 	}
 
@@ -315,11 +316,11 @@ public final class InExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// State field path expression or type discriminator
 		if (hasExpression()) {
-			expression.toParsedText(writer);
+			expression.toParsedText(writer, includeVirtual);
 		}
 
 		if (hasExpression()) {
@@ -345,7 +346,7 @@ public final class InExpression extends AbstractExpression {
 
 		// IN items
 		if (hasInItems()) {
-			inItems.toParsedText(writer);
+			inItems.toParsedText(writer, includeVirtual);
 		}
 
 		// ')'

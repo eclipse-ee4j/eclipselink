@@ -11,36 +11,41 @@
  *     Oracle - initial API and implementation
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.internal.jpql.parser;
+package org.eclipse.persistence.jpa.internal.jpql;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
-import org.eclipse.persistence.jpa.internal.jpql.DeclarationExpressionLocator;
-import org.eclipse.persistence.jpa.internal.jpql.DefaultContentAssistItems;
-import org.eclipse.persistence.jpa.internal.jpql.JPQLQueryContext;
-import org.eclipse.persistence.jpa.internal.jpql.VariableNameType;
-import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractValidator.CollectionExpressionVisitor;
+import org.eclipse.persistence.jpa.internal.jpql.AbstractValidator.CollectionExpressionVisitor;
+import org.eclipse.persistence.jpa.internal.jpql.AbstractValidator.IdentificationVariableVisitor;
+import org.eclipse.persistence.jpa.internal.jpql.DeclarationResolver.Declaration;
+import org.eclipse.persistence.jpa.internal.jpql.parser.*;
 import org.eclipse.persistence.jpa.internal.jpql.parser.OrderByItem.Ordering;
+import org.eclipse.persistence.jpa.internal.jpql.util.AndFilter;
+import org.eclipse.persistence.jpa.internal.jpql.util.Filter;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.MappingTypeHelper;
+import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IEmbeddable;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeVisitor;
 import org.eclipse.persistence.jpa.jpql.spi.IMappedSuperclass;
-import org.eclipse.persistence.jpa.jpql.spi.IQuery;
+import org.eclipse.persistence.jpa.jpql.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.spi.IType;
 
 import static org.eclipse.persistence.jpa.internal.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
 
 /**
- * This visitor traverses the JPQL parsed tree and gather the possible choices at a given position.
+ * This visitor traverses the JPQL parsed tree and gathers the possible proposals at a given position.
  * <p>
- * Note: It does not retrieve the possible state fields and collection valued fields because this
+ * Note: It does not retrieve the possible state fields and collection-valued fields because this
  * validator does not access to the application.
  *
  * @version 2.3
@@ -50,74 +55,25 @@ import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
-	/**
-	 *
-	 */
 	private AppendableExpressionVisitor appendableExpressionVisitor;
-
-	/**
-	 *
-	 */
 	private CollectionExpressionVisitor collectionExpressionVisitor;
-
-	/**
-	 *
-	 */
 	private CompletenessVisitor completenessVisitor;
-
-	/**
-	 *
-	 */
+	private CompoundExpressionHelper compoundExpressionHelper;
+	private ConditionalExpressionCompletenessVisitor conditionalExpressionCompletenessVisitor;
 	private ConstrutorCollectionHelper construtorCollectionHelper;
 
 	/**
-	 * This is used to change the position of the cursor in order to add possible choices
+	 * This is used to change the position of the cursor in order to add possible proposals
 	 */
 	private Stack<Integer> corrections;
 
-	/**
-	 *
-	 */
 	private ClauseHelper<DeleteClause> deleteClauseHelper;
-
-	/**
-	 *
-	 */
 	private DoubleEncapsulatedCollectionHelper doubleEncapsulatedCollectionHelper;
-
-	/**
-	 * 
-	 */
-	private EntityVisitor entityVisitor;
-
-	/**
-	 *
-	 */
 	private CollectionExpressionHelper<AbstractFromClause> fromClauseCollectionHelper;
-
-	/**
-	 *
-	 */
 	private ClauseHelper<AbstractFromClause> fromClauseHelper;
-
-	/**
-	 *
-	 */
 	private GroupByClauseCollectionHelper groupByClauseCollectionHelper;
-
-	/**
-	 *
-	 */
 	private ClauseHelper<HavingClause> havingClauseHelper;
-
-	/**
-	 * The set of possible choices gathered based on the position in the query.
-	 */
-	private DefaultContentAssistItems items;
-
-	/**
-	 * 
-	 */
+	private IncompleteCollectionExpressionVisitor incompleteCollectionExpressionVisitor;
 	private JoinCollectionHelper joinCollectionHelper;
 
 	/**
@@ -126,58 +82,44 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	 */
 	private Stack<Expression> lockedExpressions;
 
-	/**
-	 * 
-	 */
+	private ManagedTypeVisitor managedTypeVisitor;
+
 	private OrderByClauseCollectionHelper orderByClauseCollectionHelper;
+
+	private PathExpressionHelper pathExpressionHelper;
+
+	private PathExpressionHelperBuilder pathExpressionHelperBuilder;
 
 	/**
 	 * Used to determine if the cursor is an expression contained in a collection, if not, then this
 	 * value is set to -1.
 	 */
 	private Stack<Integer> positionInCollections;
-
 	/**
-	 * The external representation of the query used to retrieve the possible choices at a certain
-	 * position.
+	 * The set of possible proposals gathered based on the position in the query.
 	 */
-	private IQuery query;
-
+	private DefaultContentAssistProposals proposals;
 	/**
 	 * The context where some information is cached.
 	 */
 	private JPQLQueryContext queryContext;
-
 	/**
 	 * Contains the position of the cursor within the parsed {@link Expression}.
 	 */
 	private QueryPosition queryPosition;
 
-	/**
-	 *
-	 */
 	private SelectClauseCompletenessVisitor selectClauseCompletenessVisitor;
-
-	/**
-	 * 
-	 */
 	private TripleEncapsulatedCollectionHelper tripleEncapsulatedCollectionHelper;
-
-	/**
-	 *
-	 */
 	private UpdateItemCollectionHelper updateItemCollectionHelper;
 
 	/**
 	 * A virtual space is used to move the position by an amount of space in order to find some
-	 * choices within an expression. This is usually used when the trailing whitespace is not owned
+	 * proposals within an expression. This is usually used when the trailing whitespace is not owned
 	 * by the child expression but by one of its parents.
 	 */
 	private Stack<Integer> virtualSpaces;
 
-	/**
-	 *
-	 */
+	private VisitParentVisitor visitParentVisitor;
 	private ClauseHelper<WhereClause> whereClauseHelper;
 
 	/**
@@ -199,34 +141,15 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	/**
 	 * Creates a new <code>ContentAssistVisitor</code>.
 	 *
-	 * @param query The external representation of the JPQL query
-	 * @param jpqlExpression The parsed tree representation of the JPQL query
-	 * @param queryContext The context where some information is cached
-	 * @param items The object used to store the possible choices gathered based on the position in
-	 * the query
-	 * @param queryPosition Contains the position of the cursor within the parsed {@link Expression}
-	 * @param actualQuery The actual query is the text version of the query that may contain extra
-	 * whitespace and different formatting than the trim down version generated by the parsed tree
+	 * @param queryContext The context used to query information about the query
 	 */
-	public ContentAssistVisitor(IQuery query,
-	                            JPQLExpression jpqlExpression,
-	                            JPQLQueryContext queryContext,
-	                            DefaultContentAssistItems items,
-	                            QueryPosition queryPosition) {
-
+	public ContentAssistVisitor(JPQLQueryContext queryContext) {
 		super();
-		initialize(query, jpqlExpression, queryContext, items, queryPosition);
+		initialize(queryContext);
 	}
 
-	private IEntity abstractSchemaType(IManagedType managedType) {
-		EntityVisitor visitor = entityVisitor();
-		try {
-			managedType.accept(visitor);
-			return visitor.entity;
-		}
-		finally {
-			visitor.entity = null;
-		}
+	private Iterable<IEntity> abstractSchemaTypes() {
+		return getProvider().abstractSchemaTypes();
 	}
 
 	/**
@@ -234,9 +157,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	 * the current word.
 	 */
 	private void addAbstractSchemaTypes() {
-		for (IEntity abstractSchemaType : query.getProvider().abstractSchemaTypes()) {
-			if (isValidChoice(abstractSchemaType.getName(), word)) {
-				items.addAbstractSchemaType(abstractSchemaType);
+		for (IEntity abstractSchemaType : abstractSchemaTypes()) {
+			if (isValidProposal(abstractSchemaType.getName(), word)) {
+				proposals.addAbstractSchemaType(abstractSchemaType);
 			}
 		}
 	}
@@ -246,8 +169,8 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	private void addAllPossibleAggregates(JPQLQueryBNF queryBNF) {
-		for (Iterator<String> iter = identifiers(queryBNF); iter.hasNext(); ) {
-			addPossibleAggregate(iter.next());
+		for (String identifier : identifiers(queryBNF)) {
+			addPossibleAggregate(identifier);
 		}
 	}
 
@@ -256,14 +179,18 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	private void addAllPossibleClauses(JPQLQueryBNF queryBNF) {
-		for (Iterator<String> iter = identifiers(queryBNF); iter.hasNext(); ) {
-			addPossibleClause(iter.next());
+		for (String identifier : identifiers(queryBNF)) {
+			addPossibleClause(identifier);
 		}
 	}
 
+	private void addAllPossibleClauses(String queryBNF) {
+		addAllPossibleClauses(queryBNF(queryBNF));
+	}
+
 	private void addAllPossibleCompounds(JPQLQueryBNF queryBNF) {
-		for (Iterator<String> iter = identifiers(queryBNF); iter.hasNext(); ) {
-			addPossibleCompound(iter.next());
+		for (String identifier : identifiers(queryBNF)) {
+			addPossibleCompound(identifier);
 		}
 	}
 
@@ -276,8 +203,8 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	private void addAllPossibleFunctions(JPQLQueryBNF queryBNF, int position) {
-		for (Iterator<String> iter = identifiers(queryBNF); iter.hasNext(); ) {
-			addPossibleFunction(iter.next(), position);
+		for (String identifier : identifiers(queryBNF)) {
+			addPossibleFunction(identifier, position);
 		}
 	}
 
@@ -286,8 +213,8 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	private void addAllPossibleIdentifiers(JPQLQueryBNF queryBNF) {
-		for (Iterator<String> iter = identifiers(queryBNF); iter.hasNext(); ) {
-			addPossibleChoice(iter.next());
+		for (String identifier : identifiers(queryBNF)) {
+			addPossibleProposal(identifier);
 		}
 	}
 
@@ -297,46 +224,111 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 	private void addIdentificationVariables(IdentificationVariableType type, Expression expression) {
 
-		// Nothing to do
-		if (type == IdentificationVariableType.NONE) {
-			return;
-		}
-
-		IdentificationVariableFinder visitor = new IdentificationVariableFinder(type, expression);
-
 		if (type == IdentificationVariableType.RESULT_VARIABLE) {
-			expression.getRoot().accept(visitor);
-		}
-		else {
-
-			// Locate the declaration expressions
-			DeclarationExpressionLocator locator = new DeclarationExpressionLocator();
-			expression.accept(locator);
-
-			// First retrieve visit the expression and gather the identification variables
-			for (Expression declaration : locator.declarationExpresions()) {
-				declaration.accept(visitor);
-				visitor.complete = false;
+			for (String resultVariable : queryContext.getResultVariables()) {
+				addPossibleProposal(resultVariable);
 			}
 		}
+		else if (type != IdentificationVariableType.NONE) {
+			boolean stop = false;
 
-		for (String identificationVariable : visitor.identificationVariables) {
+			for (Declaration declaration : queryContext.getDeclarations()) {
 
-			// If the identification variable matches the word, then it's added
-			if (isValidChoice(identificationVariable, word)) {
-				items.addIdentificationVariable(identificationVariable);
+				if (stop) {
+					break;
+				}
 
-				// Now find the abstract schema name associated with the identification variable, if
-				// it's a range identification variable and register the association
-				String abstractSchemaName = visitor.rangeIdentificationVariables.get(identificationVariable);
+				switch (type) {
 
-				if (abstractSchemaName != null) {
-					IManagedType managedType = query.getProvider().getManagedType(abstractSchemaName);
-					if (managedType != null) {
-						IEntity abstractSchemaType = abstractSchemaType(managedType);
-						if (abstractSchemaType != null) {
-							items.addRangeIdentificationVariable(identificationVariable, abstractSchemaType);
+					// Add the entire list of identification variables (range and collection)
+					case ALL: {
+
+						if (declaration.rangeDeclaration) {
+							addPossibleRangeIdentificationVariable(declaration.variableName);
 						}
+						else {
+							addPossibleIdentificationVariable(declaration.variableName);
+						}
+
+						for (String joinIdentificationVariable : declaration.getJoinIdentificationVariables()) {
+							addPossibleIdentificationVariable(joinIdentificationVariable);
+						}
+
+						break;
+					}
+
+					// Add only the collection identification variables
+					case COLLECTION: {
+
+						if (!declaration.rangeDeclaration) {
+							addPossibleIdentificationVariable(declaration.variableName);
+
+							for (String joinIdentificationVariable : declaration.getJoinIdentificationVariables()) {
+								addPossibleIdentificationVariable(joinIdentificationVariable);
+							}
+						}
+
+						break;
+					}
+
+					// Add the entire list of identification variables (range and collection) that are
+					// defined to the left of the expression
+					case LEFT: {
+
+						boolean shouldStop = declaration.expression.isAncestor(expression);
+
+						if (shouldStop && !declaration.getJoins().contains(expression) &&
+						                  !declaration.getJoinFetches().contains(expression)) {
+
+							stop = true;
+							break;
+						}
+
+						if (declaration.rangeDeclaration) {
+							addPossibleRangeIdentificationVariable(declaration.variableName);
+						}
+						else if (!shouldStop) {
+							addPossibleIdentificationVariable(declaration.variableName);
+						}
+
+						for (Map.Entry<Join, String> join : declaration.getJoinEntries()) {
+							if (join.getKey().isAncestor(expression)) {
+								stop = true;
+								break;
+							}
+							addPossibleIdentificationVariable(join.getValue());
+						}
+
+						break;
+					}
+
+					// Add only the collection identification variables that are
+					// defined to the left of the expression
+					case LEFT_COLLECTION: {
+
+						boolean shouldStop = declaration.expression.isAncestor(expression);
+
+						if (shouldStop && (declaration.getJoins().contains(expression) &&
+						                   declaration.getJoinFetches().contains(expression))) {
+
+							stop = true;
+							break;
+						}
+
+						if (!shouldStop && !declaration.rangeDeclaration) {
+							addPossibleIdentificationVariable(declaration.variableName);
+						}
+						else {
+							for (Map.Entry<Join, String> join : declaration.getJoinEntries()) {
+								if (join.getKey().isAncestor(expression)) {
+									stop = true;
+									break;
+								}
+								addPossibleIdentificationVariable(join.getValue());
+							}
+						}
+
+						break;
 					}
 				}
 			}
@@ -344,79 +336,120 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	private void addJoinIdentifiers() {
-		items.addIdentifier(INNER_JOIN);
-		items.addIdentifier(INNER_JOIN_FETCH);
-		items.addIdentifier(JOIN);
-		items.addIdentifier(JOIN_FETCH);
-		items.addIdentifier(LEFT_JOIN);
-		items.addIdentifier(LEFT_JOIN_FETCH);
-		items.addIdentifier(LEFT_OUTER_JOIN);
-		items.addIdentifier(LEFT_OUTER_JOIN_FETCH);
+		proposals.addIdentifier(INNER_JOIN);
+		proposals.addIdentifier(INNER_JOIN_FETCH);
+		proposals.addIdentifier(JOIN);
+		proposals.addIdentifier(JOIN_FETCH);
+		proposals.addIdentifier(LEFT_JOIN);
+		proposals.addIdentifier(LEFT_JOIN_FETCH);
+		proposals.addIdentifier(LEFT_OUTER_JOIN);
+		proposals.addIdentifier(LEFT_OUTER_JOIN_FETCH);
 	}
 
 	private void addLeftIdentificationVariables(Expression expression) {
 		addIdentificationVariables(IdentificationVariableType.LEFT, expression);
 	}
 
-	private void addPossibleAggregate(String choice) {
-		if (isAggregate(choice)) {
-			addPossibleChoice(choice);
-		}
-	}
-
-	private void addPossibleChoice(String choice) {
-		addPossibleChoice(choice, word);
-	}
-
-	private void addPossibleChoice(String identifier, String word) {
-
-		if (isValidChoice(identifier, word) &&
-		    isValidVersion(identifier)) {
-
-			items.addIdentifier(identifier);
+	private void addPossibleAggregate(String proposal) {
+		if (isAggregate(proposal)) {
+			addPossibleProposal(proposal);
 		}
 	}
 
 	private void addPossibleClause(String identifier) {
 		if (isClause(identifier)) {
-			addPossibleChoice(identifier);
+			addPossibleProposal(identifier);
 		}
 	}
 
-	private void addPossibleCompound(String choice) {
-		if (isCompoundFunction(choice)) {
-			addPossibleChoice(choice);
+	private void addPossibleCompound(String proposal) {
+		if (isCompoundFunction(proposal)) {
+			if (proposal != IS) {
+				addPossibleIdentifier(proposal, queryPosition.getPosition());
+			}
 		}
 	}
 
-	private void addPossibleFunction(String choice, int position) {
+	private void addPossibleFunction(String proposal, int position) {
+		if (isFunction(proposal)) {
+			addPossibleIdentifier(proposal, position);
+		}
+	}
 
-		if (isFunction(choice)) {
-			String currentWord = word;
-			int endPosition = position - word.length();
+	private void addPossibleIdentificationVariable(String identificationVariable) {
 
-			// Check to see if the previous words are "IS", "IS NOT" and "NOT",
-			// they are special case since the only allowed identifiers are
-			// those starting with them
-			if (wordParser.endsWith(endPosition, "IS NOT")) {
-				currentWord = new StringBuilder("IS NOT ").append(word).toString();
+		if (ExpressionTools.stringIsNotEmpty(identificationVariable) &&
+		    isValidProposal(identificationVariable, word)) {
+
+			proposals.addIdentificationVariable(identificationVariable);
+		}
+	}
+
+	private void addPossibleIdentifier(String proposal, int position) {
+
+		position -= word.length();
+		boolean found = addPossibleIdentifier(proposal, position, "IS NOT ", 2);
+
+		if (!found) {
+			found = addPossibleIdentifier(proposal, position, "NOT ", 3);
+
+			if (!found) {
+				if (isValidProposal(proposal, word) &&
+				    isValidVersion(proposal)) {
+
+					proposals.addIdentifier(proposal);
+				}
 			}
-			else if (wordParser.endsWith(endPosition, "IS")) {
-				currentWord = new StringBuilder("IS ").append(word).toString();
+		}
+	}
+
+	private boolean addPossibleIdentifier(String proposal,
+	                                      int position,
+	                                      String partialEnding,
+	                                      int endIndex) {
+
+		// Check to see if the previous words are "IS", "IS NOT" and "NOT",
+		// they are special case since the only allowed identifiers are
+		// those starting with them
+		for (int index = partialEnding.length(); index > endIndex; index--) {
+			String partial = partialEnding.substring(0, index);
+
+			if (wordParser.endsWith(position, partial)) {
+				addPossibleProposal(proposal, partial + word);
+				return true;
 			}
-			else if (wordParser.endsWith(endPosition, "NOT")) {
-				currentWord = new StringBuilder("NOT ").append(word).toString();
+		}
+
+		return false;
+	}
+
+	private void addPossibleProposal(String proposal) {
+		addPossibleProposal(proposal, word);
+	}
+
+	private void addPossibleProposal(String identifier, String word) {
+
+		if (isValidProposal(identifier, word) &&
+		    isValidVersion(identifier)) {
+
+			proposals.addIdentifier(identifier);
+		}
+	}
+
+	private void addPossibleRangeIdentificationVariable(String identificationVariable) {
+
+		if (ExpressionTools.stringIsNotEmpty(identificationVariable) &&
+		    isValidProposal(identificationVariable, word)) {
+
+			Resolver resolver = queryContext.getResolver(identificationVariable);
+			IManagedType managedTyped = resolver.getManagedType();
+			IEntity entity = (managedTyped != null) ? entity(managedTyped) : null;
+
+			if (entity != null) {
+				proposals.addRangeIdentificationVariable(identificationVariable, entity);
 			}
 			else {
-				addPossibleChoice(choice);
-				currentWord = null;
-			}
-
-			if (currentWord != null                &&
-			    isValidChoice(choice, currentWord) &&
-			    isValidVersion(choice)) {
-
-				items.addIdentifier(choice);
+				proposals.addIdentificationVariable(identificationVariable);
 			}
 		}
 	}
@@ -425,13 +458,13 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		addIdentificationVariables(IdentificationVariableType.RESULT_VARIABLE, expression);
 	}
 
-	private void addScalarExpressionChoices(Expression expression) {
+	private void addScalarExpressionProposals(Expression expression) {
 		addAllIdentificationVariables(expression);
 		addAbstractSchemaTypes();
 		addAllPossibleFunctions(ScalarExpressionBNF.ID);
 	}
 
-	private void addSelectExpressionChoices(AbstractSelectClause expression, int length) {
+	private void addSelectExpressionProposals(AbstractSelectClause expression, int length) {
 
 		int position = position(expression) - corrections.peek();
 
@@ -450,7 +483,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					break;
 				}
 				else {
-					boolean withinChild = addSelectExpressionChoices(child, length, index, index + 1 == count);
+					boolean withinChild = addSelectExpressionProposals(child, length, index, index + 1 == count);
 
 					if (withinChild) {
 						break;
@@ -462,8 +495,13 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				if (collectionExpression.hasComma(index)) {
 					length++;
 				}
+				// Cannot do anything more since a comma is missing,
+				// which means the query is not valid
+				else {
+					break;
+				}
 
-				// After ',', the choices can be added
+				// After ',', the proposals can be added
 				if (position == length) {
 					addAllIdentificationVariables(expression);
 					addAllPossibleFunctions(SelectItemBNF.ID);
@@ -476,11 +514,11 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 			}
 		}
 		else {
-			addSelectExpressionChoices(expression.getSelectExpression(), length, 0, true);
+			addSelectExpressionProposals(expression.getSelectExpression(), length, 0, true);
 		}
 	}
 
-	private boolean addSelectExpressionChoices(Expression expression,
+	private boolean addSelectExpressionProposals(Expression expression,
 	                                           int length,
 	                                           int index,
 	                                           boolean last) {
@@ -492,7 +530,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			if (position == 0) {
 				if (index == 0) {
-					addPossibleChoice(DISTINCT);
+					addPossibleProposal(DISTINCT);
 				}
 				addAllIdentificationVariables(expression);
 				addAllPossibleFunctions(SelectItemBNF.ID);
@@ -505,7 +543,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				     position == childLength) &&
 				    isSelectExpressionComplete(expression)) {
 
-					// Choices cannot be added if the expression is a result variable
+					// Proposals cannot be added if the expression is a result variable
 					ResultVariableVisitor resultVariableVisitor = new ResultVariableVisitor();
 					expression.accept(resultVariableVisitor);
 
@@ -514,7 +552,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 						// There is a "virtual" space after the expression, we can add "AS"
 						// or the cursor is at the end of the child expression
 						if ((virtualSpaces.peek() > 0) || (position == childLength)) {
-							items.addIdentifier(AS);
+							proposals.addIdentifier(AS);
 						}
 
 						addAllPossibleAggregates(SelectItemBNF.ID);
@@ -533,6 +571,80 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 			appendableExpressionVisitor = new AppendableExpressionVisitor();
 		}
 		return appendableExpressionVisitor;
+	}
+
+	private FilteringPropertyCollector buildChoiceBuilder(AbstractPathExpression expression,
+	                                                      Resolver resolver,
+	                                                      Filter<IMapping> filter) {
+		return buildChoiceBuilder(
+			expression,
+			resolver,
+			filter,
+			ExpressionTools.EMPTY_STRING
+		);
+	}
+
+	private FilteringPropertyCollector buildChoiceBuilder(AbstractPathExpression expression,
+	                                                      Resolver resolver,
+	                                                      Filter<IMapping> filter,
+	                                                      String pattern) {
+		return new FilteringPropertyCollector(
+			resolver,
+			buildFilter(expression, filter),
+			pattern
+		);
+	}
+
+	private PathExpressionHelper buildCollectionPathHelper() {
+		return new PathExpressionHelper() {
+			public boolean accept(IMapping value) {
+				return MappingTypeHelper.isCollectionMapping(value) ||
+				       MappingTypeHelper.isRelationshipMapping(value);
+			}
+			public Resolver buildResolver(Resolver parent, String path) {
+				return new CollectionValuedFieldResolver(parent, path, null);
+			}
+		};
+	}
+
+	private Filter<IMapping> buildFilter(AbstractPathExpression expression, Filter<IMapping> filter) {
+
+		// Wrap the filter with another Filter that will make sure only the
+		// mappings with the right type will be accepted, for instance, AVG(e.|
+		// can only accept state fields with a numeric type
+		ExpressionTypeVisitor visitor = new ExpressionTypeVisitor();
+		expression.getParent().accept(visitor);
+		IType type = visitor.type;
+
+		// No need to filter
+		if (type == getTypeHelper().objectType()) {
+			return filter;
+		}
+
+		// This will filter the property mappings
+		return new AndFilter<IMapping>(new MappingTypeFilter(type), filter);
+	}
+
+	private PathExpressionHelper buildPropertyPathHelper() {
+		return new PathExpressionHelper() {
+			public boolean accept(IMapping value) {
+				return MappingTypeHelper.isPropertyMapping(value);
+			}
+			public Resolver buildResolver(Resolver parent, String path) {
+				return new StateFieldResolver(parent, path, null);
+			}
+		};
+	}
+
+	private PathExpressionHelper buildSingledValuedObjectFieldPathHelper() {
+		return new PathExpressionHelper() {
+			public boolean accept(IMapping value) {
+				return MappingTypeHelper.isRelationshipMapping(value);
+			}
+			public Resolver buildResolver(Resolver parent, String path) {
+				return new CollectionValuedFieldResolver(parent, path, null);
+			}
+		};
 	}
 
 	private CollectionExpression collectionExpression(Expression expression) {
@@ -560,6 +672,20 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		return completenessVisitor;
 	}
 
+	private CompoundExpressionHelper compoundExpressionHelper() {
+		if (compoundExpressionHelper == null) {
+			compoundExpressionHelper = new CompoundExpressionHelper();
+		}
+		return compoundExpressionHelper;
+	}
+
+	private CompletenessVisitor conditionalExpressionCompletenessVisitor() {
+		if (conditionalExpressionCompletenessVisitor == null) {
+			conditionalExpressionCompletenessVisitor = new ConditionalExpressionCompletenessVisitor();
+		}
+		return conditionalExpressionCompletenessVisitor;
+	}
+
 	private ConstrutorCollectionHelper constructorCollectionHelper() {
 		if (construtorCollectionHelper == null) {
 			construtorCollectionHelper = new ConstrutorCollectionHelper();
@@ -574,6 +700,16 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		return deleteClauseHelper;
 	}
 
+	/**
+	 * Disposes this visitor.
+	 */
+	public void dispose() {
+		word          = null;
+		proposals     = null;
+		wordParser    = null;
+		queryPosition = null;
+	}
+
 	private DoubleEncapsulatedCollectionHelper doubleEncapsulatedCollectionHelper() {
 		if (doubleEncapsulatedCollectionHelper == null) {
 			doubleEncapsulatedCollectionHelper = new DoubleEncapsulatedCollectionHelper();
@@ -581,11 +717,12 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		return doubleEncapsulatedCollectionHelper;
 	}
 
-	private EntityVisitor entityVisitor() {
-		if (entityVisitor == null) {
-			entityVisitor = new EntityVisitor();
-		}
-		return entityVisitor;
+	private IEmbeddable embeddable(IManagedType managedType) {
+		return (IEmbeddable) visitManagedType(managedType, ManagedTypeVisitor.Type.EMBEDDABLE);
+	}
+
+	private IEntity entity(IManagedType managedType) {
+		return (IEntity) visitManagedType(managedType, ManagedTypeVisitor.Type.ENTITY);
 	}
 
 	private int findExpressionPosition(CollectionExpression expression) {
@@ -607,7 +744,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		if (position > -1) {
 			for (int index = 0, count = expression.childrenSize(); index < count; index++) {
 				Expression child = expression.getChild(index);
-				String text = child.toParsedText();
+				String text = child.toActualText();
 
 				if (position <= text.length()) {
 					return index;
@@ -646,6 +783,31 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		return fromClauseHelper;
 	}
 
+	/**
+	 * Returns
+	 *
+	 * @return
+	 */
+	public DefaultContentAssistProposals getProposals() {
+		return proposals;
+	}
+
+	private IManagedTypeProvider getProvider() {
+		return queryContext.getProvider();
+	}
+
+	private IType getType(Class<Number> type) {
+		return queryContext.getType(type);
+	}
+
+//	private IManagedType getManagedType(String abstractSchemaName) {
+//		return getProvider().getManagedType(abstractSchemaName);
+//	}
+
+	private TypeHelper getTypeHelper() {
+		return queryContext.getTypeHelper();
+	}
+
 	private GroupByClauseCollectionHelper groupByClauseCollectionHelper() {
 		if (groupByClauseCollectionHelper == null) {
 			groupByClauseCollectionHelper = new GroupByClauseCollectionHelper();
@@ -660,21 +822,22 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		return havingClauseHelper;
 	}
 
-	private Iterator<String> identifiers(JPQLQueryBNF queryBNF) {
+	private Iterable<String> identifiers(JPQLQueryBNF queryBNF) {
 		return queryBNF.identifiers();
 	}
 
-	private void initialize(IQuery query,
-	                        JPQLExpression jpqlExpression,
-	                        JPQLQueryContext queryContext,
-	                        DefaultContentAssistItems items,
-	                        QueryPosition queryPosition) {
+	private IncompleteCollectionExpressionVisitor incompleteCollectionExpressionVisitor() {
+		if (incompleteCollectionExpressionVisitor == null) {
+			incompleteCollectionExpressionVisitor = new IncompleteCollectionExpressionVisitor();
+		}
+		return incompleteCollectionExpressionVisitor;
+	}
 
-		this.items                       = items;
-		this.query                       = query;
-		this.queryContext                = queryContext;
-		this.queryPosition               = queryPosition;
-		this.lockedExpressions           = new Stack<Expression>();
+	private void initialize(JPQLQueryContext queryContext) {
+
+		this.queryContext = queryContext;
+
+		lockedExpressions = new Stack<Expression>();
 
 		virtualSpaces = new Stack<Integer>();
 		virtualSpaces.add(0);
@@ -682,16 +845,12 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		positionInCollections = new Stack<Integer>();
 		positionInCollections.add(-1);
 
-		wordParser = new WordParser(jpqlExpression.toParsedText());
-		wordParser.setPosition(queryPosition.getPosition());
-		word = wordParser.partialWord();
-
 		corrections = new Stack<Integer>();
 		corrections.add(0);
 	}
 
-	private boolean isAggregate(String choice) {
-		return identifierRole(choice) == IdentifierRole.AGGREGATE;
+	private boolean isAggregate(String proposal) {
+		return identifierRole(proposal) == IdentifierRole.AGGREGATE;
 	}
 
 	private boolean isAppendable(Expression expression) {
@@ -705,15 +864,22 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
+	private boolean isAppendableToCollection(Expression expression) {
+		IncompleteCollectionExpressionVisitor visitor = incompleteCollectionExpressionVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.complete;
+		}
+		finally {
+			visitor.complete = false;
+		}
+	}
+
 	private boolean isClause(String identifier) {
 		return JPQLExpression.identifierRole(identifier) == IdentifierRole.CLAUSE;
 	}
 
-	private boolean isCompoundFunction(String choice) {
-		return identifierRole(choice) == IdentifierRole.COMPOUND_FUNCTION;
-	}
-
-	private boolean isExpressionComplete(Expression expression) {
+	private boolean isComplete(Expression expression) {
 		CompletenessVisitor visitor = completenessVisitor();
 		try {
 			expression.accept(visitor);
@@ -724,8 +890,46 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
-	private boolean isFunction(String choice) {
-		return identifierRole(choice) == IdentifierRole.FUNCTION;
+	private boolean isCompoundable(Expression expression) {
+		CompoundExpressionHelper visitor = compoundExpressionHelper();
+		try {
+			expression.accept(visitor);
+			return visitor.isCompoundable();
+		}
+		finally {
+			visitor.dispose();
+		}
+	}
+
+	private boolean isCompoundFunction(String proposal) {
+		return identifierRole(proposal) == IdentifierRole.COMPOUND_FUNCTION;
+	}
+
+	private boolean isConditionalExpressionComplete(Expression expression) {
+		CompletenessVisitor visitor = conditionalExpressionCompletenessVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.complete;
+		}
+		finally {
+			visitor.complete = false;
+		}
+	}
+
+	private boolean isFunction(String proposal) {
+		return identifierRole(proposal) == IdentifierRole.FUNCTION;
+	}
+
+	private boolean isGroupByComplete(Expression expression) {
+		// TODO
+		CompletenessVisitor visitor = completenessVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.complete;
+		}
+		finally {
+			visitor.complete = false;
+		}
 	}
 
 	private boolean isLocked(Expression expression) {
@@ -779,7 +983,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
-	private boolean isValidChoice(String choice, String word) {
+	private boolean isValidProposal(String proposal, String word) {
 
 		// There is no word to match the first letters
 		if (word.length() == 0) {
@@ -796,14 +1000,14 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 			return true;
 		}
 
-		// The word is longer than the choice
-		if (word.length() > choice.length()) {
+		// The word is longer than the proposal
+		if (word.length() > proposal.length()) {
 			return false;
 		}
 
-		// Check to see if the choice starts with the word
+		// Check to see if the proposal starts with the word
 		for (int index = 0, length = word.length(); index < length; index++) {
-			char character1 = choice.charAt(index);
+			char character1 = proposal.charAt(index);
 			char character2 = word  .charAt(index);
 
 			// If characters don't match but case may be ignored, try converting
@@ -840,7 +1044,18 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	private int length(Expression expression) {
-		return expression.toParsedText().length();
+		return expression.toActualText().length();
+	}
+
+	private ManagedTypeVisitor managedTypeVisitor() {
+		if (managedTypeVisitor == null) {
+			managedTypeVisitor = new ManagedTypeVisitor();
+		}
+		return managedTypeVisitor;
+	}
+
+	private IMappedSuperclass mappedSuperclass(IManagedType managedType) {
+		return (IMappedSuperclass) visitManagedType(managedType, ManagedTypeVisitor.Type.MAPPED_SUPERCLASS);
 	}
 
 	private OrderByClauseCollectionHelper orderByClauseCollectionHelper() {
@@ -850,12 +1065,48 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		return orderByClauseCollectionHelper;
 	}
 
+	private PathExpressionHelper pathExpressionHelper(Expression expression) {
+		PathExpressionHelperBuilder visitor = pathExpressionHelperBuilder();
+		try {
+			expression.accept(visitor);
+			return visitor.helper;
+		}
+		finally {
+			visitor.helper = null;
+		}
+	}
+
+	private PathExpressionHelperBuilder pathExpressionHelperBuilder() {
+		if (pathExpressionHelperBuilder == null) {
+			pathExpressionHelperBuilder = new PathExpressionHelperBuilder();
+		}
+		return pathExpressionHelperBuilder;
+	}
+
 	private int position(Expression expression) {
 		return queryPosition.getPosition(expression);
 	}
 
 	private int position(Expression expression, char character) {
-		return expression.toParsedText().indexOf(character);
+		return expression.toActualText().indexOf(character);
+	}
+
+	/**
+	 * Prepares this visitor by prepopulating it with the necessary data that is required to properly
+	 * gather the list of proposals based on the caret position.
+	 *
+	 * @param proposals The object used to store the possible proposals gathered based on the
+	 * position in the query
+	 * @param queryPosition Contains the position of the cursor within the parsed {@link Expression}
+	 */
+	public void prepare(QueryPosition queryPosition) {
+
+		this.queryPosition = queryPosition;
+		this.proposals     = new DefaultContentAssistProposals();
+
+		wordParser = new WordParser(queryContext.getJPQLExpression().toActualText());
+		wordParser.setPosition(queryPosition.getPosition());
+		word = wordParser.partialWord();
 	}
 
 	private SelectClauseCompletenessVisitor selectClauseCompletenessVisitor() {
@@ -880,7 +1131,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	private IJPAVersion version() {
-		return query.getProvider().getVersion();
+		return getProvider().getVersion();
 	}
 
 	/**
@@ -982,13 +1233,12 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 			length += length(expression.getExpression()) + SPACE_LENGTH;
 		}
 
-		// Within "NOT BETWEEN"
-		if (expression.hasNot() && isPositionWithin(position, length, NOT_BETWEEN)) {
-			items.addIdentifier(NOT_BETWEEN);
-		}
-		// Within "BETWEEN"
-		else if (!expression.hasNot() && isPositionWithin(position, length, BETWEEN)) {
-			items.addIdentifier(BETWEEN);
+		// Within "NOT BETWEEN" or "BETWEEN"
+		if (expression.hasNot() && isPositionWithin(position, length, NOT_BETWEEN) ||
+		   !expression.hasNot() && isPositionWithin(position, length, BETWEEN)) {
+
+			proposals.addIdentifier(BETWEEN);
+			proposals.addIdentifier(NOT_BETWEEN);
 		}
 		// After "BETWEEN "
 		else if (expression.hasSpaceAfterBetween()) {
@@ -1001,26 +1251,51 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				addAllPossibleFunctions(InternalBetweenExpressionBNF.ID);
 			}
 
+			// After lower bound
 			if (expression.hasLowerBoundExpression()) {
-				length += length(expression.getLowerBoundExpression());
+
+				// Check for something like "<lower bound> <word>"
+				int lowerBoundLength = length(expression.getLowerBoundExpression());
+
+				if (!expression.hasAnd() &&
+				    (position > length) && (position < length + lowerBoundLength) &&
+				    isAppendableToCollection(expression.getLowerBoundExpression())) {
+
+					addPossibleProposal(AND);
+				}
+
+				length += lowerBoundLength;
 
 				if (expression.hasSpaceAfterLowerBound()) {
 					length++;
 
-					// At the end of the lower bound expression, AND is the only viable choice
-					if (isPositionWithin(position, length, AND)) {
-						addPossibleChoice(AND);
+					// Right before "AND"
+					if (position == length) {
+						proposals.addIdentifier(AND);
 					}
+					else {
+						// Within "AND"
+						if (expression.hasAnd() && isPositionWithin(position, length, AND)) {
+							proposals.addIdentifier(AND);
+						}
+						// After "AND "
+						else if (expression.hasSpaceAfterAnd()) {
+							length += AND.length() + SPACE_LENGTH;
 
-					if (expression.hasAnd() &&
-					    expression.hasSpaceAfterAnd()) {
+							// TODO: Check for the BETWEEN's expression type
+							if (position == length) {
+								addAllIdentificationVariables(expression);
+								addAllPossibleFunctions(InternalBetweenExpressionBNF.ID);
+							}
+						}
+						else if (!expression.hasAnd() &&
+						          expression.hasUpperBoundExpression()) {
 
-						length += AND.length() + SPACE_LENGTH;
+							length += length(expression.getUpperBoundExpression());
 
-						// TODO: Check for the BETWEEN's expression type
-						if (position == length) {
-							addAllIdentificationVariables(expression);
-							addAllPossibleFunctions(InternalBetweenExpressionBNF.ID);
+							if (position == length) {
+								addPossibleProposal(AND);
+							}
 						}
 					}
 				}
@@ -1039,7 +1314,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		// Within "CASE"
 		if (isPositionWithin(position, CASE)) {
 			if (isValidVersion(CASE)) {
-				items.addIdentifier(CASE);
+				proposals.addIdentifier(CASE);
 			}
 		}
 		// After "CASE "
@@ -1050,7 +1325,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 			if (position == length) {
 				addAllIdentificationVariables(expression);
 				addAllPossibleFunctions(CaseOperandBNF.ID);
-				items.addIdentifier(WHEN);
+				proposals.addIdentifier(WHEN);
 			}
 
 			// After "<case operand> "
@@ -1061,7 +1336,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 				// Right after "<case operand> "
 				if (position == length) {
-					items.addIdentifier(WHEN);
+					proposals.addIdentifier(WHEN);
 				}
 			}
 
@@ -1073,7 +1348,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 				// Right after "<when clauses> "
 				if (isPositionWithin(position, length, ELSE)) {
-					items.addIdentifier(ELSE);
+					proposals.addIdentifier(ELSE);
 				}
 
 				// After "ELSE "
@@ -1096,7 +1371,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 						// Right after "<else expression> "
 						if (isPositionWithin(position, length, END)) {
-							items.addIdentifier(END);
+							proposals.addIdentifier(END);
 						}
 					}
 				}
@@ -1134,7 +1409,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "IN"
 		if (isPositionWithin(position, IN)) {
-			items.addIdentifier(IN);
+			proposals.addIdentifier(IN);
 		}
 
 		// In a subquery only
@@ -1168,7 +1443,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 				// Right after "<collection-valued path expression>)"
 				if ((position == length) && !expression.hasSpaceAfterRightParenthesis()) {
-					items.addIdentifier(AS);
+					proposals.addIdentifier(AS);
 				}
 
 				if (expression.hasSpaceAfterRightParenthesis()) {
@@ -1177,7 +1452,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 				// Within "AS"
 				if (isPositionWithin(position, length, AS)) {
-					items.addIdentifier(AS);
+					proposals.addIdentifier(AS);
 				}
 			}
 		}
@@ -1199,10 +1474,10 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within the <identifier>
 		if (isPositionWithin(position, length, identifier)) {
-			items.addIdentifier(NOT_MEMBER);
-			items.addIdentifier(NOT_MEMBER_OF);
-			items.addIdentifier(MEMBER);
-			items.addIdentifier(MEMBER_OF);
+			proposals.addIdentifier(NOT_MEMBER);
+			proposals.addIdentifier(NOT_MEMBER_OF);
+			proposals.addIdentifier(MEMBER);
+			proposals.addIdentifier(MEMBER_OF);
 		}
 		// After the <identifier>
 		else if (expression.hasOf() && expression.hasSpaceAfterOf() ||
@@ -1212,6 +1487,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// Right after the <identifier>
 			if (position == length) {
+				if (!expression.hasOf()) {
+					addPossibleProposal(OF);
+				}
 				addAllIdentificationVariables(expression);
 			}
 		}
@@ -1240,27 +1518,26 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within the comparison operator
 		if (isPositionWithin(position, length, expression.getComparisonOperator())) {
-			items.addIdentifier(LOWER_THAN);
-			items.addIdentifier(LOWER_THAN_OR_EQUAL);
-			items.addIdentifier(DIFFERENT);
-			items.addIdentifier(EQUAL);
-			items.addIdentifier(GREATER_THAN);
-			items.addIdentifier(GREATER_THAN_OR_EQUAL);
+			proposals.addIdentifier(LOWER_THAN);
+			proposals.addIdentifier(LOWER_THAN_OR_EQUAL);
+			proposals.addIdentifier(DIFFERENT);
+			proposals.addIdentifier(EQUAL);
+			proposals.addIdentifier(GREATER_THAN);
+			proposals.addIdentifier(GREATER_THAN_OR_EQUAL);
 		}
+
 		// After the comparison operator
-		else {
-			length += expression.getComparisonOperator().length();
+		length += expression.getComparisonOperator().length();
 
-			if (expression.hasSpaceAfterIdentifier()) {
-				length++;
-			}
+		if (expression.hasSpaceAfterIdentifier()) {
+			length++;
+		}
 
-			// Right after the comparison operator
-			if (position == length) {
-				addAllIdentificationVariables(expression);
-				addAllPossibleFunctions(expression.rightExpressionBNF());
-				addAllPossibleClauses(expression.rightExpressionBNF());
-			}
+		// Right after the comparison operator
+		if (position == length) {
+			addAllIdentificationVariables(expression);
+			addAllPossibleFunctions(expression.rightExpressionBNF());
+			addAllPossibleClauses(expression.rightExpressionBNF().getId());
 		}
 	}
 
@@ -1283,7 +1560,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// NEW
 		if (isPositionWithin(position, NEW)) {
-			items.addIdentifier(NEW);
+			proposals.addIdentifier(NEW);
 		}
 		// After "NEW "
 		else if (expression.hasSpaceAfterNew()) {
@@ -1333,9 +1610,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		    isPositionWithin(position, CURRENT_TIME) ||
 		    isPositionWithin(position, CURRENT_TIMESTAMP)) {
 
-			items.addIdentifier(CURRENT_DATE);
-			items.addIdentifier(CURRENT_TIME);
-			items.addIdentifier(CURRENT_TIMESTAMP);
+			proposals.addIdentifier(CURRENT_DATE);
+			proposals.addIdentifier(CURRENT_TIME);
+			proposals.addIdentifier(CURRENT_TIMESTAMP);
 		}
 	}
 
@@ -1385,8 +1662,8 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within the <identifier>
 		if (isPositionWithin(position, length, expression.getIdentifier())) {
-			items.addIdentifier(IS_EMPTY);
-			items.addIdentifier(IS_NOT_EMPTY);
+			proposals.addIdentifier(IS_EMPTY);
+			proposals.addIdentifier(IS_NOT_EMPTY);
 		}
 	}
 
@@ -1462,6 +1739,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		if (!isLocked(expression)) {
 			super.visit(expression);
 			visitClause(expression, HAVING, expression.hasSpaceAfterIdentifier(), havingClauseHelper());
+			visitCompoundableExpression(expression);
 		}
 	}
 
@@ -1511,7 +1789,8 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	 */
 	@Override
 	public void visit(InExpression expression) {
-		super.visit(expression);
+		expression.accept(visitParentVisitor());
+
 		int position = position(expression) - corrections.peek();
 		int length = 0;
 
@@ -1521,8 +1800,8 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "IN"
 		if (isPositionWithin(position, length, expression.getIdentifier())) {
-			items.addIdentifier(IN);
-			items.addIdentifier(NOT_IN);
+			proposals.addIdentifier(IN);
+			proposals.addIdentifier(NOT_IN);
 		}
 		// After "IN("
 		else if (expression.hasLeftParenthesis()) {
@@ -1531,7 +1810,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 			// Right after "IN("
 			if (position == length) {
 				addAllPossibleFunctions(InItemBNF.ID);
-				items.addIdentifier(SELECT);
+				proposals.addIdentifier(SELECT);
 			}
 		}
 	}
@@ -1557,21 +1836,21 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		// Within "<join>"
 		if (isPositionWithin(position, identifier)) {
 
-			// Add join identifiers
-			items.addIdentifier(JOIN);
-			items.addIdentifier(INNER_JOIN);
-			items.addIdentifier(LEFT_JOIN);
-			items.addIdentifier(LEFT_OUTER_JOIN);
+			// Add JOIN identifiers
+			proposals.addIdentifier(JOIN);
+			proposals.addIdentifier(INNER_JOIN);
+			proposals.addIdentifier(LEFT_JOIN);
+			proposals.addIdentifier(LEFT_OUTER_JOIN);
 
-			// Only add the join fetch identifiers if there is no AS or identification variable
+			// Only add the JOIN FETCH identifiers if there is no AS or identification variable
 			// otherwise the expression would become invalid
 			if (!expression.hasAs() &&
 			    !expression.hasIdentificationVariable()) {
 
-				items.addIdentifier(JOIN_FETCH);
-				items.addIdentifier(INNER_JOIN_FETCH);
-				items.addIdentifier(LEFT_JOIN_FETCH);
-				items.addIdentifier(LEFT_OUTER_JOIN_FETCH);
+				proposals.addIdentifier(JOIN_FETCH);
+				proposals.addIdentifier(INNER_JOIN_FETCH);
+				proposals.addIdentifier(LEFT_JOIN_FETCH);
+				proposals.addIdentifier(LEFT_OUTER_JOIN_FETCH);
 			}
 		}
 		// After "<join> "
@@ -1580,7 +1859,39 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// Right after "<join> "
 			if (position == length) {
-				addLeftIdentificationVariables(expression);
+				// Only add some JOIN identifiers if the actual identifier is shorter or incomplete
+				if (identifier == LEFT) {
+					addPossibleProposal(LEFT_JOIN);
+					addPossibleProposal(LEFT_OUTER_JOIN);
+
+					if (!expression.hasAs() &&
+					    !expression.hasIdentificationVariable()) {
+
+						addPossibleProposal(LEFT_JOIN_FETCH);
+						addPossibleProposal(LEFT_OUTER_JOIN_FETCH);
+					}
+				}
+				else if (identifier == INNER) {
+					      addPossibleProposal(INNER_JOIN);
+
+					if (!expression.hasAs() &&
+					    !expression.hasIdentificationVariable()) {
+
+						addPossibleProposal(INNER_JOIN_FETCH);
+					}
+				}
+				else if (identifier == "LEFT_OUTER") {
+					addPossibleProposal(LEFT_OUTER_JOIN);
+
+					if (!expression.hasAs() &&
+					    !expression.hasIdentificationVariable()) {
+
+						addPossibleProposal(LEFT_OUTER_JOIN_FETCH);
+					}
+				}
+				else {
+					addLeftIdentificationVariables(expression);
+				}
 			}
 
 			// After "join association path expression "
@@ -1591,7 +1902,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 				// Right after "join association path expression "
 				if (isPositionWithin(position, length, AS)) {
-					addPossibleChoice(AS);
+					addPossibleProposal(AS);
 				}
 			}
 		}
@@ -1634,18 +1945,18 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// At the beginning of the query
 			if (position == 0) {
-				addPossibleChoice(SELECT);
-				addPossibleChoice(UPDATE);
-				addPossibleChoice(DELETE_FROM);
+				addPossibleProposal(SELECT);
+				addPossibleProposal(UPDATE);
+				addPossibleProposal(DELETE_FROM);
 			}
 			// After the query, inside the invalid query (or ending whitespace)
 			else if (position > length) {
 
-				String text = expression.getUnknownEndingStatement().toParsedText();
+				String text = expression.getUnknownEndingStatement().toActualText();
 
-				addPossibleChoice(SELECT,      text);
-				addPossibleChoice(DELETE_FROM, text);
-				addPossibleChoice(UPDATE,      text);
+				addPossibleProposal(SELECT,      text);
+				addPossibleProposal(DELETE_FROM, text);
+				addPossibleProposal(UPDATE,      text);
 
 				if (hasQueryStatement) {
 					lockedExpressions.add(expression);
@@ -1686,9 +1997,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		    isPositionWithin(position, FALSE) ||
 		    isPositionWithin(position, NULL)) {
 
-			items.addIdentifier(TRUE);
-			items.addIdentifier(FALSE);
-			items.addIdentifier(NULL);
+			proposals.addIdentifier(TRUE);
+			proposals.addIdentifier(FALSE);
+			proposals.addIdentifier(NULL);
 		}
 	}
 
@@ -1716,8 +2027,8 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "LIKE" or "NOT LIKE"
 		if (isPositionWithin(position, length, expression.getIdentifier())) {
-			items.addIdentifier(LIKE);
-			items.addIdentifier(NOT_LIKE);
+			proposals.addIdentifier(LIKE);
+			proposals.addIdentifier(NOT_LIKE);
 		}
 		// After "LIKE " or "NOT LIKE "
 		else if (expression.hasSpaceAfterLike()) {
@@ -1731,7 +2042,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 				// Within "ESCAPE"
 				if (isPositionWithin(position, length, ESCAPE)) {
-					items.addIdentifier(ESCAPE);
+					proposals.addIdentifier(ESCAPE);
 				}
 			}
 		}
@@ -1801,16 +2112,21 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "NOT
 		if (isPositionWithin(position, NOT)) {
-			items.addIdentifier(NOT);
+			proposals.addIdentifier(NOT);
 
 			// Also add the negated JPQL identifiers
 			if (!expression.hasExpression()) {
-				items.addIdentifier(NOT_BETWEEN);
-				items.addIdentifier(NOT_EXISTS);
-				items.addIdentifier(NOT_IN);
-				items.addIdentifier(NOT_LIKE);
-				items.addIdentifier(NOT_MEMBER);
-				items.addIdentifier(NOT_MEMBER_OF);
+				int currentPosition = queryPosition.getPosition();
+				addPossibleIdentifier(NOT_BETWEEN,   currentPosition);
+				addPossibleIdentifier(NOT_EXISTS,    currentPosition);
+				addPossibleIdentifier(NOT_IN,        currentPosition);
+				addPossibleIdentifier(NOT_LIKE,      currentPosition);
+				addPossibleIdentifier(NOT_MEMBER,    currentPosition);
+				addPossibleIdentifier(NOT_MEMBER_OF, currentPosition);
+
+				// In case IS is in the query right before NOT
+				addPossibleIdentifier(IS_NOT_EMPTY,  currentPosition);
+				addPossibleIdentifier(IS_NOT_NULL,   currentPosition);
 			}
 		}
 		// After "NOT "
@@ -1819,12 +2135,27 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// Right after "NOT "
 			if (position == length) {
-				items.addIdentifier(NOT_BETWEEN);
-				items.addIdentifier(NOT_EXISTS);
-				items.addIdentifier(NOT_IN);
-				items.addIdentifier(NOT_LIKE);
-				items.addIdentifier(NOT_MEMBER);
-				items.addIdentifier(NOT_MEMBER_OF);
+				boolean canAddCompoundIdentifiers = !expression.hasExpression();
+
+				if (!canAddCompoundIdentifiers) {
+					IdentificationVariableVisitor visitor = new IdentificationVariableVisitor();
+					expression.getExpression().accept(visitor);
+					canAddCompoundIdentifiers = visitor.expression != null;
+				}
+
+				if (canAddCompoundIdentifiers) {
+					int currentPosition = queryPosition.getPosition();
+					addPossibleIdentifier(NOT_BETWEEN,   currentPosition);
+					addPossibleIdentifier(NOT_EXISTS,    currentPosition);
+					addPossibleIdentifier(NOT_IN,        currentPosition);
+					addPossibleIdentifier(NOT_LIKE,      currentPosition);
+					addPossibleIdentifier(NOT_MEMBER,    currentPosition);
+					addPossibleIdentifier(NOT_MEMBER_OF, currentPosition);
+
+					// In case IS is in the query right before NOT
+					addPossibleIdentifier(IS_NOT_EMPTY,  currentPosition);
+					addPossibleIdentifier(IS_NOT_NULL,   currentPosition);
+				}
 			}
 		}
 	}
@@ -1843,9 +2174,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 
 		// Within "IS NULL" or "IS NOT NULL"
-		if (isPositionWithin(position, length, expression.getIdentifier().name())) {
-			items.addIdentifier(IS_NULL);
-			items.addIdentifier(IS_NOT_NULL);
+		if (isPositionWithin(position, length, expression.getIdentifier())) {
+			proposals.addIdentifier(IS_NULL);
+			proposals.addIdentifier(IS_NOT_NULL);
 		}
 	}
 
@@ -1904,8 +2235,8 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 				// Right before "ASC" or "DESC"
 				if (position == length) {
-					items.addIdentifier(ASC);
-					items.addIdentifier(DESC);
+					proposals.addIdentifier(ASC);
+					proposals.addIdentifier(DESC);
 				}
 				else {
 					// Right after the space
@@ -1915,8 +2246,8 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					if ((ordering != Ordering.DEFAULT) &&
 					    isPositionWithin(position, length, ordering.name())) {
 
-						items.addIdentifier(ASC);
-						items.addIdentifier(DESC);
+						proposals.addIdentifier(ASC);
+						proposals.addIdentifier(DESC);
 					}
 				}
 			}
@@ -1948,7 +2279,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// Right after "<abstract schema name> "
 			if (isPositionWithin(position, length, AS)) {
-				addPossibleChoice(AS);
+				addPossibleProposal(AS);
 			}
 		}
 	}
@@ -1968,7 +2299,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "AS"
 		if (isPositionWithin(position, length, AS)) {
-			addPossibleChoice(AS);
+			addPossibleProposal(AS);
 		}
 	}
 
@@ -2023,7 +2354,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	public void visit(SimpleSelectStatement expression) {
 		if (!isLocked(expression)) {
 			// Don't continue traversing the parent hierarchy because a subquery
-			// will handle all the possible choices
+			// will handle all the possible proposals
 			visitSelectStatement(expression);
 		}
 	}
@@ -2042,7 +2373,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	 */
 	@Override
 	public void visit(SqrtExpression expression) {
-		super.visit(expression);
+		expression.accept(visitParentVisitor());
 		visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
 	}
 
@@ -2111,7 +2442,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		// Within "TREAT"
 		if (isPositionWithin(position, TREAT)) {
 			if (isValidVersion(TREAT)) {
-				items.addIdentifier(TREAT);
+				proposals.addIdentifier(TREAT);
 			}
 		}
 		// After "TREAT("
@@ -2131,7 +2462,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 				// Within "AS"
 				if (isPositionWithin(position, length, AS)) {
-					items.addIdentifier(AS);
+					proposals.addIdentifier(AS);
 
 					// If the entity type is not specified, then we can add
 					// the possible abstract schema names
@@ -2168,13 +2499,13 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// TRIM
 		if (isPositionWithin(position, TRIM)) {
-			items.addIdentifier(TRIM);
+			proposals.addIdentifier(TRIM);
 		}
 		// After '('
 		else if (position - corrections.peek() == position(expression, LEFT_PARENTHESIS) + SPACE_LENGTH) {
-			addPossibleChoice(BOTH);
-			addPossibleChoice(LEADING);
-			addPossibleChoice(TRAILING);
+			addPossibleProposal(BOTH);
+			addPossibleProposal(LEADING);
+			addPossibleProposal(TRAILING);
 			addAllIdentificationVariables(expression);
 			addAllPossibleFunctions(StringPrimaryBNF.ID);
 		}
@@ -2209,7 +2540,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// After the character
 			if (position - corrections.peek() == writer.length()) {
-				addPossibleChoice(FROM);
+				addPossibleProposal(FROM);
 
 				if (!expression.hasFrom()) {
 					addAllIdentificationVariables(expression);
@@ -2238,7 +2569,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				    !expression.hasTrimCharacter() &&
 				    !expression.hasFrom()) {
 
-					addPossibleChoice(FROM);
+					addPossibleProposal(FROM);
 				}
 			}
 		}
@@ -2273,7 +2604,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "UPDATE"
 		if (isPositionWithin(position, UPDATE)) {
-			items.addIdentifier(UPDATE);
+			proposals.addIdentifier(UPDATE);
 		}
 		// After "UPDATE "
 		else if (expression.hasSpaceAfterUpdate()) {
@@ -2300,7 +2631,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					    !visitor.expression.hasAs() &&
 					    isPositionWithin(position, length, SET)) {
 
-						addPossibleChoice(SET);
+						addPossibleProposal(SET);
 					}
 					// Example: "UPDATE System s "
 					// Example: "UPDATE System AS s "
@@ -2327,7 +2658,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 						    !visitor.expression.hasAs() && visitor.expression.hasIdentificationVariable()) &&
 						    isPositionWithin(position, length, SET)) {
 
-							addPossibleChoice(SET);
+							addPossibleProposal(SET);
 						}
 						// After "SET "
 						else if (expression.hasSet() &&
@@ -2370,7 +2701,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// Within "="
 			if (position == length) {
-				items.addIdentifier(EQUAL);
+				proposals.addIdentifier(EQUAL);
 			}
 			// After "="
 			else if (expression.hasEqualSign()) {
@@ -2378,7 +2709,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 				// Right after "="
 				if (position == length) {
-					items.addIdentifier(EQUAL);
+					proposals.addIdentifier(EQUAL);
 					addAllIdentificationVariables(expression);
 					addAllPossibleFunctions(NewValueBNF.ID);
 				}
@@ -2434,7 +2765,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "WHEN"
 		if (isPositionWithin(position, WHEN)) {
-			items.addIdentifier(WHEN);
+			proposals.addIdentifier(WHEN);
 		}
 		// After "WHEN "
 		else if (expression.hasSpaceAfterWhen()) {
@@ -2454,12 +2785,12 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 					// Right after "WHEN <expression> " => THEN
 					if (position == length) {
-						items.addIdentifier(THEN);
+						proposals.addIdentifier(THEN);
 					}
 					else if (expression.hasThen()) {
 						// Within "THEN"
 						if (isPositionWithin(position, length, THEN)) {
-							items.addIdentifier(THEN);
+							proposals.addIdentifier(THEN);
 						}
 						else {
 							length += THEN.length();
@@ -2470,7 +2801,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 								// Right after "WHEN <expression> THEN "
 								if (position == length) {
-									addScalarExpressionChoices(expression);
+									addScalarExpressionProposals(expression);
 								}
 							}
 						}
@@ -2488,6 +2819,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		if (!isLocked(expression)) {
 			super.visit(expression);
 			visitClause(expression, WHERE, expression.hasSpaceAfterIdentifier(), whereClauseHelper());
+			visitCompoundableExpression(expression);
 		}
 	}
 
@@ -2498,7 +2830,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "<identifier>"
 		if (isPositionWithin(position, identifier)) {
-			items.addIdentifier(identifier);
+			proposals.addIdentifier(identifier);
 		}
 		// After "<identifier>("
 		else if (expression.hasLeftParenthesis()) {
@@ -2507,7 +2839,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// Within "DISTINCT"
 			if (hasDistinct && isPositionWithin(position, length, DISTINCT) ) {
-				addPossibleChoice(DISTINCT);
+				addPossibleProposal(DISTINCT);
 			}
 			// After "("
 			else {
@@ -2518,7 +2850,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				// Right after "(" or right after "(DISTINCT "
 				if (position == length) {
 					if (!hasDistinct) {
-						addPossibleChoice(DISTINCT);
+						addPossibleProposal(DISTINCT);
 					}
 					addAllIdentificationVariables(expression);
 					addAllPossibleFunctions(expression.encapsulatedExpressionBNF());
@@ -2562,7 +2894,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "<identifier>"
 		if (isPositionWithin(position, identifier)) {
-			items.addIdentifier(identifier);
+			proposals.addIdentifier(identifier);
 		}
 		// After "<identifier> "
 		else if (hasSpaceAfterIdentifier) {
@@ -2570,7 +2902,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// Right after "<identifier> "
 			if (position == length) {
-				helper.addChoices(expression);
+				helper.addProposals(expression);
 			}
 			// Somewhere in the clause's expression
 			else {
@@ -2586,7 +2918,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					clauseExpression.accept(this);
 
 					// Now ask the helper to add possible identifiers at the end of its expression
-					if (isExpressionComplete(clauseExpression)) {
+					if (isComplete(clauseExpression)) {
 						helper.addAtTheEndOfExpression(expression);
 					}
 
@@ -2600,7 +2932,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	/**
-	 * Adds the possible choices for the given {@link Expression expression} based on the location of
+	 * Adds the possible proposals for the given {@link Expression expression} based on the location of
 	 * the cursor and the content of the expression.
 	 *
 	 * @param expression The {@link Expression expression} being visited
@@ -2615,7 +2947,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within the identifier
 		if (isPositionWithin(position, identifier)) {
-			items.addIdentifier(identifier);
+			proposals.addIdentifier(identifier);
 		}
 		// After "<identifier>(" or "<identifier> "
 		else if (helper.hasDelimiterAfterIdentifier(expression)) {
@@ -2624,7 +2956,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// Right after "<identifier>(" or "<identifier> "
 			if (position == length) {
-				helper.addChoices(expression, 0);
+				helper.addProposals(expression, 0);
 			}
 			// Within the encapsulated expressions
 			else {
@@ -2643,7 +2975,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 					// At the beginning of the child expression
 					if (position == length) {
-						helper.addChoices(expression, index);
+						helper.addProposals(expression, index);
 						break;
 					}
 					else {
@@ -2651,7 +2983,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 						// At the end of the child expression
 						if ((position == length + childLength + virtualSpaces.peek()) &&
-						     isExpressionComplete(child)) {
+						     isComplete(child)) {
 
 							helper.addAtTheEndOfChild(expression, child, index);
 							break;
@@ -2667,9 +2999,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					if (hasComma) {
 						length++;
 
-						// After ',', the choices can be added
+						// After ',', the proposals can be added
 						if (position == length) {
-							helper.addChoices(expression, index + 1);
+							helper.addProposals(expression, index + 1);
 							break;
 						}
 					}
@@ -2688,6 +3020,53 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
+	private void visitCompoundableExpression(AbstractConditionalClause expression) {
+
+		if (expression.hasConditionalExpression()) {
+
+			// Get the position and start length
+			int position = position(expression);
+			int length = expression.getIdentifier().length() + SPACE_LENGTH;
+
+			CompoundExpressionHelper helper = compoundExpressionHelper();
+
+			try {
+				// Start scanning the conditional expression
+				expression.getConditionalExpression().accept(helper);
+
+				// Visit the conditional expression in order to determine if identifiers defined has
+				// compound (example: BETWEEN) can be added as possible proposals
+				visitCompoundableExpression(helper, position, length);
+			}
+			finally {
+				helper.dispose();
+			}
+		}
+	}
+
+	private void visitCompoundableExpression(CompoundExpressionHelper helper,
+	                                         int position,
+	                                         int length) {
+
+		length += helper.length();
+
+		// At the end of an expression
+		if (position == length) {
+			if (helper.isCompoundable()) {
+				addAllPossibleCompounds(ConditionalExpressionBNF.ID);
+			}
+		}
+		// Continue inside of the conditional expression
+		else if (helper.hasIdentifier()) {
+			length += helper.identifierLength();
+
+			if (helper.hasNext()) {
+				helper.next();
+				visitCompoundableExpression(helper, position, length);
+			}
+		}
+	}
+
 	private void visitDeleteStatement(DeleteStatement expression) {
 
 		lockedExpressions.add(expression);
@@ -2699,10 +3078,10 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		DeleteClause deleteClause = expression.getDeleteClause();
 		int length = length(deleteClause);
 
-		// At the end of the DELETE clause, check for adding choices based
+		// At the end of the DELETE clause, check for adding proposals based
 		// on possible incomplete information
 		if ((position == length) && isAppendable(deleteClause)) {
-			addPossibleChoice(WHERE);
+			addPossibleProposal(WHERE);
 		}
 		// Right after the DELETE clause, the space is owned by the select statement
 		else if ((position == length + SPACE_LENGTH) && expression.hasSpaceAfterDeleteClause()) {
@@ -2737,9 +3116,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		if (position == length) {
 
 			if (expression.hasSpaceAfterDeleteClause() &&
-			    isExpressionComplete(deleteClause.getRangeVariableDeclaration())) {
+			    isComplete(deleteClause.getRangeVariableDeclaration())) {
 
-				addPossibleChoice(WHERE);
+				addPossibleProposal(WHERE);
 			}
 		}
 
@@ -2767,7 +3146,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	/**
-	 * Adds the possible choices for the given {@link AbstractEncapsulatedExpression expression}
+	 * Adds the possible proposals for the given {@link AbstractEncapsulatedExpression expression}
 	 * based on the location of the cursor and the content of the expression.
 	 *
 	 * @param expression The {@link AbstractEncapsulatedExpression expression} being visited
@@ -2776,13 +3155,13 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	 */
 	private void visitEncapsulatedExpression(AbstractEncapsulatedExpression expression,
 	                                         String identifier,
-	                                         JPQLQueryBNF jpqlQueryBNF) {
+	                                         String jpqlQueryBNF) {
 
 		int position = position(expression) - corrections.peek();
 
 		// Within the identifier
 		if (isPositionWithin(position, identifier)) {
-			items.addIdentifier(identifier);
+			proposals.addIdentifier(identifier);
 		}
 		// Right after "<identifier>("
 		else if (expression.hasLeftParenthesis()) {
@@ -2806,7 +3185,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "AND" or "OR"
 		if (isPositionWithin(position, length, expression.getIdentifier())) {
-			items.addIdentifier(identifier);
+			proposals.addIdentifier(identifier);
 		}
 		// After "AND " or "OR "
 		else if (expression.hasSpaceAfterIdentifier()) {
@@ -2820,18 +3199,112 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
+	private IManagedType visitManagedType(IManagedType managedType, ManagedTypeVisitor.Type type) {
+		ManagedTypeVisitor visitor = managedTypeVisitor();
+		try {
+			visitor.type = type;
+			managedType.accept(visitor);
+			return visitor.managedType;
+		}
+		finally {
+			visitor.managedType = null;
+		}
+	}
+
+	private VisitParentVisitor visitParentVisitor() {
+		if (visitParentVisitor == null) {
+			visitParentVisitor = new VisitParentVisitor();
+		}
+		return visitParentVisitor;
+	}
+
 	private void visitPathExpression(AbstractPathExpression expression) {
 
 		int position = position(expression);
-		String text = expression.toParsedText();
-		int dotIndex = text.indexOf(".");
+		String text = expression.toActualText();
+		int dotIndex = text.indexOf(AbstractExpression.DOT);
 
-		// Don't do anything if the cursor is after a dot, it's handled by another visitor
-		if ((position > -1) && ((dotIndex == -1) || (position <= dotIndex))) {
-			corrections.add(position(expression));
-			super.visit(expression);
-			corrections.pop();
+		if (position > -1) {
+			if ((dotIndex > -1) && (position > dotIndex)) {
+				// Retrieve the filter based on the location of the state field path, for instance, in a
+				// JOIN or IN expression, the filter has to filter out the property and accept the fields
+				// of collection type
+				visitPathExpression(expression, pathExpressionHelper(expression));
+			}
+			else {
+				IdentificationVariableVisitor visitor = new IdentificationVariableVisitor();
+				expression.getIdentificationVariable().accept(visitor);
+
+				// Don't do anything if the identification variable is either KEY() or VALUE()
+				if (visitor.expression != null) {
+					corrections.add(position(expression));
+					super.visit(expression);
+					corrections.pop();
+				}
+			}
 		}
+	}
+
+	private void visitPathExpression(AbstractPathExpression expression, PathExpressionHelper helper) {
+
+		int position = queryPosition.getPosition(expression);
+		boolean choiceBuilderCreated = false;
+		PropertyCollector choiceBuilder = new DefaultMappingCollector();
+		Resolver resolver = null;
+		int length = 0;
+
+		for (int index = 0, count = expression.pathSize(); index < count; index++) {
+			String path = expression.getPath(index);
+
+			// We're at the position, create the ChoiceBuilder
+			if (position <= length + path.length()) {
+
+				if (length == position) {
+					path = ExpressionTools.EMPTY_STRING;
+				}
+				else if (position - length > -1) {
+					path = path.substring(0, position - length);
+				}
+
+				// Special case where the path expression only has the
+				// identification variable set
+				if (resolver == null) {
+					break;
+				}
+
+				choiceBuilder = buildChoiceBuilder(expression, resolver, helper, path);
+				choiceBuilderCreated = true;
+				break;
+			}
+			// The path is entirely before the position of the cursor
+			else {
+				// The first path is always an identification variable
+				if (resolver == null) {
+					resolver = queryContext.getResolver(expression.getIdentificationVariable());
+				}
+				// Any other path is a property or collection-valued path
+				else if ((index + 1 < count) || expression.endsWithDot()) {
+					Resolver childResolver = resolver.getChild(path);
+					if (childResolver == null) {
+						childResolver = new SingleValuedObjectFieldResolver(resolver, path);
+						resolver.addChild(path, childResolver);
+						resolver = childResolver;
+					}
+				}
+				else {
+					resolver = helper.buildResolver(resolver, path);
+				}
+
+				// Move the cursor after the path and dot
+				length += path.length() + 1;
+			}
+		}
+
+		if (!choiceBuilderCreated && (resolver != null)) {
+			choiceBuilder = buildChoiceBuilder(expression, resolver, helper);
+		}
+
+		proposals.addMappings(choiceBuilder.buildProposals());
 	}
 
 	private void visitSelectClause(AbstractSelectClause expression) {
@@ -2840,7 +3313,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 		// Within "SELECT"
 		if (isPositionWithin(position, SELECT)) {
-			items.addIdentifier(SELECT);
+			proposals.addIdentifier(SELECT);
 		}
 		// After "SELECT "
 		else if (expression.hasSpaceAfterSelect()) {
@@ -2850,7 +3323,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 			if (expression.hasDistinct() &&
 			    isPositionWithin(position, length, DISTINCT)) {
 
-				items.addIdentifier(DISTINCT);
+				proposals.addIdentifier(DISTINCT);
 			}
 			// After "DISTINCT "
 			else {
@@ -2865,7 +3338,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				// Right after "SELECT " or after "DISTINCT "
 				if (position == length) {
 					if (!expression.hasDistinct()) {
-						addPossibleChoice(DISTINCT);
+						addPossibleProposal(DISTINCT);
 					}
 					addAllIdentificationVariables(expression);
 					addAllPossibleFunctions(SelectItemBNF.ID);
@@ -2876,7 +3349,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 					// At the end of the clause's expression
 					if (position <= length + selectExpressionLength + virtualSpaces.peek()) {
-						addSelectExpressionChoices(expression, length);
+						addSelectExpressionProposals(expression, length);
 					}
 				}
 			}
@@ -2896,10 +3369,10 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 			AbstractSelectClause selectClause = expression.getSelectClause();
 			int length = length(selectClause);
 
-			// At the end of the FROM clause, check for adding choices based
+			// At the end of the SELECT clause, check for adding proposals based
 			// on possible incomplete information
 			if ((position == length) && isAppendable(selectClause)) {
-				addPossibleChoice(FROM);
+				addPossibleProposal(FROM);
 			}
 			// Right after the SELECT expression, the space is owned by the select statement
 			else if ((position == length + SPACE_LENGTH) &&  expression.hasSpaceAfterSelect()) {
@@ -2936,7 +3409,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				if (expression.hasSpaceAfterSelect() &&
 				    isSelectExpressionComplete(selectClause.getSelectExpression())) {
 
-					addPossibleChoice(FROM);
+					addPossibleProposal(FROM);
 				}
 
 				return;
@@ -2950,19 +3423,63 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					int fromClauseLenght = length(fromClause);
 					length += fromClauseLenght;
 
-					// At the end of the FROM clause, check for adding choices based
+					// At the end of the FROM clause, check for adding proposals based
 					// on possible incomplete information
-					if ((position == length) && isAppendable(fromClause)) {
-						addPossibleChoice(WHERE);
+					if (position == length) {
 
-						if (!expression.hasWhereClause()) {
-							addPossibleChoice(GROUP_BY);
+						if (isAppendable(fromClause)) {
+							addPossibleProposal(WHERE);
 
-							if (!expression.hasGroupByClause()) {
-								addPossibleChoice(HAVING);
+							if (!expression.hasWhereClause()) {
+								addPossibleProposal(GROUP_BY);
 
-								if (!expression.hasHavingClause() && (expression instanceof SelectStatement)) {
-									addPossibleChoice(ORDER_BY);
+								if (!expression.hasGroupByClause()) {
+									addPossibleProposal(HAVING);
+
+									if (!expression.hasHavingClause() && (expression instanceof SelectStatement)) {
+										addPossibleProposal(ORDER_BY);
+									}
+								}
+							}
+						}
+						else if (isAppendableToCollection(fromClause)) {
+
+							boolean skip = false;
+
+							if (wordParser.endsWith(position, "GROUP") ||
+							    wordParser.endsWith(position, "GROUP B")) {
+
+								skip = true;
+
+								if (!expression.hasWhereClause()) {
+									proposals.addIdentifier(GROUP_BY);
+								}
+							}
+							else if (wordParser.endsWith(position, "ORDER") ||
+							         wordParser.endsWith(position, "ORDER B")) {
+
+								skip = true;
+
+								if (!expression.hasWhereClause()  &&
+									 !expression.hasHavingClause() && (expression instanceof SelectStatement)) {
+
+									proposals.addIdentifier(ORDER_BY);
+								}
+							}
+
+							if (!skip) {
+								addPossibleProposal(WHERE);
+
+								if (!expression.hasWhereClause()) {
+									addPossibleProposal(GROUP_BY);
+
+									if (!expression.hasGroupByClause()) {
+										addPossibleProposal(HAVING);
+
+										if (!expression.hasHavingClause() && (expression instanceof SelectStatement)) {
+											addPossibleProposal(ORDER_BY);
+										}
+									}
 								}
 							}
 						}
@@ -2979,17 +3496,17 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 						virtualSpaces.pop();
 
 						// Now add the following clause identifiers
-						if (isExpressionComplete(fromClause.getDeclaration())) {
-							addPossibleChoice(WHERE);
+						if (isComplete(fromClause.getDeclaration())) {
+							addPossibleProposal(WHERE);
 
 							if (!expression.hasWhereClause()) {
-								addPossibleChoice(GROUP_BY);
+								addPossibleProposal(GROUP_BY);
 
 								if (!expression.hasGroupByClause()) {
-									addPossibleChoice(HAVING);
+									addPossibleProposal(HAVING);
 
 									if (!expression.hasHavingClause() && (expression instanceof SelectStatement)) {
-										addPossibleChoice(ORDER_BY);
+										addPossibleProposal(ORDER_BY);
 									}
 								}
 							}
@@ -3014,19 +3531,19 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					if (position == length) {
 
 						if (expression.hasSpaceAfterFrom() &&
-						    isExpressionComplete(fromClause.getDeclaration())) {
+						    isComplete(fromClause.getDeclaration())) {
 
-							addPossibleChoice(WHERE);
+							addPossibleProposal(WHERE);
 
 							// Now add the following clause identifiers
 							if (!expression.hasWhereClause()) {
-								addPossibleChoice(GROUP_BY);
+								addPossibleProposal(GROUP_BY);
 
 								if (!expression.hasGroupByClause()) {
-									addPossibleChoice(HAVING);
+									addPossibleProposal(HAVING);
 
 									if (!expression.hasHavingClause() && (expression instanceof SelectStatement)) {
-										addPossibleChoice(ORDER_BY);
+										addPossibleProposal(ORDER_BY);
 									}
 								}
 							}
@@ -3048,16 +3565,16 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					int whereClauseLength = length(whereClause);
 					length += whereClauseLength;
 
-					// At the end of the WHERE clause, check for adding choices based
+					// At the end of the WHERE clause, check for adding proposals based
 					// on possible incomplete information
 					if ((position == length) && isAppendable(whereClause)) {
-						addPossibleChoice(GROUP_BY);
+						addPossibleProposal(GROUP_BY);
 
 						if (!expression.hasGroupByClause()) {
-							addPossibleChoice(HAVING);
+							addPossibleProposal(HAVING);
 
 							if (!expression.hasHavingClause() && (expression instanceof SelectStatement)) {
-								addPossibleChoice(ORDER_BY);
+								addPossibleProposal(ORDER_BY);
 							}
 						}
 					}
@@ -3073,14 +3590,14 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 						virtualSpaces.pop();
 
 						// Now add the following clause identifiers
-						if (isExpressionComplete(whereClause.getConditionalExpression())) {
-							addPossibleChoice(GROUP_BY);
+						if (isConditionalExpressionComplete(whereClause.getConditionalExpression())) {
+							addPossibleProposal(GROUP_BY);
 
 							if (!expression.hasGroupByClause()) {
-								addPossibleChoice(HAVING);
+								addPossibleProposal(HAVING);
 
 								if (!expression.hasHavingClause() && (expression instanceof SelectStatement)) {
-									addPossibleChoice(ORDER_BY);
+									addPossibleProposal(ORDER_BY);
 								}
 							}
 						}
@@ -3105,16 +3622,16 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				if (position == length) {
 
 					if (expression.hasSpaceAfterWhere() &&
-					    isExpressionComplete(whereClause.getConditionalExpression())) {
+					    isConditionalExpressionComplete(whereClause.getConditionalExpression())) {
 
-						addPossibleChoice(GROUP_BY);
+						addPossibleProposal(GROUP_BY);
 
 						// Now add the following clause identifiers
 						if (!expression.hasGroupByClause()) {
-							addPossibleChoice(HAVING);
+							addPossibleProposal(HAVING);
 
 							if (!expression.hasHavingClause() && (expression instanceof SelectStatement)) {
-								addPossibleChoice(ORDER_BY);
+								addPossibleProposal(ORDER_BY);
 							}
 						}
 					}
@@ -3134,13 +3651,13 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					int groupByClauseLength = length(groupByClause);
 					length += groupByClauseLength;
 
-					// At the end of the GROUP BY clause, check for adding choices based
+					// At the end of the GROUP BY clause, check for adding proposals based
 					// on possible incomplete information
 					if ((position == length) && isAppendable(groupByClause)) {
-						addPossibleChoice(HAVING);
+						addPossibleProposal(HAVING);
 
 						if (!expression.hasHavingClause() && (expression instanceof SelectStatement)) {
-							addPossibleChoice(ORDER_BY);
+							addPossibleProposal(ORDER_BY);
 						}
 					}
 					// Right after the GROUP BY clause, the space is owned by the select statement
@@ -3155,11 +3672,11 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 						virtualSpaces.pop();
 
 						// Now add the following clause identifiers
-						if (isExpressionComplete(groupByClause.getGroupByItems())) {
-							addPossibleChoice(HAVING);
+						if (isGroupByComplete(groupByClause.getGroupByItems())) {
+							addPossibleProposal(HAVING);
 
 							if (!expression.hasHavingClause()) {
-								addPossibleChoice(ORDER_BY);
+								addPossibleProposal(ORDER_BY);
 							}
 						}
 					}
@@ -3183,13 +3700,13 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				if (position == length) {
 
 					if (expression.hasSpaceAfterGroupBy() &&
-					    isExpressionComplete(groupByClause.getGroupByItems())) {
+					    isGroupByComplete(groupByClause.getGroupByItems())) {
 
 						// Now add the following clause identifiers
-						addPossibleChoice(HAVING);
+						addPossibleProposal(HAVING);
 
 						if (!expression.hasHavingClause() && (expression instanceof SelectStatement)) {
-							addPossibleChoice(ORDER_BY);
+							addPossibleProposal(ORDER_BY);
 						}
 					}
 
@@ -3212,10 +3729,10 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					// Right after the HAVING clause, the space is owned by the select statement
 					if (expression instanceof SelectStatement) {
 
-						// At the end of the HAVING clause, check for adding choices based
+						// At the end of the HAVING clause, check for adding proposals based
 						// on possible incomplete information
 						if ((position == length) && isAppendable(havingClause)) {
-							addPossibleChoice(ORDER_BY);
+							addPossibleProposal(ORDER_BY);
 						}
 						// Right after the HAVING clause, the space is owned by the select statement
 						else if ((position == length + SPACE_LENGTH) && ((SelectStatement) expression).hasSpaceBeforeOrderBy()) {
@@ -3229,8 +3746,8 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 							virtualSpaces.pop();
 
 							// Now add the following clause identifiers
-							if (isExpressionComplete(havingClause.getConditionalExpression())) {
-								addPossibleChoice(ORDER_BY);
+							if (isConditionalExpressionComplete(havingClause.getConditionalExpression())) {
+								addPossibleProposal(ORDER_BY);
 							}
 						}
 					}
@@ -3260,9 +3777,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 					if (position == length) {
 
 						if (selectStatement.hasSpaceBeforeOrderBy() &&
-						    isExpressionComplete(havingClause.getConditionalExpression())) {
+						    isConditionalExpressionComplete(havingClause.getConditionalExpression())) {
 
-							addPossibleChoice(ORDER_BY);
+							addPossibleProposal(ORDER_BY);
 						}
 
 						return;
@@ -3301,7 +3818,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	/**
-	 * Adds the possible choices for the given {@link AbstractSingleEncapsulatedExpression expression}
+	 * Adds the possible proposals for the given {@link AbstractSingleEncapsulatedExpression expression}
 	 * based on the location of the cursor and the content of the expression.
 	 *
 	 * @param expression The {@link AbstractSingleEncapsulatedExpression expression} being visited
@@ -3318,7 +3835,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	/**
-	 * Adds the possible choices for the given {@link AbstractSingleEncapsulatedExpression expression}
+	 * Adds the possible proposals for the given {@link AbstractSingleEncapsulatedExpression expression}
 	 * based on the location of the cursor and the content of the expression.
 	 *
 	 * @param expression The {@link AbstractSingleEncapsulatedExpression expression} being visited
@@ -3339,7 +3856,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 			// Within the identifier
 			if (isPositionWithin(position, actualIdentifier)) {
-				items.addIdentifier(identifier);
+				proposals.addIdentifier(identifier);
 			}
 			// Right after "<identifier>("
 			else if (expression.hasLeftParenthesis()) {
@@ -3350,7 +3867,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 
 					addIdentificationVariables(identificationVariableType, expression);
 
-					JPQLQueryBNF queryBNF = expression.encapsulatedExpressionBNF();
+					String queryBNF = expression.encapsulatedExpressionBNF();
 					addAllPossibleFunctions(queryBNF);
 					addAllPossibleClauses(queryBNF);
 				}
@@ -3402,9 +3919,9 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		if (position == length) {
 
 			if (expression.hasSpaceAfterUpdateClause() &&
-			    isExpressionComplete(updateClause.getUpdateItems())) {
+			    isComplete(updateClause.getUpdateItems())) {
 
-				addPossibleChoice(WHERE);
+				addPossibleProposal(WHERE);
 			}
 
 			return;
@@ -3560,23 +4077,23 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 	}
 
 	/**
-	 * This helper is responsible to add the choices
+	 * This helper is responsible to add the proposals
 	 */
 	private interface ClauseHelper<T extends Expression> {
 
 		/**
 		 * Adds
 		 *
-		 * @param expression The clause for which choices can be added after the expression
+		 * @param expression The clause for which proposals can be added after the expression
 		 */
 		void addAtTheEndOfExpression(T expression);
 
 		/**
-		 * Adds the possible choices.
+		 * Adds the possible proposals.
 		 *
-		 * @param expression The clause for which choices can be added
+		 * @param expression The clause for which proposals can be added
 		 */
-		void addChoices(T expression);
+		void addProposals(T expression);
 
 		/**
 		 * Returns the expression from the given clause.
@@ -3607,13 +4124,15 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		 * @param expression
 		 * @param index
 		 */
-		void addChoices(T expression, int index);
+		void addProposals(T expression, int index);
 
 		/**
-		 * Creates
+		 * Either returns the given {@link Expression}'s child, which is already a {@link CollectionExpression}
+		 * or requests this helper to return a "virtual" {@link CollectionExpression} that is wrapping
+		 * the single element.
 		 *
-		 * @param expression
-		 * @return
+		 * @param expression The parent of the children to retrieve
+		 * @return The given expression's child or a "virtual" one
 		 */
 		CollectionExpression buildCollectionExpression(T expression);
 
@@ -3668,6 +4187,228 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
+	private class CompoundExpressionHelper extends AnonymousExpressionVisitor {
+
+		private Expression leftExpression;
+		private LogicalExpression logicalExpression;
+		private Expression rightExpression;
+
+		void dispose() {
+			leftExpression    = null;
+			rightExpression   = null;
+			logicalExpression = null;
+		}
+
+		boolean hasIdentifier() {
+			if (logicalExpression != null) {
+				return true;
+			}
+			return false;
+		}
+
+		boolean hasNext() {
+			return rightExpression != null;
+		}
+
+		int identifierLength() {
+			if (logicalExpression != null) {
+				int length = logicalExpression.getIdentifier().length();
+				length += logicalExpression.hasLeftExpression()       ? 1 : 0;
+				length += logicalExpression.hasSpaceAfterIdentifier() ? 1 : 0;
+				return length;
+			}
+			return 0;
+		}
+
+		boolean isCompoundable() {
+			return isComplete(leftExpression);
+		}
+
+		int length() {
+			if (leftExpression != null) {
+				return ContentAssistVisitor.this.length(leftExpression);
+			}
+			return 0;
+		}
+
+		void next() {
+			rightExpression.accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AndExpression expression) {
+			visitLogicalExpression(expression);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(Expression expression) {
+			this.leftExpression = expression;
+			this.rightExpression = null;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(OrExpression expression) {
+			visitLogicalExpression(expression);
+		}
+
+		private void visitLogicalExpression(LogicalExpression expression) {
+
+			this.logicalExpression = expression;
+
+			if (expression.hasLeftExpression()) {
+				this.leftExpression = expression.getLeftExpression();
+			}
+			else {
+				this.leftExpression = null;
+			}
+
+			if (expression.hasRightExpression()) {
+				this.rightExpression = expression.getRightExpression();
+			}
+			else {
+				this.rightExpression = null;
+			}
+		}
+	}
+
+	/**
+	 * This visitor checks to see if the conditional expression is complete or not. To be complete,
+	 * the expression's ending has to be complete.
+	 * <p>
+	 * For instance:<br>
+	 * "<code>WHERE e.name</code>" is not complete because <code>e.name</code> is not one of the
+	 * possible expressions allowed in a conditional expression.<br>
+	 * "<code>HAVING e.age BETWEEN 5 AND 18</code>" is complete.<br>
+	 * "<code>HAVING e.age BETWEEN 5 AND</code>" is not complete.
+	 */
+	private class ConditionalExpressionCompletenessVisitor extends CompletenessVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AndExpression expression) {
+			complete = expression.hasRightExpression();
+			if (complete) {
+				complete = isComplete(expression.getRightExpression());
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(BetweenExpression expression) {
+			complete = expression.hasUpperBoundExpression();
+			if (complete) {
+				complete = isComplete(expression.getUpperBoundExpression());
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionMemberExpression expression) {
+			complete = expression.hasCollectionValuedPathExpression();
+			if (complete) {
+				complete = isComplete(expression.getCollectionValuedPathExpression());
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ComparisonExpression expression) {
+			complete = expression.hasRightExpression();
+			if (complete) {
+				complete = isComplete(expression.getRightExpression());
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(EmptyCollectionComparisonExpression expression) {
+			complete = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ExistsExpression expression) {
+			complete = expression.hasRightParenthesis();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(InExpression expression) {
+			complete = expression.hasInItems();
+			if (complete) {
+				complete = isComplete(expression.getInItems());
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(LikeExpression expression) {
+			complete = isComplete(expression);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(NullComparisonExpression expression) {
+			complete = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(OrExpression expression) {
+			complete = expression.hasRightExpression();
+			if (complete) {
+				complete = isComplete(expression.getRightExpression());
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubExpression expression) {
+			// It is the first conditional expression, make sure it is a valid conditional expression
+			if (!complete) {
+				complete = expression.hasRightParenthesis();
+				if (complete) {
+					expression.getExpression().accept(this);
+				}
+			}
+			// It is not the first conditional expression, simply make sure it has ')'
+			else {
+				complete = expression.hasRightParenthesis();
+			}
+		}
+	}
+
 	private class ConstrutorCollectionHelper implements CollectionExpressionHelper<ConstructorExpression> {
 
 		/**
@@ -3680,7 +4421,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(ConstructorExpression expression, int index) {
+		public void addProposals(ConstructorExpression expression, int index) {
 			addIdentificationVariables(IdentificationVariableType.ALL, expression);
 			addAllPossibleFunctions(ConstructorItemBNF.ID);
 		}
@@ -3728,6 +4469,19 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
+	/**
+	 * The default implementation of {@link PropertyCollector}, which returns no proposals.
+	 */
+	private static class DefaultMappingCollector implements PropertyCollector {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public Collection<IMapping> buildProposals() {
+			return Collections.emptyList();
+		}
+	}
+
 	private class DeleteClauseHelper implements ClauseHelper<DeleteClause> {
 
 		/**
@@ -3740,7 +4494,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(DeleteClause expression) {
+		public void addProposals(DeleteClause expression) {
 			addAbstractSchemaTypes();
 		}
 
@@ -3769,7 +4523,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(AbstractDoubleEncapsulatedExpression expression, int index) {
+		public void addProposals(AbstractDoubleEncapsulatedExpression expression, int index) {
 			addAllIdentificationVariables(expression);
 			addAllPossibleFunctions(queryBNF(expression, index));
 		}
@@ -3811,18 +4565,129 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
-	private class EntityVisitor implements IManagedTypeVisitor {
-	
-		private IEntity entity;
+	/**
+	 * This visitor retrieves the permitted type from the path expression's parent. For instance, SUM
+	 * or AVG only accepts state fields that have a numeric type.
+	 */
+	private class ExpressionTypeVisitor extends AbstractExpressionVisitor {
 
-		public void visit(IEmbeddable embeddable) {
+		/**
+		 * The type that is retrieved based on the expression, it determines what is acceptable.
+		 */
+		private IType type;
+
+		/**
+		 * Creates a new <code>ExpressionTypeVisitor</code>.
+		 */
+		ExpressionTypeVisitor() {
+			super();
+			type = getTypeHelper().objectType();
 		}
 
-		public void visit(IEntity entity) {
-			this.entity = entity;
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AvgFunction expression) {
+			type = getType(Number.class);
 		}
 
-		public void visit(IMappedSuperclass mappedSuperclass) {
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionExpression expression) {
+			expression.getParent().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SumFunction expression) {
+			type = getType(Number.class);
+		}
+	}
+
+	/**
+	 * This {@link PropertyCollector} returns the possible mappings (non-collection type or
+	 * collection type) from a managed type.
+	 */
+	private class FilteringPropertyCollector implements PropertyCollector {
+
+		/**
+		 * The {@link Filter} used to filter out either the collection type properties or the non-
+		 * collection type properties.
+		 */
+		private final Filter<IMapping> filter;
+
+		/**
+		 * This resolver is used to retrieve the managed type, which is the parent path of this one.
+		 */
+		private final Resolver resolver;
+
+		/**
+		 * The suffix is used to determine if the property name needs to be filtered out or not.
+		 */
+		private final String suffix;
+
+		/**
+		 * Creates a new <code>FilteringPropertyCollector</code>.
+		 *
+		 * @param resolver This resolver is used to retrieve the managed type, which is the parent
+		 * path of this one
+		 * @param filter The filter used to filter out either the collection type properties or the
+		 * non-collection type properties
+		 * @param suffix The suffix is used to determine if the property name needs to be filtered out
+		 * or not
+		 */
+		FilteringPropertyCollector(Resolver resolver, Filter<IMapping> filter, String suffix) {
+			super();
+			this.filter   = filter;
+			this.suffix   = suffix;
+			this.resolver = resolver;
+		}
+
+		private void addFilteredMappings(IManagedType managedType, List<IMapping> mappings) {
+
+			Filter<IMapping> filter = buildFilter(suffix);
+
+			for (IMapping mapping : managedType.mappings()) {
+				if (filter.accept(mapping)) {
+					mappings.add(mapping);
+				}
+			}
+		}
+
+		private Filter<IMapping> buildFilter(String suffix) {
+			if (suffix.length() == 0) {
+				return filter;
+			}
+			return new AndFilter<IMapping>(filter, buildMappingNameFilter(suffix));
+		}
+
+		private Filter<IMapping> buildMappingNameFilter(final String suffix) {
+			return new Filter<IMapping>() {
+				public boolean accept(IMapping mapping) {
+					return mapping.getName().startsWith(suffix);
+				}
+			};
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public Collection<IMapping> buildProposals() {
+
+			IManagedType managedType = resolver.getManagedType();
+
+			if (managedType == null) {
+				return Collections.emptyList();
+			}
+
+			ArrayList<IMapping> mappings = new ArrayList<IMapping>();
+			addFilteredMappings(managedType, mappings);
+			return mappings;
 		}
 	}
 
@@ -3838,10 +4703,10 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(AbstractFromClause expression, int index) {
+		public void addProposals(AbstractFromClause expression, int index) {
 			addAbstractSchemaTypes();
 			if (index > 0) {
-				addPossibleChoice(IN);
+				addPossibleProposal(IN);
 			}
 		}
 
@@ -3897,7 +4762,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(AbstractFromClause expression) {
+		public void addProposals(AbstractFromClause expression) {
 
 			addAbstractSchemaTypes();
 
@@ -3927,7 +4792,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(GroupByClause expression, int index) {
+		public void addProposals(GroupByClause expression, int index) {
 			addAllIdentificationVariables(expression);
 		}
 
@@ -3983,7 +4848,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(HavingClause expression) {
+		public void addProposals(HavingClause expression) {
 			addAllIdentificationVariables(expression);
 			addAllPossibleFunctions(ConditionalExpressionBNF.ID);
 		}
@@ -3993,262 +4858,6 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		 */
 		public Expression getClauseExpression(HavingClause expression) {
 			return expression.getConditionalExpression();
-		}
-	}
-
-	private class IdentificationVariableFinder extends AbstractTraverseChildrenVisitor {
-
-		/**
-		 *
-		 */
-		private boolean collectResultVariable;
-
-		/**
-		 *
-		 */
-		boolean complete;
-
-		/**
-		 * The expression used to stop gathering the identification variables, which is only used if
-		 * the type is {@link IdentificationVariableType#LEFT} or {@link IdentificationVariableType#
-		 * LEFT_RANGE}.
-		 */
-		private final Expression expression;
-
-		/**
-		 * The identification variable names defined in the declaration expression.
-		 */
-		private final Set<String> identificationVariables;
-
-		/**
-		 * The identification variable names mapped to their abstract schema names.
-		 */
-		private final Map<String, String> rangeIdentificationVariables;
-
-		/**
-		 * The type of identification variables to retrieve, which helps to filter out those from a
-		 * different declaration.
-		 */
-		private final IdentificationVariableType type;
-
-		/**
-		 * Creates a new <code>IdentificationVariableFinder</code>.
-		 *
-		 * @param type The type of identification variables to retrieve, which helps to filter out
-		 * those from a different declaration
-		 * @param expression The expression used to stop gathering the identification variables, which
-		 * is only used if the type is {@link IdentificationVariableType#LEFT} or
-		 * {@link IdentificationVariableType#LEFT_RANGE}
-		 */
-		IdentificationVariableFinder(IdentificationVariableType type, Expression expression) {
-			super();
-			this.type                         = type;
-			this.expression                   = expression;
-			this.identificationVariables      = new HashSet<String>();
-			this.rangeIdentificationVariables = new HashMap<String, String>();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionExpression expression) {
-			for (Iterator<Expression> iter = expression.children(); iter.hasNext(); ) {
-				Expression child = iter.next();
-				if (!complete) {
-					child.accept(this);
-				}
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionMemberDeclaration expression) {
-
-			if (expression.isAncestor(this.expression) &&
-			   (type == IdentificationVariableType.LEFT ||
-			    type == IdentificationVariableType.LEFT_COLLECTION)) {
-
-				complete = true;
-			}
-			else {
-				String variableName = queryContext.variableName(
-					expression.getIdentificationVariable(),
-					VariableNameType.IDENTIFICATION_VARIABLE
-				);
-
-				if (ExpressionTools.stringIsNotEmpty(variableName)) {
-					identificationVariables.add(variableName);
-				}
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DeleteClause expression) {
-			expression.getRangeVariableDeclaration().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DeleteStatement expression) {
-			expression.getDeleteClause().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(FromClause expression) {
-			expression.getDeclaration().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
-			if (collectResultVariable) {
-				String variable = expression.getText();
-				if (ExpressionTools.stringIsNotEmpty(variable)) {
-					identificationVariables.add(variable);
-				}
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariableDeclaration expression) {
-
-			if (this.expression != expression) {
-				expression.getRangeVariableDeclaration().accept(this);
-				expression.getJoins().accept(this);
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(Join expression) {
-
-			if (this.expression == expression &&
-			    type != IdentificationVariableType.ALL) {
-
-				complete = true;
-			}
-			else {
-				String variableName = queryContext.variableName(
-					expression.getIdentificationVariable(),
-					VariableNameType.IDENTIFICATION_VARIABLE
-				);
-
-				if (ExpressionTools.stringIsNotEmpty(variableName)) {
-					identificationVariables.add(variableName);
-				}
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JPQLExpression expression) {
-			expression.getQueryStatement().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(RangeVariableDeclaration expression) {
-
-			if (type == IdentificationVariableType.ALL ||
-			    type == IdentificationVariableType.LEFT) {
-
-				String variableName = queryContext.variableName(
-					expression.getIdentificationVariable(),
-					VariableNameType.IDENTIFICATION_VARIABLE
-				);
-
-				if (ExpressionTools.stringIsNotEmpty(variableName)) {
-					identificationVariables.add(variableName);
-
-					String abstractSchemaName = queryContext.variableName(
-						expression.getAbstractSchemaName(),
-						VariableNameType.ABSTRACT_SCHEMA_NAME
-					);
-
-					if (ExpressionTools.stringIsNotEmpty(abstractSchemaName)) {
-						rangeIdentificationVariables.put(variableName, abstractSchemaName);
-					}
-				}
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ResultVariable expression) {
-			if (expression.hasResultVariable()) {
-				collectResultVariable = true;
-				expression.getResultVariable().accept(this);
-				collectResultVariable = true;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SelectStatement expression) {
-			if (type == IdentificationVariableType.RESULT_VARIABLE) {
-				expression.getSelectClause().accept(this);
-			}
-			else {
-				expression.getFromClause().accept(this);
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SimpleFromClause expression) {
-			expression.getDeclaration().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SimpleSelectStatement expression) {
-			expression.getFromClause().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateClause expression) {
-			expression.getRangeVariableDeclaration().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateStatement expression) {
-			expression.getUpdateClause().accept(this);
 		}
 	}
 
@@ -4294,6 +4903,101 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		RESULT_VARIABLE
 	}
 
+	private class IncompleteCollectionExpressionVisitor extends CompletenessVisitor {
+
+		/**
+		 * This flag is used to make sure only the last expression in a collection is tested. A single
+		 * expression cannot be used to check the "completeness".
+		 */
+		private boolean insideCollection;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionExpression expression) {
+
+			int lastIndex = expression.childrenSize() - 1;
+			insideCollection = true;
+
+			if (!expression.hasComma(lastIndex - 1)) {
+				expression.getChild(lastIndex).accept(this);
+			}
+
+			insideCollection = false;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(FromClause expression) {
+			expression.getDeclaration().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(GroupByClause expression) {
+			expression.getGroupByItems().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(HavingClause expression) {
+			expression.getConditionalExpression().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariable expression) {
+			complete = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariableDeclaration expression) {
+			if (insideCollection && !expression.hasJoins()) {
+				expression.getRangeVariableDeclaration().accept(this);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(RangeVariableDeclaration expression) {
+
+			if (insideCollection) {
+
+				// The abstract schema name could be "GROUP" or "ORDER" and as the last declaration,
+				// GROUP BY and ORDER BY becomes valid proposals
+				complete = !expression.hasAs() && !expression.hasIdentificationVariable();
+
+				// Special cases
+				if (!complete) {
+					complete = expression.toParsedText().equalsIgnoreCase("GROUP B") ||
+					           expression.toParsedText().equalsIgnoreCase("ORDER B");
+				}
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(WhereClause expression) {
+			expression.getConditionalExpression().accept(this);
+		}
+	}
+
 	private class JoinCollectionHelper implements CollectionExpressionHelper<IdentificationVariableDeclaration> {
 
 		/**
@@ -4307,7 +5011,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(IdentificationVariableDeclaration expression, int index) {
+		public void addProposals(IdentificationVariableDeclaration expression, int index) {
 			addJoinIdentifiers();
 		}
 
@@ -4351,20 +5055,109 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
+	private static class ManagedTypeVisitor implements IManagedTypeVisitor {
+
+		/**
+		 * The {@link IManagedType} that was visited if the type is the same than the object.
+		 */
+		private IManagedType managedType;
+
+		/**
+		 * Determines whether the {@link IManagedType} to visit can be retrieved or ignored.
+		 */
+		private Type type;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(IEmbeddable embeddable) {
+			if (type == Type.EMBEDDABLE) {
+				this.managedType = embeddable;
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(IEntity entity) {
+			if (type == Type.ENTITY) {
+				this.managedType = entity;
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(IMappedSuperclass mappedSuperclass) {
+			if (type == Type.MAPPED_SUPERCLASS) {
+				this.managedType = mappedSuperclass;
+			}
+		}
+
+		/**
+		 * Determines if the {@link IManagedType} visited can be retrieved or ignored.
+		 */
+		enum Type {
+			EMBEDDABLE,
+			ENTITY,
+			MAPPED_SUPERCLASS
+		}
+	}
+
+	/**
+	 * This {@link Filter} is responsible to filter out the mappings that can't have their type
+	 * assignable to the one passed in.
+	 */
+	private class MappingTypeFilter implements Filter<IMapping> {
+
+		/**
+		 * The type used to determine if the mapping's type is a valid type.
+		 */
+		private final IType type;
+
+		/**
+		 * Creates a new <code>MappingTypeFilter</code>.
+		 *
+		 * @param type The type used to determine if the mapping's type is a valid type
+		 */
+		MappingTypeFilter(IType type) {
+			super();
+			this.type = type;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean accept(IMapping value) {
+
+			// A reference mapping always can be used for further traversal
+			if (MappingTypeHelper.isRelationshipMapping(value) &&
+			   !MappingTypeHelper.isCollectionMapping(value)) {
+
+				return true;
+			}
+
+			// Determine if it's assignable to the desired type
+			IType mappingType = value.getType();
+			mappingType = getTypeHelper().convertPrimitive(mappingType);
+			return mappingType.isAssignableTo(type);
+		}
+	}
+
 	private class OrderByClauseCollectionHelper implements CollectionExpressionHelper<OrderByClause> {
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addAtTheEndOfChild(OrderByClause expression, Expression child, int index) {
-			addPossibleChoice(ASC);
-			addPossibleChoice(DESC);
+			addPossibleProposal(ASC);
+			addPossibleProposal(DESC);
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(OrderByClause expression, int index) {
+		public void addProposals(OrderByClause expression, int index) {
 			addAllIdentificationVariables(expression);
 			addResultVariables(expression);
 		}
@@ -4407,6 +5200,82 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		public JPQLQueryBNF queryBNF(OrderByClause expression, int index) {
 			return AbstractExpression.queryBNF(OrderByItemBNF.ID);
 		}
+	}
+
+	/**
+	 * This helper completes the behavior for retrieving the possible choices for a given path
+	 * expression.
+	 */
+	private static interface PathExpressionHelper extends Filter<IMapping> {
+
+		/**
+		 * Creates the {@link Resolver} that can resolve the type of the given path.
+		 *
+		 * @param parent The parent visitor is used to retrieve the type from where the property
+		 * should be retrieved
+		 * @param path A single path to resolve
+		 * @return The {@link Resolver} responsible to return the type for the given path
+		 */
+		Resolver buildResolver(Resolver parent, String path);
+	}
+
+	/**
+	 * This visitor is responsible to create the right {@link PathExpressionHelper} based on the type
+	 * of the expression.
+	 */
+	private class PathExpressionHelperBuilder extends AbstractTraverseParentVisitor {
+
+		/**
+		 * The helper used to complete the resolution of the path expression.
+		 */
+		PathExpressionHelper helper;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionMemberDeclaration expression) {
+			helper = buildCollectionPathHelper();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+			helper = buildCollectionPathHelper();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(Join expression) {
+			helper = buildSingledValuedObjectFieldPathHelper();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(JPQLExpression expression) {
+			helper = buildPropertyPathHelper();
+		}
+	}
+
+	/**
+	 * A collector is responsible to retrieve the possible proposals by using the mappings that can
+	 * complete a path expression.
+	 */
+	private static interface PropertyCollector {
+
+		/**
+		 * Retrieves the possible proposals that can be used to complete a path expression based on
+		 * the position of the cursor.
+		 *
+		 * @return The possible proposals
+		 */
+		Collection<IMapping> buildProposals();
 	}
 
 	private class RangeVariableDeclarationVisitor extends AbstractExpressionVisitor {
@@ -4535,7 +5404,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 				complete = false;
 			}
 			else {
-				int length = expression.toParsedText(positionInCollections.peek()).length();
+				int length = expression.toActualText(positionInCollections.peek()).length();
 
 				// The position is at the beginning of the child expression, that means
 				// it's complete because we don't have to verify the child expression
@@ -4581,7 +5450,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		public void visit(DateTime expression) {
 			// Always complete if CURRENT_DATE, CURRENT_TIME, CURRENT_TIMESTAMP
 			// or if the JDBC escape syntax ends with '}'
-			complete = expression.isJDBCDate() ? expression.toParsedText().endsWith("}") : true;
+			complete = expression.isJDBCDate() ? expression.toActualText().endsWith("}") : true;
 		}
 
 		/**
@@ -5052,7 +5921,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		@Override
 		public void visit(DateTime expression) {
 			if (expression.isJDBCDate()) {
-				complete = expression.toParsedText().endsWith("}");
+				complete = expression.toActualText().endsWith("}");
 			}
 			else {
 				complete = true;
@@ -5506,7 +6375,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(AbstractTripleEncapsulatedExpression expression, int index) {
+		public void addProposals(AbstractTripleEncapsulatedExpression expression, int index) {
 			addAllIdentificationVariables(expression);
 			addAllPossibleFunctions(queryBNF(expression, index));
 		}
@@ -5560,7 +6429,7 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(UpdateClause expression, int index) {
+		public void addProposals(UpdateClause expression, int index) {
 			addAllIdentificationVariables(expression);
 		}
 
@@ -5609,20 +6478,80 @@ public final class ContentAssistVisitor extends AbstractTraverseParentVisitor {
 		}
 	}
 
+	/**
+	 * This visitor is meant to adjust the corrections stack when traversing an {@link Expression} in
+	 * order to increase the list of valid proposals.
+	 * <p>
+	 * For instance, if the query is "<code>SELECT e FROM Employee e WHERE IN</code>" and the cursor
+	 * is at the end of the query, then <code>IN</code> would be parsed with {@link InExpression}.
+	 * However, due to how {@link ContentAssistVisitor} works, the identifier <code>INDEX</code>
+	 * is not added as a valid proposal. This visitor adds that functionality.
+	 */
+	private class VisitParentVisitor extends AnonymousExpressionVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		protected void visit(Expression expression) {
+			expression.getParent().accept(ContentAssistVisitor.this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(InExpression expression) {
+
+			int position = position(expression) - corrections.peek();
+			int length = 0;
+
+			if (expression.hasExpression()) {
+				length += length(expression.getExpression()) + SPACE_LENGTH;
+			}
+
+			// Within "IN"
+			if (isPositionWithin(position, length, expression.getIdentifier())) {
+
+				boolean hasOnlyIdentifier = !expression.hasExpression() &&
+				                            !expression.hasInItems();
+
+				if (hasOnlyIdentifier) {
+					corrections.add(position(expression));
+				}
+
+				super.visit(expression);
+
+				if (hasOnlyIdentifier) {
+					corrections.pop();
+				}
+			}
+			else {
+				super.visit(expression);
+			}
+		}
+	}
+
 	private class WhereClauseHelper implements ClauseHelper<WhereClause> {
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addAtTheEndOfExpression(WhereClause expression) {
-			addAllPossibleAggregates(ConditionalExpressionBNF.ID);
-			addAllPossibleCompounds(ConditionalExpressionBNF.ID);
+
+//			if (isAggregatable(expression.getConditionalExpression())) {
+				addAllPossibleAggregates(ConditionalExpressionBNF.ID);
+//			}
+
+			if (isCompoundable(expression.getConditionalExpression())) {
+				addAllPossibleCompounds(ConditionalExpressionBNF.ID);
+			}
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addChoices(WhereClause expression) {
+		public void addProposals(WhereClause expression) {
 			addAllIdentificationVariables(expression);
 			addAllPossibleFunctions(ConditionalExpressionBNF.ID);
 		}

@@ -26,12 +26,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ConstructorItemBNF extends JPQLQueryBNF {
+public final class ConstructorItemBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "constructor_item";
+	public static final String ID = "constructor_item";
 
 	/**
 	 * Creates a new <code>ConstructorItemBNF</code>.
@@ -53,14 +53,14 @@ final class ConstructorItemBNF extends JPQLQueryBNF {
 	 */
 	@Override
 	String getFallbackExpressionFactoryId() {
-		return BasicLiteralExpressionFactory.ID;
+		return LiteralExpressionFactory.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleAggregate() {
+	public boolean handleAggregate() {
 		// In case the expression is invalid
 		return super.handleAggregate();
 	}
@@ -69,7 +69,7 @@ final class ConstructorItemBNF extends JPQLQueryBNF {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean handleCollection() {
+	public boolean handleCollection() {
 		return true;
 	}
 

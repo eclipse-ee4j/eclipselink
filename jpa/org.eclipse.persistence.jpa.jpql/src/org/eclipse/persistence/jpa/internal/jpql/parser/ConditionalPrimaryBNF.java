@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class ConditionalPrimaryBNF extends JPQLQueryBNF {
+public final class ConditionalPrimaryBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	static final String ID = "conditional_primary";
+	public static final String ID = "conditional_primary";
 
 	/**
 	 * Creates a new <code>ConditionalPrimaryBNF</code>.

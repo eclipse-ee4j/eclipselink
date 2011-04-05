@@ -50,9 +50,7 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.SubtractionExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.internal.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.UpdateItem;
-import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
-import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 
 /**
  * This visitor's responsibility is to find the type of an input parameter.
@@ -61,7 +59,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
  * @since 2.3
  * @author Pascal Filion
  */
-public final class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
+final class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 
 	/**
 	 * This is used to prevent an infinite loop between input parameters. Example: ":arg1 = :arg2".
@@ -83,12 +81,12 @@ public final class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 	/**
 	 * The {@link InputParameter} for which its type will be searched by visiting the query.
 	 */
-	private final InputParameter inputParameter;
+	private InputParameter inputParameter;
 
 	/**
-	 * The external form representing the JPQL query.
+	 * The context used to query information about the query.
 	 */
-	private final IQuery query;
+	private final JPQLQueryContext queryContext;
 
 	/**
 	 * The well defined type, which does not have to be calculated.
@@ -99,12 +97,21 @@ public final class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 	 * Creates a new <code>ParameterTypeVisitor</code>.
 	 *
 	 * @param query The external form representing the JPQL query
-	 * @param inputParameter The input parameter for which its type will be searched by visiting the query
 	 */
-	public ParameterTypeVisitor(IQuery query, InputParameter inputParameter) {
+	ParameterTypeVisitor(JPQLQueryContext queryContext) {
 		super();
-		this.query          = query;
-		this.inputParameter = inputParameter;
+		this.queryContext = queryContext;
+	}
+
+	/**
+	 * Disposes this visitor.
+	 */
+	void dispose() {
+		type              = null;
+		expression        = null;
+		ignoreType        = false;
+		inputParameter    = null;
+		currentExpression = null;
 	}
 
 	/**
@@ -114,11 +121,11 @@ public final class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 	 * found to have the closest type of the input parameter
 	 * @return Either the closed type or {@link Object} if it can't be determined
 	 */
-	public IType getType(TypeVisitor typeVisitor) {
+	IType getType() {
 
 		// The type should be ignored, use the special constant
 		if (ignoreType) {
-			return typeRepository().getType(IType.UNRESOLVABLE_TYPE);
+			return queryContext.getTypeHelper().unknownType();
 		}
 
 		// The calculation couldn't find an expression with a type
@@ -126,15 +133,10 @@ public final class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 			if (type == null) {
 				type = Object.class;
 			}
-			return typeRepository().getType(type);
+			return queryContext.getType(type);
 		}
 
-		expression.accept(typeVisitor);
-		return typeVisitor.getType();
-	}
-
-	private ITypeRepository typeRepository() {
-		return query.getProvider().getTypeRepository();
+		return queryContext.getType(expression);
 	}
 
 	/**
@@ -276,6 +278,7 @@ public final class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 	 */
 	@Override
 	public void visit(InputParameter expression) {
+		this.inputParameter = expression;
 		expression.getParent().accept(this);
 	}
 
@@ -428,14 +431,6 @@ public final class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SubtractionExpression expression) {
-		visitCompoundExpression(expression);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void visit(SubstringExpression expression) {
 
 		// The string primary is always a string
@@ -448,6 +443,14 @@ public final class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 
 			type = Integer.class;
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(SubtractionExpression expression) {
+		visitCompoundExpression(expression);
 	}
 
 	/**

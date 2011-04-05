@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * This {@link NullComparisonExpressionFactory} creates a new {@link
  * NullComparisonExpression} when the portion of the query to parse starts with

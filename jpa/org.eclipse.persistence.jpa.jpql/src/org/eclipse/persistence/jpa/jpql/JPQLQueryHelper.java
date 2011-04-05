@@ -15,8 +15,10 @@ package org.eclipse.persistence.jpa.jpql;
 
 import java.util.List;
 import org.eclipse.persistence.jpa.internal.jpql.AbstractJPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 
 /**
  * This helper can perform the following operations over a JPQL query:
@@ -36,31 +38,30 @@ import org.eclipse.persistence.jpa.jpql.spi.IType;
  * @since 2.3
  * @author Pascal Filion
  */
-public abstract class JPQLQueryHelper<T> extends AbstractJPQLQueryHelper<T> {
+public class JPQLQueryHelper extends AbstractJPQLQueryHelper {
 
 	/**
-	 * Creates a new <code>AbstractJPQLQueryHelper</code>.
-	 *
-	 * @param query The query object to wrap with the external form
-	 * @exception NullPointerException If the given query is <code>null</code>
+	 * Creates a new <code>JPQLQueryHelper</code>.
 	 */
-	protected JPQLQueryHelper(T query) {
-		super(query);
+	public JPQLQueryHelper() {
+		super();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ContentAssistItems buildContentAssistItems(int position) {
-		return super.buildContentAssistItems(position);
+	public ContentAssistProposals buildContentAssistProposals(int position) {
+		return super.buildContentAssistProposals(position);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected abstract IQuery buildQuery(T query);
+	public void dispose() {
+		super.dispose();
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -82,8 +83,59 @@ public abstract class JPQLQueryHelper<T> extends AbstractJPQLQueryHelper<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public IManagedTypeProvider getProvider() {
+		return super.getProvider();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IQuery getQuery() {
+		return super.getQuery();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public IType getResultType() {
 		return super.getResultType();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IType getType(Class<?> type) {
+		return super.getType(type);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public TypeHelper getTypeHelper() {
+		return super.getTypeHelper();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ITypeRepository getTypeRepository() {
+		return super.getTypeRepository();
+	}
+
+	/**
+	 * Sets the external form of the JPQL query, which will be parsed and information will be
+	 * extracted for later access.
+	 *
+	 * @param query The external form of the JPQL query
+	 */
+	@Override
+	public void setQuery(IQuery query) {
+		super.setQuery(query);
 	}
 
 	/**

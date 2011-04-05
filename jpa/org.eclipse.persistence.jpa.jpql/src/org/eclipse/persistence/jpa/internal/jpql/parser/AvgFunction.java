@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+
 /**
  * One of the aggregate functions. The arguments must be numeric. <b>AVG</b> returns <code>Double</code>.
  * <p>

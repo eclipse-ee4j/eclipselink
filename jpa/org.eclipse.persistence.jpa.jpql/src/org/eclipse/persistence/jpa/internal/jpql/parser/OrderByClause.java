@@ -16,12 +16,13 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
  * The <b>ORDER BY</b> clause allows the objects or values that are returned by the query to be
  * ordered.
  * <p>
- * <div nowrap><b>BNF:</b> <code>orderby_clause ::= ORDER BY {@link OrderByItem orderby_item} {, {@link OrderByItem orderby_item}}*</code><p>
+ * <div nowrap><b>BNF:</b> <code>orderby_clause ::= <b>ORDER BY</b> {@link OrderByItem orderby_item} {, {@link OrderByItem orderby_item}}*</code><p>
  *
  * @version 2.3
  * @since 2.3
@@ -88,9 +89,11 @@ public final class OrderByClause extends AbstractExpression {
 	}
 
 	/**
+	 * Creates a new {@link CollectionExpression} that will wrap the single order by item.
 	 *
+	 * @return The single order by item represented by a temporary collection
 	 */
-	CollectionExpression buildCollectionExpression() {
+	public CollectionExpression buildCollectionExpression() {
 
 		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
 		children.add((AbstractExpression) getOrderByItems());
@@ -120,7 +123,7 @@ public final class OrderByClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	JPQLQueryBNF getQueryBNF() {
+	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF(OrderByClauseBNF.ID);
 	}
 
@@ -163,7 +166,7 @@ public final class OrderByClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void toParsedText(StringBuilder writer) {
+	void toParsedText(StringBuilder writer, boolean includeVirtual) {
 
 		// 'ORDER BY'
 		writer.append(ORDER_BY);
@@ -174,7 +177,7 @@ public final class OrderByClause extends AbstractExpression {
 
 		// Order by items
 		if (orderByItems != null) {
-			orderByItems.toParsedText(writer);
+			orderByItems.toParsedText(writer, includeVirtual);
 		}
 	}
 }
