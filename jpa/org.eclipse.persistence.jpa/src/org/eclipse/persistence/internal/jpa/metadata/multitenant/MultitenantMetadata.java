@@ -12,6 +12,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.multitenant;
 
@@ -175,7 +177,14 @@ public class MultitenantMetadata extends ORMetadata {
                 
             // If we still don't have a tenant discriminator, default one.
             if (m_tenantDiscriminatorColumns.isEmpty()) {
-                m_tenantDiscriminatorColumns.add(new TenantDiscriminatorColumnMetadata(getProject()));
+                m_tenantDiscriminatorColumns.add(new TenantDiscriminatorColumnMetadata(descriptor.getClassAccessor()));
+            } else {
+                // For PU defaulted columns we must initialize them with our
+                // context.
+                for (TenantDiscriminatorColumnMetadata tenantDiscriminator : m_tenantDiscriminatorColumns) {
+                    tenantDiscriminator.setAccessibleObject(getAccessibleObject());
+                    tenantDiscriminator.setProject(getProject());
+                }
             }
         }
             

@@ -51,6 +51,8 @@
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -345,21 +347,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public String getName() {
         return m_name;
-    }
-    
-    /**
-     * INTERNAL:
-     * Helper method to return a field name from a candidate field name and a 
-     * default field name.
-     * 
-     * Requires the context from where this method is called to output the 
-     * correct logging message when defaulting the field name.
-     *
-     * In some cases, both the name and defaultName could be "" or null,
-     * therefore, don't log a message and return name.
-     */
-    protected String getName(String name, String defaultName, String context) {
-        return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getName(name, defaultName, context, getLogger(), getAnnotatedElementName());
     }
     
     /**
@@ -988,13 +975,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public void setDescriptor(MetadataDescriptor descriptor) {
         m_descriptor = descriptor;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setFieldName(DatabaseField field, String defaultName, String context) {
-        setFieldName(field, getName(field.getName(), defaultName, context));
     }
 
     /**

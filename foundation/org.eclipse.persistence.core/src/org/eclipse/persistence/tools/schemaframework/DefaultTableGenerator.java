@@ -12,6 +12,8 @@
  *     Sei Syvalta  - Bug 330237 - Tables are created in unspecified order (DDL creation)
  *     01/06/2011-2.3 Guy Pelletier
  *       - 312244: can't map optional one-to-one relationship using @PrimaryKeyJoinColumn
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -267,7 +269,7 @@ public class DefaultTableGenerator {
         for (DatabaseField dbField : descriptor.getFields()) {
             boolean isPKField = false;
 
-            //first check if the filed is a pk field in the default table.
+            //first check if the field is a pk field in the default table.
             isPKField = descriptor.getPrimaryKeyFields().contains(dbField);
 
             //then check if the field is a pk field in the secondary table(s), this is only applied to the multiple tables case.
@@ -276,6 +278,9 @@ public class DefaultTableGenerator {
             if (secondaryKeyMap != null) {
                 isPKField = isPKField || secondaryKeyMap.containsValue(dbField);
             }
+            
+            // Now check if it is a tenant discriminat column primary key field.
+            isPKField = isPKField || dbField.isPrimaryKey();
 
             //build or retrieve the field definition.
             FieldDefinition fieldDef = getFieldDefFromDBField(dbField);            

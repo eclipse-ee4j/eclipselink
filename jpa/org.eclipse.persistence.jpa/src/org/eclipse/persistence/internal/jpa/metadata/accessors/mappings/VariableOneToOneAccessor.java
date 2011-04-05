@@ -30,6 +30,8 @@
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -264,9 +266,9 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
 
         // Process the discriminator column.
         if (m_discriminatorColumn == null) {
-            mapping.setTypeField(new DiscriminatorColumnMetadata(this).process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN));
+            mapping.setTypeField(new DiscriminatorColumnMetadata(this).process(getDescriptor(), MetadataLogger.VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN));
         } else {
-            mapping.setTypeField(m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN));
+            mapping.setTypeField(m_discriminatorColumn.process(getDescriptor(), MetadataLogger.VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN));
         }
         
         // Process the discriminator classes.

@@ -17,6 +17,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -43,6 +45,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class DiscriminatorColumnMetadata extends MetadataColumn {
+    public static final String NAME_DEFAULT = "DTYPE";
+    
     private Integer m_length;
     private String m_discriminatorType;
     
@@ -146,11 +150,12 @@ public class DiscriminatorColumnMetadata extends MetadataColumn {
      * DatabaseField. What is done with that field is up to the caller 
      * of this method.
      */
-    public DatabaseField process(MetadataDescriptor descriptor, String annotatedElementName, String loggingCtx) {     
+    public DatabaseField process(MetadataDescriptor descriptor, String loggingCtx) {
         DatabaseField field = getDatabaseField();
         
-        // Set the field name taking into consideration delimited identifier settings.
-        setFieldName(field, MetadataHelper.getName(field.getName(), "DTYPE", loggingCtx, descriptor.getLogger(), annotatedElementName));
+        // Set the field name. This will take care of any any delimited 
+        // identifiers and casing defaults etc.
+        setFieldName(field, NAME_DEFAULT, loggingCtx);
 
         // Set the table.
         field.setTable(descriptor.getPrimaryTable());

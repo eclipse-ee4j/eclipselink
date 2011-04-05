@@ -39,6 +39,8 @@
  *       - 3223850: Primary key metadata issues
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -178,6 +180,8 @@ public class MetadataLogger {
     public static final String INHERITANCE_FK_COLUMN = "metadata_default_inheritance_fk_column";
     public static final String SECONDARY_TABLE_PK_COLUMN = "metadata_default_secondary_table_pk_column";
     public static final String SECONDARY_TABLE_FK_COLUMN = "metadata_default_secondary_table_fk_column";
+    public static final String TENANT_DISCRIMINATOR_COLUMN = "metadata_default_tenant_discriminator_column";
+    public static final String TENANT_DISCRIMINATOR_CONTEXT_PROPERTY = "metadata_default_tenant_discriminator_context_property";
     
     public static final String ONE_TO_ONE_MAPPING = "metadata_default_one_to_one_mapping";
     public static final String ONE_TO_MANY_MAPPING = "metadata_default_one_to_many_mapping";
@@ -320,6 +324,8 @@ public class MetadataLogger {
         addContextString(INHERITANCE_FK_COLUMN);
         addContextString(SECONDARY_TABLE_PK_COLUMN);
         addContextString(SECONDARY_TABLE_FK_COLUMN);
+        addContextString(TENANT_DISCRIMINATOR_COLUMN);
+        addContextString(TENANT_DISCRIMINATOR_CONTEXT_PROPERTY);
         
         addContextString(ONE_TO_ONE_MAPPING);
         addContextString(ONE_TO_MANY_MAPPING);

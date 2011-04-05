@@ -12,12 +12,14 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
@@ -55,15 +57,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
      * INTERNAL:
      * Used for defaulting.
      */
-    public TenantDiscriminatorColumnMetadata(MetadataProject project) {
-        setProject(project);
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for defaulting.
-     */
-    protected TenantDiscriminatorColumnMetadata(MetadataAccessor accessor) {
+    public TenantDiscriminatorColumnMetadata(MetadataAccessor accessor) {
         super(accessor);
     }
     
@@ -135,7 +129,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
      */
     public Boolean getPrimaryKey() {
         return m_primaryKey;
-    }
+     }
     
     /**
      * INTERNAL:
@@ -153,16 +147,16 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
             
         // Set the field name. This will take care of any any delimited 
         // identifiers and casing defaults etc.
-        setFieldName(tenantDiscriminatorField, NAME_DEFAULT);
+        setFieldName(tenantDiscriminatorField, NAME_DEFAULT, MetadataLogger.TENANT_DISCRIMINATOR_COLUMN);
     
         // Set a default table if one isn't specified.
         if (! tenantDiscriminatorField.hasTableName()) {
             tenantDiscriminatorField.setTable(descriptor.getPrimaryTable());
         }
             
-        // Set the property name, defaulting where necessary.
+        // Set the property name, defaulting where necessary and log a warning.
         if (m_contextProperty == null) {
-            // TODO: log a warning.
+            getLogger().logWarningMessage(MetadataLogger.TENANT_DISCRIMINATOR_CONTEXT_PROPERTY, getAccessibleObject(), tenantDiscriminatorField, CONTEXT_PROPERTY_DEFAULT);
             m_contextProperty = CONTEXT_PROPERTY_DEFAULT;
         }
 

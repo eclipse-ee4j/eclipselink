@@ -81,6 +81,8 @@
  *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -859,7 +861,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             }
         }
         
-        return m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName(), MetadataLogger.INHERITANCE_DISCRIMINATOR_COLUMN);
+        return m_discriminatorColumn.process(getDescriptor(), MetadataLogger.INHERITANCE_DISCRIMINATOR_COLUMN);
     }
     
     /**

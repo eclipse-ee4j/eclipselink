@@ -14,6 +14,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -97,8 +99,9 @@ public class OrderColumnMetadata extends DirectColumnMetadata {
             // Get the database field with metadata applied.
             DatabaseField orderField = getDatabaseField();
             
-            // Set the field name taking into consideration delimited identifier settings..
-            setFieldName(orderField, MetadataHelper.getName(getName(), mapping.getAttributeName() + _ORDER, MetadataLogger.ORDER_COLUMN, getLogger(), getAccessibleObject().toString()));
+            // Set the field name. This will take care of any any delimited 
+            // identifiers and casing defaults etc.
+            setFieldName(orderField, mapping.getAttributeName() + _ORDER, MetadataLogger.ORDER_COLUMN);
 
             // We don't set a table, the mapping will figure that out for us at runtime.
 

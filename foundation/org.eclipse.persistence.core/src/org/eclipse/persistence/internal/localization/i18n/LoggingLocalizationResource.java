@@ -21,6 +21,8 @@
  *       - 3223850: Primary key metadata issues
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -240,6 +242,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_default_inheritance_fk_column", "The foreign key column name for the inheritance class [{0}] is being defaulted to: {1}." },
         { "metadata_default_secondary_table_pk_column", "The secondary table primary key column name for element [{0}] is being defaulted to: {1}." },
         { "metadata_default_secondary_table_fk_column", "The secondary table foreign key column name for element [{0}] is being defaulted to: {1}." },
+        { "metadata_default_tenant_discriminator_column", "The tenant discriminator column name for element [{0}] is being defaulted to: {1}." },
+        { "metadata_default_tenant_discriminator_context_property", "The tenant discriminator context property for the tenant discriminator column [{1}] on the element [{0}] is being defaulted to: {2}." },
         { "metadata_default_one_to_one_mapping", "The element [{0}] is being defaulted to a one to one mapping." },
         { "metadata_default_one_to_many_mapping", "The element [{0}] is being defaulted to a one to many mapping." },
         { "metadata_default_variable_one_to_one_mapping", "The element [{0}] is being defaulted to a variable one to one mapping." },

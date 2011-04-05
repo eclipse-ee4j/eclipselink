@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -409,6 +411,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int PRIMARY_KEY_COLUMN_NAME_NOT_SPECIFIED = 7334;
     
     public static final int DUPLICATE_PARTITION_VALUE = 7335;
+    
+    public static final int MULTIPLE_CONTEXT_PROPERTY_FOR_TENANT_DISCRIMINATOR_FIELD = 7336;
     
     /**
      * INTERNAL:
@@ -2680,6 +2684,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, COPY_POLICY_MUST_SPECIFY_METHOD_OR_WORKING_COPY_METHOD, args));
         validationException.setErrorCode(COPY_POLICY_MUST_SPECIFY_METHOD_OR_WORKING_COPY_METHOD);
+        return validationException;
+    }
+    
+    public static ValidationException multipleContextPropertiesForSameTenantDiscriminatorFieldSpecified(String className, String fieldName, String property1, String property2) {
+        Object[] args = { className, fieldName, property1, property2 };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_CONTEXT_PROPERTY_FOR_TENANT_DISCRIMINATOR_FIELD, args));
+        validationException.setErrorCode(MULTIPLE_CONTEXT_PROPERTY_FOR_TENANT_DISCRIMINATOR_FIELD);
         return validationException;
     }
     

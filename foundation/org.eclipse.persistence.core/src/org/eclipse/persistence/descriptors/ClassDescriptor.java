@@ -16,6 +16,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3)
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -542,8 +544,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void addTenantDiscriminatorField(String property, DatabaseField field) {
         if (tenantDiscriminatorFields.containsKey(field)) {
-            // TODO: throw exception multiple properties per field
-            // that is, if the property is different (otherwise we have a duplicate)
+            String currentProperty = tenantDiscriminatorFields.get(field);
+            
+            if (! currentProperty.equals(property)) {
+                // Adding a different property for the same field is not 
+                // allowed. If it is the same we'll just ignore it.
+                throw ValidationException.multipleContextPropertiesForSameTenantDiscriminatorFieldSpecified(getJavaClassName(), field.getQualifiedName(), currentProperty, property);
+            }
         } else {
             tenantDiscriminatorFields.put(field, property);
         }

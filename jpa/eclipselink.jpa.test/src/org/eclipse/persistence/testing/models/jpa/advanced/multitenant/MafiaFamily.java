@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     03/24/2011-2.3 Guy Pelletier 
- *       - 337323: Multi-tenant with shared schema support (part 1)
+ *       - 337323: Multi-tenant with shared schema support (part 1
+ *     04/05/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 3))
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -33,6 +35,7 @@ import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
 import org.eclipse.persistence.annotations.Multitenant;
+import org.eclipse.persistence.annotations.TenantDiscriminatorColumns;
 
 import static javax.persistence.CascadeType.ALL;
 
@@ -40,7 +43,7 @@ import static javax.persistence.CascadeType.ALL;
 @Table(name="JPA_MAFIA_FAMILY")
 @SecondaryTable(name="JPA_FAMILY_REVENUE")
 @Multitenant
-@TenantDiscriminatorColumn(name="TENANT_ID", contextProperty="tenant.id")
+@TenantDiscriminatorColumn(name="TENANT_ID", contextProperty="tenant.id", primaryKey = true)
 @NamedQuery(
     name="findJPQLMafiaFamilies", 
     query="SELECT s from MafiaFamily s"
