@@ -1424,21 +1424,6 @@ public class AnnotationsProcessor {
         }
     }
 
-    private void removeTypeInfo(String qualifiedName, TypeInfo info) {
-        this.typeInfo.remove(qualifiedName);
-        String typeName = info.getSchemaTypeName();
-        if (typeName != null && !(EMPTY_STRING.equals(typeName))) {
-            QName typeQName = new QName(info.getClassNamespace(), typeName);
-            this.typeQNames.remove(typeQName);
-        }        
-        for(JavaClass next:this.typeInfoClasses) {
-            if(next.getQualifiedName().equals(info.getJavaClassName())) {
-                this.typeInfoClasses.remove(next);
-                break;
-            }
-        }
-    }
-
     /**
      * Store a QName (if necessary) based on a given TypeInfo's schema type
      * name.

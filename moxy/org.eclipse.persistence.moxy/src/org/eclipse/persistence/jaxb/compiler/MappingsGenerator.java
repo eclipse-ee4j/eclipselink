@@ -1260,7 +1260,7 @@ public class MappingsGenerator {
             ccMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
             return ccMapping;
         }
-        if (areEquals(javaClass, ClassConstants.APBYTE) ||areEquals(javaClass, "javax.activation.DataHandler") || areEquals(javaClass, "java.awt.Image") || areEquals(javaClass, "java.xml.transform.Source") || areEquals(javaClass, "javax.mail.internet.MimeMultipart")) {
+        if(isBinaryData(javaClass)){
         	return generateBinaryDataCollectionMapping(property, descriptor, namespaceInfo);
         }
         return generateDirectCollectionMapping(property, descriptor, namespaceInfo);
@@ -2260,8 +2260,12 @@ public class MappingsGenerator {
                     }
                 }
                 xmlField = new XMLField(xPath);
-            } else if (property.isXmlValue()) {
-                xmlField = new XMLField("text()");
+            } else if (property.isXmlValue()) {                
+            	if(isBinaryData(property.getActualType())){
+            		xmlField = new XMLField(".");
+            	}else{
+            		xmlField = new XMLField("text()");
+            	}
             } else {
                 QName elementName = property.getSchemaName();
                 xmlField = getXPathForElement(xPath, elementName, namespaceInfo, isTextMapping);
@@ -2355,7 +2359,7 @@ public class MappingsGenerator {
                 }
 
                 if(next == null){
-            		if(areEquals(nextElement.getJavaType(), ClassConstants.APBYTE) ||areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") || areEquals(nextElement.getJavaType(), "java.awt.Image") || areEquals(nextElement.getJavaType(), "java.xml.transform.Source") || areEquals(nextElement.getJavaType(), "javax.mail.internet.MimeMultipart")) {
+                	if(isBinaryData(nextElement.getJavaType())){
             			Class generatedClass = addByteArrayWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement,nextClassName, attributeTypeName);
             			 this.qNamesToGeneratedClasses.put(next, generatedClass);
                          if(nextElement.getTypeMappingInfo() != null) {
@@ -2504,8 +2508,8 @@ public class MappingsGenerator {
 	                  mapping.setXPath(".");
 	                  ((XMLField)mapping.getField()).setIsTypedTextField(true);
 	                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
-	                  desc.addMapping(mapping);
-	              }else if(areEquals(nextElement.getJavaType(), ClassConstants.APBYTE)|| areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") || areEquals(nextElement.getJavaType(), "java.awt.Image") || areEquals(nextElement.getJavaType(), "javax.xml.transform.Source")){
+	                  desc.addMapping(mapping);	                 
+	              }else if(isBinaryData(nextElement.getJavaType())){
 	              	  XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
 	              	  mapping.setAttributeName("value");
 	              	  mapping.setXPath(".");
@@ -2775,6 +2779,10 @@ public class MappingsGenerator {
         } else {
             return (JaxbClassLoader) helper.getClassLoader();
         }
+    }
+    
+    private boolean isBinaryData(JavaClass type){
+    	return areEquals(type, ClassConstants.APBYTE) ||areEquals(type, "javax.activation.DataHandler") || areEquals(type, "java.awt.Image") || areEquals(type, "java.xml.transform.Source") || areEquals(type, "javax.mail.internet.MimeMultipart");
     }
     
 }

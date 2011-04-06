@@ -46,6 +46,7 @@ import org.eclipse.persistence.testing.jaxb.xmlidrefs.object.XmlIdRefsObjectTest
 import org.eclipse.persistence.testing.jaxb.xmlinlinebinary.XmlInlineBinaryDataTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBDOMTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
+import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueByteArrayTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithAttributesTestCases;
@@ -69,6 +70,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlattribute.XmlAttributeNoNamespaceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlattribute.XmlAttributeCollectionTestCases.class);
         suite.addTestSuite(XmlValueTestCases.class);
+        suite.addTestSuite(XmlValueByteArrayTestCases.class);
         suite.addTestSuite(XmlValueWithAttributesTestCases.class);
         suite.addTestSuite(XmlValueListTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsStringTestCases.class);
