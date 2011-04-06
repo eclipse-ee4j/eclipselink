@@ -2304,6 +2304,7 @@
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
             <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/relationships"/>
             <param name="MODEL_NAME" value="eclipselink-jpql-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/jpql"/>
             <param name="TEST_NAME" value="eclipselink-jpql-model"/>
