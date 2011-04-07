@@ -29,9 +29,10 @@
 *   - Ant properties are lower case.
 *
 * Contributors:
-*     bdoughan - initial API and implementation
-*     dtwelves - Sept 2008 add in MOXy SRG testing
-*     egwin      Nov 08 - remove compile of MOXY (add dep check instead)
+*     bdoughan   - initial API and implementation
+*     dtwelves   - Sep 2008 - add in MOXy SRG testing
+*     egwin      - Nov 2008 - remove compile of MOXY (add dep check instead)
+*     rbarkhouse - 06 Apr 2011 - Separate JavadocAnnotationExamples from JAXBTestSuite
 #******************************************************************************/-->
 
 <project name="eclipselink.moxy.test" default="test" basedir=".">
@@ -350,6 +351,7 @@
                 <batchtest todir="${report.dir}/jaxb">
                     <fileset dir="${src.dir}">
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/jaxb/javadoc/JavadocAnnotationExamplesTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>

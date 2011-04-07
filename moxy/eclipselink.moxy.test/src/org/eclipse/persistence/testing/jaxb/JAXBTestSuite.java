@@ -197,7 +197,6 @@ public class JAXBTestSuite extends TestCase {
         suite.addTest(PredicateTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlinlinebinarydata.XmlInlineBinaryDataTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.annotations.xmltransient.XmlTransientTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.jaxb.javadoc.JavadocAnnotationExamplesTestSuite.suite());
         return suite;
     }
 

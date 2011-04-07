@@ -72,7 +72,6 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     protected JAXBContext jaxbContext;
     protected Marshaller jaxbMarshaller;
     protected Unmarshaller jaxbUnmarshaller;
-    Generator generator;
     protected ClassLoader classLoader;
     protected Source bindingsFileXSDSource;
 
@@ -103,6 +102,8 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         jaxbContext = null;
         jaxbMarshaller = null;
         jaxbUnmarshaller = null;
+        classLoader = null;
+        bindingsFileXSDSource = null;
     }
 
     protected void setProject(Project project) {
