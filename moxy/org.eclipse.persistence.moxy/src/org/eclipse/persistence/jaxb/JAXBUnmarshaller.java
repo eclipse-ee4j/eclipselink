@@ -122,7 +122,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 }
                 XMLStreamReader xmlStreamReader;
                 xmlStreamReader = xmlInputFactory.createXMLStreamReader(inputStream);
-                return unmarshal(xmlStreamReader);
+                Object value = unmarshal(xmlStreamReader);
+                xmlStreamReader.close();
+                return value;
             }
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
@@ -159,7 +161,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     throw XMLMarshalException.nullArgumentException();
                 }
                 XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(reader);
-                return unmarshal(xmlStreamReader);
+                Object value = unmarshal(xmlStreamReader);
+                xmlStreamReader.close();
+                return value;
             }
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
