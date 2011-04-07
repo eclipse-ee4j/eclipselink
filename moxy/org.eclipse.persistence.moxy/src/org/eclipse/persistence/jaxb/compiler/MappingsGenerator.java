@@ -1466,12 +1466,7 @@ public class MappingsGenerator {
 
             desc.addMapping(generateMappingForType(keyType, Property.DEFAULT_KEY_NAME));
             desc.addMapping(generateMappingForType(valueType, Property.DEFAULT_VALUE_NAME));
-            NamespaceResolver newNr = new NamespaceResolver();
-            String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, nr, XMLConstants.SCHEMA_INSTANCE_PREFIX, false);
-            if(prefix != null){
-                newNr.put(prefix, XMLConstants.SCHEMA_INSTANCE_URL);
-            }
-            desc.setNamespaceResolver(newNr);
+            desc.setNamespaceResolver(nr);
             project.addDescriptor(desc);
         }
         return generatedClass;
