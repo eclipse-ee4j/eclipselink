@@ -68,7 +68,6 @@ public class OverloadedPLSQLStoredProcedureTestSuite extends WebServiceTestSuite
         p1Model.setName(PROC7_TEST);
         p1Model.setReturnType("xsd:int");
         p1Model.setOverload(2);
-        p1Model.setSchemaPattern("TLUSER");
         p1Model.setCatalogPattern(PACKAGE_NAME);
         p1Model.setProcedurePattern(PROC7);
         builder.getOperations().add(p1Model);

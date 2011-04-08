@@ -68,7 +68,6 @@ public class OverloadedPLSQLStoredProcedureSimpleArgsTestSuite extends WebServic
         p1Model.setName(PROC8_TEST);
         p1Model.setReturnType("xsd:int");
         p1Model.setOverload(2);
-        p1Model.setSchemaPattern("TLUSER");
         p1Model.setCatalogPattern(PACKAGE_NAME);
         p1Model.setProcedurePattern(PROC8);
         builder.getOperations().add(p1Model);
