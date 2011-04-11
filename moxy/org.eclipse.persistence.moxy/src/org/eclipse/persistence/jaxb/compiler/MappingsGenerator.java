@@ -2777,7 +2777,7 @@ public class MappingsGenerator {
     }
     
     private boolean isBinaryData(JavaClass type){
-    	return areEquals(type, ClassConstants.APBYTE) ||areEquals(type, "javax.activation.DataHandler") || areEquals(type, "java.awt.Image") || areEquals(type, "java.xml.transform.Source") || areEquals(type, "javax.mail.internet.MimeMultipart");
+    	return areEquals(type, ClassConstants.APBYTE) ||areEquals(type, "javax.activation.DataHandler") || areEquals(type, "java.awt.Image") || areEquals(type, "javax.xml.transform.Source") || areEquals(type, "javax.mail.internet.MimeMultipart");
     }
     
 }
