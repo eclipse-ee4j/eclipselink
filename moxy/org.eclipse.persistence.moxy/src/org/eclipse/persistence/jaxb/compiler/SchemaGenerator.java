@@ -115,7 +115,6 @@ public class SchemaGenerator {
     private static final String OBJECT_CLASSNAME = "java.lang.Object";
     private static final String ID = "ID";
     private static final String IDREF = "IDREF";
-    private static final String BACKSLASH = "/";
     private static final Character DOLLAR_SIGN_CHAR = '$';
     private static final Character DOT_CHAR = '.';
 
