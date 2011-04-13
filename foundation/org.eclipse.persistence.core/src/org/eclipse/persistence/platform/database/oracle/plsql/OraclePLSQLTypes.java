@@ -13,12 +13,11 @@
 
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
-//javse imports
+import java.util.List;
 import java.util.ListIterator;
-import java.util.Vector;
 import static java.sql.Types.OTHER;
 
-// EclipseLink imports
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.SimpleDatabaseType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -187,8 +186,8 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * Translate the argument value from the query translation row to call translation row.
      */
     public void translate(PLSQLargument arg, AbstractRecord translationRow,
-        AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
-        Vector translationRowFields, Vector translationRowValues, StoredProcedureCall call) {
+            AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
+            List<DatabaseField> translationRowFields, List translationRowValues, StoredProcedureCall call) {
         databaseTypeHelper.translate(arg, translationRow, copyOfTranslationRow,
             copyOfTranslationFields, translationRowFields, translationRowValues, call);
     }
@@ -198,7 +197,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * Build the query output row from the call output row.
      */
     public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
-        DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues) {
+            DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
         databaseTypeHelper.buildOutputRow(outArg, outputRow,
             newOutputRow, outputRowFields, outputRowValues);
     }
@@ -208,7 +207,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * Append the parameter for logging purposes.
      */
     public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
-        AbstractRecord translationRow, DatabasePlatform platform) {
+            AbstractRecord translationRow, DatabasePlatform platform) {
         databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
     }
 

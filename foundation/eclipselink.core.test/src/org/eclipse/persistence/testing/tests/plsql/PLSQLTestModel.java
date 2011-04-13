@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -118,6 +119,23 @@ public class PLSQLTestModel extends TestModel {
         args.add(new BigDecimal("123.5"));
         test = new PLSQLTest("SimpleInDefaults", Address.class, args);
         test.setName("SimpleInDefaults");
+        suite.addTest(test);
+
+        args = new ArrayList();
+        args.add(null);
+        args.add(null);
+        args.add(null);
+        args.add(null);
+        args.add(null);
+        args.add(null);
+        args.add(null);
+        args.add(null);
+        args.add(null);
+        args.add(null);
+        args.add(null);
+        args.add(null);
+        test = new PLSQLTest("SimpleInDefaults2", Address.class, args);
+        test.setName("SimpleInDefaults2");
         suite.addTest(test);
 
         args = new ArrayList();
@@ -298,6 +316,14 @@ public class PLSQLTestModel extends TestModel {
         args.add("Nepean");
         test = new PLSQLTest("EmployeeInOutObject", Employee.class, args, result);
         test.setName("EmployeeInOutObjectTest");
+        suite.addTest(test);
+        
+        test = new PLSQLTest("AddressOutCursor", Address.class, new ArrayList(), new Vector());
+        test.setName("AddressOutCursorTest");
+        suite.addTest(test);
+        
+        test = new PLSQLTest("AddressRecOutCursor", Address.class, new ArrayList(), new Vector());
+        test.setName("AddressRecOutCursorTest");
         suite.addTest(test);
 
         return suite;

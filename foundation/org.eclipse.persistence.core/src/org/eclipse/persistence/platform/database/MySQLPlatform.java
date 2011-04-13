@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -157,11 +158,11 @@ public class MySQLPlatform extends DatabasePlatform {
     }
 
     /**
-     * Return the proc syntax for this platform.
+     * Return the stored procedure syntax for this platform.
      */
     @Override
-    public String buildProcedureCallString(StoredProcedureCall call, AbstractSession session) {
-        return "{ " + super.buildProcedureCallString(call, session);
+    public String buildProcedureCallString(StoredProcedureCall call, AbstractSession session, AbstractRecord row) {
+        return "{ " + super.buildProcedureCallString(call, session, row);
     }
     
     /**

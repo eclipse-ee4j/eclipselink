@@ -66,7 +66,7 @@ public class StoredFunctionQueryHandler extends StoredProcedureQueryHandler {
                 platform = new DatabasePlatform();
             }
             // StoredFunction's return value is the first parameter
-            ((DatabaseField)sfCall.getParameters().firstElement()).setSqlType(
+            ((DatabaseField)sfCall.getParameters().get(0)).setSqlType(
                 platform.getJDBCType(clz));
         }
     }

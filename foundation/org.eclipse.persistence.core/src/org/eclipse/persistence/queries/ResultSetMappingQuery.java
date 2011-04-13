@@ -72,6 +72,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      * It will cause the original to be cached in the query results if the query
      * is set to do so.
      */
+    @Override
     public void cacheResult(Object unwrappedOriginal) {
         Object cachableObject = unwrappedOriginal;
         if (shouldUseWrapperPolicy()){
@@ -80,39 +81,17 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
         setTemporaryCachedQueryResults(cachableObject);
     }
 
-/**
-     * INTERNAL:
-     * Clone the query.
-     */
-    public Object clone() {
-        ResultSetMappingQuery cloneQuery = (ResultSetMappingQuery)super.clone();
-        cloneQuery.resultSetMapping = this.resultSetMapping;
-        cloneQuery.resultSetMappingName = this.resultSetMappingName;
-        return cloneQuery;
-    }
-
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this ResultSetMapping to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        resultSetMapping.convertClassNamesToClasses(classLoader);
-    };  
-
-    /**
-     * PUBLIC:
-     * Used to define a store procedure or SQL query.
-     */
-/*    public void setCall(Call call) {
-        if (call instanceof SQLCall){
-            ((SQLCall)call).setSQLString(((SQLCall)call).getCallString().replace('?','#'));
-        }
-        super.setCall(call);
+        this.resultSetMapping.convertClassNamesToClasses(classLoader);
     }
-*/
+
     /**
      * PUBLIC:
      * This will be the SQLResultSetMapping that is used by this query to process
@@ -177,6 +156,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Executes the prepared query on the datastore.
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException {
         if (getSession().isUnitOfWork()) {
             UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
@@ -219,6 +199,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() {
         if ((!shouldMaintainCache()) && shouldRefreshIdentityMapResult()) {
             throw QueryException.refreshNotPossibleWithoutCache(this);

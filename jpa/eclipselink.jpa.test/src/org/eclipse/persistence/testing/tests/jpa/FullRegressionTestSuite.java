@@ -57,6 +57,8 @@ import org.eclipse.persistence.testing.tests.jpa.inherited.EmbeddableSuperclassJ
 
 import org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedXMLTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.plsql.XMLPLSQLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.EMQueryJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.ExpressionJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.IsolatedCacheTestSuite;
@@ -286,6 +288,8 @@ public class FullRegressionTestSuite extends TestSuite {
 
         fullSuite.addTest(PartitionedTestSuite.suite());
         fullSuite.addTest(PartitionedXMLTestSuite.suite());
+        fullSuite.addTest(PLSQLTestSuite.suite());
+        fullSuite.addTest(XMLPLSQLTestSuite.suite());
 
         return fullSuite;
     }

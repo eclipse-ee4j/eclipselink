@@ -15,6 +15,7 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -100,6 +101,53 @@ public class PLSQLProject extends Project {
         query.addArgument("P_POSITIVEN", Integer.class);
         query.addArgument("P_SIGNTYPE", BigDecimal.class);
         query.addArgument("P_NUMBER", BigDecimal.class);
+        query.setCall(call);
+        
+        return query;
+    }
+    
+    protected DatabaseQuery buildSimpleInDefaults2Query() {
+        PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
+        call.setProcedureName("PLSQL_SIMPLE_IN_DEFAULTS");
+        call.addNamedArgument("P_VARCHAR", JDBCTypes.VARCHAR_TYPE, 30);
+        call.addNamedArgument("P_BOOLEAN", OraclePLSQLTypes.PLSQLBoolean);
+        call.addNamedArgument("P_BINARY_INTEGER", OraclePLSQLTypes.BinaryInteger);
+        call.addNamedArgument("P_DEC", OraclePLSQLTypes.Dec);
+        call.addNamedArgument("P_INT", OraclePLSQLTypes.Int);
+        call.addNamedArgument("P_NATURAL", OraclePLSQLTypes.Natural);
+        call.addNamedArgument("P_NATURALN", OraclePLSQLTypes.NaturalN);
+        call.addNamedArgument("P_PLS_INTEGER", OraclePLSQLTypes.PLSQLInteger);
+        call.addNamedArgument("P_POSITIVE", OraclePLSQLTypes.Positive);
+        call.addNamedArgument("P_POSITIVEN", OraclePLSQLTypes.PositiveN);
+        call.addNamedArgument("P_SIGNTYPE", OraclePLSQLTypes.SignType);
+        call.addNamedArgument("P_NUMBER", JDBCTypes.NUMERIC_TYPE, 10, 2);
+        
+        call.addOptionalArgument("P_VARCHAR");
+        call.addOptionalArgument("P_BOOLEAN");
+        call.addOptionalArgument("P_BINARY_INTEGER");
+        call.addOptionalArgument("P_DEC");
+        call.addOptionalArgument("P_INT");
+        call.addOptionalArgument("P_NATURAL");
+        call.addOptionalArgument("P_NATURALN");
+        call.addOptionalArgument("P_PLS_INTEGER");
+        call.addOptionalArgument("P_POSITIVE");
+        call.addOptionalArgument("P_POSITIVEN");
+        call.addOptionalArgument("P_SIGNTYPE");
+        call.addOptionalArgument("P_NUMBER");
+        
+        DataModifyQuery query = new DataModifyQuery();
+        query.addArgument("P_VARCHAR", String.class, true);
+        query.addArgument("P_BOOLEAN", Integer.class, true);
+        query.addArgument("P_BINARY_INTEGER", Integer.class, true);
+        query.addArgument("P_DEC", Integer.class, true);
+        query.addArgument("P_INT", Integer.class, true);
+        query.addArgument("P_NATURAL", Integer.class, true);
+        query.addArgument("P_NATURALN", Integer.class, true);
+        query.addArgument("P_PLS_INTEGER", Integer.class, true);
+        query.addArgument("P_POSITIVE", Integer.class, true);
+        query.addArgument("P_POSITIVEN", Integer.class, true);
+        query.addArgument("P_SIGNTYPE", BigDecimal.class, true);
+        query.addArgument("P_NUMBER", BigDecimal.class, true);
         query.setCall(call);
         
         return query;
@@ -444,6 +492,28 @@ public class PLSQLProject extends Project {
 
         return query;
     }
+    
+    protected DatabaseQuery buildAddressOutCursorQuery() {
+        
+        StoredProcedureCall call = new StoredProcedureCall();
+        call.setProcedureName("PLSQL_P.PLSQL_ADDRESS_CUR_OUT");
+        call.useNamedCursorOutputAsResultSet("P_ADDRESS");
+        DataReadQuery query = new DataReadQuery();
+        query.setCall(call);
+
+        return query;
+    }
+    
+    protected DatabaseQuery buildAddressRecOutCursorQuery() {
+        
+        StoredProcedureCall call = new StoredProcedureCall();
+        call.setProcedureName("PLSQL_P.PLSQL_ADDRESS_REC_CUR_OUT");
+        call.useNamedCursorOutputAsResultSet("P_ADDRESS");
+        DataReadQuery query = new DataReadQuery();
+        query.setCall(call);
+
+        return query;
+    }
 
     protected DatabaseQuery buildAddressListInOutQuery() {
         PLSQLrecord record = buildAddressRecord();
@@ -595,6 +665,7 @@ public class PLSQLProject extends Project {
 
         descriptor.getQueryManager().addQuery("SimpleIn", buildSimpleInQuery());
         descriptor.getQueryManager().addQuery("SimpleInDefaults", buildSimpleInDefaultsQuery());
+        descriptor.getQueryManager().addQuery("SimpleInDefaults2", buildSimpleInDefaults2Query());
         descriptor.getQueryManager().addQuery("SimpleInFunc", buildSimpleInFuncQuery());
         descriptor.getQueryManager().addQuery("SimpleOut", buildSimpleOutQuery());
         descriptor.getQueryManager().addQuery("SimpleInOut", buildSimpleInOutQuery());
@@ -613,6 +684,8 @@ public class PLSQLProject extends Project {
         descriptor.getQueryManager().addQuery("AddressListInOut", buildAddressListInOutQuery());
         descriptor.getQueryManager().addQuery("BadAddressOut", buildBadAddressOutObjectQuery());
         descriptor.getQueryManager().addQuery("MissingTypeAddressListOut", buildMissingTypeAddressListOutQuery());
+        descriptor.getQueryManager().addQuery("AddressOutCursor", buildAddressOutCursorQuery());
+        descriptor.getQueryManager().addQuery("AddressRecOutCursor", buildAddressRecOutCursorQuery());
         
         descriptor.addFieldOrdering("ADDRESS_ID");
         DirectToFieldMapping idMapping = new DirectToFieldMapping();

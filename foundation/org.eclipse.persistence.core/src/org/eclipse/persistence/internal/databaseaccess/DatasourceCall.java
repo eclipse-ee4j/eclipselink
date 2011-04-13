@@ -39,10 +39,10 @@ public abstract class DatasourceCall implements Call {
     protected DatabaseQuery query;
 
     // The parameters (values) are ordered as they appear in the call.
-    transient protected Vector parameters;
+    transient protected List parameters;
 
     // The parameter types determine if the parameter is a modify, translation or literal type.
-    transient protected Vector parameterTypes;
+    transient protected List<Integer> parameterTypes;
     public static final Integer LITERAL = Integer.valueOf(1);
     public static final Integer MODIFY = Integer.valueOf(2);
     public static final Integer TRANSLATION = Integer.valueOf(3);
@@ -77,9 +77,9 @@ public abstract class DatasourceCall implements Call {
      * The parameters are the values in order of occurrence in the SQL statement.
      * This is lazy initialized to conserve space on calls that have no parameters.
      */
-    public Vector getParameters() {
+    public List getParameters() {
         if (parameters == null) {
-            parameters = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            parameters = new ArrayList();
         }
         return parameters;
     }
@@ -87,9 +87,9 @@ public abstract class DatasourceCall implements Call {
     /**
      * The parameter types determine if the parameter is a modify, translation or literal type.
      */
-    public Vector getParameterTypes() {
+    public List<Integer> getParameterTypes() {
         if (parameterTypes == null) {
-            parameterTypes = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            parameterTypes = new ArrayList<Integer>();
         }
         return parameterTypes;
     }
@@ -97,14 +97,14 @@ public abstract class DatasourceCall implements Call {
     /**
      * The parameters are the values in order of occurrence in the SQL statement.
      */
-    public void setParameters(Vector parameters) {
+    public void setParameters(List parameters) {
         this.parameters = parameters;
     }
 
     /**
      * The parameter types determine if the parameter is a modify, translation or literal type.
      */
-    public void setParameterTypes(Vector parameterTypes) {
+    public void setParameterTypes(List<Integer> parameterTypes) {
         this.parameterTypes = parameterTypes;
     }
 
@@ -130,14 +130,14 @@ public abstract class DatasourceCall implements Call {
     /**
      * Bound calls can have the SQL pre generated.
      */
-    protected boolean isPrepared() {
+    public boolean isPrepared() {
         return isPrepared;
     }
 
     /**
      * Bound calls can have the SQL pre generated.
      */
-    protected void setIsPrepared(boolean isPrepared) {
+    public void setIsPrepared(boolean isPrepared) {
         this.isPrepared = isPrepared;
     }
 
@@ -525,8 +525,8 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().addElement(literal);
-        getParameterTypes().addElement(LITERAL);
+        getParameters().add(literal);
+        getParameterTypes().add(LITERAL);
     }
 
     /**
@@ -539,8 +539,8 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().addElement(modifyField);
-        getParameterTypes().addElement(TRANSLATION);
+        getParameters().add(modifyField);
+        getParameterTypes().add(TRANSLATION);
     }
 
     /**
@@ -553,8 +553,8 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().addElement(modifyField);
-        getParameterTypes().addElement(MODIFY);
+        getParameters().add(modifyField);
+        getParameterTypes().add(MODIFY);
     }
 
     /**
@@ -567,8 +567,8 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().addElement(field);
-        getParameterTypes().addElement(IN);
+        getParameters().add(field);
+        getParameterTypes().add(IN);
     }
 
     /**
@@ -582,8 +582,8 @@ public abstract class DatasourceCall implements Call {
             throw ValidationException.fileError(exception);
         }
         Object[] inOut = { inoutField, inoutField };
-        getParameters().addElement(inOut);
-        getParameterTypes().addElement(INOUT);
+        getParameters().add(inOut);
+        getParameterTypes().add(INOUT);
     }
 
     /**
@@ -596,8 +596,8 @@ public abstract class DatasourceCall implements Call {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().addElement(outField);
-        getParameterTypes().addElement(OUT);
+        getParameters().add(outField);
+        getParameterTypes().add(OUT);
     }
 
     /**
@@ -648,8 +648,8 @@ public abstract class DatasourceCall implements Call {
             // PERF: This method is heavily optimized do not touch anything unless you know "very well" what your doing.
             // Must translate field parameters and may get new bound parameters for large data.
             List parameterFields = getParameters();
-            List parameterTypes = getParameterTypes();
-            setParameters(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(parameterFields.size()));
+            List<Integer> parameterTypes = getParameterTypes();
+            setParameters(NonSynchronizedVector.newInstance(parameterFields.size()));
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
                 String token;
@@ -689,7 +689,7 @@ public abstract class DatasourceCall implements Call {
                 writer.write(token);
                 if (tokenIndex != -1) {
                     // Process next parameter.
-                    Integer parameterType = (Integer)parameterTypes.get(parameterIndex);
+                    Integer parameterType = parameterTypes.get(parameterIndex);
                     if (parameterType == MODIFY) {
                         DatabaseField field = (DatabaseField)parameterFields.get(parameterIndex);
                         Object value = modifyRow.get(field);
@@ -756,12 +756,15 @@ public abstract class DatasourceCall implements Call {
      */
     protected Object getValueForInParameter(Object parameter, AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session, boolean shouldBind) {
         Object value = parameter;
-
+        DatabaseField field = null;
+        boolean isNull = false;
+        
         // Parameter expressions are used for nesting and correct mapping conversion of the value.
         if (parameter instanceof ParameterExpression) {
             value = ((ParameterExpression)parameter).getValue(translationRow, session);
+            field = ((ParameterExpression)parameter).getField();
         } else if (parameter instanceof DatabaseField) {
-            DatabaseField field = (DatabaseField)parameter;
+            field = (DatabaseField)parameter;
             value = translationRow.get(field);
             // Must check for the modify row as well for custom SQL compatibility as only one # is required.
             if (modifyRow != null) {
@@ -777,7 +780,8 @@ public abstract class DatasourceCall implements Call {
                     }
                 }
             }
-            if ((value == null) && shouldBind) {
+            if (value == null && shouldBind) {
+                isNull = true;
                 if ((field.getType() != null) ||(field.getSqlType()!= DatabaseField.NULL_SQL_TYPE)){
                     value = field;
                 } else if (modifyRow != null) {
@@ -795,11 +799,14 @@ public abstract class DatasourceCall implements Call {
                         value = translationField;
                     }
                 }
-            }else {
+            } else {
                 if (parameter instanceof ObjectRelationalDatabaseField){
-                    value = new InParameterForCallableStatement( value, (DatabaseField)parameter);
+                    value = new InParameterForCallableStatement(value, (DatabaseField)parameter);
                 }
             }
+        }
+        if ((value == null || isNull) && this.query.hasNullableArguments() && this.query.getNullableArguments().contains(field)) {
+            return this;
         }
         return value;
     }

@@ -477,7 +477,7 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-jpa-performance, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation" description="build EclipseLink jar">
+    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
@@ -543,6 +543,7 @@
                                org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/**
                                org/eclipse/persistence/testing/models/jpa/metamodel/**
                                org/eclipse/persistence/testing/models/jpa/partitioned/**
+                               org/eclipse/persistence/testing/models/jpa/plsql/**
                                org/eclipse/persistence/testing/models/jpa/performance/**
                                org/eclipse/persistence/testing/models/jpa/performance2/**
                                org/eclipse/persistence/testing/models/jpa/beanvalidation/**
@@ -715,6 +716,20 @@
         </copy>
         <jar jarfile="${eclipselink.jpa.test}/eclipselink-partitioned-model.jar">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/eclipselink-partitioned-model">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-plsql" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/eclipselink-plsql-model/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-plsql-model" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/eclipselink-plsql-model">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/plsql/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/eclipselink-plsql-model.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/eclipselink-plsql-model">
             </fileset>
         </jar>
     </target>

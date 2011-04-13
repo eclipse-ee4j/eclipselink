@@ -963,10 +963,10 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         @Override
         public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
             StoredProcedureCall spc = (StoredProcedureCall)anObject;
-            Vector parameterTypes = spc.getParameterTypes();
-            Vector parameters = spc.getParameters();
-            Vector procedureArgumentNames = spc.getProcedureArgumentNames();
-            Vector storedProcedureArguments = new Vector();
+            List parameterTypes = spc.getParameterTypes();
+            List parameters = spc.getParameters();
+            List procedureArgumentNames = spc.getProcedureArgumentNames();
+            List storedProcedureArguments = new Vector();
             for (int i = spc.getFirstParameterIndexForCallString(); i < parameterTypes.size(); i++) {
                 StoredProcedureArgument spa = null;
                 Integer direction = (Integer)parameterTypes.get(i);

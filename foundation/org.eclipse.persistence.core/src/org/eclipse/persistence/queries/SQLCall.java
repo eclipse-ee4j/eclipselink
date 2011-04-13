@@ -13,7 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import java.util.Vector;
+import java.util.List;
 import java.io.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -56,33 +56,34 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      * INTERNAL:
      * Set the data passed through setCustomSQLArgumentType and useCustomSQLCursorOutputAsResultSet methods.
      */
-    protected void afterTranslateCustomQuery(Vector updatedParameters, Vector updatedParameterTypes) {
-        for (int i = 0; i < getParameters().size(); i++) {
-            Integer parameterType = (Integer)getParameterTypes().elementAt(i);
-            Object parameter = getParameters().elementAt(i);
+    protected void afterTranslateCustomQuery(List updatedParameters, List<Integer> updatedParameterTypes) {
+        int size = getParameters().size();
+        for (int i = 0; i < size; i++) {
+            Integer parameterType = this.parameterTypes.get(i);
+            Object parameter = this.parameters.get(i);
             if ((parameterType == MODIFY) || (parameterType == OUT) || (parameterType == OUT_CURSOR) || ((parameterType == IN) && parameter instanceof DatabaseField)) {
                 DatabaseField field = afterTranslateCustomQueryUpdateParameter((DatabaseField)parameter, i, parameterType, updatedParameters, updatedParameterTypes);
                 if (field!=null){
-                    getParameters().setElementAt(field, i);
+                    this.parameters.set(i, field);
                 }
             } else if (parameterType == INOUT) {
                 DatabaseField outField = afterTranslateCustomQueryUpdateParameter((DatabaseField)((Object[])parameter)[1], i, parameterType, updatedParameters, updatedParameterTypes);
-                if (outField !=null){
+                if (outField != null) {
                     if (((Object[])parameter)[0] instanceof DatabaseField){
                         if ( ((Object[])parameter)[0] != ((Object[])parameter)[1] ) {
                             DatabaseField inField = outField.clone();
                             inField.setName( ((DatabaseField)((Object[])parameter)[0]).getName());
                             ((Object[])parameter)[0] = inField;
-                        }else {
+                        } else {
                             ((Object[])parameter)[0] = outField;
                         }
                     }
                     ((Object[])parameter)[1] = outField;
                 }
-            } else if ((parameterType == IN)&& (parameter instanceof DatabaseField)){
+            } else if ((parameterType == IN) && (parameter instanceof DatabaseField)){
                 DatabaseField field = afterTranslateCustomQueryUpdateParameter((DatabaseField)parameter, i, parameterType, updatedParameters, updatedParameterTypes);
-                if (field!=null){
-                    getParameters().setElementAt(field, i);
+                if (field != null) {
+                    this.parameters.set(i, field);
                 }
             }
         }
@@ -93,16 +94,17 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      * Set the data passed through setCustomSQLArgumentType and useCustomSQLCursorOutputAsResultSet methods.
      * This will return the null if the user did not add the field/type using the setCustomSQLArgumentType method
      */
-    protected DatabaseField afterTranslateCustomQueryUpdateParameter(DatabaseField field, int index, Integer parameterType, Vector updatedParameters, Vector updatedParameterTypes) {
-        for (int j = 0; j < updatedParameters.size(); j++) {
-            DatabaseField updateField = (DatabaseField)updatedParameters.elementAt(j);
+    protected DatabaseField afterTranslateCustomQueryUpdateParameter(DatabaseField field, int index, Integer parameterType, List updatedParameters, List<Integer> updatedParameterTypes) {
+        int size = updatedParameters.size();
+        for (int j = 0; j < size; j++) {
+            DatabaseField updateField = (DatabaseField)updatedParameters.get(j);
             if (field.equals(updateField)) {
-                Integer updateParameterType = (Integer)updatedParameterTypes.elementAt(j);
+                Integer updateParameterType = updatedParameterTypes.get(j);
                 if (updateParameterType == null) {
                     return updateField;
                 } else if (updateParameterType == OUT_CURSOR) {
                     if (parameterType == OUT) {
-                        getParameterTypes().setElementAt(OUT_CURSOR, index);
+                        this.parameterTypes.set(index, OUT_CURSOR);
                         return updateField;
                     } else {
                         throw ValidationException.cannotSetCursorForParameterTypeOtherThanOut(field.getName(), toString());
@@ -122,10 +124,12 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         return hasCustomSQLArguments;
     }
 
+    @Override
     public boolean isSQLCall() {
         return true;
     }
 
+    @Override
     public boolean isQueryStringCall() {
         return true;
     }
@@ -134,11 +138,12 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      * INTERNAL:
      * Called by prepare method only.
      */
+    @Override
     protected void prepareInternal(AbstractSession session) {
         if (hasCustomSQLArguments()) {
             // hold results of setCustomSQLArgumentType and useCustomSQLCursorOutputAsResultSet methods
-            Vector updatedParameters = null;
-            Vector updatedParameterTypes = null;
+            List updatedParameters = null;
+            List updatedParameterTypes = null;
             if (getParameters().size() > 0) {
                 updatedParameters = getParameters();
                 setParameters(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance());

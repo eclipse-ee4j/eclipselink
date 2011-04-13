@@ -251,6 +251,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return if the query is equal to the other.
      * This is used to allow dynamic expression query SQL to be cached.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -302,8 +303,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         } else if (query.hasOrderByExpressions()) {
             return false;
         }
-        return ((getReferenceClass() == query.getReferenceClass()) || ((getReferenceClass() != null) && getReferenceClass().equals(query.getReferenceClass())))
-            && ((getSelectionCriteria() == query.getSelectionCriteria()) || ((getSelectionCriteria() != null) && getSelectionCriteria().equals(query.getSelectionCriteria())));
+        if (! ((this.referenceClass == query.referenceClass) || ((this.referenceClass != null) && this.referenceClass.equals(query.referenceClass)))) {
+            return false;
+        }
+        Expression selectionCriteria = getSelectionCriteria();
+        Expression otherSelectionCriteria = query.getSelectionCriteria();
+        return ((selectionCriteria == otherSelectionCriteria) || ((selectionCriteria != null) && selectionCriteria.equals(otherSelectionCriteria)));
     }
         
     /**
@@ -311,16 +316,18 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Compute a consistent hash-code for the expression.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public int hashCode() {
         if (!isExpressionQuery()) {
             return super.hashCode();
         }
         int hashCode = 32;
-        if (getReferenceClass() != null) {
-            hashCode = hashCode + getReferenceClass().hashCode();
+        if (this.referenceClass != null) {
+            hashCode = hashCode + this.referenceClass.hashCode();
         }
-        if (getSelectionCriteria() != null) {
-            hashCode = hashCode + getSelectionCriteria().hashCode();
+        Expression selectionCriteria = getSelectionCriteria();
+        if (selectionCriteria != null) {
+            hashCode = hashCode + selectionCriteria.hashCode();
         }
         return hashCode;
     }
@@ -398,6 +405,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Clone the query
      */
+    @Override
     public Object clone() {
         ObjectLevelReadQuery cloneQuery = (ObjectLevelReadQuery)super.clone();
 
@@ -431,6 +439,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Normally selection criteria are not cloned here as they are cloned
      * later on during prepare.
      */
+    @Override
     public Object deepClone() {
         ObjectLevelReadQuery clone = (ObjectLevelReadQuery)clone();
         if (getSelectionCriteria() != null) {
@@ -719,6 +728,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Used to build the object, and register it if in the context of a unit of work. 
      */
+    @Override
     public Object buildObject(AbstractRecord row) {
         return this.descriptor.getObjectBuilder().buildObject(this, row);
     }
@@ -738,6 +748,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Ensure that the descriptor has been set.
      */
+    @Override
     public void checkDescriptor(AbstractSession session) throws QueryException {
         if (this.descriptor == null) {
             if (getReferenceClass() == null) {
@@ -761,6 +772,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Check to see if this query already knows the return value without performing any further work.
      */
+    @Override
     public Object checkEarlyReturn(AbstractSession session, AbstractRecord translationRow) {
         // For bug 3136413/2610803 building the selection criteria from an EJBQL string or
         // an example object is done just in time.
@@ -818,6 +830,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Check to see if this query needs to be prepare and prepare it.
      * The prepare is done on the original query to ensure that the work is not repeated.
      */
+    @Override
     public void checkPrepare(AbstractSession session, AbstractRecord translationRow, boolean force) {
         // CR#3823735 For custom queries the prePrepare may not have been called yet.
         if (!this.isPrePrepared || (this.descriptor == null)) {
@@ -1033,6 +1046,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * @exception  OptimisticLockException - an error has occurred using the optimistic lock feature.
      * @return An object, the result of executing the query.
      */
+    @Override
     public Object execute(AbstractSession session, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
         //Bug#2839852  Refreshing is not possible if the query uses checkCacheOnly.
         if (shouldRefreshIdentityMapResult() && shouldCheckCacheOnly()) {
@@ -1046,6 +1060,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Executes the prepared query on the datastore.
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException {
         // PERF: If the query has been set to optimize building its result
         // directly from the database result-set then follow an optimized path.
@@ -1119,6 +1134,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Execute the query in the unit of work.
      * This allows any pre-execute checks to be done for unit of work queries.
      */
+    @Override
     public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {        
         Object result = null;
         
@@ -1415,10 +1431,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /**
      * INTERNAL:
      * Lookup the descriptor for this item by traversing its expression recursively.
-     * @param expression
-     * @param rootDescriptor
-     * @return
-     * @throws org.eclipse.persistence.exceptions.QueryException
      */
     public ClassDescriptor getLeafDescriptorFor(Expression expression, ClassDescriptor rootDescriptor) throws QueryException {
         // The base case
@@ -1522,6 +1534,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * PUBLIC:
      * Return the reference class of the query.
      */
+    @Override
     public Class getReferenceClass() {
         return referenceClass;
     }
@@ -1645,6 +1658,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Set<DatabaseField> getFetchGroupNonNestedFieldsSet() {
         return getFetchGroupNonNestedFieldsSet(null);
     }
+    
+    /**
+     * INTERNAL:
+     * Return the set of fields required in the select clause, for fetch group reading.
+     */
     public Set<DatabaseField> getFetchGroupNonNestedFieldsSet(DatabaseMapping nestedMapping) {
         Set fetchedFields = new HashSet(getExecutionFetchGroup().getAttributeNames().size());
 
@@ -1827,6 +1845,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * PUBLIC:
      * Return if this is an object level read query.
      */
+    @Override
     public boolean isObjectLevelReadQuery() {
         return true;
     }
@@ -1906,14 +1925,17 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setIsPrepared(boolean isPrepared) {
         super.setIsPrepared(isPrepared);
-        this.isReferenceClassLocked = null;
-        this.concreteSubclassCalls = null;
+        if (!isPrepared) {
+            this.isReferenceClassLocked = null;
+            this.concreteSubclassCalls = null;
+        }
     }
 
     /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() throws QueryException {
         super.prepare();
         prepareQuery();
@@ -1955,6 +1977,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * By default this calls prepareFromQuery, but additional properties may be required
      * to be copied as prepareFromQuery only copies properties that affect the SQL.
      */
+    @Override
     public void copyFromQuery(DatabaseQuery query) {
         super.copyFromQuery(query);
         if (query.isObjectLevelReadQuery()) {
@@ -1977,6 +2000,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * dynamic queries.
      * This only copies over properties that are configured through EJBQL.
      */
+    @Override
     public void prepareFromQuery(DatabaseQuery query) {
         super.prepareFromQuery(query);
         if (query.isObjectLevelReadQuery()) {
@@ -2181,6 +2205,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepareForRemoteExecution() throws QueryException {
         super.prepareForRemoteExecution();
         checkPrePrepare(getSession());
@@ -2502,6 +2527,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * REQUIRED:
      * Set the reference class for the query.
      */
+    @Override
     public void setReferenceClass(Class aClass) {
         if (referenceClass != aClass) {
             setIsPrepared(false);
@@ -2513,24 +2539,31 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Set the reference class for the query.
      */
+    @Override
     public void setReferenceClassName(String aClass) {
-        if (referenceClassName != aClass) {
+        if (this.referenceClassName != aClass) {
             setIsPrepared(false);
         }
-        referenceClassName = aClass;
+        this.referenceClassName = aClass;
     }
 
 
+    /**
+     * PUBLIC:
+     * Set the Expression/where clause of the query.
+     * The expression should be defined using the query's ExpressionBuilder.
+     */
+    @Override
     public void setSelectionCriteria(Expression expression) {
         super.setSelectionCriteria(expression);
-        if ((expression != null) && (defaultBuilder != null) && (defaultBuilder.getQueryClass() == null)){
+        if ((expression != null) && (this.defaultBuilder != null) && (this.defaultBuilder.getQueryClass() == null)){
             // For flashback: Must make sure expression and defaultBuilder always in sync.
             ExpressionBuilder newBuilder = expression.getBuilder();
-            if (newBuilder != defaultBuilder) {
+            if (newBuilder != this.defaultBuilder) {
                 if (hasAsOfClause() && getAsOfClause().isUniversal()) {
-                    newBuilder.asOf(defaultBuilder.getAsOfClause());
+                    newBuilder.asOf(this.defaultBuilder.getAsOfClause());
                 }
-                defaultBuilder = newBuilder;
+                this.defaultBuilder = newBuilder;
             }
         }
     }
@@ -2711,6 +2744,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * i.e. does not use any properties that may conflict with another query
      * with the same JPQL or selection criteria.
      */
+    @Override
     public boolean isDefaultPropertiesQuery() {
         return super.isDefaultPropertiesQuery()
             && (!this.isResultSetOptimizedQuery)
@@ -3111,6 +3145,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         getBatchFetchPolicy().setBatchObjects(batchObjects);
     }
 
+    @Override
     public String toString() {
         String str = super.toString();
         if(this.fetchGroup != null) {

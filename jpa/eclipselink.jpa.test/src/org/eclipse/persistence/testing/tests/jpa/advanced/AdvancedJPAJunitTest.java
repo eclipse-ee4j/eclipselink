@@ -270,7 +270,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         try {
             query = em.createNamedQuery("StoredFunction_In");
             query.setParameter("P_IN", 1);
-            query.getResultList();
+            int result = (Integer)query.getSingleResult();
+            if (result != 1000) {
+                fail("Incorrect result returned:" + result);
+            }
         } finally {
             closeEntityManager(em);
         }

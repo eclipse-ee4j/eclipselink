@@ -13,15 +13,11 @@
 
 package org.eclipse.persistence.internal.helper;
 
-// Javase imports
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
-import java.util.Vector;
 import static java.lang.Integer.MIN_VALUE;
 
-// Java extension imports
-
-// EclipseLink imports
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
@@ -70,12 +66,12 @@ public interface DatabaseType {
     public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call);
 
     public void translate(PLSQLargument arg, AbstractRecord translationRow,
-        AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
-        Vector translationRowFields, Vector translationRowValues,
+        AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
+        List<DatabaseField> translationRowFields, List translationRowValues,
         StoredProcedureCall call);
 
     public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
-        DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues);
+        DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues);
 
     public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
         AbstractRecord translationRow, DatabasePlatform platform);
@@ -122,9 +118,9 @@ public interface DatabaseType {
         }
 
         public void translate(PLSQLargument arg, AbstractRecord translationRow,
-            AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
-            Vector translationRowFields, Vector translationRowValues,
-            StoredProcedureCall call) {
+                AbstractRecord copyOfTranslationRow, List copyOfTranslationFields,
+                List translationRowFields, List translationRowValues,
+                StoredProcedureCall call) {
             DatabaseField field = null;
             for (Iterator i = copyOfTranslationFields.iterator(); i.hasNext(); ) {
                 DatabaseField f = (DatabaseField)i.next();
@@ -142,13 +138,13 @@ public interface DatabaseType {
             if (arg.scale != MIN_VALUE) {
                 field.setScale(arg.scale);
             }
-            translationRowFields.setElementAt(field, arg.inIndex-1);
+            translationRowFields.set(arg.inIndex - 1, field);
             Object value = copyOfTranslationRow.get(field);
-            translationRowValues.setElementAt(value, arg.inIndex-1);
+            translationRowValues.set(arg.inIndex - 1, value);
         }
 
         public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
-            DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues) {
+                DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
             DatabaseField field = null;
             for (Iterator i = outputRowFields.iterator(); i.hasNext(); ) {
                 DatabaseField f = (DatabaseField)i.next();

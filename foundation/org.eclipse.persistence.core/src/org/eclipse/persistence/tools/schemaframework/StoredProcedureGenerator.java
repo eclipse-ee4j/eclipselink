@@ -107,7 +107,7 @@ public class StoredProcedureGenerator {
         while (tokenIndex != -1) {
             stringWriter.write(stringToModify.substring(startIndex, tokenIndex));
             startIndex = tokenIndex + 1;
-            Object parameter = call.getParameters().elementAt(nextParamIndex);
+            Object parameter = call.getParameters().get(nextParamIndex);
             if (parameter instanceof DatabaseField) {
                 stringWriter.write(replacementToken);
                 stringWriter.write(((DatabaseField)parameter).getName());

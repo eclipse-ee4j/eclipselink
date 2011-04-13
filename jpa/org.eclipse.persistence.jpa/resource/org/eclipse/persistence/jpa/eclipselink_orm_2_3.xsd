@@ -666,6 +666,8 @@
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="sql-result-set-mapping" 
                      type="orm:sql-result-set-mapping" 
                      minOccurs="0" maxOccurs="unbounded"/>
@@ -878,6 +880,8 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="sql-result-set-mapping" 
                    type="orm:sql-result-set-mapping" 
                    minOccurs="0" maxOccurs="unbounded"/>
@@ -3158,6 +3162,8 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/> 
       <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>            
+      <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="sql-result-set-mapping" 
                    type="orm:sql-result-set-mapping" 
                    minOccurs="0" maxOccurs="unbounded"/>
@@ -3378,6 +3384,8 @@
     <xsd:attribute name="multiple-result-sets" type="xsd:boolean"/>
     <xsd:attribute name="call-by-index" type="xsd:boolean"/>
   </xsd:complexType>
+  
+  <!-- **************************************************** -->
 
   <xsd:complexType name="named-stored-function-query">
     <xsd:annotation>
@@ -3441,6 +3449,134 @@
     <xsd:attribute name="result-set-mapping" type="xsd:string"/>
     <xsd:attribute name="function-name" type="xsd:string" use="required"/>
     <xsd:attribute name="call-by-index" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="named-plsql-stored-function-query">
+    <xsd:annotation>
+      <xsd:documentation>
+
+            /** 
+             * A NamedPLSQLStoredFunctionQuery annotation allows the definition of queries that 
+             * call PLSQL stored functions as named queries.
+             * The PLSQL support adds support for complex PLSQL types such as RECORD and TABLE types,
+             * that are not accessible from JDBC.
+             * 
+             * A NamedPLSQLStoredFunctionQuery annotation may be defined on an Entity or
+             * MappedSuperclass.
+             * 
+             * @author James Sutherland
+             * @since EclipseLink 2.3
+             */ 
+            @Target({TYPE})
+            @Retention(RUNTIME)
+            public @interface NamedPLSQLStoredFunctionQuery {
+                /**
+                 * (Required) Unique name that references this stored procedure query.
+                 */
+                String name();
+            
+                /**
+                 * (Optional) Query hints.
+                 */
+                QueryHint[] hints() default {};
+            
+                /**
+                 * (Optional) The name of the SQLResultMapping.
+                 */
+                String resultSetMapping() default "";
+            
+                /**
+                 * (Required) The name of the stored procedure.
+                 */
+                String functionName();
+                
+                /**
+                 * (Optional) Defines the parameters to the stored procedure.
+                 */
+                PLSQLParameter[] parameters() default {};
+                
+                /**
+                 * (Required) Defines the return value of the stored function.
+                 */
+                PLSQLParameter returnParameter();
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="hint" type="orm:query-hint" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="parameter" type="orm:plsql-parameter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="return-parameter" type="orm:plsql-parameter" minOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="result-set-mapping" type="xsd:string"/>
+    <xsd:attribute name="function-name" type="xsd:string" use="required"/>    
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="named-plsql-stored-procedure-query">
+    <xsd:annotation>
+      <xsd:documentation>
+
+            /** 
+             * A PLSQLNamedStoredProcedureQuery annotation allows the definition of queries that 
+             * call PLSQL stored procedures as named queries.
+             * The PLSQL support adds support for complex PLSQL types such as RECORD and TABLE types,
+             * that are not accessible from JDBC.
+             * 
+             * A PLSQLNamedStoredProcedureQuery annotation may be defined on an Entity or
+             * MappedSuperclass.
+             * 
+             * @author James Sutherland
+             * @since EclipseLink 2.3
+             */ 
+            @Target({TYPE})
+            @Retention(RUNTIME)
+            public @interface NamedPLSQLStoredProcedureQuery {
+                /**
+                 * (Required) Unique name that references this stored procedure query.
+                 */
+                String name();
+            
+                /**
+                 * (Optional) Query hints.
+                 */
+                QueryHint[] hints() default {};
+            
+                /**
+                 * (Optional) Refers to the class of the result.
+                 */
+                Class resultClass() default void.class;
+            
+                /**
+                 * (Optional) The name of the SQLResultMapping.
+                 */
+                String resultSetMapping() default "";
+            
+                /**
+                 * (Required) The name of the stored procedure.
+                 */
+                String procedureName();
+                
+                /**
+                 * (Optional) Defines the parameters to the stored procedure.
+                 */
+                PLSQLParameter[] parameters() default {};
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="hint" type="orm:query-hint" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="parameter" type="orm:plsql-parameter" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="result-class" type="xsd:string"/>
+    <xsd:attribute name="result-set-mapping" type="xsd:string"/>
+    <xsd:attribute name="procedure-name" type="xsd:string" use="required"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->
@@ -4300,6 +4436,11 @@
            * (Required) The query parameter name.
            */
           String queryParameter();
+    
+          /**
+           * (Optional) Define if the parameter is required, or optional and defaulted by the procedure.
+           */
+          boolean optional() default false;
 
           /**
            * (Optional) The type of Java class desired back from the procedure, 
@@ -4325,11 +4466,88 @@
     <xsd:attribute name="direction" type="orm:direction-type"/>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="query-parameter" type="xsd:string" use="required"/>
+    <xsd:attribute name="optional" type="xsd:boolean"/>
     <xsd:attribute name="type" type="xsd:string"/>
     <xsd:attribute name="jdbc-type" type="xsd:integer"/>
     <xsd:attribute name="jdbc-type-name" type="xsd:string"/>
   </xsd:complexType>
 
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="plsql-parameter">
+    <xsd:annotation>
+      <xsd:documentation>
+
+            /** 
+             * A PLSQLParameter annotation is used within a 
+             * NamedPLSQLStoredProcedureQuery or PLSQLRecord annotation.
+             * 
+             * @see NamedPLSQLStoredProcedureQuery
+             * @see PLSQLRecord
+             * @author James Sutherland
+             * @since EclipseLink 2.3
+             */ 
+            @Target({})
+            @Retention(RUNTIME)
+            public @interface PLSQLParameter {
+                /**
+                 * (Optional) The direction of the stored procedure parameter.
+                 */
+                Direction direction() default IN;
+            
+                /**
+                 * (Optional) Stored procedure parameter name.
+                 */
+                String name() default "";
+            
+                /**
+                 * (Required) The query parameter name.
+                 */
+                String queryParameter();
+                
+                /**
+                 * (Optional) Define if the parameter is required, or optional and defaulted by the procedure.
+                 */
+                boolean optional() default false;
+                
+                /**
+                 * (Optional) The database data-type for the paramter.
+                 * This either one of the type constants defined in OraclePLSQLTypes, or JDBCTypes,
+                 * or a custom record or table type name.
+                 * @see PLSQLRecord
+                 * @see OraclePLSQLTypes
+                 * @see JDBCTypes
+                 */
+                String databaseType() default "VARCHAR";
+                
+                /**
+                 * (Optional) The max length of the field value.
+                 */
+                int length() default 255;
+                
+                /**
+                 * (Optional) If a numeric, the max scale value.
+                 */
+                int scale() default 0;
+            
+                /**
+                 * (Optional) If a numeric, the max precision value.
+                 */
+                int precision() default 0;
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="direction" type="orm:direction-type"/>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="query-parameter" type="xsd:string" use="required"/>
+    <xsd:attribute name="optional" type="xsd:boolean"/>
+    <xsd:attribute name="database-type" type="xsd:string"/>
+    <xsd:attribute name="length" type="xsd:integer"/>
+    <xsd:attribute name="scale" type="xsd:integer"/>
+    <xsd:attribute name="precision" type="xsd:integer"/>
+  </xsd:complexType>
+  
   <!-- **************************************************** -->
 
   <xsd:complexType name="struct-converter">

@@ -582,6 +582,7 @@ public class ReportQuery extends ReadAllQuery {
      * By default return the row.
      * Used by cursored stream.
      */
+    @Override
     public Object buildObject(AbstractRecord row) {
         return buildObject(row, null);
     }
@@ -658,6 +659,7 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * The cache check is done before the prepare as a hit will not require the work to be done.
      */
+    @Override
     protected Object checkEarlyReturnLocal(AbstractSession session, AbstractRecord translationRow) {
         // Check for in-memory only query.
         if (shouldCheckCacheOnly()) {
@@ -673,6 +675,7 @@ public class ReportQuery extends ReadAllQuery {
      * This is done before the query is copied and prepared/executed.
      * null means there is none.
      */
+    @Override
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
         return null;
     }
@@ -681,6 +684,7 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * Clone the query.
      */
+    @Override
     public Object clone() {
         ReportQuery cloneQuery = (ReportQuery)super.clone();
         cloneQuery.items = new ArrayList<ReportItem>(this.items.size());
@@ -813,6 +817,7 @@ public class ReportQuery extends ReadAllQuery {
      * @exception  DatabaseException - an error has occurred on the database
      * @return either collection of objects, or report data resulting from execution of query.
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException {
         // ensure a pessimistic locking query will go down the write connection
        if (isLockQuery() && getSession().isUnitOfWork()) {
@@ -845,6 +850,7 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * Extract the correct query result from the transporter.
      */
+    @Override
     public Object extractRemoteResult(Transporter transporter) {
         return transporter.getObject();
     }
@@ -916,6 +922,7 @@ public class ReportQuery extends ReadAllQuery {
      * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
      * See ClassDescriptor for their types.
      */
+    @Override
     protected QueryRedirector getDefaultRedirector(){
         return descriptor.getDefaultReportQueryRedirector();
     }
@@ -1014,6 +1021,7 @@ public class ReportQuery extends ReadAllQuery {
      * PUBLIC:
      * Return if this is a report query.
      */
+    @Override
     public boolean isReportQuery() {
         return true;
     }
@@ -1023,6 +1031,7 @@ public class ReportQuery extends ReadAllQuery {
      * Prepare the receiver for execution in a session.
      * Initialize each item with its DTF mapping
      */
+    @Override
     protected void prepare() throws QueryException {
         if (prepareFromCachedQuery()) {
             return;
@@ -1067,6 +1076,7 @@ public class ReportQuery extends ReadAllQuery {
      * dynamic queries.
      * This only copies over properties that are configured through EJBQL.
      */
+    @Override
     public void prepareFromQuery(DatabaseQuery query) {
         super.prepareFromQuery(query);
         if (query.isReportQuery()) {
@@ -1080,26 +1090,13 @@ public class ReportQuery extends ReadAllQuery {
             this.shouldRetrievePrimaryKeys = reportQuery.shouldRetrievePrimaryKeys;
         }
     }
-        
-    /**
-     * INTERNAL:
-     * Return true if the query uses default properties.
-     * This is used to determine if this query is cacheable.
-     * i.e. does not use any properties that may conflict with another query
-     * with the same EJBQL or selection criteria.
-     */
-    public boolean isDefaultPropertiesQuery() {
-        return super.isDefaultPropertiesQuery()
-            && (!hasBatchReadAttributes())
-            && (!hasHierarchicalExpressions())
-            && (!getContainerPolicy().isCursorPolicy());
-    }
     
     /**
      * INTERNAL:
      * Return if the query is equal to the other.
      * This is used to allow dynamic expression query SQL to be cached.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -1292,6 +1289,7 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * Prepare the mechanism.
      */
+    @Override
     protected void prepareSelectAllRows() {
         prepareObjectAttributeCount(null);
 
@@ -1335,19 +1333,12 @@ public class ReportQuery extends ReadAllQuery {
         setSession(null);
         setTranslationRow(null);
     }
-
-    /**
-     * INTERNAL:
-     * Avoid processing fetch-groups for report query.
-     */
-    public void initializeFetchGroup() {
-        // Do nothing.
-    }
     
     /**
      * INTERNAL:
      * replace the value holders in the specified result object(s)
      */
+    @Override
     public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         // do nothing, since report queries do not return domain objects
         return null;

@@ -1059,4 +1059,11 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             eventManager.executeEvent(new DescriptorEvent(DescriptorEventManager.PostUpdateEvent, writeQuery));
         }
     }
+    
+    /**
+     * Unprepare the call if required.
+     */
+    public void unprepare() {
+        
+    }
 }

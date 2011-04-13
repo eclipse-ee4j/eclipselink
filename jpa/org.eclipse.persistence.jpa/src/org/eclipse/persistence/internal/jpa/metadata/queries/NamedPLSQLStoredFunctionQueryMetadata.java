@@ -21,34 +21,34 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.StoredFunctionCall;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 
 /**
  * INTERNAL:
- * Object to hold onto a named stored function query.
+ * Object to hold onto a named PLSQL stored function query.
  * 
  * @author James
  * @since EclipseLink 2.3
  */
-public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryMetadata {
-    private StoredProcedureParameterMetadata returnParameter;
+public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProcedureQueryMetadata {
+    private PLSQLParameterMetadata returnParameter;
 
-    public NamedStoredFunctionQueryMetadata() {
-        super("<named-stored-function-query>");
+    public NamedPLSQLStoredFunctionQueryMetadata() {
+        super("<named-plsql-stored-function-query>");
     }
 
-    public NamedStoredFunctionQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessor accessor) {
+    public NamedPLSQLStoredFunctionQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessor accessor) {
         super(namedStoredProcedureQuery, accessor);
          
-        this.returnParameter = new StoredProcedureParameterMetadata((MetadataAnnotation)namedStoredProcedureQuery.getAttribute("returnParameter"), accessor);
+        this.returnParameter = new PLSQLParameterMetadata((MetadataAnnotation)namedStoredProcedureQuery.getAttribute("returnParameter"), accessor);
         
         setProcedureName((String) namedStoredProcedureQuery.getAttribute("functionName"));
     }
 
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof NamedStoredFunctionQueryMetadata) {
-            NamedStoredFunctionQueryMetadata query = (NamedStoredFunctionQueryMetadata) objectToCompare;                        
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedPLSQLStoredFunctionQueryMetadata) {
+            NamedPLSQLStoredFunctionQueryMetadata query = (NamedPLSQLStoredFunctionQueryMetadata) objectToCompare;                        
             
             return valuesMatch(this.returnParameter, query.getReturnParameter());
         }
@@ -67,16 +67,15 @@ public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryM
     @Override
     public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
         // Build the stored procedure call.
-        StoredFunctionCall call = new StoredFunctionCall();
+        PLSQLStoredFunctionCall call = new PLSQLStoredFunctionCall();
         
         // Process the stored procedure parameters.
-        boolean callByIndex = (m_callByIndex == null) ? false : m_callByIndex;
-        for (StoredProcedureParameterMetadata parameter : getParameters()) {
-            parameter.process(call, project, callByIndex, false);
+        for (PLSQLParameterMetadata parameter : getParameters()) {
+            parameter.process(call, project, false);
         }
         
         if (getReturnParameter() != null) {
-            getReturnParameter().process(call, project, callByIndex, true);
+            getReturnParameter().process(call, project, true);
         }
         
         // Process the procedure name.
@@ -98,11 +97,11 @@ public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryM
         }
     }
 
-    public StoredProcedureParameterMetadata getReturnParameter() {
+    public PLSQLParameterMetadata getReturnParameter() {
         return returnParameter;
     }
 
-    public void setReturnParameter(StoredProcedureParameterMetadata returnParameter) {
+    public void setReturnParameter(PLSQLParameterMetadata returnParameter) {
         this.returnParameter = returnParameter;
     }
 }

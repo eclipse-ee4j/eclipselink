@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,27 +8,56 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-package org.eclipse.persistence.testing.models.plsql;
+ *     James Sutherland (Oracle) - initial impl
+ ******************************************************************************/ 
+package org.eclipse.persistence.testing.tests.jpa.plsql;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-public class PLSQLSystem extends TestSystem {
-    public PLSQLSystem() {
-        project = new PLSQLProject();
+import junit.framework.*;
+
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+
+public class PLSQLTestSuite extends JUnitTestCase {
+    public static boolean validDatabase = true;
+        
+    public static Test suite() {
+        TestSuite suite = new TestSuite("PLSQLTests");
+        suite.addTest(new PLSQLTestSuite("testSetup"));
+        suite.addTest(new PLSQLTestSuite("testSimpleProcedure"));
+        suite.addTest(new PLSQLTestSuite("testSimpleFunction"));
+        suite.addTest(new PLSQLTestSuite("testRecordOut"));
+        return suite;
     }
-
-    public void addDescriptors(DatabaseSession session) {
-        if (project == null) {
-            project = new PLSQLProject();
+    
+    public PLSQLTestSuite(String name) {
+        super(name);
+    }
+    
+    /**
+     * Return the name of the persistence context this test uses.
+     * This allow a subclass test to set this only in one place.
+     */
+    @Override
+    public String getPersistenceUnitName() {
+        return "plsql";
+    }
+    
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            warning("This test can only be run on Oracle.");
+            return;
         }
-        (session).addDescriptors(project);
+        createTables(getDatabaseSession());
     }
-
+    
     public void createTables(DatabaseSession session) {
-    	// Tables
+        // Tables
         try {
             session.executeNonSelectingSQL("DROP TABLE PLSQL_ADDRESS");
         } catch (Exception ignore) {}
@@ -39,25 +68,25 @@ public class PLSQLSystem extends TestSystem {
         
         // Procedures
         session.executeNonSelectingSQL("CREATE OR REPLACE PROCEDURE PLSQL_SIMPLE_IN(P_VARCHAR IN VARCHAR2 DEFAULT '', P_BOOLEAN IN BOOLEAN, P_BINARY_INTEGER IN BINARY_INTEGER, "
-        		+ "P_DEC IN DEC, P_INT IN INT, P_NATURAL IN NATURAL, P_NATURALN IN NATURALN, "
-        		+ "P_PLS_INTEGER IN PLS_INTEGER, P_POSITIVE IN POSITIVE, P_POSITIVEN IN POSITIVEN, P_SIGNTYPE IN SIGNTYPE, P_NUMBER IN NUMBER) AS "                
+                        + "P_DEC IN DEC, P_INT IN INT, P_NATURAL IN NATURAL, P_NATURALN IN NATURALN, "
+                        + "P_PLS_INTEGER IN PLS_INTEGER, P_POSITIVE IN POSITIVE, P_POSITIVEN IN POSITIVEN, P_SIGNTYPE IN SIGNTYPE, P_NUMBER IN NUMBER) AS "                
                 + "BEGIN NULL; END;");
         session.executeNonSelectingSQL("CREATE OR REPLACE PROCEDURE PLSQL_SIMPLE_IN_DEFAULTS(P_VARCHAR IN VARCHAR2 DEFAULT '', P_BOOLEAN IN BOOLEAN DEFAULT TRUE, P_BINARY_INTEGER IN BINARY_INTEGER DEFAULT 0, "
                 + "P_DEC IN DEC DEFAULT 0, P_INT IN INT DEFAULT 0, P_NATURAL IN NATURAL DEFAULT 1, P_NATURALN IN NATURALN DEFAULT 1, "
                 + "P_PLS_INTEGER IN PLS_INTEGER DEFAULT 0, P_POSITIVE IN POSITIVE DEFAULT 1, P_POSITIVEN IN POSITIVEN DEFAULT 1, P_SIGNTYPE IN SIGNTYPE DEFAULT 1, P_NUMBER IN NUMBER DEFAULT 0) AS "                
         + "BEGIN NULL; END;");
         session.executeNonSelectingSQL("CREATE OR REPLACE PROCEDURE PLSQL_SIMPLE_OUT(P_VARCHAR OUT VARCHAR2, P_BOOLEAN OUT BOOLEAN, P_BINARY_INTEGER OUT BINARY_INTEGER, "
-        		+ "P_DEC OUT DEC, P_INT OUT INT, P_NATURAL OUT NATURAL, " //P_NATURALN OUT NATURALN, "
-        		+ "P_PLS_INTEGER OUT PLS_INTEGER, P_POSITIVE OUT POSITIVE, " //P_POSITIVEN OUT POSITIVEN, "
-        		+ "P_SIGNTYPE OUT SIGNTYPE, P_NUMBER OUT NUMBER) AS "                
+                        + "P_DEC OUT DEC, P_INT OUT INT, P_NATURAL OUT NATURAL, " //P_NATURALN OUT NATURALN, "
+                        + "P_PLS_INTEGER OUT PLS_INTEGER, P_POSITIVE OUT POSITIVE, " //P_POSITIVEN OUT POSITIVEN, "
+                        + "P_SIGNTYPE OUT SIGNTYPE, P_NUMBER OUT NUMBER) AS "                
                 + "BEGIN P_VARCHAR := 'varchar'; P_BOOLEAN := true; P_BINARY_INTEGER := 123; "
                 + "P_DEC := 1; P_INT := 1; P_NATURAL := 1; " //P_NATURALN := 1; "
-        		+ "P_PLS_INTEGER := 1; P_POSITIVE := 1; " //P_POSITIVEN := 1; "
-        		+ "P_SIGNTYPE := 1; P_NUMBER := 123; \n"
+                        + "P_PLS_INTEGER := 1; P_POSITIVE := 1; " //P_POSITIVEN := 1; "
+                        + "P_SIGNTYPE := 1; P_NUMBER := 123; \n"
                 + "END;");
         session.executeNonSelectingSQL("CREATE OR REPLACE PROCEDURE PLSQL_SIMPLE_INOUT(P_VARCHAR IN OUT VARCHAR2, P_BOOLEAN IN OUT BOOLEAN, P_BINARY_INTEGER IN OUT BINARY_INTEGER, "
-        		+ "P_DEC IN OUT DEC, P_INT IN OUT INT, P_NATURAL IN OUT NATURAL, P_NATURALN IN OUT NATURALN, "
-        		+ "P_PLS_INTEGER IN OUT PLS_INTEGER, P_POSITIVE IN OUT POSITIVE, P_POSITIVEN IN OUT POSITIVEN, P_SIGNTYPE IN OUT SIGNTYPE, P_NUMBER IN OUT NUMBER) AS "                
+                        + "P_DEC IN OUT DEC, P_INT IN OUT INT, P_NATURAL IN OUT NATURAL, P_NATURALN IN OUT NATURALN, "
+                        + "P_PLS_INTEGER IN OUT PLS_INTEGER, P_POSITIVE IN OUT POSITIVE, P_POSITIVEN IN OUT POSITIVEN, P_SIGNTYPE IN OUT SIGNTYPE, P_NUMBER IN OUT NUMBER) AS "                
                 + "BEGIN NULL; END;");
         session.executeNonSelectingSQL("CREATE OR REPLACE PROCEDURE PLSQL_ADDRESS_IN(P_ADDRESS IN PLSQL_ADDRESS%ROWTYPE) AS "
                 + "BEGIN NULL; END;");
@@ -128,55 +157,55 @@ public class PLSQLSystem extends TestSystem {
                     + "END PLSQL_P; \n");
         session.executeNonSelectingSQL("CREATE OR REPLACE PACKAGE BODY PLSQL_P AS \n"
                     + "PROCEDURE PLSQL_CITY_LIST_IN(P_CITY_LIST IN PLSQL_CITY_LIST, P_CITY IN VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "NULL; \n"
-                    	+ "END PLSQL_CITY_LIST_IN; \n"
+                        + "BEGIN \n"
+                        + "NULL; \n"
+                        + "END PLSQL_CITY_LIST_IN; \n"
                     + "PROCEDURE PLSQL_CITY_LIST_OUT(P_CITY_LIST OUT PLSQL_CITY_LIST, P_CITY OUT VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "P_CITY := 'Nepean'; \n"
-                    	+ "P_CITY_LIST(1) := 'Ottawa'; \n"
-                    	+ "END PLSQL_CITY_LIST_OUT; \n"
+                        + "BEGIN \n"
+                        + "P_CITY := 'Nepean'; \n"
+                        + "P_CITY_LIST(1) := 'Ottawa'; \n"
+                        + "END PLSQL_CITY_LIST_OUT; \n"
                     + "PROCEDURE PLSQL_CITY_LIST_INOUT(P_CITY_LIST IN OUT PLSQL_CITY_LIST, P_CITY IN OUT VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "P_CITY := 'Nepean'; \n"
-                    	+ "P_CITY_LIST(1) := 'Ottawa'; \n"
-                    	+ "END PLSQL_CITY_LIST_INOUT; \n"
+                        + "BEGIN \n"
+                        + "P_CITY := 'Nepean'; \n"
+                        + "P_CITY_LIST(1) := 'Ottawa'; \n"
+                        + "END PLSQL_CITY_LIST_INOUT; \n"
                     + "PROCEDURE PLSQL_ADDRESS_LIST_IN(P_ADDRESS_LIST IN PLSQL_ADDRESS_LIST, P_CITY IN VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "NULL; \n"
-                    	+ "END PLSQL_ADDRESS_LIST_IN; \n"
+                        + "BEGIN \n"
+                        + "NULL; \n"
+                        + "END PLSQL_ADDRESS_LIST_IN; \n"
                     + "PROCEDURE PLSQL_ADDRESS_LIST_OUT(P_ADDRESS_LIST OUT PLSQL_ADDRESS_LIST, P_CITY OUT VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "P_CITY := 'Nepean'; "
-                    	+ "END PLSQL_ADDRESS_LIST_OUT; \n"
+                        + "BEGIN \n"
+                        + "P_CITY := 'Nepean'; "
+                        + "END PLSQL_ADDRESS_LIST_OUT; \n"
                     + "PROCEDURE PLSQL_ADDRESS_LIST_INOUT(P_ADDRESS_LIST IN OUT PLSQL_ADDRESS_LIST, P_CITY IN OUT VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "P_CITY := 'Nepean'; \n"
-                    	+ "END PLSQL_ADDRESS_LIST_INOUT; \n"
+                        + "BEGIN \n"
+                        + "P_CITY := 'Nepean'; \n"
+                        + "END PLSQL_ADDRESS_LIST_INOUT; \n"
                     + "PROCEDURE PLSQL_EMP_LIST_IN(P_EMP_LIST IN PLSQL_EMP_LIST, P_CITY IN VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "NULL; \n"
-                    	+ "END PLSQL_EMP_LIST_IN; \n"
+                        + "BEGIN \n"
+                        + "NULL; \n"
+                        + "END PLSQL_EMP_LIST_IN; \n"
                     + "PROCEDURE PLSQL_EMP_LIST_OUT(P_EMP_LIST OUT PLSQL_EMP_LIST, P_CITY OUT VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "P_CITY := 'Nepean'; "
-                    	+ "END PLSQL_EMP_LIST_OUT; \n"
+                        + "BEGIN \n"
+                        + "P_CITY := 'Nepean'; "
+                        + "END PLSQL_EMP_LIST_OUT; \n"
                     + "PROCEDURE PLSQL_EMP_LIST_INOUT(P_EMP_LIST IN OUT PLSQL_EMP_LIST, P_CITY IN OUT VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "P_CITY := 'Nepean'; "
-                    	+ "END PLSQL_EMP_LIST_INOUT; \n"
+                        + "BEGIN \n"
+                        + "P_CITY := 'Nepean'; "
+                        + "END PLSQL_EMP_LIST_INOUT; \n"
                     + "PROCEDURE PLSQL_EMP_IN(P_EMP IN PLSQL_EMP_REC, P_CITY IN VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "NULL; \n"
-                    	+ "END PLSQL_EMP_IN; \n"
+                        + "BEGIN \n"
+                        + "NULL; \n"
+                        + "END PLSQL_EMP_IN; \n"
                     + "PROCEDURE PLSQL_EMP_OUT(P_EMP OUT PLSQL_EMP_REC, P_CITY OUT VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "P_CITY := 'Nepean'; "
-                    	+ "END PLSQL_EMP_OUT; \n"
+                        + "BEGIN \n"
+                        + "P_CITY := 'Nepean'; "
+                        + "END PLSQL_EMP_OUT; \n"
                     + "PROCEDURE PLSQL_EMP_INOUT(P_EMP IN OUT PLSQL_EMP_REC, P_CITY IN OUT VARCHAR2) AS \n"
-                    	+ "BEGIN \n"
-                    	+ "P_CITY := 'Nepean'; \n"
-                    	+ "END PLSQL_EMP_INOUT; \n"
+                        + "BEGIN \n"
+                        + "P_CITY := 'Nepean'; \n"
+                        + "END PLSQL_EMP_INOUT; \n"
                     + "PROCEDURE PLSQL_ADDRESS_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_CUR) AS \n"
                         + "BEGIN \n"
                         + "OPEN P_ADDRESS FOR SELECT * FROM PLSQL_ADDRESS; \n"
@@ -187,8 +216,95 @@ public class PLSQLSystem extends TestSystem {
                         + "END PLSQL_ADDRESS_REC_CUR_OUT; \n"
                     + "END PLSQL_P; \n");
     }
-
-    public void populate(DatabaseSession session) {
-        //
+    
+    /**
+     * Test a simple procedure.
+     */
+    public void testSimpleProcedure() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createNamedQuery("PLSQL_SIMPLE_IN_DEFAULTS");
+            query.setParameter("P_VARCHAR", "test");
+            query.executeUpdate();
+            query = em.createNamedQuery("PLSQL_SIMPLE_IN_DEFAULTS");
+            query.setParameter("P_BOOLEAN", true);
+            query.executeUpdate();
+            query = em.createNamedQuery("PLSQL_SIMPLE_IN_DEFAULTS");
+            query.setParameter("P_VARCHAR", "test");
+            query.setParameter("P_BOOLEAN", true);
+            query.setParameter("P_BINARY_INTEGER", 1);
+            query.setParameter("P_DEC", 1);
+            query.setParameter("P_INT", 1);
+            query.setParameter("P_NATURAL", 1);
+            query.setParameter("P_NATURALN", 1);
+            query.setParameter("P_PLS_INTEGER", 1);
+            query.setParameter("P_POSITIVE", 1);
+            query.setParameter("P_POSITIVEN", 1);
+            query.setParameter("P_SIGNTYPE", 1);
+            query.setParameter("P_NUMBER", 1);
+            query.executeUpdate();
+            query.executeUpdate();
+            query = em.createNamedQuery("PLSQL_SIMPLE_IN_DEFAULTS");
+            query.setParameter("P_BOOLEAN", true);
+            query.executeUpdate();
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+    
+    /**
+     * Test a simple function.
+     */
+    public void testSimpleFunction() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createNamedQuery("PLSQL_SIMPLE_IN_FUNC");
+            query.setParameter("P_VARCHAR", "test");
+            query.setParameter("P_BOOLEAN", true);
+            query.setParameter("P_BINARY_INTEGER", 1);
+            query.setParameter("P_DEC", 1);
+            query.setParameter("P_INT", 1);
+            query.setParameter("P_NATURAL", 1);
+            query.setParameter("P_NATURALN", 1);
+            query.setParameter("P_PLS_INTEGER", 1);
+            query.setParameter("P_POSITIVE", 1);
+            query.setParameter("P_POSITIVEN", 1);
+            query.setParameter("P_SIGNTYPE", 1);
+            query.setParameter("P_NUMBER", 1);
+            int result = (Integer)query.getSingleResult();
+            if (result != 1) {
+                fail("Incorrect result.");
+            }
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+    
+    /**
+     * Test a record out procedure.
+     */
+    public void testRecordOut() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createNamedQuery("PLSQL_ADDRESS_OUT");
+            Object result = query.getSingleResult();
+            if (result == null) {
+                fail("Incorrect result.");
+            }
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
     }
 }

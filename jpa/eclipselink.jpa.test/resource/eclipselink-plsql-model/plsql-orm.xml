@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <persistence-unit-metadata>
+       <xml-mapping-metadata-complete/>
+    </persistence-unit-metadata>
+    <package>org.eclipse.persistence.testing.models.jpa.plsql</package>
+    <named-plsql-stored-procedure-query name="PLSQL_SIMPLE_IN_DEFAULTS" procedure-name="PLSQL_SIMPLE_IN_DEFAULTS">
+            <parameter query-parameter="P_VARCHAR" database-type="VARCHAR_TYPE" optional="true"/>
+            <parameter query-parameter="P_BOOLEAN" database-type="PLSQLBoolean" optional="true"/>
+            <parameter query-parameter="P_BINARY_INTEGER" database-type="BinaryInteger" optional="true"/>
+            <parameter query-parameter="P_DEC" database-type="Dec" optional="true"/>
+            <parameter query-parameter="P_INT" database-type="Int" optional="true"/>
+            <parameter query-parameter="P_NATURAL" database-type="Natural" optional="true"/>
+            <parameter query-parameter="P_NATURALN" database-type="NaturalN" optional="true"/>
+            <parameter query-parameter="P_PLS_INTEGER" database-type="PLSQLInteger" optional="true"/>
+            <parameter query-parameter="P_POSITIVE" database-type="Positive" optional="true"/>
+            <parameter query-parameter="P_POSITIVEN" database-type="PositiveN" optional="true"/>
+            <parameter query-parameter="P_SIGNTYPE" database-type="SignType" optional="true"/>
+            <parameter query-parameter="P_NUMBER" database-type="Number" optional="true"/>
+    </named-plsql-stored-procedure-query>
+    <named-plsql-stored-procedure-query name="PLSQL_ADDRESS_OUT" procedure-name="PLSQL_ADDRESS_OUT">
+            <parameter query-parameter="P_ADDRESS" direction="OUT" database-type="PLSQL_ADDRESS%ROWTYPE"/>
+    </named-plsql-stored-procedure-query>
+    <named-plsql-stored-function-query name="PLSQL_SIMPLE_IN_FUNC" function-name="PLSQL_SIMPLE_IN_FUNC">
+            <parameter query-parameter="P_VARCHAR" database-type="VARCHAR_TYPE"/>
+            <parameter query-parameter="P_BOOLEAN" database-type="PLSQLBoolean"/>
+            <parameter query-parameter="P_BINARY_INTEGER" database-type="BinaryInteger"/>
+            <parameter query-parameter="P_DEC" database-type="Dec"/>
+            <parameter query-parameter="P_INT" database-type="Int"/>
+            <parameter query-parameter="P_NATURAL" database-type="Natural"/>
+            <parameter query-parameter="P_NATURALN" database-type="NaturalN"/>
+            <parameter query-parameter="P_PLS_INTEGER" database-type="PLSQLInteger"/>
+            <parameter query-parameter="P_POSITIVE" database-type="Positive"/>
+            <parameter query-parameter="P_POSITIVEN" database-type="PositiveN"/>
+            <parameter query-parameter="P_SIGNTYPE" database-type="SignType"/>
+            <parameter query-parameter="P_NUMBER" database-type="Number"/>
+            <return-parameter query-parameter="RESULT" database-type="PLSQLBoolean"/>
+    </named-plsql-stored-function-query>
+    <entity class="Employee" access="FIELD">
+        <attributes>
+            <id name="id"/>
+        </attributes>
+    </entity>
+    <embeddable class="Address" access="FIELD"/>
+    <embeddable class="Phone" access="FIELD"/>
+</entity-mappings>

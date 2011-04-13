@@ -68,6 +68,8 @@ import org.eclipse.persistence.internal.jpa.metadata.partitioning.RoundRobinPart
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.UnionPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.ValuePartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredFunctionQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
@@ -98,6 +100,8 @@ public class XMLEntityMappings extends ORMetadata {
     private List<NamedQueryMetadata> m_namedQueries;
     private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries;
     private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries;
+    private List<NamedPLSQLStoredProcedureQueryMetadata> m_namedPLSQLStoredProcedureQueries;
+    private List<NamedPLSQLStoredFunctionQueryMetadata> m_namedPLSQLStoredFunctionQueries;
     private List<ObjectTypeConverterMetadata> m_objectTypeConverters;
     private List<SequenceGeneratorMetadata> m_sequenceGenerators;
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings;
@@ -331,6 +335,18 @@ public class XMLEntityMappings extends ORMetadata {
 
     public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
         return m_namedStoredFunctionQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedPLSQLStoredProcedureQueryMetadata> getNamedPLSQLStoredProcedureQueries() {
+        return m_namedPLSQLStoredProcedureQueries;
+    }
+
+    public List<NamedPLSQLStoredFunctionQueryMetadata> getNamedPLSQLStoredFunctionQueries() {
+        return m_namedPLSQLStoredFunctionQueries;
     }
     
     /**
@@ -683,6 +699,18 @@ public class XMLEntityMappings extends ORMetadata {
             namedStoredFunctionQuery.initXMLObject(m_file, this);
             m_project.addQuery(namedStoredFunctionQuery);
         }
+        
+        // Add the XML named stored procedure queries to the project.
+        for (NamedPLSQLStoredProcedureQueryMetadata namedPLSQLStoredProcedureQuery : m_namedPLSQLStoredProcedureQueries) {
+            namedPLSQLStoredProcedureQuery.initXMLObject(m_file, this);
+            m_project.addQuery(namedPLSQLStoredProcedureQuery);
+        }
+        
+        // Add the XML named stored function queries to the project.
+        for (NamedPLSQLStoredFunctionQueryMetadata namedPLSQLStoredFunctionQuery : m_namedPLSQLStoredFunctionQueries) {
+            namedPLSQLStoredFunctionQuery.initXMLObject(m_file, this);
+            m_project.addQuery(namedPLSQLStoredFunctionQuery);
+        }
             
         // Add the XML sql result set mappings to the project.
         for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings) {
@@ -970,6 +998,18 @@ public class XMLEntityMappings extends ORMetadata {
 
     public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
         m_namedStoredFunctionQueries = namedStoredFunctionQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedPLSQLStoredProcedureQueries(List<NamedPLSQLStoredProcedureQueryMetadata> namedPLSQLStoredProcedureQueries) {
+        m_namedPLSQLStoredProcedureQueries = namedPLSQLStoredProcedureQueries;
+    }
+
+    public void setNamedPLSQLStoredFunctionQueries(List<NamedPLSQLStoredFunctionQueryMetadata> namedPLSQLStoredFunctionQueries) {
+        m_namedPLSQLStoredFunctionQueries = namedPLSQLStoredFunctionQueries;
     }
     
     /**

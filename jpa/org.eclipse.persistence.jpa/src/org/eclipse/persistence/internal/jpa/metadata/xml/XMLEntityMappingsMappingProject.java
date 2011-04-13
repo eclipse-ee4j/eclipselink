@@ -143,9 +143,12 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.FetchAttributeMetad
 import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FieldResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredFunctionQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLParameterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryHintMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
@@ -223,6 +226,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildNamedStoredProcedureQueryDescriptor());
         addDescriptor(buildNamedStoredFunctionQueryDescriptor());
         addDescriptor(buildStoredProcedureParameterDescriptor());
+        addDescriptor(buildNamedPLSQLStoredProcedureQueryDescriptor());
+        addDescriptor(buildNamedPLSQLStoredFunctionQueryDescriptor());
+        addDescriptor(buildPLSQLParameterDescriptor());
         addDescriptor(buildSqlResultSetMappingDescriptor());
         addDescriptor(buildQueryHintDescriptor());
         addDescriptor(buildEntityResultDescriptor());
@@ -1262,6 +1268,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
         descriptor.addMapping(getNamedStoredFunctionQueryMapping());
+        descriptor.addMapping(getNamedPLSQLStoredProcedureQueryMapping());
+        descriptor.addMapping(getNamedPLSQLStoredFunctionQueryMapping());
         descriptor.addMapping(getResultSetMappingMapping());
         descriptor.addMapping(getQueryRedirectorsMapping());
         descriptor.addMapping(getExcludeDefaultListenersMapping());
@@ -1440,6 +1448,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
         descriptor.addMapping(getNamedStoredFunctionQueryMapping());
+        descriptor.addMapping(getNamedPLSQLStoredProcedureQueryMapping());
+        descriptor.addMapping(getNamedPLSQLStoredFunctionQueryMapping());
         descriptor.addMapping(getResultSetMappingMapping());
         
         XMLCompositeCollectionMapping mappedSuperclassMapping = new XMLCompositeCollectionMapping();
@@ -1919,6 +1929,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
         descriptor.addMapping(getNamedStoredFunctionQueryMapping());
+        descriptor.addMapping(getNamedPLSQLStoredProcedureQueryMapping());
+        descriptor.addMapping(getNamedPLSQLStoredFunctionQueryMapping());
         descriptor.addMapping(getResultSetMappingMapping());
         descriptor.addMapping(getQueryRedirectorsMapping());
         descriptor.addMapping(getExcludeDefaultListenersMapping());
@@ -2047,6 +2059,78 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         multipleResultSetsMapping.setSetMethodName("setMultipleResultSets");
         multipleResultSetsMapping.setXPath("@multiple-result-sets");
         descriptor.addMapping(multipleResultSetsMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: named-plsql-stored-procedure-query
+     */
+    protected ClassDescriptor buildNamedPLSQLStoredProcedureQueryDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NamedPLSQLStoredProcedureQueryMetadata.class);
+                
+        descriptor.addMapping(getHintMapping());
+        
+        XMLCompositeCollectionMapping procedureParameterMapping = new XMLCompositeCollectionMapping();
+        procedureParameterMapping.setAttributeName("m_parameters");
+        procedureParameterMapping.setGetMethodName("getParameters");
+        procedureParameterMapping.setSetMethodName("setParameters");
+        procedureParameterMapping.setReferenceClass(PLSQLParameterMetadata.class);
+        procedureParameterMapping.setXPath("orm:parameter");
+        descriptor.addMapping(procedureParameterMapping);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getResultClassAttributeMapping());
+        descriptor.addMapping(getResultSetMappingAttributeMapping());
+        
+        XMLDirectMapping procedureNameMapping = new XMLDirectMapping();
+        procedureNameMapping.setAttributeName("m_procedureName");
+        procedureNameMapping.setGetMethodName("getProcedureName");
+        procedureNameMapping.setSetMethodName("setProcedureName");
+        procedureNameMapping.setXPath("@procedure-name");
+        descriptor.addMapping(procedureNameMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: named-plsql-stored-function-query
+     */
+    protected ClassDescriptor buildNamedPLSQLStoredFunctionQueryDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NamedPLSQLStoredFunctionQueryMetadata.class);
+                
+        descriptor.addMapping(getHintMapping());
+        
+        XMLCompositeCollectionMapping procedureParameterMapping = new XMLCompositeCollectionMapping();
+        procedureParameterMapping.setAttributeName("m_parameters");
+        procedureParameterMapping.setGetMethodName("getParameters");
+        procedureParameterMapping.setSetMethodName("setParameters");
+        procedureParameterMapping.setReferenceClass(PLSQLParameterMetadata.class);
+        procedureParameterMapping.setXPath("orm:parameter");
+        descriptor.addMapping(procedureParameterMapping);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getResultClassAttributeMapping());
+        descriptor.addMapping(getResultSetMappingAttributeMapping());
+        
+        XMLDirectMapping procedureNameMapping = new XMLDirectMapping();
+        procedureNameMapping.setAttributeName("m_procedureName");
+        procedureNameMapping.setGetMethodName("getProcedureName");
+        procedureNameMapping.setSetMethodName("setProcedureName");
+        procedureNameMapping.setXPath("@function-name");
+        descriptor.addMapping(procedureNameMapping);
+
+        XMLCompositeObjectMapping returnParameterMapping = new XMLCompositeObjectMapping();
+        returnParameterMapping.setAttributeName("m_returnParameter");
+        returnParameterMapping.setGetMethodName("getReturnParameter");
+        returnParameterMapping.setSetMethodName("setReturnParameter");
+        returnParameterMapping.setReferenceClass(PLSQLParameterMetadata.class);
+        returnParameterMapping.setXPath("orm:return-parameter");
+        descriptor.addMapping(returnParameterMapping);
         
         return descriptor;
     }
@@ -2494,14 +2578,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapping.setAttributeName("startValue");
         mapping.setGetMethodName("getStartValue");
         mapping.setSetMethodName("setStartValue");
-        mapping.setXPath("@startValue");
+        mapping.setXPath("@start-value");
         descriptor.addMapping(mapping);
         
         mapping = new XMLDirectMapping();
         mapping.setAttributeName("endValue");
         mapping.setGetMethodName("getEndValue");
         mapping.setSetMethodName("setEndValue");
-        mapping.setXPath("@endValue");
+        mapping.setXPath("@end-value");
         descriptor.addMapping(mapping);
         
         descriptor.addMapping(getConnectionPoolMapping());
@@ -2519,6 +2603,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getUnionUnpartitionableQueriesMapping());
         descriptor.addMapping(getPartitionColumnMapping());
+        
+        XMLDirectMapping valueMapping = new XMLDirectMapping();
+        valueMapping.setAttributeName("partitionValueType");
+        valueMapping.setGetMethodName("getPartitionValueType");
+        valueMapping.setSetMethodName("setPartitionValueType");
+        valueMapping.setXPath("@partition-value-type");
+        descriptor.addMapping(valueMapping);
         
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName("partitions");
@@ -2684,6 +2775,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         queryParameterMapping.setSetMethodName("setQueryParameter");
         queryParameterMapping.setXPath("@query-parameter");
         descriptor.addMapping(queryParameterMapping);
+
+        XMLDirectMapping optionalMapping = new XMLDirectMapping();
+        optionalMapping.setAttributeName("m_optional");
+        optionalMapping.setGetMethodName("getOptional");
+        optionalMapping.setSetMethodName("setOptional");
+        optionalMapping.setXPath("@optional");
+        descriptor.addMapping(optionalMapping);
         
         XMLDirectMapping typeMapping = new XMLDirectMapping();
         typeMapping.setAttributeName("m_typeName");
@@ -2705,6 +2803,68 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         jdbcTypeNameMapping.setSetMethodName("setJdbcTypeName");
         jdbcTypeNameMapping.setXPath("@jdbc-type-name");
         descriptor.addMapping(jdbcTypeNameMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: plsql-parameter
+     */
+    protected ClassDescriptor buildPLSQLParameterDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PLSQLParameterMetadata.class);
+    
+        XMLDirectMapping directionMapping = new XMLDirectMapping();
+        directionMapping.setAttributeName("m_direction");
+        directionMapping.setGetMethodName("getDirection");
+        directionMapping.setSetMethodName("setDirection");
+        directionMapping.setXPath("@direction");
+        descriptor.addMapping(directionMapping);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        XMLDirectMapping queryParameterMapping = new XMLDirectMapping();
+        queryParameterMapping.setAttributeName("m_queryParameter");
+        queryParameterMapping.setGetMethodName("getQueryParameter");
+        queryParameterMapping.setSetMethodName("setQueryParameter");
+        queryParameterMapping.setXPath("@query-parameter");
+        descriptor.addMapping(queryParameterMapping);
+
+        XMLDirectMapping optionalMapping = new XMLDirectMapping();
+        optionalMapping.setAttributeName("m_optional");
+        optionalMapping.setGetMethodName("getOptional");
+        optionalMapping.setSetMethodName("setOptional");
+        optionalMapping.setXPath("@optional");
+        descriptor.addMapping(optionalMapping);
+        
+        XMLDirectMapping typeMapping = new XMLDirectMapping();
+        typeMapping.setAttributeName("m_databaseType");
+        typeMapping.setGetMethodName("getDatabaseType");
+        typeMapping.setSetMethodName("setDatabaseType");
+        typeMapping.setXPath("@database-type");
+        descriptor.addMapping(typeMapping);
+        
+        XMLDirectMapping lengthMapping = new XMLDirectMapping();
+        lengthMapping.setAttributeName("m_length");
+        lengthMapping.setGetMethodName("getLength");
+        lengthMapping.setSetMethodName("setLength");
+        lengthMapping.setXPath("@length");
+        descriptor.addMapping(lengthMapping);
+        
+        XMLDirectMapping precisionMapping = new XMLDirectMapping();
+        precisionMapping.setAttributeName("m_precision");
+        precisionMapping.setGetMethodName("getPrecision");
+        precisionMapping.setSetMethodName("setPrecision");
+        precisionMapping.setXPath("@precision");
+        descriptor.addMapping(precisionMapping);
+        
+        XMLDirectMapping scaleMapping = new XMLDirectMapping();
+        scaleMapping.setAttributeName("m_scale");
+        scaleMapping.setGetMethodName("getScale");
+        scaleMapping.setSetMethodName("setScale");
+        scaleMapping.setXPath("@scale");
+        descriptor.addMapping(scaleMapping);
         
         return descriptor;
     }
@@ -3010,6 +3170,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPartitionColumnMapping());
         
         XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("partitionValueType");
+        mapping.setGetMethodName("getPartitionValueType");
+        mapping.setSetMethodName("setPartitionValueType");
+        mapping.setXPath("@partition-value-type");
+        descriptor.addMapping(mapping);
+        
+        mapping = new XMLDirectMapping();
         mapping.setAttributeName("defaultConnectionPool");
         mapping.setGetMethodName("getDefaultConnectionPool");
         mapping.setSetMethodName("setDefaultConnectionPool");
@@ -4177,6 +4344,26 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         namedStoredFunctionQueryMapping.setSetMethodName("setNamedStoredFunctionQueries");
         namedStoredFunctionQueryMapping.setReferenceClass(NamedStoredFunctionQueryMetadata.class);
         namedStoredFunctionQueryMapping.setXPath("orm:named-stored-function-query");
+        return namedStoredFunctionQueryMapping;
+    }
+
+    protected XMLCompositeCollectionMapping getNamedPLSQLStoredProcedureQueryMapping() {
+        XMLCompositeCollectionMapping namedStoredFunctionQueryMapping = new XMLCompositeCollectionMapping();
+        namedStoredFunctionQueryMapping.setAttributeName("m_namedPLSQLStoredProcedureQueries");
+        namedStoredFunctionQueryMapping.setGetMethodName("getNamedPLSQLStoredProcedureQueries");
+        namedStoredFunctionQueryMapping.setSetMethodName("setNamedPLSQLStoredProcedureQueries");
+        namedStoredFunctionQueryMapping.setReferenceClass(NamedPLSQLStoredProcedureQueryMetadata.class);
+        namedStoredFunctionQueryMapping.setXPath("orm:named-plsql-stored-procedure-query");
+        return namedStoredFunctionQueryMapping;
+    }
+
+    protected XMLCompositeCollectionMapping getNamedPLSQLStoredFunctionQueryMapping() {
+        XMLCompositeCollectionMapping namedStoredFunctionQueryMapping = new XMLCompositeCollectionMapping();
+        namedStoredFunctionQueryMapping.setAttributeName("m_namedPLSQLStoredFunctionQueries");
+        namedStoredFunctionQueryMapping.setGetMethodName("getNamedPLSQLStoredFunctionQueries");
+        namedStoredFunctionQueryMapping.setSetMethodName("setNamedPLSQLStoredFunctionQueries");
+        namedStoredFunctionQueryMapping.setReferenceClass(NamedPLSQLStoredFunctionQueryMetadata.class);
+        namedStoredFunctionQueryMapping.setXPath("orm:named-plsql-stored-function-query");
         return namedStoredFunctionQueryMapping;
     }
 

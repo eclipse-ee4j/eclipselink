@@ -12,11 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
-//javase imports
 import java.util.ListIterator;
-import java.util.Vector;
+import java.util.List;
 
-//EclipseLink imports
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -114,7 +112,6 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
         this.javaTypeName = javaTypeName;
     }
 
-    @Override
     public ComplexDatabaseType clone() {
         try {
             ComplexDatabaseType clone = (ComplexDatabaseType)super.clone();
@@ -167,7 +164,7 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
         String sql2PlName = call.getSQL2PlName(this);
         if (sql2PlName == null) {
-        	// TODO exception
+            // TODO exception
             throw new NullPointerException("no SQL2Pl conversion routine for " + typeName);
         }
         String target = databaseTypeHelper.buildTarget(arg);
@@ -185,7 +182,7 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call) {
         String sql2PlName = call.getPl2SQLName(this);
         if (sql2PlName == null) {
-        	// TODO: Error.
+            // TODO: Error.
             throw new NullPointerException("no Pl2SQL conversion routine for " + typeName);
         }
         String target = databaseTypeHelper.buildTarget(outArg);
@@ -200,7 +197,7 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     }
 
     public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
-    				DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues) {
+    				DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
     	databaseTypeHelper.buildOutputRow(outArg, outputRow,
                 newOutputRow, outputRowFields, outputRowValues);
     }
@@ -214,13 +211,13 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     }
 
     public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
-        AbstractRecord translationRow, DatabasePlatform platform) {
+            AbstractRecord translationRow, DatabasePlatform platform) {
         databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
     }
 
     public void translate(PLSQLargument arg, AbstractRecord translationRow,
-	        AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
-	        Vector translationRowFields, Vector translationRowValues, StoredProcedureCall call) {
+	        AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
+	        List<DatabaseField> translationRowFields, List translationRowValues, StoredProcedureCall call) {
         databaseTypeHelper.translate(arg, translationRow, copyOfTranslationRow,
             copyOfTranslationFields, translationRowFields, translationRowValues, call);
     }

@@ -212,7 +212,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        getParameters().addElement(parameter);
+        getParameters().add(parameter);
     }
 
     /**
@@ -343,8 +343,9 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Return 1-based index of out cursor parameter, or -1.
      */
     public int getCursorOutIndex() {
-        for (int i = 0; i < getParameters().size(); i++) {
-            Object parameter = getParameters().elementAt(i);
+        int size = getParameters().size();
+        for (int i = 0; i < size; i++) {
+            Object parameter = this.parameters.get(i);
             if (parameter instanceof OutputParameterForCallableStatement) {
                 if (((OutputParameterForCallableStatement)parameter).isCursor()) {
                     return i + 1;
@@ -424,9 +425,10 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public Vector getOutputRowFields() {
         Vector fields = new Vector();
-        for (int i = 0; i < getParameters().size(); i++) {
-            Integer parameterType = (Integer)getParameterTypes().elementAt(i);
-            Object parameter = getParameters().elementAt(i);
+        int size = getParameters().size();
+        for (int i = 0; i < size; i++) {
+            Integer parameterType = this.parameterTypes.get(i);
+            Object parameter = this.parameters.get(i);
             if (parameterType == OUT) {
                 fields.add(parameter);
             } else if (parameterType == INOUT) {
@@ -578,14 +580,13 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Allow pre-printing of the SQL string for fully bound calls, to save from reprinting.
      * Should be called before translation.
      */
+    @Override
     public void prepare(AbstractSession session) {
-        if (isPrepared()) {
+        if (this.isPrepared) {
             return;
         }
-
         prepareInternal(session);
-
-        setIsPrepared(true);
+        this.isPrepared = true;
     }
 
     /**
@@ -606,8 +607,9 @@ public abstract class DatabaseCall extends DatasourceCall {
             // 2. If there are multiple OUT_CURSOR parameters - throw Validation exception
             int nFirstOutParameterIndex = -1;
             boolean hasFoundOutCursor = false;
-            for (int index = 0; index < parameters.size(); index++) {
-                Integer parameterType = (Integer)parameterTypes.elementAt(index);
+            int size = this.parameters.size();
+            for (int index = 0; index < size; index++) {
+                Integer parameterType = this.parameterTypes.get(index);
                 if (parameterType == DatasourceCall.OUT_CURSOR) {
                     if (hasFoundOutCursor) {
                         // one cursor has been already found
@@ -625,18 +627,19 @@ public abstract class DatabaseCall extends DatasourceCall {
                 }
             }
             if (!hasFoundOutCursor && (nFirstOutParameterIndex >= 0)) {
-                parameterTypes.setElementAt(DatasourceCall.OUT_CURSOR, nFirstOutParameterIndex);
+                this.parameterTypes.set(nFirstOutParameterIndex, DatasourceCall.OUT_CURSOR);
             }
         }
 
-        for (int i = 0; i < getParameters().size(); i++) {
-            Object parameter = getParameters().elementAt(i);
-            Integer parameterType = (Integer)getParameterTypes().elementAt(i);
+        int size = getParameters().size();
+        for (int i = 0; i < size; i++) {
+            Object parameter = this.parameters.get(i);
+            Integer parameterType = this.parameterTypes.get(i);
             if (parameterType == MODIFY) {
                 // in case the field's type is not set, the parameter type is set to CUSTOM_MODIFY.
                 DatabaseField field = (DatabaseField)parameter;
                 if ((field.getType() == null) || session.getPlatform().shouldUseCustomModifyForCall(field)) {
-                    getParameterTypes().setElementAt(CUSTOM_MODIFY, i);
+                    this.parameterTypes.set(i, CUSTOM_MODIFY);
                 }
             } else if (parameterType == INOUT) {
                 // In case there is a type in outField, outParameter is created.
@@ -672,9 +675,9 @@ public abstract class DatabaseCall extends DatasourceCall {
 
                 // outParameter contains all the info for registerOutputParameter call.
                 OutputParameterForCallableStatement outParameter = new OutputParameterForCallableStatement(outField, session, isCursor);
-                getParameters().setElementAt(outParameter, i);
+                this.parameters.set(i, outParameter);
                 // nothing to do during translate method
-                getParameterTypes().setElementAt(LITERAL, i);
+                this.parameterTypes.set(i, LITERAL);
             }
         }
         if (this.returnsResultSet == null) {
@@ -941,14 +944,15 @@ public abstract class DatabaseCall extends DatasourceCall {
      * INTERNAL:
      * Allow the call to translate from the translation for predefined calls.
      */
+    @Override
     public void translate(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
         if (!isPrepared()) {
             throw ValidationException.cannotTranslateUnpreparedCall(toString());
         }
         if (usesBinding(session) && (this.parameters != null)) {
             boolean hasParameterizedIN = false;
-            Vector parameters = getParameters();
-            Vector parameterTypes = getParameterTypes();
+            List parameters = getParameters();
+            List<Integer> parameterTypes = getParameterTypes();
             int size = parameters.size();
             Vector parametersValues = new Vector(size);
             for (int index = 0; index < size; index++) {
@@ -1005,19 +1009,26 @@ public abstract class DatabaseCall extends DatasourceCall {
                     }
                     // If the value is null, the field is passed as the value so the type can be obtained from the field.
                     if ((value == null) && (field != null)) {
-                        value = translationRow.getField(field);
-                        // The field from the row is used, as the calls field may not have the type,
-                        // but if the field is missing the calls field may also have the type.
-                        if (value == null) {
-                            value = field;
+                        if (!this.query.hasNullableArguments() || !this.query.getNullableArguments().contains(field)) {
+                            value = translationRow.getField(field);
+                            // The field from the row is used, as the calls field may not have the type,
+                            // but if the field is missing the calls field may also have the type.
+                            if (value == null) {
+                                value = field;
+                            }
+                            parametersValues.add(value);
                         }
+                    } else {
+                        parametersValues.add(value);
                     }
-                    parametersValues.add(value);
                 } else if (parameterType == LITERAL) {
                     parametersValues.add(parameter);
                 } else if (parameterType == IN) {
                     Object value = getValueForInParameter(parameter, translationRow, modifyRow, session, true);
-                    parametersValues.add(value);
+                    // Returning this means the parameter was optional and should not be included.
+                    if (value != this) {
+                        parametersValues.add(value);
+                    }
                 } else if (parameterType == INOUT) {
                     Object value = getValueForInOutParameter(parameter, translationRow, modifyRow, session);
                     parametersValues.add(value);
@@ -1045,8 +1056,8 @@ public abstract class DatabaseCall extends DatasourceCall {
         Writer writer = new CharArrayWriter(queryString.length() + 50);
         try {
             // PERF: This method is heavily optimized do not touch anything unless you know "very well" what your doing.
-            Vector parameters = getParameters();            
-            Vector parametersValues = new Vector(parameters.size());
+            List parameters = getParameters();            
+            List parametersValues = new ArrayList(parameters.size());
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
                 String token;

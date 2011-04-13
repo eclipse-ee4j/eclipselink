@@ -16,9 +16,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.persistence.annotations.Direction;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -28,6 +25,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 
 /**
@@ -48,6 +46,7 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 public class StoredProcedureParameterMetadata extends ORMetadata {
     private MetadataClass m_type;
     private String m_direction;
+    private Boolean m_optional;
     private Integer m_jdbcType;
     private String m_jdbcTypeName;
     private String m_name;
@@ -75,6 +74,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         m_type = getMetadataClass((String) storedProcedureParameter.getAttributeClass("type"));
         m_jdbcType = (Integer) storedProcedureParameter.getAttribute("jdbcType");
         m_jdbcTypeName = (String) storedProcedureParameter.getAttribute("jdbcTypeName");
+        m_optional = (Boolean) storedProcedureParameter.getAttribute("optional");
     }
     
     /**
@@ -102,6 +102,10 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             }
             
             if (! valuesMatch(m_name, parameter.getName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_optional, parameter.getOptional())) {
                 return false;
             }
             
@@ -200,9 +204,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public List<String> process(StoredProcedureCall call, MetadataProject project, boolean callByIndex) {
-        List<String> queryArguments = new ArrayList<String>();
-                    
+    public void process(StoredProcedureCall call, MetadataProject project, boolean callByIndex, boolean functionReturn) {                    
         // Process the procedure parameter name, defaults to the 
         // argument field name.
         // TODO: Log a message when defaulting.
@@ -210,9 +212,22 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         if (m_name == null || m_name.equals("")) {
             procedureParameterName = m_queryParameter;
         }
-                        
+
+        if ((m_optional != null) && m_optional) {
+            call.addOptionalArgument(m_queryParameter);
+        }
         // Process the parameter direction
-        if (m_direction == null || m_direction.equals(Direction.IN.name())) {
+        if (functionReturn) {
+            if (hasType()) {
+                ((StoredFunctionCall)call).setResult(procedureParameterName, getJavaClass(m_type));
+            } else if (hasJdbcType() && hasJdbcTypeName()) {
+                ((StoredFunctionCall)call).setResult(procedureParameterName, m_jdbcType, m_jdbcTypeName);
+            } else if (hasJdbcType()) {
+                ((StoredFunctionCall)call).setResult(procedureParameterName, m_jdbcType);
+            } else {
+                ((StoredFunctionCall)call).setResult(procedureParameterName);                
+            }
+        } else if (m_direction == null || m_direction.equals(Direction.IN.name())) {
             // TODO: Log a defaulting message if m_direction is null.
             if (hasType()) {
                 if (!callByIndex) {
@@ -239,7 +254,6 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                     call.addUnamedArgument(m_queryParameter);
                 }
             }
-            queryArguments.add(m_queryParameter);
         } else if (m_direction.equals(Direction.OUT.name())) {
             if (hasType()) {
                 if (!callByIndex) {
@@ -267,7 +281,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                 }
             }
             //set the project level settings on the argument's database fields
-            setDatabaseFieldSettings((DatabaseField)call.getParameters().lastElement(), project);
+            setDatabaseFieldSettings((DatabaseField)call.getParameters().get(call.getParameters().size() - 1), project);
         } else if (m_direction.equals(Direction.IN_OUT.name())) {
             if (hasType()) {
                 if (!callByIndex) {
@@ -295,12 +309,11 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                 }
             }
             //set the project level settings on the argument's out database field
-            Object[] array = (Object[])call.getParameters().lastElement();
+            Object[] array = (Object[])call.getParameters().get(call.getParameters().size() - 1);
             if (array[0] == array[1]){
                 array[1] = ((DatabaseField)array[1]).clone();
             }
             setDatabaseFieldSettings((DatabaseField)array[1], project);
-            queryArguments.add(m_queryParameter);
         } else if (m_direction.equals(Direction.OUT_CURSOR.name())) {
             boolean multipleCursors = false;
             if (call.getParameterTypes().contains(call.OUT_CURSOR)) {
@@ -315,9 +328,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             if (multipleCursors) {
                 call.setIsCursorOutputProcedure(false);
             }
-        }
-      
-        return queryArguments;    
+        } 
     }
 
     /**
@@ -385,5 +396,13 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      */
     public void setTypeName(String typeName) {
         m_typeName = typeName;
+    }
+    
+    public Boolean getOptional() {
+        return m_optional;
+    }
+
+    public void setOptional(Boolean optional) {
+        m_optional = optional;
     }
 }

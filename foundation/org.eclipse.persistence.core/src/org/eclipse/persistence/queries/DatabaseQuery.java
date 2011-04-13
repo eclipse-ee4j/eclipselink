@@ -176,6 +176,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * non-pre SQL generated queries.
      */
     protected boolean shouldPrepare;
+    
+    /**
+     * List of arguments to check for null.
+     * If any are null, the query needs to be re-prepared.
+     */
+    protected List<DatabaseField> nullableArguments;
 
     /** Bind all arguments to the SQL statement. */
 
@@ -359,10 +365,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * executeQuery()
      */
     public void addArgument(String argumentName) {
-        // CR#3545 - Changed the default argument type to make argument types
-        // work more consistently
-        // with the SDK
-        addArgument(argumentName, java.lang.Object.class);
+        addArgument(argumentName, Object.class);
     }
 
     /**
@@ -373,9 +376,25 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * identically named queries are used but with different argument lists.
      */
     public void addArgument(String argumentName, Class type) {
+        addArgument(argumentName, type, false);
+    }
+
+    /**
+     * PUBLIC: Add the argument named argumentName and its class type. This will
+     * cause the translation of references of argumentName in the receiver's
+     * expression, with the value of the argument as supplied to the query in
+     * order from executeQuery(). Specifying the class type is important if
+     * identically named queries are used but with different argument lists.
+     * If the argument can be null, and null must be treated differently in the
+     * generated SQL, then nullable should be set to true.
+     */
+    public void addArgument(String argumentName, Class type, boolean nullable) {
         getArguments().add(argumentName);
         getArgumentTypes().add(type);
         getArgumentTypeNames().add(type.getName());
+        if (nullable) {
+            getNullableArguments().add(new DatabaseField(argumentName));
+        }
     }
 
     /**
@@ -597,26 +616,22 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         try {
             DatabaseQuery cloneQuery = (DatabaseQuery) super.clone();
 
-            // Keep a reference back to the original source query.
-            cloneQuery.sourceMapping = this.sourceMapping;
-
             // partial fix for 3054240
             // need to pay attention to other components of the query, too MWN
             if (cloneQuery.properties != null) {
                 if (cloneQuery.properties.isEmpty()) {
-                    cloneQuery.setProperties(null);
+                    cloneQuery.properties = null;
                 } else {
-                    cloneQuery.setProperties(new HashMap(getProperties()));
+                    cloneQuery.properties = new HashMap(this.properties);
                 }
             }
 
             // bug 3524620: now that the query mechanism is lazy-init'd,
             // only clone the query mechanism if we have one.
-            if (hasQueryMechanism()) {
-                cloneQuery.setQueryMechanism(getQueryMechanism().clone(cloneQuery));
+            if (this.queryMechanism != null) {
+                cloneQuery.queryMechanism = this.queryMechanism.clone(cloneQuery);
             }
-            cloneQuery.setIsPrepared(isPrepared());// Setting some things will
-            // trigger unprepare.
+            cloneQuery.isPrepared = this.isPrepared; // Setting some things may trigger unprepare.
             return cloneQuery;
         } catch (CloneNotSupportedException e) {
             return null;
@@ -775,7 +790,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         // so the query keeps track if it has been cloned already.
         queryToExecute = session.prepareDatabaseQuery(queryToExecute);
 
-        if (queryToExecute.shouldPrepare()) {
+        boolean prepare = queryToExecute.shouldPrepare(translationRow);
+        if (prepare) {
             queryToExecute.checkPrepare(session, translationRow);
         }
 
@@ -791,7 +807,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
         // If the prepare has been disable the clone is prepare dynamically to
         // not parameterize the SQL.
-        if (!queryToExecute.shouldPrepare()) {
+        if (!prepare) {
+            queryToExecute.setIsPrepared(false);
+            queryToExecute.setTranslationRow(translationRow);
             queryToExecute.checkPrepare(session, translationRow);
         }
         queryToExecute.setSession(session);
@@ -1642,6 +1660,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.cascadePolicy = query.cascadePolicy;
         this.flushOnExecute = query.flushOnExecute;
         this.arguments = query.arguments;
+        this.nullableArguments = query.nullableArguments;
         this.argumentTypes = query.argumentTypes;
         this.argumentTypeNames = query.argumentTypeNames;
         this.argumentValues = query.argumentValues;
@@ -1658,6 +1677,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.shouldRetrieveBypassCache = query.shouldRetrieveBypassCache;
         this.shouldStoreBypassCache = query.shouldStoreBypassCache;
         this.parameterDelimiter = query.parameterDelimiter;
+        this.shouldCloneCall = query.shouldCloneCall;
+        this.partitioningPolicy = query.partitioningPolicy;
     }
 
     /**
@@ -1968,8 +1989,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setIsPrepared(boolean isPrepared) {
         this.isPrepared = isPrepared;
-        if (!isPrepared){
+        if (!isPrepared) {
             this.isCustomQueryUsed = null;
+            if (this.queryMechanism != null) {
+                this.queryMechanism.unprepare();
+            }
         }
     }
 
@@ -2366,6 +2390,26 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public boolean shouldPrepare() {
         return shouldPrepare;
     }
+    
+    /**
+     * INTERNAL:
+     * Check if the query should be prepared, or dynamic, depending on the arguments.
+     * This allows null parameters to affect the SQL, such as stored procedure default values,
+     * or IS NULL, or insert defaults.
+     */
+    public boolean shouldPrepare(AbstractRecord translationRow) {
+        if (!this.shouldPrepare) {
+            return false;
+        }
+        if (this.nullableArguments != null) {
+            for (DatabaseField argument : this.nullableArguments) {
+                if (translationRow.get(argument) == null) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     /**
      * ADVANCED: JPA flag used to control the behavior of the shared cache. This
@@ -2486,5 +2530,34 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setBatchObjects(Map<Object, Object> batchObjects) {
         setProperty(BATCH_FETCH_PROPERTY, batchObjects);
+    }
+
+    /**
+     * INTERNAL:
+     * Return if the query has any nullable arguments.
+     */
+    public boolean hasNullableArguments() {
+        return (this.nullableArguments != null) && !this.nullableArguments.isEmpty();
+    }
+
+    /**
+     * INTERNAL:
+     * Return the list of arguments to check for null.
+     * If any are null, the query needs to be re-prepared.
+     */
+    public List<DatabaseField> getNullableArguments() {
+        if (this.nullableArguments == null) {
+            this.nullableArguments = new ArrayList<DatabaseField>();
+        }
+        return nullableArguments;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the list of arguments to check for null.
+     * If any are null, the query needs to be re-prepared.
+     */
+    public void setNullableArguments(List<DatabaseField> nullableArguments) {
+        this.nullableArguments = nullableArguments;
     }
 }

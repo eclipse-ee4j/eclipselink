@@ -418,15 +418,14 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         DatabaseQuery query = getQuery();
         AbstractSession executionSession = query.getExecutionSession();
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall call = (DatasourceCall)callsEnum.nextElement();
+            for (DatasourceCall call : (List<DatasourceCall>)getCalls()) {
                 call.prepare(executionSession);
             }
         } else if (getCall() != null) {
             getCall().prepare(executionSession);
         }
     }
-
+    
     /**
      * Pre-build configure the call.
      */

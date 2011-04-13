@@ -94,7 +94,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
      * Define the field name to be substitute for the function return.
      */
     public void setResult(String name) {
-        DatabaseField returnField = (DatabaseField)getParameters().firstElement();
+        DatabaseField returnField = (DatabaseField)getParameters().get(0);
         returnField.setName(name);
     }
 
@@ -104,8 +104,31 @@ public class StoredFunctionCall extends StoredProcedureCall {
      * The type is the type of Java class desired back from the function, this is dependent on the type returned from the function.
      */
     public void setResult(String name, Class type) {
-        DatabaseField returnField = (DatabaseField)getParameters().firstElement();
+        DatabaseField returnField = (DatabaseField)getParameters().get(0);
         returnField.setName(name);
         returnField.setType(type);
+    }
+
+    /**
+     * PUBLIC:
+     * Define the field name to be substitute for the function return.
+     * The type is the type of Java class desired back from the function, this is dependent on the type returned from the function.
+     */
+    public void setResult(String name, int type, String typeName) {
+        ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(name);
+        field.setSqlType(type);
+        field.setSqlTypeName(typeName);
+        getParameters().set(0, field);
+    }
+
+    /**
+     * PUBLIC:
+     * Define the field name to be substitute for the function return.
+     * The type is the type of Java class desired back from the function, this is dependent on the type returned from the function.
+     */
+    public void setResult(String name, int type) {
+        DatabaseField returnField = (DatabaseField)getParameters().get(0);
+        returnField.setName(name);
+        returnField.setSqlType(type);
     }
 }

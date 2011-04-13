@@ -13,18 +13,16 @@
 
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
-// javase imports
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Vector;
 import static java.sql.Types.OTHER;
 import static java.sql.Types.STRUCT;
 
-// EclipseLink imports
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -189,9 +187,9 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
     }
 
     public void translate(PLSQLargument arg, AbstractRecord translationRow,
-        AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
-        Vector translationRowFields, Vector translationRowValues,
-        StoredProcedureCall call) {
+            AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
+            List<DatabaseField> translationRowFields, List translationRowValues,
+            StoredProcedureCall call) {
         if (hasCompatibleType()) {
             super.translate(arg, translationRow, copyOfTranslationRow,
                 copyOfTranslationFields, translationRowFields, translationRowValues, call);
@@ -204,7 +202,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
     }
 
     public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
-                DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues) {
+                DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
         if (hasCompatibleType()) {
             super.buildOutputRow(outArg, outputRow, newOutputRow, outputRowFields, outputRowValues);
         } else {

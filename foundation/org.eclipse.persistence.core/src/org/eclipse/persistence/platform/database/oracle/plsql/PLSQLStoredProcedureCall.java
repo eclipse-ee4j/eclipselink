@@ -566,11 +566,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     /**
      * INTERNAL
      * Generate portion of the Anonymous PL/SQL block that declares the temporary variables
-     * in the DECLARE section
-     * 
-     * @param sb
+     * in the DECLARE section.
      */
-    protected void buildDeclareBlock(StringBuilder sb) {
+    protected void buildDeclareBlock(StringBuilder sb, List<PLSQLargument> arguments) {
         List<PLSQLargument> inArguments = getArguments(arguments, IN);
         List<PLSQLargument> inOutArguments = getArguments(arguments, INOUT);
         inArguments.addAll(inOutArguments);
@@ -891,14 +889,12 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     /**
      * INTERNAL
      * Generate portion of the Anonymous PL/SQL block with PL/SQL conversion routines as
-     * nested functions
-     * 
-     * @param sb
+     * nested functions.
      */
-    protected void buildNestedFunctions(StringBuilder stream) {
+    protected void buildNestedFunctions(StringBuilder stream, List<PLSQLargument> arguments) {
         List<String> nestedFunctions = new ArrayList<String>();
         Set<DatabaseType> processed = new HashSet<DatabaseType>();
-        for (PLSQLargument arg : this.arguments) {
+        for (PLSQLargument arg : arguments) {
             DatabaseType type = arg.databaseType;
             addNestedFunctionsForArgument(nestedFunctions, arg, type, processed);
         }
@@ -911,12 +907,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     /**
      * INTERNAL Generate portion of the Anonymous PL/SQL block that assigns fields at the beginning
-     * of the BEGIN block (before invoking the target procedure)
-     * 
-     * @param sb
+     * of the BEGIN block (before invoking the target procedure).
      */
-    protected void buildBeginBlock(StringBuilder sb) {
-
+    protected void buildBeginBlock(StringBuilder sb, List<PLSQLargument> arguments) {
         List<PLSQLargument> inArguments = getArguments(arguments, IN);
         inArguments.addAll(getArguments(arguments, INOUT));
         for (PLSQLargument arg : inArguments) {
@@ -925,20 +918,17 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     }
 
     /**
-     * INTERNAL Generate portion of the Anonymous PL/SQL block that invokes the target procedure
-     * 
-     * @param sb
+     * INTERNAL Generate portion of the Anonymous PL/SQL block that invokes the target procedure.
      */
-    protected void buildProcedureInvocation(StringBuilder sb) {
-        
+    protected void buildProcedureInvocation(StringBuilder sb, List<PLSQLargument> arguments) {
         sb.append("  ");
         sb.append(getProcedureName());
         sb.append("(");
         int size = arguments.size(), idx = 1;
-        for (PLSQLargument arg : arguments) {
-            sb.append(arg.name);
+        for (PLSQLargument argument : arguments) {
+            sb.append(argument.name);
             sb.append("=>");
-            sb.append(databaseTypeHelper.buildTarget(arg));
+            sb.append(databaseTypeHelper.buildTarget(argument));
             if (idx < size) {
                 sb.append(", ");
                 idx++;
@@ -950,11 +940,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     /**
      * INTERNAL Generate portion of the Anonymous PL/SQL block after the target procedures has been
-     * invoked and OUT parameters must be handled
-     * 
-     * @param sb
+     * invoked and OUT parameters must be handled.
      */
-    protected void buildOutAssignments(StringBuilder sb) {
+    protected void buildOutAssignments(StringBuilder sb, List<PLSQLargument> arguments) {
         List<PLSQLargument> outArguments = getArguments(arguments, OUT);
         outArguments.addAll(getArguments(arguments, INOUT));
         for (PLSQLargument arg : outArguments) {
@@ -970,17 +958,36 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         // build any and all required type conversion routines for
         // complex PL/SQL types in packages
         this.typesInfo = new HashMap<String, TypeInfo>();
+        // Rest parameters to be recomputed if being reprepared.
+        this.parameters = null;
         // create a copy of the arguments re-ordered with different indices
         assignIndices();
+        
+        // Filter out any optional arguments that are null.
+        List<PLSQLargument> specifiedArguments = this.arguments;
+        AbstractRecord row = getQuery().getTranslationRow();
+        if ((row != null) && hasOptionalArguments()) {
+            for (PLSQLargument argument : this.arguments) {
+                DatabaseField queryArgument = new DatabaseField(argument.name);
+                if (this.optionalArguments.contains(queryArgument) && (row.get(queryArgument) == null)) {
+                    if (specifiedArguments == this.arguments) {
+                        specifiedArguments = new ArrayList<PLSQLargument>(this.arguments);
+                    }
+                    specifiedArguments.remove(argument);
+                }
+            }
+        }
         // build the Anonymous PL/SQL block in sections
         StringBuilder sb = new StringBuilder();
-        sb.append(BEGIN_DECLARE_BLOCK);
-        buildDeclareBlock(sb);
-        buildNestedFunctions(sb);
+        if (!specifiedArguments.isEmpty()) {
+            sb.append(BEGIN_DECLARE_BLOCK);
+            buildDeclareBlock(sb, specifiedArguments);
+            buildNestedFunctions(sb, specifiedArguments);
+        }
         sb.append(BEGIN_BEGIN_BLOCK);
-        buildBeginBlock(sb);
-        buildProcedureInvocation(sb);
-        buildOutAssignments(sb);
+        buildBeginBlock(sb, specifiedArguments);
+        buildProcedureInvocation(sb, specifiedArguments);
+        buildOutAssignments(sb, specifiedArguments);
         sb.append(END_BEGIN_BLOCK);
         setSQLStringInternal(sb.toString());
         super.prepareInternalParameters(session);
@@ -992,14 +999,13 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * This handles expanding and re-ordering parameters.          
      */                                                            
     @Override
-    public void translate(AbstractRecord translationRow, AbstractRecord modifyRow,
-        AbstractSession session) {
+    public void translate(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
         // re-order elements in translationRow to conform to re-ordered indices
         AbstractRecord copyOfTranslationRow = translationRow.clone();
         int len = copyOfTranslationRow.size();
-        Vector copyOfTranslationFields = copyOfTranslationRow.getFields();
+        List<DatabaseField> copyOfTranslationFields = copyOfTranslationRow.getFields();
         translationRow.clear();
-        Vector translationRowFields = translationRow.getFields();
+        Vector<DatabaseField> translationRowFields = translationRow.getFields();
         translationRowFields.setSize(len);
         Vector translationRowValues = translationRow.getValues();
         translationRowValues.setSize(len);
@@ -1055,8 +1061,21 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         sb.append(Helper.cr());
         sb.append(INDENT);
         sb.append("bind => [");
-        List<PLSQLargument> inArguments = getArguments(arguments, IN);
-        inArguments.addAll(getArguments(arguments, INOUT));
+        List<PLSQLargument> specifiedArguments = this.arguments;
+        AbstractRecord row = getQuery().getTranslationRow();
+        if ((row != null) && hasOptionalArguments()) {
+            for (PLSQLargument argument : this.arguments) {
+                DatabaseField queryArgument = new DatabaseField(argument.name);
+                if (this.optionalArguments.contains(queryArgument) && (row.get(queryArgument) == null)) {
+                    if (specifiedArguments == this.arguments) {
+                        specifiedArguments = new ArrayList<PLSQLargument>(this.arguments);
+                    }
+                    specifiedArguments.remove(argument);
+                }
+            }
+        }
+        List<PLSQLargument> inArguments = getArguments(specifiedArguments, IN);
+        inArguments.addAll(getArguments(specifiedArguments, INOUT));
         Collections.sort(inArguments, new Comparator<PLSQLargument>() {
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.inIndex - o2.inIndex;
@@ -1070,8 +1089,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 sb.append(", ");
             }
         }
-        List<PLSQLargument> outArguments = getArguments(arguments, OUT);
-        outArguments.addAll(getArguments(arguments, INOUT));
+        List<PLSQLargument> outArguments = getArguments(specifiedArguments, OUT);
+        outArguments.addAll(getArguments(specifiedArguments, INOUT));
         Collections.sort(outArguments, new Comparator<PLSQLargument>() {
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.outIndex - o2.outIndex;

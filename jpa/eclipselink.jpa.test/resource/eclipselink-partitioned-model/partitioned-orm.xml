@@ -138,7 +138,7 @@
         <inheritance strategy="JOINED"/>
         <discriminator-value>P</discriminator-value>
         <discriminator-column name="PROJ_TYPE"/>
-        <range-partitioning name="RangePartitioningByPROJ_ID" union-unpartitionable-queries="true">
+        <range-partitioning name="RangePartitioningByPROJ_ID" partition-value-type="java.lang.Integer" union-unpartitionable-queries="true">
             <partition-column name="PROJ_ID"/>
             <partition connection-pool="default" start-value="0" end-value="1000"/>
             <partition connection-pool="node2" start-value="1000" end-value="2000"/>

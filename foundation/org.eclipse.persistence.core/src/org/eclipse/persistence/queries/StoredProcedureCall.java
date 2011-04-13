@@ -12,10 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-//javase imports
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
-//EclipseLink imports
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -30,7 +29,8 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField
  */
 public class StoredProcedureCall extends DatabaseCall {
     protected String procedureName;
-    protected Vector procedureArgumentNames;
+    protected List<String> procedureArgumentNames;
+    protected List<DatabaseField> optionalArguments;
 
     public StoredProcedureCall() {
         super();
@@ -769,9 +769,9 @@ public class StoredProcedureCall extends DatabaseCall {
      * The if the names are provide the order is not required to match the call def.
      * This is lazy initialized to conserve space on calls that have no parameters.
      */
-    public Vector getProcedureArgumentNames() {
+    public List<String> getProcedureArgumentNames() {
         if (procedureArgumentNames == null) {
-            procedureArgumentNames = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            procedureArgumentNames = new ArrayList<String>();
         }
         return procedureArgumentNames;
     }
@@ -792,8 +792,9 @@ public class StoredProcedureCall extends DatabaseCall {
      * INTERNAL:
      * Called by prepare method only.
      */
-    protected void prepareInternal(AbstractSession session) {
-        setSQLStringInternal(session.getPlatform().buildProcedureCallString(this, session));
+    @Override
+    protected void prepareInternal(AbstractSession session) {        
+        setSQLStringInternal(session.getPlatform().buildProcedureCallString(this, session, getQuery().getTranslationRow()));
         super.prepareInternal(session);
     }
 
@@ -802,7 +803,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The if the names are provide the order is not required to match the call def.
      * This is lazy initialized to conserve space on calls that have no parameters.
      */
-    public void setProcedureArgumentNames(Vector procedureArgumentNames) {
+    public void setProcedureArgumentNames(List<String> procedureArgumentNames) {
         this.procedureArgumentNames = procedureArgumentNames;
     }
 
@@ -884,6 +885,44 @@ public class StoredProcedureCall extends DatabaseCall {
      * For Oracle a cursored output parameter can be used instead of a result set.
      */
     public void setReturnsResultSet(boolean returnsResultSet) {
-        this.returnsResultSet = Boolean.valueOf(returnsResultSet);
+        super.setReturnsResultSet(returnsResultSet);
+    }
+
+    /**
+     * PUBLIC:
+     * Add the optional argument.
+     * This will be ignored if null and defaulted by the database.
+     */
+    public void addOptionalArgument(String argument) {
+        getOptionalArguments().add(new DatabaseField(argument));
+    }
+
+    /**
+     * INTERNAL:
+     * Return if there are any optional arguments.
+     */
+    public boolean hasOptionalArguments() {
+        return (this.optionalArguments != null) && !this.optionalArguments.isEmpty();
+    }
+
+    /**
+     * INTERNAL:
+     * Return the list of optional arguments.
+     * These will be ignored if null and defaulted by the database.
+     */
+    public List<DatabaseField> getOptionalArguments() {
+        if (this.optionalArguments == null) {
+            this.optionalArguments = new ArrayList<DatabaseField>();
+        }
+        return this.optionalArguments;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the list of optional arguments.
+     * These will be ignored if null and defaulted by the database.
+     */
+    public void setOptionalArguments(List<DatabaseField> optionalArguments) {
+        this.optionalArguments = optionalArguments;
     }
 }

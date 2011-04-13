@@ -13,11 +13,10 @@
 
 package org.eclipse.persistence.platform.database.jdbc;
 
-//javase imports
 import java.sql.Array;
 import java.sql.Struct;
+import java.util.List;
 import java.util.ListIterator;
-import java.util.Vector;
 import static java.lang.Integer.MIN_VALUE;
 import static java.sql.Types.ARRAY;
 import static java.sql.Types.BIGINT;
@@ -50,8 +49,8 @@ import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
 
-//EclipseLink imports
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -221,21 +220,21 @@ public enum JDBCTypes implements JDBCType {
         }
 
         public void translate(PLSQLargument arg, AbstractRecord translationRow,
-            AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
-            Vector translationRowFields, Vector translationRowValues,
-            StoredProcedureCall call) {
+                AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
+                List<DatabaseField> translationRowFields, List translationRowValues,
+                StoredProcedureCall call) {
             databaseTypeHelper.translate(arg, translationRow, copyOfTranslationRow,
                 copyOfTranslationFields, translationRowFields, translationRowValues, call);
         }
 
         public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
-            DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues) {
+                DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
             databaseTypeHelper.buildOutputRow(outArg, outputRow,
                 newOutputRow, outputRowFields, outputRowValues);
         }
 
         public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
-            AbstractRecord translationRow, DatabasePlatform platform) {
+                AbstractRecord translationRow, DatabasePlatform platform) {
             databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
         }
 

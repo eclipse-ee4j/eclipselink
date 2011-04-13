@@ -148,6 +148,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * It will cause the original to be cached in the query results if the query
      * is set to do so.
      */
+    @Override
     public void cacheResult(Object unwrappedOriginal) {
         Collection container = (Collection)getTemporaryCachedQueryResults();
         if (container == null) {
@@ -161,6 +162,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * The cache check is done before the prepare as a hit will not require the work to be done.
      */
+    @Override
     protected Object checkEarlyReturnLocal(AbstractSession session, AbstractRecord translationRow) {
         // Check for in-memory only query.
         if (shouldCheckCacheOnly()) {
@@ -196,6 +198,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * This is done before the query is copied and prepared/executed.
      * null means there is none.
      */
+    @Override
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
         checkDescriptor(session);
 
@@ -214,6 +217,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Clone the query.
      */
+    @Override
     public Object clone() {
         ReadAllQuery cloneQuery = (ReadAllQuery)super.clone();
 
@@ -343,6 +347,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * @return An object or vector, the result of executing the query.
      * @exception DatabaseException - an error has occurred on the database
      */
+    @Override
     public Object execute(AbstractSession session, AbstractRecord row) throws DatabaseException {        
         if (shouldCacheQueryResults()) {
             if (getContainerPolicy().overridesRead()) {
@@ -392,6 +397,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * @exception  DatabaseException - an error has occurred on the database
      * @return java.lang.Object collection of objects resulting from execution of query.
      */
+    @Override
     protected Object executeObjectLevelReadQuery() throws DatabaseException {
         Object result = null;
         
@@ -456,6 +462,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * @exception  DatabaseException - an error has occurred on the database
      * @return an ArrayList of the resulting objects.
      */
+    @Override
     protected Object executeObjectLevelReadQueryFromResultSet() throws DatabaseException {
         AbstractSession session = this.session;
         DatabasePlatform platform = session.getPlatform();
@@ -511,6 +518,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Extract the correct query result from the transporter.
      */
+    @Override
     public Object extractRemoteResult(Transporter transporter) {
         return ((RemoteSession)getSession()).getObjectsCorrespondingToAll(transporter.getObject(), transporter.getObjectDescriptors(), new IdentityHashMap(), this, getContainerPolicy());
     }
@@ -518,7 +526,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     /**
      * INTERNAL:
      * Return the query's container policy.
-     * @return org.eclipse.persistence.internal.queries.ContainerPolicy
      */
     public ContainerPolicy getContainerPolicy() {
         return containerPolicy;
@@ -529,7 +536,8 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
      * See ClassDescriptor for their types.
      */
-    protected QueryRedirector getDefaultRedirector(){
+    @Override
+    protected QueryRedirector getDefaultRedirector() {
         return descriptor.getDefaultReadAllQueryRedirector();
     }
 
@@ -573,6 +581,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * i.e. does not use any properties that may conflict with another query
      * with the same JPQL or selection criteria.
      */
+    @Override
     public boolean isDefaultPropertiesQuery() {
         return super.isDefaultPropertiesQuery()
             && (!hasBatchReadAttributes())
@@ -585,6 +594,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Return if the query is equal to the other.
      * This is used to allow dynamic expression query SQL to be cached.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -603,6 +613,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * PUBLIC:
      * Return if this is a read all query.
      */
+    @Override
     public boolean isReadAllQuery() {
         return true;
     }
@@ -611,6 +622,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() throws QueryException {
         if ((!isReportQuery()) && prepareFromCachedQuery()) {
             return;
@@ -638,6 +650,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * dynamic queries.
      * This only copies over properties that are configured through JPQL.
      */
+    @Override
     public void prepareFromQuery(DatabaseQuery query) {
         super.prepareFromQuery(query);
         if (query.isReadAllQuery()) {
@@ -655,6 +668,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Set the properties needed to be cascaded into the custom query.
      */
+    @Override
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
         ReadAllQuery customReadQuery = (ReadAllQuery)customQuery;
         customReadQuery.containerPolicy = this.containerPolicy;
@@ -668,6 +682,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
         
@@ -710,6 +725,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      *
      * @return the final (conformed, refreshed, wrapped) UnitOfWork query result
      */
+    @Override
     public Object registerResultInUnitOfWork(Object result, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, boolean buildDirectlyFromRows) {
         // For bug 2612366: Conforming results in UOW extremely slow.
         // Replacing results with registered versions in the UOW is a part of 
@@ -795,6 +811,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Execute the query through remote session.
      */
+    @Override
     public Object remoteExecute() {
         if (this.containerPolicy.overridesRead()) {
             return this.containerPolicy.remoteExecute();
@@ -812,6 +829,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * replace the value holders in the specified result object(s)
      */
+    @Override
     public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         return controller.replaceValueHoldersInAll(object, getContainerPolicy());
     }

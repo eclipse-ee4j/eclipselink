@@ -34,12 +34,12 @@ public interface QueryStringCall extends Call {
      * The parameters are the values in order of occurance in the SQL statement.
      * This is lazy initialized to conserv space on calls that have no parameters.
      */
-    public Vector getParameters();
+    public List getParameters();
 
     /**
      * The parameter types determine if the parameter is a modify, translation or litteral type.
      */
-    public Vector getParameterTypes();
+    public List<Integer> getParameterTypes();
 
     /**
      * The parameters are the values in order of occurance in call.

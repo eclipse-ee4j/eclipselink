@@ -61,6 +61,35 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     }
 
     /**
+     * Unprepare the call if required.
+     * Clone and unprepare stored procedure calls, so they can be reprepared with possible different optional arguments.
+     */
+    public void unprepare() {
+        DatabaseQuery query = this.query;
+        if (hasMultipleCalls()) {
+            this.calls = ((Vector)this.calls.clone());
+            int size = this.calls.size();
+            for (int index = 0; index < size; index++) {
+                DatabaseCall call = (DatabaseCall)this.calls.get(index);
+                if (call.isPrepared() && call.isStoredProcedureCall()
+                        && ((StoredProcedureCall)call).hasOptionalArguments()) {
+                    call = (DatabaseCall)call.clone();
+                    call.setIsPrepared(false);
+                    call.setQuery(query);
+                    this.calls.set(index, call);
+                }
+            }
+        } else if (this.call != null) {
+            if (this.call.isPrepared() && this.call.isStoredProcedureCall()
+                    && ((StoredProcedureCall)this.call).hasOptionalArguments()) {
+                this.call = (DatabaseCall)this.call.clone();
+                this.call.setIsPrepared(false);
+                this.call.setQuery(query);
+            }
+        }
+    }
+    
+    /**
      * INTERNAL:
      * This is different from 'prepareForExecution' in that this is called on the original query,
      * and the other is called on the copy of the query.
@@ -68,15 +97,21 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
      * will apply to any future execution of this query.
      */
     public void prepareCall() throws QueryException {
-        DatabaseQuery query = getQuery();
+        DatabaseQuery query = this.query;
         AbstractSession executionSession = query.getExecutionSession();
         if (hasMultipleCalls()) {
-            if(getQuery().shouldCloneCall()){
-                //For glassFish bug2689, the call needs to be cloned when query asks to do so. 
-                calls = ((Vector)getCalls().clone());
+            if (query.shouldCloneCall()) {
+                this.calls = ((Vector)this.calls.clone());
             }
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatabaseCall call = (DatabaseCall)callsEnum.nextElement();
+            int size = this.calls.size();
+            for (int index = 0; index < size; index++) {
+                DatabaseCall call = (DatabaseCall)this.calls.get(index);
+                if (query.shouldCloneCall()) {
+                    // Need to clone the call if setting query specific properties on it as the call may be shared.
+                    call = (DatabaseCall)call.clone();
+                    call.setQuery(query);
+                    this.calls.set(index, call);
+                }
                 if (!query.shouldIgnoreBindAllParameters()) {
                     call.setUsesBinding(query.shouldBindAllParameters());
                 }
@@ -102,13 +137,13 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
                 }
                 call.prepare(executionSession);
             }
-        } else if (getCall() != null) {
-            if (getQuery().shouldCloneCall()){
-                //For glassFish bug2689, the call needs to be cloned when query asks to do so. 
-                call = (DatabaseCall)getDatabaseCall().clone();
-                setCall(call);
-            } 
-            DatabaseCall call = getDatabaseCall();
+        } else if (this.call != null) {
+            if (query.shouldCloneCall()) {
+                // Need to clone the call if setting query specific properties on it as the call may be shared.
+                this.call = (DatabaseCall)this.call.clone();
+                call.setQuery(query);
+            }
+            DatabaseCall call = (DatabaseCall)this.call;
             if (!query.shouldIgnoreBindAllParameters()) {
                 call.setUsesBinding(query.shouldBindAllParameters());
             }

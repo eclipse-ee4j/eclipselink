@@ -423,8 +423,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             appendLiteralToCallWithBinding(call, writer, literal);
         } else {
             int nParametersToAdd = appendParameterInternal(call, writer, literal);
-            for(int i=0; i < nParametersToAdd; i++ ) {
-                ((DatabaseCall)call).getParameterTypes().addElement(DatabaseCall.LITERAL);
+            for (int i = 0; i < nParametersToAdd; i++) {
+                ((DatabaseCall)call).getParameterTypes().add(DatabaseCall.LITERAL);
             }
         }
     }
@@ -714,7 +714,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Return the proc syntax for this platform.
      */
-    public String buildProcedureCallString(StoredProcedureCall call, AbstractSession session) {
+    public String buildProcedureCallString(StoredProcedureCall call, AbstractSession session, AbstractRecord row) {
         StringWriter writer = new StringWriter();
         writer.write(call.getCallHeader(this));
         writer.write(call.getProcedureName());
@@ -725,23 +725,28 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
 
         int indexFirst = call.getFirstParameterIndexForCallString();
-        for (int index = indexFirst; index < call.getParameters().size(); index++) {
-            String name = (String)call.getProcedureArgumentNames().elementAt(index);
-            Integer parameterType = (Integer)call.getParameterTypes().elementAt(index);
-            if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
-                writer.write(getProcedureArgumentString());
-                writer.write(name);
-                writer.write(getProcedureArgumentSetter());
-            }
-            writer.write("?");
-            if (call.isOutputParameterType(parameterType)) {
-                if (requiresProcedureCallOuputToken()) {
-                    writer.write(" ");
-                    writer.write(getOutputProcedureToken());
+        int size = call.getParameters().size();
+        for (int index = indexFirst; index < size; index++) {
+            String name = call.getProcedureArgumentNames().get(index);
+            Object parameter = call.getParameters().get(index);
+            Integer parameterType = call.getParameterTypes().get(index);
+            // If the argument is optional and null, ignore it.
+            if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
+                if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
+                    writer.write(getProcedureArgumentString());
+                    writer.write(name);
+                    writer.write(getProcedureArgumentSetter());
                 }
-            }
-            if ((index + 1) < call.getParameters().size()) {
-                writer.write(", ");
+                writer.write("?");
+                if (call.isOutputParameterType(parameterType)) {
+                    if (requiresProcedureCallOuputToken()) {
+                        writer.write(" ");
+                        writer.write(getOutputProcedureToken());
+                    }
+                }
+                if ((index + 1) < call.getParameters().size()) {
+                    writer.write(", ");
+                }
             }
         }
         call.setProcedureArgumentNames(null);

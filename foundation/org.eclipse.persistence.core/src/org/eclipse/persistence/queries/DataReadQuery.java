@@ -88,6 +88,7 @@ public class DataReadQuery extends ReadQuery {
      * It will cause the original to be cached in the query results if the query
      * is set to do so.
      */
+    @Override
     public void cacheResult(Object results) {
         setTemporaryCachedQueryResults(results);
     }
@@ -96,9 +97,10 @@ public class DataReadQuery extends ReadQuery {
      * INTERNAL:
      * Clone the query.
      */
+    @Override
     public Object clone() {
         DataReadQuery cloneQuery = (DataReadQuery)super.clone();
-        cloneQuery.setContainerPolicy(getContainerPolicy().clone(cloneQuery));
+        cloneQuery.containerPolicy = this.containerPolicy.clone(cloneQuery);
         return cloneQuery;
     }
 
@@ -107,10 +109,11 @@ public class DataReadQuery extends ReadQuery {
      * Execute the query. If there are cached results return those.
      * This must override the super to support result caching.
      *
-     * @param aSession - the session in which the receiver will be executed.
-     * @return An object or vector, the result of executing the query.
+     * @param session - the session in which the receiver will be executed.
+     * @return An object or collection, the result of executing the query.
      * @exception DatabaseException - an error has occurred on the database
      */
+    @Override
     public Object execute(AbstractSession session, AbstractRecord row) throws DatabaseException {
         if (shouldCacheQueryResults()) {
             if (this.containerPolicy.overridesRead()) {
@@ -141,6 +144,7 @@ public class DataReadQuery extends ReadQuery {
      * @exception DatabaseException an error has occurred on the database
      * @return a collection or cursor of Records representing the result set
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException {
         if (getContainerPolicy().overridesRead()) {
             return getContainerPolicy().execute();
@@ -162,6 +166,7 @@ public class DataReadQuery extends ReadQuery {
      * INTERNAL:
      * Build the result value for the row.
      */
+    @Override
     public Object buildObject(AbstractRecord row) {
         if (this.resultType == AUTO) {
             List values = row.getValues();
@@ -230,7 +235,6 @@ public class DataReadQuery extends ReadQuery {
     /**
      * PUBLIC:
      * Return the query's ContainerPolicy.
-     * @return org.eclipse.persistence.internal.queries.ContainerPolicy
      */
     public ContainerPolicy getContainerPolicy() {
         return containerPolicy;
@@ -240,6 +244,7 @@ public class DataReadQuery extends ReadQuery {
      * PUBLIC:
      * Return if this is a data read query.
      */
+    @Override
     public boolean isDataReadQuery() {
         return true;
     }
@@ -248,10 +253,11 @@ public class DataReadQuery extends ReadQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() {
         super.prepare();
-        getContainerPolicy().prepare(this, getSession());
-        if (getContainerPolicy().overridesRead()) {
+        this.containerPolicy.prepare(this, this.session);
+        if (this.containerPolicy.overridesRead()) {
             return;
         }
         getQueryMechanism().prepareExecuteSelect();
@@ -261,14 +267,17 @@ public class DataReadQuery extends ReadQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
-        getContainerPolicy().prepareForExecution();
+        this.containerPolicy.prepareForExecution();
     }
 
     /**
      * INTERNAL:
+     * Used by RemoteSession.
      */
+    @Override
     public Object remoteExecute() {
         if (getContainerPolicy().overridesRead()) {
             return getContainerPolicy().remoteExecute();

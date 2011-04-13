@@ -45,6 +45,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.parsing.JPQLParseTree;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser;
@@ -56,6 +57,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -320,7 +323,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     /**
      * Build a ReadAllQuery from a class and stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(Class resultClass, StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildStoredProcedureQuery(Class resultClass, StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         DatabaseQuery query = new ReadAllQuery(resultClass);
         query.setCall(call);
         query.setIsUserDefined(true);
@@ -329,7 +332,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         query = applyHints(hints, query, classLoader, session);
 
         // apply any query arguments
-        applyArguments(arguments, query);
+        applyArguments(call, query);
 
         return query;
     }
@@ -338,7 +341,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildStoredProcedureQuery(StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         DataReadQuery query = new DataReadQuery();
         query.setResultType(DataReadQuery.AUTO);
 
@@ -349,7 +352,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         DatabaseQuery hintQuery = applyHints(hints, query, classLoader, session);
 
         // apply any query arguments
-        applyArguments(arguments, hintQuery);
+        applyArguments(call, hintQuery);
 
         return hintQuery;
     }
@@ -358,7 +361,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(String sqlResultSetMappingName, StoredProcedureCall call, List<String> arguments, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildStoredProcedureQuery(String sqlResultSetMappingName, StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
         query.setSQLResultSetMappingName(sqlResultSetMappingName);
         query.setCall(call);
@@ -368,7 +371,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         DatabaseQuery hintQuery = applyHints(hints, query, classLoader, session);
 
         // apply any query arguments
-        applyArguments(arguments, hintQuery);
+        applyArguments(call, hintQuery);
 
         return hintQuery;
     }
@@ -819,6 +822,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             Object parameter = this.parameterValues.get(name);
             if ((parameter != null) || this.parameterValues.containsKey(name)) {
                 parameterValues.add(parameter);
+            } else if (query.hasNullableArguments() && query.getNullableArguments().contains(new DatabaseField(name))) {
+                parameterValues.add(null);
             } else {
                 // Error: missing actual parameter value
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("missing_parameter_value", new Object[] { name }));
@@ -902,11 +907,40 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     }
 
     /**
-     * Set implementation-specific query arguments.
+     * Define the query arguments based on the procedure call.
      */
-    protected static void applyArguments(List<String> arguments, DatabaseQuery query) {
-        for (String argument : arguments) {
-            query.addArgument(argument);
+    protected static void applyArguments(StoredProcedureCall call, DatabaseQuery query) {
+        if (call instanceof PLSQLStoredProcedureCall) {
+            PLSQLStoredProcedureCall plsqlCall = (PLSQLStoredProcedureCall)call;
+            for (int index = 0; index < plsqlCall.getArguments().size(); index++) {
+                PLSQLargument argument = plsqlCall.getArguments().get(index);
+                int type = argument.direction;
+                if ((type == StoredProcedureCall.IN) || (type == StoredProcedureCall.INOUT)) {
+                    if (call.hasOptionalArguments()) {
+                        query.addArgument(argument.name, Object.class, call.getOptionalArguments().contains(new DatabaseField(argument.name)));
+                    } else {
+                        query.addArgument(argument.name);
+                    }
+                }
+            }            
+        } else {
+            for (int index = 0; index < call.getParameters().size(); index++) {
+                Object value = call.getParameters().get(index);
+                DatabaseField parameter = null;
+                if (value instanceof Object[]) {
+                    parameter = (DatabaseField) ((Object[])value)[0];
+                } else {
+                    parameter = (DatabaseField)call.getParameters().get(index);
+                }
+                int type = call.getParameterTypes().get(index);
+                if ((type == StoredProcedureCall.IN) || (type == StoredProcedureCall.INOUT)) {
+                    if (call.hasOptionalArguments()) {
+                        query.addArgument(parameter.getName(), Object.class, call.getOptionalArguments().contains(parameter));
+                    } else {
+                        query.addArgument(parameter.getName());
+                    }
+                }
+            }
         }
     }
 
@@ -1517,4 +1551,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         throw new PersistenceException("Could not unwrap query to: " + cls);
     }
 
+    public String toString() {
+        return getClass().getSimpleName() + "(" + String.valueOf(this.databaseQuery) + ")";
+    }
 }

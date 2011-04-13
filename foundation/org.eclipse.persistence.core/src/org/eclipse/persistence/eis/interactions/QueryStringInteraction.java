@@ -99,11 +99,10 @@ public class QueryStringInteraction extends MappedInteraction implements QuerySt
         writer.write(Helper.cr());
         writer.write("\tparameters => [");
         if (hasParameters()) {
-            // Unfortunately vectors cannot print if they have nulls in them...
-            for (Enumeration paramsEnum = getParameters().elements(); paramsEnum.hasMoreElements();) {
-                Object parameter = paramsEnum.nextElement();
+            for (Iterator iterator = getParameters().iterator(); iterator.hasNext();) {
+                Object parameter = iterator.next();
                 writer.write(String.valueOf(parameter));
-                if (paramsEnum.hasMoreElements()) {
+                if (iterator.hasNext()) {
                     writer.write(", ");
                 }
             }

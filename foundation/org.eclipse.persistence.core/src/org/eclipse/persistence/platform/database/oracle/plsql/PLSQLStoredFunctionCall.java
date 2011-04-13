@@ -15,6 +15,8 @@ package org.eclipse.persistence.platform.database.oracle.plsql;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
 
+import java.util.List;
+
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -59,6 +61,7 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
      * INTERNAL:
      * Return call header for the call string.
      */
+    @Override
     public String getCallHeader(DatabasePlatform platform) {
         return platform.getFunctionCallHeader();
     }
@@ -68,6 +71,7 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
      * Return the first index of parameter to be placed inside brackets
      * in the call string.
      */
+    @Override
     public int getFirstParameterIndexForCallString() {
         return 1;
     }
@@ -75,6 +79,7 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isStoredFunctionCall() {
         return true;
     }
@@ -82,6 +87,7 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
     /**
      * INTERNAL:
      */
+    @Override
     public void prepareInternal(AbstractSession session) {
         if (session.getPlatform().supportsStoredFunctions()) {
             super.prepareInternal(session);
@@ -120,16 +126,17 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
     /**
      * INTERNAL Generate portion of the Anonymous PL/SQL block that invokes the target function.
      */
-    protected void buildProcedureInvocation(StringBuilder sb) {        
+    @Override
+    protected void buildProcedureInvocation(StringBuilder sb, List<PLSQLargument> arguments) {
         sb.append("  ");
-        PLSQLargument argument = this.arguments.get(0);
+        PLSQLargument argument = arguments.get(0);
         sb.append(databaseTypeHelper.buildTarget(argument));
         sb.append(" := ");
         sb.append(getProcedureName());
         sb.append("(");
-        int size = this.arguments.size();
+        int size = arguments.size();
         for (int index = 1; index < size; index++) {
-            argument = this.arguments.get(index);
+            argument = arguments.get(index);
             sb.append(argument.name);
             sb.append("=>");
             sb.append(databaseTypeHelper.buildTarget(argument));

@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation
  ******************************************************************************/  
-package org.eclipse.persistence.annotations;
+package org.eclipse.persistence.platform.database.oracle.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -19,17 +19,17 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /** 
- * A NamedStoredFunctionQueries annotation allows the definition of multiple
- * NamedStoredFunctionQuery.
+ * A NamedPLSQLStoredFunctionQueries annotation allows the definition of multiple
+ * NamedPLSQLStoredFunctionQuery.
  * 
  * @author James
  * @since EclipseLink 2.3
  */ 
 @Target({TYPE})
 @Retention(RUNTIME)
-public @interface NamedStoredFunctionQueries {
+public @interface NamedPLSQLStoredFunctionQueries {
     /**
-     * (Required) An array of named stored procedure query.
+     * (Required) An array of named PLSQL stored procedure query.
      */
-    NamedStoredFunctionQuery[] value();
+    NamedPLSQLStoredFunctionQuery[] value();
 }

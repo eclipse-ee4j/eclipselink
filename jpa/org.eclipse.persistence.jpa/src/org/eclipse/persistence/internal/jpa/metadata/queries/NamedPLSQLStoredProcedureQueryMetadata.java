@@ -27,11 +27,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 
 /**
  * INTERNAL:
- * Object to hold onto a named stored procedure query.
+ * Object to hold onto a named PLSQL stored procedure query.
  * 
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
@@ -41,47 +41,41 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
  * 
- * @author Guy Pelletier
- * @since TopLink 11g
+ * @author James Sutherland
+ * @since EclipseLink 2.3
  */
-public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata {
-    private Boolean m_multipleResultSets;
-    private Boolean m_returnsResultSet;
-    protected Boolean m_callByIndex;
+public class NamedPLSQLStoredProcedureQueryMetadata extends NamedNativeQueryMetadata {
 
-    private List<StoredProcedureParameterMetadata> m_parameters = new ArrayList<StoredProcedureParameterMetadata>();
+    private List<PLSQLParameterMetadata> m_parameters = new ArrayList<PLSQLParameterMetadata>();
     private String m_procedureName;
     
     /**
      * INTERNAL:
      * Used for XML loading.
      */
-    public NamedStoredProcedureQueryMetadata() {
-        super("<named-stored-procedure-query>");
+    public NamedPLSQLStoredProcedureQueryMetadata() {
+        super("<named-plsql-stored-procedure-query>");
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public NamedStoredProcedureQueryMetadata(String elementName) {
+    public NamedPLSQLStoredProcedureQueryMetadata(String elementName) {
         super(elementName);
     }
     
     /**
      * INTERNAL:
      */
-    public NamedStoredProcedureQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessor accessor) {
+    public NamedPLSQLStoredProcedureQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessor accessor) {
         super(namedStoredProcedureQuery, accessor);
          
         for (Object storedProcedureParameter : (Object[]) namedStoredProcedureQuery.getAttributeArray("parameters")) {
-           m_parameters.add(new StoredProcedureParameterMetadata((MetadataAnnotation)storedProcedureParameter, accessor));
+           m_parameters.add(new PLSQLParameterMetadata((MetadataAnnotation)storedProcedureParameter, accessor));
         }
         
         m_procedureName = (String) namedStoredProcedureQuery.getAttribute("procedureName");
-        m_returnsResultSet = (Boolean) namedStoredProcedureQuery.getAttribute("returnsResultSet");
-        m_multipleResultSets = (Boolean) namedStoredProcedureQuery.getAttribute("multipleResultSets");
-        m_callByIndex = (Boolean) namedStoredProcedureQuery.getAttribute("callByIndex");
     }
    
     /**
@@ -89,19 +83,9 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof NamedStoredProcedureQueryMetadata) {
-            NamedStoredProcedureQueryMetadata query = (NamedStoredProcedureQueryMetadata) objectToCompare;
-            
-            if (! valuesMatch(m_returnsResultSet, query.getReturnsResultSet())) {
-                return false;
-            }
-            if (! valuesMatch(m_callByIndex, query.getCallByIndex())) {
-                return false;
-            }
-            if (! valuesMatch(m_multipleResultSets, query.getMultipleResultSets())) {
-                return false;
-            }
-            
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedPLSQLStoredProcedureQueryMetadata) {
+            NamedPLSQLStoredProcedureQueryMetadata query = (NamedPLSQLStoredProcedureQueryMetadata) objectToCompare;
+                        
             if (! valuesMatch(m_parameters, query.getParameters())) {
                 return false;
             }
@@ -110,14 +94,6 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         }
         
         return false;
-    }
-
-    public Boolean getCallByIndex() {
-        return m_callByIndex;
-    }
-
-    public void setCallByIndex(Boolean callByIndex) {
-        m_callByIndex = callByIndex;
     }
     
     /**
@@ -132,23 +108,8 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<StoredProcedureParameterMetadata> getParameters() {
+    public List<PLSQLParameterMetadata> getParameters() {
         return m_parameters;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public Boolean getReturnsResultSet() {
-        return m_returnsResultSet;
-    }
-    
-    public Boolean getMultipleResultSets() {
-        return m_multipleResultSets;
-    }
-
-    public void setMultipleResultSets(Boolean multipleResultSets) {
-        m_multipleResultSets = multipleResultSets;
     }
     
     /**
@@ -168,22 +129,16 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     @Override
     public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
         // Build the stored procedure call.
-        StoredProcedureCall call = new StoredProcedureCall();
+        PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         
         // Process the stored procedure parameters.
-        boolean callByIndex = (m_callByIndex == null) ? false : m_callByIndex;
-        for (StoredProcedureParameterMetadata parameter : m_parameters) {
-            parameter.process(call, project, callByIndex, false);
+        for (PLSQLParameterMetadata parameter : m_parameters) {
+            parameter.process(call, project, false);
         }
         
         // Process the procedure name.
         call.setProcedureName(m_procedureName);
-        
-        // Process the returns result set.
-        call.setReturnsResultSet((m_returnsResultSet == null) ? false : m_returnsResultSet);
-        
-        call.setHasMultipleResultSets((m_multipleResultSets == null) ? false : m_multipleResultSets);
-        
+                
         // Process the query hints.
         Map<String, Object> hints = processQueryHints(session);
         
@@ -212,15 +167,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setParameters(List<StoredProcedureParameterMetadata> parameters) {
+    public void setParameters(List<PLSQLParameterMetadata> parameters) {
         m_parameters = parameters;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setReturnsResultSet(Boolean returnsResultSet) {
-        m_returnsResultSet = returnsResultSet;
     }
 }
