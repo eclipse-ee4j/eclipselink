@@ -173,6 +173,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /** PERF: Used to optimize cache locking to only acquire deferred locks when required (no-indirection). */
     protected boolean shouldAcquireCascadedLocks = false;
+    /** INTERNAL: flag to indicate the initialization state of cascade locking for this descriptor */
+    protected boolean cascadedLockingInitialized = false;
 
     /** PERF: Compute and store if the primary key is simple (direct-mapped) to allow fast extraction. */
     protected boolean hasSimplePrimaryKey = false;
@@ -345,10 +347,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
         // do not propagate an extra locking policy to other mappings, if this descriptor already
         // has a cascaded optimistic locking policy that will be cascaded
-        if (!(usesOptimisticLocking() && getOptimisticLockingPolicy().isCascaded()) && isInitialized(INITIALIZED)) {
-            // Set cascade locking policies on privately owned children mappings.
-            for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
-                prepareCascadeLockingPolicy((DatabaseMapping)mappings.nextElement());
+        if (!cascadedLockingInitialized) {
+            // never cascade locking until descriptor is initialized 
+            if (isInitialized(INITIALIZED)) {
+                // Set cascade locking policies on privately owned children mappings.
+                for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
+                    prepareCascadeLockingPolicy((DatabaseMapping)mappings.nextElement());
+                }
+                cascadedLockingInitialized = true;
             }
         }
     }
@@ -2788,6 +2794,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             setMappings(mappings);
         }
 
+        boolean initializeCascadeLocking = (usesOptimisticLocking() && getOptimisticLockingPolicy().isCascaded()) || hasCascadeLockingPolicies();
         for (DatabaseMapping mapping : getMappings()) {
             validateMappingType(mapping);
             mapping.initialize(session);
@@ -2823,7 +2830,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             // If this descriptor uses a cascaded version optimistic locking 
             // or has cascade locking policies set then prepare check the 
             // mappings.
-            if ((usesOptimisticLocking() && getOptimisticLockingPolicy().isCascaded()) || hasCascadeLockingPolicies()) {
+            if (initializeCascadeLocking) {
                 prepareCascadeLockingPolicy(mapping);
             }
 
@@ -2834,6 +2841,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
             
             // Add all the fields in the mapping to myself.
             Helper.addAllUniqueToVector(getFields(), mapping.getFields());
+        }
+        if (initializeCascadeLocking) {
+            cascadedLockingInitialized = true;
         }
         
         if (hasMappingsPostCalculateChangesOnDeleted()) {

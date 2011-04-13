@@ -126,6 +126,8 @@ public class OptimisticLockingTestModel extends TestModel {
         suite.addTest(new CascadedMultiLevelCollectionOptimisticLockingTest());
         suite.addTest(new Cascaded12MInheritanceOptimisticLockingTest());
         suite.addTest(new Cascaded12MInheritanceListOnSuperOptimisticLockingTest());
+        // EL bug 342632
+        suite.addTest(new CascadedVersionLockingMultiplePrivateOwnedTest());
     
         return suite;
     }
