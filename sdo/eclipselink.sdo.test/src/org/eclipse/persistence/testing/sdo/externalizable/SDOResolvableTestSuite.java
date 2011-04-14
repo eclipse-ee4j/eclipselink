@@ -30,6 +30,7 @@ public class SDOResolvableTestSuite {
         TestSuite suite = new TestSuite("All SDOResolvable Tests");
         suite.addTest(new TestSuite(SDOResolvableTest.class));
         suite.addTestSuite(BinaryPropertyTestCases.class);
+        suite.addTestSuite(SDOResolvableBug342852TestCases.class);
         return suite;
     }
 }

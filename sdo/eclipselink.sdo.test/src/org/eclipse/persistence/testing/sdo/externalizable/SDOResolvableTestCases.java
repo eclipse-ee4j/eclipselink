@@ -54,54 +54,6 @@ public class SDOResolvableTestCases extends SDOTestCase {
     }
 
     /**
-     * This function is invoked by the JUnit framework before test cases are executed
-     */
-    public void setUp() {
-        try {
-            xmlComparer = new SDOXMLComparer();
-            aHelperContext = SDOHelperContext.getHelperContext();
-            typeHelper = aHelperContext.getTypeHelper();
-            xmlHelper = aHelperContext.getXMLHelper();
-            xsdHelper = aHelperContext.getXSDHelper();
-            equalityHelper = aHelperContext.getEqualityHelper();
-            copyHelper = aHelperContext.getCopyHelper();
-            dataFactory = aHelperContext.getDataFactory();
-            // TODO: we should be using the DataHelper interface
-            dataHelper = (SDODataHelper)aHelperContext.getDataHelper();
-
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            builderFactory.setNamespaceAware(true);
-            builderFactory.setIgnoringElementContentWhitespace(true);
-            try {
-                parser = builderFactory.newDocumentBuilder();
-            } catch (Exception e) {
-                fail("Could not create parser.");
-                e.printStackTrace();
-            }
-            
-            ((SDOTypeHelper) typeHelper).reset();
-            ((SDOXMLHelper) xmlHelper).reset();
-            ((SDOXSDHelper) xsdHelper).reset();
-            // load in the schema
-            String xsdString = getXSDString("org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeep.xsd");
-
-            // Define Types so that processing attributes completes
-            List types = xsdHelper.define(xsdString);
-
-            // first we set up root data object
-            FileInputStream inStream = new FileInputStream("org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderNSDeep.xml");
-
-            XMLDocument document = xmlHelper.load(inStream);
-            root = (DataObject)document.getRootObject();
-            inStream.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("SDOResolvableTestCases.setup() failed to load DataObject");
-        }
-    }
-
-    /**
      * This wrapper function around the ObjectOutputStream.writeObject(object) method
      * will invoke the Externalizable framework
      * @param anObject
@@ -261,7 +213,7 @@ public class SDOResolvableTestCases extends SDOTestCase {
         return aBuffer.toString();
     }
 
-    private String getXSDString(String filename) {
+    protected String getXSDString(String filename) {
         try {
             FileInputStream inStream = new FileInputStream(filename);
             byte[] bytes = new byte[inStream.available()];

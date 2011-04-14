@@ -78,12 +78,12 @@ public class SDOMarshalListener implements XMLMarshalListener {
 
             String rootElementName = this.marshalledObjectRootQName.getLocalPart();
             String rootNamespaceUri = this.marshalledObjectRootQName.getNamespaceURI();
-            if(rootNamespaceUri != null && !rootNamespaceUri.equals("")) {
+            if(rootNamespaceUri != null && !rootNamespaceUri.equals(XMLConstants.EMPTY_STRING)) {            	
                 NamespaceResolver resolver = getRootMarshalRecord().getNamespaceResolver();
                 if(resolver != null) {
                     String prefix = resolver.resolveNamespaceURI(this.marshalledObjectRootQName.getNamespaceURI());
                     if(prefix != null) {
-                        rootElementName = prefix + ":" + rootElementName;
+                        rootElementName = prefix + XMLConstants.COLON + rootElementName;                        
                     }
                 }
             }
@@ -170,7 +170,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
                 for (int j = 0; j < namespaces.size(); j++) {
                     Namespace next = (Namespace)namespaces.get(j);
                     if (declareNamespace(next.getNamespaceURI(), next.getPrefix(), changeSummary.getRootObject())) {
-                        csNode.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + next.getPrefix(), next.getNamespaceURI());
+                        csNode.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + next.getPrefix(), next.getNamespaceURI());
                     }
                 }
 
@@ -311,9 +311,9 @@ public class SDOMarshalListener implements XMLMarshalListener {
                     String schemaContextUri = schemaContextQName.getNamespaceURI();
                     String schemaContextPrefix = ((SDOType)value.getType()).getXmlDescriptor().getNonNullNamespaceResolver().resolveNamespaceURI(schemaContextUri);
                     if (schemaContextPrefix != null) {
-                        modifiedElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + schemaContextPrefix, schemaContextQName.getNamespaceURI());
+                        modifiedElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + schemaContextPrefix, schemaContextQName.getNamespaceURI());
                     }
-                    modifiedElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, schemaInstancePrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
+                    modifiedElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, schemaInstancePrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
                 }
             }
         }
@@ -416,7 +416,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
                     String prefix = typeHelper.getNamespaceResolver().resolveNamespaceURI(uri);
 
                     if ((prefix != null) && !prefix.equals(SDOConstants.EMPTY_STRING)) {
-                        return prefix + ":" + name;
+                        return prefix + XMLConstants.COLON + name;
                     }
                 }
             }
@@ -578,15 +578,15 @@ public class SDOMarshalListener implements XMLMarshalListener {
     private void marshalNilAttribute(SDOProperty property, DOMRecord row) {
         //Marshal out xsi:nil=true   
         String xsiPrefix = typeHelper.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-        if ((xsiPrefix == null) || xsiPrefix.equals("")) {
-            xsiPrefix = typeHelper.getNamespaceResolver().generatePrefix("xsi");
+        if ((xsiPrefix == null) || xsiPrefix.equals(SDOConstants.EMPTY_STRING)) {
+            xsiPrefix = typeHelper.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
             typeHelper.getNamespaceResolver().put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
         String xPath = getXPathForProperty(property, true);
-        xPath = xPath + "/@" + xsiPrefix + ":nil";
+        xPath = xPath + "/@" + xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
 
         XMLField field = new XMLField(xPath);
         field.setNamespaceResolver(typeHelper.getNamespaceResolver());
-        row.put(field, "true");
+        row.put(field, XMLConstants.BOOLEAN_STRING_TRUE);
     }
 }

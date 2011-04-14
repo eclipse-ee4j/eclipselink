@@ -13,16 +13,74 @@
 package org.eclipse.persistence.testing.sdo.externalizable;
 
 import commonj.sdo.DataObject;
+import commonj.sdo.helper.XMLDocument;
+
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
+import org.eclipse.persistence.sdo.helper.SDODataHelper;
+import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
+import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
+
+import org.eclipse.persistence.testing.sdo.SDOXMLComparer;
 
 public class SDOResolvableTest extends SDOResolvableTestCases {
     public final String SERIALIZATION_FILE_NAME = tempFileDir + "/serialization.bin";
 
     public SDOResolvableTest(String name) {
         super(name);
+    }
+    
+    public void setUp() {
+        try {
+            xmlComparer = new SDOXMLComparer();
+            aHelperContext = SDOHelperContext.getHelperContext();
+            typeHelper = aHelperContext.getTypeHelper();
+            xmlHelper = aHelperContext.getXMLHelper();
+            xsdHelper = aHelperContext.getXSDHelper();
+            equalityHelper = aHelperContext.getEqualityHelper();
+            copyHelper = aHelperContext.getCopyHelper();
+            dataFactory = aHelperContext.getDataFactory();
+            // TODO: we should be using the DataHelper interface
+            dataHelper = (SDODataHelper)aHelperContext.getDataHelper();
+
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setNamespaceAware(true);
+            builderFactory.setIgnoringElementContentWhitespace(true);
+            try {
+                parser = builderFactory.newDocumentBuilder();
+            } catch (Exception e) {
+                fail("Could not create parser.");
+                e.printStackTrace();
+            }
+            
+            ((SDOTypeHelper) typeHelper).reset();
+            ((SDOXMLHelper) xmlHelper).reset();
+            ((SDOXSDHelper) xsdHelper).reset();
+            // load in the schema
+            String xsdString = getXSDString("org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeep.xsd");
+
+            // Define Types so that processing attributes completes
+            List types = xsdHelper.define(xsdString);
+
+            // first we set up root data object
+            FileInputStream inStream = new FileInputStream("org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderNSDeep.xml");
+
+            XMLDocument document = xmlHelper.load(inStream);
+            root = (DataObject)document.getRootObject();
+            inStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("SDOResolvableTestCases.setup() failed to load DataObject");
+        }
     }
 
     /*    public SDOResolvableTest(String name, HelperContext aContext) {
