@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings.nullpolicy;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -20,6 +21,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Session;
@@ -384,5 +386,18 @@ public abstract class AbstractNullPolicy {
         }
         return xsiPrefix;
     }
-
+    
+    public void directMarshal(DatabaseField field, XMLRecord record, Object object) {
+        Object fieldValue = null;
+        if(getMarshalNullRepresentation() == XMLNullRepresentationType.EMPTY_NODE) {
+            fieldValue = XMLConstants.EMPTY_STRING;
+        } else {
+            if(!(((XMLField)field).getLastXPathFragment().isAttribute())) {
+                if(getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
+                    fieldValue = XMLRecord.NIL;
+                }
+            }
+        }
+        record.put(field, fieldValue);
+    }
 }

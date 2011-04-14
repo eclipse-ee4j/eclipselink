@@ -14,6 +14,7 @@ package org.eclipse.persistence.oxm.mappings.nullpolicy;
 
 import java.lang.reflect.Method;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.NillableNodeValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
@@ -107,6 +108,14 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
             return super.directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
     }
+    
+    public void directMarshal(DatabaseField field, XMLRecord record, Object object) {
+        if(!isSet(object)) {
+            return;
+        }
+        super.directMarshal(field, record, object);
+    }
+    
 
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
             Object object, Session session, NamespaceResolver namespaceResolver) {

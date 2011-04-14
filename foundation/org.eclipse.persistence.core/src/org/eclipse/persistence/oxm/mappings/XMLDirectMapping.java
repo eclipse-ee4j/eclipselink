@@ -25,6 +25,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -372,7 +373,11 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
         Object fieldValue = getFieldValue(value, session, row);
-        writeValueIntoRow(row, getField(), fieldValue);
+        if(fieldValue == null && getNullPolicy() != null) {
+            getNullPolicy().directMarshal(this.getField(), row, parent);
+        } else {
+            writeValueIntoRow(row, getField(), fieldValue);
+        }
     }
     
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {

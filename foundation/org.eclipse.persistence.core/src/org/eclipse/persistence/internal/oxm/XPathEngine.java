@@ -30,6 +30,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
+import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLNodeList;
@@ -311,7 +312,7 @@ public class XPathEngine {
     }
 
     private Object getValueToWrite(Object value, XMLField xmlField, AbstractSession session) {
-        if (value instanceof Node) {
+        if (value instanceof Node || value == XMLRecord.NIL) {
             return value;
         }
 
@@ -496,7 +497,13 @@ public class XPathEngine {
                     sibling = newElement;
                 }
             } else {
-                Element newElement = (Element)createElement(parent, fragment, xmlField, value, session);
+                Element newElement = null;
+                if (value != XMLRecord.NIL) {
+                    newElement = (Element)createElement(parent, fragment, xmlField, value, session);
+                } else {
+                    newElement = (Element) createElement(parent, fragment, xmlField, XMLConstants.EMPTY_STRING, session);
+                    newElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":" + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
+                }
                 docPresPolicy.getNodeOrderingPolicy().appendNode(parent, newElement, sibling);
                 elementsToReturn.add(newElement);
             }
@@ -805,7 +812,40 @@ public class XPathEngine {
                     if(value == null) {
                         ((Attr)node).getOwnerElement().removeAttributeNode((Attr)node);
                     } else {
-                        node.setNodeValue((String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING));
+                        if(value == XMLRecord.NIL && ((node.getNodeType() == Node.TEXT_NODE) || (node.getNodeType() == Node.CDATA_SECTION_NODE))) {
+                            Element parentElement = (Element)node.getParentNode();
+                            NamespaceResolver nsr = new NamespaceResolver();
+                            nsr.setDOM(parentElement);
+                            String schemaInstancePrefix = resolveNamespacePrefixForURI(XMLConstants.SCHEMA_INSTANCE_URL, nsr);
+                            if(schemaInstancePrefix == null) {
+                                //Not decalred in the doc
+                                nsr = getNamespaceResolverForField(xmlField);
+                                schemaInstancePrefix = nsr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+                                if(schemaInstancePrefix == null) {
+                                    schemaInstancePrefix = nsr.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+                                }
+                                parentElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + schemaInstancePrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                            }
+                            parentElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":" + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
+                            parentElement.removeChild(node);
+                        } else {
+                            String stringValue = (String)((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING);
+                            Element parentElement = (Element)node.getParentNode();
+                            if(parentElement == null && parent.getNodeType() == Node.ELEMENT_NODE) {
+                                parentElement = (Element)parent;
+                            }
+                            if(stringValue.length() == 0 && ((node.getNodeType() == Node.TEXT_NODE) || (node.getNodeType() == Node.CDATA_SECTION_NODE)) && parentElement != null) {
+                                parentElement.removeChild(node);
+                            } else {
+                                node.setNodeValue(stringValue);
+                                if(((node.getNodeType() == Node.TEXT_NODE) || (node.getNodeType() == Node.CDATA_SECTION_NODE)) && parentElement != null) {
+                                    Attr nil = parentElement.getAttributeNodeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
+                                    if(nil != null) {
+                                        parentElement.removeAttributeNode(nil);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             } else {
