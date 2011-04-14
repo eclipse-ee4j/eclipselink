@@ -1080,6 +1080,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         storedProcArgumentsMapping.setXPath(getPrimaryNamespaceXPath() + "arguments/" + getPrimaryNamespaceXPath() + "argument");
         descriptor.addMapping(storedProcArgumentsMapping);
 
+        XMLCompositeCollectionMapping optionalMapping = new XMLCompositeCollectionMapping();
+        optionalMapping.setAttributeName("optionalArguments");
+        optionalMapping.setXPath(getPrimaryNamespaceXPath() + "optional-arguments/" + getPrimaryNamespaceXPath() + "argument");
+        optionalMapping.setReferenceClass(DatabaseField.class);
+        descriptor.addMapping(optionalMapping);
+
         return descriptor;
     }
 
@@ -1093,7 +1099,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
             StoredFunctionCall sfc = (StoredFunctionCall)anObject;
             Object argument = sfc.getParameters().get(0);
-            String argumentName = (String)sfc.getProcedureArgumentNames().get(0);
+            String argumentName = sfc.getProcedureArgumentNames().get(0);
             StoredProcedureOutArgument outArgument = new StoredProcedureOutArgument((DatabaseField)argument);
             outArgument.argumentName = argumentName;
             return outArgument;
@@ -1736,6 +1742,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          argumentsMapping.setXPath(getPrimaryNamespaceXPath() + "arguments/" + getPrimaryNamespaceXPath() + "argument");
          argumentsMapping.setReferenceClass(PLSQLargument.class);
          descriptor.addMapping(argumentsMapping);
+
+         XMLCompositeCollectionMapping optionalMapping = new XMLCompositeCollectionMapping();
+         optionalMapping.setAttributeName("optionalArguments");
+         optionalMapping.setXPath(getPrimaryNamespaceXPath() + "optional-arguments/" + getPrimaryNamespaceXPath() + "argument");
+         optionalMapping.setReferenceClass(DatabaseField.class);
+         descriptor.addMapping(optionalMapping);
 
          return descriptor;
      }

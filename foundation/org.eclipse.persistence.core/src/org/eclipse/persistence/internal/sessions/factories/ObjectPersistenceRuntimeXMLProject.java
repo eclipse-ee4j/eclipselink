@@ -585,7 +585,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                     association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                 }
 
-                ((AggregateObjectMapping)object).setAggregateToSourceFieldAssociations(associations/*(Vector)value*/);
+                mapping.setAggregateToSourceFieldAssociations(associations);
             }
         });
         aggregateToSourceFieldNameAssociationsMapping.setAttributeName("aggregateToSourceFieldNameAssociationsMapping");
@@ -1330,6 +1330,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                     if (!values.isEmpty()) {
                         queryArgument.setValue(values.get(index));
                     }
+                    if (query.hasNullableArguments()
+                            && query.getNullableArguments().contains(new DatabaseField((String)queryArgument.getKey()))) {
+                        queryArgument.setNullable(true);
+                    }
                     queryArguments.add(queryArgument);
                 }
                 return queryArguments;
@@ -1349,6 +1353,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                     }
                     if (queryArgument.getType() != null) {
                         types.add(queryArgument.getType());
+                    }
+                    if (queryArgument.isNullable()) {
+                        query.getNullableArguments().add(new DatabaseField((String)queryArgument.getKey()));
                     }
                 }
                 query.setArguments(arguments);
@@ -3824,6 +3831,14 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         valueMapping.setSetMethodName("setValue");
         valueMapping.setField(buildTypedField(getSecondaryNamespaceXPath() + "value/text()"));
         descriptor.addMapping(valueMapping);
+
+        XMLDirectMapping nullableMapping = new XMLDirectMapping();
+        nullableMapping.setAttributeName("nullable");
+        nullableMapping.setGetMethodName("isNullable");
+        nullableMapping.setSetMethodName("setNullable");
+        nullableMapping.setNullValue(Boolean.FALSE);
+        nullableMapping.setField(buildTypedField(getSecondaryNamespaceXPath() + "nullable/text()"));
+        descriptor.addMapping(nullableMapping);
 
         return descriptor;
     }

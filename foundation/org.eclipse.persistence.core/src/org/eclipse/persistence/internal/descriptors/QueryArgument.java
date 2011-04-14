@@ -26,6 +26,7 @@ public class QueryArgument extends TypedAssociation {
     /** The type of the query argument */
     protected Class type;
     protected String typeName;// bug 3256198 types can now be set by name
+    protected boolean nullable;
 
     /**
      * Default constructor.
@@ -37,6 +38,14 @@ public class QueryArgument extends TypedAssociation {
     public QueryArgument(String argumentName, Object value, Class type) {
         super(argumentName, value);
         this.type = type;
+    }
+    
+    public boolean isNullable() {
+        return nullable;
+    }
+
+    public void setNullable(boolean nullable) {
+        this.nullable = nullable;
     }
 
     public Class getType() {
