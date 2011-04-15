@@ -28,7 +28,6 @@ public class MapNamespaceTestCases extends JAXBTestCases {
     protected MapObject getControlObject() {
         MapObject mo = new MapObject();
         mo.getMap().put("One", 1);
-        mo.getMap().put("Two", 2);
         return mo;
     }
 
