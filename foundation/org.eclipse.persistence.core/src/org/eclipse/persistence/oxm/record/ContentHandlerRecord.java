@@ -12,8 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
@@ -53,12 +55,13 @@ public class ContentHandlerRecord extends MarshalRecord {
     private LexicalHandler lexicalHandler;
     private XPathFragment xPathFragment;
     private AttributesImpl attributes;
-    private int level;
     private Map<Integer, List<String>> prefixMappings;
+    List<String> currentLevelPrefixMappings;
+    private Deque<List<String>> prefixMappingsDeque;
 
     public ContentHandlerRecord() {
-        level = 0;
-        prefixMappings = new HashMap<Integer, List<String>>();
+        prefixMappingsDeque = new ArrayDeque<List<String>>();
+        currentLevelPrefixMappings = Collections.EMPTY_LIST;
         attributes = new AttributesImpl();
     }
 
@@ -126,12 +129,12 @@ public class ContentHandlerRecord extends MarshalRecord {
     public void startPrefixMapping(String prefix, String namespaceURI) {
         try {
             contentHandler.startPrefixMapping(prefix, namespaceURI);
-            List<String> currentLevelPrefixMappings = prefixMappings.get(level);
-            if(null == currentLevelPrefixMappings) {
+            if(Collections.EMPTY_LIST == currentLevelPrefixMappings) {
                 currentLevelPrefixMappings = new ArrayList<String>();
-                prefixMappings.put(level, currentLevelPrefixMappings);
             }
             currentLevelPrefixMappings.add(prefix);
+            
+            
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -183,7 +186,6 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     private void openAndCloseStartElement() {
         try {
-            level ++;
             contentHandler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
@@ -195,6 +197,9 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
+        currentLevelPrefixMappings = Collections.EMPTY_LIST;
+        prefixMappingsDeque.push(currentLevelPrefixMappings);                
+                
         if (isStartElementOpen) {
             openAndCloseStartElement();
         }
@@ -263,13 +268,11 @@ public class ContentHandlerRecord extends MarshalRecord {
         }
         try {
             contentHandler.endElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName());
-            level--;
-            List<String> currentLevelPrefixMappings = prefixMappings.get(level);
-            if(null != currentLevelPrefixMappings) {
+            List<String> currentLevelPrefixMappings = prefixMappingsDeque.pop();
+            if(null != currentLevelPrefixMappings && Collections.EMPTY_LIST != currentLevelPrefixMappings) {
                 for(String prefix : currentLevelPrefixMappings) {
                     contentHandler.endPrefixMapping(prefix);
                 }
-                currentLevelPrefixMappings.clear();
             }
             isStartElementOpen = false;
         } catch (SAXException e) {
