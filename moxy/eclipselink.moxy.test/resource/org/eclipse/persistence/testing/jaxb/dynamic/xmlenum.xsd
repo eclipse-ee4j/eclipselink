@@ -10,12 +10,15 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- This test contains exactly 6 enum values to test an ASM boundary case (ICONST) -->
     <xs:simpleType name="compass-direction">
         <xs:restriction base="xs:string">
             <xs:enumeration value="NORTH"/>
             <xs:enumeration value="SOUTH"/>
             <xs:enumeration value="EAST"/>
             <xs:enumeration value="WEST"/>
+            <xs:enumeration value="SOUTHWEST"/>
+            <xs:enumeration value="SOUTHEAST"/>
         </xs:restriction>
     </xs:simpleType>
 

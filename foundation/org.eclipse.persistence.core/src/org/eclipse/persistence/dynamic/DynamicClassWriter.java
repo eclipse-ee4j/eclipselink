@@ -299,7 +299,7 @@ public class DynamicClassWriter {
             lastCount = i;
         }
 
-        if (lastCount <= 5) {
+        if (lastCount < 5) {
             cv.visitInsn(ICONST[lastCount + 1]);
         }
         else {

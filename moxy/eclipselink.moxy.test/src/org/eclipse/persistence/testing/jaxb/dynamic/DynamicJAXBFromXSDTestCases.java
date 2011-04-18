@@ -606,6 +606,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
     public void testXmlEnum() throws Exception {
         // Tests XmlEnum and XmlEnumValue
+        // This test schema contains exactly 6 enum values to test an ASM boundary case
 
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLENUM);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
