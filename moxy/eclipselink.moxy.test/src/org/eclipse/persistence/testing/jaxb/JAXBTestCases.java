@@ -131,13 +131,13 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             if(overrides != null){
                 Iterator valuesIter = overrides.values().iterator();
                 while(valuesIter.hasNext()){
-                    Source theSource = (Source) valuesIter.next();
-                    validateBindingsFileAgainstSchema(theSource);
+                	Object next = valuesIter.next();
+                	validateBindingsFileAgainstSchema(next);
                 }
             }
         }
 
-        jaxbContext = JAXBContextFactory.createContext(newTypes, props, classLoader);
+        jaxbContext = JAXBContextFactory.createContext(newTypes, getProperties(), classLoader);
 
         xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
         setProject(xmlContext.getSession(0).getProject());
@@ -608,18 +608,17 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
           }
    }
 
-    /**
-     * Validates a given instance doc against the generated schema.
-     *
-     * @param src
-     * @param schemaIndex index in output resolver's list of generated schemas
-     * @param outputResolver contains one or more schemas to validate against
-     */
-    protected void validateBindingsFileAgainstSchema(InputStream src) {
-        StreamSource ss = new StreamSource(src);
-        validateBindingsFileAgainstSchema(ss);
-    }
 
+    protected void validateBindingsFileAgainstSchema(Object obj) {
+    	if(obj instanceof List){
+    		List theList = (List)obj;
+    		for(int i=0; i<theList.size(); i++){
+    			Source src = (Source)theList.get(i);
+    			validateBindingsFileAgainstSchema(src);
+    		}
+    	}
+    }
+    
     protected void validateBindingsFileAgainstSchema(Source src) {
         String result = null;
         SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);

@@ -91,7 +91,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50069", "A package was not specified for the provided XML metadata file.  The package can be specified by passing in Map<String, Object> (where String = package, Object = handle to XML metadata file) or by setting the package-name attribute on the xml-bindings element in the XML metadata file."},
         {"50070", "Property [{0}] on class [{1}] has an XmlElements declaration containing an unequal amount of XmlElement/XmlJoinNodes.  It is required that there be a corresponding XmlJoinNodes for each XmlElement contained within the XmlElements declaration."},
         {"50071", "Property [{0}] on class [{1}] has an XmlPaths declaration containing an XmlPath with an attribute at the root of the path [{2}].  In the case of XmlPaths, attributes must be nested in the XmlPath, i.e. [foo/{2}]."},
-        {"50072", "Duplicate Property named [{0}] found on class [{1}]"}
+        {"50072", "Duplicate Property named [{0}] found on class [{1}]"},
+        {"50073", "Property [{0}] on class [{1}] is specified in multiple external bindings files. Each property can only be specified in one file"}
     };
 
     /**

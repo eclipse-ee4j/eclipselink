@@ -1,0 +1,17 @@
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+   <xml-schema attribute-form-default="UNQUALIFIED" element-form-default="UNQUALIFIED" namespace=""/>
+   <java-types>
+	  <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Employee">
+         <xml-root-element name="empRoot2"/>
+         <xml-properties>
+                <xml-property name="3" value="C" />
+                <xml-property name="4" value="D"/>
+          </xml-properties>
+       </java-type>
+	   <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Person">
+	      <xml-type name="person-type"/>
+	   </java-type>
+      <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Phone">
+      </java-type>  
+	</java-types>
+</xml-bindings>

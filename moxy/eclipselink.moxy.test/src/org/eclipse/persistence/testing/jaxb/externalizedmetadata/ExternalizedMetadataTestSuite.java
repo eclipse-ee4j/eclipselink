@@ -22,6 +22,8 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compos
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.CompositeCollecitonMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.DirectMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.directcollection.DirectCollectionMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.MultipleBindingsFourFilesTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.MultipleBindingsSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.XmlAccessorOrderTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.XmlAccessorTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.XmlAdapterTestCases;
@@ -112,6 +114,8 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlJoinNodeTestCases.class);
         suite.addTestSuite(XmlMetadataCompleteTestCases.class);
         suite.addTestSuite(XmlAdapterListTestCases.class);
+        suite.addTestSuite(MultipleBindingsSimpleTestCases.class);
+        suite.addTestSuite(MultipleBindingsFourFilesTestCases.class);
         return suite;
     }
     

@@ -43,6 +43,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlEnum;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlEnumValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlInverseReference;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapters;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMap;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
@@ -53,6 +54,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransient;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlValue;
+import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlEnums;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlRegistries;
@@ -81,7 +83,7 @@ public class XMLProcessor {
     public XMLProcessor(Map<String, XmlBindings> bindings) {
         this.xmlBindingMap = bindings;
     }
-
+    
     /**
      * Process XmlBindings on a per package basis for a given
      * AnnotationsProcessor instance.
@@ -1684,6 +1686,210 @@ public class XMLProcessor {
             xja.setValue(packageLevelAdapter.getQualifiedName());
             xja.setType(type.getQualifiedName());
             prop.setXmlJavaTypeAdapter(xja);
+        }
+    }
+    
+    public static XmlBindings mergeXmlBindings(List<XmlBindings> bindings) {
+        if(bindings.size() == 0) {
+            return null;
+        }
+        XmlBindings rootBindings = bindings.get(0);
+        for(int i = 1; i < bindings.size(); i++) {
+            XmlBindings nextBindings = bindings.get(i);
+            if(nextBindings.isSetXmlAccessorOrder()) {
+                rootBindings.setXmlAccessorOrder(nextBindings.getXmlAccessorOrder());
+            }
+            if(nextBindings.isSetXmlAccessorType()) {
+                rootBindings.setXmlAccessorType(nextBindings.getXmlAccessorType());
+            }
+            if(nextBindings.isSetXmlMappingMetadataComplete()) {
+                rootBindings.setXmlMappingMetadataComplete(nextBindings.isXmlMappingMetadataComplete());
+            }
+            mergeJavaTypes(rootBindings.getJavaTypes(), nextBindings.getJavaTypes());
+
+            if(rootBindings.getXmlEnums() == null) {
+                rootBindings.setXmlEnums(nextBindings.getXmlEnums());
+            } else {
+                mergeXmlEnums(rootBindings.getXmlEnums(), nextBindings.getXmlEnums());
+            }
+            
+            if(rootBindings.getXmlSchema() == null) {
+                rootBindings.setXmlSchema(nextBindings.getXmlSchema());
+            } else if(nextBindings.getXmlSchema() != null){
+                mergeXmlSchema(rootBindings.getXmlSchema(), nextBindings.getXmlSchema());
+            }
+            
+            if(rootBindings.getXmlSchemaType() == null) {
+                rootBindings.setXmlSchemaTypes(nextBindings.getXmlSchemaTypes());
+            } else if(nextBindings.getXmlSchemaTypes() != null){
+                mergeXmlSchemaTypes(rootBindings.getXmlSchemaTypes(), nextBindings.getXmlSchemaTypes());
+            }
+            
+            if(rootBindings.getXmlJavaTypeAdapters() == null) {
+                rootBindings.setXmlJavaTypeAdapters(nextBindings.getXmlJavaTypeAdapters());
+            } else if(nextBindings.getXmlJavaTypeAdapters() != null){
+                mergeXmlJavaTypeAdapters(rootBindings.getXmlJavaTypeAdapters(), nextBindings.getXmlJavaTypeAdapters());
+            }
+        }
+        return rootBindings;
+    }
+
+    private static void mergeXmlJavaTypeAdapters(XmlJavaTypeAdapters xmlJavaTypeAdapters, XmlJavaTypeAdapters overrideAdapters) {
+        List<XmlJavaTypeAdapter> adapterList = xmlJavaTypeAdapters.getXmlJavaTypeAdapter();
+        HashMap<String, XmlJavaTypeAdapter> adapterMap = new HashMap<String, XmlJavaTypeAdapter>(adapterList.size());
+        for(XmlJavaTypeAdapter next:adapterList) {
+            adapterMap.put(next.getType(), next);
+        }
+        
+        for(XmlJavaTypeAdapter next:overrideAdapters.getXmlJavaTypeAdapter()) {
+            //If there's already an adapter for this type, replace it's value
+            XmlJavaTypeAdapter existingAdapter = adapterMap.get(next.getType());
+            if(existingAdapter != null) {
+                existingAdapter.setValue(next.getValue());
+            } else {
+                xmlJavaTypeAdapters.getXmlJavaTypeAdapter().add(next);
+            }
+        }
+    }
+
+    private static void mergeXmlSchemaTypes(XmlSchemaTypes xmlSchemaTypes, XmlSchemaTypes overrideSchemaTypes) {
+        List<XmlSchemaType> schemaTypeList = xmlSchemaTypes.getXmlSchemaType();
+        HashMap<String, XmlSchemaType> schemaTypeMap = new HashMap<String, XmlSchemaType>(schemaTypeList.size());
+        for(XmlSchemaType next:schemaTypeList) {
+            schemaTypeMap.put(next.getType(), next);
+        }
+        
+        for(XmlSchemaType next:overrideSchemaTypes.getXmlSchemaType()) {
+            //if there's already a schemaType for this type, override it's value
+            XmlSchemaType existingType = schemaTypeMap.get(next.getType());
+            if(existingType != null) {
+                existingType.setName(next.getName());
+                existingType.setNamespace(next.getNamespace());
+            } else {
+                xmlSchemaTypes.getXmlSchemaType().add(next);
+            }
+        }
+    }
+
+    private static void mergeXmlSchema(XmlSchema xmlSchema, XmlSchema overrideSchema) {
+
+        xmlSchema.setAttributeFormDefault(overrideSchema.getAttributeFormDefault());
+        xmlSchema.setElementFormDefault(overrideSchema.getElementFormDefault());
+        xmlSchema.setLocation(overrideSchema.getLocation());
+        xmlSchema.setNamespace(overrideSchema.getNamespace());
+        List<XmlNs> xmlNsList = xmlSchema.getXmlNs();
+        xmlNsList.addAll(overrideSchema.getXmlNs());
+    }
+
+    private static void mergeXmlEnums(XmlEnums xmlEnums, XmlEnums overrideEnum) {
+        if(overrideEnum == null) {
+            return;
+        }
+        List<XmlEnum> enumList = xmlEnums.getXmlEnum();
+        Map<String, XmlEnum> enumMap = new HashMap<String, XmlEnum>(enumList.size());
+        for(XmlEnum next:enumList) {
+            enumMap.put(next.getJavaEnum(), next);
+        }
+        for(XmlEnum next:overrideEnum.getXmlEnum()) {
+            XmlEnum existingEnum = enumMap.get(next.getJavaEnum());
+            if(existingEnum != null) {
+                mergeXmlEnumValues(existingEnum.getXmlEnumValue(), next.getXmlEnumValue());
+            } else {
+                xmlEnums.getXmlEnum().add(next);
+            }
+        }
+    }
+
+    private static void mergeXmlEnumValues(List<XmlEnumValue> xmlEnumValue, List<XmlEnumValue> overrideXmlEnumValue) {
+    
+        Map<String, XmlEnumValue> values = new HashMap<String, XmlEnumValue>();
+        List<XmlEnumValue> extraValues = new ArrayList<XmlEnumValue>();
+        for(XmlEnumValue next:xmlEnumValue){
+            values.put(next.getJavaEnumValue(), next);
+        }
+        
+        for(XmlEnumValue next:overrideXmlEnumValue) {
+            XmlEnumValue existingValue = values.get(next.getJavaEnumValue());
+            if(existingValue == null) {
+                extraValues.add(next);
+            } else {
+                existingValue.setValue(next.getValue());
+            }
+        }
+        xmlEnumValue.addAll(extraValues);
+    }
+
+    private static void mergeJavaTypes(JavaTypes javaTypes, JavaTypes overrideJavaTypes) {
+        List<JavaType> javaTypeList = javaTypes.getJavaType();
+        Map<String, JavaType> javaTypeMap = new HashMap<String, JavaType>(javaTypeList.size());
+        for(JavaType next:javaTypeList) {
+            javaTypeMap.put(next.getName(), next);
+        }
+        for(JavaType next:overrideJavaTypes.getJavaType()) {
+            JavaType existingType = javaTypeMap.get(next.getName());
+            if(existingType == null) {
+                javaTypes.getJavaType().add(next);
+            } else {
+                mergeJavaType(existingType, next);
+            }
+        }
+    }
+
+    private static void mergeJavaType(JavaType existingType, JavaType next) {
+        if(next.isSetXmlAccessorOrder()) {
+            existingType.setXmlAccessorOrder(next.getXmlAccessorOrder());
+        }
+
+        if(next.isSetXmlAccessorType()) {
+            existingType.setXmlAccessorType(next.getXmlAccessorType());
+        }
+        
+        if(next.isSetXmlInlineBinaryData()) {
+            existingType.setXmlInlineBinaryData(next.isXmlInlineBinaryData());
+        }
+        
+        if(next.isSetXmlTransient()) {
+            existingType.setXmlTransient(next.isXmlInlineBinaryData());
+        }
+        
+        if(next.getXmlRootElement() != null) {
+            existingType.setXmlRootElement(next.getXmlRootElement());
+        }
+        
+        if(existingType.getXmlProperties() == null) {
+            existingType.setXmlProperties(next.getXmlProperties());
+        } else if(next.getXmlProperties() != null) {
+            existingType.getXmlProperties().getXmlProperty().addAll(next.getXmlProperties().getXmlProperty());
+        }
+        
+        existingType.getXmlSeeAlso().addAll(next.getXmlSeeAlso());
+        
+        
+        JavaAttributes attributes = existingType.getJavaAttributes();
+        JavaAttributes overrideAttributes = next.getJavaAttributes();
+        if(attributes == null) {
+            existingType.setJavaAttributes(overrideAttributes);
+        } else if(overrideAttributes != null) {
+            mergeJavaAttributes(attributes, overrideAttributes, existingType);
+        }
+        
+    }
+
+    private static void mergeJavaAttributes(JavaAttributes attributes, JavaAttributes overrideAttributes, JavaType javaType) {
+        List<JAXBElement<? extends JavaAttribute>> attributeList = attributes.getJavaAttribute();
+        Map<String, JAXBElement> attributeMap = new HashMap<String, JAXBElement>(attributeList.size());
+        
+        for(JAXBElement next:attributeList) {
+            attributeMap.put(((JavaAttribute)next.getValue()).getJavaAttribute(), next);
+        }
+        for(JAXBElement next:overrideAttributes.getJavaAttribute()) {
+            JAXBElement existingAttribute = attributeMap.get(((JavaAttribute)next.getValue()).getJavaAttribute());
+            if(existingAttribute != null) {
+                //attributes.getJavaAttribute().remove(existingAttribute);
+                //Throw an Exception for now:
+                throw JAXBException.samePropertyInMultipleFiles(((JavaAttribute)next.getValue()).getJavaAttribute(), javaType.getName());
+            }
+            attributes.getJavaAttribute().add(next);
         }
     }
 }

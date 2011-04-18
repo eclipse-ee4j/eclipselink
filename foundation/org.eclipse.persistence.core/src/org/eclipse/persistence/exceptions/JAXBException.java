@@ -102,6 +102,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int INCORRECT_NUMBER_OF_XMLJOINNODES_ON_XMLELEMENTS = 50070;
     public static final int INVALID_XML_PATH_ATTRIBUTE = 50071;
     public static final int DUPLICATE_PROPERTY_NAME = 50072;
+    public static final int SAME_PROPERTY_IN_MULTIPLE_BINDINGS_FILES = 50073;
 
     protected JAXBException(String message) {
         super(message);
@@ -939,5 +940,13 @@ public class JAXBException extends EclipseLinkException {
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, DUPLICATE_PROPERTY_NAME, args));
         validationException.setErrorCode(DUPLICATE_PROPERTY_NAME);
         return validationException;
+    }
+    
+    public static JAXBException samePropertyInMultipleFiles(String propertyName, String className) {
+        Object[] args = {propertyName, className};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, SAME_PROPERTY_IN_MULTIPLE_BINDINGS_FILES, args));
+        validationException.setErrorCode(SAME_PROPERTY_IN_MULTIPLE_BINDINGS_FILES);
+        return validationException;
+        
     }
 }

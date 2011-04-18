@@ -414,7 +414,7 @@ public class JAXBContextFactory {
      *       xml-bindings element
      */
     public static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
-        Map<String, XmlBindings> bindings = new HashMap<String, XmlBindings>();
+        Map<String, List<XmlBindings>> bindings = new HashMap<String, List<XmlBindings>>();
         Object value;
         if (properties != null && ((value = properties.get(ECLIPSELINK_OXM_XML_KEY)) != null)) {
             // handle Map<String, Object>
@@ -428,6 +428,7 @@ public class JAXBContextFactory {
                 if (metadataFiles != null) {
                     for(Entry<String, Object> entry : metadataFiles.entrySet()) {
                         String key = null;
+                        List<XmlBindings> xmlBindings = new ArrayList<XmlBindings>();
                         try {
                             key = entry.getKey();
                             if (key == null) {
@@ -440,9 +441,17 @@ public class JAXBContextFactory {
                         if (metadataSource == null) {
                             throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource(key);
                         }
-                        XmlBindings binding = getXmlBindings(metadataSource, classLoader);
-                        if (binding != null) {
-                            bindings.put(key, binding);
+                        if(metadataSource instanceof List) {
+                            for(Object next: (List)metadataSource) {
+                                XmlBindings binding = getXmlBindings(next, classLoader);
+                                xmlBindings.add(binding);
+                            }
+                        } else {
+                            XmlBindings binding = getXmlBindings(metadataSource, classLoader);
+                            xmlBindings.add(binding);
+                        }
+                        if (xmlBindings != null) {
+                            bindings.put(key, xmlBindings);
                         }
                     }
                 }
@@ -459,7 +468,11 @@ public class JAXBContextFactory {
                 bindings = processBindingFile(bindings, value, classLoader);
             }
         }
-        return bindings;
+        Map<String, XmlBindings> mergedBindings = new HashMap<String, XmlBindings>(bindings.size());
+        for(Entry<String, List<XmlBindings>> next:bindings.entrySet()) {
+            mergedBindings.put(next.getKey(), XMLProcessor.mergeXmlBindings(next.getValue()));
+        }
+        return mergedBindings;
     }
     
     /**
@@ -471,8 +484,8 @@ public class JAXBContextFactory {
      * @param classLoader
      * @return
      */
-    private static Map<String, XmlBindings> processBindingFile(Map<String, XmlBindings> originalBindings, Object bindingHandle, ClassLoader classLoader) {
-        Map<String, XmlBindings> bindingMap = originalBindings;
+    private static Map<String, List<XmlBindings>> processBindingFile(Map<String, List<XmlBindings>> originalBindings, Object bindingHandle, ClassLoader classLoader) {
+        Map<String, List<XmlBindings>> bindingMap = originalBindings;
         XmlBindings binding = getXmlBindings(bindingHandle, classLoader);
         if (binding != null) {
             String key = binding.getPackageName();
@@ -489,7 +502,14 @@ public class JAXBContextFactory {
                     }
                 }
             }
-            bindingMap.put(key, binding);
+            List<XmlBindings> existingBindings = bindingMap.get(key);
+            if(existingBindings != null) {
+                existingBindings.add(binding);
+            } else {
+                existingBindings = new ArrayList<XmlBindings>();
+                existingBindings.add(binding);
+                bindingMap.put(key, existingBindings);
+            }
         }
         return bindingMap;
     }

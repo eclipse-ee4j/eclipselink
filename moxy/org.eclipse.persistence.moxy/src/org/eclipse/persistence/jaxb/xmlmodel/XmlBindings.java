@@ -587,5 +587,9 @@ public class XmlBindings {
         }
 
     }
+    
+    public boolean isSetXmlMappingMetadataComplete() {
+        return this.xmlMappingMetadataComplete != null;
+    }
 
 }
