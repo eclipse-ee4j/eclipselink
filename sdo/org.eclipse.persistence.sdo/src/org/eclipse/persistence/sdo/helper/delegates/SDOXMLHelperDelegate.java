@@ -441,7 +441,15 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObjectRootQName(new QName(xmlDocument.getRootElementURI(), xmlDocument.getRootElementName()));
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalRecord(writerRecord);
         
-        anXMLMarshaller.marshal(xmlDocument, writerRecord);
+        try{
+            anXMLMarshaller.marshal(xmlDocument, writerRecord);
+        }catch(XMLMarshalException xme){
+            if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){
+    		    if(aHelperContext != ((SDOType)xmlDocument.getRootObject().getType()).getHelperContext()){
+    			     throw SDOException.dataObjectNotFromHelperContext();
+    		   }    	
+            }
+    	} 
         outputWriter.flush();
     }
 
@@ -553,7 +561,17 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(rootObject);
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObjectRootQName(new QName(rootElementURI, rootElementName));
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalRecord(writerRecord);
-        anXMLMarshaller.marshal(xmlDocument, writerRecord);
+  
+        try{
+            anXMLMarshaller.marshal(xmlDocument, writerRecord);
+        }catch(XMLMarshalException xme){
+            if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){
+    		    if(aHelperContext != ((SDOType)rootObject.getType()).getHelperContext()){
+    			     throw SDOException.dataObjectNotFromHelperContext();
+    		   }    	
+            }
+    	} 
+        
         try {
             writer.flush();
         } catch(IOException ex) {

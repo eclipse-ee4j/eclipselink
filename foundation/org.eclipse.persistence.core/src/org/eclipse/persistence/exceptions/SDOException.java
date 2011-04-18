@@ -91,6 +91,7 @@ public class SDOException extends EclipseLinkException {
     public static final int ERROR_RESOLVING_ENTITY = 45207;
     public static final int MISSING_DEPENDENCY_FOR_BINARY_MAPPING = 45208;
     public static final int ATTEMPT_TO_RESET_APP_RESOLVER = 45209;
+    public static final int DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT = 45210;
 
     protected SDOException(String message) {
         super(message);
@@ -697,5 +698,17 @@ public class SDOException extends EclipseLinkException {
          SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ATTEMPT_TO_RESET_APP_RESOLVER, args));
          exception.setErrorCode(ATTEMPT_TO_RESET_APP_RESOLVER);
          return exception;
-     }     
+     }
+     
+     /**
+      * INTERNAL:
+      * Exception trying to marshal a dataobject from a different HelperContext
+      */
+    public static SDOException dataObjectNotFromHelperContext() {
+        Object[] args = { };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, args));
+        exception.setErrorCode(DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT);
+        return exception;
+    }
+
 }

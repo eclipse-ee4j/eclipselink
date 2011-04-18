@@ -75,7 +75,8 @@ public class SDOExceptionResource extends ListResourceBundle {
                                            { "45206", "SDO/JAXB - An error occurred creating a JAXB Unmarshaller." },
                                            { "45207", "An error occured attempting to resolve a schema using the provided SchemaResolver."},
                                            { "45208", "Unable to map property {0} from type {1}. The javax.activation and javax.mail packages are required to map properties of type DataHandler. Ensure that both of these are available on the classpath."},
-                                           { "45209", "An attempt was made to reset the ApplicationResolver instance on SDOHelperContext.  Only one set is permitted."}
+                                           { "45209", "An attempt was made to reset the ApplicationResolver instance on SDOHelperContext.  Only one set is permitted."},
+                                           { "45210", "The DataObject being marshalled is not from the same HelperContext as the XMLHelper."},
                                            
     };
 
