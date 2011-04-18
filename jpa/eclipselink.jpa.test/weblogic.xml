@@ -1,9 +1,9 @@
 <!--/*******************************************************************************
-* This program and the accompanying materials are made available under the 
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
-* which accompanies this distribution. 
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at 
+* and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 *   Ant naming conventions:
@@ -20,7 +20,7 @@
 *     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
-*     e.g. 'runpathref'  
+*     e.g. 'runpathref'
 *   - multi-word tasks (taskdef) names are concatinated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
@@ -61,34 +61,36 @@
         <contains string="${server.version}" substring="10.3.0"/>
     </condition>
 
-    <!-- WebLogic ant tasks -->
-    <taskdef name="wlserver" classname="weblogic.ant.taskdefs.management.WLServer">
-        <classpath>
-            <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
-        </classpath>
-    </taskdef>
-    <taskdef name="wlconfig" classname="weblogic.ant.taskdefs.management.WLConfig">
-        <classpath>
-            <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
-        </classpath>
-    </taskdef>
-    <taskdef name="wldeploy" classname="weblogic.ant.taskdefs.management.WLDeploy">
-        <classpath>
-            <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
-        </classpath>
-    </taskdef>
+    <path id="wls.path">
+        <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
+    </path>
 
     <!-- This creates the server domain. -->
     <target name="weblogic-install">
         <delete dir="${weblogic.domain}"/>
-        <mkdir dir="${weblogic.domain}"/>
-        <antcall target="weblogic-start-nosleep" inheritRefs="true"/>
+        <copy todir="${eclipselink.jpa.test}/${run.dir}" overwrite="true">
+            <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="*.py"/>
+        </copy>
+        <replace dir="${eclipselink.jpa.test}/${run.dir}">
+            <include name="**/*.py"/>
+            <replacefilter token="%%WL_HOME%%" value="${weblogic.installdir}"/>
+            <replacefilter token="%%WL_HOST%%" value="${weblogic.host}"/>
+            <replacefilter token="%%WL_PORT%%" value="${weblogic.port}"/>
+            <replacefilter token="%%WL_USR%%" value="${server.user}"/>
+            <replacefilter token="%%WL_PWD%%" value="${server.pwd}"/>
+            <replacefilter token="%%WL_DOMAIN%%" value="${weblogic.domain}"/>
+        </replace>
+
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${run.dir}/wls_install.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
         <copy file="${junit.lib}" todir="${weblogic.domain}/lib"/>
-        <antcall target="copy-eclipselink-jar-to-domain-lib" inheritRefs="true"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.jar}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}" todir="${weblogic.domain}/lib"/>
-        <copy file="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}" todir="${weblogic.domain}/lib"/>
-        <antcall target="weblogic-stop" inheritRefs="true"/>
+        <antcall target="copy-eclipselink-jar-to-domain-lib" inheritRefs="true"/>
     </target>
 
     <target name="copy-eclipselink-jar-to-domain-lib" if="is.v1030">
@@ -96,131 +98,117 @@
     </target>
 
     <!-- Start the server. -->
-    <target name="weblogic-start" depends="weblogic-start-nosleep">
-        <echo>WebLogic Server has been started ......</echo>
-        <sleep hours="2"/>
-    </target>
-
-    <target name="weblogic-start-nosleep">
-        <wlserver fork="true" spawn="true" weblogichome="${weblogic.home}"
-            dir="${weblogic.domain}" host="${weblogic.host}" generateConfig="true" verbose="true"
-            username="${server.user}" password="${server.pwd}" action="start">
+    <target name="weblogic-start">
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${run.dir}/wls_start.py"/>
             <classpath>
                 <!--this path is used for WebLogic JPA2.0 support-->
                 <pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/>
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
                 <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
             </classpath>
-            <jvmarg value="-Xms512m"/>
-            <jvmarg value="-Xmx960m"/>
-            <!-- Using the following instead of above "jvmarg" setting when using SUN jdk because jrockit doesn't support PermSize
-            <jvmarg value="-XX:PermSize=128m"/>
-            <jvmarg value="-XX:MaxPermSize=256m"/>
-            -->
-            <!--jvmarg value="-Xdebug"/-->
-            <!--jvmarg value="-Xnoagent"/-->
-            <!--jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=4000"/-->
-            <!--sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/-->
-            <!--sysproperty key="http.proxyPort" value="80"/-->
             <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
             <sysproperty key="ejb.lookup" value="${ejb.lookup}"/>
             <sysproperty key="is.JTA" value="${is.JTA}"/>
-        </wlserver>
+        </java>
     </target>
 
-    <!--
-        This target is to create connection pool and managed datasource required for running JPA tests on the WLS server.
-        Note: WLS server must be running.
-    -->
+    <!-- This creates datasource and deploy to the server. -->
     <target name="weblogic-setup">
-        <wlconfig url="${server.admin.url}" username="${server.user}" password="${server.pwd}">
-            <query domain="mydomain" type="Server" name="myserver" property="myserver"/>
-            <create type="JDBCConnectionPool" name="ejbPool">
-                <set attribute="CapacityIncrement" value="2"/>
-                <set attribute="DriverName" value="${db.driver}"/>
-                <set attribute="InitialCapacity" value="1"/>
-                <set attribute="MaxCapacity" value="50"/>
-                <set attribute="Password" value="${db.pwd}"/>
-                <set attribute="Properties" value="user=${db.user}"/>
-                <set attribute="URL" value="${db.url}"/>
-                <set attribute="Targets" value="${myserver}"/>
-            </create>
-            <create type="JDBCTxDataSource" name="EclipseLinkDS">
-                <set attribute="JNDIName" value="jdbc/EclipseLinkDS"/>
-                <set attribute="PoolName" value="ejbPool"/>
-                <set attribute="Targets" value="${myserver}"/>
-            </create>
-            <create type="JDBCDataSource" name="ELNonJTADS">
-                <set attribute="JNDIName" value="jdbc/ELNonJTADS"/>
-                <set attribute="PoolName" value="ejbPool"/>
-                <set attribute="Targets" value="${myserver}"/>
-            </create>
-        </wlconfig>
+        <copy overwrite="true" file="${eclipselink.jpa.test}/resource/weblogic/wls_setup.py" tofile="${eclipselink.jpa.test}/${run.dir}/wls_setup.py"/>
+        <replace file="${eclipselink.jpa.test}/${run.dir}/wls_setup.py">
+            <replacefilter token="%%WL_HOST%%" value="${weblogic.host}"/>
+            <replacefilter token="%%WL_PORT%%" value="${weblogic.port}"/>
+            <replacefilter token="%%WL_USR%%" value="${server.user}"/>
+            <replacefilter token="%%WL_PWD%%" value="${server.pwd}"/>
+            <replacefilter token="%%DBDRV%%" value="${db.driver}"/>
+            <replacefilter token="%%DBURL%%" value="${db.url}"/>
+            <replacefilter token="%%DBUSR%%" value="${db.user}"/>
+            <replacefilter token="%%DBPWD%%" value="${db.pwd}"/>
+        </replace>
+
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${run.dir}/wls_setup.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
     </target>
 
-	<target name="weblogic-domain-setup">
-        <wlconfig url="${server.admin.url}" username="${server.user}" password="${server.pwd}">
-           <query domain="mydomain" type="JPA" name="mydomain" property="jpaprovider"/>
-		   <set mbean="${jpaprovider}" attribute="DefaultJPAProvider" value="org.eclipse.persistence.jpa.PersistenceProvider"/>
-        </wlconfig>
-    </target>
-
-    <!--
-        This target is to remove the connection pool and managed datasource created by target <weblogic-setup>
-        Note: WLS server must be running.
-    -->
+    <!-- Remove all datasources created by target <weblogic-setup>
+         Note: WLS server must be running.-->
     <target name="weblogic-reset">
-        <wlconfig url="${server.admin.url}" username="${server.user}" password="${server.pwd}">
-            <query domain="mydomain" type="JDBCDataSource" name="ELNonJTADS">
-                <delete/>
-            </query>
-            <query domain="mydomain" type="JDBCTxDataSource" name="EclipseLinkDS">
-                <delete/>
-            </query>
-            <query domain="mydomain" type="JDBCConnectionPool" name="ejbPool">
-                <delete/>
-            </query>
-        </wlconfig>
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${run.dir}/wls_reset.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
     </target>
 
-	<target name="weblogic-domain-reset">
-        <wlconfig url="${server.admin.url}" username="${server.user}" password="${server.pwd}">
-           <query domain="mydomain" type="JPA" name="mydomain" property="jpaprovider"/>
-		   <set mbean="${jpaprovider}" attribute="DefaultJPAProvider" value="org.apache.openjpa.persistence.PersistenceProviderImpl"/>
-        </wlconfig>
+    <!-- Set EclipseLink JPA as DefaultJPAProvider for wls. -->
+    <target name="weblogic-domain-setup">
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${run.dir}/wls_domain_setup.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
+    </target>
+
+    <!-- Set back openjpa as DefaultJPAProvider for wls server. -->
+    <target name="weblogic-domain-reset">
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${run.dir}/wls_domain_reset.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
     </target>
 
     <!-- Stop the server. -->
     <target name="weblogic-stop">
-        <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
-            dir="${weblogic.domain}" host="${weblogic.host}"
-            username="${server.user}" password="${server.pwd}" action="shutdown">
-        </wlserver>
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${run.dir}/wls_stop.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
     </target>
 
-    <!--
-        Deploy the application ear to the server.
-        Note: WLS server must be running.
-    -->
+    <!-- Deploy the application ear to the server.
+         Note: WLS server must be running. -->
     <target name="weblogic-deploy">
-        <wldeploy action="deploy"
-            name="${application.name}" source="${ear.name}"
-            user="${server.user}" password="${server.pwd}"
-            adminurl="${server.admin.url}" targets="${target.server}"
-            failonerror="false">
-        </wldeploy>
+        <copy todir="${eclipselink.jpa.test}/${run.dir}" overwrite="true">
+            <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="wls_*deploy.py"/>
+        </copy>
+        <replace dir="${eclipselink.jpa.test}/${run.dir}">
+            <include name="**/wls_*deploy.py"/>
+            <replacefilter token="%%WL_HOST%%" value="${weblogic.host}"/>
+            <replacefilter token="%%WL_PORT%%" value="${weblogic.port}"/>
+            <replacefilter token="%%WL_USR%%" value="${server.user}"/>
+            <replacefilter token="%%WL_PWD%%" value="${server.pwd}"/>
+            <replacefilter token="%%appName%%" value="${application.name}"/>
+            <replacefilter token="%%testDir%%" value="${eclipselink.jpa.test}"/>
+        </replace>
+
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${run.dir}/wls_deploy.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
     </target>
 
-    <!--
-        Undeploy the application ear to the server.
-        Note: WLS server must be running.
-    -->
+    <!-- Undeploy the application ear to the server.
+         Note: WLS server must be running. -->
     <target name="weblogic-undeploy">
-        <wldeploy action="undeploy" name="${application.name}"
-            user="${server.user}" password="${server.pwd}"
-            adminurl="${server.admin.url}"
-            failonerror="false">
-        </wldeploy>
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${run.dir}/wls_undeploy.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
     </target>
 
 </project>
