@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" package-name="org.eclipse.persistence.testing.jaxb.xmlextensions">
+
+    <xml-schema>
+        <xml-ns prefix="xsd" namespace-uri="http://www.w3.org/2001/XMLSchema" />
+        <xml-ns prefix="xsi" namespace-uri="http://www.w3.org/2001/XMLSchema-instance" />
+    </xml-schema>
+
+    <xml-enums>
+        <xml-enum java-enum="org.eclipse.persistence.testing.jaxb.xmlextensions.ExtEnum" value="java.lang.String">
+            <xml-enum-value java-enum-value="N">NORTH</xml-enum-value>
+            <xml-enum-value java-enum-value="S">SOUTH</xml-enum-value>
+            <xml-enum-value java-enum-value="E">EAST</xml-enum-value>
+            <xml-enum-value java-enum-value="W">WEST</xml-enum-value>
+        </xml-enum>
+    </xml-enums>
+
+    <java-types>
+        <java-type name="Employee">
+            <java-attributes>
+                <xml-element java-attribute="salary" type="java.math.BigDecimal" />
+                <xml-element java-attribute="age" type="java.lang.Integer">
+                    <xml-access-methods get-method="getInt" set-method="setInt" />
+                </xml-element>
+                <xml-element java-attribute="dept" type="java.lang.Integer">
+                    <xml-access-methods get-method="getInt" set-method="setInt" />
+                </xml-element>
+                <xml-element java-attribute="batphone" type="org.eclipse.persistence.testing.jaxb.xmlextensions.PhoneNumber" />
+            </java-attributes>
+        </java-type>
+        <java-type name="PhoneNumber">
+            <xml-extensible set-method="putExt" get-method="getExt" />
+            <java-attributes>
+                <xml-element java-attribute="ext" type="java.lang.String" />
+                <xml-element java-attribute="countryCode" name="country-code" type="java.lang.String" />
+                <xml-element java-attribute="forwards" name="phone" type="org.eclipse.persistence.testing.jaxb.xmlextensions.PhoneNumber" container-type="java.util.LinkedList">
+                    <xml-element-wrapper name="forwards" />
+                </xml-element>
+            </java-attributes>
+        </java-type>
+
+        <!-- ============================== -->
+
+        <java-type name="ExtObjectA">
+            <java-attributes>
+                <xml-attribute java-attribute="directatt" type="java.lang.String" />
+                <xml-element java-attribute="directelem" type="java.lang.String" />
+                <xml-element java-attribute="nullpol" type="java.lang.String">
+                    <xml-null-policy null-representation-for-xml="XSI_NIL"
+                        xsi-nil-represents-null="true" empty-node-represents-null="false" />
+                </xml-element>
+                <xml-join-nodes java-attribute="join" type="org.eclipse.persistence.testing.jaxb.xmlextensions.ExtObjectB">
+                    <xml-join-node xml-path="join/@directatt" referenced-xml-path="@directatt" />
+                </xml-join-nodes>
+                <xml-element java-attribute="idref" type="org.eclipse.persistence.testing.jaxb.xmlextensions.ExtObjectB" xml-idref="true" />
+                <xml-element java-attribute="anEnum" type="org.eclipse.persistence.testing.jaxb.xmlextensions.ExtEnum" />
+
+                <!--  NOT WORKING -->
+                <!--
+                <xml-element java-attribute="base64">
+                    <xml-schema-type name="base64Binary" />
+                </xml-element>
+                <xml-element java-attribute="hex">
+                    <xml-schema-type name="hexBinary" />
+                </xml-element>
+                -->
+
+                <xml-element java-attribute="xmllist" type="java.lang.String" container-type="java.util.ArrayList" xml-list="true" />
+                <xml-any-element java-attribute="mixed" container-type="java.util.ArrayList" />
+
+            </java-attributes>
+        </java-type>
+
+        <java-type name="ExtObjectB">
+            <java-attributes>
+                <xml-attribute java-attribute="directatt" xml-path="@directatt" xml-id="true" type="java.lang.String" />
+                <xml-element java-attribute="directelem" type="java.lang.String" />
+                <xml-element java-attribute="references" name="ref" type="org.eclipse.persistence.testing.jaxb.xmlextensions.ExtObjectC" container-type="java.util.ArrayList">
+                    <xml-element-wrapper name="references" />
+                </xml-element>
+            </java-attributes>
+        </java-type>
+
+        <java-type name="ExtObjectC">
+            <java-attributes>
+                <xml-attribute java-attribute="directatt" type="java.lang.String" />
+                <xml-element java-attribute="directelem" type="java.lang.String" />
+
+                <!-- NOT WORKING -->
+                <!--
+                <xml-inverse-reference java-attribute="inverse" type="org.eclipse.persistence.testing.jaxb.xmlextensions.ExtObjectB" mapped-by="references" />
+                -->
+
+            </java-attributes>
+        </java-type>
+
+    </java-types>
+
+</xml-bindings>

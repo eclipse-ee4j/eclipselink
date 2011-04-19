@@ -111,6 +111,7 @@ import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
 import org.eclipse.persistence.oxm.annotations.XmlElementsJoinNodes;
+import org.eclipse.persistence.oxm.annotations.XmlExtensible;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
@@ -482,6 +483,9 @@ public class AnnotationsProcessor {
             if (helper.isAnnotationPresent(javaClass, XmlTransient.class)) {
                 info.setXmlTransient(true);
             }
+
+            // handle @XmlExtensible
+            processXmlExtensible(javaClass, info);
 
             // handle @XmlInlineBinaryData
             if (helper.isAnnotationPresent(javaClass, XmlInlineBinaryData.class)) {
@@ -1140,6 +1144,22 @@ public class AnnotationsProcessor {
             xmlRE.setName(rootElemAnnotation.name());
             xmlRE.setNamespace(rootElemAnnotation.namespace());
             info.setXmlRootElement(xmlRE);
+        }
+    }
+
+    /**
+     * Process @XmlExtensible annotation on a given JavaClass.
+     *
+     * @param javaClass
+     * @param info
+     */
+    private void processXmlExtensible(JavaClass javaClass, TypeInfo info) {
+        if (helper.isAnnotationPresent(javaClass, XmlExtensible.class)) {
+            XmlExtensible extAnnotation = (XmlExtensible) helper.getAnnotation(javaClass, XmlExtensible.class);
+            org.eclipse.persistence.jaxb.xmlmodel.XmlExtensible xmlExt = new org.eclipse.persistence.jaxb.xmlmodel.XmlExtensible();
+            xmlExt.setGetMethod(extAnnotation.getMethod());
+            xmlExt.setSetMethod(extAnnotation.setMethod());
+            info.setXmlExtensible(xmlExt);
         }
     }
 

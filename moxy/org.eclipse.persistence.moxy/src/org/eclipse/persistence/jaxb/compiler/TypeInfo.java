@@ -31,6 +31,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlExtensible;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlType;
@@ -96,6 +97,7 @@ public class TypeInfo {
     private XmlAccessOrder xmlAccessOrder;
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
     private String xmlCustomizer;
+    private XmlExtensible xmlExtensible;
 
     private String anyAttributePropertyName;
     private String anyElementPropertyName;
@@ -1031,4 +1033,13 @@ public class TypeInfo {
     public HashMap<String, Property> getOriginalProperties() {
         return originalProperties;
     }
+
+    public XmlExtensible getXmlExtensible() {
+        return xmlExtensible;
+    }
+
+    public void setXmlExtensible(XmlExtensible xmlExtensible) {
+        this.xmlExtensible = xmlExtensible;
+    }
+
 }

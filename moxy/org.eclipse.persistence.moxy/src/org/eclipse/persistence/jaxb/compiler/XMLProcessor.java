@@ -180,6 +180,11 @@ public class XMLProcessor {
                         info.setXmlJavaTypeAdapter(javaType.getXmlJavaTypeAdapter());
                     }
 
+                    // handle class-level @XmlExtensible override
+                    if (javaType.getXmlExtensible() != null) {
+                        info.setXmlExtensible(javaType.getXmlExtensible());
+                    }
+
                     // handle class-level @XmlAccessorOrder override
                     if (javaType.isSetXmlAccessorOrder()) {
                         info.setXmlAccessOrder(javaType.getXmlAccessorOrder());
@@ -363,11 +368,19 @@ public class XMLProcessor {
             List<String> processedPropertyNames = new ArrayList<String>();
             for (JAXBElement jaxbElement : javaType.getJavaAttributes().getJavaAttribute()) {
                 JavaAttribute javaAttribute = (JavaAttribute) jaxbElement.getValue();
-                
+
                 Property originalProperty = typeInfo.getOriginalProperties().get(javaAttribute.getJavaAttribute());
                 if (originalProperty == null) {
-                    getLogger().logWarning(JAXBMetadataLogger.NO_PROPERTY_FOR_JAVA_ATTRIBUTE, new Object[] { javaAttribute.getJavaAttribute(), javaType.getName() });
-                    continue;
+                    if (typeInfo.getXmlExtensible() != null) {
+                        Property newProperty = new Property(this.aProcessor.getHelper());
+                        newProperty.setPropertyName(javaAttribute.getJavaAttribute());
+                        newProperty.setExtension(true);
+                        originalProperty = newProperty;
+                        typeInfo.addProperty(javaAttribute.getJavaAttribute(), newProperty);
+                    } else {
+                        getLogger().logWarning(JAXBMetadataLogger.NO_PROPERTY_FOR_JAVA_ATTRIBUTE, new Object[] { javaAttribute.getJavaAttribute(), javaType.getName() });
+                        continue;
+                    }
                 }
 
                 boolean alreadyProcessed = processedPropertyNames.contains(javaAttribute.getJavaAttribute()); 

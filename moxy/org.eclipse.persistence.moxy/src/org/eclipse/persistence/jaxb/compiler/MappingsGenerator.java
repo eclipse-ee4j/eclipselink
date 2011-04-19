@@ -36,6 +36,8 @@ import javax.xml.transform.Source;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.DefaultElementConverter;
 import org.eclipse.persistence.internal.jaxb.DomHandlerConverter;
@@ -1992,7 +1994,7 @@ public class MappingsGenerator {
 
     /**
      * Generate mappings for a given TypeInfo.
-     * 
+     *
      * @param info
      * @param descriptor
      * @param namespaceInfo
@@ -2002,18 +2004,34 @@ public class MappingsGenerator {
             //may need to generate inherited mappings
             generateInheritedMappingsForAnonymousType(info, descriptor, namespaceInfo);
         }
-    	List<Property> propertiesInOrder = info.getNonTransientPropertiesInPropOrder();
-    	for (int i = 0; i < propertiesInOrder.size(); i++) {
-    		Property next = propertiesInOrder.get(i);
-    		if (next != null){
-            	DatabaseMapping mapping = generateMapping(next, descriptor, namespaceInfo);
-            	descriptor.addMapping(mapping);
-            	// set user-defined properties if necessary
-            	if (next.isSetUserProperties()) {
-            	    mapping.setProperties(next.getUserProperties());
-            	}
+        List<Property> propertiesInOrder = info.getNonTransientPropertiesInPropOrder();
+        for (int i = 0; i < propertiesInOrder.size(); i++) {
+            Property next = propertiesInOrder.get(i);
+            if (next != null){
+                DatabaseMapping mapping = generateMapping(next, descriptor, namespaceInfo);
+                if (next.isExtension()) {
+                    VirtualAttributeAccessor accessor = new VirtualAttributeAccessor();
+                    accessor.setAttributeName(mapping.getAttributeName());
+
+                    String getMethod = info.getXmlExtensible().getGetMethod();
+                    String setMethod = info.getXmlExtensible().getSetMethod();
+
+                    if (mapping.getAttributeAccessor().isMethodAttributeAccessor()) {
+                        getMethod = ((MethodAttributeAccessor) mapping.getAttributeAccessor()).getGetMethodName();
+                        setMethod = ((MethodAttributeAccessor) mapping.getAttributeAccessor()).getSetMethodName();
+                    }
+
+                    accessor.setGetMethodName(getMethod);
+                    accessor.setSetMethodName(setMethod);
+                    mapping.setAttributeAccessor(accessor);
+                }
+                descriptor.addMapping(mapping);
+                // set user-defined properties if necessary
+                if (next.isSetUserProperties()) {
+                    mapping.setProperties(next.getUserProperties());
+                }
             }
-    	}
+        }
     }
 
     private void generateInheritedMappingsForAnonymousType(TypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {

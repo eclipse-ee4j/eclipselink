@@ -103,6 +103,8 @@ public class JavaType {
     protected Boolean xmlInlineBinaryData;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-transient")
     protected Boolean xmlTransient;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-extensible")
+    protected XmlExtensible xmlExtensible;
 
     /**
      * Gets the value of the xmlType property.
@@ -619,6 +621,14 @@ public class JavaType {
             return this.javaAttribute;
         }
 
+    }
+
+    public XmlExtensible getXmlExtensible() {
+        return xmlExtensible;
+    }
+
+    public void setXmlExtensible(XmlExtensible xmlExtensible) {
+        this.xmlExtensible = xmlExtensible;
     }
 
 }
