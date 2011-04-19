@@ -68,7 +68,18 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         AnnotationValueVisitor<Object, Object> visitor = new AnnotationValueVisitor<Object, Object>();
         
         for (AnnotationMirror annotationMirror : annotationMirrors) {
-            annotatedElement.addAnnotation((MetadataAnnotation) visitor.visitAnnotation(annotationMirror, null));
+            String annotation = annotationMirror.getAnnotationType().toString() ;
+            
+            // Only add annotations that we care about. Be nice to have API
+            // that we could call into with the annotation mirror to the
+            // processor to see if it is a supported annotation. That is, it 
+            // would tie into the  @SupportedAnnotationTypes({"javax.persistence.*", "org.eclipse.persistence.annotations.*"})
+            // declaration from CanonicalModelProcessor, but I couldn't find a 
+            // way to do this. For now we'll check the strings (similar to what
+            // is done with our ASM factory).
+            if (annotation.contains("javax.persistence") || annotation.contains("org.eclipse.persistence.annotations")) {
+                annotatedElement.addAnnotation((MetadataAnnotation) visitor.visitAnnotation(annotationMirror, null));
+            } 
         }
     }
     
