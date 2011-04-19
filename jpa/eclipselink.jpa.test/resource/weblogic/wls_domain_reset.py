@@ -18,7 +18,7 @@ connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
 edit()
 startEdit()
 
-cd('/JPA/eclipselink')
+cd('/JPA/mydomain')
 cmo.setDefaultJPAProvider('org.apache.openjpa.persistence.PersistenceProviderImpl')
 
 save()
