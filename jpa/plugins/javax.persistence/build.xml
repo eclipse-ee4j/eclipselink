@@ -174,9 +174,7 @@
                failonerror="true"
                memoryMaximumSize="512m"
                fork="true">
-            <classpath>
-                <path refid="jpaproto.compile.path"/>
-            </classpath>
+               classpathref="jpaproto.compile.path"
         </javac>
     </target>
 

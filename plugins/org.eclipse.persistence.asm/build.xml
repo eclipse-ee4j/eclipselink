@@ -67,12 +67,13 @@
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, bnd-package, package" description="package ${ant.project.name}"/>
+    <target name="bld"   depends="clean, compile, bnd-package, package" description="build ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${asm.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
-       </delete>
+        </delete>
     </target>
 
     <!-- initialize varables and paths needed for compile -->
@@ -99,6 +100,12 @@
         <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
         <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- Set Compile Path-->
+        <path id="asm.compile.path">
+            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.core.zip"/>
+            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
+        </path>
 
         <!-- Check for BND library -->
         <property name="nobndtool.manifest.dir"      value="${asm.build.location}/META-INF"/>
@@ -138,6 +145,26 @@
         <echo message="on the ant command-line. However, the manifests used will be those"/>
         <echo message="checked-in for development, and will likely have errors."/>
         <fail message="Missing BND library!"/>
+    </target>
+
+    <!-- compile -->
+    <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
+        <delete dir="${asm.build.location}/org" includeEmptyDirs="true" failonerror="false" quiet="true"/>
+        <property name="javac.version" value="1.7"/>
+        <javac srcdir="${src.dir}"
+               destdir="${asm.build.location}"
+               includes="org/eclipse/persistence/**/*.java"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="asm.compile.path"
+        />
     </target>
 
     <!-- package -->

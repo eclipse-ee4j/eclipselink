@@ -67,6 +67,7 @@
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, bnd-package, package" description="package ${ant.project.name}"/>
+    <target name="bld"   depends="clean, compile, bnd-package, package" description="build ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean the build">
@@ -138,6 +139,40 @@
         <echo message="on the ant command-line. However, the manifests used will be those"/>
         <echo message="checked-in for development, and will likely have errors."/>
         <fail message="Missing BND library!"/>
+    </target>
+
+    <!-- compile -->
+    <target name="pre-compile" depends="init" description="Compile bundle code">
+        <condition property="antlr3.lib" value="${extensions.depend.dir}/antlr-3.3-complete.jar">
+            <available file="${extensions.depend.dir}/antlr-3.3-complete.jar"/>
+        </condition>
+    </target>
+
+    <!-- compile -->
+    <target name="compile" if="antlr3.lib" depends="pre-compile" description="Compile bundle code">
+        <!-- Set Compile Path-->
+        <path id="antlr.compile.path">
+            <pathelement path="${antlr3.lib}"/>
+            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.core.zip"/>
+            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
+        </path>
+
+        <delete dir="${antlr.build.location}/org" includeEmptyDirs="true" failonerror="false" quiet="true"/>
+        <property name="javac.version" value="1.7"/>
+        <javac srcdir="${src.dir}"
+               destdir="${antlr.build.location}"
+               includes="org/eclipse/persistence/**/*.java"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="antlr.compile.path"
+        />
     </target>
 
     <!-- package -->
