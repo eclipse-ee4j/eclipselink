@@ -12,12 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -55,13 +51,12 @@ public class ContentHandlerRecord extends MarshalRecord {
     private LexicalHandler lexicalHandler;
     private XPathFragment xPathFragment;
     private AttributesImpl attributes;
-    private Map<Integer, List<String>> prefixMappings;
     List<String> currentLevelPrefixMappings;
-    private Deque<List<String>> prefixMappingsDeque;
+    private List<List<String>> prefixMappings;
 
     public ContentHandlerRecord() {
-        prefixMappingsDeque = new ArrayDeque<List<String>>();
-        currentLevelPrefixMappings = Collections.EMPTY_LIST;
+        prefixMappings = new ArrayList<List<String>>();
+        currentLevelPrefixMappings = null;
         attributes = new AttributesImpl();
     }
 
@@ -129,7 +124,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     public void startPrefixMapping(String prefix, String namespaceURI) {
         try {
             contentHandler.startPrefixMapping(prefix, namespaceURI);
-            if(Collections.EMPTY_LIST == currentLevelPrefixMappings) {
+            if(null == currentLevelPrefixMappings) {
                 currentLevelPrefixMappings = new ArrayList<String>();
             }
             currentLevelPrefixMappings.add(prefix);
@@ -197,8 +192,8 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
-        currentLevelPrefixMappings = Collections.EMPTY_LIST;
-        prefixMappingsDeque.push(currentLevelPrefixMappings);                
+        currentLevelPrefixMappings = null;
+        prefixMappings.add(currentLevelPrefixMappings);
                 
         if (isStartElementOpen) {
             openAndCloseStartElement();
@@ -268,8 +263,8 @@ public class ContentHandlerRecord extends MarshalRecord {
         }
         try {
             contentHandler.endElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName());
-            List<String> currentLevelPrefixMappings = prefixMappingsDeque.pop();
-            if(null != currentLevelPrefixMappings && Collections.EMPTY_LIST != currentLevelPrefixMappings) {
+            List<String> currentLevelPrefixMappings = prefixMappings.remove(prefixMappings.size()-1);
+            if(null != currentLevelPrefixMappings) {
                 for(String prefix : currentLevelPrefixMappings) {
                     contentHandler.endPrefixMapping(prefix);
                 }
