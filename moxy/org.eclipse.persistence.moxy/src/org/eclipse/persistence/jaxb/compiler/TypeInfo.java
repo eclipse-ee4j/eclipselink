@@ -25,7 +25,9 @@ import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLNameTransformer;
 
+import org.eclipse.persistence.jaxb.DefaultXMLNameTransformer;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
@@ -109,7 +111,11 @@ public class TypeInfo {
 
     private static String EMPTY_STRING = "";
     
-    /**
+    private XMLNameTransformer xmlNameTransformer;
+    
+    public static XMLNameTransformer DEFAULT_NAME_TRANSFORMER = new DefaultXMLNameTransformer();
+ 
+	/**
      * This constructor sets the Helper to be used throughout XML and Annotations
      * processing.  Other fields are initialized here as well.
      * 
@@ -121,7 +127,7 @@ public class TypeInfo {
         originalProperties = new HashMap<String, Property>();
         propertyList = new ArrayList<Property>();
         packageLevelAdaptersByClass = new HashMap<String, JavaClass>();
-
+        xmlNameTransformer = DEFAULT_NAME_TRANSFORMER;
         isSetXmlTransient = false;
         isPreBuilt = false;
         isPostBuilt = false;
@@ -1042,4 +1048,30 @@ public class TypeInfo {
         this.xmlExtensible = xmlExtensible;
     }
 
+    
+    /**
+     * Return the XMLNameTransformer used when converting Java names to XML names
+     * @return
+     */
+    public XMLNameTransformer getXmlNameTransformer() {    	
+        return xmlNameTransformer;
+    }
+
+    /**
+     * Set the XMLNameTransformer used when converting Java names to XML names
+     * @param xmlNameTransformer
+     */
+    public void setXmlNameTransformer(XMLNameTransformer xmlNameTransformer) {
+        this.xmlNameTransformer = xmlNameTransformer;
+        if(getXmlType() !=null && getXmlType().getName() !=null && javaClassName != null){
+            String newName = null;
+            try{
+                newName = (xmlNameTransformer.transformTypeName(javaClassName));                
+            }catch(Exception ex){
+                throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClassName, xmlNameTransformer.getClass().getName(), ex);
+            }
+            getXmlType().setName(newName);
+        }
+    }
+	
 }

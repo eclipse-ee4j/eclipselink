@@ -56,6 +56,7 @@ import javax.xml.bind.annotation.XmlList;
  *       &lt;attribute name="xml-discriminator-value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="xml-inline-binary-data" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-transient" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-name-transformer" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -105,6 +106,8 @@ public class JavaType {
     protected Boolean xmlTransient;
     @javax.xml.bind.annotation.XmlElement(name = "xml-extensible")
     protected XmlExtensible xmlExtensible;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-name-transformer")
+    protected String xmlNameTransformer;
 
     /**
      * Gets the value of the xmlType property.
@@ -551,6 +554,31 @@ public class JavaType {
     public boolean isSetXmlTransient() {
         return xmlTransient != null;
     }
+
+    /**
+     * Gets the value of the xmlNameTransformer property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getXmlNameTransformer() {
+        return xmlNameTransformer;
+    }
+
+    /**
+     * Sets the value of the xmlNameTransformer property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXmlNameTransformer(String value) {
+        this.xmlNameTransformer = value;
+    }
+
 
     /**
      * <p>Java class for anonymous complex type.

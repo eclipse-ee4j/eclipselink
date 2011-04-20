@@ -101,6 +101,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransform
 import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
@@ -117,6 +118,7 @@ import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNodes;
 import org.eclipse.persistence.oxm.annotations.XmlKey;
+import org.eclipse.persistence.oxm.annotations.XmlNameTransformer;
 import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlParameter;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
@@ -573,8 +575,8 @@ public class AnnotationsProcessor {
         // create type info instances for any additional classes
         javaClasses = processAdditionalClasses(javaClasses);
         preBuildTypeInfo(javaClasses);
-        updateGlobalElements(javaClasses);
         buildTypeInfo(javaClasses);
+        updateGlobalElements(javaClasses);        
         return javaClasses;
     }
 
@@ -605,6 +607,36 @@ public class AnnotationsProcessor {
 
             NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
 
+            
+            XMLNameTransformer transformer = info.getXmlNameTransformer();
+            if(transformer == TypeInfo.DEFAULT_NAME_TRANSFORMER){
+            	XMLNameTransformer nsInfoXmlNameTransformer = packageNamespace.getXmlNameTransformer();
+
+            	if(nsInfoXmlNameTransformer != null){
+                    info.setXmlNameTransformer(nsInfoXmlNameTransformer);
+            	}else if (helper.isAnnotationPresent(javaClass, XmlNameTransformer.class)) {
+                   XmlNameTransformer nameTranformer = (XmlNameTransformer) helper.getAnnotation(javaClass, XmlNameTransformer.class);
+                    Class nameTransformerClass = nameTranformer.value();	                                    
+                    try {				
+                        info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.newInstance());
+                    } catch (InstantiationException ex) {
+                        throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
+                    } catch (IllegalAccessException ex) {
+                        throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
+                    }	             		
+          	}else if (helper.isAnnotationPresent(javaClass.getPackage(), XmlNameTransformer.class)) {
+                  XmlNameTransformer nameTranformer = (XmlNameTransformer) helper.getAnnotation(javaClass.getPackage(), XmlNameTransformer.class);
+                  Class nameTransformerClass = nameTranformer.value();	                                    
+                  try {				
+                      info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.newInstance());
+                  } catch (InstantiationException ex) {
+                      throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
+                  } catch (IllegalAccessException ex) {
+                      throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
+                  }	                              
+              }	            
+            }   
+            
             // handle @XmlAccessorType
             postProcessXmlAccessorType(info, packageNamespace);
 
@@ -1199,8 +1231,12 @@ public class AnnotationsProcessor {
             // set factoryMethodName
             xmlType.setFactoryMethod(typeAnnotation.factoryMethod());
         } else {
-            // set defaults
-            xmlType.setName(getSchemaTypeNameForClassName(javaClass.getName()));
+            // set defaults        	            
+            try{                
+                xmlType.setName(info.getXmlNameTransformer().transformTypeName(javaClass.getName()));
+            }catch (Exception ex){
+             	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+            }            
             xmlType.setNamespace(packageNamespace.getNamespace());
         }
         info.setXmlType(xmlType);
@@ -1242,8 +1278,12 @@ public class AnnotationsProcessor {
 
         // figure out type name
         String typeName = xmlType.getName();
-        if (typeName.equals(XMLProcessor.DEFAULT)) {
-            typeName = getSchemaTypeNameForClassName(javaClass.getName());
+        if (typeName.equals(XMLProcessor.DEFAULT)) {    
+            try {                
+                typeName = info.getXmlNameTransformer().transformTypeName(javaClass.getName());
+            }catch (Exception ex){
+                throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);             
+            }                    	        	
         }
         info.setSchemaTypeName(typeName);
 
@@ -1652,9 +1692,9 @@ public class AnnotationsProcessor {
             }
             property.setSchemaName(qName);
         } else {
-            property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getNamespaceInfoForPackage(cls), info.getClassNamespace()));
+            property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getNamespaceInfoForPackage(cls), info));
         }
-
+        
         ptype = property.getActualType();
         if (ptype.isPrimitive()) {
             property.setIsRequired(true);
@@ -2648,51 +2688,6 @@ public class AnnotationsProcessor {
         this.getLocalElements().add(elem);
     }
 
-    private String decapitalize(String javaName) {
-        char[] name = javaName.toCharArray();
-        int i = 0;
-        while (i < name.length && (Character.isUpperCase(name[i]) || !Character.isLetter(name[i]))) {
-            i++;
-        }
-        if (i > 0) {
-            name[0] = Character.toLowerCase(name[0]);
-            for (int j = 1; j < i - 1; j++) {
-                name[j] = Character.toLowerCase(name[j]);
-            }
-            return new String(name);
-        } else {
-            return javaName;
-        }
-    }
-
-    public String getSchemaTypeNameForClassName(String className) {
-        String typeName = EMPTY_STRING;
-        if (className.indexOf(DOLLAR_SIGN_CHR) != -1) {
-            typeName = decapitalize(className.substring(className.lastIndexOf(DOLLAR_SIGN_CHR) + 1));
-        } else {
-            typeName = decapitalize(className.substring(className.lastIndexOf(DOT_CHR) + 1));
-        }
-        // now capitalize any characters that occur after a "break"
-        boolean inBreak = false;
-        StringBuffer toReturn = new StringBuffer(typeName.length());
-        for (int i = 0; i < typeName.length(); i++) {
-            char next = typeName.charAt(i);
-            if (Character.isDigit(next)) {
-                if (!inBreak) {
-                    inBreak = true;
-                }
-                toReturn.append(next);
-            } else {
-                if (inBreak) {
-                    toReturn.append(Character.toUpperCase(next));
-                } else {
-                    toReturn.append(next);
-                }
-            }
-        }
-        return toReturn.toString();
-    }
-
     public QName getSchemaTypeOrNullFor(JavaClass javaClass) {
         if (javaClass == null) {
             return null;
@@ -2786,27 +2781,8 @@ public class AnnotationsProcessor {
         return namespaceResolver;
     }
 
-    public String getSchemaTypeNameFor(JavaClass javaClass, XmlType xmlType) {
-        String typeName = EMPTY_STRING;
-        if (javaClass == null) {
-            return typeName;
-        }
-
-        if (helper.isAnnotationPresent(javaClass, XmlType.class)) {
-            // Figure out what kind of type we have
-            // figure out type name
-            XmlType typeAnnotation = (XmlType) helper.getAnnotation(javaClass, XmlType.class);
-            typeName = typeAnnotation.name();
-            if (typeName.equals("#default")) {
-                typeName = getSchemaTypeNameForClassName(javaClass.getName());
-            }
-        } else {
-            typeName = getSchemaTypeNameForClassName(javaClass.getName());
-        }
-        return typeName;
-    }
-
-    public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo, String uri) {
+    public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo, TypeInfo info) {
+    	String uri = info.getClassNamespace();
         String name = XMLProcessor.DEFAULT;
         String namespace = XMLProcessor.DEFAULT;
         QName qName = null;
@@ -2817,8 +2793,13 @@ public class AnnotationsProcessor {
 
             if (name.equals(XMLProcessor.DEFAULT)) {
                 name = defaultName;
-            }
-
+                try{
+                    name = info.getXmlNameTransformer().transformAttributeName(name);
+                 }catch (Exception ex){
+                 	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
+                 }
+            }                  
+         
             if (!namespace.equals(XMLProcessor.DEFAULT)) {
                 qName = new QName(namespace, name);
                 isDefaultNamespaceAllowed = false;
@@ -2829,7 +2810,7 @@ public class AnnotationsProcessor {
                     qName = new QName(name);
                 }
             }
-        } else {
+        } else {      
             if (helper.isAnnotationPresent(element, XmlElement.class)) {
                 XmlElement xmlElement = (XmlElement) helper.getAnnotation(element, XmlElement.class);
                 name = xmlElement.name();
@@ -2838,6 +2819,12 @@ public class AnnotationsProcessor {
 
             if (name.equals(XMLProcessor.DEFAULT)) {
                 name = defaultName;
+                
+                try{
+                	name = info.getXmlNameTransformer().transformElementName(name);
+                }catch (Exception ex){
+                 	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
+                }
             }
 
             if (!namespace.equals(XMLProcessor.DEFAULT)) {
@@ -2855,7 +2842,7 @@ public class AnnotationsProcessor {
         }
         return qName;
     }
-
+    
     public HashMap<String, NamespaceInfo> getPackageToNamespaceMappings() {
         return packageToNamespaceMappings;
     }
@@ -3140,21 +3127,14 @@ public class AnnotationsProcessor {
                 namespaceInfo = getNamespaceInfoForPackage(javaClass);
 
                 String elementName = xmlRE.getName();
-                if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {
-                    if (javaClass.getName().indexOf(DOLLAR_SIGN_CHR) != -1) {
-                        elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf(DOLLAR_SIGN_CHR) + 1));
-                    } else {
-                        elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf(DOT_CHR) + 1));
-                    }
-                    // TCK Compliancy
-                    if (elementName.length() >= 3) {
-                        int idx = elementName.length() - 1;
-                        char ch = elementName.charAt(idx - 1);
-                        if (Character.isDigit(ch)) {
-                            char lastCh = Character.toUpperCase(elementName.charAt(idx));
-                            elementName = elementName.substring(0, idx) + lastCh;
-                        }
-                    }
+                if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {                	
+                    XMLNameTransformer transformer = info.getXmlNameTransformer();
+                    try{                
+                        elementName = transformer.transformRootElementName(javaClass.getName());
+                    }catch (Exception ex){
+                     	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                    }  
+                    
                 }
                 String rootNamespace = xmlRE.getNamespace();
                 QName rootElemName = null;
@@ -3950,23 +3930,12 @@ public class AnnotationsProcessor {
         if (info.isSetXmlRootElement()) {
             org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = info.getXmlRootElement();
             String elementName = xmlRE.getName();
-            if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {
-                if (javaClass.getName().indexOf(DOLLAR_SIGN_CHR) != -1) {
-                    elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf(DOLLAR_SIGN_CHR) + 1));
-                } else {
-                    elementName = Introspector.decapitalize(javaClass.getName().substring(javaClass.getName().lastIndexOf(DOT_CHR) + 1));
-                }
-
-                // TCK Compliancy
-                if (elementName.length() >= 3) {
-                    int idx = elementName.length() - 1;
-                    char ch = elementName.charAt(idx - 1);
-                    if (Character.isDigit(ch)) {
-                        char lastCh = Character.toUpperCase(elementName.charAt(idx));
-                        elementName = elementName.substring(0, idx) + lastCh;
-                    }
-                }
-
+            if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {            	
+                try{                
+                    elementName = info.getXmlNameTransformer().transformRootElementName(javaClass.getName());
+                }catch (Exception ex){
+                 	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                }  
             }
             String rootNamespace = xmlRE.getNamespace();
             QName rootElemName = null;

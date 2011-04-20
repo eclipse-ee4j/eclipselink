@@ -103,7 +103,6 @@ public class SchemaGenerator {
     private static final String COLON = ":";
     private static final String ATT = "@";
     private static final String EMPTY_STRING = "";
-    private static final String DOLLAR_SIGN = "$";
     private static final String DOT = ".";
     private static final String SKIP = "skip";
     private static final String ENTRY = "entry";
@@ -115,7 +114,6 @@ public class SchemaGenerator {
     private static final String OBJECT_CLASSNAME = "java.lang.Object";
     private static final String ID = "ID";
     private static final String IDREF = "IDREF";
-    private static final Character DOLLAR_SIGN_CHAR = '$';
     private static final Character DOT_CHAR = '.';
 
     private SchemaOutputResolver outputResolver;
@@ -174,20 +172,12 @@ public class SchemaGenerator {
             org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = info.getXmlRootElement();
             rootElement = new Element();
             String elementName = xmlRE.getName();
-            if (elementName.equals(DEFAULT) || elementName.equals(EMPTY_STRING)) {
-                if (myClassName.indexOf(DOLLAR_SIGN) != -1) {
-                    elementName = Introspector.decapitalize(myClassName.substring(myClassName.lastIndexOf(DOLLAR_SIGN_CHAR) + 1));
-                } else {
-                    elementName = Introspector.decapitalize(myClassName.substring(myClassName.lastIndexOf(DOT_CHAR) + 1));
-                }
-
-                // the following satisfies a TCK requirement
-                if (elementName.length() >= 3) {
-                    int idx = elementName.length() - 1;
-                    if (Character.isDigit(elementName.charAt(idx - 1))) {
-                        elementName = elementName.substring(0, idx) + Character.toUpperCase(elementName.charAt(idx));
-                    }
-                }
+            if (elementName.equals(DEFAULT) || elementName.equals(EMPTY_STRING)) {            	
+            	 try{                
+            		 elementName = info.getXmlNameTransformer().transformRootElementName(myClassName);
+                 }catch (Exception ex){
+                  	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(myClassName, info.getXmlNameTransformer().getClass().getName(), ex);
+                 }             	
             }
             rootElement.setName(elementName);
             String rootNamespace = xmlRE.getNamespace();
@@ -228,7 +218,7 @@ public class SchemaGenerator {
                 if (rootElement != null) {
                     rootElement.setSimpleType(type);
                 }
-            } else {
+            } else {            	
                 type.setName(typeName);
                 schema.addTopLevelSimpleTypes(type);
                 if (rootElement != null) {

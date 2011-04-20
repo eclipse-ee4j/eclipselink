@@ -238,15 +238,22 @@ public class MappingsGenerator {
         XMLDescriptor descriptor = new XMLDescriptor();
         org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement rootElem = info.getXmlRootElement();
         if (rootElem == null) {
-            String rawName = javaClass.getRawName();
-            elementName = Introspector.decapitalize(rawName.substring(rawName.lastIndexOf(".") + 1));
+        	 try{                
+        		 elementName = info.getXmlNameTransformer().transformRootElementName(javaClass.getName());
+             }catch (Exception ex){
+              	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+             }  
+            
             namespace = packageNamespace;
             descriptor.setResultAlwaysXMLRoot(true);
         } else {
             elementName = rootElem.getName();
-            if (elementName.equals("##default")) {
-                String rawName = javaClass.getRawName();
-                elementName = Introspector.decapitalize(rawName.substring(rawName.lastIndexOf(".") + 1));
+            if (elementName.equals("##default")) {                                
+                try{                
+                    elementName = info.getXmlNameTransformer().transformRootElementName(javaClass.getName());
+                }catch (Exception ex){
+                 	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                }  
             }
             namespace = rootElem.getNamespace();
             descriptor.setResultAlwaysXMLRoot(false);
@@ -2702,7 +2709,7 @@ public class MappingsGenerator {
     }
 
     private class MapEntryGeneratedKey {
-        String keyClassName;
+      	String keyClassName;
 		String valueClassName;
 
     	public MapEntryGeneratedKey(String keyClass, String valueClass){

@@ -60,6 +60,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlEnums;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlRegistries;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlProperties.XmlProperty;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
+import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 
@@ -179,7 +180,14 @@ public class XMLProcessor {
                     if (javaType.getXmlJavaTypeAdapter() != null) {
                         info.setXmlJavaTypeAdapter(javaType.getXmlJavaTypeAdapter());
                     }
-
+                    
+                    // handle class-level @XmlNameTransformer
+                    String transformerClassName = javaType.getXmlNameTransformer();
+                    
+                    XMLNameTransformer transformer = getXMLNameTransformerClassFromString(transformerClassName);
+                    if(transformer != null){
+                        info.setXmlNameTransformer(transformer);
+                    }
                     // handle class-level @XmlExtensible override
                     if (javaType.getXmlExtensible() != null) {
                         info.setXmlExtensible(javaType.getXmlExtensible());
@@ -257,24 +265,32 @@ public class XMLProcessor {
                     }
                 }
             }
-            // apply package-level @XmlJavaTypeAdapters
-            if (xmlBindings.getXmlJavaTypeAdapters() != null) {
-                Map<String, TypeInfo> typeInfos = aProcessor.getTypeInfosForPackage(packageName);
-                for (TypeInfo tInfo : typeInfos.values()) {
-                    List<XmlJavaTypeAdapter> adapters = xmlBindings.getXmlJavaTypeAdapters().getXmlJavaTypeAdapter();
-                    for (XmlJavaTypeAdapter xja : adapters) {
-                        try {
-                            JavaClass adapterClass = jModelInput.getJavaModel().getClass(xja.getValue());
-                            JavaClass boundType = jModelInput.getJavaModel().getClass(xja.getType());
-                            if (boundType != null) {
-                                tInfo.addPackageLevelAdapterClass(adapterClass, boundType);
-                            }
-                        } catch(JAXBException e) {
-                            throw JAXBException.invalidPackageAdapterClass(xja.getValue(), packageName);
-                        }
-                    }
-                }
+            //apply package-level @XmlNameTransformer
+            Map<String, TypeInfo> typeInfos = aProcessor.getTypeInfosForPackage(packageName);
+            String transformerClassName = xmlBindings.getXmlNameTransformer();
+            
+            XMLNameTransformer transformer = getXMLNameTransformerClassFromString(transformerClassName);
+            if(transformer != null){
+               nsInfo.setXmlNameTransformer(transformer);
             }
+            // apply package-level @XmlJavaTypeAdapters
+            for (TypeInfo tInfo : typeInfos.values()) {
+            	if(xmlBindings.getXmlJavaTypeAdapters() != null){
+	                List<XmlJavaTypeAdapter> adapters = xmlBindings.getXmlJavaTypeAdapters().getXmlJavaTypeAdapter();
+	                for (XmlJavaTypeAdapter xja : adapters) {
+	                    try {
+	                        JavaClass adapterClass = jModelInput.getJavaModel().getClass(xja.getValue());
+	                        JavaClass boundType = jModelInput.getJavaModel().getClass(xja.getType());
+	                        if (boundType != null) {
+	                            tInfo.addPackageLevelAdapterClass(adapterClass, boundType);
+	                        }
+	                    } catch(JAXBException e) {
+	                        throw JAXBException.invalidPackageAdapterClass(xja.getValue(), packageName);
+	                    }
+	                }
+            	}
+            }            
+            
         }
         for (String packageName : xmlBindingMap.keySet()) {
             ArrayList classesToProcess = pkgToClassMap.get(packageName);
@@ -355,6 +371,28 @@ public class XMLProcessor {
         aProcessor.createElementsForTypeMappingInfo();
     }
 
+    private XMLNameTransformer getXMLNameTransformerClassFromString(String transformerClassName){
+    	XMLNameTransformer transformer = null;
+        if(transformerClassName != null){
+           Class nameTransformerClass;
+
+             try {
+                 nameTransformerClass = Class.forName(transformerClassName);			
+             } catch (ClassNotFoundException ex) {
+                 throw JAXBException.exceptionWithNameTransformerClass(transformerClassName, ex);
+             }  
+             try {
+                 transformer = (XMLNameTransformer) nameTransformerClass.newInstance();
+         	} catch (InstantiationException ex) {
+                 throw JAXBException.exceptionWithNameTransformerClass(transformerClassName, ex);
+             } catch (IllegalAccessException ex) {
+                 throw JAXBException.exceptionWithNameTransformerClass(transformerClassName, ex);
+             } 
+         }
+    	 return transformer;
+    	
+    }
+    
     /**
      * Process a given JavaType's attributes.
      * 

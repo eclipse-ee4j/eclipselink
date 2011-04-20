@@ -15,6 +15,7 @@ package org.eclipse.persistence.jaxb.compiler;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 /**
  *  INTERNAL:
@@ -39,8 +40,17 @@ public class NamespaceInfo {
     private XmlAccessOrder accessOrder = XmlAccessOrder.UNDEFINED;
     private String location;
     private NamespaceResolver namespaceResolverForDescriptor;
+    private XMLNameTransformer xmlNameTransformer;
     
-    public String getNamespace() {
+    public XMLNameTransformer getXmlNameTransformer() {
+		return xmlNameTransformer;
+	}
+
+	public void setXmlNameTransformer(XMLNameTransformer xmlNameTransformer) {
+		this.xmlNameTransformer = xmlNameTransformer;
+	}
+
+	public String getNamespace() {
         return namespace;
     }
     

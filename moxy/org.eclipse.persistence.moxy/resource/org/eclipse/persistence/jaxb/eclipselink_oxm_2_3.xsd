@@ -53,6 +53,7 @@
             <xs:attribute name="xml-accessor-order" type="xml-access-order" default="UNDEFINED" />
             <xs:attribute name="xml-mapping-metadata-complete" type="xs:boolean" default="false" />
             <xs:attribute name="package-name" type="xs:string" default="##default" />
+            <xs:attribute name="xml-name-transformer" type="xs:string" />
         </xs:complexType>
     </xs:element>
     <xs:element name="xml-registry">
@@ -101,6 +102,7 @@
             <xs:attribute name="xml-discriminator-value" type="xs:string" />
             <xs:attribute name="xml-inline-binary-data" type="xs:boolean" default="false" />
             <xs:attribute name="xml-transient" type="xs:boolean" default="false" />
+            <xs:attribute name="xml-name-transformer" type="xs:string" />
         </xs:complexType>
     </xs:element>
     <xs:element name="java-attribute" type="java-attribute" />

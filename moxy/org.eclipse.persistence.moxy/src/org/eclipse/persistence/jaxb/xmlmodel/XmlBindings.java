@@ -73,6 +73,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="xml-accessor-order" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-order" default="UNDEFINED" />
  *       &lt;attribute name="xml-mapping-metadata-complete" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="package-name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
+ *       &lt;attribute name="xml-name-transformer" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -109,6 +110,8 @@ public class XmlBindings {
     protected Boolean xmlMappingMetadataComplete;
     @XmlAttribute(name = "package-name")
     protected String packageName;
+    @XmlAttribute(name = "xml-name-transformer")
+    protected String xmlNameTransformer;
 
     /**
      * Gets the value of the xmlSchema property.
@@ -406,6 +409,30 @@ public class XmlBindings {
      */
     public void setPackageName(String value) {
         this.packageName = value;
+    }
+
+    /**
+     * Gets the value of the xmlNameTransformer property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getXmlNameTransformer() {
+        return xmlNameTransformer;
+    }
+
+    /**
+     * Sets the value of the xmlNameTransformer property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXmlNameTransformer(String value) {
+        this.xmlNameTransformer = value;
     }
 
 

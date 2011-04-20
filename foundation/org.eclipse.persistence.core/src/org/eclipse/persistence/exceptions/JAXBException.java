@@ -103,6 +103,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_XML_PATH_ATTRIBUTE = 50071;
     public static final int DUPLICATE_PROPERTY_NAME = 50072;
     public static final int SAME_PROPERTY_IN_MULTIPLE_BINDINGS_FILES = 50073;
+    public static final int EXCEPTION_WITH_NAME_TRANSFORMER_CLASS = 50074;
+    public static final int EXCEPTION_DURING_NAME_TRANSFORMATION = 50075;    
 
     protected JAXBException(String message) {
         super(message);
@@ -821,7 +823,7 @@ public class JAXBException extends EclipseLinkException {
     
     /**
      * PUBLIC:
-     * Cause: An exception occurred while attampting to get the declared methods from 
+     * Cause: An exception occurred while attempting to get the declared methods from 
      * the adapter class.
      */
     public static JAXBException adapterClassMethodsCouldNotBeAccessed(String adapterClassName, Exception ex) {
@@ -833,7 +835,7 @@ public class JAXBException extends EclipseLinkException {
     
     /**
      * PUBLIC:
-     * Cause: An exception occurred while attampting to get a new instance of 
+     * Cause: An exception occurred while attempting to get a new instance of 
      * the adapter class.
      */
     public static JAXBException adapterClassCouldNotBeInstantiated(String adapterClassName, Exception ex) {
@@ -949,4 +951,29 @@ public class JAXBException extends EclipseLinkException {
         return validationException;
         
     }
+    
+    /**
+     * PUBLIC:
+     * Cause: An exception occurred while attempting to get a new instance of 
+     * the transformer class.
+     */
+    public static JAXBException exceptionWithNameTransformerClass(String nametransformerClassName, Exception ex) {
+        Object[] args = { nametransformerClassName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, EXCEPTION_WITH_NAME_TRANSFORMER_CLASS, args), ex);
+        validationException.setErrorCode(EXCEPTION_WITH_NAME_TRANSFORMER_CLASS);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: An exception occurred during transformation to an xml name
+     */
+    public static JAXBException exceptionDuringNameTransformation(String nameBeingTransformed, String nametransformerClassName, Exception ex) {
+        Object[] args = { nameBeingTransformed, nametransformerClassName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, EXCEPTION_DURING_NAME_TRANSFORMATION, args), ex);
+        validationException.setErrorCode(EXCEPTION_DURING_NAME_TRANSFORMATION);
+        return validationException;
+    }
+    
+        
 }

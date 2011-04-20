@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="myuri" targetNamespace="myuri">
+   <xsd:element name="PHONEROOT" type="ns0:ORG.ECLIPSE.PERSISTENCE.TESTING.JAXB.EXTERNALIZEDMETADATA.XMLNAMETRANSFORMER.PHONETYPE"/>
+   <xsd:simpleType name="ORG.ECLIPSE.PERSISTENCE.TESTING.JAXB.EXTERNALIZEDMETADATA.XMLNAMETRANSFORMER.PHONETYPE">
+      <xsd:restriction base="xsd:string"/>
+   </xsd:simpleType>
+</xsd:schema>
