@@ -63,7 +63,7 @@
     <property name="wdf_test.2.jpa.dir"            value="${wdf_test.2.trunk.dir}/jpa/org.eclipse.persistence.jpa"/>
     <property name="wdf_test.2.moxy.dir"           value="${wdf_test.2.trunk.dir}/moxy/org.eclipse.persistence.moxy"/>
     <property name="wdf_test.2.core.test.dir"      value="${wdf_test.2.trunk.dir}/foundation/eclipselink.core.test"/>
-    <property name="eclipselink.jpa.test" value="${wdf_test.build.location}/../eclipselink.jpa.test"/>
+    <property name="eclipselink.jpa.test"          value="${wdf_test.build.location}/../eclipselink.jpa.test"/>
     <property name="env" environment="env"         value="env"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
@@ -78,7 +78,7 @@
     <target name="build-against-jar"     depends="clean, init_against_jar, compile, package"                description="build JPA WDF testing jars"/>
     <target name="build-against-classes" depends="clean, init_against_classes, compile, package"            description="build JPA WDF testing jars"/>
     <target name="build-against-bundles" depends="clean, init_against_bundles, compile, package"            description="build JPA WDF testing jars"/>
-    <target name="test-against-jar"      depends="clean-test, init_against_jar, init_runtime,  test-lrg"     description="run JPA WDF tests"/>
+    <target name="test-against-jar"      depends="clean-test, init_against_jar, init_runtime,  test-lrg"    description="run JPA WDF tests"/>
     <target name="test-against-classes"  depends="clean-test, init_against_classes, init_runtime, test-lrg" description="run JPA WDF tests"/>
     <target name="test-against-bundles"  depends="clean-test, init_against_bundles, init_runtime, test-lrg" description="run JPA WDF tests"/>
     <target name="server-test"           depends="server-test-internal" description="run JPA WDF tests on server configured by property server.name"/>
@@ -135,8 +135,7 @@
                           org.eclipse.persistence.jpa_*.jar,
                           org.eclipse.persistence.moxy_*.jar,
                           org.eclipse.persistence.asm_*.jar,
-                          org.eclipse.persistence.antlr_*.jar
-                "
+                          org.eclipse.persistence.antlr_*.jar"
             />
         </path>
         <path id="product.jar.path">
@@ -183,36 +182,15 @@
         </javac>
         <javac
             srcdir="${wdf_test.2.core.test.dir}/${src.dir}"
-               destdir="${classes.dir}"
-               debug="${javac.debug}"
-               debuglevel="${javac.debuglevel}"
-               optimize="${javac.optimize}"
-               source="${javac.version}"
-               target="${javac.version}"
-               deprecation="${javac.deprecation}"
-               failonerror="true"
-            includes="org/eclipse/persistence/testing/framework/junit/**,
-                org/eclipse/persistence/testing/framework/AutoVerifyTestCase.java,
-                org/eclipse/persistence/testing/framework/TestCase.java,
-                org/eclipse/persistence/testing/framework/TestEntity.java,
-                org/eclipse/persistence/testing/framework/TestModel.java,
-                org/eclipse/persistence/testing/framework/*TestHelper.java,
-                org/eclipse/persistence/testing/framework/QuerySQLTracker.java,
-                org/eclipse/persistence/testing/framework/TestWarningException.java,
-                org/eclipse/persistence/testing/framework/TestException.java,
-                org/eclipse/persistence/testing/framework/TestErrorException.java,
-                org/eclipse/persistence/testing/framework/TestProblemException.java,
-                org/eclipse/persistence/testing/framework/ResultInterface.java,
-                org/eclipse/persistence/testing/framework/TestCollection.java,
-                org/eclipse/persistence/testing/framework/PerformanceComparisonTest.java,
-                org/eclipse/persistence/testing/framework/PerformanceComparisonTestCase.java,
-                org/eclipse/persistence/testing/framework/TestResult.java,
-                org/eclipse/persistence/testing/framework/PerformanceComparisonTestResult.java,
-                org/eclipse/persistence/testing/framework/PerformanceRegressionTest.java,
-                org/eclipse/persistence/testing/framework/PerformanceRegressionTestCase.java,
-                org/eclipse/persistence/testing/framework/ConcurrencyTestAdapter.java,
-                org/eclipse/persistence/testing/framework/ConcurrentPerformanceComparisonTest.java,
-                org/eclipse/persistence/testing/framework/ConcurrentPerformanceRegressionTest.java">
+            destdir="${classes.dir}"
+            debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
+            optimize="${javac.optimize}"
+            source="${javac.version}"
+            target="${javac.version}"
+            deprecation="${javac.deprecation}"
+            failonerror="true"
+            includes="org/eclipse/persistence/testing/framework/**">
             <classpath refid="compile.path"/>
         </javac>
     </target>
