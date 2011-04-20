@@ -1298,7 +1298,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     @Override
     public Object valueFromPKList(Object[] pks, AbstractSession session) {
-        if (pks[0] == null) return null;
+        if (pks.length == 0 || pks[0] == null) return null;
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(getReferenceClass());
         query.setSelectionId(pks[0]);
