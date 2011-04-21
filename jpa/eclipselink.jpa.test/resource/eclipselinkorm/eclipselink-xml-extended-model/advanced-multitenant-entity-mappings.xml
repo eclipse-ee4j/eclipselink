@@ -115,6 +115,12 @@
     </entity>
     
     <entity name="XMLContract" class="Contract">
+        <named-query name="FindAllXmlContracts">
+            <query>SELECT c FROM XMLContract c</query>
+        </named-query>
+        <named-query name="UpdateAllXmlContractDescriptions">
+            <query>UPDATE XMLContract c SET c.description = 'voided'</query>
+        </named-query>
         <table name="XML_CONTRACT">
             <multitenant type="SINGLE_TABLE"/>
         </table>
@@ -125,6 +131,9 @@
             </id>
             <basic name="description">
                 <column name="DESCRIP"/>
+            </basic>
+            <basic name="tenantId">
+                <column name="TENANT_ID" insertable="false" updatable="false"/>
             </basic>
             <many-to-many name="soldiers">
                 <cascade>

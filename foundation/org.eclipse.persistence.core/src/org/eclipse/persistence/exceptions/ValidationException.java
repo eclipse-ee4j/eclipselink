@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     04/21/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 5)
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -413,6 +415,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int DUPLICATE_PARTITION_VALUE = 7335;
     
     public static final int MULTIPLE_CONTEXT_PROPERTY_FOR_TENANT_DISCRIMINATOR_FIELD = 7336;
+    public static final int NON_READ_ONLY_MAPPED_TENANT_DISCRIMINATOR_FIELD = 7337;
     
     /**
      * INTERNAL:
@@ -2692,6 +2695,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_CONTEXT_PROPERTY_FOR_TENANT_DISCRIMINATOR_FIELD, args));
         validationException.setErrorCode(MULTIPLE_CONTEXT_PROPERTY_FOR_TENANT_DISCRIMINATOR_FIELD);
+        return validationException;
+    }
+
+    public static ValidationException nonReadOnlyMappedTenantDiscriminatorField(String className, String fieldName) {
+        Object[] args = { className, fieldName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NON_READ_ONLY_MAPPED_TENANT_DISCRIMINATOR_FIELD, args));
+        validationException.setErrorCode(NON_READ_ONLY_MAPPED_TENANT_DISCRIMINATOR_FIELD);
         return validationException;
     }
     

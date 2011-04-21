@@ -10,6 +10,8 @@
  * Contributors:
  *     03/23/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/21/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 5)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant;
 
@@ -20,6 +22,7 @@ public class Contract {
     private int id;
     private Integer version;
     private String description;
+    private String tenantId;
     private Collection<Soldier> soldiers;
 
     public Contract() {
@@ -42,7 +45,9 @@ public class Contract {
     public Collection<Soldier> getSoldiers() { 
         return soldiers; 
     }
-
+    public String getTenantId() {
+        return tenantId;
+    }
     public Integer getVersion() {
         return version; 
     }
@@ -59,6 +64,9 @@ public class Contract {
         this.soldiers = soldiers;
     }
     
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
     public void setVersion(Integer version) {
         this.version = version;
     }

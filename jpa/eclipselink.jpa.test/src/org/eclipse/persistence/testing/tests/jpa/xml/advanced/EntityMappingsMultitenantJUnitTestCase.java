@@ -12,6 +12,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     04/21/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 5)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
@@ -27,6 +29,8 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import junit.framework.*;
+
+import org.eclipse.persistence.config.EntityManagerProperties;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
@@ -75,6 +79,7 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
         
         suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testValidateMafiaFamily707"));
         suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testValidateMafiaFamily007"));
+        suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testValidateMafiaFamily707and007WithSameEM"));
         suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testValidateMafiaFamily123"));
         return suite;
     }
@@ -89,7 +94,7 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
     public void testCreateMafiaFamily707() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
         em.setProperty("tenant.id", "707");
-        em.setProperty("eclipselink.tenant-id", "707");
+        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
 
         try {
             beginTransaction(em);
@@ -227,7 +232,7 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
     public void testCreateMafiaFamily007() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
         em.setProperty("tenant.id", "007");
-        em.setProperty("eclipselink.tenant-id", "007");
+        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
 
         try {
             beginTransaction(em);
@@ -459,46 +464,10 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
     public void testValidateMafiaFamily707() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
         em.setProperty("tenant.id", "707");
-        em.setProperty("eclipselink.tenant-id", "707");
+        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
 
         try {
-            clearCache(MULTI_TENANT_PU);
-            em.clear();
-            
-            MafiaFamily family = em.find(MafiaFamily.class, family707);
-            assertNotNull("The Mafia Family with id: " + family707 + ", was not found", family);
-            assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [3]", family.getTags().size() == 3);
-            assertNull("The Mafia Family with id: " + family007 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family007));
-            assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
-            assertFalse("No mafiosos part of 707 family", family.getMafiosos().isEmpty());
-            
-            // See if we can find any members of the other family.
-            for (Integer id : family007Mafiosos) {
-                assertNull("Found family 007 mafioso.", em.find(Mafioso.class, id));
-            }
-            
-            // Query directly for the boss from the other family.
-            Boss otherBoss = em.find(Boss.class, family007Mafiosos.get(0));
-            assertNull("Found family 007 boss.", otherBoss);
-            
-            // See if we can find any contracts of the other family.
-            for (Integer id : family007Contracts) {
-                assertNull("Found family 007 contract. ", em.find(Contract.class, id));
-            }
-            
-            // See how many soldiers are returned from a jpql query
-            List soldiers = em.createQuery("SELECT s from XMLSoldier s").getResultList();
-            assertTrue("Incorrect number of soldiers were returned [" + soldiers.size() + "], expected [5]",  soldiers.size() == 5);
-            
-            // We know what the boss's id is for the 007 family to try to update him from the 707 pu.
-            // The 007 family is validated after this test.
-            beginTransaction(em);
-            Query query = em.createNamedQuery("UpdateXMLBossName");
-            query.setParameter("name", "Compromised");
-            query.setParameter("id", family007Mafiosos.get(0));
-            query.executeUpdate();
-            commitTransaction(em);
-
+            validateMafiaFamily707(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -513,40 +482,34 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
     public void testValidateMafiaFamily007() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
         em.setProperty("tenant.id", "007");
-        em.setProperty("eclipselink.tenant-id", "007");
+        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
 
         try {
-            clearCache(MULTI_TENANT_PU);
-            em.clear();
-            
-            MafiaFamily family =  em.find(MafiaFamily.class, family007);
-            assertNotNull("The Mafia Family with id: " + family007 + ", was not found", family);
-            assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [5]", family.getTags().size() == 5);
-            assertNull("The Mafia Family with id: " + family707 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family707));
-            assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
-            assertFalse("No mafiosos part of 007 family", family.getMafiosos().isEmpty());
-            
-            // See if we can find any members of the other family.
-            for (Integer id : family707Mafiosos) {
-                assertNull("Found family 707 mafioso.", em.find(Mafioso.class, id));
+            validateMafiaFamily007(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            // Query directly for the boss from the other family.
-            Boss otherBoss = em.find(Boss.class, family707Mafiosos.get(0));
-            assertNull("Found family 707 boss.", otherBoss);
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testValidateMafiaFamily707and007WithSameEM() {
+        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        em.setProperty("tenant.id", "707");
+        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
+
+        try {
+            validateMafiaFamily707(em);
             
-            // See if we can find any contracts of the other family.
-            for (Integer id : family707Contracts) {
-                assertNull("Found family 707 contract.", em.find(Contract.class, id));
-            }
-            
-            // Try a select named query
-            List families = em.createNamedQuery("findJPQLXMLMafiaFamilies").getResultList();
-            assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1); 
-       
-            // Find our boss and make sure his name has not been compromised from the 707 family.
-            Boss boss = em.find(Boss.class, family007Mafiosos.get(0));
-            assertFalse("The Boss name has been compromised", boss.getFirstName().equals("Compromised"));
+            // Change the properties on the same EM and validate the next family.
+            em.setProperty("tenant.id", "007");
+            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
+
+            validateMafiaFamily007(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -598,6 +561,96 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+    }
+    
+    protected void validateMafiaFamily007(EntityManager em) {
+        clearCache(MULTI_TENANT_PU);
+        em.clear();
+        
+        MafiaFamily family =  em.find(MafiaFamily.class, family007);
+        assertNotNull("The Mafia Family with id: " + family007 + ", was not found", family);
+        assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [5]", family.getTags().size() == 5);
+        assertNull("The Mafia Family with id: " + family707 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family707));
+        assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
+        assertFalse("No mafiosos part of 007 family", family.getMafiosos().isEmpty());
+        
+        // See if we can find any members of the other family.
+        for (Integer id : family707Mafiosos) {
+            assertNull("Found family 707 mafioso.", em.find(Mafioso.class, id));
+        }
+        
+        // Query directly for the boss from the other family.
+        Boss otherBoss = em.find(Boss.class, family707Mafiosos.get(0));
+        assertNull("Found family 707 boss.", otherBoss);
+        
+        // See if we can find any contracts of the other family.
+        for (Integer id : family707Contracts) {
+            assertNull("Found family 707 contract.", em.find(Contract.class, id));
+        }
+        
+        // Read and validate our contracts
+        List<Contract> contracts = em.createNamedQuery("FindAllXmlContracts").getResultList();
+        assertTrue("Incorrect number of contracts were returned [" + contracts.size() + "], expected[3]", contracts.size() == 3);
+        
+        for (Contract contract : contracts) {
+            assertFalse("Contract description was voided.", contract.getDescription().equals("voided"));
+        }
+        
+        // Try a select named query
+        List families = em.createNamedQuery("findJPQLXMLMafiaFamilies").getResultList();
+        assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1); 
+   
+        // Find our boss and make sure his name has not been compromised from the 707 family.
+        Boss boss = em.find(Boss.class, family007Mafiosos.get(0));
+        assertFalse("The Boss name has been compromised", boss.getFirstName().equals("Compromised"));
+    }
+    
+    protected void validateMafiaFamily707(EntityManager em) {
+        clearCache(MULTI_TENANT_PU);
+        em.clear();
+        
+        MafiaFamily family = em.find(MafiaFamily.class, family707);
+        assertNotNull("The Mafia Family with id: " + family707 + ", was not found", family);
+        assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [3]", family.getTags().size() == 3);
+        assertNull("The Mafia Family with id: " + family007 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family007));
+        assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
+        assertFalse("No mafiosos part of 707 family", family.getMafiosos().isEmpty());
+        
+        // See if we can find any members of the other family.
+        for (Integer id : family007Mafiosos) {
+            assertNull("Found family 007 mafioso.", em.find(Mafioso.class, id));
+        }
+        
+        // Query directly for the boss from the other family.
+        Boss otherBoss = em.find(Boss.class, family007Mafiosos.get(0));
+        assertNull("Found family 007 boss.", otherBoss);
+        
+        // See if we can find any contracts of the other family.
+        for (Integer id : family007Contracts) {
+            assertNull("Found family 007 contract. ", em.find(Contract.class, id));
+        }
+        
+        // Update all our contract descriptions to be 'voided'
+        beginTransaction(em);
+        em.createNamedQuery("UpdateAllXmlContractDescriptions").executeUpdate();
+        commitTransaction(em);
+        
+        // Read and validate the contracts
+        List<Contract> contracts = em.createNamedQuery("FindAllXmlContracts").getResultList();
+        assertTrue("Incorrect number of contracts were returned [" + contracts.size() + "], expected[3]", contracts.size() == 3);
+        
+        // See how many soldiers are returned from a jpql query
+        List soldiers = em.createQuery("SELECT s from XMLSoldier s").getResultList();
+        assertTrue("Incorrect number of soldiers were returned [" + soldiers.size() + "], expected [5]",  soldiers.size() == 5);
+        
+        // We know what the boss's id is for the 007 family to try to update him from the 707 pu.
+        // The 007 family is validated after this test.
+        beginTransaction(em);
+        Query query = em.createNamedQuery("UpdateXMLBossName");
+        query.setParameter("name", "Compromised");
+        query.setParameter("id", family007Mafiosos.get(0));
+        query.executeUpdate();
+        commitTransaction(em);
     }
 }
 

@@ -18,6 +18,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     04/21/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 5)
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -2910,11 +2912,33 @@ public class ClassDescriptor implements Cloneable, Serializable {
             setMappings(mappings);
         }
 
+        // Once the table and mapping information has been settled, we'll need 
+        // to set tenant  id fields on the descriptor for each table. These are 
+        // at least used  for DDL generation. Doesn't seem to interfere or 
+        // duplicate anything else we have done to support tenant id fields.
+        if (hasTenantDiscriminatorFields()) {
+            for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {                
+                getFields().add(buildField(discriminatorField));
+            }
+        }
+        
         // Initialize the allFields to its fields, this can be done now because the fields have been computed.
         setAllFields((Vector)getFields().clone());
 
         getObjectBuilder().initialize(session);
-
+        
+        // After the mappings have been initialized validate the read only
+        // mapped discriminator column mappings.
+        if (hasTenantDiscriminatorFields()) {
+            for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
+                DatabaseMapping mapping = getObjectBuilder().getMappingForField(discriminatorField);
+                
+                if (mapping != null && ! mapping.isReadOnly()) {
+                    throw ValidationException.nonReadOnlyMappedTenantDiscriminatorField(getJavaClassName(), discriminatorField.getQualifiedName());
+                }
+            }
+        }
+        
         if (shouldOrderMappings()) {
             // PERF: Ensure direct primary key mappings are first.
             for (int index = getObjectBuilder().getPrimaryKeyMappings().size() - 1; index >= 0; index--) {
@@ -3602,16 +3626,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         } else {
             // This must be done now, after validate, before init anything else.
             setInternalDefaultTable();
-        }
-        
-        // Once the table information has been settled, we'll need to set tenant 
-        // id fields on the descriptor for each table. These are at least used 
-        // for DDL generation. Doesn't seem to interfere or duplicate anything 
-        // else we have done to support tenant id fields.
-        if (hasTenantDiscriminatorFields()) {
-            for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
-                getFields().add(buildField(discriminatorField));
-            }
         }
         
         verifyTableQualifiers(session.getDatasourcePlatform());

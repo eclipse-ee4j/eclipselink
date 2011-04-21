@@ -10,12 +10,15 @@
  * Contributors:
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/21/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 5)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
 import java.util.Collection;
 import java.util.Vector;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,6 +27,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -36,10 +41,20 @@ import static org.eclipse.persistence.annotations.MultitenantType.SINGLE_TABLE;
 @Entity
 @Table(name="JPA_CONTRACT")
 @Multitenant(SINGLE_TABLE)
+@NamedQueries({
+  @NamedQuery(
+    name="FindAllContracts",
+    query="SELECT c FROM Contract c"),
+  @NamedQuery(
+    name="UpdateAllContractDescriptions",
+    query="UPDATE Contract c SET c.description = 'voided'")
+})
+// Will default the tenant discriminator column to TENANT_ID, which is mapped below.
 public class Contract {
     private int id;
     private Integer version;
     private String description;
+    private String tenantId;
     private Collection<Soldier> soldiers;
 
     public Contract() {
@@ -73,6 +88,11 @@ public class Contract {
         return soldiers; 
     }
     
+    @Column(name="TENANT_ID", insertable=false, updatable=false)
+    public String getTenantId() {
+        return tenantId;
+    }
+    
     @Version
     public Integer getVersion() {
         return version; 
@@ -88,6 +108,10 @@ public class Contract {
     
     public void setSoldiers(Collection<Soldier> soldiers) {
         this.soldiers = soldiers;
+    }
+    
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
     
     public void setVersion(Integer version) {

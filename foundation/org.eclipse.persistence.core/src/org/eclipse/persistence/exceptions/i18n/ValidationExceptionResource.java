@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     04/21/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 5)
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -311,6 +313,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7334", "Class [{0}] has an incomplete primary key specification. When specifying primary key columns, the names of those columns must be specified."},
                                            { "7335", "Duplicate partition value [{1}] given for @ValuePartitioning named [{0}]"},
                                            { "7336", "Multiple context properties [{2}] and [{3}] specified for the same tenant discriminator field [{1}] for class [{0}]"},
+                                           { "7337", "The mapped tenant discriminator column [{1}] on the class [{0}] must be marked as read only. In JPA this is done by setting insertable=false and updatable=false on the column e.g. @Column(name=\"TENANT_ID\", insertable=false, updatable=false)."},
                                            
  };
     
