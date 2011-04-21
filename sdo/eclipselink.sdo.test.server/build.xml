@@ -39,6 +39,7 @@
 
     <dirname  property="sdotest.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
     <echo message="sdotest.build.location = '${sdotest.build.location}'"/>
+    <property name="eclipselink.jpa.test" value="${sdotest.build.location}/../../jpa/eclipselink.jpa.test"/>
 
     <condition property="sdotest.2.base.dir" value="../.." else="..">
         <contains string="${sdotest.build.location}" substring="sdo"/>
@@ -149,6 +150,7 @@
 
     <target name="server-deploy">
         <ant antfile="${sdotest.2.base.dir}/jpa/eclipselink.jpa.test/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
+            <property name="ear.dir" value="${sdotest.build.location}"/>
             <property name="ear.name" value="${ear.name}"/>
             <property name="application.name" value="${application.name}"/>
         </ant>
