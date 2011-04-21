@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Session;

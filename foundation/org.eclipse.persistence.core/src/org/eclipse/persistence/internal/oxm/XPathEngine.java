@@ -30,7 +30,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
-import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLNodeList;

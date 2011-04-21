@@ -25,7 +25,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
