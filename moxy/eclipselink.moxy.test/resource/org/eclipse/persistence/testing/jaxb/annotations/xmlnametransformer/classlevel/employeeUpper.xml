@@ -1,0 +1,19 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<x:employee-data id="10" BIRTHDAY="2005-05-24T16:06:53.0" xmlns:x="examplenamespace">
+   <FIRSTNAME>Bob</FIRSTNAME>
+   <lastname>Smith</lastname>
+   <ADDRESS>
+      <id>20</id>
+	  <cityname>Ottawa</cityname>
+   </ADDRESS>
+   <responsibilities>
+      <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+      <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+      <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
+   </responsibilities>
+   <RESPONSIBILITIES2 xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</RESPONSIBILITIES2>
+   <RESPONSIBILITIES2 xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</RESPONSIBILITIES2>
+   <RESPONSIBILITIES2 xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</RESPONSIBILITIES2>
+   <SOMENUMBER>10</SOMENUMBER>
+</x:employee-data>
+
