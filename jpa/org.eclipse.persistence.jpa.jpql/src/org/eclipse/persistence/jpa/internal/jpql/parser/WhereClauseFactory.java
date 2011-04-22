@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link WhereClauseFactory} creates a new {@link WhereClause} when the
- * portion of the query to parse starts with <b>WHERE</b>.
+ * This {@link WhereClauseFactory} creates a new {@link WhereClause} when the portion of the query
+ * to parse starts with <b>WHERE</b>.
  *
  * @see WhereClause
  *
@@ -49,6 +49,7 @@ final class WhereClauseFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new WhereClause(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;
