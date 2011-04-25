@@ -27,7 +27,7 @@ public class Diner extends Person {
     }
 
     public void addFavouriteRestaurant(Restaurant aRestaurant) {
-        collectionChange("favouriteRestaurants", getFavouriteRestaurants(), aRestaurant, CollectionChangeEvent.ADD);
+        collectionChange("favouriteRestaurants", getFavouriteRestaurants(), aRestaurant, CollectionChangeEvent.ADD, false);
         getFavouriteRestaurants().addElement(aRestaurant);
     }
 

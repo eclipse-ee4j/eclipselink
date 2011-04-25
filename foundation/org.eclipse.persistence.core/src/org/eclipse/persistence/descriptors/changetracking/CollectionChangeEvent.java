@@ -51,20 +51,41 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      * This flag indicates whether the event was raised by set operation on the list. 
      */
     protected boolean isSet;
+    
+    /**
+     * INTERNAL:
+     * This flag will indicate if the object has already been removed or added to the collection before raising an event.
+     * The object is not removed or added before raising an event during merge.
+     */
+    protected boolean isChangeApplied = true;
 
     /**
      * PUBLIC:
      * Create a CollectionChangeEvent for an object based on the property name, old value, new value
      * and change type (add or remove)
+     * 
+     * @deprecated as of EclipseLink 2.3
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType) {
-        this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, (Integer)null);
+        this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, (Integer)null, false, true);
     }
     
     /**
      * PUBLIC:
+     * Create a CollectionChangeEvent for an object based on the property name, old value, new value,
+     * change type (add or remove) and change applied.
+     * 
+     */
+    public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, boolean isChangeApplied) {
+        this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, (Integer)null, false, isChangeApplied);
+    }
+   
+    /**
+     * PUBLIC:
      * Create a CollectionChangeEvent for an object based on the property name, old value, new value, 
      * change type (add or remove) and the index where the object is/was in the collection (list)
+     * 
+     * @deprecated as of EclipseLink 2.3
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
         this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, index, false);
@@ -75,12 +96,26 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      * Create a CollectionChangeEvent for an object based on the property name, old value, new value, 
      * change type (add or remove) and the index where the object is/was in the collection (list),
      * flag indicating whether the change (addition or removal) is part of a single set operation on a list. 
+     * 
+     * @deprecated as of EclipseLink 2.3
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index, boolean isSet) {
+        this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, index, isSet, true);
+    }
+
+    /**
+     * PUBLIC:
+     * Create a CollectionChangeEvent for an object based on the property name, old value, new value, 
+     * change type (add or remove) and the index where the object is/was in the collection (list),
+     * flag indicating whether the change (addition or removal) is part of a single set operation on a list,
+     * flag indicating whether the object has already been added or removed from the collection. 
+     */
+    public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index, boolean isSet, boolean isChangeApplied) {
         super(collectionOwner, propertyName, collectionChanged, elementChanged);
         this.changeType = changeType;
         this.index = index;
         this.isSet = isSet;
+        this.isChangeApplied = isChangeApplied;
     }
 
     /**
@@ -113,5 +148,13 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      */
     public void setIndex(Integer index) {
         this.index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the value indicating if the object has been already added or removed from the collection.
+     */
+    public boolean isChangeApplied() {
+        return isChangeApplied;
     }
 }

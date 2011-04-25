@@ -36,9 +36,21 @@ public class MapChangeEvent extends CollectionChangeEvent {
      * PUBLIC:
      * Create a MapChangeEvent for an object based on the property name, the updated Map, the new Key and the new Value
      * and change type (add or remove)
+     * 
+     * @deprecated as of EclipseLink 2.3
      */
     public MapChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementKey, Object elementValue, int changeType) {
         super(collectionOwner, propertyName, collectionChanged, elementValue, changeType);
+        this.key = elementKey;
+    }
+
+    /**
+     * PUBLIC:
+     * Create a MapChangeEvent for an object based on the property name, the updated Map, the new Key and the new Value
+     * and change type (add or remove)
+     */
+    public MapChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementKey, Object elementValue, int changeType, boolean isChangeApplied) {
+        super(collectionOwner, propertyName, collectionChanged, elementValue, changeType, isChangeApplied);
         this.key = elementKey;
     }
 

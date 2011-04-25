@@ -564,7 +564,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      */
     protected void raiseAddChangeEvent(Object key, Object value) {
         if (hasTrackedPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new MapChangeEvent(this, getTrackedAttributeName(), this, key, value, CollectionChangeEvent.ADD));
+            _persistence_getPropertyChangeListener().propertyChange(new MapChangeEvent(this, getTrackedAttributeName(), this, key, value, CollectionChangeEvent.ADD, true));
         }
         // this is where relationship maintenance would go
     }
@@ -574,7 +574,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      */
     protected void raiseRemoveChangeEvent(Object key, Object value) {
         if (hasTrackedPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new MapChangeEvent(this, getTrackedAttributeName(), this, key, value, CollectionChangeEvent.REMOVE));
+            _persistence_getPropertyChangeListener().propertyChange(new MapChangeEvent(this, getTrackedAttributeName(), this, key, value, CollectionChangeEvent.REMOVE, true));
         }
         // this is where relationship maintenance would go
     }

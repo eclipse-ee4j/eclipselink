@@ -51,9 +51,9 @@ public class Menu implements ChangeTracker{
         }
     }
 
-    public void collectionChange(String propertyName, Collection changedCollection, Object newObject, int changeType) {
+    public void collectionChange(String propertyName, Collection changedCollection, Object newObject, int changeType, boolean isChangeApplied) {
         if (listener != null) {
-            listener.propertyChange(new CollectionChangeEvent(this, propertyName, changedCollection, newObject, changeType));
+            listener.propertyChange(new CollectionChangeEvent(this, propertyName, changedCollection, newObject, changeType, isChangeApplied));
         }
     }
 

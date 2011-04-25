@@ -103,9 +103,9 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
         }
     }
 
-    public void collectionChange(String propertyName, Object oldValue, Object newValue, int changeType) {
+    public void collectionChange(String propertyName, Object oldValue, Object newValue, int changeType, boolean isChangeApplied) {
         if (listener != null) {
-            listener.propertyChange(new CollectionChangeEvent(this, propertyName, oldValue, newValue, changeType));
+            listener.propertyChange(new CollectionChangeEvent(this, propertyName, oldValue, newValue, changeType, isChangeApplied));
         }
     }
 
@@ -138,7 +138,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      */
     public void addManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
         if(getManagedEmployees().add(employee)) {
-            collectionChange("managedEmployees", managedEmployees, employee, 0);
+            collectionChange("managedEmployees", managedEmployees, employee, 0, true);
             employee.setManager(this);
         }
     }
@@ -148,20 +148,20 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      */
     public void addPhoneNumber(PhoneNumber phoneNumber) {
         if(getPhoneNumbers().add(phoneNumber)) {
-            collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 0);
+            collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 0, true);
             phoneNumber.setOwner(this);
         }
     }
 
     public void addProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
         if(getProjects().add(project)) {
-            collectionChange("projects", projects, project, 0);
+            collectionChange("projects", projects, project, 0, true);
         }
     }
 
     public void addResponsibility(String responsibility) {
         if(getResponsibilitiesList().add(responsibility)) {
-            collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 0);
+            collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 0, true);
         }
     }
 
@@ -309,7 +309,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      */
     public void removeManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
         if(getManagedEmployees().removeElement(employee)) {
-            collectionChange("managedEmployees", managedEmployees, employee, 1);
+            collectionChange("managedEmployees", managedEmployees, employee, 1, true);
             employee.setManager(null);
         }
     }
@@ -322,19 +322,19 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      */
     public void removePhoneNumber(PhoneNumber phoneNumber) {
         if(getPhoneNumbers().removeElement(phoneNumber)) {
-            collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 1);
+            collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 1, true);
         }
     }
 
     public void removeProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
         if(getProjects().removeElement(project)) {
-            collectionChange("projects", projects, project, 1);
+            collectionChange("projects", projects, project, 1, true);
         }
     }
 
     public void removeResponsibility(String responsibility) {
         if(getResponsibilitiesList().removeElement(responsibility)) {
-            collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 1);
+            collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 1, true);
         }
     }
 

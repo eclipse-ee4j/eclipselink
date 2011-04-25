@@ -536,7 +536,7 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
      */
     protected void raiseAddChangeEvent(Object element) {
         if (hasTrackedPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD));
+            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD, true));
         }
         if (hasBeenRegistered()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceSet(element, null);
@@ -548,7 +548,7 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
      */
     protected void raiseRemoveChangeEvent(Object element) {
         if (hasTrackedPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE));
+            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE, true));
         }
         if (hasBeenRegistered()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceRemove(element);

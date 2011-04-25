@@ -70,9 +70,9 @@ public class EmploymentPeriod implements Serializable, ChangeTracker, Cloneable 
         }
     }
 
-    public void collectionChange(String propertyName, Object oldValue, Object newValue, int changeType) {
+    public void collectionChange(String propertyName, Object oldValue, Object newValue, int changeType, boolean isChangeApplied) {
         if (listener != null) {
-            listener.propertyChange(new CollectionChangeEvent(this, propertyName, oldValue, newValue, changeType));
+            listener.propertyChange(new CollectionChangeEvent(this, propertyName, oldValue, newValue, changeType, isChangeApplied));
         }
     }
 

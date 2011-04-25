@@ -346,12 +346,12 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * Creates a CollectionChangeEvent for the container
      */
     @Override
-    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
+    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index, boolean isChangeApplied) {
         if (elementChanged instanceof Map.Entry) {
             return new MapChangeEvent(collectionOwner,propertyName, collectionChanged,
-                    ((Map.Entry)elementChanged).getKey(), ((Map.Entry)elementChanged).getValue(), changeType);
+                    ((Map.Entry)elementChanged).getKey(), ((Map.Entry)elementChanged).getValue(), changeType, isChangeApplied);
         } 
-        return super.createChangeEvent(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, index);
+        return super.createChangeEvent(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, index, isChangeApplied);
     }
 
     /**

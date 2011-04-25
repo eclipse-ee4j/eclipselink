@@ -1984,7 +1984,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 Integer zero = Integer.valueOf(0);//remove does not seem to use index.
                 while (containerPolicy.hasNext(iterator)) {
                     // Bug304251: let the containerPolicy build the proper remove CollectionChangeEvent
-                    CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeManager.getSession()), CollectionChangeEvent.REMOVE, zero);
+                    CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeManager.getSession()), CollectionChangeEvent.REMOVE, zero, false);
                     listener.internalPropertyChange(event);
                 }
                 if (newContainer instanceof ChangeTracker) {
@@ -2005,7 +2005,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             Object sourceValue = containerPolicy.next(sourceValuesIterator, mergeManager.getSession());
             if (fireCollectionChangeEvents) {
                 // Bug304251: let the containerPolicy build the proper remove CollectionChangeEvent
-                CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, sourceValue, CollectionChangeEvent.ADD, Integer.valueOf(i));
+                CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, sourceValue, CollectionChangeEvent.ADD, Integer.valueOf(i), false);
                 listener.internalPropertyChange(event);
             }
             containerPolicy.addInto(sourceValue, valueOfTarget, mergeManager.getSession());
@@ -2858,10 +2858,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public void simpleAddToCollectionChangeRecord(Object referenceKey, Object objectToAdd, ObjectChangeSet changeSet, AbstractSession session) {
-        simpleAddToCollectionChangeRecord(objectToAdd, null, false, changeSet, session);
+        simpleAddToCollectionChangeRecord(objectToAdd, null, false, changeSet, session, true);
     }
 
-    protected void simpleAddToCollectionChangeRecord(Object objectToAdd, Integer index, boolean isSet, ObjectChangeSet changeSet, AbstractSession session) {
+    protected void simpleAddToCollectionChangeRecord(Object objectToAdd, Integer index, boolean isSet, ObjectChangeSet changeSet, AbstractSession session, boolean isChangeApplied) {
         DirectCollectionChangeRecord collectionChangeRecord = (DirectCollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
         if (collectionChangeRecord == null) {
             collectionChangeRecord = new DirectCollectionChangeRecord(changeSet);
@@ -2882,7 +2882,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 collectionChangeRecord.setLatestCollection(collection);
             } else {
                 collectionChangeRecord.storeDatabaseCounts(collection, getContainerPolicy(), session);
-                collectionChangeRecord.firstToAddAlreadyInCollection();
+                collectionChangeRecord.setFirstToAddAlreadyInCollection(isChangeApplied);
             }
         }
         if(!collectionChangeRecord.isDeferred() && this.listOrderField == null) {
@@ -2897,10 +2897,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object objectToRemove, ObjectChangeSet changeSet, AbstractSession session) {
-        simpleRemoveFromCollectionChangeRecord(objectToRemove, null, false, changeSet, session);
+        simpleRemoveFromCollectionChangeRecord(objectToRemove, null, false, changeSet, session, true);
     }
 
-    protected void simpleRemoveFromCollectionChangeRecord(Object objectToRemove, Integer index, boolean isSet, ObjectChangeSet changeSet, AbstractSession session) {
+    protected void simpleRemoveFromCollectionChangeRecord(Object objectToRemove, Integer index, boolean isSet, ObjectChangeSet changeSet, AbstractSession session, boolean isChangeApplied) {
         DirectCollectionChangeRecord collectionChangeRecord = (DirectCollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
         if (collectionChangeRecord == null) {
             collectionChangeRecord = new DirectCollectionChangeRecord(changeSet);
@@ -2921,9 +2921,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 collectionChangeRecord.setLatestCollection(collection);
             } else {
                 collectionChangeRecord.storeDatabaseCounts(collection, getContainerPolicy(), session);
-                collectionChangeRecord.firstToRemoveAlreadyOutCollection();
+                collectionChangeRecord.setFirstToRemoveAlreadyOutCollection(isChangeApplied);
                 if(isSet) {
-                    collectionChangeRecord.firstToAddAlreadyInCollection();
+                    collectionChangeRecord.setFirstToAddAlreadyInCollection(isChangeApplied);
                 }
             }
         }
@@ -2973,9 +2973,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             Object value =  event.getNewValue();
             
             if (event.getChangeType() == CollectionChangeEvent.ADD) {
-                simpleAddToCollectionChangeRecord(value, event.getIndex(), event.isSet(), changeSet, uow);
+                simpleAddToCollectionChangeRecord(value, event.getIndex(), event.isSet(), changeSet, uow, event.isChangeApplied());
             } else if (event.getChangeType() == CollectionChangeEvent.REMOVE) {
-                simpleRemoveFromCollectionChangeRecord(value, event.getIndex(), event.isSet(), changeSet, uow);
+                simpleRemoveFromCollectionChangeRecord(value, event.getIndex(), event.isSet(), changeSet, uow, event.isChangeApplied());
             } else {
                 throw ValidationException.wrongCollectionChangeEventType(event.getChangeType());
             }

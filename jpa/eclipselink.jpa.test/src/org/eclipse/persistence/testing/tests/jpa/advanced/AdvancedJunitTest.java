@@ -12,13 +12,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -36,6 +39,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.VegetablePK;
 import org.eclipse.persistence.testing.models.jpa.advanced.WorldRank;
 import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLink;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleEntity;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleNature;
 
 public class AdvancedJunitTest extends JUnitTestCase {
     public AdvancedJunitTest() {
@@ -58,6 +63,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testManAndWoman"));
         suite.addTest(new AdvancedJunitTest("testStringArrayField"));
         suite.addTest(new AdvancedJunitTest("testCreateDerivedPKFromPKValues"));
+        suite.addTest(new AdvancedJunitTest("testElementCollectionClear"));
         
         return suite;
     }
@@ -282,5 +288,82 @@ public class AdvancedJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-
+    
+    public void testElementCollectionClear() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            SimpleEntity se = new SimpleEntity();
+            se.setId(101L);
+            se.setDescription("Element Collection Clear Test Record");
+            Collection<String> nature = new ArrayList<String>();
+            nature.add(SimpleNature.PERSONALITY[0]);
+            nature.add(SimpleNature.PERSONALITY[1]);
+            nature.add(SimpleNature.PERSONALITY[2]);
+            nature.add(SimpleNature.PERSONALITY[3]);
+            nature.add(SimpleNature.PERSONALITY[4]);
+            nature.add(SimpleNature.PERSONALITY[5]);
+            se.setSimpleNature(nature);
+        
+            em.persist(se);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // Clear Cache.
+        clearCache();
+        em = createEntityManager();
+        beginTransaction(em);
+        SimpleEntity se;
+        try {
+            se = em.find(SimpleEntity.class, 101L);
+            // Detach all entities.
+            em.clear();
+            closeEntityManager(em);
+            
+            // Clear lazily loaded ElementCollection.
+            se.getSimpleNature().clear();
+            
+            em = createEntityManager();
+            beginTransaction(em);
+            em.merge(se);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // Clear Cache
+        clearCache();
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
+            se = em.find(SimpleEntity.class, 101L);
+            Collection<String> natureList = se.getSimpleNature();
+            int count = 0;
+            for(String nature : natureList) {
+                // Iterate to load the collection.
+                count++;
+            }
+            Assert.assertEquals("All entries of collection have not been removed from database for ElementCollection Test.", 0, count);
+        } catch (RuntimeException e) {
+           throw e;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
 }

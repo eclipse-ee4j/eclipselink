@@ -134,8 +134,8 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * Creates a CollectionChangeEvent for the container
      */
     @Override
-    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
-        return new CollectionChangeEvent(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, index);// make the remove change event fire.
+    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index, boolean isChangeApplied) {
+        return new CollectionChangeEvent(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, index, false, isChangeApplied);// make the remove change event fire.
     }
 
     /**

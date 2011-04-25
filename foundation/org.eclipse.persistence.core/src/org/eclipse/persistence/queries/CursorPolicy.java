@@ -59,7 +59,7 @@ public abstract class CursorPolicy extends ContainerPolicy {
      * INTERNAL:
      * Creates a CollectionChangeEvent for the container
      */
-    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index){
+    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index, boolean isChangeApplied){
         throw ValidationException.operationNotSupported("createChangeEvent");
     }
 

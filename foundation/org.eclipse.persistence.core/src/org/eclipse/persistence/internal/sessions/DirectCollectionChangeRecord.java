@@ -110,7 +110,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         }
         if(this.isFirstToAdd) {
             this.isFirstToAdd = false;
-            if(!this.isFirstToAddAlreadyInCollection) {
+            if(this.isFirstToAddAlreadyInCollection) {
                 return;
             }
         }
@@ -370,15 +370,15 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         }        
     }
     
-    public void firstToAddAlreadyInCollection() {
-        this.isFirstToAddAlreadyInCollection = true;
+    public void setFirstToAddAlreadyInCollection(boolean flag) {
+        this.isFirstToAddAlreadyInCollection = flag;
     }
     public boolean isFirstToAddAlreadyInCollection() {
         return this.isFirstToAddAlreadyInCollection;
     }
 
-    public void firstToRemoveAlreadyOutCollection() {
-        this.isFirstToRemoveAlreadyOutCollection = true;
+    public void setFirstToRemoveAlreadyOutCollection(boolean flag) {
+        this.isFirstToRemoveAlreadyOutCollection = flag;
     }
     public boolean isFirstToRemoveAlreadyOutCollection() {
         return this.isFirstToRemoveAlreadyOutCollection;

@@ -142,7 +142,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     }    
     protected void raiseAddChangeEvent(Object element, Integer index, boolean isSet) {
         if (hasTrackedPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD, index, isSet));
+            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD, index, isSet, true));
         }
         if (hasBeenRegistered()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceSet(element, null);
@@ -157,7 +157,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     }
     protected void raiseRemoveChangeEvent(Object element, Integer index, boolean isSet) {
         if (hasTrackedPropertyChangeListener()) {
-            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE, index, isSet));
+            _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE, index, isSet, true));
         }
         if (hasBeenRegistered()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceRemove(element);

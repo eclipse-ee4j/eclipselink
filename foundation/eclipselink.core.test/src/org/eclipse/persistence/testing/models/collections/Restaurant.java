@@ -71,15 +71,15 @@ public class Restaurant implements ChangeTracker {
         }
     }
 
-    public void collectionChange(String propertyName, Collection changedCollection, Object newObject, int changeType) {
+    public void collectionChange(String propertyName, Collection changedCollection, Object newObject, int changeType, boolean isChangeApplied) {
         if (listener != null) {
-            listener.propertyChange(new CollectionChangeEvent(this, propertyName, changedCollection, newObject, changeType));
+            listener.propertyChange(new CollectionChangeEvent(this, propertyName, changedCollection, newObject, changeType, isChangeApplied));
         }
     }
 
-    public void mapChange(String propertyName, Map changedCollection, Object key, Object newObject, int changeType) {
+    public void mapChange(String propertyName, Map changedCollection, Object key, Object newObject, int changeType, boolean isChangeApplied) {
         if (listener != null) {
-            listener.propertyChange(new MapChangeEvent(this, propertyName, changedCollection, key, newObject, changeType));
+            listener.propertyChange(new MapChangeEvent(this, propertyName, changedCollection, key, newObject, changeType, isChangeApplied));
         }
     }
 
@@ -90,26 +90,26 @@ public class Restaurant implements ChangeTracker {
     public void addDiner(Diner aDiner) {
         getDiners().put(aDiner.getLastName(), aDiner);
         aDiner.addFavouriteRestaurant(this);
-        mapChange("preferredCustomers", getDiners(), aDiner.getLastName(), aDiner, MapChangeEvent.ADD);
+        mapChange("preferredCustomers", getDiners(), aDiner.getLastName(), aDiner, MapChangeEvent.ADD, true);
     }
 
     public void addLocation(Location aLocation) {
         getLocations().add(aLocation);
-        collectionChange("locations", getLocations(), aLocation, CollectionChangeEvent.ADD);
+        collectionChange("locations", getLocations(), aLocation, CollectionChangeEvent.ADD, true);
     }
 
     public void addMenu(Menu aMenu) {
         aMenu.setOwner(this);
 
         getMenus().put(aMenu.getKey(), aMenu);
-        mapChange("menus", getDiners(), aMenu.getKey(), aMenu, MapChangeEvent.ADD);
+        mapChange("menus", getDiners(), aMenu.getKey(), aMenu, MapChangeEvent.ADD, true);
     }
 
     public void removeMenu(Menu aMenu) {
         aMenu.setOwner((Restaurant)null);
 
         getMenus().remove(aMenu.getKey());
-        mapChange("menus", getMenus(), aMenu.getKey(), aMenu, MapChangeEvent.REMOVE);
+        mapChange("menus", getMenus(), aMenu.getKey(), aMenu, MapChangeEvent.REMOVE, true);
     }
 
     public String allToString() {

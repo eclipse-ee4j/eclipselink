@@ -44,15 +44,15 @@ public abstract class Person implements Comparable, ChangeTracker {
         }
     }
 
-    public void collectionChange(String propertyName, Collection changedCollection, Object newObject, int changeType) {
+    public void collectionChange(String propertyName, Collection changedCollection, Object newObject, int changeType, boolean isChangeApplied) {
         if (listener != null) {
-            listener.propertyChange(new CollectionChangeEvent(this, propertyName, changedCollection, newObject, changeType));
+            listener.propertyChange(new CollectionChangeEvent(this, propertyName, changedCollection, newObject, changeType, isChangeApplied));
         }
     }
 
-    public void mapChange(String propertyName, Map changedCollection, Object key, Object newObject, int changeType) {
+    public void mapChange(String propertyName, Map changedCollection, Object key, Object newObject, int changeType, boolean isChangeApplied) {
         if (listener != null) {
-            listener.propertyChange(new MapChangeEvent(this, propertyName, changedCollection, key, newObject, changeType));
+            listener.propertyChange(new MapChangeEvent(this, propertyName, changedCollection, key, newObject, changeType, isChangeApplied));
         }
     }
 

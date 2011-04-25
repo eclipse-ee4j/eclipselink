@@ -556,7 +556,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             Object iterator = containerPolicy.iteratorFor(valueOfTarget);
             while (containerPolicy.hasNext(iterator)) {
                 Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(iterator, mergeManager.getSession());
-                ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new MapChangeEvent(target, getAttributeName(), valueOfTarget, entry.getKey(), entry.getValue(), CollectionChangeEvent.REMOVE));// make the remove change event fire.
+                ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new MapChangeEvent(target, getAttributeName(), valueOfTarget, entry.getKey(), entry.getValue(), CollectionChangeEvent.REMOVE, false));// make the remove change event fire.
             }
             if (newContainer instanceof ChangeTracker) {
                 ((ChangeTracker)newContainer)._persistence_setPropertyChangeListener(((ChangeTracker)target)._persistence_getPropertyChangeListener());
@@ -572,7 +572,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(sourceValuesIterator, mergeManager.getSession());
             if (fireChangeEvents) {
                 //Collections may not be indirect list or may have been replaced with user collection.
-                ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new MapChangeEvent(target, getAttributeName(), valueOfTarget, entry.getKey(), entry.getValue(), CollectionChangeEvent.ADD));// make the add change event fire.
+                ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new MapChangeEvent(target, getAttributeName(), valueOfTarget, entry.getKey(), entry.getValue(), CollectionChangeEvent.ADD, false));// make the add change event fire.
             }
             containerPolicy.addInto(entry.getKey(), entry.getValue(), valueOfTarget, mergeManager.getSession());
         }

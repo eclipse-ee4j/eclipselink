@@ -1427,7 +1427,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     // When event is processed the index is used only in listOrderField case, ignored otherwise.  
                     Integer zero = Integer.valueOf(0);
                     while (containerPolicy.hasNext(iterator)) {
-                        CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE, zero);
+                        CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE, zero, false);
                         listener.internalPropertyChange(event);
                     }                        
                 }
@@ -1478,7 +1478,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 if (fireChangeEvents) {
                     //Collections may not be indirect list or may have been replaced with user collection.
                     //bug 304251: let the ContainerPolicy decide what changeevent object to create
-                    CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD, i++);
+                    CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD, i++, false);
                     listener.internalPropertyChange(event);
                 }
                 containerPolicy.addInto(wrappedObject, valueOfTarget, mergeManager.getSession());

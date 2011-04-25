@@ -74,6 +74,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildBOLTTable());
         addTableDefinition(buildNUTTable());
         addTableDefinition(buildLOOTTable());
+        addTableDefinition(buildADVSIMPLEENTITYTable());
+        addTableDefinition(buildADVECSIMPLETable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -2044,5 +2046,74 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.addField(fieldAUDITORID);
     
         return table;
+    }
+     
+    public TableDefinition buildADVSIMPLEENTITYTable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("ADV_SIMPLE_ENTITY");
+
+        FieldDefinition fieldSIMPLEID = new FieldDefinition();
+        fieldSIMPLEID.setName("SIMPLE_ID");
+        fieldSIMPLEID.setTypeName("NUMERIC");
+        fieldSIMPLEID.setSize(15);
+        fieldSIMPLEID.setShouldAllowNull(false);
+        fieldSIMPLEID.setIsPrimaryKey(true);
+        fieldSIMPLEID.setUnique(false);
+        fieldSIMPLEID.setIsIdentity(true);
+        table.addField(fieldSIMPLEID);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("description");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(100);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        table.addField(fieldDESCRIPTION);
+        
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMERIC");
+        fieldVERSION.setSize(15);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+   
+        return table;
+       
+    }
+    
+    public TableDefinition buildADVECSIMPLETable() {
+         TableDefinition table = new TableDefinition();
+
+        table.setName("ADV_EC_SIMPLE");
+
+        FieldDefinition fieldSIMPLEID = new FieldDefinition();
+        fieldSIMPLEID.setName("SIMPLE_ID");
+        fieldSIMPLEID.setTypeName("NUMERIC");
+        fieldSIMPLEID.setSize(15);
+        fieldSIMPLEID.setShouldAllowNull(false);
+        fieldSIMPLEID.setIsPrimaryKey(false);
+        fieldSIMPLEID.setUnique(false);
+        fieldSIMPLEID.setIsIdentity(false);
+        fieldSIMPLEID.setForeignKeyFieldName("ADV_SIMPLE_ENTITY.SIMPLE_ID");
+        table.addField(fieldSIMPLEID);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("SIMPLE_NATURE");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(100);
+        fieldDESCRIPTION.setShouldAllowNull(false);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        table.addField(fieldDESCRIPTION);
+        
+        return table;
+       
     }
 }
