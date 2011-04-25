@@ -161,14 +161,24 @@ public class MultipleBindingsFourFilesTestCases extends JAXBTestCases {
 	        assertEquals(8, props.size());
 	        assertEquals("I", props.get("2"));
 	    }
-	    
-	    public void testNamespaceResolver(){
-	        assertNotNull("JAXBContext creation failed", xmlContext);
-	        XMLDescriptor xdesc = xmlContext.getDescriptor(new QName("", "empRoot4"));
-	        assertNotNull("Employee descriptor is null", xdesc);
-	        String prefix = xdesc.getNamespaceResolver().resolveNamespaceURI("http://www.example.com/uriA");
-	        String prefix2 = xdesc.getNamespaceResolver().resolveNamespaceURI("http://www.example.com/uriB");
-	        assertEquals("newPrefixA", prefix);
-	        assertEquals("prefixB", prefix2);
-	    }
+
+        public void testNamespaceResolver(){
+            assertNotNull("JAXBContext creation failed", xmlContext);
+            XMLDescriptor xdesc = xmlContext.getDescriptor(new QName("", "empRoot4"));
+            assertNotNull("Employee descriptor is null", xdesc);
+
+            // Test merged namespaces
+            // Ensure that there are two namespaces for prefix "uriA" and one for "uriB"
+            String uriA = "http://www.example.com/uriA";
+            String uriB = "http://www.example.com/uriB";
+
+            String prefixA = "prefixA";
+            String prefixNewA = "newPrefixA";
+            String prefixB = "prefixB";
+
+            assertEquals(uriA, xdesc.getNamespaceResolver().resolveNamespacePrefix(prefixA));
+            assertEquals(uriA, xdesc.getNamespaceResolver().resolveNamespacePrefix(prefixNewA));
+            assertEquals(uriB, xdesc.getNamespaceResolver().resolveNamespacePrefix(prefixB));
+        }
+
 }
