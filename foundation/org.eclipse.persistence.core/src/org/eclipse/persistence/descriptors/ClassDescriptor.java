@@ -2911,16 +2911,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
             }
             setMappings(mappings);
         }
-
-        // Once the table and mapping information has been settled, we'll need 
-        // to set tenant  id fields on the descriptor for each table. These are 
-        // at least used  for DDL generation. Doesn't seem to interfere or 
-        // duplicate anything else we have done to support tenant id fields.
-        if (hasTenantDiscriminatorFields()) {
-            for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {                
-                getFields().add(buildField(discriminatorField));
-            }
-        }
         
         // Initialize the allFields to its fields, this can be done now because the fields have been computed.
         setAllFields((Vector)getFields().clone());
@@ -3626,6 +3616,16 @@ public class ClassDescriptor implements Cloneable, Serializable {
         } else {
             // This must be done now, after validate, before init anything else.
             setInternalDefaultTable();
+        }
+        
+        // Once the table and mapping information has been settled, we'll need 
+        // to set tenant  id fields on the descriptor for each table. These are 
+        // at least used  for DDL generation. Doesn't seem to interfere or 
+        // duplicate anything else we have done to support tenant id fields.
+        if (hasTenantDiscriminatorFields()) {
+            for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {                
+                getFields().add(buildField(discriminatorField));
+            }
         }
         
         verifyTableQualifiers(session.getDatasourcePlatform());
