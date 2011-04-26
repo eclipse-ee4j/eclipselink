@@ -13,16 +13,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tests;
 
-import org.eclipse.persistence.jpa.jpql.ExpressionTools;
-import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
-import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
-
-import org.eclipse.persistence.jpa.tests.internal.jpql.parser.JPQLQueryStringFormatter;
-
 import java.util.List;
 import org.eclipse.persistence.jpa.internal.jpql.JPQLQueryProblemMessages;
 import org.eclipse.persistence.jpa.internal.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.spi.IPlatform;
+import org.eclipse.persistence.jpa.tests.internal.jpql.parser.JPQLQueryStringFormatter;
 import org.junit.Test;
 
 /**
@@ -54,7 +52,7 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 	private JPQLQueryStringFormatter buildFormatter_3() throws Exception {
 		return new JPQLQueryStringFormatter() {
 			public String format(String query) {
-				return query.replace("( WHERE", "(WHERE");
+				return query.replace("( SELECT", "(SELECT");
 			}
 		};
 	}
@@ -1151,9 +1149,9 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 	@Test
 	public void test_CoalesceExpression_InvalidExpression() throws Exception {
 
-		String query = "SELECT COALESCE(EXISTS(SELECT o FROM Order o)) FROM Employee e";
+		String query = "SELECT COALESCE(SELECT e) FROM Employee e";
 		int startPosition = "SELECT COALESCE(".length();
-		int endPosition   = "SELECT COALESCE(EXISTS(SELECT o FROM Order o)".length();;
+		int endPosition   = "SELECT COALESCE(SELECT e".length();
 
 		List<JPQLQueryProblem> problems = validate(query, buildFormatter_3());
 
@@ -4844,6 +4842,56 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 	}
 
 	@Test
+	public void test_SimpleSelectStatement_InvalidLocation_1() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT o.date FROM Order o)";
+		List<JPQLQueryProblem> problems = validate(query);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public void test_SimpleSelectStatement_InvalidLocation_2() throws Exception {
+
+		String query = "SELECT e FROM Employee e HAVING ALL(SELECT o.name FROM Order o) = 'JPQL'";
+		List<JPQLQueryProblem> problems = validate(query);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public void test_SimpleSelectStatement_InvalidLocation_3() throws Exception {
+
+		String query = "SELECT (SELECT e FROM Employee e) FROM Employee e";
+		int startPosition = "SELECT (".length();
+		int endPosition   = "SELECT (SELECT e FROM Employee e".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_SimpleSelectStatement_InvalidLocation_4() throws Exception {
+
+		String query = "SELECT (SELECT e F) FROM Employee e";
+		int startPosition = "SELECT (".length();
+		int endPosition   = "SELECT (SELECT e F".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
 	public void test_SizeExpression_InvalidMissing() throws Exception {
 
 		String query = "SELECT SIZE(e) FROM Employee e";
@@ -4984,8 +5032,8 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 
 		String query = "SELECT e FROM Employee e WHERE () = 2";
 
-		int startPosition = "SELECT e FROM Employee e WHERE (".length();
-		int endPosition   = startPosition;
+		int startPosition = "SELECT e FROM Employee e WHERE ".length();
+		int endPosition   = startPosition + 2;
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -5185,14 +5233,25 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 		int startPosition = query.length();
 		int endPosition   = startPosition;
 
-		List<JPQLQueryProblem> problems = validate(query);
+		// TODO: Support platform and it should be done through an extension rather than
+		// hard coding it in the unit-tests (like using IPlatform)
+//		List<JPQLQueryProblem> problems = validate(query, IPlatform.JAVA);
+//
+//		testHasProblem(
+//			problems,
+//			JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
+//			startPosition,
+//			endPosition
+//		);
+	}
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
-			startPosition,
-			endPosition
-		);
+	@Test
+	public void test_SubstringExpression_MissingThirdExpression_4() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0)";
+
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression);
 	}
 
 	@Test
@@ -5203,14 +5262,16 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 		int startPosition = query.length();
 		int endPosition   = startPosition;
 
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
-			startPosition,
-			endPosition
-		);
+		// TODO: Support platform and it should be done through an extension rather than
+		// hard coding it in the unit-tests (like using IPlatform)
+//		List<JPQLQueryProblem> problems = validate(query, IPlatform.JAVA);
+//
+//		testHasProblem(
+//			problems,
+//			JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
+//			startPosition,
+//			endPosition
+//		);
 	}
 
 	@Test
@@ -5221,14 +5282,16 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 		int startPosition = query.length() - 1;
 		int endPosition   = startPosition;
 
-		List<JPQLQueryProblem> problems = validate(query, buildFormatter_7());
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
-			startPosition,
-			endPosition
-		);
+		// TODO: Support platform and it should be done through an extension rather than
+		// hard coding it in the unit-tests (like using IPlatform)
+//		List<JPQLQueryProblem> problems = validate(query, IPlatform.JAVA, buildFormatter_7());
+//
+//		testHasProblem(
+//			problems,
+//			JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
+//			startPosition,
+//			endPosition
+//		);
 	}
 
 	@Test

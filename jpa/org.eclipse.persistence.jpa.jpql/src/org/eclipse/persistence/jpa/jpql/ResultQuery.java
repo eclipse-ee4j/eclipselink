@@ -17,7 +17,7 @@ package org.eclipse.persistence.jpa.jpql;
  * This is used to retrieve the new JPQL query when a content assist item needs to be insert at
  * a certain position.
  *
- * @see ContentAssistItems#buildQuery(String, String, int, boolean)
+ * @see ContentAssistProposals#buildQuery(String, String, int, boolean)
  *
  * @version 2.3
  * @since 2.3

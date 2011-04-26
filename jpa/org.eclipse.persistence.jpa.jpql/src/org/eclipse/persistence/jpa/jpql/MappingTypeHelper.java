@@ -28,6 +28,7 @@ public final class MappingTypeHelper {
 	/**
 	 * Determines whether the given {@link IMapping} is a collection type mapping.
 	 *
+	 * @param mapping The {@link IMapping} to verify if it's property mapping
 	 * @return <code>true</code> if the given {@link IMapping} is a collection mapping; <code>false</code>
 	 * otherwise
 	 */
@@ -38,6 +39,7 @@ public final class MappingTypeHelper {
 	/**
 	 * Determines whether the given {@link IMappingType} is considered a collection mapping.
 	 *
+	 * @param mappingType The {@link IMappingType} to verify if it's collection mapping
 	 * @return <code>true</code> if the given {@link IMapping} is considered a collection mapping;
 	 * <code>false</code> otherwise
 	 */
@@ -53,36 +55,9 @@ public final class MappingTypeHelper {
 	}
 
 	/**
-	 * Determines whether the given {@link IMapping} is a foreign reference mapping.
-	 *
-	 * @return <code>true</code> if the given {@link IMapping} is a foreign reference mapping;
-	 * <code>false</code> otherwise
-	 */
-	public static boolean isForeignReferenceMapping(IMapping mapping) {
-		return isForeignReferenceMapping(mappingType(mapping));
-	}
-
-	/**
-	 * Determines whether the given {@link IMappingType} is considered a foreign reference mapping.
-	 *
-	 * @return <code>true</code> if the given {@link IMapping} is considered a foreign reference
-	 * mapping; <code>false</code> otherwise
-	 */
-	public static boolean isForeignReferenceMapping(IMappingType mappingType) {
-		switch (mappingType) {
-			case ELEMENT_COLLECTION:
-			case MANY_TO_MANY:
-			case MANY_TO_ONE:
-			case ONE_TO_MANY:
-			case ONE_TO_ONE:
-			case VARIABLE_ONE_TO_ONE: return true;
-			default:                  return false;
-		}
-	}
-
-	/**
 	 * Determines whether the given {@link IMapping} is a not a collection type mapping.
 	 *
+	 * @param mapping The {@link IMapping} to verify if it's property mapping
 	 * @return <code>true</code> if the given {@link IMapping} is a not collection mapping;
 	 * <code>false</code> otherwise
 	 */
@@ -91,18 +66,25 @@ public final class MappingTypeHelper {
 	}
 
 	/**
-	 * Determines whether the given {@link IMappingType} is a not a collection type mapping.
+	 * Determines whether the given {@link IMappingType} is a not a property type mapping.
 	 *
+	 * @param mappingType The {@link IMappingType} to verify if it's property mapping
 	 * @return <code>true</code> if the given {@link IMappingType} is a not collection mapping;
 	 * <code>false</code> otherwise
 	 */
 	public static boolean isPropertyMapping(IMappingType mappingType) {
-		return (mappingType != IMappingType.TRANSIENT) && !isCollectionMapping(mappingType);
+		switch (mappingType) {
+			case BASIC:
+			case ID:
+			case VERSION: return true;
+			default:      return false;
+		}
 	}
 
 	/**
 	 * Determines whether the given {@link IMapping} is a relationship type mapping.
 	 *
+	 * @param mapping The {@link IMapping} to verify if it's a relationship mapping
 	 * @return <code>true</code> if the given {@link IMapping} is a relationship mapping;
 	 * <code>false</code> otherwise
 	 */
@@ -113,26 +95,28 @@ public final class MappingTypeHelper {
 	/**
 	 * Determines whether the given {@link IMappingType} is considered a relationship mapping.
 	 *
+	 * @param mappingType The {@link IMappingType} to verify if it's a relationship mapping
 	 * @return <code>true</code> if the given {@link IMapping} is considered a relationship mapping;
 	 * <code>false</code> otherwise
 	 */
 	public static boolean isRelationshipMapping(IMappingType mappingType) {
 		switch (mappingType) {
 			case ELEMENT_COLLECTION:
+			case EMBEDDED:
+			case EMBEDDED_ID:
 			case MANY_TO_MANY:
+			case MANY_TO_ONE:
 			case ONE_TO_MANY:
 			case ONE_TO_ONE:
-			case MANY_TO_ONE:
-			case VARIABLE_ONE_TO_ONE:
-				return true;
-			default:
-				return false;
+			case VARIABLE_ONE_TO_ONE: return true;
+			default:                  return false;
 		}
 	}
 
 	/**
 	 * Determines whether the given {@link IMapping} is a transient mapping.
 	 *
+	 * @param mapping The {@link IMapping} to verify if it's a transient mapping
 	 * @return <code>true</code> if the given {@link IMapping} is a transient mapping;
 	 * <code>false</code> otherwise
 	 */

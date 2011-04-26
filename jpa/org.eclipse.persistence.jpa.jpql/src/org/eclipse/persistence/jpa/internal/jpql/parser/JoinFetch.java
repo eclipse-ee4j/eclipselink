@@ -159,6 +159,19 @@ public final class JoinFetch extends AbstractExpression {
 	}
 
 	/**
+	 * Determines whether this {@link JoinFetch} is a left join fetch, i.e. {@link Expression#LEFT_JOIN_FETCH}
+	 * or {@link Expression#LEFT_OUTER_JOIN_FETCH}.
+	 *
+	 * @return <code>true</code> if this {@link JoinFetch} expression is a {@link Expression#LEFT_JOIN_FETCH}
+	 * or {@link Expression#LEFT_OUTER_JOIN_FETCH}; <code>false</code> otherwise
+	 */
+	public boolean isLeftJoinFetch() {
+		String identifier = getIdentifier();
+		return identifier == LEFT_JOIN_FETCH ||
+		       identifier == LEFT_OUTER_JOIN_FETCH;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override

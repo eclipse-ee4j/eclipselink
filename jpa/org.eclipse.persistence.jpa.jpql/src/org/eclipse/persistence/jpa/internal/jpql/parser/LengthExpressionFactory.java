@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link LengthExpressionFactory} creates a new {@link LengthExpression}
- * when the portion of the query to parse starts with <b>LENGTH</b>.
+ * This {@link LengthExpressionFactory} creates a new {@link LengthExpression} when the portion of
+ * the query to parse starts with <b>LENGTH</b>.
  *
  * @see LengthExpression
  *
@@ -49,6 +49,7 @@ final class LengthExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new LengthExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

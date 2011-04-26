@@ -13,236 +13,164 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.internal.jpql.parser;
 
-import org.eclipse.persistence.jpa.internal.jpql.parser.CollectionMemberExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.CollectionValuedPathExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.Expression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.JPQLExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.NullExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.SelectStatement;
-import org.eclipse.persistence.jpa.internal.jpql.parser.StateFieldPathExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.WhereClause;
-
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
 public final class CollectionMemberExpressionTest extends AbstractJPQLTest {
 	@Test
 	public void testBuildExpression_01() {
-		String query = "SELECT e, f FROM Employee e, e.employees f WHERE e.name MEMBER f.offices";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		String query = "SELECT e, f FROM Employee e, IN(e.employees) f WHERE e.name MEMBER f.offices";
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(
+				variable("e"),
+				variable("f")
+			),
+			from(
+				identificationVariableDeclaration("Employee", "e"),
+				fromIn("e.employees", "f")
+			),
+			where(
+					path("e.name")
+				.member(
+					collectionValuedPath("f.offices")
+				)
+			)
+		);
 
-		// CollectionMemberExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof CollectionMemberExpression);
-		CollectionMemberExpression collectionMemberExpression = (CollectionMemberExpression) expression;
-
-		assertFalse(collectionMemberExpression.hasNot());
-		assertFalse(collectionMemberExpression.hasOf());
-
-		// SimpleSelectStatement
-		expression = collectionMemberExpression.getEntityExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals("e.name", stateFieldPathExpression.toParsedText());
-
-		// CollectionValuedPathExpression
-		expression = collectionMemberExpression.getCollectionValuedPathExpression();
-		assertTrue(expression instanceof CollectionValuedPathExpression);
-		CollectionValuedPathExpression collectionValuedPathExpression = (CollectionValuedPathExpression) expression;
-
-		assertEquals("f.offices", collectionValuedPathExpression.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_02() {
-		String query = "SELECT e, f FROM Employee e, e.employees f WHERE e.name MEMBER OF e.employees";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		String query = "SELECT e, f FROM Employee e, IN(e.employees) f WHERE e.name MEMBER OF e.employees";
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(
+				variable("e"),
+				variable("f")
+			),
+			from(
+				identificationVariableDeclaration("Employee", "e"),
+				fromIn("e.employees", "f")
+			),
+			where(
+					path("e.name")
+				.memberOf(
+					collectionValuedPath("e.employees")
+				)
+			)
+		);
 
-		// CollectionMemberExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof CollectionMemberExpression);
-		CollectionMemberExpression collectionMemberExpression = (CollectionMemberExpression) expression;
-
-		assertFalse(collectionMemberExpression.hasNot());
-		assertTrue (collectionMemberExpression.hasOf());
-
-		// SimpleSelectStatement
-		expression = collectionMemberExpression.getEntityExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals("e.name", stateFieldPathExpression.toParsedText());
-
-		// CollectionValuedPathExpression
-		expression = collectionMemberExpression.getCollectionValuedPathExpression();
-		assertTrue(expression instanceof CollectionValuedPathExpression);
-		CollectionValuedPathExpression collectionValuedPathExpression = (CollectionValuedPathExpression) expression;
-
-		assertEquals("e.employees", collectionValuedPathExpression.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_03() {
-		String query = "SELECT e, f FROM Employee e, e.employees f WHERE e.name NOT MEMBER OF e.employees";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		String query = "SELECT e, f FROM Employee e, IN(e.employees) f WHERE e.name NOT MEMBER OF e.employees";
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(
+				variable("e"),
+				variable("f")
+			),
+			from(
+				identificationVariableDeclaration("Employee", "e"),
+				fromIn("e.employees", "f")
+			),
+			where(
+					path("e.name")
+				.notMemberOf(
+					collectionValuedPath("e.employees")
+				)
+			)
+		);
 
-		// CollectionMemberExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof CollectionMemberExpression);
-		CollectionMemberExpression collectionMemberExpression = (CollectionMemberExpression) expression;
-
-		assertTrue(collectionMemberExpression.hasNot());
-		assertTrue(collectionMemberExpression.hasOf());
-
-		// SimpleSelectStatement
-		expression = collectionMemberExpression.getEntityExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-
-		assertEquals("e.name", stateFieldPathExpression.toParsedText());
-
-		// CollectionValuedPathExpression
-		expression = collectionMemberExpression.getCollectionValuedPathExpression();
-		assertTrue(expression instanceof CollectionValuedPathExpression);
-		CollectionValuedPathExpression collectionValuedPathExpression = (CollectionValuedPathExpression) expression;
-
-		assertEquals("e.employees", collectionValuedPathExpression.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_04() {
+
 		String query = "SELECT e FROM Employee e WHERE MEMBER";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		CollectionMemberExpressionTester member = member(nullExpression(), nullExpression());
+		member.hasSpaceAfterMember = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(member)
+		);
 
-		// CollectionMemberExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof CollectionMemberExpression);
-		CollectionMemberExpression collectionMemberExpression = (CollectionMemberExpression) expression;
-
-		assertFalse(collectionMemberExpression.hasNot());
-		assertFalse(collectionMemberExpression.hasOf());
-		assertTrue (collectionMemberExpression.getEntityExpression() instanceof NullExpression);
-		assertTrue (collectionMemberExpression.getCollectionValuedPathExpression() instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_05() {
+
 		String query = "SELECT e FROM Employee e WHERE NOT MEMBER";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		CollectionMemberExpressionTester member = notMember(nullExpression(), nullExpression());
+		member.hasSpaceAfterMember = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(member)
+		);
 
-		// CollectionMemberExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof CollectionMemberExpression);
-		CollectionMemberExpression collectionMemberExpression = (CollectionMemberExpression) expression;
-
-		assertTrue (collectionMemberExpression.hasNot());
-		assertFalse(collectionMemberExpression.hasOf());
-		assertTrue (collectionMemberExpression.getEntityExpression() instanceof NullExpression);
-		assertTrue (collectionMemberExpression.getCollectionValuedPathExpression() instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_06() {
+
 		String query = "SELECT e FROM Employee e WHERE MEMBER OF";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		CollectionMemberExpressionTester member = memberOf(nullExpression(), nullExpression());
+		member.hasSpaceAfterOf = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(member)
+		);
 
-		// CollectionMemberExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof CollectionMemberExpression);
-		CollectionMemberExpression collectionMemberExpression = (CollectionMemberExpression) expression;
-
-		assertFalse(collectionMemberExpression.hasNot());
-		assertTrue (collectionMemberExpression.hasOf());
-		assertTrue (collectionMemberExpression.getEntityExpression() instanceof NullExpression);
-		assertTrue (collectionMemberExpression.getCollectionValuedPathExpression() instanceof NullExpression);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_07() {
+
 		String query = "SELECT e FROM Employee e WHERE NOT MEMBER OF";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		CollectionMemberExpressionTester member = notMemberOf(nullExpression(), nullExpression());
+		member.hasSpaceAfterOf = false;
 
-		// WhereClause
-		expression = selectStatement.getWhereClause();
-		assertTrue(expression instanceof WhereClause);
-		WhereClause whereClause = (WhereClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(member)
+		);
 
-		// CollectionMemberExpression
-		expression = whereClause.getConditionalExpression();
-		assertTrue(expression instanceof CollectionMemberExpression);
-		CollectionMemberExpression collectionMemberExpression = (CollectionMemberExpression) expression;
+		testInvalidQuery(query, selectStatement);
+	}
 
-		assertTrue(collectionMemberExpression.hasNot());
-		assertTrue(collectionMemberExpression.hasOf());
-		assertTrue(collectionMemberExpression.getEntityExpression() instanceof NullExpression);
-		assertTrue(collectionMemberExpression.getCollectionValuedPathExpression() instanceof NullExpression);
+	@Test
+	public void testBuildExpression_08() {
+
+		String query = "SELECT e FROM Employee e WHERE NOT MEMBER OF ";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(notMemberOf(nullExpression(), nullExpression()))
+		);
+
+		testInvalidQuery(query, selectStatement);
 	}
 }

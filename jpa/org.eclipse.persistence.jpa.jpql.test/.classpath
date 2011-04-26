@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resource/source"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa.jpql"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.0.0"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>

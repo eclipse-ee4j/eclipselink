@@ -13,6 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.internal.jpql.parser;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AndExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.ComparisonExpression;
@@ -20,17 +23,11 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.HavingClause;
-import org.eclipse.persistence.jpa.internal.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.internal.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.JPQLExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.NullExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.internal.jpql.parser.WhereClause;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 import org.junit.Test;
 
@@ -78,111 +75,57 @@ public final class BadExpressionTest extends AbstractJPQLTest {
 
 	@Test
 	public void testBadExpression_01() {
+
 		String query = "SELECT e, FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(collection(variable("e"), nullExpression())),
+			from("Employee", "e")
+		);
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
-
-		// CollectionExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof CollectionExpression);
-		CollectionExpression collectionExpression = (CollectionExpression) expression;
-
-		assertEquals(2, collectionExpression.childrenSize());
-
-		// IdentificationVariable
-		expression = collectionExpression.getChild(0);
-		assertTrue(expression instanceof IdentificationVariable);
-		IdentificationVariable identificationVariable = (IdentificationVariable) expression;
-
-		assertEquals("e", identificationVariable.toParsedText());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBadExpression_02() {
+
 		String query = "SELECT FROM Employee e";
 
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
+		SelectClauseTester selectClause = select(nullExpression());
+		selectClause.hasSpaceAfterSelect = true;
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			selectClause,
+			from("Employee", "e")
+		);
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
-
-		// NullExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof NullExpression);
-
-		// FromClause
-		expression = selectStatement.getFromClause();
-		assertTrue(expression instanceof FromClause);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBadExpression_03() {
+
 		String query = "SELECT DISTINCT FROM Employee e";
 
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
+		ExpressionTester selectStatement = selectStatement(
+			selectDistinct(nullExpression()),
+			from("Employee", "e")
+		);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
-
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
-
-		assertTrue(selectClause.hasDistinct());
-
-		// NullExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof NullExpression);
-
-		// FromClause
-		expression = selectStatement.getFromClause();
-		assertTrue(expression instanceof FromClause);
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBadExpression_04() {
+
 		String query = "SELECT e e FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query, IJPAVersion.VERSION_1_0);
 
-		// SelectStatement
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(spacedCollection(variable("e"), variable("e"))),
+			from("Employee", "e")
+		);
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
-
-		// BadExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof CollectionExpression);
-		CollectionExpression collectionExpression = (CollectionExpression) expression;
-
-		assertEquals("e e", collectionExpression.toParsedText());
-
-		// FromClause
-		expression = selectStatement.getFromClause();
-		assertTrue(expression instanceof FromClause);
+		testInvalidQuery(query, selectStatement, IJPAVersion.VERSION_1_0);
 	}
 
 	@Test
@@ -204,10 +147,10 @@ public final class BadExpressionTest extends AbstractJPQLTest {
 		// UnknownExpression
 		// TODO: Probably shouldn't be IdentificationVariable
 		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof IdentificationVariable);
-		IdentificationVariable unknownExpression = (IdentificationVariable) expression;
+//		assertTrue(expression instanceof IdentificationVariable);
+//		IdentificationVariable unknownExpression = (IdentificationVariable) expression;
 
-		assertEquals(Expression.IS, unknownExpression.toParsedText());
+//		assertEquals(Expression.IS, unknownExpression.toParsedText());
 	}
 
 //	@Test

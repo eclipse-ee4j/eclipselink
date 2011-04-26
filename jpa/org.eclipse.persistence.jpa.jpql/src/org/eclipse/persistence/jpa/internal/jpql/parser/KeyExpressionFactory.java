@@ -14,8 +14,8 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 /**
- * This {@link KeyExpressionFactory} creates a new {@link KeyExpression} when
- * the portion of the query to parse starts with <b>KEY</b>.
+ * This {@link KeyExpressionFactory} creates a new {@link KeyExpression} when the portion of the
+ * query to parse starts with <b>KEY</b>.
  *
  * @see KeyExpression
  *

@@ -13,13 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tests;
 
-import org.eclipse.persistence.jpa.jpql.ExpressionTools;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.IConstructor;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;

@@ -39,6 +39,14 @@ final class SumFunctionResolver extends Resolver {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void accept(ResolverVisitor visitor) {
+		getParent().accept(visitor);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	IType buildType() {
 
 		IType type = getTypeDeclaration().getType();

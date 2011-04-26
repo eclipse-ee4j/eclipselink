@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link ConstructorExpressionFactory} creates a new {@link ConstructorExpression}
- * when the portion of the query to parse starts with <b>NEW</b>.
+ * This {@link ConstructorExpressionFactory} creates a new {@link ConstructorExpression} when the
+ * portion of the query to parse starts with <b>NEW</b>.
  *
  * @see ConstructorExpression
  *
@@ -49,6 +49,7 @@ final class ConstructorExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new ConstructorExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

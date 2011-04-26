@@ -26,7 +26,12 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * @since 2.3
  * @author Pascal Filion
  */
-final class StateFieldResolver extends AbstractPathResolver {
+public final class StateFieldResolver extends AbstractPathResolver {
+
+	/**
+	 * Flag used to indicate the state field path expression is actually an enum type.
+	 */
+	private Boolean enumType;
 
 	/**
 	 * The full state field path expression, which is used to determine if it's an enum type.
@@ -50,6 +55,14 @@ final class StateFieldResolver extends AbstractPathResolver {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void accept(ResolverVisitor visitor) {
+		visitor.visit(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	IType buildType() {
 		return getTypeHelper().convertPrimitive(super.buildType());
 	}
@@ -59,14 +72,52 @@ final class StateFieldResolver extends AbstractPathResolver {
 	 */
 	@Override
 	ITypeDeclaration buildTypeDeclaration() {
+
 		IType type = getEnumType();
+
 		if (type != null) {
+			enumType = Boolean.TRUE;
 			return type.getTypeDeclaration();
 		}
-		return super.buildTypeDeclaration();
+		else {
+			enumType = Boolean.FALSE;
+			return super.buildTypeDeclaration();
+		}
 	}
 
 	private IType getEnumType() {
 		return (stateFieldPath != null) ? getTypeRepository().getEnumType(stateFieldPath) : null;
+	}
+
+	/**
+	 * Returns
+	 *
+	 * @return
+	 */
+	public String getStateFieldPath() {
+		return stateFieldPath;
+	}
+
+	/**
+	 * Determines whether the state field path expression is actually an enum type.
+	 *
+	 * @return <code>true</code> if the path represents the fully qualified enum type with the enum
+	 * constant; <code>false</code> to indicate it's a real state field path expression
+	 */
+	public boolean isEnumType() {
+		// If this is called before the type was calculated,
+		// then do so in order to set the enum type flag
+		if (enumType == null) {
+			getType();
+		}
+		return enumType;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return stateFieldPath;
 	}
 }

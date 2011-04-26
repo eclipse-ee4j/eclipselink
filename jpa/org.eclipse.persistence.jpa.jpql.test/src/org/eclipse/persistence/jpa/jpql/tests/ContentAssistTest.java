@@ -13,20 +13,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tests;
 
-import org.eclipse.persistence.jpa.jpql.ExpressionTools;
-import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
-
-import org.eclipse.persistence.jpa.tests.internal.jpql.parser.JPQLQueryBNFAccessor;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.persistence.jpa.internal.jpql.DefaultContentAssistProposals;
 import org.eclipse.persistence.jpa.internal.jpql.VirtualQuery;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
+import org.eclipse.persistence.jpa.tests.internal.jpql.parser.JPQLQueryBNFAccessor;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -136,6 +134,13 @@ public final class ContentAssistTest {
 	public void tearDown() {
 		queryHelper.dispose();
 		virtualQuery.setExpression(null);
+	}
+
+	@Test
+	public void test__IsNotNull() throws Exception {
+		String query = "select e from Employee e where e.managerEmployee is not ";
+		int position = query.length();
+//		testHasOnlyTheseProposals(query, position, IS_NOT_EMPTY, IS_NULL);
 	}
 
 	@Test
@@ -5805,7 +5810,7 @@ public final class ContentAssistTest {
 	}
 
 	@Test
-	public void test_SubQuery_01() throws Exception {
+	public void test_Subquery_01() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (".length();
 
@@ -5818,63 +5823,63 @@ public final class ContentAssistTest {
 	}
 
 	@Test
-	public void test_SubQuery_02() throws Exception {
+	public void test_Subquery_02() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (S".length();
 		testHasTheseProposals(query, position, SELECT);
 	}
 
 	@Test
-	public void test_SubQuery_03() throws Exception {
+	public void test_Subquery_03() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SE".length();
 		testHasOnlyTheseProposals(query, position, SELECT);
 	}
 
 	@Test
-	public void test_SubQuery_04() throws Exception {
+	public void test_Subquery_04() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SEL".length();
 		testHasOnlyTheseProposals(query, position, SELECT);
 	}
 
 	@Test
-	public void test_SubQuery_05() throws Exception {
+	public void test_Subquery_05() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SELE".length();
 		testHasOnlyTheseProposals(query, position, SELECT);
 	}
 
 	@Test
-	public void test_SubQuery_06() throws Exception {
+	public void test_Subquery_06() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SELEC".length();
 		testHasOnlyTheseProposals(query, position, SELECT);
 	}
 
 	@Test
-	public void test_SubQuery_07() throws Exception {
+	public void test_Subquery_07() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT".length();
 		testHasTheseProposals(query, position, SELECT);
 	}
 
 	@Test
-	public void test_SubQuery_08() throws Exception {
+	public void test_Subquery_08() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT ";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT".length();
 		testHasOnlyTheseProposals(query, position, SELECT);
 	}
 
 	@Test
-	public void test_SubQuery_09() throws Exception {
+	public void test_Subquery_09() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT A";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT A".length();
 		testHasOnlyTheseProposals(query, position, ABS, AVG);
 	}
 
 	@Test
-	public void test_SubQuery_10() throws Exception {
+	public void test_Subquery_10() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) ".length();
 
@@ -5887,7 +5892,7 @@ public final class ContentAssistTest {
 	}
 
 	@Test
-	public void test_SubQuery_StateFieldPath_01() throws Exception {
+	public void test_Subquery_StateFieldPath_01() throws Exception {
 		String query = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.".length();
 		testHasOnlyTheseProposals(query, position, "empId", "roomNumber", "salary", "address", "dept", "managerEmployee");
@@ -6288,7 +6293,7 @@ public final class ContentAssistTest {
 	public void test_Trim_10() {
 		String query = "SELECT e FROM Employee e WHERE TRIM(BOTH";
 		int position = query.length();
-		testHasNoProposals(query, position);
+		testHasOnlyTheseProposals(query, position, BOTH);
 	}
 
 	@Test
@@ -6337,7 +6342,7 @@ public final class ContentAssistTest {
 	public void test_Trim_17() {
 		String query = "SELECT e FROM Employee e WHERE TRIM(LEADING";
 		int position = query.length();
-		testHasNoProposals(query, position);
+		testHasOnlyTheseProposals(query, position, LEADING);
 	}
 
 	@Test
@@ -6393,7 +6398,7 @@ public final class ContentAssistTest {
 	public void test_Trim_25() {
 		String query = "SELECT e FROM Employee e WHERE TRIM(TRAILING";
 		int position = query.length();
-		testHasNoProposals(query, position);
+		testHasOnlyTheseProposals(query, position, TRAILING);
 	}
 
 	@Test
@@ -6428,7 +6433,7 @@ public final class ContentAssistTest {
 	public void test_Trim_30() {
 		String query = "SELECT e FROM Employee e WHERE TRIM(TRAILING 'd' FROM";
 		int position = query.length();
-		testHasNoProposals(query, position);
+		testHasOnlyTheseProposals(query, position, FROM);
 	}
 
 	@Test
@@ -6436,6 +6441,13 @@ public final class ContentAssistTest {
 		String query = "SELECT e FROM Employee e WHERE TRIM(TRAILING 'd' FROM ";
 		int position = query.length();
 		testHasTheseProposals(query, position, "e");
+	}
+
+	@Test
+	public void test_Trim_32() {
+		String query = "SELECT e FROM Employee e WHERE TRIM(TRAILING 'd' FROM";
+		int position = query.length() - 1;
+		testHasOnlyTheseProposals(query, position, FROM);
 	}
 
 	@Test

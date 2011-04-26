@@ -25,7 +25,8 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * @since 2.3
  * @author Pascal Filion
  */
-final class IdentificationVariableResolver extends Resolver {
+@SuppressWarnings("nls")
+public final class IdentificationVariableResolver extends Resolver {
 
 	/**
 	 * The name of the identification variable, which is never <code>null</code> nor an empty string.
@@ -39,7 +40,7 @@ final class IdentificationVariableResolver extends Resolver {
 	 * @param variableName The name of the identification variable, which should never be
 	 * <code>null</code> and it should not be an empty string
 	 */
-	IdentificationVariableResolver(DeclarationResolver parent, String variableName) {
+	IdentificationVariableResolver(Resolver parent, String variableName) {
 		super(parent);
 		this.variableName = variableName;
 	}
@@ -48,9 +49,16 @@ final class IdentificationVariableResolver extends Resolver {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void accept(ResolverVisitor visitor) {
+		visitor.visit(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public IType buildType() {
-		Resolver resolver = getParent().getResolver(variableName);
-		return (resolver == null) ? null : resolver.getType();
+		return getParentType();
 	}
 
 	/**
@@ -58,8 +66,7 @@ final class IdentificationVariableResolver extends Resolver {
 	 */
 	@Override
 	public ITypeDeclaration buildTypeDeclaration() {
-		Resolver resolver = getParent().getResolver(variableName);
-		return (resolver == null) ? null : resolver.getTypeDeclaration();
+		return getParentTypeDeclaration();
 	}
 
 	/**
@@ -67,8 +74,7 @@ final class IdentificationVariableResolver extends Resolver {
 	 */
 	@Override
 	public IManagedType getManagedType() {
-		Resolver resolver = getParent().getResolver(variableName);
-		return (resolver == null) ? null : resolver.getManagedType();
+		return getParentManagedType();
 	}
 
 	/**
@@ -76,11 +82,23 @@ final class IdentificationVariableResolver extends Resolver {
 	 */
 	@Override
 	public IMapping getMapping() {
-		Resolver resolver = getParent().getResolver(variableName);
-		return (resolver == null) ? null : resolver.getMapping();
+		return getParentMapping();
 	}
 
-	private DeclarationResolver getParent() {
-		return (DeclarationResolver) parent;
+	/**
+	 * Returns the identification variable handled by this {@link Resolver}.
+	 *
+	 * @return The identification variable handled by this {@link Resolver}
+	 */
+	public String getVariableName() {
+		return variableName;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return variableName + " -> " + getParent();
 	}
 }

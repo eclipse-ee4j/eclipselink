@@ -184,11 +184,7 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 		}
 
 		// Parse the select expression
-		selectExpression = parse(
-			wordParser,
-			selectItemBNF(),
-			tolerant
-		);
+		selectExpression = parse(wordParser, selectItemBNF(), tolerant);
 	}
 
 	/**

@@ -16,9 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link BetweenExpressionFactory} creates a new {@link BetweenExpression}
- * when the portion of the query to parse starts with <b>BETWEEN</b> or <b>NOT
- * BETWEEN</b>.
+ * This {@link BetweenExpressionFactory} creates a new {@link BetweenExpression} when the portion of
+ * the query to parse starts with <b>BETWEEN</b> or <b>NOT BETWEEN</b>.
  *
  * @see BetweenExpression
  *
@@ -51,6 +50,7 @@ final class BetweenExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new BetweenExpression(parent, expression);
 		expression.parse(wordParser, tolerant);
 		return expression;

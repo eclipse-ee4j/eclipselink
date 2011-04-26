@@ -17,8 +17,8 @@ import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 /**
- * This {@link NullIfExpressionFactory} creates a new {@link NullIfExpression}
- * when the portion of the query to parse starts with <b>NULLIF</b>.
+ * This {@link NullIfExpressionFactory} creates a new {@link NullIfExpression} when the portion of
+ * the query to parse starts with <b>NULLIF</b>.
  *
  * @see NullIfExpression
  *
@@ -50,6 +50,7 @@ final class NullIfExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new NullIfExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

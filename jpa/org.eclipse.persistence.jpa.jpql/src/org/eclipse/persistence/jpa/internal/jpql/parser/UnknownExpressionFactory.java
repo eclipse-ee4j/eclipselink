@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link UnknownExpressionFactory} creates a new {@link UnknownExpression}
- * when the portion of the query to parse is unknown.
+ * This {@link UnknownExpressionFactory} creates a new {@link UnknownExpression} when the portion of
+ * the query to parse is unknown.
  *
  * @see UnknownExpression
  *
@@ -50,6 +50,7 @@ final class UnknownExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new UnknownExpression(parent, wordParser.substring());
 		expression.parse(wordParser, tolerant);
 		return expression;

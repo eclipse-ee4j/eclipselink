@@ -455,7 +455,7 @@ public abstract class AbstractExpression extends StringExpression
 	 *
 	 * @return <code>false</code> by default
 	 */
-	public boolean isNull() {
+	boolean isNull() {
 		return false;
 	}
 
@@ -869,6 +869,24 @@ public abstract class AbstractExpression extends StringExpression
 	final void readdLeadingSpaces(StringBuilder text, int count) {
 		for (int index = count; --index >= 0; ) {
 			text.insert(0, SPACE);
+		}
+	}
+
+	/**
+	 * Rebuilds the actual parsed text if it has been cached.
+	 */
+	final void rebuildActualText() {
+		if (actualText != null) {
+			toActualText();
+		}
+	}
+
+	/**
+	 * Rebuilds the parsed parsed text if it has been cached.
+	 */
+	final void rebuildParsedText() {
+		if (parsedText != null) {
+			toParsedText();
 		}
 	}
 

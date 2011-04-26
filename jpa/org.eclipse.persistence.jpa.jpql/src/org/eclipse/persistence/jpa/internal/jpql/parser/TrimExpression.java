@@ -248,11 +248,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 
 		// Parse the trim character
 		if (!wordParser.startsWithIdentifier(FROM)) {
-			trimCharacter = parse(
-				wordParser,
-				queryBNF(PreLiteralExpressionBNF.ID),
-				tolerant
-			);
+			trimCharacter = parse(wordParser, queryBNF(PreLiteralExpressionBNF.ID), tolerant);
 		}
 
 		if (hasTrimCharacter()) {

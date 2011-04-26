@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link GroupByClauseFactory} creates a new {@link GroupByClause} when
- * the portion of the query to parse starts with <b>GROUP BY</b>.
+ * This {@link GroupByClauseFactory} creates a new {@link GroupByClause} when the portion of the
+ * query to parse starts with <b>GROUP BY</b>.
  *
  * @see GroupByClause
  *
@@ -49,6 +49,7 @@ final class GroupByClauseFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new GroupByClause(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

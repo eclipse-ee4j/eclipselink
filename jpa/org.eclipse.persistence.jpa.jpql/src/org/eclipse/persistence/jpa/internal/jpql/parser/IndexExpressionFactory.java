@@ -17,8 +17,8 @@ import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 /**
- * This {@link IndexExpressionFactory} creates a new {@link IndexExpression}
- * when the portion of the query to parse starts with <b>INDEX</b>.
+ * This {@link IndexExpressionFactory} creates a new {@link IndexExpression} when the portion of the
+ * query to parse starts with <b>INDEX</b>.
  *
  * @see IndexExpression
  *
@@ -50,6 +50,7 @@ final class IndexExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new IndexExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

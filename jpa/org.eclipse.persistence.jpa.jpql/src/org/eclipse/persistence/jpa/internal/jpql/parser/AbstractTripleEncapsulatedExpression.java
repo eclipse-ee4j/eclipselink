@@ -171,7 +171,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		if (firstExpression == null) {
 			firstExpression = buildNullExpression();
 		}
-
 		return firstExpression;
 	}
 
@@ -184,7 +183,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		if (secondExpression == null) {
 			secondExpression = buildNullExpression();
 		}
-
 		return secondExpression;
 	}
 
@@ -197,7 +195,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		if (thirdExpression == null) {
 			thirdExpression = buildNullExpression();
 		}
-
 		return thirdExpression;
 	}
 
@@ -296,8 +293,8 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	/**
 	 * Returns the BNF to be used to parse one of the encapsulated expression.
 	 *
-	 * @param index The position of the encapsulated {@link Expression} that
-	 * needs to be parsed within the parenthesis
+	 * @param index The position of the encapsulated {@link Expression} that needs to be parsed
+	 * within the parenthesis
 	 * @return The BNF to be used to parse one of the encapsulated expression
 	 */
 	public abstract JPQLQueryBNF parameterExpressionBNF(int index);

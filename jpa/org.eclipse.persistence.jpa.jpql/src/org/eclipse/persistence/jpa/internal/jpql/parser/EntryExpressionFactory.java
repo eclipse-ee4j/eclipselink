@@ -17,8 +17,8 @@ import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 /**
- * This {@link EntryExpressionFactory} creates a new {@link EntryExpression}
- * when the portion of the query to parse starts with <b>ENTRY</b>.
+ * This {@link EntryExpressionFactory} creates a new {@link EntryExpression} when the portion of the
+ * query to parse starts with <b>ENTRY</b>.
  *
  * @see EntryExpression
  *
@@ -50,6 +50,7 @@ final class EntryExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new EntryExpression(parent);
 		expression.parse(wordParser, tolerant);
 

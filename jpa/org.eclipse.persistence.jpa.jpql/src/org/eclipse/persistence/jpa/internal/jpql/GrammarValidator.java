@@ -13,12 +13,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.eclipse.persistence.jpa.internal.jpql.DeclarationResolver.Declaration;
 import org.eclipse.persistence.jpa.internal.jpql.parser.*;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 import static org.eclipse.persistence.jpa.internal.jpql.JPQLQueryProblemMessages.*;
 import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
@@ -49,15 +53,27 @@ public final class GrammarValidator extends AbstractValidator {
 	private CollectionSeparatedBySpaceValidator collectionSeparatedBySpaceValidator;
 
 	/**
-	 *
+	 * This visitor is responsible to retrieve the visited {@link Expression} if it is a
+	 * {@link ComparisonExpression}.
 	 */
 	private ComparisonExpressionVisitor comparisonExpressionVisitor;
+
+	/**
+	 * This visitor is responsible to traverse the parents of the visited {@link Expression} and
+	 * stops if a parent is {@link FuncExpression}.
+	 */
+	private FuncExpressionFinder funcExpressionFinder;
 
 	/**
 	 * The registered expression helper mapped by the unique JPQL identifier of the same expression
 	 * to validate.
 	 */
 	private Map<String, Object> helpers;
+
+	/**
+	 * The cached {@link InputParameter InputParameters} that are present in the entire JPQL query.
+	 */
+	private Collection<InputParameter> inputParameters;
 
 	/**
 	 * The compiled regular expression that validates numeric literals using {@link #REGULAR_EXPRESSION_NUMERIC_LITERAL}.
@@ -121,10 +137,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<AbsExpression> buildAbsExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<AbsExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<AbsExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return AbsExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return AbsExpression_MissingExpression;
 			}
@@ -138,14 +156,16 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<AllOrAnyExpression> buildAllOrAnyExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<AllOrAnyExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<AllOrAnyExpression>() {
 			@Override
 			public String[] arguments(AllOrAnyExpression expression) {
 				return new String[] { expression.getIdentifier() };
 			}
+			@Override
 			public String expressionInvalidKey() {
 				return AllOrAnyExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return AllOrAnyExpression_MissingExpression;
 			}
@@ -159,10 +179,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<AvgFunction> buildAvgFunctionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<AvgFunction>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<AvgFunction>() {
+			@Override
 			public String expressionInvalidKey() {
 				return AvgFunction_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return AvgFunction_MissingExpression;
 			}
@@ -181,10 +203,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<CoalesceExpression> buildCoalesceExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<CoalesceExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<CoalesceExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return CoalesceExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return CoalesceExpression_MissingExpression;
 			}
@@ -198,10 +222,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<ConcatExpression> buildConcatExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<ConcatExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<ConcatExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return ConcatExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return ConcatExpression_MissingExpression;
 			}
@@ -220,10 +246,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<CountFunction> buildCountFunctionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<CountFunction>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<CountFunction>() {
+			@Override
 			public String expressionInvalidKey() {
 				return CountFunction_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return CountFunction_MissingExpression;
 			}
@@ -242,10 +270,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<EntryExpression> buildEntryExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<EntryExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<EntryExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return EntryExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return EntryExpression_MissingExpression;
 			}
@@ -263,10 +293,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<ExistsExpression> buildExistsExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<ExistsExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<ExistsExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return ExistsExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return ExistsExpression_MissingExpression;
 			}
@@ -280,10 +312,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<FuncExpression> buildFuncExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<FuncExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<FuncExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return null; // Not used
 			}
+			@Override
 			public String expressionMissingKey() {
 				return FuncExpression_MissingFunctionName;
 			}
@@ -306,10 +340,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<IndexExpression> buildIndexExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<IndexExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<IndexExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return IndexExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return IndexExpression_MissingExpression;
 			}
@@ -327,10 +363,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<KeyExpression> buildKeyExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<KeyExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<KeyExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return KeyExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return KeyExpression_MissingExpression;
 			}
@@ -348,10 +386,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<LengthExpression> buildLengthExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<LengthExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<LengthExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return LengthExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return LengthExpression_MissingExpression;
 			}
@@ -365,59 +405,57 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractTripleEncapsulatedExpressionHelper<LocateExpression> buildLocateExpressionHelper() {
-		return new AbstractAbstractTripleEncapsulatedExpressionHelper<LocateExpression>() {
+		return new AbstractTripleEncapsulatedExpressionHelper<LocateExpression>() {
+			@Override
 			public String firstCommaMissingKey() {
 				return LocateExpression_MissingFirstComma;
 			}
-
+			@Override
 			public String firstExpressionInvalidKey() {
 				return LocateExpression_InvalidFirstExpression;
 			}
-
+			@Override
 			public String firstExpressionMissingKey() {
 				return LocateExpression_MissingFirstExpression;
 			}
-
 			public String identifier(LocateExpression expression) {
 				return LOCATE;
 			}
-
+			@Override
 			public boolean isFirstExpressionValid(LocateExpression expression) {
 				return isValid(expression.getFirstExpression(), StringPrimaryBNF.ID);
 			}
-
+			@Override
 			public boolean isSecondExpressionValid(LocateExpression expression) {
 				return isValid(expression.getSecondExpression(), StringPrimaryBNF.ID);
 			}
-
+			@Override
 			public boolean isThirdExpressionValid(LocateExpression expression) {
 				return isValid(expression.getThirdExpression(), StringPrimaryBNF.ID);
 			}
-
 			public String leftParenthesisMissingKey() {
 				return LocateExpression_MissingLeftParenthesis;
 			}
-
 			public String rightParenthesisMissingKey() {
 				return LocateExpression_MissingRightParenthesis;
 			}
-
+			@Override
 			public String secondCommaMissingKey() {
 				return LocateExpression_MissingSecondComma;
 			}
-
+			@Override
 			public String secondExpressionInvalidKey() {
 				return LocateExpression_InvalidSecondExpression;
 			}
-
+			@Override
 			public String secondExpressionMissingKey() {
 				return LocateExpression_MissingSecondExpression;
 			}
-
+			@Override
 			public String thirdExpressionInvalidKey() {
 				return LocateExpression_InvalidThirdExpression;
 			}
-
+			@Override
 			public String thirdExpressionMissingKey() {
 				return LocateExpression_MissingThirdExpression;
 			}
@@ -425,10 +463,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<LowerExpression> buildLowerExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<LowerExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<LowerExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return LowerExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return LowerExpression_MissingExpression;
 			}
@@ -442,10 +482,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<MaxFunction> buildMaxFunctionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<MaxFunction>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<MaxFunction>() {
+			@Override
 			public String expressionInvalidKey() {
 				return MaxFunction_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return MaxFunction_MissingExpression;
 			}
@@ -464,10 +506,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<MinFunction> buildMinFunctionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<MinFunction>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<MinFunction>() {
+			@Override
 			public String expressionInvalidKey() {
 				return MinFunction_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return MinFunction_MissingExpression;
 			}
@@ -486,43 +530,41 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractDoubleEncapsulatedExpressionHelper<ModExpression> buildModExpressionHelper() {
-		return new AbstractAbstractDoubleEncapsulatedExpressionHelper<ModExpression>() {
+		return new AbstractDoubleEncapsulatedExpressionHelper<ModExpression>() {
+			@Override
 			public String firstExpressionInvalidKey() {
 				return ModExpression_InvalidFirstExpression;
 			}
-
+			@Override
 			public String firstExpressionMissingKey() {
 				return ModExpression_MissingFirstExpression;
 			}
-
 			public String identifier(ModExpression expression) {
 				return MOD;
 			}
-
+			@Override
 			public boolean isFirstExpressionValid(ModExpression expression) {
 				return isValid(expression.getFirstExpression(), SimpleArithmeticExpressionBNF.ID);
 			}
-
+			@Override
 			public boolean isSecondExpressionValid(ModExpression expression) {
 				return isValid(expression.getSecondExpression(), SimpleArithmeticExpressionBNF.ID);
 			}
-
 			public String leftParenthesisMissingKey() {
 				return ModExpression_MissingLeftParenthesis;
 			}
-
+			@Override
 			public String missingCommaKey() {
 				return ModExpression_MissingComma;
 			}
-
 			public String rightParenthesisMissingKey() {
 				return ModExpression_MissingRightParenthesis;
 			}
-
+			@Override
 			public String secondExpressionInvalidKey() {
 				return ModExpression_InvalidSecondParenthesis;
 			}
-
+			@Override
 			public String secondExpressionMissingKey() {
 				return ModExpression_MissingSecondExpression;
 			}
@@ -530,43 +572,41 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractDoubleEncapsulatedExpressionHelper<NullIfExpression> buildNullIfExpressionHelper() {
-		return new AbstractAbstractDoubleEncapsulatedExpressionHelper<NullIfExpression>() {
+		return new AbstractDoubleEncapsulatedExpressionHelper<NullIfExpression>() {
+			@Override
 			public String firstExpressionInvalidKey() {
 				return NullIfExpression_InvalidFirstExpression;
 			}
-
+			@Override
 			public String firstExpressionMissingKey() {
 				return NullIfExpression_MissingFirstExpression;
 			}
-
 			public String identifier(NullIfExpression expression) {
 				return NULLIF;
 			}
-
+			@Override
 			public boolean isFirstExpressionValid(NullIfExpression expression) {
 				return isValid(expression.getFirstExpression(), ScalarExpressionBNF.ID);
 			}
-
+			@Override
 			public boolean isSecondExpressionValid(NullIfExpression expression) {
 				return isValid(expression.getSecondExpression(), ScalarExpressionBNF.ID);
 			}
-
 			public String leftParenthesisMissingKey() {
 				return NullIfExpression_MissingLeftParenthesis;
 			}
-
+			@Override
 			public String missingCommaKey() {
 				return NullIfExpression_MissingComma;
 			}
-
 			public String rightParenthesisMissingKey() {
 				return NullIfExpression_MissingRightParenthesis;
 			}
-
+			@Override
 			public String secondExpressionInvalidKey() {
 				return NullIfExpression_InvalidSecondExpression;
 			}
-
+			@Override
 			public String secondExpressionMissingKey() {
 				return NullIfExpression_MissingSecondExpression;
 			}
@@ -574,10 +614,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<ObjectExpression> buildObjectExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<ObjectExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<ObjectExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return ObjectExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return ObjectExpression_MissingExpression;
 			}
@@ -595,10 +637,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<SizeExpression> buildSizeExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<SizeExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<SizeExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return SizeExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return SizeExpression_MissingExpression;
 			}
@@ -612,10 +656,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<SqrtExpression> buildSqrtExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<SqrtExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<SqrtExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return SqrtExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return SqrtExpression_MissingExpression;
 			}
@@ -629,59 +675,67 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractTripleEncapsulatedExpressionHelper<SubstringExpression> buildSubstringExpressionHelper() {
-		return new AbstractAbstractTripleEncapsulatedExpressionHelper<SubstringExpression>() {
+		return new AbstractTripleEncapsulatedExpressionHelper<SubstringExpression>() {
+			@Override
 			public String firstCommaMissingKey() {
 				return SubstringExpression_MissingFirstComma;
 			}
-
+			@Override
 			public String firstExpressionInvalidKey() {
 				return SubstringExpression_InvalidFirstExpression;
 			}
-
+			@Override
 			public String firstExpressionMissingKey() {
 				return SubstringExpression_MissingFirstExpression;
 			}
-
+			@Override
+			public boolean hasThirdExpression(SubstringExpression expression) {
+				boolean hasThirdExpression = super.hasThirdExpression(expression);
+				// If there is no third expression and the JPA version is 2.0, then we trick the
+				// validator to think there is an expression because it is optional
+				if (!hasThirdExpression && getJPAVersion().isNewerThanOrEqual(IJPAVersion.VERSION_2_0)) {
+					hasThirdExpression = true;
+				}
+				return hasThirdExpression;
+			}
 			public String identifier(SubstringExpression expression) {
 				return SUBSTRING;
 			}
-
+			@Override
 			public boolean isFirstExpressionValid(SubstringExpression expression) {
 				return isValid(expression.getFirstExpression(), SimpleArithmeticExpressionBNF.ID);
 			}
-
+			@Override
 			public boolean isSecondExpressionValid(SubstringExpression expression) {
 				return isValid(expression.getSecondExpression(), SimpleArithmeticExpressionBNF.ID);
 			}
-
+			@Override
 			public boolean isThirdExpressionValid(SubstringExpression expression) {
 				return isValid(expression.getThirdExpression(), SimpleArithmeticExpressionBNF.ID);
 			}
-
 			public String leftParenthesisMissingKey() {
 				return SubstringExpression_MissingLeftParenthesis;
 			}
-
 			public String rightParenthesisMissingKey() {
 				return SubstringExpression_MissingRightParenthesis;
 			}
-
+			@Override
 			public String secondCommaMissingKey() {
 				return SubstringExpression_MissingSecondComma;
 			}
-
+			@Override
 			public String secondExpressionInvalidKey() {
 				return SubstringExpression_InvalidSecondExpression;
 			}
-
+			@Override
 			public String secondExpressionMissingKey() {
 				return SubstringExpression_MissingSecondExpression;
 			}
-
+			@Override
 			public String thirdExpressionInvalidKey() {
 				return SubstringExpression_InvalidThirdExpression;
 			}
-
+			@Override
 			public String thirdExpressionMissingKey() {
 				return SubstringExpression_MissingThirdExpression;
 			}
@@ -689,10 +743,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<SumFunction> buildSumFunctionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<SumFunction>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<SumFunction>() {
+			@Override
 			public String expressionInvalidKey() {
 				return SumFunction_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return SumFunction_MissingExpression;
 			}
@@ -711,10 +767,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<TrimExpression> buildTrimExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<TrimExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<TrimExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return TrimExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return TrimExpression_MissingExpression;
 			}
@@ -737,10 +795,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<TypeExpression> buildTypeExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<TypeExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<TypeExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return TypeExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return TypeExpression_MissingExpression;
 			}
@@ -754,10 +814,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<UpperExpression> buildUpperExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<UpperExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<UpperExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return UpperExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return UpperExpression_MissingExpression;
 			}
@@ -771,10 +833,12 @@ public final class GrammarValidator extends AbstractValidator {
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<ValueExpression> buildValueExpressionHelper() {
-		return new AbstractAbstractSingleEncapsulatedExpressionHelper<ValueExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<ValueExpression>() {
+			@Override
 			public String expressionInvalidKey() {
 				return ValueExpression_InvalidExpression;
 			}
+			@Override
 			public String expressionMissingKey() {
 				return ValueExpression_MissingExpression;
 			}
@@ -839,6 +903,15 @@ public final class GrammarValidator extends AbstractValidator {
 		return helper;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+		inputParameters.clear();
+	}
+
 	private AbstractSingleEncapsulatedExpressionHelper<EntryExpression> entryExpressionHelper() {
 		AbstractSingleEncapsulatedExpressionHelper<EntryExpression> helper = getHelper(ENTRY);
 		if (helper == null) {
@@ -855,6 +928,13 @@ public final class GrammarValidator extends AbstractValidator {
 			helpers.put(EXISTS, helper);
 		}
 		return helper;
+	}
+
+	private FuncExpressionFinder funcExpressionFinder() {
+		if (funcExpressionFinder == null) {
+			funcExpressionFinder = new FuncExpressionFinder();
+		}
+		return funcExpressionFinder;
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<FuncExpression> funcExpressionHelper() {
@@ -884,9 +964,10 @@ public final class GrammarValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void initialize() {
+	protected void initialize() {
 		super.initialize();
 		helpers = new HashMap<String, Object>();
+		inputParameters = new ArrayList<InputParameter>();
 	}
 
 	private boolean isChildOfComparisonExpession(AllOrAnyExpression expression) {
@@ -903,34 +984,69 @@ public final class GrammarValidator extends AbstractValidator {
 		}
 	}
 
-	private boolean isIdentificationVariableDeclaredAfter(int index,
-	                                                      IdentificationVariable identificationVariable,
-	                                                      List<IdentificationVariable> identificationVariables) {
+	private boolean isIdentificationVariableDeclaredBefore(String variableName,
+	                                                       int variableNameIndex,
+	                                                       int joinIndex,
+	                                                       List<Declaration> declarations) {
 
-		String variable = identificationVariable.toParsedText().toLowerCase();
+		// Stop before variableNameIndex if the variableName is not in a JOIN expression (which means
+		// joinIndex is -1), otherwise stop at variableNameIndex to verify the range variable name
+		// or the JOIN expression before joinIndex
+		boolean scanDeclaration = (joinIndex > -1);
 
-		// First check if the variable is declared before, if so, then duplicate
-		// variable declarations will be ignore (one before and one after)
-		for (int index2 = 0; index2 < index; index2++) {
-			IdentificationVariable identificationVariable2 = identificationVariables.get(index2);
-			String variable2 = identificationVariable2.toParsedText().toLowerCase();
+		for (int index = 0; scanDeclaration ? (index <= variableNameIndex) : (index < variableNameIndex); index++) {
 
-			if (variable.equals(variable2)) {
-				return false;
-			}
-		}
+			Declaration declaration = declarations.get(index);
+			String previousVariableName = declaration.getVariableName();
 
-		// Check to see if the identification variable is declared after
-		for (int count = identificationVariables.size(); index < count; index++) {
-			IdentificationVariable identificationVariable2 = identificationVariables.get(index);
-			String variable2 = identificationVariable2.toParsedText().toLowerCase();
-
-			if (variable.equals(variable2)) {
+			if (variableName.equalsIgnoreCase(previousVariableName)) {
 				return true;
+			}
+
+			if (declaration.hasJoins()) {
+				List<Map.Entry<Join, String>> joinEntries = declaration.getJoinEntries();
+
+				// Scan all the JOIN expression if index is not variableNameIndex, otherwise
+				// scan up to joinIndex, exclusively
+				int endIndex = (index == variableNameIndex) ? joinIndex : joinEntries.size();
+
+				for (int subIndex = 0; subIndex < endIndex; subIndex++) {
+					Map.Entry<Join, String> join = joinEntries.get(subIndex);
+					previousVariableName = join.getValue();
+
+					if (variableName.equalsIgnoreCase(previousVariableName)) {
+						return true;
+					}
+				}
 			}
 		}
 
 		return false;
+	}
+
+	private boolean isInFuncExpressionInSelectClause(OwningClauseVisitor visitor,
+	                                                 InputParameter expression) {
+
+		// If the owning clause is not a SELECT clause, then ignore the check
+		if (visitor.selectClause       == null &&
+		    visitor.simpleSelectClause == null) {
+
+			return false;
+		}
+
+		FuncExpressionFinder finder = funcExpressionFinder();
+
+		try {
+			expression.accept(finder);
+			return finder.expression != null;
+		}
+		finally {
+			finder.expression = null;
+		}
+	}
+
+	private boolean isNumericLiteral(String text) {
+		return numericalLiteralPattern().matcher(text).matches();
 	}
 
 	private boolean isRightParenthesisMissing(AbstractTripleEncapsulatedExpression expression) {
@@ -938,6 +1054,7 @@ public final class GrammarValidator extends AbstractValidator {
 		if (!expression.hasLeftParenthesis() ||
 		    !expression.hasFirstExpression() ||
 		     expression.hasRightParenthesis()) {
+
 			return false;
 		}
 
@@ -946,6 +1063,7 @@ public final class GrammarValidator extends AbstractValidator {
 		   !expression.hasSecondExpression() &&
 		   !expression.hasSecondComma()      &&
 		   !expression.hasThirdExpression()) {
+
 			return false;
 		}
 
@@ -953,16 +1071,24 @@ public final class GrammarValidator extends AbstractValidator {
 		   !expression.hasSecondExpression() &&
 		   !expression.hasSecondComma()      &&
 		   !expression.hasThirdExpression()) {
+
 			return false;
 		}
 
 		if (expression.hasSecondExpression() &&
 		    expression.hasSecondComma()      &&
 		   !expression.hasThirdExpression()) {
+
 			return false;
 		}
 
 		return true;
+	}
+
+	private boolean isValidJPA20Identifier() {
+		// EclipseLink always parses JPQL queries using the latest JPA version
+		// TODO: What about EclipseLink platform older and that doesn't support JPA 2.0?
+		return isEclipseLinkPlatform() || getJPAVersion().isNewerThanOrEqual(IJPAVersion.VERSION_2_0);
 	}
 
 	private AbstractSingleEncapsulatedExpressionHelper<KeyExpression> keyExpressionHelper() {
@@ -979,6 +1105,15 @@ public final class GrammarValidator extends AbstractValidator {
 		if (helper == null) {
 			helper = buildLengthExpressionHelper();
 			helpers.put(LENGTH, helper);
+		}
+		return helper;
+	}
+
+	private AbstractTripleEncapsulatedExpressionHelper<LocateExpression> locateExpressionHelper() {
+		AbstractTripleEncapsulatedExpressionHelper<LocateExpression> helper = getHelper(LOCATE);
+		if (helper == null) {
+			helper = buildLocateExpressionHelper();
+			helpers.put(LOCATE, helper);
 		}
 		return helper;
 	}
@@ -1010,6 +1145,31 @@ public final class GrammarValidator extends AbstractValidator {
 		return helper;
 	}
 
+	private AbstractDoubleEncapsulatedExpressionHelper<ModExpression> modExpressionHelper() {
+		AbstractDoubleEncapsulatedExpressionHelper<ModExpression> helper = getHelper(MOD);
+		if (helper == null) {
+			helper = buildModExpressionHelper();
+			helpers.put(MOD, helper);
+		}
+		return helper;
+	}
+
+	private AbstractDoubleEncapsulatedExpressionHelper<NullIfExpression> nullIfExpressionHelper() {
+		AbstractDoubleEncapsulatedExpressionHelper<NullIfExpression> helper = getHelper(NULLIF);
+		if (helper == null) {
+			helper = buildNullIfExpressionHelper();
+			helpers.put(NULLIF, helper);
+		}
+		return helper;
+	}
+
+	private Pattern numericalLiteralPattern() {
+		if (numericalLiteralPattern == null) {
+			numericalLiteralPattern = Pattern.compile(REGULAR_EXPRESSION_NUMERIC_LITERAL);
+		}
+		return numericalLiteralPattern;
+	}
+
 	private AbstractSingleEncapsulatedExpressionHelper<ObjectExpression> objectExpressionHelper() {
 		AbstractSingleEncapsulatedExpressionHelper<ObjectExpression> helper = getHelper(OBJECT);
 		if (helper == null) {
@@ -1033,6 +1193,15 @@ public final class GrammarValidator extends AbstractValidator {
 		if (helper == null) {
 			helper = buildSqrtExpressionHelper();
 			helpers.put(SQRT, helper);
+		}
+		return helper;
+	}
+
+	private AbstractTripleEncapsulatedExpressionHelper<SubstringExpression> substringExpressionHelper() {
+		AbstractTripleEncapsulatedExpressionHelper<SubstringExpression> helper = getHelper(SUBSTRING);
+		if (helper == null) {
+			helper = buildSubstringExpressionHelper();
+			helpers.put(SUBSTRING, helper);
 		}
 		return helper;
 	}
@@ -1071,6 +1240,545 @@ public final class GrammarValidator extends AbstractValidator {
 			helpers.put(UPPER, helper);
 		}
 		return helper;
+	}
+
+	private void validateAbstractConditionalClause(AbstractConditionalClause expression,
+	                                               String missingConditionalExpressionMessageKey,
+	                                               String invalidConditionalExpressionMessageKey) {
+
+		// Missing conditional expression
+		if (!expression.hasConditionalExpression()) {
+			int startPosition = position(expression);
+			int endPosition   = startPosition + expression.getIdentifier().length();
+
+			if (expression.hasSpaceAfterIdentifier()) {
+				endPosition++;
+			}
+
+			addProblem(expression, startPosition, endPosition, missingConditionalExpressionMessageKey);
+		}
+		// Invalid conditional expression
+		else {
+			Expression conditionalExpression = expression.getConditionalExpression();
+
+			if (!isValid(conditionalExpression, ConditionalExpressionBNF.ID)) {
+				int startPosition = position(conditionalExpression);
+				int endPosition   = startPosition + length(conditionalExpression);
+				addProblem(expression, startPosition, endPosition, invalidConditionalExpressionMessageKey);
+			}
+		}
+	}
+
+	private <T extends AbstractDoubleEncapsulatedExpression>
+	        void validateAbstractDoubleEncapsulatedExpression
+	        (T expression, AbstractDoubleEncapsulatedExpressionHelper<T> helper) {
+
+		String identifier = helper.identifier(expression);
+
+		// Missing '('
+		if (!expression.hasLeftParenthesis()) {
+			int startPosition = position(expression) + identifier.length();
+			int endPosition   = startPosition;
+			addProblem(expression, startPosition, endPosition, helper.leftParenthesisMissingKey());
+		}
+
+		// Missing ')'
+		if (expression.hasLeftParenthesis() &&
+		    helper.hasSecondExpression(expression) &&
+		   !expression.hasRightParenthesis()) {
+
+			int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+
+			// First expression
+			if (helper.hasFirstExpression(expression)) {
+				startPosition += length(expression.getFirstExpression());
+			}
+
+			if (expression.hasComma()) {
+				startPosition++;
+			}
+
+			if (expression.hasSpaceAfterComma()) {
+				startPosition++;
+			}
+
+			// Second expression
+			if (helper.hasSecondExpression(expression)) {
+				startPosition += length(expression.getSecondExpression());
+			}
+
+			int endPosition = startPosition;
+
+			addProblem(expression, startPosition, endPosition, helper.rightParenthesisMissingKey());
+		}
+
+		if (expression.hasLeftParenthesis()) {
+			// Missing first expression
+			if (!helper.hasFirstExpression(expression)) {
+				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+				int endPosition   = startPosition;
+				addProblem(expression, startPosition, endPosition, helper.firstExpressionMissingKey());
+			}
+			// Invalid first expression
+			else if (!helper.isFirstExpressionValid(expression)) {
+				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+				int endPosition   = startPosition + helper.firstExpressionLength(expression);
+				addProblem(expression, startPosition, endPosition, helper.firstExpressionInvalidKey());
+			}
+			else {
+				expression.getFirstExpression().accept(this);
+			}
+
+			// Missing comma
+			if (helper.hasFirstExpression(expression) &&
+			    !expression.hasComma()) {
+
+				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+
+				if (helper.hasFirstExpression(expression)) {
+					startPosition += length(expression.getFirstExpression());
+				}
+
+				int endPosition = startPosition;
+
+				addProblem(expression, startPosition, endPosition, helper.missingCommaKey());
+			}
+
+			// Missing second expression
+			if (expression.hasComma()) {
+
+				if (!helper.hasSecondExpression(expression)) {
+					int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+
+					// First expression
+					if (helper.hasFirstExpression(expression)) {
+						startPosition += helper.firstExpressionLength(expression);
+					}
+
+					if (expression.hasComma()) {
+						startPosition++;
+					}
+
+					if (expression.hasSpaceAfterComma()) {
+						startPosition++;
+					}
+
+					int endPosition = startPosition;
+
+					addProblem(expression, startPosition, endPosition, helper.secondExpressionMissingKey());
+				}
+				// Invalid second expression
+				else if (!helper.isSecondExpressionValid(expression)) {
+					int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+
+					// First expression
+					if (helper.hasFirstExpression(expression)) {
+						startPosition += helper.firstExpressionLength(expression);
+					}
+
+					if (expression.hasComma()) {
+						startPosition++;
+					}
+
+					if (expression.hasSpaceAfterComma()) {
+						startPosition++;
+					}
+
+					int endPosition = startPosition + helper.secondExpressionLength(expression);
+
+					addProblem(expression, startPosition, endPosition, helper.secondExpressionInvalidKey());
+				}
+				else {
+					expression.getSecondExpression().accept(this);
+				}
+			}
+		}
+	}
+
+	private void validateAbstractFromClause(AbstractFromClause expression) {
+
+		if (expression.hasDeclaration()) {
+
+			// Two identification variable declarations have to be separated by a comma and
+			// the FROM clause cannot end with a comma
+			validateCollectionSeparatedByComma(
+				expression.getDeclaration(),
+				AbstractFromClause_IdentificationVariableDeclarationEndsWithComma,
+				AbstractFromClause_IdentificationVariableDeclarationIsMissingComma
+			);
+
+			// The identification variable declarations are evaluated from left to right in
+			// the FROM clause, and an identification variable declaration can use the result
+			// of a preceding identification variable declaration of the query string
+			List<Declaration> declarations = queryContext.getDeclarations();
+
+			for (int index = 0, count = declarations.size(); index < count; index++) {
+				Declaration declaration = declarations.get(index);
+
+				// Check the JOIN expressions in the identification variable declaration
+				if (declaration.isRange() && declaration.hasJoins()) {
+
+					List<Map.Entry<Join, String>> joinEntries = declaration.getJoinEntries();
+
+					for (int joinIndex = 0, joinCount = joinEntries.size(); joinIndex < joinCount; joinIndex++) {
+						Map.Entry<Join, String> joinEntry = joinEntries.get(joinIndex);
+						Join join = joinEntry.getKey();
+
+						// Retrieve the identification variable from the join association path
+						String variableName = queryContext.literal(
+							join.getJoinAssociationPath(),
+							LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE
+						);
+
+						// Make sure the identification variable is defined before the JOIN expression
+						if (ExpressionTools.stringIsNotEmpty(variableName) &&
+						    !isIdentificationVariableDeclaredBefore(variableName, index, joinIndex, declarations)) {
+
+							int startPosition = position(join.getJoinAssociationPath());
+							int endPosition   = startPosition + variableName.length();
+
+							addProblem(
+								expression,
+								startPosition,
+								endPosition,
+								AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration,
+								variableName
+							);
+						}
+					}
+				}
+				// Check the collection member declaration
+				else if (!declaration.isRange()) {
+
+					// Retrieve the identification variable from the path expression
+					String variableName = queryContext.literal(
+						declaration.getBaseExpression(),
+						LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE
+					);
+
+					if (ExpressionTools.stringIsNotEmpty(variableName) &&
+					    !isIdentificationVariableDeclaredBefore(variableName, index, -1, declarations)) {
+
+						int startPosition = position(declaration.getDeclarationExpression()) - variableName.length();
+						int endPosition   = startPosition + variableName.length();
+
+						addProblem(
+							expression,
+							startPosition,
+							endPosition,
+							AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration,
+							variableName
+						);
+					}
+				}
+			}
+		}
+		else {
+			int startPosition = position(expression) + FROM.length();
+
+			if (expression.hasSpaceAfterFrom()) {
+				startPosition++;
+			}
+
+			int endPosition = startPosition;
+
+			addProblem(
+				expression,
+				startPosition,
+				endPosition,
+				AbstractFromClause_MissingIdentificationVariableDeclaration
+			);
+		}
+	}
+
+	private <T extends AbstractSingleEncapsulatedExpression>
+	        void validateAbstractSingleEncapsulatedExpression
+	        (T expression, AbstractSingleEncapsulatedExpressionHelper<T> helper) {
+
+		String identifier = helper.identifier(expression);
+
+		// Missing '('
+		if (!expression.hasLeftParenthesis()) {
+			int startPosition = position(expression) + identifier.length();
+			int endPosition   = startPosition;
+
+			addProblem(
+				expression,
+				startPosition,
+				endPosition,
+				helper.leftParenthesisMissingKey(),
+				helper.arguments(expression)
+			);
+		}
+		// Missing encapsulated expression
+		else if (!helper.hasExpression(expression)) {
+			int startPosition = position(expression) +
+			                    identifier.length()  +
+			                    1 /* '(' */          +
+			                    helper.lengthBeforeEncapsulatedExpression(expression);
+
+			int endPosition = startPosition;
+
+			addProblem(
+				expression,
+				startPosition,
+				endPosition,
+				helper.expressionMissingKey(),
+				helper.arguments(expression)
+			);
+		}
+		else {
+			if (!helper.isValidExpression(expression)) {
+				int startPosition = position(expression) +
+				                    identifier.length()  +
+				                    1 /* '(' */          +
+				                    helper.lengthBeforeEncapsulatedExpression(expression);
+
+				int endPosition = startPosition + helper.encapsulatedExpressionLength(expression);
+
+				addProblem(
+					expression,
+					startPosition,
+					endPosition,
+					helper.expressionInvalidKey(),
+					helper.arguments(expression)
+				);
+			}
+			else {
+				super.visit(expression);
+			}
+		}
+
+		// Missing ')'
+		if (!expression.hasRightParenthesis()) {
+			int startPosition = position(expression) + length(expression);
+			int endPosition   = startPosition;
+
+			addProblem(
+				expression,
+				startPosition,
+				endPosition,
+				helper.rightParenthesisMissingKey(),
+				helper.arguments(expression)
+			);
+		}
+	}
+
+	private <T extends AbstractTripleEncapsulatedExpression>
+	        void validateAbstractTripleEncapsulatedExpression
+	        (T expression, AbstractTripleEncapsulatedExpressionHelper<T> helper) {
+
+		String identifier = helper.identifier(expression);
+
+		// Missing '('
+		if (!expression.hasLeftParenthesis()) {
+			int startPosition = position(expression) + identifier.length();
+			int endPosition   = startPosition;
+
+			addProblem(
+				expression,
+				startPosition,
+				endPosition,
+				helper.leftParenthesisMissingKey()
+			);
+		}
+
+		// Missing ')'
+		if (expression.hasLeftParenthesis() &&
+		    helper.hasFirstExpression(expression) &&
+		   !expression.hasRightParenthesis() &&
+		    isRightParenthesisMissing(expression)) {
+
+			int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+
+			// First expression
+			if (helper.hasFirstExpression(expression)) {
+				startPosition += length(expression.getFirstExpression());
+			}
+
+			if (expression.hasFirstComma()) {
+				startPosition++;
+			}
+
+			if (expression.hasSpaceAfterFirstComma()) {
+				startPosition++;
+			}
+
+			// Second expression
+			if (helper.hasSecondExpression(expression)) {
+				startPosition += length(expression.getSecondExpression());
+			}
+
+			if (expression.hasSecondComma()) {
+				startPosition++;
+			}
+
+			if (expression.hasSpaceAfterSecondComma()) {
+				startPosition++;
+			}
+
+			// Third expression
+			if (helper.hasThirdExpression(expression)) {
+				startPosition += length(expression.getThirdExpression());
+			}
+
+			int endPosition = startPosition;
+
+			addProblem(expression, startPosition, endPosition, helper.rightParenthesisMissingKey());
+		}
+
+		if (expression.hasLeftParenthesis()) {
+
+			// Missing first expression
+			if (!helper.hasFirstExpression(expression)) {
+				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+				int endPosition   = startPosition;
+				addProblem(expression, startPosition, endPosition, helper.firstExpressionMissingKey());
+			}
+			// Invalid first expression
+			else if (!helper.isFirstExpressionValid(expression)) {
+				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+				int endPosition   = startPosition + helper.firstExpressionLength(expression);
+				addProblem(expression, startPosition, endPosition, helper.firstExpressionInvalidKey());
+			}
+			else {
+				expression.getFirstExpression().accept(this);
+			}
+
+			// Missing first comma
+			if (helper.hasFirstExpression(expression) &&
+			    !expression.hasFirstComma()) {
+
+				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+
+				if (helper.hasFirstExpression(expression)) {
+					startPosition += helper.firstExpressionLength(expression);
+				}
+
+				int endPosition = startPosition;
+
+				addProblem(expression, startPosition, endPosition, helper.firstCommaMissingKey());
+			}
+
+			// Validate second expression
+			if (expression.hasFirstComma()) {
+				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+
+				if (helper.hasFirstExpression(expression)) {
+					startPosition += helper.firstExpressionLength(expression);
+				}
+
+				if (expression.hasFirstComma()) {
+					startPosition++;
+				}
+
+				if (expression.hasSpaceAfterFirstComma()) {
+					startPosition++;
+				}
+
+				// Missing second expression
+				if (!helper.hasSecondExpression(expression)) {
+					int endPosition = startPosition;
+					addProblem(expression, startPosition, endPosition, helper.secondExpressionMissingKey());
+				}
+				// Invalid second expression
+				else if (!helper.isSecondExpressionValid(expression)) {
+					int endPosition = startPosition + helper.secondExpressionLength(expression);
+					addProblem(expression, startPosition, endPosition, helper.secondExpressionInvalidKey());
+				}
+				else {
+					expression.getSecondExpression().accept(this);
+				}
+			}
+
+			// Missing second comma
+			if (helper.hasSecondExpression(expression) &&
+			    !expression.hasSecondComma() &&
+			    helper.hasThirdExpression(expression)) {
+
+				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+
+				// First expression
+				if (helper.hasFirstExpression(expression)) {
+					startPosition += length(expression.getFirstExpression());
+				}
+
+				if (expression.hasFirstComma()) {
+					startPosition++;
+				}
+
+				if (expression.hasSpaceAfterFirstComma()) {
+					startPosition++;
+				}
+
+				// Second expression
+				if (helper.hasSecondExpression(expression)) {
+					startPosition += helper.secondExpressionLength(expression);
+				}
+
+				int endPosition = startPosition;
+
+				addProblem(expression, startPosition, endPosition, helper.secondCommaMissingKey());
+			}
+
+			// Validate third expression
+			if (expression.hasSecondComma()) {
+				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+
+				// First expression
+				if (helper.hasFirstExpression(expression)) {
+					startPosition += helper.firstExpressionLength(expression);
+				}
+
+				if (expression.hasFirstComma()) {
+					startPosition++;
+				}
+
+				if (expression.hasSpaceAfterFirstComma()) {
+					startPosition++;
+				}
+
+				// Second expression
+				if (helper.hasSecondExpression(expression)) {
+					startPosition += helper.secondExpressionLength(expression);
+				}
+
+				if (expression.hasSecondComma()) {
+					startPosition++;
+				}
+
+				if (expression.hasSpaceAfterSecondComma()) {
+					startPosition++;
+				}
+
+				// Missing third expression
+				if (!helper.hasThirdExpression(expression)) {
+					int endPosition = startPosition;
+					addProblem(expression, startPosition, endPosition, helper.thirdExpressionMissingKey());
+				}
+				// Invalid third expression
+				else if (!helper.isThirdExpressionValid(expression)) {
+					int endPosition = startPosition + helper.thirdExpressionLength(expression);
+					addProblem(expression, startPosition, endPosition, helper.thirdExpressionInvalidKey());
+				}
+				else {
+					expression.getThirdExpression().accept(this);
+				}
+			}
+		}
+	}
+
+	private void validateArithmeticExpression(ArithmeticExpression expression) {
+		validateCompoundExpression(
+			expression,
+			expression.getArithmeticSign(),
+			ArithmeticExpression_MissingLeftExpression,
+			ArithmeticExpression_InvalidLeftExpression,
+			ArithmeticExpression_MissingRightExpression,
+			ArithmeticExpression_InvalidRightExpression,
+			ArithmeticExpressionBNF.ID,
+			ArithmeticTermBNF.ID
+		);
 	}
 
 	/**
@@ -1125,6 +1833,70 @@ public final class GrammarValidator extends AbstractValidator {
 		}
 	}
 
+	private void validateCompoundExpression(CompoundExpression expression,
+	                                        String identifier,
+	                                        String missingLeftExpression,
+	                                        String invalidLeftExpression,
+	                                        String missingRightExpression,
+	                                        String invalidRightExpression,
+	                                        String leftExpressionQueryBNF,
+	                                        String rightExpressionQueryBNF) {
+
+		// Missing left expression
+		if (!expression.hasLeftExpression()) {
+			int startPosition = position(expression);
+			int endPosition   = startPosition;
+			addProblem(expression, startPosition, endPosition, missingLeftExpression);
+		}
+		// Invalid left expression
+		else if (!isValid(expression.getLeftExpression(), leftExpressionQueryBNF)) {
+
+			int startPosition = position(expression);
+			int endPosition   = startPosition + length(expression.getLeftExpression());
+			addProblem(expression, startPosition, endPosition, invalidLeftExpression);
+		}
+		else {
+			expression.getLeftExpression().accept(this);
+		}
+
+		// Missing right expression
+		if (!expression.hasRightExpression()) {
+			int startPosition = position(expression) + identifier.length();
+
+			if (expression.hasLeftExpression()) {
+				startPosition += length(expression.getLeftExpression()) + 1;
+			}
+
+			if (expression.hasSpaceAfterIdentifier()) {
+				startPosition++;
+			}
+
+			int endPosition = startPosition;
+
+			addProblem(expression, startPosition, endPosition, missingRightExpression);
+		}
+		// Invalid right expression
+		else if (!isValid(expression.getRightExpression(), rightExpressionQueryBNF)) {
+
+			int startPosition = position(expression) + identifier.length();
+
+			if (expression.hasLeftExpression()) {
+				startPosition += length(expression.getLeftExpression()) + 1;
+			}
+
+			if (expression.hasSpaceAfterIdentifier()) {
+				startPosition++;
+			}
+
+			int endPosition = startPosition + length(expression.getRightExpression());
+
+			addProblem(expression, startPosition, endPosition, invalidRightExpression);
+		}
+		else {
+			expression.getRightExpression().accept(this);
+		}
+	}
+
 	/**
 	 * Validates the given variable name to make sure:
 	 * <ul>
@@ -1168,6 +1940,73 @@ public final class GrammarValidator extends AbstractValidator {
 		}
 	}
 
+	private void validateInputParameters(JPQLExpression expression) {
+
+		int positionalCount = 0;
+		int namedCount = 0;
+
+		for (InputParameter inputParameter : inputParameters) {
+			if (inputParameter.isNamed()) {
+				namedCount++;
+			}
+			else if (inputParameter.isPositional()) {
+				positionalCount++;
+			}
+		}
+
+		if ((positionalCount > 0) && (namedCount > 0)) {
+			for (InputParameter parameter : inputParameters) {
+				addProblem(parameter, InputParameter_Mixture);
+			}
+		}
+	}
+
+	private void validateLogicalExpression(LogicalExpression expression,
+	                                       String leftExpressionQueryBNF,
+	                                       String rightExpressionQueryBNF) {
+
+		validateCompoundExpression(
+			expression,
+			expression.getIdentifier(),
+			LogicalExpression_MissingLeftExpression,
+			LogicalExpression_InvalidLeftExpression,
+			LogicalExpression_MissingRightExpression,
+			LogicalExpression_InvalidRightExpression,
+			leftExpressionQueryBNF,
+			rightExpressionQueryBNF
+		);
+	}
+
+	private void validatePathExpression(AbstractPathExpression expression) {
+
+		// Missing identification variable
+		if (!expression.hasIdentificationVariable() &&
+		    !expression.hasVirtualIdentificationVariable()) {
+
+			addProblem(expression, AbstractPathExpression_MissingIdentificationVariable);
+		}
+
+		// Cannot end with a dot
+		if (expression.endsWithDot()) {
+			addProblem(expression, AbstractPathExpression_CannotEndWithComma);
+		}
+	}
+
+	private void validateSelectStatement(AbstractSelectStatement expression) {
+
+		// Does not have a FROM clause
+		if (!expression.hasFromClause()) {
+			int startPosition = position(expression) + length(expression.getSelectClause());
+
+			if (expression.hasSpaceAfterSelect()) {
+				startPosition++;
+			}
+
+			int endPosition = startPosition;
+			addProblem(expression, startPosition, endPosition, AbstractSelectStatement_FromClauseMissing);
+		}
+	}
+
 	private AbstractSingleEncapsulatedExpressionHelper<ValueExpression> valueExpressionHelper() {
 		AbstractSingleEncapsulatedExpressionHelper<ValueExpression> helper = getHelper(VALUE);
 		if (helper == null) {
@@ -1182,8 +2021,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(AbsExpression expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, absExpressionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, absExpressionHelper());
 	}
 
 	/**
@@ -1200,8 +2038,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(AdditionExpression expression) {
-		visitArithmeticExpression(expression);
-		super.visit(expression);
+		validateArithmeticExpression(expression);
 	}
 
 	/**
@@ -1210,22 +2047,12 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(AllOrAnyExpression expression) {
 
-		visitAbstractSingleEncapsulatedExpression(expression, allOrAnyExpressionHelper());
+		validateAbstractSingleEncapsulatedExpression(expression, allOrAnyExpressionHelper());
 
 		// Make sure the expression is part of a comparison expression
 		if (!isChildOfComparisonExpession(expression)) {
-			int startPosition = position(expression);
-			int endPosition   = startPosition + length(expression);
-
-			addProblem(
-				expression,
-				startPosition,
-				endPosition,
-				AllOrAnyExpression_NotPartOfComparisonExpression
-			);
+			addProblem(expression, AllOrAnyExpression_NotPartOfComparisonExpression);
 		}
-
-		super.visit(expression);
 	}
 
 	/**
@@ -1233,8 +2060,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(AndExpression expression) {
-		visitLogicalExpression(expression, ConditionalExpressionBNF.ID, ConditionalExpressionBNF.ID);
-		super.visit(expression);
+		validateLogicalExpression(expression, ConditionalExpressionBNF.ID, ConditionalExpressionBNF.ID);
 	}
 
 	/**
@@ -1249,8 +2075,9 @@ public final class GrammarValidator extends AbstractValidator {
 			int endPosition   = startPosition;
 			addProblem(expression, startPosition, endPosition, ArithmeticFactor_MissingExpression);
 		}
-
-		super.visit(expression);
+		else {
+			super.visit(expression);
+		}
 	}
 
 	/**
@@ -1258,8 +2085,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(AvgFunction expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, avgFunctionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, avgFunctionHelper());
 	}
 
 	/**
@@ -1306,6 +2132,7 @@ public final class GrammarValidator extends AbstractValidator {
 		// Missing 'AND'
 		if (expression.hasLowerBoundExpression() &&
 		   !expression.hasAnd()) {
+
 			int startPosition = position(expression);
 
 			if (expression.hasExpression()) {
@@ -1332,6 +2159,7 @@ public final class GrammarValidator extends AbstractValidator {
 		// Missing upper bound expression
 		if (expression.hasAnd() &&
 		   !expression.hasUpperBoundExpression()) {
+
 			int startPosition = position(expression);
 
 			if (expression.hasExpression()) {
@@ -1374,154 +2202,157 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(CaseExpression expression) {
 
-		// TODO: Validate not valid for JPA 1.0
-
-		// When Clauses can't be separated by commas
-		if (expression.hasWhenClauses()) {
-			validateCollectionSeparatedBySpace(
-				expression.getWhenClauses(),
-				CaseExpression_WhenClausesEndWithComma,
-				CaseExpression_WhenClausesHasComma
-			);
+		if (!isValidJPA20Identifier()) {
+			addProblem(expression, CaseExpression_InvalidJPAVersion);
 		}
-		// At least one WHEN clause must be specified
 		else {
-			int startPosition = position(expression) + CASE.length();
-
-			if (expression.hasSpaceAfterCase()) {
-				startPosition++;
-			}
-
-			if (expression.hasCaseOperand()) {
-				startPosition += length(expression.getCaseOperand());
-			}
-
-			if (expression.hasSpaceAfterCaseOperand()) {
-				startPosition++;
-			}
-
-			int endPosition = startPosition;
-
-			addProblem(expression, startPosition, endPosition, CaseExpression_MissingWhenClause);
-		}
-
-		// ELSE is missing
-		if (expression.hasWhenClauses() &&
-		   !expression.hasElse()) {
-			int startPosition = position(expression) + CASE.length();
-
-			if (expression.hasSpaceAfterCase()) {
-				startPosition++;
-			}
-
-			if (expression.hasCaseOperand()) {
-				startPosition += length(expression.getCaseOperand());
-			}
-
-			if (expression.hasSpaceAfterCaseOperand()) {
-				startPosition++;
-			}
-
+			// When Clauses can't be separated by commas
 			if (expression.hasWhenClauses()) {
-				startPosition += length(expression.getWhenClauses());
+				validateCollectionSeparatedBySpace(
+					expression.getWhenClauses(),
+					CaseExpression_WhenClausesEndWithComma,
+					CaseExpression_WhenClausesHasComma
+				);
+			}
+			// At least one WHEN clause must be specified
+			else {
+				int startPosition = position(expression) + CASE.length();
+
+				if (expression.hasSpaceAfterCase()) {
+					startPosition++;
+				}
+
+				if (expression.hasCaseOperand()) {
+					startPosition += length(expression.getCaseOperand());
+				}
+
+				if (expression.hasSpaceAfterCaseOperand()) {
+					startPosition++;
+				}
+
+				int endPosition = startPosition;
+
+				addProblem(expression, startPosition, endPosition, CaseExpression_MissingWhenClause);
 			}
 
-			if (expression.hasSpaceAfterWhenClauses()) {
-				startPosition++;
+			// ELSE is missing
+			if (expression.hasWhenClauses() &&
+			   !expression.hasElse()) {
+				int startPosition = position(expression) + CASE.length();
+
+				if (expression.hasSpaceAfterCase()) {
+					startPosition++;
+				}
+
+				if (expression.hasCaseOperand()) {
+					startPosition += length(expression.getCaseOperand());
+				}
+
+				if (expression.hasSpaceAfterCaseOperand()) {
+					startPosition++;
+				}
+
+				if (expression.hasWhenClauses()) {
+					startPosition += length(expression.getWhenClauses());
+				}
+
+				if (expression.hasSpaceAfterWhenClauses()) {
+					startPosition++;
+				}
+
+				int endPosition = startPosition;
+
+				addProblem(expression, startPosition, endPosition, CaseExpression_MissingElseIdentifier);
 			}
 
-			int endPosition = startPosition;
+			// ELSE expression is missing
+			if (expression.hasWhenClauses() &&
+			    expression.hasElse()        &&
+			   !expression.hasElseExpression()) {
 
-			addProblem(expression, startPosition, endPosition, CaseExpression_MissingElseIdentifier);
+				int startPosition = position(expression) + CASE.length();
+
+				if (expression.hasSpaceAfterCase()) {
+					startPosition++;
+				}
+
+				if (expression.hasCaseOperand()) {
+					startPosition += length(expression.getCaseOperand());
+				}
+
+				if (expression.hasSpaceAfterCaseOperand()) {
+					startPosition++;
+				}
+
+				if (expression.hasWhenClauses()) {
+					startPosition += length(expression.getWhenClauses());
+				}
+
+				if (expression.hasSpaceAfterWhenClauses()) {
+					startPosition++;
+				}
+
+				if (expression.hasElse()) {
+					startPosition += ELSE.length();
+				}
+
+				if (expression.hasSpaceAfterElse()) {
+					startPosition++;
+				}
+
+				int endPosition = startPosition;
+
+				addProblem(expression, startPosition, endPosition, CaseExpression_MissingElseExpression);
+			}
+
+			// END is missing
+			if (expression.hasWhenClauses()    &&
+			    expression.hasElseExpression() &&
+			   !expression.hasEnd()) {
+
+				int startPosition = position(expression) + CASE.length();
+
+				if (expression.hasSpaceAfterCase()) {
+					startPosition++;
+				}
+
+				if (expression.hasCaseOperand()) {
+					startPosition += length(expression.getCaseOperand());
+				}
+
+				if (expression.hasSpaceAfterCaseOperand()) {
+					startPosition++;
+				}
+
+				if (expression.hasWhenClauses()) {
+					startPosition += length(expression.getWhenClauses());
+				}
+
+				if (expression.hasSpaceAfterWhenClauses()) {
+					startPosition++;
+				}
+
+				if (expression.hasElse()) {
+					startPosition += ELSE.length();
+				}
+
+				if (expression.hasSpaceAfterElse()) {
+					startPosition++;
+				}
+
+				startPosition += length(expression.getElseExpression());
+
+				if (expression.hasSpaceAfterElseExpression()) {
+					startPosition++;
+				}
+
+				int endPosition = startPosition;
+
+				addProblem(expression, startPosition, endPosition, CaseExpression_MissingEndIdentifier);
+			}
+
+			super.visit(expression);
 		}
-
-		// ELSE expression is missing
-		if (expression.hasWhenClauses() &&
-		    expression.hasElse()        &&
-		   !expression.hasElseExpression()) {
-
-			int startPosition = position(expression) + CASE.length();
-
-			if (expression.hasSpaceAfterCase()) {
-				startPosition++;
-			}
-
-			if (expression.hasCaseOperand()) {
-				startPosition += length(expression.getCaseOperand());
-			}
-
-			if (expression.hasSpaceAfterCaseOperand()) {
-				startPosition++;
-			}
-
-			if (expression.hasWhenClauses()) {
-				startPosition += length(expression.getWhenClauses());
-			}
-
-			if (expression.hasSpaceAfterWhenClauses()) {
-				startPosition++;
-			}
-
-			if (expression.hasElse()) {
-				startPosition += ELSE.length();
-			}
-
-			if (expression.hasSpaceAfterElse()) {
-				startPosition++;
-			}
-
-			int endPosition = startPosition;
-
-			addProblem(expression, startPosition, endPosition, CaseExpression_MissingElseExpression);
-		}
-
-		// END is missing
-		if (expression.hasWhenClauses()    &&
-		    expression.hasElseExpression() &&
-		   !expression.hasEnd()) {
-
-			int startPosition = position(expression) + CASE.length();
-
-			if (expression.hasSpaceAfterCase()) {
-				startPosition++;
-			}
-
-			if (expression.hasCaseOperand()) {
-				startPosition += length(expression.getCaseOperand());
-			}
-
-			if (expression.hasSpaceAfterCaseOperand()) {
-				startPosition++;
-			}
-
-			if (expression.hasWhenClauses()) {
-				startPosition += length(expression.getWhenClauses());
-			}
-
-			if (expression.hasSpaceAfterWhenClauses()) {
-				startPosition++;
-			}
-
-			if (expression.hasElse()) {
-				startPosition += ELSE.length();
-			}
-
-			if (expression.hasSpaceAfterElse()) {
-				startPosition++;
-			}
-
-			startPosition += length(expression.getElseExpression());
-
-			if (expression.hasSpaceAfterElseExpression()) {
-				startPosition++;
-			}
-
-			int endPosition = startPosition;
-
-			addProblem(expression, startPosition, endPosition, CaseExpression_MissingEndIdentifier);
-		}
-
-		super.visit(expression);
 	}
 
 	/**
@@ -1529,10 +2360,13 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(CoalesceExpression expression) {
-		// TODO: Validate not valid for JPA 1.0
 
-		visitAbstractSingleEncapsulatedExpression(expression, coalesceExpressionHelper());
-		super.visit(expression);
+		if (isValidJPA20Identifier()) {
+			validateAbstractSingleEncapsulatedExpression(expression, coalesceExpressionHelper());
+		}
+		else {
+			addProblem(expression, CoalesceExpression_InvalidJPAVersion);
+		}
 	}
 
 	/**
@@ -1551,11 +2385,9 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(CollectionMemberDeclaration expression) {
 
-		OwningClauseVisitor visitor = new OwningClauseVisitor();
-		expression.accept(visitor);
-
 		// FROM => 'IN (x) AS y'
-		if (visitor.fromClause != null) {
+		if (isOwnedByFromClause(expression)) {
+
 			// Missing left parenthesis
 			if (!expression.hasLeftParenthesis()) {
 				int startPosition = position(expression) + 2; // IN
@@ -1694,7 +2526,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(CollectionValuedPathExpression expression) {
-		visitPathExpression(expression);
+		validatePathExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1739,42 +2571,25 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(ConcatExpression expression) {
 
-		visitAbstractSingleEncapsulatedExpression(expression, concatExpressionHelper());
+		validateAbstractSingleEncapsulatedExpression(expression, concatExpressionHelper());
 
 		if (expression.hasLeftParenthesis() &&
 		    expression.hasExpression()) {
 
-			CollectionExpressionVisitor visitor = new CollectionExpressionVisitor();
-			expression.getExpression().accept(visitor);
+			CollectionExpression collectionExpression = collectionExpression(expression.getExpression());
 
-			if (visitor.expression != null) {
-				int count = visitor.expression.childrenSize();
-
-				// Missing one argument
-				if (count == 1) {
-					int startPosition = position(expression);
-					int endPosition   = startPosition + length(expression);
-					addProblem(expression, startPosition, endPosition, ConcatExpression_MissingExpression);
-				}
-
-				for (Expression child : visitor.expression.getChildren()) {
-
+			// Single element
+			if (collectionExpression == null) {
+				addProblem(expression, ConcatExpression_MissingExpression);
+			}
+			else {
+				for (Expression child : collectionExpression.getChildren()) {
 					if (!isValid(child, StringPrimaryBNF.ID)) {
-						int startPosition = position(child);
-						int endPosition   = startPosition + length(child);
-
-						addProblem(
-							expression,
-							startPosition,
-							endPosition,
-							ConcatExpression_InvalidExpression, child.toParsedText()
-						);
+						addProblem(child, ConcatExpression_InvalidExpression, child.toParsedText());
 					}
 				}
 			}
 		}
-
-		super.visit(expression);
 	}
 
 	/**
@@ -1871,8 +2686,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(CountFunction expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, countFunctionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, countFunctionHelper());
 	}
 
 	/**
@@ -1972,9 +2786,7 @@ public final class GrammarValidator extends AbstractValidator {
 		}
 
 		// More than one entity abstract schema type is declared
-		CollectionExpressionVisitor visitor = new CollectionExpressionVisitor();
-		expression.getRangeVariableDeclaration().accept(visitor);
-		CollectionExpression collectionExpression = visitor.expression;
+		CollectionExpression collectionExpression = collectionExpression(expression.getRangeVariableDeclaration());
 
 		if (collectionExpression != null) {
 			Expression firstChild = collectionExpression.getChild(0);
@@ -2018,8 +2830,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(DivisionExpression expression) {
-		visitArithmeticExpression(expression);
-		super.visit(expression);
+		validateArithmeticExpression(expression);
 	}
 
 	/**
@@ -2034,8 +2845,9 @@ public final class GrammarValidator extends AbstractValidator {
 			int endPosition   = startPosition;
 			addProblem(expression, startPosition, endPosition, EmptyCollectionComparisonExpression_MissingExpression);
 		}
-
-		super.visit(expression);
+		else {
+			super.visit(expression);
+		}
 	}
 
 	/**
@@ -2052,10 +2864,13 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(EntryExpression expression) {
-		// TODO: Validate not valid for JPA 1.0
 
-		visitAbstractSingleEncapsulatedExpression(expression, entryExpressionHelper());
-		super.visit(expression);
+		if (isValidJPA20Identifier()) {
+			validateAbstractSingleEncapsulatedExpression(expression, entryExpressionHelper());
+		}
+		else {
+			addProblem(expression, EntryExpression_InvalidJPAVersion);
+		}
 	}
 
 	/**
@@ -2063,8 +2878,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ExistsExpression expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, existsExpressionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, existsExpressionHelper());
 	}
 
 	/**
@@ -2072,7 +2886,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(FromClause expression) {
-		visitAbstractFromClause(expression);
+		validateAbstractFromClause(expression);
 		super.visit(expression);
 	}
 
@@ -2082,27 +2896,31 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(FuncExpression expression) {
 
-		// TODO: Validate not valid for default JPA
+		if (isEclipseLinkPlatform()) {
+			validateAbstractSingleEncapsulatedExpression(expression, funcExpressionHelper());
 
-		visitAbstractSingleEncapsulatedExpression(expression, funcExpressionHelper());
+			// Missing SQL function name
+			if (expression.hasLeftParenthesis()) {
+				String functionName = expression.getFunctionName();
 
-		// Missing SQL function name
-		if (expression.hasLeftParenthesis()) {
-			String functionName = expression.getFunctionName();
+				if (ExpressionTools.stringIsEmpty(functionName)) {
+					int startPosition = position(expression) + FUNC.length();
 
-			if (ExpressionTools.stringIsEmpty(functionName)) {
-				int startPosition = position(expression) + FUNC.length();
+					if (expression.hasLeftParenthesis()) {
+						startPosition++;
+					}
 
-				if (expression.hasLeftParenthesis()) {
-					startPosition++;
+					int endPosition   = startPosition;
+					addProblem(expression, startPosition, endPosition, FuncExpression_MissingFunctionName);
 				}
-
-				int endPosition   = startPosition;
-				addProblem(expression, startPosition, endPosition, FuncExpression_MissingFunctionName);
 			}
-		}
 
-		super.visit(expression);
+			super.visit(expression);
+		}
+		// Invalid platform
+		else {
+			addProblem(expression, FuncExpression_InvalidJPAPlatform);
+		}
 	}
 
 	/**
@@ -2124,9 +2942,9 @@ public final class GrammarValidator extends AbstractValidator {
 				GroupByClause_GroupByItemEndsWithComma,
 				GroupByClause_GroupByItemIsMissingComma
 			);
-		}
 
-		super.visit(expression);
+			super.visit(expression);
+		}
 	}
 
 	/**
@@ -2135,7 +2953,7 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(HavingClause expression) {
 
-		visitAbstractConditionalClause(
+		validateAbstractConditionalClause(
 			expression,
 			HavingClause_MissingConditionalExpression,
 			HavingClause_InvalidConditionalExpression
@@ -2161,8 +2979,6 @@ public final class GrammarValidator extends AbstractValidator {
 				IdentificationVariable_Invalid_JavaIdentifier
 			);
 		}
-
-		super.visit(expression);
 	}
 
 	/**
@@ -2192,10 +3008,13 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(IndexExpression expression) {
-		// TODO: Validate not valid for JPA 1.0
 
-		visitAbstractSingleEncapsulatedExpression(expression, indexExpressionHelper());
-		super.visit(expression);
+		if (isValidJPA20Identifier()) {
+			validateAbstractSingleEncapsulatedExpression(expression, indexExpressionHelper());
+		}
+		else {
+			addProblem(expression, IndexExpression_InvalidJPAVersion);
+		}
 	}
 
 	/**
@@ -2212,21 +3031,19 @@ public final class GrammarValidator extends AbstractValidator {
 		}
 		// Make sure it's a valid expression
 		else {
-			InExpressionExpressionVisitor visitor = new InExpressionExpressionVisitor();
-			expression.getExpression().accept(visitor);
+			Expression pathExpression = expression.getExpression();
 
-			if (visitor.expression == null) {
+			if (!isValid(pathExpression, StateFieldPathExpressionBNF.ID) &&
+			    !isValid(pathExpression, TypeExpressionBNF.ID)) {
+
 				int startPosition = position(expression);
 				int endPosition   = startPosition + length(expression.getExpression());
 				addProblem(expression, startPosition, endPosition, InExpression_MalformedExpression);
 			}
 		}
 
-		InputParameterVisitor visitor = new InputParameterVisitor();
-		expression.getInItems().accept(visitor);
-
 		// Missing '('
-		if ((visitor.expression == null) && !expression.hasLeftParenthesis()) {
+		if (!expression.hasLeftParenthesis()) {
 			int startPosition = position(expression) + 2;  // IN
 
 			if (expression.hasExpression()) {
@@ -2259,6 +3076,9 @@ public final class GrammarValidator extends AbstractValidator {
 		}
 		// Make sure the IN items are separated by commas
 		else {
+			// TODO: Validate each child
+//			!isValidWithChildBypass(expression.getInItems(), InItemBNF.ID)
+
 			validateCollectionSeparatedByComma(
 				expression.getInItems(),
 				InExpression_InItemEndsWithComma,
@@ -2297,15 +3117,16 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(InputParameter expression) {
 
+		inputParameters.add(expression);
 		String parameter = expression.getParameter();
 
-		// Input parameter is missing its value
+		// No parameter specified
 		if (parameter.length() == 1) {
 			int startPosition = position(expression);
 			int endPosition   = startPosition + 1;
 			addProblem(expression, startPosition, endPosition, InputParameter_MissingParameter);
 		}
-		// Named parameter: It follows the rules for identifiers defined in Section 4.4.1
+		// Named parameter: It follows the rules for identifiers defined in Section 4.4.1 of the spec<
 		else if (expression.isNamed()) {
 			if (!isValidJavaIdentifier(parameter.substring(1))) {
 				int startPosition = position(expression);
@@ -2313,8 +3134,7 @@ public final class GrammarValidator extends AbstractValidator {
 				addProblem(expression, startPosition, endPosition, InputParameter_JavaIdentifier);
 			}
 		}
-		// Input parameters are designated by the question mark (?) prefix
-		// followed by an integer. For example: ?1
+		// Positional parameter: Designated by the question mark (?) prefix followed by an integer
 		else {
 			boolean valid = true;
 
@@ -2342,24 +3162,28 @@ public final class GrammarValidator extends AbstractValidator {
 			}
 		}
 
-		// Input parameters can only be used in the WHERE clause or HAVING
-		// clause of a query. We skip the ORDER BY clause because it has its
-		// own validation rule
-		OwningClauseVisitor visitor = new OwningClauseVisitor();
+		// Input parameters can only be used in the WHERE or HAVING clause of a query.
+		// Skip the ORDER BY clause because it has its own validation rule. The exception
+		// to this rule is in a FUNC expression
+		OwningClauseVisitor visitor = owningClauseVisitor();
 		expression.accept(visitor);
 
-		if ((visitor.whereClause   == null) &&
-		    (visitor.havingClause  == null) &&
-		    (visitor.orderByClause == null) &&
-		    (visitor.updateClause  == null) &&
-		    (visitor.deleteClause  == null)) {
+		try {
+			if ((visitor.whereClause   == null) &&
+			    (visitor.havingClause  == null) &&
+			    (visitor.orderByClause == null) &&
+			    (visitor.updateClause  == null) &&
+			    (visitor.deleteClause  == null) &&
+			    !isInFuncExpressionInSelectClause(visitor, expression)) {
 
-			int startPosition = position(expression);
-			int endPosition   = startPosition + parameter.length();
-			addProblem(expression, startPosition, endPosition, InputParameter_WrongClauseDeclaration);
+				int startPosition = position(expression);
+				int endPosition   = startPosition + parameter.length();
+				addProblem(expression, startPosition, endPosition, InputParameter_WrongClauseDeclaration);
+			}
 		}
-
-		super.visit(expression);
+		finally {
+			visitor.dispose();
+		}
 	}
 
 	/**
@@ -2433,10 +3257,7 @@ public final class GrammarValidator extends AbstractValidator {
 		}
 
 		// The FETCH JOIN construct must not be used in the FROM clause of a subquery
-		OwningClauseVisitor visitor = new OwningClauseVisitor();
-		expression.accept(visitor);
-
-		if (visitor.simpleFromClause != null) {
+		if (isOwnedBySubFromClause(expression)) {
 			int startPosition = position(expression);
 			int endPosition = startPosition + length(expression);
 			addProblem(expression, startPosition, endPosition, JoinFetch_WrongClauseDeclaration);
@@ -2464,10 +3285,11 @@ public final class GrammarValidator extends AbstractValidator {
 			addProblem(expression, startPosition, endPosition, JPQLExpression_UnknownEnding);
 		}
 
-		// Positional and named parameters must not be mixed in a single query
-		visitInputParameter(expression);
-
 		super.visit(expression);
+
+		// Now that the entire tree was visited, we can validate the input parameters, which were
+		// automatically cached. Positional and named parameters must not be mixed in a single query
+		validateInputParameters(expression);
 	}
 
 	/**
@@ -2475,10 +3297,13 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(KeyExpression expression) {
-		// TODO: Validate not valid for JPA 1.0
 
-		visitAbstractSingleEncapsulatedExpression(expression, keyExpressionHelper());
-		super.visit(expression);
+		if (isValidJPA20Identifier()) {
+			validateAbstractSingleEncapsulatedExpression(expression, keyExpressionHelper());
+		}
+		else {
+			addProblem(expression, KeyExpression_InvalidJPAVersion);
+		}
 	}
 
 	/**
@@ -2495,8 +3320,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(LengthExpression expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, lengthExpressionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, lengthExpressionHelper());
 	}
 
 	/**
@@ -2562,41 +3386,41 @@ public final class GrammarValidator extends AbstractValidator {
 				startPosition++;
 			}
 
+			// Validate the escape character
 			if (expression.hasEscapeCharacter()) {
 		   	Expression escapeCharacter = expression.getEscapeCharacter();
+		   	int endPosition = startPosition + length(escapeCharacter);
 
-		   	InputParameterVisitor visitor = new InputParameterVisitor();
-		   	escapeCharacter.accept(visitor);
+		   	// Check for a string literal (single quoted character)
+		   	String character = queryContext.literal(escapeCharacter, LiteralType.STRING_LITERAL);
 
-		   	if (visitor.expression == null) {
-			   	int endPosition = startPosition + length(escapeCharacter);
+	   		if (character.length() > 0) {
+	   			character = ExpressionTools.unquote(character);
 
-			   	StringLiteralVisitor stringVisitor = new StringLiteralVisitor();
-		   		escapeCharacter.accept(stringVisitor);
+	   			if (character.length() != 1) {
+				   	addProblem(
+	   					expression,
+	   					startPosition,
+	   					endPosition,
+	   					LikeExpression_InvalidEscapeCharacter,
+	   					escapeCharacter.toParsedText()
+	   				);
+	   			}
+	   		}
+	   		else {
+			   	// Check for an input parameter
+			   	character = queryContext.literal(escapeCharacter, LiteralType.INPUT_PARAMETER);
 
-		   		if (stringVisitor.expression != null) {
-		   			String character = stringVisitor.expression.getUnquotedText();
-
-		   			if (character.length() != 1) {
-		   				addProblem(
-		   					expression,
-		   					startPosition,
-		   					endPosition,
-		   					LikeExpression_InvalidEscapeCharacter,
-		   					escapeCharacter.toParsedText()
-		   				);
-		   			}
-		   		}
-		   		else {
-						addProblem(
+			   	if (character.length() == 0) {
+				   	addProblem(
 							expression,
 							startPosition,
 							endPosition,
 							LikeExpression_InvalidEscapeCharacter,
 							escapeCharacter.toParsedText()
 						);
-		   		}
-		   	}
+	   			}
+	   		}
 		   }
 		   else {
 		   	int endPosition = startPosition;
@@ -2612,8 +3436,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(LocateExpression expression) {
-		visitAbstractTripleEncapsulatedExpression(expression, buildLocateExpressionHelper());
-		super.visit(expression);
+		validateAbstractTripleEncapsulatedExpression(expression, locateExpressionHelper());
 	}
 
 	/**
@@ -2621,8 +3444,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(LowerExpression expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, lowerExpressionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, lowerExpressionHelper());
 	}
 
 	/**
@@ -2630,8 +3452,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(MaxFunction expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, maxFunctionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, maxFunctionHelper());
 	}
 
 	/**
@@ -2639,8 +3460,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(MinFunction expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, minFunctionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, minFunctionHelper());
 	}
 
 	/**
@@ -2648,8 +3468,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ModExpression expression) {
-		visitAbstractDoubleEncapsulatedExpression(expression, buildModExpressionHelper());
-		super.visit(expression);
+		validateAbstractDoubleEncapsulatedExpression(expression, modExpressionHelper());
 	}
 
 	/**
@@ -2657,8 +3476,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(MultiplicationExpression expression) {
-		visitArithmeticExpression(expression);
-		super.visit(expression);
+		validateArithmeticExpression(expression);
 	}
 
 	/**
@@ -2695,8 +3513,9 @@ public final class GrammarValidator extends AbstractValidator {
 			int endPosition   = startPosition;
 			addProblem(expression, startPosition, endPosition, NullComparisonExpression_MissingExpression);
 		}
-
-		super.visit(expression);
+		else {
+			super.visit(expression);
+		}
 	}
 
 	/**
@@ -2713,10 +3532,12 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(NullIfExpression expression) {
-		// TODO: Validate not valid for JPA 1.0
-
-		visitAbstractDoubleEncapsulatedExpression(expression, buildNullIfExpressionHelper());
-		super.visit(expression);
+		if (isValidJPA20Identifier()) {
+			validateAbstractDoubleEncapsulatedExpression(expression, nullIfExpressionHelper());
+		}
+		else {
+			addProblem(expression, CoalesceExpression_InvalidJPAVersion);
+		}
 	}
 
 	/**
@@ -2724,10 +3545,6 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(NumericLiteral expression) {
-
-		if (numericalLiteralPattern == null) {
-			numericalLiteralPattern = Pattern.compile(REGULAR_EXPRESSION_NUMERIC_LITERAL);
-		}
 
 		String text = expression.getText();
 
@@ -2737,7 +3554,7 @@ public final class GrammarValidator extends AbstractValidator {
 		//   syntax as well as SQL approximate numeric literal syntax
 		// • Appropriate suffixes can be used to indicate the specific type
 		//   of a numeric literal in accordance with the Java Language Specification
-		if (!numericalLiteralPattern.matcher(text).matches()) {
+		if (!isNumericLiteral(text)) {
 			int startPosition = position(expression);
 			int endPosition   = startPosition + text.length();
 			addProblem(expression, startPosition, endPosition, NumericLiteral_Invalid, text);
@@ -2751,8 +3568,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ObjectExpression expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, objectExpressionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, objectExpressionHelper());
 	}
 
 	/**
@@ -2823,8 +3639,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(OrExpression expression) {
-		visitLogicalExpression(expression, ConditionalExpressionBNF.ID, ConditionalExpressionBNF.ID);
-		super.visit(expression);
+		validateLogicalExpression(expression, ConditionalExpressionBNF.ID, ConditionalExpressionBNF.ID);
 	}
 
 	/**
@@ -2876,33 +3691,37 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(ResultVariable expression) {
 
-		// TODO: Validate not valid for JPA 1.0
+		if (isValidJPA20Identifier()) {
 
-		// Missing select expression
-		if (!expression.hasSelectExpression()) {
-			int startPosition = position(expression);
-			int endPosition   = startPosition;
-			addProblem(expression, startPosition, endPosition, ResultVariable_MissingSelectExpression);
-		}
-
-		// Missing result variable
-		if (!expression.hasResultVariable()) {
-			int startPosition = position(expression) + 2 /* AS */;
-
-			if (expression.hasSelectExpression()) {
-				startPosition += length(expression.getSelectExpression()) + 1;
+			// Missing select expression
+			if (!expression.hasSelectExpression()) {
+				int startPosition = position(expression);
+				int endPosition   = startPosition;
+				addProblem(expression, startPosition, endPosition, ResultVariable_MissingSelectExpression);
 			}
 
-			if (expression.hasSpaceAfterAs()) {
-				startPosition++;
+			// Missing result variable
+			if (!expression.hasResultVariable()) {
+				int startPosition = position(expression) + 2 /* AS */;
+
+				if (expression.hasSelectExpression()) {
+					startPosition += length(expression.getSelectExpression()) + 1;
+				}
+
+				if (expression.hasSpaceAfterAs()) {
+					startPosition++;
+				}
+
+				int endPosition = startPosition;
+
+				addProblem(expression, startPosition, endPosition, ResultVariable_MissingResultVariable);
 			}
 
-			int endPosition = startPosition;
-
-			addProblem(expression, startPosition, endPosition, ResultVariable_MissingResultVariable);
+			super.visit(expression);
 		}
-
-		super.visit(expression);
+		else {
+			addProblem(expression, ResultVariable_InvalidJPAVersion);
+		}
 	}
 
 	/**
@@ -2910,8 +3729,22 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SelectClause expression) {
-		visitAbstractSelectClause(expression);
-		super.visit(expression);
+
+		// No select expression defined
+		if (!expression.hasSelectExpression()) {
+			int startPosition = position(expression) + length(expression);
+			int endPosition   = startPosition;
+			addProblem(expression, startPosition, endPosition, AbstractSelectClause_SelectExpressionMissing);
+		}
+		else {
+			validateCollectionSeparatedByComma(
+				expression.getSelectExpression(),
+				AbstractSelectClause_SelectExpressionEndsWithComma,
+				AbstractSelectClause_SelectExpressionIsMissingComma
+			);
+
+			super.visit(expression);
+		}
 	}
 
 	/**
@@ -2919,7 +3752,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SelectStatement expression) {
-		visitSelectStatement(expression);
+		validateSelectStatement(expression);
 		super.visit(expression);
 	}
 
@@ -2928,7 +3761,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SimpleFromClause expression) {
-		visitAbstractFromClause(expression);
+		validateAbstractFromClause(expression);
 		super.visit(expression);
 	}
 
@@ -2938,30 +3771,26 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(SimpleSelectClause expression) {
 
-		visitAbstractSelectClause(expression);
-
-		// select expression cannot be a collection
+		// Select expression cannot be a collection
 		if (expression.hasSelectExpression()) {
 			Expression selectExpression = expression.getSelectExpression();
 
-			CollectionExpressionVisitor visitor = new CollectionExpressionVisitor();
-			selectExpression.accept(visitor);
-
-			if (visitor.expression != null) {
-				int startPosition = position(selectExpression);
-				int endPosition = startPosition + length(selectExpression);
-
+			if (collectionExpression(selectExpression) != null) {
 				addProblem(
-					expression,
-					startPosition,
-					endPosition,
+					selectExpression,
 					SimpleSelectClause_NotSingleExpression,
 					selectExpression.toParsedText()
 				);
 			}
-		}
 
-		super.visit(expression);
+			super.visit(expression);
+		}
+		// No select expression defined
+		else {
+			int startPosition = position(expression) + length(expression);
+			int endPosition   = startPosition;
+			addProblem(expression, startPosition, endPosition, AbstractSelectClause_SelectExpressionMissing);
+		}
 	}
 
 	/**
@@ -2970,13 +3799,25 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(SimpleSelectStatement expression) {
 
-		visitSelectStatement(expression);
+		if (isOwnedByConditionalClause(expression)) {
 
-		// - Subqueries may be used in the WHERE or HAVING clause.
+			validateSelectStatement(expression);
+			queryContext.newSubqueryContext(expression);
+
+			try {
+				super.visit(expression);
+			}
+			finally {
+				queryContext.disposeSubqueryContext();
+			}
+		}
+		// Subqueries may be used in the WHERE or HAVING clause
+		else {
+			addProblem(expression, SimpleSelectStatement_InvalidLocation);
+		}
+
 		// - Note that some contexts in which a subquery can be used require that
 		//   the subquery be a scalar subquery (i.e., produce a single result).
-
-		super.visit(expression);
 	}
 
 	/**
@@ -2984,8 +3825,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SizeExpression expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, sizeExpressionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, sizeExpressionHelper());
 	}
 
 	/**
@@ -2993,8 +3833,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SqrtExpression expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, sqrtExpressionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, sqrtExpressionHelper());
 	}
 
 	/**
@@ -3002,7 +3841,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(StateFieldPathExpression expression) {
-		visitPathExpression(expression);
+		validatePathExpression(expression);
 		super.visit(expression);
 	}
 
@@ -3011,8 +3850,9 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(StringLiteral expression) {
-		// The use of Java escape notation is not supported in query string literals.
-		super.visit(expression);
+		if (!expression.hasCloseQuote()) {
+			addProblem(expression, StringLiteral_MissingClosingQuote);
+		}
 	}
 
 	/**
@@ -3023,17 +3863,22 @@ public final class GrammarValidator extends AbstractValidator {
 
 		// Missing sub-expression
 		if (!expression.hasExpression()) {
-			int startPosition = position(expression) + 1 /* '(' */;
-			int endPosition   = startPosition;
+			int startPosition = position(expression);
+			int endPosition   = startPosition + 1;
+
+			if (expression.hasRightParenthesis()) {
+				endPosition++;
+			}
+
 			addProblem(expression, startPosition, endPosition, SubExpression_MissingExpression);
 		}
 
 		// Missing right parenthesis
 		if (!expression.hasRightParenthesis()) {
-			int startPosition = position(expression) + 1 /* '(' */;
+			int startPosition = position(expression);
 
 			if (expression.hasExpression()) {
-				startPosition += length(expression.getExpression());
+				startPosition += length(expression.getExpression()) + 1;
 			}
 
 			int endPosition = startPosition;
@@ -3049,8 +3894,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SubstringExpression expression) {
-		visitAbstractTripleEncapsulatedExpression(expression, buildSubstringExpressionHelper());
-		super.visit(expression);
+		validateAbstractTripleEncapsulatedExpression(expression, substringExpressionHelper());
 	}
 
 	/**
@@ -3058,8 +3902,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SubtractionExpression expression) {
-		visitArithmeticExpression(expression);
-		super.visit(expression);
+		validateArithmeticExpression(expression);
 	}
 
 	/**
@@ -3067,8 +3910,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SumFunction expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, sumFunctionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, sumFunctionHelper());
 	}
 
 	/**
@@ -3076,9 +3918,15 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(TreatExpression expression) {
-		// TODO: Validate not valid for default JPA
+
 		// TODO: Validate syntax
-		super.visit(expression);
+		if (isEclipseLinkPlatform()) {
+			super.visit(expression);
+		}
+		// Invalid platform
+		else {
+			addProblem(expression, FuncExpression_InvalidJPAPlatform);
+		}
 	}
 
 	/**
@@ -3087,7 +3935,7 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(TrimExpression expression) {
 
-		visitAbstractSingleEncapsulatedExpression(expression, trimExpressionHelper());
+		validateAbstractSingleEncapsulatedExpression(expression, trimExpressionHelper());
 
 		// Missing string primary
 		if (!expression.hasExpression()) {
@@ -3164,13 +4012,13 @@ public final class GrammarValidator extends AbstractValidator {
 
 		// Invalid trim character
 		if (expression.hasTrimCharacter()) {
-			InputParameterVisitor visitor1 = new InputParameterVisitor();
-			expression.getTrimCharacter().accept(visitor1);
+			Expression trimCharacter = expression.getTrimCharacter();
 
-			if (visitor1.expression == null) {
-				StringLiteralVisitor visitor2 = new StringLiteralVisitor();
-				expression.getTrimCharacter().accept(visitor2);
+			// Make sure it's not an input parameter
+			String inputParameter = queryContext.literal(trimCharacter, LiteralType.INPUT_PARAMETER);
 
+			if (ExpressionTools.stringIsEmpty(inputParameter)) {
+				String stringLiteral = queryContext.literal(trimCharacter, LiteralType.STRING_LITERAL);
 				int startPosition = position(expression) + 4 /* TRIM */;
 
 				if (expression.hasLeftParenthesis()) {
@@ -3187,22 +4035,18 @@ public final class GrammarValidator extends AbstractValidator {
 
 				int endPosition = startPosition + length(expression.getTrimCharacter());
 
-				if (visitor2.expression == null) {
-					addProblem(expression, startPosition, endPosition, TrimExpression_InvalidTrimCharacter);
+				if (ExpressionTools.stringIsEmpty(stringLiteral)) {
+					addProblem(trimCharacter, startPosition, endPosition, TrimExpression_InvalidTrimCharacter);
 				}
 				else {
-					StringLiteral stringLiteral = visitor2.expression;
-					String text = expression.getTrimCharacter().toParsedText();
-					text = text.substring(1, stringLiteral.hasCloseQuote() ? text.length() - 1 : text.length());
+					stringLiteral = stringLiteral.substring(1, stringLiteral.length() - (stringLiteral.endsWith("'") ? 1 : 0));
 
-					if (text.length() != 1) {
-						addProblem(expression, startPosition, endPosition, TrimExpression_NotSingleStringLiteral);
+					if (stringLiteral.length() != 1) {
+						addProblem(trimCharacter, startPosition, endPosition, TrimExpression_NotSingleStringLiteral);
 					}
 				}
 			}
 		}
-
-		super.visit(expression);
 	}
 
 	/**
@@ -3210,10 +4054,13 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(TypeExpression expression) {
-		// TODO: Validate not valid for JPA 1.0
 
-		visitAbstractSingleEncapsulatedExpression(expression, typeExpressionHelper());
-		super.visit(expression);
+		if (isValidJPA20Identifier()) {
+			validateAbstractSingleEncapsulatedExpression(expression, typeExpressionHelper());
+		}
+		else {
+			addProblem(expression, TypeExpression_InvalidJPAVersion);
+		}
 	}
 
 	/**
@@ -3401,8 +4248,7 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(UpperExpression expression) {
-		visitAbstractSingleEncapsulatedExpression(expression, upperExpressionHelper());
-		super.visit(expression);
+		validateAbstractSingleEncapsulatedExpression(expression, upperExpressionHelper());
 	}
 
 	/**
@@ -3410,10 +4256,13 @@ public final class GrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ValueExpression expression) {
-		// TODO: Validate not valid for JPA 1.0
 
-		visitAbstractSingleEncapsulatedExpression(expression, valueExpressionHelper());
-		super.visit(expression);
+		if (isValidJPA20Identifier()) {
+			validateAbstractSingleEncapsulatedExpression(expression, valueExpressionHelper());
+		}
+		else {
+			addProblem(expression, ValueExpression_InvalidJPAVersion);
+		}
 	}
 
 	/**
@@ -3492,7 +4341,7 @@ public final class GrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(WhereClause expression) {
 
-		visitAbstractConditionalClause(
+		validateAbstractConditionalClause(
 			expression,
 			WhereClause_MissingConditionalExpression,
 			WhereClause_InvalidConditionalExpression
@@ -3501,918 +4350,20 @@ public final class GrammarValidator extends AbstractValidator {
 		super.visit(expression);
 	}
 
-	private void visitAbstractConditionalClause(AbstractConditionalClause expression,
-	                                            String missingConditionalExpressionMessageKey,
-	                                            String invalidConditionalExpressionMessageKey) {
-
-		// Missing conditional expression
-		if (!expression.hasConditionalExpression()) {
-			int startPosition = position(expression);
-			int endPosition   = startPosition + expression.getIdentifier().length();
-
-			if (expression.hasSpaceAfterIdentifier()) {
-				endPosition++;
-			}
-
-			addProblem(expression, startPosition, endPosition, missingConditionalExpressionMessageKey);
-		}
-		// Invalid conditional expression
-		else {
-			Expression conditionalExpression = expression.getConditionalExpression();
-
-			if (!isValid(conditionalExpression, ConditionalExpressionBNF.ID)) {
-				int startPosition = position(conditionalExpression);
-				int endPosition   = startPosition + length(conditionalExpression);
-				addProblem(expression, startPosition, endPosition, invalidConditionalExpressionMessageKey);
-			}
-		}
-	}
-
-	private <T extends AbstractDoubleEncapsulatedExpression> void visitAbstractDoubleEncapsulatedExpression(T expression,
-                                                                                                           AbstractDoubleEncapsulatedExpressionHelper<T> helper) {
-		String identifier = helper.identifier(expression);
-
-		// Missing '('
-		if (!expression.hasLeftParenthesis()) {
-			int startPosition = position(expression) + identifier.length();
-			int endPosition   = startPosition;
-			addProblem(expression, startPosition, endPosition, helper.leftParenthesisMissingKey());
-		}
-
-		// Missing ')'
-		if (expression.hasLeftParenthesis() &&
-		    helper.hasSecondExpression(expression) &&
-		   !expression.hasRightParenthesis()) {
-
-			int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-
-			// First expression
-			if (helper.hasFirstExpression(expression)) {
-				startPosition += length(expression.getFirstExpression());
-			}
-
-			if (expression.hasComma()) {
-				startPosition++;
-			}
-
-			if (expression.hasSpaceAfterComma()) {
-				startPosition++;
-			}
-
-			// Second expression
-			if (helper.hasSecondExpression(expression)) {
-				startPosition += length(expression.getSecondExpression());
-			}
-
-			int endPosition = startPosition;
-
-			addProblem(expression, startPosition, endPosition, helper.rightParenthesisMissingKey());
-		}
-
-		if (expression.hasLeftParenthesis()) {
-			// Missing first expression
-			if (!helper.hasFirstExpression(expression)) {
-				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-				int endPosition   = startPosition;
-				addProblem(expression, startPosition, endPosition, helper.firstExpressionMissingKey());
-			}
-			// Invalid first expression
-			else if (!helper.isFirstExpressionValid(expression)) {
-				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-				int endPosition   = startPosition + helper.firstExpressionLength(expression);
-				addProblem(expression, startPosition, endPosition, helper.firstExpressionInvalidKey());
-			}
-
-			// Missing comma
-			if (helper.hasFirstExpression(expression) &&
-			    !expression.hasComma()) {
-
-				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-
-				if (helper.hasFirstExpression(expression)) {
-					startPosition += length(expression.getFirstExpression());
-				}
-
-				int endPosition = startPosition;
-
-				addProblem(expression, startPosition, endPosition, helper.missingCommaKey());
-			}
-
-			// Missing second expression
-			if (expression.hasComma()) {
-				if (!helper.hasSecondExpression(expression)) {
-					int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-
-					// First expression
-					if (helper.hasFirstExpression(expression)) {
-						startPosition += helper.firstExpressionLength(expression);
-					}
-
-					if (expression.hasComma()) {
-						startPosition++;
-					}
-
-					if (expression.hasSpaceAfterComma()) {
-						startPosition++;
-					}
-
-					int endPosition = startPosition;
-
-					addProblem(expression, startPosition, endPosition, helper.secondExpressionMissingKey());
-				}
-				// Invalid second expression
-				else if (!helper.isSecondExpressionValid(expression)) {
-					int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-
-					// First expression
-					if (helper.hasFirstExpression(expression)) {
-						startPosition += helper.firstExpressionLength(expression);
-					}
-
-					if (expression.hasComma()) {
-						startPosition++;
-					}
-
-					if (expression.hasSpaceAfterComma()) {
-						startPosition++;
-					}
-
-					int endPosition = startPosition + helper.secondExpressionLength(expression);
-
-					addProblem(expression, startPosition, endPosition, helper.secondExpressionInvalidKey());
-				}
-			}
-		}
-	}
-
-	private void visitAbstractFromClause(AbstractFromClause expression) {
-
-		if (expression.hasDeclaration()) {
-
-			// Two identification variable declarations have to be separated by a comma and
-			// the FROM clause cannot end with a comma
-			validateCollectionSeparatedByComma(
-				expression.getDeclaration(),
-				AbstractFromClause_IdentificationVariableDeclarationEndsWithComma,
-				AbstractFromClause_IdentificationVariableDeclarationIsMissingComma
-			);
-
-			// The identification variable declarations are evaluated from left to right in
-			// the FROM clause, and an identification variable declaration can use the result
-			// of a preceding identification variable declaration of the query string
-			OrderOfIdentificationVariableDeclarationVisitor visitor = new OrderOfIdentificationVariableDeclarationVisitor();
-			expression.getDeclaration().accept(visitor);
-
-			for (int index = 0, count = visitor.identificationVariableUsages.size(); index < count; index++) {
-				Object[] values = visitor.identificationVariableUsages.get(index);
-				IdentificationVariable identificationVariable = (IdentificationVariable) values[0];
-				int position = (Integer) values[1];
-
-				if (isIdentificationVariableDeclaredAfter(position, identificationVariable, visitor.identificationVariableDeclarations)) {
-					int startPosition = position(identificationVariable);
-					int endPosition   = startPosition + length(identificationVariable);
-
-					addProblem(
-						expression,
-						startPosition,
-						endPosition,
-						AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration,
-						identificationVariable.toParsedText()
-					);
-				}
-			}
-		}
-		else {
-			int startPosition = position(expression) + FROM.length();
-
-			if (expression.hasSpaceAfterFrom()) {
-				startPosition++;
-			}
-
-			int endPosition = startPosition;
-
-			addProblem(
-				expression,
-				startPosition,
-				endPosition,
-				AbstractFromClause_MissingIdentificationVariableDeclaration
-			);
-		}
-	}
-
-	private void visitAbstractSelectClause(AbstractSelectClause expression) {
-
-		if (expression.hasSelectExpression()) {
-			validateCollectionSeparatedByComma(
-				expression.getSelectExpression(),
-				AbstractSelectClause_SelectExpressionEndsWithComma,
-				AbstractSelectClause_SelectExpressionIsMissingComma
-			);
-		}
-		// No select expression defined
-		else {
-			int startPosition = position(expression) + length(expression);
-			int endPosition   = startPosition;
-			addProblem(expression, startPosition, endPosition, AbstractSelectClause_SelectExpressionMissing);
-		}
-	}
-
-	private <T extends AbstractSingleEncapsulatedExpression> void visitAbstractSingleEncapsulatedExpression(T expression,
-	                                                                                                        AbstractSingleEncapsulatedExpressionHelper<T> helper) {
-		String identifier = helper.identifier(expression);
-
-		// Missing '('
-		if (!expression.hasLeftParenthesis()) {
-			int startPosition = position(expression) + identifier.length();
-			int endPosition   = startPosition;
-
-			addProblem(
-				expression,
-				startPosition,
-				endPosition,
-				helper.leftParenthesisMissingKey(),
-				helper.arguments(expression)
-			);
-		}
-		// Missing encapsulated expression
-		else if (!helper.hasExpression(expression)) {
-			int startPosition = position(expression) +
-			                    identifier.length()  +
-			                    1 /* '(' */          +
-			                    helper.lengthBeforeEncapsulatedExpression(expression);
-
-			int endPosition = startPosition;
-
-			addProblem(
-				expression,
-				startPosition,
-				endPosition,
-				helper.expressionMissingKey(),
-				helper.arguments(expression)
-			);
-		}
-		else if (!helper.isValidExpression(expression)) {
-			int startPosition = position(expression) +
-			                    identifier.length()  +
-			                    1 /* '(' */          +
-			                    helper.lengthBeforeEncapsulatedExpression(expression);
-
-			int endPosition = startPosition + helper.encapsulatedExpressionLength(expression);
-
-			addProblem(
-				expression,
-				startPosition,
-				endPosition,
-				helper.expressionInvalidKey(),
-				helper.arguments(expression)
-			);
-		}
-
-		// Missing ')'
-		if (!expression.hasRightParenthesis()) {
-			int startPosition = position(expression) + length(expression);
-			int endPosition   = startPosition;
-
-			addProblem(
-				expression,
-				startPosition,
-				endPosition,
-				helper.rightParenthesisMissingKey(),
-				helper.arguments(expression)
-			);
-		}
-	}
-
-	private <T extends AbstractTripleEncapsulatedExpression> void visitAbstractTripleEncapsulatedExpression(T expression,
-                                                                                                           AbstractTripleEncapsulatedExpressionHelper<T> helper) {
-		String identifier = helper.identifier(expression);
-
-		// Missing '('
-		if (!expression.hasLeftParenthesis()) {
-			int startPosition = position(expression) + identifier.length();
-			int endPosition   = startPosition;
-
-			addProblem(
-				expression,
-				startPosition,
-				endPosition,
-				helper.leftParenthesisMissingKey()
-			);
-		}
-
-		// Missing ')'
-		if (expression.hasLeftParenthesis() &&
-		    helper.hasFirstExpression(expression) &&
-		   !expression.hasRightParenthesis() &&
-		    isRightParenthesisMissing(expression)) {
-
-			int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-
-			// First expression
-			if (helper.hasFirstExpression(expression)) {
-				startPosition += length(expression.getFirstExpression());
-			}
-
-			if (expression.hasFirstComma()) {
-				startPosition++;
-			}
-
-			if (expression.hasSpaceAfterFirstComma()) {
-				startPosition++;
-			}
-
-			// Second expression
-			if (helper.hasSecondExpression(expression)) {
-				startPosition += length(expression.getSecondExpression());
-			}
-
-			if (expression.hasSecondComma()) {
-				startPosition++;
-			}
-
-			if (expression.hasSpaceAfterSecondComma()) {
-				startPosition++;
-			}
-
-			// Third expression
-			if (helper.hasThirdExpression(expression)) {
-				startPosition += length(expression.getThirdExpression());
-			}
-
-			int endPosition = startPosition;
-
-			addProblem(expression, startPosition, endPosition, helper.rightParenthesisMissingKey());
-		}
-
-		if (expression.hasLeftParenthesis()) {
-			// Missing first expression
-			if (!helper.hasFirstExpression(expression)) {
-				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-				int endPosition   = startPosition;
-				addProblem(expression, startPosition, endPosition, helper.firstExpressionMissingKey());
-			}
-			// Invalid first expression
-			else if (!helper.isFirstExpressionValid(expression)) {
-				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-				int endPosition   = startPosition + helper.firstExpressionLength(expression);
-				addProblem(expression, startPosition, endPosition, helper.firstExpressionInvalidKey());
-			}
-
-			// Missing first comma
-			if (helper.hasFirstExpression(expression) &&
-			    !expression.hasFirstComma()) {
-
-				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-
-				if (helper.hasFirstExpression(expression)) {
-					startPosition += helper.firstExpressionLength(expression);
-				}
-
-				int endPosition = startPosition;
-
-				addProblem(expression, startPosition, endPosition, helper.firstCommaMissingKey());
-			}
-
-			// Validate second expression
-			if (expression.hasFirstComma()) {
-				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-
-				if (helper.hasFirstExpression(expression)) {
-					startPosition += helper.firstExpressionLength(expression);
-				}
-
-				if (expression.hasFirstComma()) {
-					startPosition++;
-				}
-
-				if (expression.hasSpaceAfterFirstComma()) {
-					startPosition++;
-				}
-
-				// Missing second expression
-				if (!helper.hasSecondExpression(expression)) {
-					int endPosition = startPosition;
-					addProblem(expression, startPosition, endPosition, helper.secondExpressionMissingKey());
-				}
-				// Invalid second expression
-				else if (!helper.isSecondExpressionValid(expression)) {
-					int endPosition = startPosition + helper.secondExpressionLength(expression);
-					addProblem(expression, startPosition, endPosition, helper.secondExpressionInvalidKey());
-				}
-			}
-
-			// Missing second comma
-			if (helper.hasSecondExpression(expression) &&
-			    !expression.hasSecondComma() &&
-			    helper.hasThirdExpression(expression)) {
-
-				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-
-				// First expression
-				if (helper.hasFirstExpression(expression)) {
-					startPosition += length(expression.getFirstExpression());
-				}
-
-				if (expression.hasFirstComma()) {
-					startPosition++;
-				}
-
-				if (expression.hasSpaceAfterFirstComma()) {
-					startPosition++;
-				}
-
-				// Second expression
-				if (helper.hasSecondExpression(expression)) {
-					startPosition += helper.secondExpressionLength(expression);
-				}
-
-				int endPosition = startPosition;
-
-				addProblem(expression, startPosition, endPosition, helper.secondCommaMissingKey());
-			}
-
-			// Validate third expression
-			if (expression.hasSecondComma()) {
-				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
-
-				// First expression
-				if (helper.hasFirstExpression(expression)) {
-					startPosition += helper.firstExpressionLength(expression);
-				}
-
-				if (expression.hasFirstComma()) {
-					startPosition++;
-				}
-
-				if (expression.hasSpaceAfterFirstComma()) {
-					startPosition++;
-				}
-
-				// Second expression
-				if (helper.hasSecondExpression(expression)) {
-					startPosition += helper.secondExpressionLength(expression);
-				}
-
-				if (expression.hasSecondComma()) {
-					startPosition++;
-				}
-
-				if (expression.hasSpaceAfterSecondComma()) {
-					startPosition++;
-				}
-
-				// Missing third expression
-				if (!helper.hasThirdExpression(expression)) {
-					int endPosition = startPosition;
-					addProblem(expression, startPosition, endPosition, helper.thirdExpressionMissingKey());
-				}
-				// Invalid third expression
-				else if (!helper.isThirdExpressionValid(expression)) {
-					int endPosition = startPosition + helper.thirdExpressionLength(expression);
-					addProblem(expression, startPosition, endPosition, helper.thirdExpressionInvalidKey());
-				}
-			}
-		}
-	}
-
-	private void visitArithmeticExpression(ArithmeticExpression expression) {
-		visitCompoundExpression(
-			expression,
-			expression.getArithmeticSign(),
-			ArithmeticExpression_MissingLeftExpression,
-			ArithmeticExpression_InvalidLeftExpression,
-			ArithmeticExpression_MissingRightExpression,
-			ArithmeticExpression_InvalidRightExpression,
-			ArithmeticExpressionBNF.ID,
-			ArithmeticTermBNF.ID
-		);
-	}
-
-	private void visitCompoundExpression(CompoundExpression expression,
-	                                     String identifier,
-	                                     String missingLeftExpression,
-	                                     String invalidLeftExpression,
-	                                     String missingRightExpression,
-	                                     String invalidRightExpression,
-	                                     String leftExpressionQueryBNF,
-	                                     String rightExpressionQueryBNF) {
-
-		// Missing left expression
-		if (!expression.hasLeftExpression()) {
-			int startPosition = position(expression);
-			int endPosition   = startPosition;
-			addProblem(expression, startPosition, endPosition, missingLeftExpression);
-		}
-		// Invalid left expression
-		else if (!isValid(expression.getLeftExpression(), leftExpressionQueryBNF)) {
-
-			int startPosition = position(expression);
-			int endPosition   = startPosition + length(expression.getLeftExpression());
-			addProblem(expression, startPosition, endPosition, invalidLeftExpression);
-		}
-
-		// Missing right expression
-		if (!expression.hasRightExpression()) {
-			int startPosition = position(expression) + identifier.length();
-
-			if (expression.hasLeftExpression()) {
-				startPosition += length(expression.getLeftExpression()) + 1;
-			}
-
-			if (expression.hasSpaceAfterIdentifier()) {
-				startPosition++;
-			}
-
-			int endPosition = startPosition;
-
-			addProblem(expression, startPosition, endPosition, missingRightExpression);
-		}
-		// Invalid right expression
-		else if (!isValid(expression.getRightExpression(), rightExpressionQueryBNF)) {
-
-			int startPosition = position(expression) + identifier.length();
-
-			if (expression.hasLeftExpression()) {
-				startPosition += length(expression.getLeftExpression()) + 1;
-			}
-
-			if (expression.hasSpaceAfterIdentifier()) {
-				startPosition++;
-			}
-
-			int endPosition = startPosition + length(expression.getRightExpression());
-
-			addProblem(expression, startPosition, endPosition, invalidRightExpression);
-		}
-	}
-
-	private void visitInputParameter(JPQLExpression expression) {
-
-		InputParameterCollector visitor = new InputParameterCollector();
-		expression.accept(visitor);
-
-		if (!visitor.namedParameters.isEmpty() &&
-		    !visitor.positionalParameters.isEmpty()) {
-
-			for (InputParameter parameter : visitor.parameters()) {
-				int startPosition = position(expression);
-				int endPosition   = startPosition + length(parameter);
-				addProblem(parameter, startPosition, endPosition, InputParameter_Mixture);
-			}
-		}
-	}
-
-	private void visitLogicalExpression(LogicalExpression expression,
-	                                    String leftExpressionQueryBNF,
-	                                    String rightExpressionQueryBNF) {
-
-		visitCompoundExpression(
-			expression,
-			expression.getIdentifier(),
-			LogicalExpression_MissingLeftExpression,
-			LogicalExpression_InvalidLeftExpression,
-			LogicalExpression_MissingRightExpression,
-			LogicalExpression_InvalidRightExpression,
-			leftExpressionQueryBNF,
-			rightExpressionQueryBNF
-		);
-	}
-
-	private void visitPathExpression(AbstractPathExpression expression) {
-
-		// Missing identification variable
-		if (!expression.hasIdentificationVariable() &&
-		    !expression.hasVirtualIdentificationVariable()) {
-
-			int startPosition = position(expression);
-			int endPosition   = startPosition + length(expression);
-			addProblem(expression, startPosition, endPosition, AbstractPathExpression_MissingIdentificationVariable);
-		}
-
-		// Cannot end with a dot
-		if (expression.endsWithDot()) {
-			int startPosition = position(expression);
-			int endPosition   = startPosition + length(expression);
-			addProblem(expression, startPosition, endPosition, AbstractPathExpression_CannotEndWithComma);
-		}
-	}
-
-	private void visitSelectStatement(AbstractSelectStatement expression) {
-
-		// Does not have a FROM clause
-		if (!expression.hasFromClause()) {
-			int startPosition = position(expression) + length(expression.getSelectClause());
-
-			if (expression.hasSpaceAfterSelect()) {
-				startPosition++;
-			}
-
-			int endPosition = startPosition;
-			addProblem(expression, startPosition, endPosition, AbstractSelectStatement_FromClauseMissing);
-		}
-	}
-
-	private abstract class AbstractAbstractDoubleEncapsulatedExpressionHelper<T extends AbstractDoubleEncapsulatedExpression> implements AbstractDoubleEncapsulatedExpressionHelper<T> {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public Object[] arguments(T expression) {
-			return ExpressionTools.EMPTY_ARRAY;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int encapsulatedExpressionLength(T expression) {
-
-			int length = 0;
-
-			if (hasFirstExpression(expression)) {
-				length += length(expression.getFirstExpression());
-			}
-
-			if (expression.hasComma()) {
-				length++;
-			}
-
-			if (expression.hasSpaceAfterComma()) {
-				length++;
-			}
-
-			if (hasSecondExpression(expression)) {
-				length += secondExpressionLength(expression);
-			}
-
-			return length;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int firstExpressionLength(T expression) {
-			if (hasFirstExpression(expression)) {
-				return length(expression.getFirstExpression());
-			}
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean hasFirstExpression(T expression) {
-			return expression.hasFirstExpression();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean hasSecondExpression(T expression) {
-			return expression.hasSecondExpression();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int lengthBeforeFirstExpression(T expression) {
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int lengthBeforeSecondExpression(T expression) {
-
-			int length = identifier(expression).length();
-
-			if (expression.hasLeftParenthesis()) {
-				length++;
-			}
-
-			if (hasFirstExpression(expression)) {
-				length += length(expression.getFirstExpression());
-			}
-
-			if (expression.hasComma()) {
-				length++;
-			}
-
-			if (expression.hasSpaceAfterComma()) {
-				length++;
-			}
-
-			return length;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int secondExpressionLength(T expression) {
-			if (hasSecondExpression(expression)) {
-				return length(expression.getSecondExpression());
-			}
-			return 0;
-		}
-	}
-
 	/**
-	 * The abstract implementation of {@link AbstractSingleEncapsulatedExpressionHelper} which
-	 * implements some of the methods since the behavior is the same for all subclasses of {@link
-	 * AbstractSingleEncapsulatedExpression}.
-	 */
-	private abstract class AbstractAbstractSingleEncapsulatedExpressionHelper<T extends AbstractSingleEncapsulatedExpression> implements AbstractSingleEncapsulatedExpressionHelper<T> {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public String[] arguments(T expression) {
-			return ExpressionTools.EMPTY_STRING_ARRAY;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int encapsulatedExpressionLength(T expression) {
-			return length(expression.getExpression());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean hasExpression(T expression) {
-			return expression.hasExpression();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public final String identifier(T expression) {
-			return expression.getIdentifier();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean isValidExpression(T expression) {
-			return isValid(expression.getExpression(), expression.encapsulatedExpressionBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int lengthBeforeEncapsulatedExpression(T expression) {
-			// By default, there is no text after the left parenthesis and the encapsulated expression
-			// but there are exception, such as the functions (AVG, COUNT, MIN, MAX, SUM)
-			return 0;
-		}
-	}
-
-	private abstract class AbstractAbstractTripleEncapsulatedExpressionHelper<T extends AbstractTripleEncapsulatedExpression> implements AbstractTripleEncapsulatedExpressionHelper<T> {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public Object[] arguments(T expression) {
-			return ExpressionTools.EMPTY_ARRAY;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int firstExpressionLength(T expression) {
-			if (expression.hasFirstExpression()) {
-				return length(expression.getFirstExpression());
-			}
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean hasFirstExpression(T expression) {
-			return expression.hasFirstExpression();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean hasSecondExpression(T expression) {
-			return expression.hasSecondExpression();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean hasThirdExpression(T expression) {
-			return expression.hasThirdExpression();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int lengthBeforeFirstExpression(T expression) {
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int lengthBeforeSecondExpression(T expression) {
-
-			int length = identifier(expression).length();
-
-			if (expression.hasLeftParenthesis()) {
-				length++;
-			}
-
-			if (hasFirstExpression(expression)) {
-				length += firstExpressionLength(expression);
-			}
-
-			if (expression.hasFirstComma()) {
-				length++;
-			}
-
-			if (expression.hasSpaceAfterFirstComma()) {
-				length++;
-			}
-
-			return length;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int lengthBeforeThirdExpression(T expression) {
-
-			int length = identifier(expression).length();
-
-			if (expression.hasLeftParenthesis()) {
-				length++;
-			}
-
-			if (hasFirstExpression(expression)) {
-				length += firstExpressionLength(expression);
-			}
-
-			if (expression.hasFirstComma()) {
-				length++;
-			}
-
-			if (expression.hasSpaceAfterFirstComma()) {
-				length++;
-			}
-
-			if (hasSecondExpression(expression)) {
-				length += secondExpressionLength(expression);
-			}
-
-			if (expression.hasSecondComma()) {
-				length++;
-			}
-
-			if (expression.hasSpaceAfterSecondComma()) {
-				length++;
-			}
-
-			return length;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int secondExpressionLength(T expression) {
-			if (hasSecondExpression(expression)) {
-				return length(expression.getSecondExpression());
-			}
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int thirdExpressionLength(T expression) {
-			if (hasThirdExpression(expression)) {
-				return length(expression.getThirdExpression());
-			}
-			return 0;
-		}
-	}
-
-	/**
-	 *
+	 * This validate is responsible to validate the collection of {@link Expression Expressions}:
+	 * <ul>
+	 * <li>Making sure they are all separated by a comma or by a space (depending on which one is
+	 * required);</li>
+	 * <li>Making sure it does not end with a comma;</li>
+	 * <li>There is no empty expression between two commas.</li>
+	 * </ul>
 	 */
 	private abstract class AbstractCollectionValidator extends AbstractExpressionVisitor {
 
 		String endsWithCommaProblemKey;
 		boolean validateOnly;
 		String wrongSeparatorProblemKey;
-
-		private boolean isNull(Expression expression) {
-			NullExpressionVisitor visitor = new NullExpressionVisitor();
-			expression.accept(visitor);
-			return visitor.nullExpression;
-		}
 
 		private void validateEndsWithComma(CollectionExpression expression) {
 
@@ -4496,65 +4447,237 @@ public final class GrammarValidator extends AbstractValidator {
 		}
 	}
 
-	private interface AbstractDoubleEncapsulatedExpressionHelper<T extends AbstractDoubleEncapsulatedExpression> {
-		Object[] arguments(T expression);
-      int encapsulatedExpressionLength(T expression);
-      String firstExpressionInvalidKey();
-		int firstExpressionLength(T expression);
-		String firstExpressionMissingKey();
-		boolean hasFirstExpression(T expression);
-		boolean hasSecondExpression(T expression);
-		String identifier(T expression);
-		boolean isFirstExpressionValid(T expression);
-      boolean isSecondExpressionValid(T expression);
-		String leftParenthesisMissingKey();
-		int lengthBeforeFirstExpression(T expression);
-		int lengthBeforeSecondExpression(T expression);
-      String missingCommaKey();
-		String rightParenthesisMissingKey();
-		String secondExpressionInvalidKey();
-		int secondExpressionLength(T expression);
-		String secondExpressionMissingKey();
+	private abstract class AbstractDoubleEncapsulatedExpressionHelper<T extends AbstractDoubleEncapsulatedExpression>
+	                 implements AbstractEncapsulatedExpressionHelper<T> {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public String[] arguments(T expression) {
+			return ExpressionTools.EMPTY_STRING_ARRAY;
+		}
+
+		abstract String firstExpressionInvalidKey();
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public int firstExpressionLength(T expression) {
+			return length(expression.getFirstExpression());
+		}
+
+		abstract String firstExpressionMissingKey();
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasFirstExpression(T expression) {
+			return expression.hasFirstExpression();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasSecondExpression(T expression) {
+			return expression.hasSecondExpression();
+		}
+
+		abstract boolean isFirstExpressionValid(T expression);
+
+		abstract boolean isSecondExpressionValid(T expression);
+
+		abstract String missingCommaKey();
+
+		abstract String secondExpressionInvalidKey();
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public int secondExpressionLength(T expression) {
+			return length(expression.getSecondExpression());
+		}
+
+		abstract String secondExpressionMissingKey();
 	}
 
-	private interface AbstractSingleEncapsulatedExpressionHelper<T extends AbstractSingleEncapsulatedExpression> {
+	/**
+	 * The root helper that validates any {@link AbstractEncapsulatedExpression}.
+	 *
+	 * @see AbstractDoubleEncapsulatedExpressionHelper
+	 * @see AbstractSingleEncapsulatedExpressionHelper
+	 * @see AbstractTripleEncapsulatedExpressionHelper
+	 */
+	private interface AbstractEncapsulatedExpressionHelper<T extends AbstractEncapsulatedExpression> {
+
+		/**
+		 * Returns the arguments that can help to format the localized problem.
+		 *
+		 * @param expression The {@link AbstractEncapsulatedExpression} being validated
+		 * @return The list of arguments used to complete the localized problem
+		 */
 		String[] arguments(T expression);
-		int encapsulatedExpressionLength(T expression);
-		String expressionInvalidKey();
-		String expressionMissingKey();
-      boolean hasExpression(T expression);
+
+		/**
+		 * Returns the JPQL identifier of the given {@link AbstractEncapsulatedExpression}.
+		 *
+		 * @param expression The {@link AbstractEncapsulatedExpression} being validated
+		 * @return The JPQL identifier of the given {@link AbstractEncapsulatedExpression}
+		 */
 		String identifier(T expression);
-		boolean isValidExpression(T expression);
+
+		/**
+		 * Returns the message key for the problem describing that the left parenthesis is missing.
+		 *
+		 * @return The key used to retrieve the localized message
+		 */
 		String leftParenthesisMissingKey();
-      int lengthBeforeEncapsulatedExpression(T expression);
+
+		/**
+		 * Returns the message key for the problem describing that the right parenthesis is missing.
+		 *
+		 * @return The key used to retrieve the localized message
+		 */
 		String rightParenthesisMissingKey();
 	}
 
-	private interface AbstractTripleEncapsulatedExpressionHelper<T extends AbstractTripleEncapsulatedExpression> {
-		Object[] arguments(T expression);
-      String firstCommaMissingKey();
-		String firstExpressionInvalidKey();
-		int firstExpressionLength(T expression);
-      String firstExpressionMissingKey();
-		boolean hasFirstExpression(T expression);
-		boolean hasSecondExpression(T expression);
-		boolean hasThirdExpression(T expression);
-		String identifier(T expression);
-      boolean isFirstExpressionValid(T expression);
-		boolean isSecondExpressionValid(T expression);
-      boolean isThirdExpressionValid(T expression);
-      String leftParenthesisMissingKey();
-      int lengthBeforeFirstExpression(T expression);
-		int lengthBeforeSecondExpression(T expression);
-      int lengthBeforeThirdExpression(T expression);
-      String rightParenthesisMissingKey();
-      String secondCommaMissingKey();
-		String secondExpressionInvalidKey();
-		int secondExpressionLength(T expression);
-		String secondExpressionMissingKey();
-		String thirdExpressionInvalidKey();
-		int thirdExpressionLength(T expression);
-		String thirdExpressionMissingKey();
+	/**
+	 * The abstract implementation of {@link AbstractSingleEncapsulatedExpressionHelper} which
+	 * implements some of the methods since the behavior is the same for all subclasses of {@link
+	 * AbstractSingleEncapsulatedExpression}.
+	 */
+	private abstract class AbstractSingleEncapsulatedExpressionHelper<T extends AbstractSingleEncapsulatedExpression>
+	                 implements AbstractEncapsulatedExpressionHelper<T> {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public String[] arguments(T expression) {
+			return ExpressionTools.EMPTY_STRING_ARRAY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public int encapsulatedExpressionLength(T expression) {
+			return length(expression.getExpression());
+		}
+
+		/**
+		 * Returns
+		 *
+		 * @return
+		 */
+		abstract String expressionInvalidKey();
+
+		/**
+		 * Returns
+		 *
+		 * @return
+		 */
+		abstract String expressionMissingKey();
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasExpression(T expression) {
+			return expression.hasExpression();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public final String identifier(T expression) {
+			return expression.getIdentifier();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean isValidExpression(T expression) {
+			return isValid(expression.getExpression(), expression.encapsulatedExpressionBNF());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public int lengthBeforeEncapsulatedExpression(T expression) {
+			// By default, there is no text after the left parenthesis and the encapsulated expression
+			// but there are exception, such as the functions (AVG, COUNT, MIN, MAX, SUM)
+			return 0;
+		}
+	}
+
+	private abstract class AbstractTripleEncapsulatedExpressionHelper<T extends AbstractTripleEncapsulatedExpression>
+	                 implements AbstractEncapsulatedExpressionHelper<T> {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public String[] arguments(T expression) {
+			return ExpressionTools.EMPTY_STRING_ARRAY;
+		}
+
+		abstract String firstCommaMissingKey();
+
+		abstract String firstExpressionInvalidKey();
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public int firstExpressionLength(T expression) {
+			return length(expression.getFirstExpression());
+		}
+
+		abstract String firstExpressionMissingKey();
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasFirstExpression(T expression) {
+			return expression.hasFirstExpression();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasSecondExpression(T expression) {
+			return expression.hasSecondExpression();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasThirdExpression(T expression) {
+			return expression.hasThirdExpression();
+		}
+
+		abstract boolean isFirstExpressionValid(T expression);
+		abstract boolean isSecondExpressionValid(T expression);
+		abstract boolean isThirdExpressionValid(T expression);
+
+		abstract String secondCommaMissingKey();
+
+		abstract String secondExpressionInvalidKey();
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public int secondExpressionLength(T expression) {
+			return length(expression.getSecondExpression());
+		}
+
+		abstract String secondExpressionMissingKey();
+
+		abstract String thirdExpressionInvalidKey();
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public int thirdExpressionLength(T expression) {
+			return length(expression.getThirdExpression());
+		}
+
+		abstract String thirdExpressionMissingKey();
 	}
 
 	/**
@@ -4587,24 +4710,39 @@ public final class GrammarValidator extends AbstractValidator {
 		}
 	}
 
-	private class InExpressionExpressionVisitor extends AbstractExpressionVisitor {
+	private static class ComparisonExpressionVisitor extends AbstractExpressionVisitor {
 
-		Expression expression;
+		/**
+		 * The {@link ComparisonExpression} if it is the {@link Expression} that was visited.
+		 */
+		ComparisonExpression expression;
 
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(StateFieldPathExpression expression) {
-			this.expression = expression;;
+		public void visit(ComparisonExpression expression) {
+			this.expression = expression;
 		}
+	}
+
+	/**
+	 * This visitor is responsible to traverse the parents of the visited {@link Expression} and
+	 * stops if a parent is {@link FuncExpression}.
+	 */
+	private static class FuncExpressionFinder extends AbstractTraverseParentVisitor {
+
+		/**
+		 * The {@link FunctionExpression} if it is a parent of the {@link Expression} being visited.
+		 */
+		private FuncExpression expression;
 
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(TypeExpression expression) {
-			this.expression = expression;;
+		public void visit(FuncExpression expression) {
+			this.expression = expression;
 		}
 	}
 }

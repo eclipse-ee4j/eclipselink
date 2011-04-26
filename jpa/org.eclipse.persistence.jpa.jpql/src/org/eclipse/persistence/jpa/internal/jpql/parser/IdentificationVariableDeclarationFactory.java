@@ -16,9 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link IdentificationVariableDeclarationFactory} is meant to handle the
- * parsing of a portion of the query when it's expected to be an identification
- * variable declaration.
+ * This {@link IdentificationVariableDeclarationFactory} is meant to handle the parsing of a portion
+ * of the query when it's expected to be an identification variable declaration.
  *
  * @see IdentificationVariableDeclaration
  *
@@ -51,6 +50,7 @@ final class IdentificationVariableDeclarationFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		if (word.length() == 0) {
 			return null;
 		}

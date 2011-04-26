@@ -42,6 +42,13 @@ final class AbsFunctionResolver extends Resolver {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void accept(ResolverVisitor visitor) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	IType buildType() {
 
 		IType type = getParentType();

@@ -347,6 +347,23 @@ public final class TypeHelper {
 	}
 
 	/**
+	 * Determines whether the given {@link IType} represents a primitive type.
+	 *
+	 * @param type The type to check it's assignability
+	 * @return <code>true</code> if the given {@link IType} represents a primitive; <code>false</code>
+	 * otherwise
+	 */
+	public boolean isPrimitiveType(IType type) {
+		return type == primitiveBoolean() ||
+		       type == primitiveByte()    ||
+		       type == primitiveDouble()  ||
+		       type == primitiveFloat()   ||
+		       type == primitiveInteger() ||
+		       type == primitiveLong()    ||
+		       type == primitiveShort();
+	}
+
+	/**
 	 * Determines whether the given {@link IType} represents the <code>String</code> class.
 	 *
 	 * @param type The type to check it's assignability

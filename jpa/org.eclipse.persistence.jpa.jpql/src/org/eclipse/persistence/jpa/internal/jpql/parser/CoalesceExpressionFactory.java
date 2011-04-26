@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link CoalesceExpressionFactory} creates a new {@link CoalesceExpression}
- * when the portion of the query to parse starts with <b>COALESCE</b>.
+ * This {@link CoalesceExpressionFactory} creates a new {@link CoalesceExpression} when the portion
+ * of the query to parse starts with <b>COALESCE</b>.
  *
  * @see CoalesceExpression
  *
@@ -49,6 +49,7 @@ final class CoalesceExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new CoalesceExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

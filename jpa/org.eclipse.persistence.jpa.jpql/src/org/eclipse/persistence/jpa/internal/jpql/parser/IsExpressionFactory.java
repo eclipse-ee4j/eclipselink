@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link IsExpressionFactory} creates a new expression when the portion of
- * the query to parse starts with <b>IS</b>.
+ * This {@link IsExpressionFactory} creates a new expression when the portion of the query to parse
+ * starts with <b>IS</b>.
  *
  * @see EmptyCollectionComparisonExpression
  * @see NullComparisonExpression
@@ -50,6 +50,7 @@ final class IsExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		int index = wordParser.position() + 2;
 		index += wordParser.whitespaceCount(index);
 

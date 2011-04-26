@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link SizeExpressionFactory} creates a new {@link SizeExpression} when
- * the portion of the query to parse starts with <b>SIZE</b>.
+ * This {@link SizeExpressionFactory} creates a new {@link SizeExpression} when the portion of the
+ * query to parse starts with <b>SIZE</b>.
  *
  * @see SizeExpression
  *
@@ -49,6 +49,7 @@ final class SizeExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new SizeExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

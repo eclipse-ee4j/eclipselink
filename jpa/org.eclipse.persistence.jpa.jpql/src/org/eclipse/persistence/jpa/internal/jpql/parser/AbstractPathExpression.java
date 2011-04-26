@@ -282,9 +282,13 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 * schema name
 	 */
 	final void setVirtualIdentificationVariable(String variableName) {
+
 		paths = null;
 		virtualIdentificationVariable = true;
 		identificationVariable = new IdentificationVariable(this, variableName, true);
+
+		rebuildActualText();
+		rebuildParsedText();
 	}
 
 	/**

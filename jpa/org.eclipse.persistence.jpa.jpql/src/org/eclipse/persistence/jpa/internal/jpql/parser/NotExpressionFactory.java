@@ -16,9 +16,9 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link NotExpressionFactory} creates a new {@link NotExpression} when
- * the portion of the query to parse starts with <b>NOT</b>. If the text has
- * another identifier that is negated, then the right expression will be created.
+ * This {@link NotExpressionFactory} creates a new {@link NotExpression} when the portion of the
+ * query to parse starts with <b>NOT</b>. If the text has another identifier that is negated, then
+ * the right expression will be created.
  *
  * @see NotExpression
  *
@@ -50,6 +50,7 @@ final class NotExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		// Skip 'NOT '
 		int index = wordParser.position() + 3;
 		index += wordParser.whitespaceCount(index);

@@ -176,9 +176,13 @@ public final class IdentificationVariable extends AbstractExpression {
 	 * schema name
 	 */
 	void setVirtualIdentificationVariable(String variableName) {
+
 		virtual = true;
 		stateFieldPathExpression = new StateFieldPathExpression(getParent(), getText());
 		stateFieldPathExpression.setVirtualIdentificationVariable(variableName);
+
+		rebuildActualText();
+		rebuildParsedText();
 	}
 
 	/**

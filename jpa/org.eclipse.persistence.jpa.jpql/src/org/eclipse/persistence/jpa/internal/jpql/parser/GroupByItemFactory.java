@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link GroupByItemFactory} is responsible to return the right expression
- * and to support invalid expression as well.
+ * This {@link GroupByItemFactory} is responsible to return the right expression and to support
+ * invalid expression as well.
  *
  * @version 2.3
  * @since 2.3
@@ -48,6 +48,7 @@ final class GroupByItemFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		// StateFieldPathExpression
 		if (word.indexOf(AbstractExpression.DOT) > -1) {
 			expression = new StateFieldPathExpression(parent, word);

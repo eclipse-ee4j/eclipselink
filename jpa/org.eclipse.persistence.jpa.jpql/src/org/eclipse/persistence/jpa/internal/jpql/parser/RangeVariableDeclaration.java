@@ -47,9 +47,9 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 */
 	private boolean hasSpaceAfterAs;
 
-    /**
-     * Determines whether a whitespace was parsed after the abstract schema name.
-     */
+	/**
+	 * Determines whether a whitespace was parsed after the abstract schema name.
+	 */
 	private boolean hasSpaceAfterSchemaName;
 
 	/**
@@ -57,10 +57,10 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 */
 	private AbstractExpression identificationVariable;
 
-    /**
-     * Determines whether the identification variable is virtual, meaning it's not part of the query
-     * but is required for proper navigability.
-     */
+	/**
+	 * Determines whether the identification variable is virtual, meaning it's not part of the query
+	 * but is required for proper navigability.
+	 */
 	private boolean virtualIdentificationVariable;
 
 	/**
@@ -127,11 +127,11 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 		}
 	}
 
-    /**
-     * Returns the {@link Expression} that represents the abstract schema name.
-     *
-     * @return The expression that was parsed representing the abstract schema name
-     */
+	/**
+	 * Returns the {@link Expression} that represents the abstract schema name.
+	 *
+	 * @return The expression that was parsed representing the abstract schema name
+	 */
 	public Expression getAbstractSchemaName() {
 		if (abstractSchemaName == null) {
 			abstractSchemaName = buildNullExpression();
@@ -139,11 +139,11 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 		return abstractSchemaName;
 	}
 
-    /**
-     * Returns the {@link Expression} that represents the identification variable.
-     *
-     * @return The expression that was parsed representing the identification variable
-     */
+	/**
+	 * Returns the {@link Expression} that represents the identification variable.
+	 *
+	 * @return The expression that was parsed representing the identification variable
+	 */
 	public Expression getIdentificationVariable() {
 		if (identificationVariable == null) {
 			identificationVariable = buildNullExpression();
@@ -159,66 +159,66 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 		return queryBNF(RangeVariableDeclarationBNF.ID);
 	}
 
-    /**
-     * Determines whether the abstract schema name was parsed.
-     *
-     * @return <code>true</code> if the abstract schema name was parsed; <code>false</code>
-     * otherwise
-     */
+	/**
+	 * Determines whether the abstract schema name was parsed.
+	 *
+	 * @return <code>true</code> if the abstract schema name was parsed; <code>false</code>
+	 * otherwise
+	 */
 	public boolean hasAbstractSchemaName() {
 		return abstractSchemaName != null &&
 		      !abstractSchemaName.isNull();
 	}
 
-    /**
-     * Determines whether the identifier <b>AS</b> was parsed.
-     *
-     * @return <code>true</code> if the identifier <b>AS</b> was parsed; <code>false</code>
-     * otherwise
-     */
+	/**
+	 * Determines whether the identifier <b>AS</b> was parsed.
+	 *
+	 * @return <code>true</code> if the identifier <b>AS</b> was parsed; <code>false</code>
+	 * otherwise
+	 */
 	public boolean hasAs() {
 		return hasAs;
 	}
 
-    /**
-     * Determines whether the identification variable was parsed.
-     *
-     * @return <code>true</code> if the identification variable was parsed; <code>false</code>
-     * otherwise
-     */
+	/**
+	 * Determines whether the identification variable was parsed.
+	 *
+	 * @return <code>true</code> if the identification variable was parsed; <code>false</code>
+	 * otherwise
+	 */
 	public boolean hasIdentificationVariable() {
 		return identificationVariable != null  &&
 		      !identificationVariable.isNull() &&
 		      !identificationVariable.isVirtual();
 	}
 
-    /**
-     * Determines whether a whitespace was parsed after the abstract schema name.
-     *
-     * @return <code>true</code> if there was a whitespace after the abstract schema name;
-     * <code>false</code> otherwise
-     */
+	/**
+	 * Determines whether a whitespace was parsed after the abstract schema name.
+	 *
+	 * @return <code>true</code> if there was a whitespace after the abstract schema name;
+	 * <code>false</code> otherwise
+	 */
 	public boolean hasSpaceAfterAbstractSchemaName() {
 		return hasSpaceAfterSchemaName;
 	}
 
-    /**
-     * Determines whether a whitespace was parsed after <b>AS</b>.
-     *
-     * @return <code>true</code> if there was a whitespace after <b>AS</b>; <code>false</code>
-     * otherwise
-     */
+	/**
+	 * Determines whether a whitespace was parsed after <b>AS</b>.
+	 *
+	 * @return <code>true</code> if there was a whitespace after <b>AS</b>; <code>false</code>
+	 * otherwise
+	 */
 	public boolean hasSpaceAfterAs() {
 		return hasSpaceAfterAs;
 	}
 
-    /**
-     * Determines whether this identification variable is virtual, meaning it's not part of the
-     * query but is required for proper navigability.
-     *
-     * @return <code>true</code> if this identification variable was virtually created to fully
-     * qualify path expression; <code>false</code> if it was parsed
-     */
+	/**
+	 * Determines whether this identification variable is virtual, meaning it's not part of the
+	 * query but is required for proper navigability.
+	 *
+	 * @return <code>true</code> if this identification variable was virtually created to fully
+	 * qualify path expression; <code>false</code> if it was parsed
+	 */
 	public boolean hasVirtualIdentificationVariable() {
 		return virtualIdentificationVariable;
 	}
@@ -322,24 +322,31 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	}
 
 	/**
-     * Sets a virtual identification variable because the abstract schema name was parsed without
-     * one. This is valid in an <b>UPDATE</b> and <b>DELETE</b> queries.
-     *
-     * @param variableName The identification variable that was generated to identify the abstract
-     * schema name
-     */
+	 * Sets a virtual identification variable because the abstract schema name was parsed without
+	 * one. This is valid in an <b>UPDATE</b> and <b>DELETE</b> queries.
+	 *
+	 * @param variableName The identification variable that was generated to identify the abstract
+	 * schema name
+	 */
 	void setVirtualIdentificationVariable(String variableName) {
 		virtualIdentificationVariable = true;
 		identificationVariable = new IdentificationVariable(this, variableName, true);
 	}
 
+	/**
+	 * Sets a virtual identification variable because the abstract schema name was parsed without
+	 * one. This is valid in an <b>UPDATE</b> and <b>DELETE</b> queries.
+	 *
+	 * @param variableName The identification variable that was generated to identify the abstract
+	 * schema name
+	 * @param path The path that was parsed as an abstract schema name
+	 */
 	public void setVirtualIdentificationVariable(String variableName, String path) {
 
 		setVirtualIdentificationVariable(variableName);
 
 		CollectionValuedPathExpression expression = new CollectionValuedPathExpression(this, path);
 		expression.setVirtualIdentificationVariable(variableName);
-
 		abstractSchemaName = expression;
 	}
 

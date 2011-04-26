@@ -371,6 +371,11 @@ public final class ExpressionTools {
 	 */
 	public static String unquote(String text) {
 
+		// Nothing to unquote
+		if (stringIsEmpty(text)) {
+			return text;
+		}
+
 		int startIndex = 0;
 		int endIndex = text.length();
 

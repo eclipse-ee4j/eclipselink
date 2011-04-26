@@ -17,8 +17,8 @@ import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 /**
- * This {@link ResultVariableFactory} creates a new {@link ResultVariable} when
- * the portion of the query to parse starts with or without <b>AS</b>.
+ * This {@link ResultVariableFactory} creates a new {@link ResultVariable} when the portion of the
+ * query to parse starts with or without <b>AS</b>.
  *
  * @see ResultVariable
  *
@@ -61,6 +61,16 @@ final class ResultVariableFactory extends ExpressionFactory {
 			ResultVariable resultVariable = new ResultVariable(parent, expression);
 			resultVariable.parse(wordParser, tolerant);
 			return resultVariable;
+		}
+
+		// The word is a JPQL identifier, lets try to parse the query using the factory so
+		// the invalid portion can be properly validated and possibly the rest of the query
+		// can be parsed correctly
+		if (tolerant && AbstractExpression.isIdentifier(word)) {
+			ExpressionFactory factory = AbstractExpression.expressionFactoryForIdentifier(word);
+			if (factory != null) {
+				return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+			}
 		}
 
 		// Use the default factory

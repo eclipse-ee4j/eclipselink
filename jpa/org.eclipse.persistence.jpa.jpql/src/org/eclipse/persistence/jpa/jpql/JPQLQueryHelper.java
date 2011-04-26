@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.jpql;
 
 import java.util.List;
 import org.eclipse.persistence.jpa.internal.jpql.AbstractJPQLQueryHelper;
+import org.eclipse.persistence.jpa.internal.jpql.JPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
@@ -45,6 +46,15 @@ public class JPQLQueryHelper extends AbstractJPQLQueryHelper {
 	 */
 	public JPQLQueryHelper() {
 		super();
+	}
+
+	/**
+	 * Creates a new <code>JPQLQueryHelper</code>.
+	 *
+	 * @param queryContext The context used to query information about the JPQL query
+	 */
+	public JPQLQueryHelper(JPQLQueryContext queryContext) {
+		super(queryContext);
 	}
 
 	/**

@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link UpperExpressionFactory} creates a new {@link UpperExpression}
- * when the portion of the query to parse starts with <b>UPPER</b>.
+ * This {@link UpperExpressionFactory} creates a new {@link UpperExpression} when the portion of the
+ * query to parse starts with <b>UPPER</b>.
  *
  * @see UpperExpression
  *
@@ -49,6 +49,7 @@ final class UpperExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new UpperExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

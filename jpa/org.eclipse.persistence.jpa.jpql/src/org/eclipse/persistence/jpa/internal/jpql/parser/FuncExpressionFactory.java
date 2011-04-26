@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link FuncExpressionFactory} creates a new {@link FuncExpression} when
- * the portion of the query to parse starts with <b>FUNC</b>.
+ * This {@link FuncExpressionFactory} creates a new {@link FuncExpression} when the portion of the
+ * query to parse starts with <b>FUNC</b>.
  *
  * @see FuncExpression
  *
@@ -49,6 +49,7 @@ final class FuncExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new FuncExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

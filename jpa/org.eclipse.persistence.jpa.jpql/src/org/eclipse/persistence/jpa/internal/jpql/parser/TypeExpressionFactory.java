@@ -17,8 +17,8 @@ import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 /**
- * This {@link TypeExpressionFactory} creates a new {@link TypeExpression} when
- * the portion of the query to parse starts with <b>TYPE</b>.
+ * This {@link TypeExpressionFactory} creates a new {@link TypeExpression} when the portion of the
+ * query to parse starts with <b>TYPE</b>.
  *
  * @see TypeExpression
  *
@@ -50,6 +50,7 @@ final class TypeExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new TypeExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

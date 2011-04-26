@@ -14,8 +14,9 @@
 package org.eclipse.persistence.jpa.internal.jpql;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import org.eclipse.persistence.jpa.internal.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.InputParameter;
@@ -62,7 +63,7 @@ public abstract class AbstractJPQLQueryHelper {
 	private GrammarValidator grammarValidator;
 
 	/**
-	 * The context used to query information about the query.
+	 * The context used to query information about the JPQL query.
 	 */
 	private final JPQLQueryContext queryContext;
 
@@ -76,8 +77,17 @@ public abstract class AbstractJPQLQueryHelper {
 	 * Creates a new <code>AbstractJPQLQueryHelper</code>.
 	 */
 	protected AbstractJPQLQueryHelper() {
+		this(new JPQLQueryContext());
+	}
+
+	/**
+	 * Creates a new <code>AbstractJPQLQueryHelper</code>.
+	 *
+	 * @param queryContext The context used to query information about the JPQL query
+	 */
+	protected AbstractJPQLQueryHelper(JPQLQueryContext queryContext) {
 		super();
-		queryContext = new JPQLQueryContext();
+		this.queryContext = queryContext;
 	}
 
 	/**
@@ -135,13 +145,12 @@ public abstract class AbstractJPQLQueryHelper {
 	 * <p>
 	 * Note: Both named and positional input parameter can be used.
 	 *
-	 * @param expression The parsed tree representation of the query
 	 * @param parameterName The name of the input parameter to retrieve its type, which needs to be
 	 * prepended by ':' or '?'
 	 * @return Either the closest type of the input parameter or <code>null</code> if the type
 	 * couldn't be determined
 	 */
-	protected IType getParameterType(JPQLExpression expression, String parameterName) {
+	protected IType getParameterType(String parameterName) {
 
 		// Retrieve the input parameter's qualifier (':' or '?')
 		char character = parameterName.length() > 0 ? parameterName.charAt(0) : '\0';
@@ -151,18 +160,16 @@ public abstract class AbstractJPQLQueryHelper {
 			return getTypeHelper().objectType();
 		}
 
-		// Find all the location of the input parameters
-		InputParameterVisitor visitor1 = new InputParameterVisitor(parameterName);
-		expression.accept(visitor1);
-		Set<InputParameter> inputParameters = visitor1.inputParameters;
+		// Find the InputParameters with the given parameter name
+		Collection<InputParameter> inputParameters = queryContext.findInputParameters(parameterName);
 
-		// The input parameter is not part of the query
+		// No InputParameter was found
 		if (inputParameters.isEmpty()) {
 			return getTypeHelper().objectType();
 		}
 
 		// Now find the closest type for each location
-		TreeSet<IType> types = new TreeSet<IType>(new NumericTypeComparator(getTypeHelper()));
+		TreeSet<IType> types = new TreeSet<IType>(buildNumericTypeComparator());
 
 		for (InputParameter inputParameter : inputParameters) {
 			IType type = queryContext.getParameterType(inputParameter);
@@ -179,19 +186,8 @@ public abstract class AbstractJPQLQueryHelper {
 		return types.isEmpty() ? getTypeHelper().objectType() : types.first();
 	}
 
-	/**
-	 * Retrieves, if it can be determined, the type of the given input parameter with the given name.
-	 * The type will be guessed based on its location within expression.
-	 * <p>
-	 * Note: Both named and positional input parameter can be used.
-	 *
-	 * @param parameterName The name of the input parameter to retrieve its type, which needs to be
-	 * prepended by ':' or '?'
-	 * @return Either the closest type of the input parameter or <code>null</code> if the type
-	 * couldn't be determined
-	 */
-	protected IType getParameterType(String parameterName) {
-		return getParameterType(getJPQLExpression(), parameterName);
+	private Comparator<IType> buildNumericTypeComparator() {
+		return new NumericTypeComparator(getTypeHelper());
 	}
 
 	/**
@@ -222,9 +218,9 @@ public abstract class AbstractJPQLQueryHelper {
 	}
 
 	/**
-	 * Returns
+	 * Returns the {@link JPQLQueryContext} that contains information about the JPQL query.
 	 *
-	 * @return
+	 * @return The {@link JPQLQueryContext} that contains information contained in the JPQL query
 	 */
 	protected JPQLQueryContext getQueryContext() {
 		return queryContext;
@@ -329,7 +325,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @param problems A non-<code>null</code> list that will be used to store the {@link
 	 * JPQLQueryProblem problems} if any was found
 	 */
-	protected void validate(Expression expression, List<JPQLQueryProblem> problems) {
+	public void validate(Expression expression, List<JPQLQueryProblem> problems) {
 		validateGrammar(expression, problems);
 		validateSemantic(expression, problems);
 	}
@@ -353,7 +349,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @param problems A non-<code>null</code> list that will be used to store the {@link
 	 * JPQLQueryProblem problems} if any was found
 	 */
-	protected void validateGrammar(Expression expression, List<JPQLQueryProblem> problems) {
+	public void validateGrammar(Expression expression, List<JPQLQueryProblem> problems) {
 		GrammarValidator visitor = grammarValidator();
 		try {
 			visitor.setProblems(problems);
@@ -383,7 +379,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @param problems A non-<code>null</code> list that will be used to store the {@link
 	 * JPQLQueryProblem problems} if any was found
 	 */
-	protected void validateSemantic(Expression expression, List<JPQLQueryProblem> problems) {
+	public void validateSemantic(Expression expression, List<JPQLQueryProblem> problems) {
 		SemanticValidator visitor = semanticValidator();
 		try {
 			visitor.setProblems(problems);

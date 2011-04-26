@@ -14,7 +14,6 @@
 package org.eclipse.persistence.jpa.jpql.tests;
 
 import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
-
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 

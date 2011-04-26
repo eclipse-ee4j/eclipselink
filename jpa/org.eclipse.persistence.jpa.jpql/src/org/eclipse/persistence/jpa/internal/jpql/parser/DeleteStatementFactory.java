@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link DeleteStatementFactory} creates a new {@link DeleteStatement}
- * when the portion of the query to parse starts with <b>DELETE FROM</b>.
+ * This {@link DeleteStatementFactory} creates a new {@link DeleteStatement} when the portion of the
+ * query to parse starts with <b>DELETE FROM</b>.
  *
  * @see DeleteStatement
  *
@@ -51,6 +51,7 @@ final class DeleteStatementFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new DeleteStatement(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

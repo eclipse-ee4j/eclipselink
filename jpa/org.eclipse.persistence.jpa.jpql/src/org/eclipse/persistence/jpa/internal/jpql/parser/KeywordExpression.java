@@ -78,7 +78,6 @@ public final class KeywordExpression extends AbstractExpression {
 	void parse(WordParser wordParser, boolean tolerant) {
 		String word = parseIdentifier(wordParser);
 		setText(word);
-
 		wordParser.moveForward(word);
 	}
 

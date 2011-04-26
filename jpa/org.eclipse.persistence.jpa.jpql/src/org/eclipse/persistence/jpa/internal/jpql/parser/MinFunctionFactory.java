@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link MinFunctionFactory} creates a new {@link MinFunction} when the
- * portion of the query to parse starts with <b>MIN</b>.
+ * This {@link MinFunctionFactory} creates a new {@link MinFunction} when the portion of the query
+ * to parse starts with <b>MIN</b>.
  *
  * @see MinFunction
  *
@@ -49,6 +49,7 @@ final class MinFunctionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new MinFunction(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

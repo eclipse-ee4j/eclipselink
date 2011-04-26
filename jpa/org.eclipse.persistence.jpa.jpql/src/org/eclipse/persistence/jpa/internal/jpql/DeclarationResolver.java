@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.internal.jpql;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,10 +26,10 @@ import java.util.Set;
 import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.internal.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.CollectionMemberDeclaration;
+import org.eclipse.persistence.jpa.internal.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.DeleteStatement;
 import org.eclipse.persistence.jpa.internal.jpql.parser.Expression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.ExpressionVisitor;
 import org.eclipse.persistence.jpa.internal.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.internal.jpql.parser.IdentificationVariableDeclaration;
@@ -51,18 +52,32 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
  * This {@link Resolver} is responsible to visit the current query (which is either the top-level
- * query or a subquery) and gathers the information from the declaration clause.
+ * query or a subquery) and gathers the information from the declaration clause. For a <b>SELECT</b>
+ * or <b>DELETE</b> clause, the information will be retrieved from the <b>FROM</b> clause. For an
+ * <code>UDPATE</code> clause, it will be retrieved from the unique identification range variable
+ * declaration.
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
-final class DeclarationResolver extends Resolver {
+public final class DeclarationResolver extends Resolver {
 
 	/**
-	 *
+	 * The {@link Declaration Declarations} of the current query that was parsed.
 	 */
 	private List<Declaration> declarations;
+
+	/**
+	 * This visitor is responsible to visit the current query's declaration and populate this
+	 * resolver with the list of declarations.
+	 */
+	private DeclarationVisitor declarationVisitor;
+
+	/**
+	 * This visitor is responsible to convert the abstract schema name into a path expression.
+	 */
+	private QualifyRangeDeclarationVisitor qualifyRangeDeclarationVisitor;
 
 	/**
 	 * The context used to query information about the query.
@@ -74,13 +89,11 @@ final class DeclarationResolver extends Resolver {
 	 */
 	private Map<String, Resolver> resolvers;
 
-	private Set<String> resultVariables;
-
 	/**
-	 * This visitor is responsible to visit the current query's declaration and populate this
-	 * resolver with the information.
+	 * The variables identifying the select expressions, if any was defined or an empty set if none
+	 * were defined.
 	 */
-	private Visitor visitor;
+	private Map<IdentificationVariable, String> resultVariables;
 
 	/**
 	 * Creates a new <code>DeclarationResolver</code>.
@@ -92,6 +105,13 @@ final class DeclarationResolver extends Resolver {
 	DeclarationResolver(DeclarationResolver parent, JPQLQueryContext queryContext) {
 		super(parent);
 		initialize(queryContext);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void accept(ResolverVisitor visitor) {
 	}
 
 	/**
@@ -119,18 +139,54 @@ final class DeclarationResolver extends Resolver {
 	}
 
 	/**
-	 * Disposes this {@link Resolver}.
+	 * Converts the given {@link Declaration} from being set as a range variable declaration to
+	 * a path expression declaration.
+	 * <p>
+	 * In this query "<code>UPDATE Employee SET firstName = 'MODIFIED' WHERE (SELECT COUNT(m) FROM
+	 * managedEmployees m) > 0</code>" <em>managedEmployees</em> is an unqualified collection-valued
+	 * path expression (<code>employee.managedEmployees</code>).
+	 *
+	 * @param declaration The {@link Declaration} that was parsed to range over an abstract schema
+	 * name but is actually ranging over a path expression
+	 * @param outerVariableName The identification variable coming from the parent identification
+	 * variable declaration
 	 */
-	protected void dispose() {
+	void convertUnqualifiedDeclaration(Declaration declaration, String outerVariableName) {
+
+		QualifyRangeDeclarationVisitor visitor = qualifyRangeDeclarationVisitor();
+
+		try {
+			visitor.declaration       = declaration;
+			visitor.outerVariableName = outerVariableName;
+
+			declaration.declarationExpression.accept(visitor);
+		}
+		finally {
+			visitor.declaration       = null;
+			visitor.outerVariableName = null;
+		}
+	}
+
+	private DeclarationVisitor declarationVisitor() {
+		if (declarationVisitor == null) {
+			declarationVisitor = new DeclarationVisitor();
+		}
+		return declarationVisitor;
+	}
+
+	/**
+	 * Disposes the internal data.
+	 */
+	void dispose() {
 		resolvers      .clear();
 		declarations   .clear();
 		resultVariables.clear();
 	}
 
 	/**
-	 * Returns
+	 * Returns the ordered list of {@link Declaration Declarations}.
 	 *
-	 * @return
+	 * @return The {@link Declaration Declarations} of the current query that was parsed
 	 */
 	List<Declaration> getDeclarations() {
 		return Collections.unmodifiableList(declarations);
@@ -147,7 +203,7 @@ final class DeclarationResolver extends Resolver {
 	 */
 	Collection<JoinFetch> getJoinFetches(String variableName) {
 		Collection<JoinFetch> joinFetches = getJoinFetchesImp(variableName);
-		if (joinFetches.isEmpty() && (parent != null)) {
+		if (joinFetches.isEmpty() && (getParent() != null)) {
 			joinFetches = getParent().getJoinFetchesImp(variableName);
 		}
 		return joinFetches;
@@ -156,7 +212,7 @@ final class DeclarationResolver extends Resolver {
 	private Collection<JoinFetch> getJoinFetchesImp(String variableName) {
 
 		for (Declaration declaration : declarations) {
-			if (declaration.variableName.equalsIgnoreCase(variableName)) {
+			if (declaration.getVariableName().equalsIgnoreCase(variableName)) {
 				return declaration.getJoinFetches();
 			}
 		}
@@ -164,8 +220,12 @@ final class DeclarationResolver extends Resolver {
 		return Collections.emptyList();
 	}
 
-	private DeclarationResolver getParent() {
-		return (DeclarationResolver) parent;
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public DeclarationResolver getParent() {
+		return (DeclarationResolver) super.getParent();
 	}
 
 	/**
@@ -189,7 +249,7 @@ final class DeclarationResolver extends Resolver {
 		variableName = variableName.toUpperCase();
 		Resolver resolver = getResolverImp(variableName);
 
-		if ((resolver == null) && (parent != null)) {
+		if ((resolver == null) && (getParent() != null)) {
 			resolver = getParent().getResolver(variableName);
 		}
 
@@ -206,12 +266,14 @@ final class DeclarationResolver extends Resolver {
 	}
 
 	/**
-	 * Returns
+	 * Returns the variables that got defined in the select expression. This only applies to JPQL
+	 * queries built for JPA 2.0.
 	 *
-	 * @return
+	 * @return The variables identifying the select expressions, if any was defined or an empty set
+	 * if none were defined
 	 */
 	Set<String> getResultVariables() {
-		return Collections.unmodifiableSet(resultVariables);
+		return new HashSet<String>(resultVariables.values());
 	}
 
 	/**
@@ -232,14 +294,13 @@ final class DeclarationResolver extends Resolver {
 	/**
 	 * Initializes this <code>DeclarationResolver</code>.
 	 *
-	 * @param parent The parent resolver if this is used for a subquery or null if it's used for the
-	 * top-level query
+	 * @param queryContext The context used to query information about the query
 	 */
-	protected void initialize(JPQLQueryContext queryContext) {
+	private void initialize(JPQLQueryContext queryContext) {
 		this.queryContext    = queryContext;
 		this.resolvers       = new HashMap<String, Resolver>();
 		this.declarations    = new ArrayList<Declaration>();
-		this.resultVariables = new HashSet<String>();
+		this.resultVariables = new HashMap<IdentificationVariable, String>();
 	}
 
 	/**
@@ -253,7 +314,7 @@ final class DeclarationResolver extends Resolver {
 	 */
 	boolean isCollectionIdentificationVariable(String variableName) {
 		boolean result = isCollectionIdentificationVariableImp(variableName);
-		if (!result && (parent != null)) {
+		if (!result && (getParent() != null)) {
 			result = getParent().isCollectionIdentificationVariableImp(variableName);
 		}
 		return result;
@@ -265,7 +326,7 @@ final class DeclarationResolver extends Resolver {
 
 			// Check for a collection member declaration
 			if (!declaration.rangeDeclaration &&
-			     declaration.variableName.equalsIgnoreCase(variableName)) {
+			     declaration.getVariableName().equalsIgnoreCase(variableName)) {
 
 				return true;
 			}
@@ -292,7 +353,7 @@ final class DeclarationResolver extends Resolver {
 	 */
 	boolean isRangeIdentificationVariable(String variableName) {
 		boolean result = isRangeIdentificationVariableImp(variableName);
-		if (!result && (parent != null)) {
+		if (!result && (getParent() != null)) {
 			result = getParent().isRangeIdentificationVariableImp(variableName);
 		}
 		return result;
@@ -303,7 +364,7 @@ final class DeclarationResolver extends Resolver {
 		for (Declaration declaration : declarations) {
 
 			if (declaration.rangeDeclaration &&
-			    declaration.variableName.equalsIgnoreCase(variableName)) {
+			    declaration.getVariableName().equalsIgnoreCase(variableName)) {
 
 				return true;
 			}
@@ -313,22 +374,29 @@ final class DeclarationResolver extends Resolver {
 	}
 
 	/**
-	 * Visit the current query (which is either the top-level query or a subquery) and gathers the
+	 * Visits the current query (which is either the top-level query or a subquery) and gathers the
 	 * information from the declaration clause.
 	 *
 	 * @param expression The {@link Expression} to visit in order to retrieve the information
 	 * contained in the given query's declaration
 	 */
 	void populate(Expression expression) {
-		expression.accept(visitor());
+		expression.accept(declarationVisitor());
+	}
+
+	private QualifyRangeDeclarationVisitor qualifyRangeDeclarationVisitor() {
+		if (qualifyRangeDeclarationVisitor == null) {
+			qualifyRangeDeclarationVisitor = new QualifyRangeDeclarationVisitor();
+		}
+		return qualifyRangeDeclarationVisitor;
 	}
 
 	private String visitDeclaration(Expression expression, Expression identificationVariable) {
 
 		// Visit the identification variable expression and retrieve the identification variable name
-		String variableName = queryContext.variableName(
+		String variableName = queryContext.literal(
 			identificationVariable,
-			VariableNameType.IDENTIFICATION_VARIABLE
+			LiteralType.IDENTIFICATION_VARIABLE
 		);
 
 		// If it's not empty, then we can create a Resolver
@@ -342,8 +410,9 @@ final class DeclarationResolver extends Resolver {
 			// this could cause issues when trying to resolve it
 			if (!resolvers.containsKey(internalVariableName)) {
 
-				// Resolve the expression and map the Resolver with the identification variable
+				// Resolve the expression and map it with the identification variable
 				Resolver resolver = queryContext.getResolver(expression);
+				resolver = new IdentificationVariableResolver(resolver, variableName);
 				resolvers.put(internalVariableName, resolver);
 			}
 
@@ -353,37 +422,53 @@ final class DeclarationResolver extends Resolver {
 		return ExpressionTools.EMPTY_STRING;
 	}
 
-	private ExpressionVisitor visitor() {
-		if (visitor == null) {
-			visitor = new Visitor();
-		}
-		return visitor;
-	}
-
+	/**
+	 * A <code>Declaration</code> represents either an identification variable declaration or a
+	 * collection member declaration.
+	 */
 	public static class Declaration {
 
 		/**
-		 * The abstract schema name, which is the entity name.
+		 * The abstract schema name, which is the entity name or <code>null</code> if this {@link
+		 * Declaration} is a collection member declaration.
 		 */
 		String abstractSchemaName;
 
 		/**
-		 * The actual expression that visited (either a {@link IdentificationVariableDeclaration} or
-		 * a {@link CollectionMemberDeclaration}.
+		 * Either the range variable declaration if this is a range declaration otherwise the
+		 * collection-valued path expression when this is a collection member declaration.
 		 */
-		Expression expression;
+		Expression baseExpression;
+
+		/**
+		 * The declaration expression, which is either an {@link IdentificationVariableDeclaration} or
+		 * a {@link CollectionMemberDeclaration} when part of a <b>FROM</b> clause, otherwise it's
+		 * either the {@link DeleteClause} or the {@link UpdateClause}.
+		 */
+		Expression declarationExpression;
+
+		/**
+		 * The identification variable used to declare an abstract schema name or a collection-valued
+		 * path expression.
+		 */
+		IdentificationVariable identificationVariable;
 
 		/**
 		 * The list of <b>JOIN FETCH</b> expressions that are declared in the same declaration than
 		 * the range variable declaration.
 		 */
-		private List<JoinFetch> joinFetches;
+		List<JoinFetch> joinFetches;
+
+		/**
+		 * The identification variables that are defined in the <b>JOIN</b> expressions.
+		 */
+		Set<String> joinIdentificationVariables;
 
 		/**
 		 * The list of <b>JOIN</b> expressions that are declared in the same declaration than the
 		 * range variable declaration.
 		 */
-		private Map<Join, String> joins;
+		Map<Join, IdentificationVariable> joins;
 
 		/**
 		 * Flag used to determine if this declaration is for a range variable declaration
@@ -391,129 +476,203 @@ final class DeclarationResolver extends Resolver {
 		 */
 		boolean rangeDeclaration;
 
-		/**
-		 * The identification variable used to declare an abstract schema name or a collection-valued
-		 * path expression.
-		 */
-		String variableName;
-
-		/**
-		 * Adds
-		 *
-		 * @param join
-		 */
-		public void addJoin(String variableName, Join join) {
+		private void addJoin(Join join, IdentificationVariable identificationVariable) {
 			if (joins == null) {
-				joins = new LinkedHashMap<Join, String>();
+				joins = new LinkedHashMap<Join, IdentificationVariable>();
 			}
-			joins.put(join, variableName);
+			joins.put(join, identificationVariable);
 		}
 
-		/**
-		 * Adds
-		 *
-		 * @param joinFetch
-		 */
-		public void addJoinFetch(JoinFetch joinFetch) {
+		private void addJoinFetch(JoinFetch joinFetch) {
 			if (joinFetches == null) {
 				joinFetches = new ArrayList<JoinFetch>();
 			}
 			joinFetches.add(joinFetch);
 		}
 
+		private Set<String> buildJoinIdentificationVariables() {
+
+			Set<String> variables = new HashSet<String>();
+			Set<String> upperCaseVariables = new HashSet<String>();
+
+			// Add the non-empty join identification variables
+			for (IdentificationVariable identificationVariable : joins.values()) {
+				String joinVariable = identificationVariable.getText();
+				// Make sure the same variable name but with different case is not added more than once
+				if ((joinVariable.length() > 0) &&
+				    !upperCaseVariables.contains(joinVariable.toUpperCase())) {
+
+					variables.add(joinVariable);
+				}
+			}
+
+			return Collections.unmodifiableSet(variables);
+		}
+
+		private Map.Entry<Join, String> buildMapEntry(Map.Entry<Join, IdentificationVariable> entry) {
+			IdentificationVariable variable = entry.getValue();
+			String variableName = (variable != null) ? variable.getText() : ExpressionTools.EMPTY_STRING;
+			return new SimpleEntry<Join, String>(entry.getKey(), variableName);
+		}
+
 		/**
-		 * Returns
+		 * Returns the abstract schema name, which is the entity name.
 		 *
-		 * @return
+		 * @return The abstract schema name, which is the entity name or <code>null</code> if this
+		 * {@link Declaration} is a collection member declaration
 		 */
 		public String getAbstractSchemaName() {
 			return abstractSchemaName;
 		}
 
 		/**
-		 * Returns
+		 * Returns the range variable declaration if this is a range declaration otherwise the
+		 * collection-valued path expression when this is a collection member declaration.
 		 *
-		 * @return
+		 * @return Either the range variable declaration or the collection-valued path expression
 		 */
-		public Expression getExpression() {
-			return expression;
+		public Expression getBaseExpression() {
+			return baseExpression;
 		}
 
 		/**
-		 * Returns
+		 * Returns the declaration expression, which is either an {@link IdentificationVariableDeclaration}
+		 * or a {@link CollectionMemberDeclaration} when part of a <b>FROM</b> clause, otherwise it's
+		 * either the {@link DeleteClause} or the {@link UpdateClause}.
 		 *
-		 * @return
+		 * @return The root of the declaration expression
+		 */
+		public Expression getDeclarationExpression() {
+			return declarationExpression;
+		}
+
+		/**
+		 * Returns the <b>JOIN</b> expressions mapped to their identification variables. The set
+		 * returns the <b>JOIN</b> expressions in ordered they were parsed.
+		 *
+		 * @return The <b>JOIN</b> expressions mapped to their identification variables
+		 */
+		public List<Map.Entry<Join, String>> getJoinEntries() {
+			List<Map.Entry<Join, String>> entries = new ArrayList<Map.Entry<Join, String>>();
+			for (Map.Entry<Join, IdentificationVariable> entry : joins.entrySet()) {
+				entries.add(buildMapEntry(entry));
+			}
+			return entries;
+		}
+
+		/**
+		 * Returns the <b>JOIN FETCH</b> expressions that were part of the range variable declaration
+		 * in the ordered they were parsed.
+		 *
+		 * @return The ordered list of <b>JOIN FETCH</b> expressions or an empty collection if none
+		 * was present
 		 */
 		public List<JoinFetch> getJoinFetches() {
-			return (joinFetches != null) ? joinFetches : Collections.<JoinFetch>emptyList();
+			return joinFetches;
 		}
 
 		/**
-		 * Returns
+		 * Returns the identification variables that are defined in the <b>JOIN</b> expressions.
 		 *
-		 * @return
+		 * @return The identification variables that are defined in the <b>JOIN</b> expressions
 		 */
 		public Set<String> getJoinIdentificationVariables() {
 
-			Set<String> variables = new HashSet<String>();
-			Set<String> upperCaseVariables = new HashSet<String>();
-
-			// Add the non-empty join identification variables
-			for (String joinVariable : (joins != null) ? joins.values() : Collections.<String>emptySet()) {
-				// Make sure the same variable name but with different case is not added more than once
-				if ((joinVariable.length() > 0) && !upperCaseVariables.contains(joinVariable.toUpperCase())) {
-					variables.add(joinVariable);
+			if (joinIdentificationVariables == null) {
+				if (hasJoins()) {
+					joinIdentificationVariables = buildJoinIdentificationVariables();
+				}
+				else {
+					joinIdentificationVariables = Collections.emptySet();
 				}
 			}
-			return  variables;
+
+			return joinIdentificationVariables;
 		}
 
 		/**
-		 * Returns
+		 * Returns the <b>JOIN</b> expressions that were part of the range variable declaration in the
+		 * ordered they were parsed.
 		 *
-		 * @return
-		 */
-		public Set<Map.Entry<Join, String>> getJoinEntries() {
-			if (joins != null) {
-				return Collections.unmodifiableSet(joins.entrySet());
-			}
-			return Collections.<Map.Entry<Join, String>>emptySet();
-		}
-
-		/**
-		 * Returns
-		 *
-		 * @return
+		 * @return The ordered list of <b>JOIN</b> expressions or an empty collection if none was
+		 * present
 		 */
 		public Collection<Join> getJoins() {
-			return (joins != null) ? joins.keySet() : Collections.<Join>emptyList();
+			return joins.keySet();
 		}
 
 		/**
-		 * Returns
+		 * Returns the identification variable name that is defining either the abstract schema name
+		 * or the collection-valued path expression
 		 *
-		 * @return
+		 * @return The name of the identification variable
 		 */
 		public String getVariableName() {
-			return variableName;
+			if (identificationVariable == null) {
+				return ExpressionTools.EMPTY_STRING;
+			}
+			return identificationVariable.getText();
 		}
 
 		/**
-		 * Determines whether
+		 * Determines whether the declaration contains <b>JOIN FETCH</b> expressions. This can be
+		 * <code>true</code> only when {@link #isRange()} returns <code>true</code>. A collection
+		 * member declaration does not have <b>JOIN FETCH</b> expressions.
 		 *
-		 * @return
+		 * @return <code>true</code> if at least one <b>JOIN FETCH</b> expression was parsed;
+		 * otherwise <code>false</code>
 		 */
 		public boolean hasJoinFetches() {
-			return (joinFetches != null) && !joinFetches.isEmpty();
+			return !joinFetches.isEmpty();
 		}
 
 		/**
-		 * Determines whether
+		 * Determines whether the declaration contains <b>JOIN</b> expressions. This can be
+		 * <code>true</code> only when {@link #isRange()} returns <code>true</code>. A collection
+		 * member declaration does not have <b>JOIN</b> expressions.
 		 *
-		 * @return
+		 * @return <code>true</code> if at least one <b>JOIN</b> expression was parsed;
+		 * otherwise <code>false</code>
 		 */
 		public boolean hasJoins() {
-			return (joins != null) && !joins.isEmpty();
+			return !joins.isEmpty();
+		}
+
+		/**
+		 * Determines whether this {@link Declaration} represents a range identification variable
+		 * declaration, example: "Employee e".
+		 * <p>
+		 * Note: There is a case where this can be <code>true</code> but the range expression is not
+		 * an abstract schema name but a derived path. It only happens in a subquery defined in the
+		 * <b>WHERE</b> clause of an <b>UPDATE</b> or <b>DELETE</b> statement because the
+		 * identification variable is optional.
+		 *
+		 * @return <code>true</code> if the declaration is over an abstract schema name; <code>false</code>
+		 * if it's over a collection-valued path expression
+		 */
+		public boolean isRange() {
+			return rangeDeclaration;
+		}
+
+		/**
+		 * Make sure the list of <b>JOIN</b> expressions and the map of <b>JOIN FETCHS</b> expressions
+		 * can not be modified.
+		 */
+		private void lockData() {
+
+			if (joins != null) {
+				joins = Collections.unmodifiableMap(joins);
+			}
+			else {
+				joins = Collections.emptyMap();
+			}
+
+			if (joinFetches != null) {
+				joinFetches = Collections.unmodifiableList(joinFetches);
+			}
+			else {
+				joinFetches = Collections.emptyList();
+			}
 		}
 
 		/**
@@ -521,11 +680,11 @@ final class DeclarationResolver extends Resolver {
 		 */
 		@Override
 		public String toString() {
-			return expression.toParsedText();
+			return declarationExpression.toParsedText();
 		}
 	}
 
-	private class Visitor extends AbstractExpressionVisitor {
+	private class DeclarationVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The {@link Declaration} being populated.
@@ -547,11 +706,18 @@ final class DeclarationResolver extends Resolver {
 		public void visit(CollectionMemberDeclaration expression) {
 
 			Declaration declaration = new Declaration();
-			declaration.expression = expression;
-			declarations.add(declaration);
 
-			String variableName = visitDeclaration(expression, expression.getIdentificationVariable());
-			declaration.variableName = variableName;
+			Expression identificationVariable = expression.getIdentificationVariable();
+			String variableName = visitDeclaration(expression, identificationVariable);
+
+			if (variableName.length() > 0) {
+				declaration.identificationVariable = (IdentificationVariable) identificationVariable;
+			}
+
+			declaration.declarationExpression = expression;
+			declaration.baseExpression        = expression.getCollectionValuedPathExpression();
+			declaration.lockData();
+			declarations.add(declaration);
 		}
 
 		/**
@@ -561,7 +727,7 @@ final class DeclarationResolver extends Resolver {
 		public void visit(DeleteClause expression) {
 
 			Declaration declaration = new Declaration();
-			declaration.expression = expression;
+			declaration.declarationExpression = expression;
 			declaration.rangeDeclaration = true;
 			declarations.add(declaration);
 
@@ -571,6 +737,7 @@ final class DeclarationResolver extends Resolver {
 				expression.getRangeVariableDeclaration().accept(this);
 			}
 			finally {
+				currentDeclaration.lockData();
 				currentDeclaration = null;
 			}
 		}
@@ -596,10 +763,7 @@ final class DeclarationResolver extends Resolver {
 		 */
 		@Override
 		public void visit(IdentificationVariable expression) {
-			String resultVariable = expression.getText();
-			if (ExpressionTools.stringIsNotEmpty(resultVariable)) {
-				resultVariables.add(resultVariable);
-			}
+			resultVariables.put(expression, expression.getText());
 		}
 
 		/**
@@ -609,8 +773,8 @@ final class DeclarationResolver extends Resolver {
 		public void visit(IdentificationVariableDeclaration expression) {
 
 			Declaration declaration = new Declaration();
-			declaration.expression = expression;
-			declaration.rangeDeclaration = true;
+			declaration.declarationExpression = expression;
+			declaration.baseExpression        = expression.getRangeVariableDeclaration();
 			declarations.add(declaration);
 
 			currentDeclaration = declaration;
@@ -620,6 +784,7 @@ final class DeclarationResolver extends Resolver {
 				expression.getJoins().accept(this);
 			}
 			finally {
+				currentDeclaration.lockData();
 				currentDeclaration = null;
 			}
 		}
@@ -629,8 +794,14 @@ final class DeclarationResolver extends Resolver {
 		 */
 		@Override
 		public void visit(Join expression) {
-			String variableName = visitDeclaration(expression, expression.getIdentificationVariable());
-			currentDeclaration.addJoin(variableName, expression);
+			Expression identificationVariable = expression.getIdentificationVariable();
+			String variableName = visitDeclaration(expression, identificationVariable);
+			if (variableName.length() > 0) {
+				currentDeclaration.addJoin(expression, (IdentificationVariable) identificationVariable);
+			}
+			else {
+				currentDeclaration.addJoin(expression, null);
+			}
 		}
 
 		/**
@@ -655,18 +826,34 @@ final class DeclarationResolver extends Resolver {
 		@Override
 		public void visit(RangeVariableDeclaration expression) {
 
-			String variableName = visitDeclaration(
-				expression.getAbstractSchemaName(),
-				expression.getIdentificationVariable()
+			Expression abstractSchemaName     = expression.getAbstractSchemaName();
+			Expression identificationVariable = expression.getIdentificationVariable();
+
+			// Identification variable
+			String variableName = visitDeclaration(abstractSchemaName, identificationVariable);
+
+			if (variableName.length() > 0) {
+				currentDeclaration.identificationVariable = (IdentificationVariable) identificationVariable;
+			}
+
+			// Abstract schema name or join association (for subqueries)
+			String entityName = queryContext.literal(
+				abstractSchemaName,
+				LiteralType.ABSTRACT_SCHEMA_NAME
 			);
 
-			String abstractSchemaName = queryContext.variableName(
-				expression.getAbstractSchemaName(),
-				VariableNameType.ABSTRACT_SCHEMA_NAME
-			);
+			if (ExpressionTools.stringIsNotEmpty(entityName)) {
+				currentDeclaration.rangeDeclaration = true;
+				currentDeclaration.abstractSchemaName = entityName;
+			}
+			else {
+				String joinAssociation = queryContext.literal(
+					abstractSchemaName,
+					LiteralType.PATH_EXPRESSION_ALL_PATH
+				);
 
-			currentDeclaration.variableName       = variableName;
-			currentDeclaration.abstractSchemaName = abstractSchemaName;
+				currentDeclaration.abstractSchemaName = joinAssociation;
+			}
 		}
 
 		/**
@@ -725,7 +912,7 @@ final class DeclarationResolver extends Resolver {
 		public void visit(UpdateClause expression) {
 
 			Declaration declaration = new Declaration();
-			declaration.expression = expression;
+			declaration.declarationExpression = expression;
 			declaration.rangeDeclaration = true;
 			declarations.add(declaration);
 
@@ -735,6 +922,7 @@ final class DeclarationResolver extends Resolver {
 				expression.getRangeVariableDeclaration().accept(this);
 			}
 			finally {
+				currentDeclaration.lockData();
 				currentDeclaration = null;
 			}
 		}
@@ -745,6 +933,47 @@ final class DeclarationResolver extends Resolver {
 		@Override
 		public void visit(UpdateStatement expression) {
 			expression.getUpdateClause().accept(this);
+		}
+	}
+
+	private class QualifyRangeDeclarationVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The {@link Declaration} being modified.
+		 */
+		Declaration declaration;
+
+		/**
+		 * The identification variable coming from the parent identification variable declaration.
+		 */
+		String outerVariableName;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+			declaration.baseExpression = expression;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariableDeclaration expression) {
+			expression.getRangeVariableDeclaration().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(RangeVariableDeclaration expression) {
+
+			declaration.rangeDeclaration = false;
+
+			expression.setVirtualIdentificationVariable(outerVariableName, declaration.abstractSchemaName);
+			expression.getAbstractSchemaName().accept(this);
 		}
 	}
 }

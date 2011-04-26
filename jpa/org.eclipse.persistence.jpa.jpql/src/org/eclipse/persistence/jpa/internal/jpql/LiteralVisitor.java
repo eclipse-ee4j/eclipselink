@@ -19,6 +19,7 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.AnonymousExpressionVisit
 import org.eclipse.persistence.jpa.internal.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.internal.jpql.parser.IdentificationVariable;
+import org.eclipse.persistence.jpa.internal.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.internal.jpql.parser.Join;
 import org.eclipse.persistence.jpa.internal.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.internal.jpql.parser.StateFieldPathExpression;
@@ -26,31 +27,32 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.StringLiteral;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 /**
- * This visitor traverses {@link org.eclipse.persistence.jpa.query.parser.Expression expressions}
- * that has a name, such as {@link StateFieldPathExpression}, {@link IdentificationVariable},
- * {@link CollectionValuedPathExpression} for instance and collects the variable name.
+ * This visitor traverses an {@link Expression} and retrieves the "literal" value. The literal to
+ * retrieve depends on the {@link LiteralType type}. The literal is basically a string value like an
+ * identification variable name, an input parameter, a path expression, an abstract schema name,
+ * etc.
  *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
  */
-public final class VariableNameVisitor extends AnonymousExpressionVisitor {
+public final class LiteralVisitor extends AnonymousExpressionVisitor {
 
 	/**
-	 * The {@link Type} helps to determine when traversing an {@link Expression} if it's name can
-	 * be retrieved.
+	 * The literal value retrieved from the visited {@link Expression}.
 	 */
-	private VariableNameType type;
+	public String literal;
 
 	/**
-	 * The name retrieved from an {@link Expression} depending on the {@link Type} value.
+	 * The {@link LiteralType} helps to determine when traversing an {@link Expression} what to
+	 * retrieve.
 	 */
-	public String variableName;
+	private LiteralType type;
 
 	/**
 	 * Creates a new <code>VariableNameVisitor</code>.
 	 */
-	public VariableNameVisitor() {
+	public LiteralVisitor() {
 		super();
 	}
 
@@ -59,19 +61,19 @@ public final class VariableNameVisitor extends AnonymousExpressionVisitor {
 	 *
 	 * @param type One of the possible way to retrieve a variable name
 	 */
-	VariableNameVisitor(VariableNameType type) {
+	LiteralVisitor(LiteralType type) {
 		super();
 		setType(type);
 	}
 
 	/**
-	 * Changes the way this visitor should retrieve a variable name.
+	 * Changes the way this visitor should retrieve the literal value.
 	 *
-	 * @param type One of the possible way to retrieve a variable name
+	 * @param type One of the possible {@link LiteralType LiteralTypes}
 	 */
-	public void setType(VariableNameType type) {
+	public void setType(LiteralType type) {
 		this.type = type;
-		this.variableName = ExpressionTools.EMPTY_STRING;
+		this.literal = ExpressionTools.EMPTY_STRING;
 	}
 
 	/**
@@ -79,8 +81,8 @@ public final class VariableNameVisitor extends AnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(AbstractSchemaName expression) {
-		if (type == VariableNameType.ABSTRACT_SCHEMA_NAME) {
-			variableName = expression.getText();
+		if (type == LiteralType.ABSTRACT_SCHEMA_NAME) {
+			literal = expression.getText();
 		}
 	}
 
@@ -97,8 +99,8 @@ public final class VariableNameVisitor extends AnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(EntityTypeLiteral expression) {
-		if (type == VariableNameType.ENTITY_TYPE) {
-			variableName = expression.getEntityTypeName();
+		if (type == LiteralType.ENTITY_TYPE) {
+			literal = expression.getEntityTypeName();
 		}
 	}
 
@@ -108,10 +110,20 @@ public final class VariableNameVisitor extends AnonymousExpressionVisitor {
 	@Override
 	public void visit(IdentificationVariable expression) {
 
-		if (type == VariableNameType.IDENTIFICATION_VARIABLE ||
-		    type == VariableNameType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE) {
+		if (type == LiteralType.IDENTIFICATION_VARIABLE ||
+		    type == LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE) {
 
-			variableName = expression.getText();
+			literal = expression.getText();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(InputParameter expression) {
+		if (type == LiteralType.INPUT_PARAMETER) {
+			literal = expression.getParameter();
 		}
 	}
 
@@ -120,7 +132,7 @@ public final class VariableNameVisitor extends AnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(Join expression) {
-		if (type == VariableNameType.IDENTIFICATION_VARIABLE) {
+		if (type == LiteralType.IDENTIFICATION_VARIABLE) {
 			expression.getIdentificationVariable().accept(this);
 		}
 		else {
@@ -149,20 +161,20 @@ public final class VariableNameVisitor extends AnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(StringLiteral expression) {
-		if (type == VariableNameType.STRING_LITERAL) {
-			variableName = expression.getText();
+		if (type == LiteralType.STRING_LITERAL) {
+			literal = expression.getText();
 		}
 	}
 
 	private void visitAbstractPathExpression(AbstractPathExpression expression) {
-		if (type == VariableNameType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE) {
+		if (type == LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE) {
 			expression.getIdentificationVariable().accept(this);
 		}
-		else if (type == VariableNameType.PATH_EXPRESSION_ALL_PATH) {
-			variableName = expression.toParsedText();
+		else if (type == LiteralType.PATH_EXPRESSION_ALL_PATH) {
+			literal = expression.toParsedText();
 		}
-		else if (type == VariableNameType.PATH_EXPRESSION_LAST_PATH) {
-			variableName = expression.getPath(expression.pathSize() - 1);
+		else if (type == LiteralType.PATH_EXPRESSION_LAST_PATH) {
+			literal = expression.getPath(expression.pathSize() - 1);
 		}
 	}
 }

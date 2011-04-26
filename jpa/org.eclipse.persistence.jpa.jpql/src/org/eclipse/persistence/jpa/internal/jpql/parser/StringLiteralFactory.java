@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * The {@link StringLiteralExpressionFactory} responsible to parse a sub-query
- * starting with a single quote.
+ * The {@link StringLiteralExpressionFactory} responsible to parse a sub-query starting with a
+ * single quote.
  *
  * @see StringLiteral
  *
@@ -50,6 +50,7 @@ final class StringLiteralFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new StringLiteral(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

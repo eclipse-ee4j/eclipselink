@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link ObjectExpressionFactory} creates a new {@link ObjectExpression}
- * when the portion of the query to parse starts with <b>OBJECT</b>.
+ * This {@link ObjectExpressionFactory} creates a new {@link ObjectExpression} when the portion of
+ * the query to parse starts with <b>OBJECT</b>.
  *
  * @see ObjectExpression
  *
@@ -49,6 +49,7 @@ final class ObjectExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new ObjectExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

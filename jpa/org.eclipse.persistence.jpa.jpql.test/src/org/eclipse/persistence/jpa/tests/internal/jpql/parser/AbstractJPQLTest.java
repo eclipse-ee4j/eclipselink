@@ -109,6 +109,7 @@ import org.eclipse.persistence.jpa.internal.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.internal.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.internal.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 import static org.eclipse.persistence.jpa.internal.jpql.parser.Expression.*;
 import static org.junit.Assert.*;
@@ -1119,6 +1120,42 @@ abstract class AbstractJPQLTest {
 	 * @param query The JPQL query to parse and to test the parsed tree representation
 	 * @param queryStatement The tester used to verify the parsed tree is correctly representing the
 	 * JPQL query
+	 * @param version The JPA version used for parsing the query
+	 */
+	final void testInvalidQuery(String query, ExpressionTester queryStatement, IJPAVersion version) {
+		testInvalidQuery(query, queryStatement, version, JPQLQueryStringFormatter.DEFAULT);
+	}
+
+	/**
+	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 * <p>
+	 * The parsing system will have the tolerance turned on.
+	 *
+	 * @param query The JPQL query to parse and to test the parsed tree representation
+	 * @param queryStatement The tester used to verify the parsed tree is correctly representing the
+	 * JPQL query
+	 * @param version The JPA version used for parsing the query
+	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
+	 * before it is used to test the generated string
+	 */
+	final void testInvalidQuery(String query,
+	                            ExpressionTester queryStatement,
+	                            IJPAVersion version,
+	                            JPQLQueryStringFormatter formatter) {
+
+		testQuery(query, queryStatement, version, formatter, true);
+	}
+
+	/**
+	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 * <p>
+	 * The parsing system will have the tolerance turned on.
+	 *
+	 * @param query The JPQL query to parse and to test the parsed tree representation
+	 * @param queryStatement The tester used to verify the parsed tree is correctly representing the
+	 * JPQL query
 	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
 	 * before it is used to test the generated string
 	 */
@@ -1126,7 +1163,7 @@ abstract class AbstractJPQLTest {
 	                            ExpressionTester queryStatement,
 	                            JPQLQueryStringFormatter formatter) {
 
-		testQuery(query, queryStatement, formatter, true);
+		testInvalidQuery(query, queryStatement, IJPAVersion.DEFAULT_VERSION, formatter);
 	}
 
 	/**
@@ -1144,6 +1181,34 @@ abstract class AbstractJPQLTest {
 	 */
 	final void testQuery(String query, ExpressionTester queryStatement) {
 		testQuery(query, queryStatement, JPQLQueryStringFormatter.DEFAULT);
+	}
+
+	/**
+	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 *
+	 * @param query The JPQL query to parse and to test the parsed tree representation
+	 * @param queryStatement The tester used to verify the parsed tree is correctly representing the
+	 * JPQL query
+	 * @param version The JPA version used for parsing the query
+	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
+	 * before it is used to test the generated string
+	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
+	 * to parse grammatically invalid or incomplete queries
+	 */
+	private final void testQuery(String query,
+	                             ExpressionTester queryStatement,
+	                             IJPAVersion version,
+	                             JPQLQueryStringFormatter formatter,
+	                             boolean tolerant) {
+
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query, version, tolerant, formatter);
+
+		if (queryStatement.getClass() != JPQLExpressionTester.class) {
+			queryStatement = jpqlExpression(queryStatement);
+		}
+
+		queryStatement.test(jpqlExpression);
 	}
 
 	/**
@@ -1172,32 +1237,6 @@ abstract class AbstractJPQLTest {
 	/**
 	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
 	 * with the given tester, which is an equivalent representation of the parsed tree.
-	 *
-	 * @param query The JPQL query to parse and to test the parsed tree representation
-	 * @param queryStatement The tester used to verify the parsed tree is correctly representing the
-	 * JPQL query
-	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
-	 * before it is used to test the generated string
-	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
-	 * to parse grammatically invalid or incomplete queries
-	 */
-	private final void testQuery(String query,
-	                             ExpressionTester queryStatement,
-	                             JPQLQueryStringFormatter formatter,
-	                             boolean tolerant) {
-
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query, tolerant, formatter);
-
-		if (queryStatement.getClass() != JPQLExpressionTester.class) {
-			queryStatement = jpqlExpression(queryStatement);
-		}
-
-		queryStatement.test(jpqlExpression);
-	}
-
-	/**
-	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
-	 * with the given tester, which is an equivalent representation of the parsed tree.
 	 * <p>
 	 * The parsing system will have the tolerance turned off.
 	 *
@@ -1218,6 +1257,42 @@ abstract class AbstractJPQLTest {
 	 * @param query The JPQL query to parse and to test the parsed tree representation
 	 * @param queryStatement The tester used to verify the parsed tree is correctly representing the
 	 * JPQL query
+	 */
+	final void testValidQuery(String query, ExpressionTester queryStatement, IJPAVersion version) {
+		testValidQuery(query, queryStatement, version, JPQLQueryStringFormatter.DEFAULT);
+	}
+
+	/**
+	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 * <p>
+	 * The parsing system will have the tolerance turned off.
+	 *
+	 * @param query The JPQL query to parse and to test the parsed tree representation
+	 * @param queryStatement The tester used to verify the parsed tree is correctly representing the
+	 * JPQL query
+	 * @param version The JPA version used to parse the query
+	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
+	 * before it is used to test the generated string
+	 */
+	final void testValidQuery(String query,
+	                          ExpressionTester queryStatement,
+	                          IJPAVersion version,
+	                          JPQLQueryStringFormatter formatter) {
+
+		testQuery(query, queryStatement, version, formatter, false);
+	}
+
+
+	/**
+	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 * <p>
+	 * The parsing system will have the tolerance turned off.
+	 *
+	 * @param query The JPQL query to parse and to test the parsed tree representation
+	 * @param queryStatement The tester used to verify the parsed tree is correctly representing the
+	 * JPQL query
 	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
 	 * before it is used to test the generated string
 	 */
@@ -1225,7 +1300,7 @@ abstract class AbstractJPQLTest {
 	                          ExpressionTester queryStatement,
 	                          JPQLQueryStringFormatter formatter) {
 
-		testQuery(query, queryStatement, formatter, false);
+		testValidQuery(query, queryStatement, IJPAVersion.DEFAULT_VERSION, formatter);
 	}
 
 	static final class AbsExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
@@ -1468,11 +1543,11 @@ abstract class AbstractJPQLTest {
 			return AbstractJPQLTest.lowerThanOrEqual(this, expression);
 		}
 
-		public final ExpressionTester member(ExpressionTester collectionValuedPathExpression) {
+		public final CollectionMemberExpressionTester member(ExpressionTester collectionValuedPathExpression) {
 			return AbstractJPQLTest.member(this, collectionValuedPathExpression);
 		}
 
-		public final ExpressionTester memberOf(ExpressionTester collectionValuedPathExpression) {
+		public final CollectionMemberExpressionTester memberOf(ExpressionTester collectionValuedPathExpression) {
 			return AbstractJPQLTest.memberOf(this, collectionValuedPathExpression);
 		}
 
@@ -2252,20 +2327,21 @@ abstract class AbstractJPQLTest {
 	}
 
 	static final class CollectionMemberExpressionTester extends AbstractExpressionTester {
+
 		private ExpressionTester collectionValuedPathExpression;
 		private ExpressionTester entityExpression;
 		private boolean hasNot;
 		private boolean hasOf;
+		public boolean hasSpaceAfterMember;
+		public boolean hasSpaceAfterOf;
 
-		CollectionMemberExpressionTester(ExpressionTester entityExpression,
-		                                 boolean hasNot,
-		                                 boolean hasOf,
-		                                 ExpressionTester collectionValuedPathExpression) {
+		CollectionMemberExpressionTester(ExpressionTester entityExpression, boolean hasNot, boolean hasOf, ExpressionTester collectionValuedPathExpression) {
 			super();
-
-			this.hasNot = hasNot;
-			this.hasOf = hasOf;
-			this.entityExpression = entityExpression;
+			this.hasNot                         = hasNot;
+			this.hasOf                          = hasOf;
+			this.hasSpaceAfterMember            = true;
+			this.hasSpaceAfterOf                = hasOf;
+			this.entityExpression               = entityExpression;
 			this.collectionValuedPathExpression = collectionValuedPathExpression;
 		}
 
@@ -2273,12 +2349,13 @@ abstract class AbstractJPQLTest {
 			assertInstance(expression, CollectionMemberExpression.class);
 
 			CollectionMemberExpression collectionMemberExpression = (CollectionMemberExpression) expression;
-			assertEquals(toString(), collectionMemberExpression.toParsedText());
-			assertTrue  (collectionMemberExpression.hasCollectionValuedPathExpression());
-			assertTrue  (collectionMemberExpression.hasEntityExpression());
-			assertTrue  (collectionMemberExpression.hasSpaceAfterMember());
-			assertEquals(hasNot, collectionMemberExpression.hasNot());
-			assertEquals(hasOf,  collectionMemberExpression.hasSpaceAfterOf());
+			assertEquals(toString(),                               collectionMemberExpression.toParsedText());
+			assertEquals(!collectionValuedPathExpression.isNull(), collectionMemberExpression.hasCollectionValuedPathExpression());
+			assertEquals(!entityExpression.isNull(),               collectionMemberExpression.hasEntityExpression());
+			assertEquals(hasNot,                                   collectionMemberExpression.hasNot());
+			assertEquals(hasSpaceAfterMember,                      collectionMemberExpression.hasSpaceAfterMember());
+			assertEquals(hasOf,                                    collectionMemberExpression.hasOf());
+			assertEquals(hasSpaceAfterOf,                          collectionMemberExpression.hasSpaceAfterOf());
 
 			entityExpression.test(collectionMemberExpression.getEntityExpression());
 			collectionValuedPathExpression.test(collectionMemberExpression.getCollectionValuedPathExpression());
@@ -2288,7 +2365,24 @@ abstract class AbstractJPQLTest {
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(entityExpression);
-			sb.append(hasNot && hasOf ? " NOT MEMBER OF " : hasOf ? " MEMBER OF " : hasNot ? " NOT MEMBER " : " MEMBER ");
+			if (!entityExpression.isNull()) {
+				sb.append(" ");
+			}
+			if (hasNot) {
+				sb.append("NOT ");
+			}
+			if (hasOf) {
+				sb.append(MEMBER_OF);
+				if (hasSpaceAfterOf) {
+					sb.append(" ");
+				}
+			}
+			else {
+				sb.append(MEMBER);
+				if (hasSpaceAfterMember) {
+					sb.append(" ");
+				}
+			}
 			sb.append(collectionValuedPathExpression);
 			return sb.toString();
 		}
@@ -2309,9 +2403,9 @@ abstract class AbstractJPQLTest {
 	static final class ComparisonExpressionTester extends AbstractExpressionTester {
 
 		private String comparator;
+		public boolean hasSpaceAfterIdentifier;
 		private ExpressionTester leftExpression;
 		private ExpressionTester rightExpression;
-		public boolean hasSpaceAfterIdentifier;
 
 		ComparisonExpressionTester(String comparator, ExpressionTester leftExpression, ExpressionTester rightExpression) {
 			super();
@@ -2418,25 +2512,31 @@ abstract class AbstractJPQLTest {
 	}
 
 	static final class ConstructorExpressionTester extends AbstractExpressionTester {
+
 		private String className;
 		private ExpressionTester constructorItems;
+		boolean hasLeftParenthesis;
+		boolean hasRightParenthesis;
+		boolean hasSpaceAfterNew;
 
-		ConstructorExpressionTester(String className,
-		                            ExpressionTester constructorItems) {
+		ConstructorExpressionTester(String className, ExpressionTester constructorItems) {
 			super();
-
-			this.className = className;
-			this.constructorItems = constructorItems;
+			this.className           = className;
+			this.constructorItems    = constructorItems;
+			this.hasSpaceAfterNew    = true;
+			this.hasLeftParenthesis  = true;
+			this.hasRightParenthesis = true;
 		}
 
 		public void test(Expression expression) {
 			assertInstance(expression, ConstructorExpression.class);
 
 			ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-			assertEquals(toString(), constructorExpression.toParsedText());
-			assertTrue  (constructorExpression.hasConstructorItems());
-			assertTrue  (constructorExpression.hasLeftParenthesis());
-			assertTrue  (constructorExpression.hasRightParenthesis());
+			assertEquals(toString(),                 constructorExpression.toParsedText());
+			assertEquals(!constructorItems.isNull(), constructorExpression.hasConstructorItems());
+			assertEquals(hasSpaceAfterNew,           constructorExpression.hasSpaceAfterNew());
+			assertEquals(hasLeftParenthesis,         constructorExpression.hasLeftParenthesis());
+			assertEquals(hasRightParenthesis,        constructorExpression.hasRightParenthesis());
 
 			constructorItems.test(constructorExpression.getConstructorItems());
 		}
@@ -2445,11 +2545,17 @@ abstract class AbstractJPQLTest {
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(NEW);
-			sb.append(" ");
+			if (hasSpaceAfterNew) {
+				sb.append(" ");
+			}
 			sb.append(className);
-			sb.append("(");
+			if (hasLeftParenthesis) {
+				sb.append("(");
+			}
 			sb.append(constructorItems);
-			sb.append(")");
+			if (hasRightParenthesis) {
+				sb.append(")");
+			}
 			return sb.toString();
 		}
 	}

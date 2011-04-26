@@ -16,11 +16,10 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link ModExpressionFactory} creates a new {@link ModExpression} when
- * the portion of the query to parse starts with <b>MOD</b>.
+ * This {@link ModExpressionFactory} creates a new {@link ModExpression} when the portion of the
+ * query to parse starts with <b>MOD</b>.
  *
  * @see ModExpression
- *
  * @version 2.3
  * @since 2.3
  * @author Pascal Filion
@@ -49,6 +48,7 @@ final class ModExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new ModExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

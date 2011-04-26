@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * @since 2.3
  * @author Pascal Filion
  */
-final class SingleValuedObjectFieldResolver extends AbstractPathResolver {
+public final class SingleValuedObjectFieldResolver extends AbstractPathResolver {
 
 	/**
 	 * The {@link IManagedType} representing this single valued object field path.
@@ -54,7 +54,15 @@ final class SingleValuedObjectFieldResolver extends AbstractPathResolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	IManagedType getManagedType() {
+	public void accept(ResolverVisitor visitor) {
+		visitor.visit(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IManagedType getManagedType() {
 		if ((managedType == null) && !managedTypeResolved) {
 			managedType = resolveManagedType();
 			managedTypeResolved = true;
@@ -82,5 +90,13 @@ final class SingleValuedObjectFieldResolver extends AbstractPathResolver {
 
 		// Retrieve the corresponding managed type for the mapping's type
 		return getProvider().getManagedType(type);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return path;
 	}
 }

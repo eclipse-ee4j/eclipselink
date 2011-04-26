@@ -14,8 +14,8 @@
 package org.eclipse.persistence.jpa.internal.jpql.parser;
 
 /**
- * This {@link ValueExpressionFactory} creates a new {@link ValueExpression}
- * when the portion of the query to parse starts with <b>VALUE</b>.
+ * This {@link ValueExpressionFactory} creates a new {@link ValueExpression} when the portion of the
+ * query to parse starts with <b>VALUE</b>.
  *
  * @see ValueExpression
  *

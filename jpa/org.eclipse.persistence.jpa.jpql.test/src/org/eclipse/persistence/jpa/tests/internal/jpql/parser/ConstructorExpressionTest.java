@@ -13,467 +13,342 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.internal.jpql.parser;
 
-import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.AvgFunction;
-import org.eclipse.persistence.jpa.internal.jpql.parser.CollectionExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.ConstructorExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.CountFunction;
-import org.eclipse.persistence.jpa.internal.jpql.parser.Expression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.FromClause;
-import org.eclipse.persistence.jpa.internal.jpql.parser.IdentificationVariable;
-import org.eclipse.persistence.jpa.internal.jpql.parser.JPQLExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.SelectClause;
-import org.eclipse.persistence.jpa.internal.jpql.parser.SelectStatement;
-import org.eclipse.persistence.jpa.internal.jpql.parser.StateFieldPathExpression;
-
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")
 public final class ConstructorExpressionTest extends AbstractJPQLTest {
+
 	@Test
 	public void testBuildExpression_01() {
+
 		String query = "SELECT NEW " + ConstructorExpressionTest.class.getName() + "(e) FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(new_(ConstructorExpressionTest.class.getName(), variable("e"))),
+			from("Employee", "e")
+		);
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
-
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals(ConstructorExpressionTest.class.getName(), constructorExpression.getClassName());
-		assertFalse (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertTrue  (constructorExpression.hasRightParenthesis());
-
-		// ConstructorItem
-		expression = constructorExpression.getConstructorItems();
-		assertTrue(expression instanceof IdentificationVariable);
-		IdentificationVariable identificationVariable = (IdentificationVariable) expression;
-
-		assertEquals("e", identificationVariable.getText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_02() {
+
 		String query = "SELECT NEW " + ConstructorExpressionTest.class.getName() + "(e, COUNT(DISTINCT e.name)) FROM Employee e";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(
+				new_(
+					ConstructorExpressionTest.class.getName(),
+					variable("e"),
+					countDistinct(path("e.name"))
+				)
+			),
+			from("Employee", "e")
+		);
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
-
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals(ConstructorExpressionTest.class.getName(), constructorExpression.getClassName());
-		assertFalse (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertTrue  (constructorExpression.hasRightParenthesis());
-
-		// ConstructorItem
-		expression = constructorExpression.getConstructorItems();
-		assertTrue(expression instanceof CollectionExpression);
-		CollectionExpression collectionExpression = (CollectionExpression) expression;
-
-		assertEquals(2, collectionExpression.childrenSize());
-		assertTrue(collectionExpression.getChild(0) instanceof IdentificationVariable);
-		assertTrue(collectionExpression.getChild(1) instanceof CountFunction);
-
-		IdentificationVariable identificationVariable = (IdentificationVariable) collectionExpression.getChild(0);
-		assertEquals("e", identificationVariable.getText());
-
-		CountFunction countFunction = (CountFunction) collectionExpression.getChild(1);
-		assertTrue(countFunction.hasDistinct());
-
-		expression = countFunction.getExpression();
-		assertTrue(expression instanceof StateFieldPathExpression);
-		StateFieldPathExpression stateFieldPathExpression = (StateFieldPathExpression) expression;
-		assertEquals("e.name", stateFieldPathExpression.toParsedText());
+		testQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_03() {
+
 		String query = "SELECT NEW";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(ExpressionTools.EMPTY_STRING, nullExpression());
+		constructor.hasSpaceAfterNew    = false;
+		constructor.hasLeftParenthesis  = false;
+		constructor.hasRightParenthesis = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals("", constructorExpression.getClassName());
-		assertTrue  (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertFalse (constructorExpression.hasLeftParenthesis());
-		assertFalse (constructorExpression.hasRightParenthesis());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_04() {
+
 		String query = "SELECT NEW ";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(ExpressionTools.EMPTY_STRING, nullExpression());
+		constructor.hasSpaceAfterNew    = true;
+		constructor.hasLeftParenthesis  = false;
+		constructor.hasRightParenthesis = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals("", constructorExpression.getClassName());
-		assertTrue  (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertFalse (constructorExpression.hasLeftParenthesis());
-		assertFalse (constructorExpression.hasRightParenthesis());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_05() {
+
 		String query = "SELECT NEW From Employee e";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(ExpressionTools.EMPTY_STRING, nullExpression());
+		constructor.hasSpaceAfterNew    = true;
+		constructor.hasLeftParenthesis  = false;
+		constructor.hasRightParenthesis = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			from("Employee", "e")
+		);
 
-		// FromClause
-		expression = selectStatement.getFromClause();
-		assertTrue(expression instanceof FromClause);
-		assertEquals("FROM Employee e", expression.toParsedText());
-
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals("", constructorExpression.getClassName());
-		assertFalse (constructorExpression.hasConstructorItems());
-		assertFalse (constructorExpression.hasLeftParenthesis());
-		assertFalse (constructorExpression.hasRightParenthesis());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_06() {
+
 		String query = "SELECT NEW(";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(ExpressionTools.EMPTY_STRING, nullExpression());
+		constructor.hasSpaceAfterNew    = false;
+		constructor.hasLeftParenthesis  = true;
+		constructor.hasRightParenthesis = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals("", constructorExpression.getClassName());
-		assertTrue  (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertFalse (constructorExpression.hasRightParenthesis());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_07() {
+
 		String query = "SELECT NEW(,";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(
+			ExpressionTools.EMPTY_STRING,
+			collection(
+				new ExpressionTester[] { nullExpression(), nullExpression() },
+				new Boolean[] { true, false },
+				new Boolean[] { false, false }
+			)
+		);
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		constructor.hasSpaceAfterNew    = false;
+		constructor.hasLeftParenthesis  = true;
+		constructor.hasRightParenthesis = false;
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		assertEquals("", constructorExpression.getClassName());
-		assertFalse (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertFalse (constructorExpression.hasRightParenthesis());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_08() {
+
 		String query = "SELECT NEW()";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(ExpressionTools.EMPTY_STRING, nullExpression());
+		constructor.hasSpaceAfterNew = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals("", constructorExpression.getClassName());
-		assertTrue  (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertTrue  (constructorExpression.hasRightParenthesis());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_09() {
+
 		String query = "SELECT NEW(,)";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(
+			ExpressionTools.EMPTY_STRING,
+			collection(
+				new ExpressionTester[] { nullExpression(), nullExpression() },
+				new Boolean[] { true, false },
+				new Boolean[] { false, false }
+			)
+		);
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		constructor.hasSpaceAfterNew    = false;
+		constructor.hasLeftParenthesis  = true;
+		constructor.hasRightParenthesis = true;
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		assertEquals("", constructorExpression.getClassName());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertTrue  (constructorExpression.hasRightParenthesis());
-		assertEquals(",", ((AbstractExpression) constructorExpression.getConstructorItems()).toParsedText());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_10() {
+
 		String query = "SELECT NEW(e.name";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(
+			ExpressionTools.EMPTY_STRING,
+			path("e.name")
+		);
+		constructor.hasSpaceAfterNew    = false;
+		constructor.hasLeftParenthesis  = true;
+		constructor.hasRightParenthesis = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals("", constructorExpression.getClassName());
-		assertFalse (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertFalse (constructorExpression.hasRightParenthesis());
-		assertEquals("e.name", ((AbstractExpression) constructorExpression.getConstructorItems()).toParsedText());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_11() {
+
 		String query = "SELECT NEW(e.name,";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(
+			ExpressionTools.EMPTY_STRING,
+			collection(
+				new ExpressionTester[] { path("e.name"), nullExpression() },
+				new Boolean[] { true, false },
+				new Boolean[] { false, false }
+			)
+		);
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		constructor.hasSpaceAfterNew    = false;
+		constructor.hasLeftParenthesis  = true;
+		constructor.hasRightParenthesis = false;
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		assertEquals("", constructorExpression.getClassName());
-		assertFalse (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertFalse (constructorExpression.hasRightParenthesis());
-		assertEquals("e.name,", ((AbstractExpression) constructorExpression.getConstructorItems()).toParsedText());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_12() {
+
 		String query = "SELECT NEW(e.name, ";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(
+			ExpressionTools.EMPTY_STRING,
+			collection(path("e.name"), nullExpression())
+		);
+		constructor.hasSpaceAfterNew    = false;
+		constructor.hasLeftParenthesis  = true;
+		constructor.hasRightParenthesis = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals("", constructorExpression.getClassName());
-		assertFalse (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertFalse (constructorExpression.hasRightParenthesis());
-		assertEquals("e.name, ", ((AbstractExpression) constructorExpression.getConstructorItems()).toParsedText());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_13() {
+
 		String query = "SELECT NEW(e.name,)";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(
+			ExpressionTools.EMPTY_STRING,
+			collection(
+				new ExpressionTester[] { path("e.name"), nullExpression() },
+				new Boolean[] { true, false },
+				new Boolean[] { false, false }
+			)
+		);
+		constructor.hasSpaceAfterNew = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals("", constructorExpression.getClassName());
-		assertFalse (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertTrue  (constructorExpression.hasRightParenthesis());
-		assertEquals("e.name,", ((AbstractExpression) constructorExpression.getConstructorItems()).toParsedText());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_14() {
+
 		String query = "SELECT NEW(e.name)";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(
+			ExpressionTools.EMPTY_STRING,
+			path("e.name")
+		);
+		constructor.hasSpaceAfterNew = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			nullExpression()
+		);
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals("", constructorExpression.getClassName());
-		assertFalse (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertTrue  (constructorExpression.hasRightParenthesis());
-		assertEquals("e.name", ((AbstractExpression) constructorExpression.getConstructorItems()).toParsedText());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_15() {
+
 		String query = "SELECT NEW(e.name) From Employee e";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(
+			ExpressionTools.EMPTY_STRING,
+			path("e.name")
+		);
+		constructor.hasSpaceAfterNew = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			from("Employee", "e")
+		);
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
-
-		assertEquals("", constructorExpression.getClassName());
-		assertFalse (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertTrue  (constructorExpression.hasRightParenthesis());
-		assertEquals("e.name", ((AbstractExpression) constructorExpression.getConstructorItems()).toParsedText());
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_16() {
+
 		String query = "SELECT NEW(AVG(e.name)) From Employee e";
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(query);
 
-		Expression expression = jpqlExpression.getQueryStatement();
-		assertTrue(expression instanceof SelectStatement);
-		SelectStatement selectStatement = (SelectStatement) expression;
+		ConstructorExpressionTester constructor = new_(
+			ExpressionTools.EMPTY_STRING,
+			avg("e.name")
+		);
+		constructor.hasSpaceAfterNew = false;
 
-		// SelectClause
-		expression = selectStatement.getSelectClause();
-		assertTrue(expression instanceof SelectClause);
-		SelectClause selectClause = (SelectClause) expression;
+		ExpressionTester selectStatement = selectStatement(
+			select(constructor),
+			from("Employee", "e")
+		);
 
-		// ConstructorExpression
-		expression = selectClause.getSelectExpression();
-		assertTrue(expression instanceof ConstructorExpression);
-		ConstructorExpression constructorExpression = (ConstructorExpression) expression;
+		testInvalidQuery(query, selectStatement);
+	}
 
-		assertEquals("", constructorExpression.getClassName());
-		assertFalse (((AbstractExpression) constructorExpression.getConstructorItems()).isNull());
-		assertTrue  (constructorExpression.hasLeftParenthesis());
-		assertTrue  (constructorExpression.hasRightParenthesis());
+	@Test
+	public void testBuildExpression_17() {
 
-		// AvgFunction
-		expression = constructorExpression.getConstructorItems();
-		assertTrue(expression instanceof AvgFunction);
-		AvgFunction avgFunction = (AvgFunction) expression;
+		String query = "SELECT NEW (e.name)";
 
-		assertEquals("e.name", avgFunction.getExpression().toParsedText());
+		ExpressionTester selectStatement = selectStatement(
+			select(new_(ExpressionTools.EMPTY_STRING, path("e.name"))),
+			nullExpression()
+		);
+
+		testInvalidQuery(query, selectStatement);
 	}
 }

@@ -17,9 +17,8 @@ import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 /**
- * This {@link ValueExpressionFactory} creates a general identification variable,
- * which is either with the identifier <b>KEY</b> or <b>VALUE</b> and then
- * checks the existence of a path expression.
+ * This {@link ValueExpressionFactory} creates a general identification variable, which is either
+ * with the identifier <b>KEY</b> or <b>VALUE</b> and then checks the existence of a path expression.
  *
  * @see KeyExpressionFactory
  * @see ValueExpressionFactory
@@ -58,6 +57,7 @@ abstract class GeneralIdentificationExpressionFactory extends ExpressionFactory 
 	                                         JPQLQueryBNF queryBNF,
 	                                         AbstractExpression expression,
 	                                         boolean tolerant) {
+
 		expression = buildExpression(parent);
 		expression.parse(wordParser, tolerant);
 

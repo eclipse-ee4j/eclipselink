@@ -76,12 +76,21 @@ abstract class AbstractPathResolver extends Resolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	final IMapping getMapping() {
+	public final IMapping getMapping() {
 		if ((mapping == null) && !mappingResolved) {
 			mapping = resolveMapping();
 			mappingResolved = true;
 		}
 		return mapping;
+	}
+
+	/**
+	 * Returns the single path represented by this {@link Resolver}.
+	 *
+	 * @return The single path represented by this {@link Resolver}
+	 */
+	public final String getPath() {
+		return path;
 	}
 
 	/**

@@ -18,8 +18,8 @@ import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 /**
- * An <code>ExpressionFactory</code> is responsible to parse a portion of JPQL
- * query that starts with one of the factory's identifiers.
+ * An <code>ExpressionFactory</code> is responsible to parse a portion of JPQL query that starts
+ * with one of the factory's identifiers.
  *
  * @version 2.3
  * @since 2.3
@@ -39,14 +39,13 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory> {
 	private final String[] identifiers;
 
 	/**
-	 * Creates a new <code>AbstractExpressionFactory</code>.
+	 * Creates a new <code>ExpressionFactory</code>.
 	 *
 	 * @param id The unique identifier of this <code>ExpressionFactory</code>
 	 * @param identifiers The JPQL identifiers handled by this factory
 	 */
 	ExpressionFactory(String id, String... identifiers) {
 		super();
-
 		this.id = id;
 		this.identifiers = identifiers;
 	}
@@ -55,16 +54,13 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory> {
 	 * Creates a new {@link Expression}.
 	 *
 	 * @param parent The parent expression
-	 * @param wordParser The text to parse based on the current position of the
-	 * cursor
+	 * @param wordParser The text to parse based on the current position of the cursor
 	 * @param word The current word to parse
-	 * @param queryBNF The BNF grammar that was used to identifier this factory
-	 * to be capable to parse a portion of the query
-	 * @param expression During the parsing, it is possible the first part of
-	 * an expression was parsed which needs to be used as a sub-expression of
-	 * the newly created expression
-	 * @return A new <code>Expression</code> representing a portion or the
-	 * totality of the given text
+	 * @param queryBNF The BNF grammar that was used to identifier this factory to be capable to
+	 * parse a portion of the query
+	 * @param expression During the parsing, it is possible the first part of an expression was
+	 * parsed which needs to be used as a sub-expression of the newly created expression
+	 * @return A new <code>Expression</code> representing a portion or the totality of the given text
 	 */
 	abstract AbstractExpression buildExpression(AbstractExpression parent,
 	                                            WordParser wordParser,
@@ -85,23 +81,20 @@ abstract class ExpressionFactory implements Comparable<ExpressionFactory> {
 	 */
 	@Override
 	public final boolean equals(Object object) {
+
 		if (this == object) {
 			return true;
 		}
 
-		if (object instanceof ExpressionFactory) {
-			ExpressionFactory factory = (ExpressionFactory) object;
-			return id.equals(factory.id);
-		}
-
-		return false;
+		ExpressionFactory factory = (ExpressionFactory) object;
+		return id.equals(factory.id);
 	}
 
 	/**
 	 * Returns the unique identifier of this <code>ExpressionFactory</code>.
 	 *
-	 * @return The identifier used to register this <code>ExpressionFactory</code>
-	 * with <code>AbstractExpression</code>
+	 * @return The identifier used to register this {@link ExpressionFactory} with {@link
+	 * ExpressionRegistry}
 	 */
 	final String getId() {
 		return id;

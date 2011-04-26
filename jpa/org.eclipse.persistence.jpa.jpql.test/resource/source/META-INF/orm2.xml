@@ -284,6 +284,9 @@
   <named-query name="employee.in">
      <query>SELECT e FROM Employee e WHERE e.name IN :type</query>
   </named-query>
+  <named-query name="address.subquery.subquery">
+     <query>SELECT e FROM Employee e WHERE 2 &lt; ALL(SELECT a FROM Address a WHERE 2 &lt; ANY(SELECT d FROM Dept WHERE a.city = ?1))</query>
+  </named-query>
 
   <named-query name="address.addition">
      <query>SELECT a.id + 2 FROM Address a</query>

@@ -33,12 +33,18 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-abstract class Resolver {
+public abstract class Resolver {
+
+	/**
+	 * This is only applicable to 1:1 relationships, and allows the target of the relationship to be
+	 * <code>null</code> if there is no corresponding relationship in the database.
+	 */
+	private boolean nullAllowed;
 
 	/**
 	 * The parent of this resolver, which is never <code>null</code>.
 	 */
-	final Resolver parent;
+	private final Resolver parent;
 
 	/**
 	 * The cached {@link Resolver Resolvers} mapped with a variable name.
@@ -66,6 +72,13 @@ abstract class Resolver {
 		checkParent(parent);
 		this.parent = parent;
 	}
+
+	/**
+	 * Visits this {@link Resolver} by the given {@link ResolverVisitor visitor}.
+	 *
+	 * @param visitor The {@link ResolverVisitor visitor} to visit this object
+	 */
+	public abstract void accept(ResolverVisitor visitor);
 
 	/**
 	 * Caches the given {@link Resolver}.
@@ -126,7 +139,7 @@ abstract class Resolver {
 	 *
 	 * @return Either the {@link IManagedType}, if it could be resolved; <code>null</code> otherwise
 	 */
-	IManagedType getManagedType() {
+	public IManagedType getManagedType() {
 		return null;
 	}
 
@@ -135,8 +148,17 @@ abstract class Resolver {
 	 *
 	 * @return Either the {@link IMapping} or <code>null</code> if none exists
 	 */
-	IMapping getMapping() {
+	public IMapping getMapping() {
 		return null;
+	}
+
+	/**
+	 * Returns the parent of this {@link Resolver}.
+	 *
+	 * @return The parent of this {@link Resolver}
+	 */
+	public Resolver getParent() {
+		return parent;
 	}
 
 	/**
@@ -199,7 +221,7 @@ abstract class Resolver {
 	 * @return Either the {@link IType} that was resolved by this {@link Resolver} or the {@link IType}
 	 * for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
 	 */
-	final IType getType() {
+	public final IType getType() {
 		if (type == null) {
 			type = buildType();
 		}
@@ -255,5 +277,29 @@ abstract class Resolver {
 	 */
 	final ITypeRepository getTypeRepository() {
 		return getQuery().getProvider().getTypeRepository();
+	}
+
+	/**
+	 * Determines whether the {@link Expression} to be created, which wraps the attribute or query
+	 * key name allows the target of the 1:1 relationship to be <code>null</code> if there is no
+	 * corresponding relationship in the database.
+	 *
+	 * @return <code>true</code> to allow <code>null</code> if the corresponding relationship in the
+	 * database does not exists; <code>false</code> otherwise
+	 */
+	public final boolean isNullAllowed() {
+		return nullAllowed;
+	}
+
+	/**
+	 * Sets whether the {@link Expression} to be created, which wraps the attribute or query
+	 * key name allows the target of the 1:1 relationship to be <code>null</code> if there is no
+	 * corresponding relationship in the database.
+	 *
+	 * @param nullAllowed <code>true</code> to allow <code>null</code> if the corresponding
+	 * relationship in the database does not exists; <code>false</code> otherwise
+	 */
+	public void setNullAllowed(boolean nullAllowed) {
+		this.nullAllowed = nullAllowed;
 	}
 }

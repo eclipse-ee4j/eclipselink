@@ -249,6 +249,19 @@ public final class Join extends AbstractExpression {
 	}
 
 	/**
+	 * Determines whether this {@link Join} is a left join, i.e. {@link Expression#LEFT_JOIN} or
+	 * {@link Expression#LEFT_OUTER_JOIN}.
+	 *
+	 * @return <code>true</code> if this {@link Join} expression is a {@link Expression#LEFT_JOIN} or
+	 * {@link Expression#LEFT_OUTER_JOIN}; <code>false</code> otherwise
+	 */
+	public boolean isLeftJoin() {
+		String identifier = getIdentifier();
+		return identifier == LEFT_JOIN ||
+		       identifier == LEFT_OUTER_JOIN;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override

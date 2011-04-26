@@ -13,14 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tests;
 
-import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Vector;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
@@ -56,6 +55,14 @@ public abstract class AbstractJPQLQueryHelperTest extends AbstractJPQLQueryTest 
 		IManagedType entity = provider.getManagedType(entityName);
 		assertNotNull("The entity " + entityName + " could not be found", entity);
 		return entity;
+	}
+
+	protected IType getType(IQuery query, Class<?> type) {
+		return typeRepository(query).getType(type);
+	}
+
+	protected IType getType(IQuery query, String typeName) {
+		return typeRepository(query).getType(typeName);
 	}
 
 	protected IType mappedType(IQuery query, String entityName) {
@@ -531,7 +538,7 @@ public abstract class AbstractJPQLQueryHelperTest extends AbstractJPQLQueryTest 
 	}
 
 	@Test
-	public void test_ParameterType_SubQuery_String() throws Exception {
+	public void test_ParameterType_Subquery_String() throws Exception {
 
 		// SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM Project p JOIN p.employees emp WHERE emp = e AND p.name = :name)
 		IQuery namedQuery = namedQuery("Employee", "employee.subquery1");
@@ -546,6 +553,27 @@ public abstract class AbstractJPQLQueryHelperTest extends AbstractJPQLQueryTest 
 
 		assertEquals(
 			"The wrong type for :name was retrieved",
+			getType(namedQuery, String.class),
+			type
+		);
+	}
+
+	@Test
+	public void test_ParameterType_Subquery_Subquery() throws Exception {
+
+		// SELECT e FROM Employee e WHERE 2 < ALL(SELECT a FROM Address a WHERE 2 < ANY(SELECT d FROM Dept WHERE a.city = ?1)
+		IQuery namedQuery = namedQuery("Address", "address.subquery.subquery");
+
+		JPQLQueryHelper helper = buildQueryHelper(namedQuery);
+		IType type = helper.getParameterType("?1");
+
+		assertNotNull(
+			"The type of ?1 should have been found",
+			type
+		);
+
+		assertEquals(
+			"The wrong type for ?1 was retrieved",
 			getType(namedQuery, String.class),
 			type
 		);
@@ -677,6 +705,46 @@ public abstract class AbstractJPQLQueryHelperTest extends AbstractJPQLQueryTest 
 		);
 	}
 
+//	@Test
+//	public void test_ResultType_Bad_1() throws Exception {
+//		// SELECT FROM Home h
+//		IQuery namedQuery = namedQuery("Home", "home.bad1");
+//
+//		AbstractJPQLQueryHelper helper = buildQueryHelper(namedQuery);
+//		IType type = helper.getResultType();
+//
+//		assertNotNull(
+//			"The type of (nothing) should have been found",
+//			type
+//		);
+//
+//		assertEquals(
+//			"The wrong type for (nothing) was retrieved",
+//			getType(namedQuery, Object.class),
+//			type
+//		);
+//	}
+
+//	@Test
+//	public void test_ResultType_Bad_2() throws Exception {
+//		// SELEC
+//		IQuery namedQuery = namedQuery("Home", "home.bad2");
+//
+//		AbstractJPQLQueryHelper helper = buildQueryHelper(namedQuery);
+//		IType type = helper.getResultType();
+//
+//		assertNotNull(
+//			"The type of (nothing) should have been found",
+//			type
+//		);
+//
+//		assertEquals(
+//			"The wrong type for (nothing) was retrieved",
+//			getType(namedQuery, Object.class),
+//			type
+//		);
+//	}
+
 	@Test
 	public void test_ResultType_Addition_4() throws Exception {
 
@@ -718,46 +786,6 @@ public abstract class AbstractJPQLQueryHelperTest extends AbstractJPQLQueryTest 
 			type
 		);
 	}
-
-//	@Test
-//	public void test_ResultType_Bad_1() throws Exception {
-//		// SELECT FROM Home h
-//		IQuery namedQuery = namedQuery("Home", "home.bad1");
-//
-//		AbstractJPQLQueryHelper helper = buildQueryHelper(namedQuery);
-//		IType type = helper.getResultType();
-//
-//		assertNotNull(
-//			"The type of (nothing) should have been found",
-//			type
-//		);
-//
-//		assertEquals(
-//			"The wrong type for (nothing) was retrieved",
-//			getType(namedQuery, Object.class),
-//			type
-//		);
-//	}
-
-//	@Test
-//	public void test_ResultType_Bad_2() throws Exception {
-//		// SELEC
-//		IQuery namedQuery = namedQuery("Home", "home.bad2");
-//
-//		AbstractJPQLQueryHelper helper = buildQueryHelper(namedQuery);
-//		IType type = helper.getResultType();
-//
-//		assertNotNull(
-//			"The type of (nothing) should have been found",
-//			type
-//		);
-//
-//		assertEquals(
-//			"The wrong type for (nothing) was retrieved",
-//			getType(namedQuery, Object.class),
-//			type
-//		);
-//	}
 
 	@Test
 	public void test_ResultType_Case_1() throws Exception {
@@ -2306,14 +2334,6 @@ public abstract class AbstractJPQLQueryHelperTest extends AbstractJPQLQueryTest 
 			getType(namedQuery, Date.class),
 			type
 		);
-	}
-
-	protected IType getType(IQuery query, Class<?> type) {
-		return typeRepository(query).getType(type);
-	}
-
-	protected IType getType(IQuery query, String typeName) {
-		return typeRepository(query).getType(typeName);
 	}
 
 	protected ITypeRepository typeRepository(IQuery query) {

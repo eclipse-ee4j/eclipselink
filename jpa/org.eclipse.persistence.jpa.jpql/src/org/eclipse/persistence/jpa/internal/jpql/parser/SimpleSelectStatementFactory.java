@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link SimpleSelectStatementFactory} creates a new {@link SimpleSelectStatement}
- * when the portion of the query to parse starts with <b>SELECT</b>.
+ * This {@link SimpleSelectStatementFactory} creates a new {@link SimpleSelectStatement} when the
+ * portion of the query to parse starts with <b>SELECT</b>.
  *
  * @see SimpleSelectStatement
  *
@@ -50,6 +50,7 @@ final class SimpleSelectStatementFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new SimpleSelectStatement(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

@@ -50,6 +50,7 @@ final class CollectionValuedPathExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		if (expression != null) {
 			expression = new CollectionValuedPathExpression(parent, expression);
 		}

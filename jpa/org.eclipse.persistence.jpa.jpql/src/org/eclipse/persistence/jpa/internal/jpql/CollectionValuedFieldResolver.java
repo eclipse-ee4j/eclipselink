@@ -28,13 +28,18 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * @since 2.3
  * @author Pascal Filion
  */
-final class CollectionValuedFieldResolver extends AbstractPathResolver {
+public final class CollectionValuedFieldResolver extends AbstractPathResolver {
 
 	/**
 	 * The full collection-valued field path expression, which is used to determine if it's an enum
 	 * type.
 	 */
 	private String collectionValuedField;
+
+	/**
+	 * Flag used to indicate the state field path expression is actually an enum type.
+	 */
+	private Boolean enumType;
 
 	/**
 	 * The {@link IManagedType} representing this single valued object field path.
@@ -65,10 +70,18 @@ final class CollectionValuedFieldResolver extends AbstractPathResolver {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void accept(ResolverVisitor visitor) {
+		visitor.visit(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	IType buildType() {
 
 		// Check first to see if the path expression is actually representing an enum constant
-		IType type = (collectionValuedField != null) ? getTypeRepository().getEnumType(collectionValuedField) : null;
+		IType type = getEnumType();
 
 		if (type != null) {
 			return type;
@@ -103,11 +116,26 @@ final class CollectionValuedFieldResolver extends AbstractPathResolver {
 	 */
 	@Override
 	ITypeDeclaration buildTypeDeclaration() {
+
 		IType type = getEnumType();
+
 		if (type != null) {
+			enumType = Boolean.TRUE;
 			return type.getTypeDeclaration();
 		}
-		return super.buildTypeDeclaration();
+		else {
+			enumType = Boolean.FALSE;
+			return super.buildTypeDeclaration();
+		}
+	}
+
+	/**
+	 * Returns
+	 *
+	 * @return
+	 */
+	public String getCollectionValuedField() {
+		return collectionValuedField;
 	}
 
 	private IType getEnumType() {
@@ -118,7 +146,7 @@ final class CollectionValuedFieldResolver extends AbstractPathResolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	IManagedType getManagedType() {
+	public IManagedType getManagedType() {
 		if ((managedType == null) && !managedTypeResolved) {
 			if (!getType().isEnum()) {
 				managedType = resolveManagedType();
@@ -126,6 +154,21 @@ final class CollectionValuedFieldResolver extends AbstractPathResolver {
 			managedTypeResolved = true;
 		}
 		return managedType;
+	}
+
+	/**
+	 * Determines whether the state field path expression is actually an enum type.
+	 *
+	 * @return <code>true</code> if the path represents the fully qualified enum type with the enum
+	 * constant; <code>false</code> to indicate it's a real state field path expression
+	 */
+	public boolean isEnumType() {
+		// If this is called before the type was calculated,
+		// then do so in order to set the enum type flag
+		if (enumType == null) {
+			getType();
+		}
+		return enumType;
 	}
 
 	private IManagedType resolveManagedType() {
@@ -155,6 +198,14 @@ final class CollectionValuedFieldResolver extends AbstractPathResolver {
 
 		// Retrieve the corresponding managed type for the mapping's type
 		return getProvider().getManagedType(type);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return collectionValuedField;
 	}
 
 	private static class MapManagedType implements IManagedType {

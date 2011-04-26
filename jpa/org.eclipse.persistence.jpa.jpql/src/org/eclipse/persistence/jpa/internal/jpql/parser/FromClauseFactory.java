@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link FromClauseFactory} creates a new {@link FromClause} when the
- * portion of the query to parse starts with <b>FROM</b>.
+ * This {@link FromClauseFactory} creates a new {@link FromClause} when the portion of the query to
+ * parse starts with <b>FROM</b>.
  *
  * @see FromClause
  *
@@ -49,6 +49,7 @@ final class FromClauseFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new FromClause(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

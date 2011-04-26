@@ -18,7 +18,8 @@ import java.util.List;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * TODO:
+ * Returns an expression that allows to treat its base as if it were a subclass of the class
+ * returned by the base.
  * <p>
  * New to
  * <div nowrap><b>BNF:</b> <code>join_treat ::= TREAT(collection_valued_path_expression AS entity_type_literal)</code>
@@ -32,14 +33,14 @@ import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 public final class TreatExpression extends AbstractEncapsulatedExpression {
 
 	/**
-	 *
+	 * The {@link Expression} that represents the collection-valued path expression.
 	 */
-	private AbstractExpression entityType;
+	private AbstractExpression collectionValuedPathExpression;
 
 	/**
-	 *
+	 * The entity type used to downcast the type of the elements in the collection.
 	 */
-	private AbstractExpression expression;
+	private AbstractExpression entityType;
 
 	/**
 	 * Determines whether the identifier <b>AS</b> was parsed.
@@ -52,9 +53,9 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	private boolean hasSpaceAfterAs;
 
 	/**
-	 *
+	 * Determines whether a whitespace was parsed after the collection-valued path expression.
 	 */
-	private boolean hasSpaceAfterExpression;
+	private boolean hasSpaceAfterCollectionValuedPathExpression;
 
 	/**
 	 * Creates a new <code>TreatExpression</code>.
@@ -76,7 +77,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	public void acceptChildren(ExpressionVisitor visitor) {
-		getExpression().accept(visitor);
+		getCollectionValuedPathExpression().accept(visitor);
 		getEntityType().accept(visitor);
 	}
 
@@ -85,7 +86,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 */
 	@Override
 	void addChildrenTo(Collection<Expression> children) {
-		children.add(getExpression());
+		children.add(getCollectionValuedPathExpression());
 		children.add(getEntityType());
 	}
 
@@ -96,11 +97,11 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	void addOrderedEncapsulatedExpressionTo(List<StringExpression> children) {
 
 		// Collection-valued path expression
-		if (expression != null) {
-			children.add(expression);
+		if (collectionValuedPathExpression != null) {
+			children.add(collectionValuedPathExpression);
 		}
 
-		if (hasSpaceAfterExpression) {
+		if (hasSpaceAfterCollectionValuedPathExpression) {
 			children.add(buildStringExpression(SPACE));
 		}
 
@@ -119,18 +120,29 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 		}
 	}
 
+	/**
+	 * Returns the {@link Expression} that represents the collection-valued path expression.
+	 *
+	 * @return The expression that represents the collection-valued path expression
+	 */
+	public Expression getCollectionValuedPathExpression() {
+		if (collectionValuedPathExpression == null) {
+			collectionValuedPathExpression = buildNullExpression();
+		}
+		return collectionValuedPathExpression;
+	}
+
+	/**
+	 * Returns the {@link Expression} that represents the entity type that will be used to downcast
+	 * the type of the elements in the collection.
+	 *
+	 * @return The expression representing the entity type
+	 */
 	public Expression getEntityType() {
 		if (entityType == null) {
 			entityType = buildNullExpression();
 		}
 		return entityType;
-	}
-
-	public Expression getExpression() {
-		if (expression == null) {
-			expression = buildNullExpression();
-		}
-		return expression;
 	}
 
 	/**
@@ -151,21 +163,33 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	}
 
 	/**
+	 * Determines whether the collection-valued path expression of the query was parsed.
+	 *
+	 * @return <code>true</code> if the collection-valued path expression was parsed;
+	 * <code>false</code> if nothing was parsed
+	 */
+	public boolean hasCollectionValuedPathExpression() {
+		return collectionValuedPathExpression != null &&
+		      !collectionValuedPathExpression.isNull();
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean hasEncapsulatedExpression() {
-		return hasExpression() || hasAs || hasEntityType();
+		return hasCollectionValuedPathExpression() || hasAs || hasEntityType();
 	}
 
+	/**
+	 * Determines whether the entity type was parsed.
+	 *
+	 * @return <code>true</code> if the entity type was parsed; <code>false</code> if nothing was
+	 * parsed
+	 */
 	public boolean hasEntityType() {
 		return entityType != null &&
 		      !entityType.isNull();
-	}
-
-	public boolean hasExpression() {
-		return expression != null &&
-		      !expression.isNull();
 	}
 
 	/**
@@ -178,8 +202,14 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 		return hasSpaceAfterAs;
 	}
 
-	public boolean hasSpaceAfterExpression() {
-		return hasSpaceAfterExpression;
+	/**
+	 * Determines whether a whitespace was parsed after the collection-valued path expression.
+	 *
+	 * @return <code>true</code> if a whitespace was parsed after the collection-valued path
+	 * expression; <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterCollectionValuedPathExpression() {
+		return hasSpaceAfterCollectionValuedPathExpression;
 	}
 
 	/**
@@ -190,14 +220,18 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 
 		// Collection-valued path expression
 		if (tolerant) {
-			expression = parse(wordParser, queryBNF(CollectionValuedPathExpressionBNF.ID), tolerant);
+			collectionValuedPathExpression = parse(
+				wordParser,
+				queryBNF(CollectionValuedPathExpressionBNF.ID),
+				tolerant
+			);
 		}
 		else {
-			expression = new CollectionValuedPathExpression(this, wordParser.word());
-			expression.parse(wordParser, tolerant);
+			collectionValuedPathExpression = new CollectionValuedPathExpression(this, wordParser.word());
+			collectionValuedPathExpression.parse(wordParser, tolerant);
 		}
 
-		hasSpaceAfterExpression = wordParser.skipLeadingWhitespace() > 0;
+		hasSpaceAfterCollectionValuedPathExpression = wordParser.skipLeadingWhitespace() > 0;
 
 		// AS
 		hasAs = wordParser.startsWithIdentifier(AS);
@@ -232,11 +266,11 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean includeVirtual) {
 
 		// Collection-valued path expression
-		if (expression != null) {
-			writer.append(expression);
+		if (collectionValuedPathExpression != null) {
+			writer.append(collectionValuedPathExpression);
 		}
 
-		if (hasSpaceAfterExpression) {
+		if (hasSpaceAfterCollectionValuedPathExpression) {
 			writer.append(SPACE);
 		}
 

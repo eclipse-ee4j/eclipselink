@@ -13,18 +13,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tests;
 
-import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
-import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
-
-import org.eclipse.persistence.jpa.tests.internal.jpql.parser.JPQLQueryBuilder;
-import org.eclipse.persistence.jpa.tests.internal.jpql.parser.JPQLQueryStringFormatter;
-
 import java.util.List;
 import java.util.ListResourceBundle;
 import java.util.ResourceBundle;
 import org.eclipse.persistence.jpa.internal.jpql.JPQLQueryProblemResourceBundle;
 import org.eclipse.persistence.jpa.internal.jpql.parser.JPQLExpression;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
+import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
+import org.eclipse.persistence.jpa.tests.internal.jpql.parser.JPQLQueryBuilder;
+import org.eclipse.persistence.jpa.tests.internal.jpql.parser.JPQLQueryStringFormatter;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -244,20 +243,53 @@ public abstract class AbstractValidatorTest extends AbstractJPQLQueryTest {
 	 * Validates the given named query and returns the list of {@link JPQLQueryProblem problems}.
 	 *
 	 * @param query The query to validate
+	 * @param version The JPA version used to parse the query
+	 * @return Either an empty list if validation didn't find any problem or the list of
+	 * {@link JPQLQueryProblem problems}
+	 */
+	final List<JPQLQueryProblem> validate(String query, IJPAVersion version) throws Exception {
+		return validate(query, version,  JPQLQueryStringFormatter.DEFAULT);
+	}
+
+	/**
+	 * Validates the given named query and returns the list of {@link JPQLQueryProblem problems}.
+	 *
+	 * @param query The query to validate
+	 * @param version The JPA version used to parse the query
+	 * @param formatter The formatter used to update the format of the query when validating
+	 * the parsed tree
+	 * @return Either an empty list if validation didn't find any problem or the list of
+	 * {@link JPQLQueryProblem problems}
+	 */
+	final List<JPQLQueryProblem> validate(String query,
+	                                      IJPAVersion version,
+	                                      JPQLQueryStringFormatter formatter) throws Exception {
+
+		IQuery externalQuery = buildExternalQuery(query);
+		assertNotNull("IQuery could not be created for '" + query + "'", externalQuery);
+
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(
+			externalQuery.getExpression(),
+			version,
+			formatter
+		);
+
+		queryHelper.setJPQLExpression(jpqlExpression);
+		queryHelper.setQuery(externalQuery);
+
+		return validate(queryHelper);
+	}
+
+	/**
+	 * Validates the given named query and returns the list of {@link JPQLQueryProblem problems}.
+	 *
+	 * @param query The query to validate
 	 * @param formatter The formatter used to update the format of the query when validating
 	 * the parsed tree
 	 * @return Either an empty list if validation didn't find any problem or the list of
 	 * {@link JPQLQueryProblem problems}
 	 */
 	final List<JPQLQueryProblem> validate(String query, JPQLQueryStringFormatter formatter) throws Exception {
-
-		IQuery externalQuery = buildExternalQuery(query);
-		assertNotNull("IQuery could not be created for '" + query + "'", externalQuery);
-
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(externalQuery.getExpression(), formatter);
-		queryHelper.setJPQLExpression(jpqlExpression);
-		queryHelper.setQuery(externalQuery);
-
-		return validate(queryHelper);
+		return validate(query, IJPAVersion.DEFAULT_VERSION, formatter);
 	}
 }

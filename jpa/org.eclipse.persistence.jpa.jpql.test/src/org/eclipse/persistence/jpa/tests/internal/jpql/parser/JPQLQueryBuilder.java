@@ -14,7 +14,6 @@
 package org.eclipse.persistence.jpa.tests.internal.jpql.parser;
 
 import org.eclipse.persistence.jpa.internal.jpql.parser.JPQLExpression;
-
 import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
 
 import static org.junit.Assert.*;
@@ -77,7 +76,7 @@ public final class JPQLQueryBuilder {
 	 * formatted first.
 	 *
 	 * @param query The JPQL query to parse into a parsed tree
-	 * @param version The JPA version used for parsing the query
+	 * @param version The JPA version used to parse the query
 	 * @return The parsed tree representation of the given JPQL query
 	 */
 	public static JPQLExpression buildQuery(String query, IJPAVersion version) {
@@ -89,7 +88,7 @@ public final class JPQLQueryBuilder {
 	 * formatted first.
 	 *
 	 * @param query The JPQL query to parse into a parsed tree
-	 * @param version The JPA version used for parsing the query
+	 * @param version The JPA version used to parse the query
 	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
 	 * to parse invalid or incomplete queries
 	 * @return The parsed tree representation of the given JPQL query
@@ -105,7 +104,7 @@ public final class JPQLQueryBuilder {
 	 * @param query The JPQL query to parse into a parsed tree
 	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
 	 * to parse invalid or incomplete queries
-	 * @param version The JPA version used for parsing the query
+	 * @param version The JPA version used to parse the query
 	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
 	 * before it is used to test the generated string
 	 * @return The parsed tree representation of the given JPQL query
@@ -141,7 +140,7 @@ public final class JPQLQueryBuilder {
 	 * formatted first.
 	 *
 	 * @param query The JPQL query to parse into a parsed tree
-	 * @param version The JPA version used for parsing the query
+	 * @param version The JPA version used to parse the query
 	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
 	 * before it is used to test the generated string
 	 * @return The parsed tree representation of the given JPQL query

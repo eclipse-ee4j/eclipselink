@@ -13,11 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tests;
 
-import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
-import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
-
 import java.util.List;
 import org.eclipse.persistence.jpa.internal.jpql.JPQLQueryProblemMessages;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.junit.Test;
 
 /**
@@ -829,10 +828,11 @@ public final class SemanticValidatorTest extends AbstractValidatorTest {
 	@Test
 	public void test_EntityTypeLiteral_NotResolvable_2() throws Exception {
 
-		String query = "SELECT e FROM Employee e TREAT(e.phoneNumbers AS Phone2) AS ee";
+		String query = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS Phone2) AS ee";
+		int startPosition = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS ".length();
+		int endPosition   = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS Phone2".length();
+
 		List<JPQLQueryProblem> problems = validate(query);
-		int startPosition = "SELECT e FROM Employee e TREAT(e.phoneNumbers AS ".length();
-		int endPosition   = "SELECT e FROM Employee e TREAT(e.phoneNumbers AS Phone2".length();
 
 		testHasProblem(
 			problems,
@@ -1087,11 +1087,15 @@ public final class SemanticValidatorTest extends AbstractValidatorTest {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name, e.name) = 0";
 		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.LocateExpression_FirstExpression_WrongType);
+	}
 
-		testDoesNotHaveProblem(
-			problems,
-			JPQLQueryProblemMessages.LocateExpression_FirstExpression_WrongType
-		);
+	@Test
+	public void test_LocateExpression_FirstExpression_WrongType_3() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE LOCATE(, e.name) = 0";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.LocateExpression_FirstExpression_WrongType);
 	}
 
 	@Test
@@ -1116,11 +1120,15 @@ public final class SemanticValidatorTest extends AbstractValidatorTest {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name, e.name) = 0";
 		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.LocateExpression_SecondExpression_WrongType);
+	}
 
-		testDoesNotHaveProblem(
-			problems,
-			JPQLQueryProblemMessages.LocateExpression_SecondExpression_WrongType
-		);
+	@Test
+	public void test_LocateExpression_SecondExpression_WrongType_3() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name,) = 0";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.LocateExpression_SecondExpression_WrongType);
 	}
 
 	@Test

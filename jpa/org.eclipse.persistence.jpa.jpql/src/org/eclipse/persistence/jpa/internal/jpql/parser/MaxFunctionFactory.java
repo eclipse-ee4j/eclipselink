@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link MaxFunctionFactory} creates a new {@link MaxFunction} when the
- * portion of the query to parse starts with <b>MAX</b>.
+ * This {@link MaxFunctionFactory} creates a new {@link MaxFunction} when the portion of the query
+ * to parse starts with <b>MAX</b>.
  *
  * @see MaxFunction
  *
@@ -49,6 +49,7 @@ final class MaxFunctionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new MaxFunction(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

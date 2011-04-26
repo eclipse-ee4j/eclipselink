@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link OrExpressionFactory} creates a new {@link OrExpression} when the
- * portion of the query to parse starts with <b>OR</b>.
+ * This {@link OrExpressionFactory} creates a new {@link OrExpression} when the portion of the query
+ * to parse starts with <b>OR</b>.
  *
  * @see OrExpression
  *
@@ -49,6 +49,7 @@ final class OrExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		OrExpression orExpression = new OrExpression(parent);
 		orExpression.setLeftExpression(expression);
 		orExpression.parse(wordParser, tolerant);

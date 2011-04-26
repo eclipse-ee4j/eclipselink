@@ -105,6 +105,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"BETWEEN_EXPRESSION_WRONG_TYPE",                     "The expression's type and the lower and upper bound expressions' type have to be the same type."},
 
 			// CaseExpression - Grammar
+			{"CASE_EXPRESSION_INVALID_JPA_VERSION",         "A CASE expression cannot be used in a JPQL query when the JPA platform is 1.0."},
 			{"CASE_EXPRESSION_MISSING_ELSE_EXPRESSION",     "A CASE expression must have an ELSE expression."},
 			{"CASE_EXPRESSION_MISSING_ELSE_IDENTIFIER",     "The identifier ELSE is missing from the CASE expression."},
 			{"CASE_EXPRESSION_MISSING_END_IDENTIFIER",      "The identifier END is missing from the CASE expression."},
@@ -114,6 +115,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 
 			// CoalesceExpression - Grammar
 			{"COALESCE_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
+			{"COALESCE_EXPRESSION_INVALID_JPA_VERSION",       "A COALESCE expression cannot be used in a JPQL query when the JPA platform is 1.0."},
 			{"COALESCE_EXPRESSION_MISSING_EXPRESSION",        "The encapsulated expressions must be provided for a COALESCE expression."},
 			{"COALESCE_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the COALESCE expression."},
 			{"COALESCE_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the COALESCE expression."},
@@ -186,10 +188,6 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"DIVISION_EXPRESSION_LEFT_EXPRESSION_WRONG_TYPE",  "The left side of the division is not a valid arithmetic expression."},
 			{"DIVISION_EXPRESSION_RIGHT_EXPRESSION_WRONG_TYPE", "The right side of the division is not a valid arithmetic expression."},
 
-			// EclipseLinkQueryBuilder - Validation
-			{"ECLIPSE_LINK_QUERY_BUILDER_GRAMMAR_VALIDATOR_ERROR_MESSAGE",  "Syntax error parsing the query [{0}]. {1}"},
-			{"ECLIPSE_LINK_QUERY_BUILDER_SEMANTIC_VALIDATOR_ERROR_MESSAGE", "Problem compiling the query [{0}]. {1}"},
-
 			// EncapsulatedIdentificationVariableExpression - Semantic
 			{"ENCAPSULATED_IDENTIFICATION_VARIABLE_EXPRESSION_NOT_MAP_VALUED", "The {0} operator may only be applied to identification variables that correspond to map-valued associations or map-valued element collections."},
 
@@ -204,6 +202,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"ENTRY_EXPRESSION_MISSING_EXPRESSION",        "An identification variable must be provided for an ENTRY expression."},
 			{"ENTRY_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the ENTRY expression."},
 			{"ENTRY_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the ENTRY expression."},
+			{"ENTRY_EXPRESSION_INVALID_JPA_VERSION",       "An ENTRY expression cannot be used in a JPQL query when the JPA platform is 1.0."},
 
 			// ExistsExpression - Grammar
 			{"EXISTS_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
@@ -212,6 +211,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"EXISTS_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the EXISTS expression."},
 
 			// FuncExpression - Grammar
+			{"FUNC_EXPRESSION_INVALID_JPA_PLATFORM",      "A FUNC expression can only be used when the platform is EclipseLink."},
 			{"FUNC_EXPRESSION_MISSING_FUNCTION_NAME",     "The SQL function name must be specified."},
 			{"FUNC_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the FUNC expression."},
 			{"FUNC_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the FUNC expression."},
@@ -224,6 +224,10 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			// HavingClause - Grammar
 			{"HAVING_CLAUSE_INVALID_CONDITIONAL_EXPRESSION", "The expression is not a valid conditional expression."},
 			{"HAVING_CLAUSE_MISSING_CONDITIONAL_EXPRESSION", "The conditional expression is missing from the HAVING clause."},
+
+			// HermesParser - Validation
+			{"HERMES_PARSER_GRAMMAR_VALIDATOR_ERROR_MESSAGE",  "Syntax error parsing the query [{0}]. {1}"},
+			{"HERMES_PARSER_SEMANTIC_VALIDATOR_ERROR_MESSAGE", "Problem compiling the query [{0}]. {1}"},
 
 			// IdentificationVariable - Grammar
 			{"IDENTIFICATION_VARIABLE_INVALID_DUPLICATE",       "The identification variable ''{0}'' cannot be declared more than once."},
@@ -238,6 +242,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 
 			// IndexExpression - Grammar
 			{"INDEX_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
+			{"INDEX_EXPRESSION_INVALID_JPA_VERSION",       "An INDEX expression cannot be used in a JPQL query when the JPA platform is 1.0."},
 			{"INDEX_EXPRESSION_MISSING_EXPRESSION",        "An identification variable must be provided for an INDEX expression."},
 			{"INDEX_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the INDEX expression."},
 			{"INDEX_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the INDEX expression."},
@@ -275,6 +280,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 
 			// KeyExpression - Grammar
 			{"KEY_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
+			{"KEY_EXPRESSION_INVALID_JPA_VERSION",       "A KEY expression cannot be used in a JPQL query when the JPA platform is 1.0."},
 			{"KEY_EXPRESSION_MISSING_EXPRESSION",        "The identification variable must be provided for an ABS expression."},
 			{"KEY_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the ABS expression."},
 			{"KEY_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the ABS expression."},
@@ -355,20 +361,20 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"NOT_EXPRESSION_MISSING_EXPRESSION", "The expression is missing after the identifier NOT."},
 			// NotExpression - Semantic
 			{"NOT_EXPRESSION_WRONG_TYPE",         "The expression is not of boolean type."},
-
 			// NullComparisonExpression - Grammar
 			{"NULL_COMPARISON_EXPRESSION_MISSING_EXPRESSION", "The expression is missing from the null comparison expression."},
 			// NullComparisonExpression - Semantic
 			{"NULL_COMPARISON_EXPRESSION_INVALID_TYPE",       "''{0}'' cannot be resolved to an embeddable."},
 
 			// NullIfExpression - Grammar
-			{"NULL_IF_EXPRESSION_INVALID_FIRST_EXPRESSION",  "The first argument is not a valid expression."},
-			{"NULL_IF_EXPRESSION_INVALID_SECOND_EXPRESSION", "The second argument is not a valid expression."},
-			{"NULL_IF_EXPRESSION_MISSING_COMMA",             "The comma is missing from the NULLIF expression."},
-			{"NULL_IF_EXPRESSION_MISSING_FIRST_EXPRESSION",  "The first argument is missing from the NULLIF expression."},
-			{"NULL_IF_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the NULLIF expression."},
-			{"NULL_IF_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the NULLIF expression."},
-			{"NULL_IF_EXPRESSION_MISSING_SECOND_EXPRESSION", "The second argument is missing from the NULLIF expression."},
+			{"NULLIF_EXPRESSION_INVALID_FIRST_EXPRESSION",  "The first argument is not a valid expression."},
+			{"NULLIF_EXPRESSION_INVALID_JPA_VERSION",       "A NULLIF expression cannot be used in a JPQL query when the JPA platform is 1.0."},
+			{"NULLIF_EXPRESSION_INVALID_SECOND_EXPRESSION", "The second argument is not a valid expression."},
+			{"NULLIF_EXPRESSION_MISSING_COMMA",             "The comma is missing from the NULLIF expression."},
+			{"NULLIF_EXPRESSION_MISSING_FIRST_EXPRESSION",  "The first argument is missing from the NULLIF expression."},
+			{"NULLIF_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the NULLIF expression."},
+			{"NULLIF_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the NULLIF expression."},
+			{"NULLIF_EXPRESSION_MISSING_SECOND_EXPRESSION", "The second argument is missing from the NULLIF expression."},
 
 			// NumericLiteral - Grammar
 			{"NUMERIC_LITERAL_INVALID", "''{0}'' is not a valid numeric value."},
@@ -393,6 +399,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"RANGE_VARIABLE_DECLARATION_MISSING_IDENTIFICATION_VARIABLE", "An identification variable must be provider for a range variable declaration."},
 
 			// ResultVariable - Grammar
+			{"RESULT_VARIABLE_INVALID_JPA_VERSION",       "A result variable cannot be used in a JPQL query when the JPA platform is 1.0."},
 			{"RESULT_VARIABLE_MISSING_SELECT_EXPRESSION", "The select item is missing from the result variable declaration."},
 			{"RESULT_VARIABLE_MISSING_RESULT_VARIABLE",   "The result variable is missing from the select item declaration."},
 
@@ -401,6 +408,9 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 
 			// SimpleSelectClause - Grammar
 			{"SIMPLE_SELECT_CLAUSE_NOT_SINGLE_EXPRESSION", "Only one expression can be declared in a SELECT clause of a subquery."},
+
+			// SimpleSelectStatement - Grammar
+			{"SIMPLE_SELECT_STATEMENT_INVALID_LOCATION", "A subquery can only be used in the WHERE or HAVING clause."},
 
 			// SizeExpression - Grammar
 			{"SIZE_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
@@ -422,6 +432,9 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"STATE_FIELD_PATH_EXPRESSION_INVALID_ENUM_CONSTANT", "''{0}'' cannot be resolved to an Enum constant."},
 			{"STATE_FIELD_PATH_EXPRESSION_NO_MAPPING",            "No mapping is associated with the state field path ''{0}''."},
 			{"STATE_FIELD_PATH_EXPRESSION_NOT_RESOLVABLE",        "The state field path ''{0}'' cannot be resolved to a valid type."},
+
+			// StringLiteral - Grammar
+			{"STRING_LITERAL_MISSING_CLOSING_QUOTE", "The string literal is missing the closing quote."},
 
 			// SubExpression - Grammar
 			{"SUB_EXPRESSION_MISSING_EXPRESSION",        "The encapsulated expression is missing."},
@@ -455,6 +468,9 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			// SumFunction - Semantic
 			{"SUM_FUNCTION_WRONG_TYPE",                "The argument must be numeric."},
 
+			// TreatExpression - Grammar
+			{"TREAT_EXPRESSION_INVALID_JPA_PLATFORM", "A TREAT expression can only be used when the platform is EclipseLink."},
+
 			// TrimExpression - Grammar
 			{"TRIM_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
 			{"TRIM_EXPRESSION_INVALID_TRIM_CHARACTER",    "The trim character should be a single-character string literal or a character-valued input parameter (i.e., char or Character)."},
@@ -465,10 +481,10 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 
 			// TypeExpression - Grammar
 			{"TYPE_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
+			{"TYPE_EXPRESSION_INVALID_JPA_VERSION",       "A TYPE expression cannot be used in a JPQL query when the JPA platform is 1.0."},
 			{"TYPE_EXPRESSION_MISSING_EXPRESSION",        "An identification variable or a path expression must be provided for a TYPE expression."},
 			{"TYPE_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the TYPE expression."},
 			{"TYPE_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the TYPE expression."},
-			// TypeExpression - Semantic
 
 			// UpdateClause - Grammar
 			{"UPDATE_CLAUSE_MISSING_RANGE_VARIABLE_DECLARATION", "The range variable declaration is missing from the UPDATE clause."},
@@ -484,6 +500,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			// UpdateItem - Semantic
 			{"UPDATE_ITEM_NOT_ASSIGNABLE",                      "Type mismatch: cannot convert from {0} to {1}."},
 			{"UPDATE_ITEM_NOT_RESOLVABLE",                      "The state field cannot be resolved."},
+			{"UPDATE_ITEM_NULL_NOT_ASSIGNABLE_TO_PRIMITIVE",    "NULL cannot be assigned to a primitive value."},
 
 			// UpperExpression - Grammar
 			{"UPPER_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
@@ -495,6 +512,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 
 			// ValueExpression - Grammar
 			{"VALUE_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
+			{"VALUE_EXPRESSION_INVALID_JPA_VERSION",       "A VALUE expression cannot be used in a JPQL query when the JPA platform is 1.0."},
 			{"VALUE_EXPRESSION_MISSING_EXPRESSION",        "An identification variable must be provided for a VALUE expression."},
 			{"VALUE_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the VALUE expression."},
 			{"VALUE_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the VALUE expression."},

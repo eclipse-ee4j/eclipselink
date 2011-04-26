@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
 
 /**
- * This {@link LocateExpressionFactory} creates a new {@link LocateExpression}
- * when the portion of the query to parse starts with <b>LOCATE</b>.
+ * This {@link LocateExpressionFactory} creates a new {@link LocateExpression} when the portion of
+ * the query to parse starts with <b>LOCATE</b>.
  *
  * @see LocateExpression
  *
@@ -49,6 +49,7 @@ final class LocateExpressionFactory extends ExpressionFactory {
 	                                   JPQLQueryBNF queryBNF,
 	                                   AbstractExpression expression,
 	                                   boolean tolerant) {
+
 		expression = new LocateExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;
