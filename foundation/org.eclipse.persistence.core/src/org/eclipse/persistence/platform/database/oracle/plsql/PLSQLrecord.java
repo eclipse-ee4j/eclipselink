@@ -76,6 +76,10 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         }
     }
 
+    public void addField(PLSQLargument field) {
+        fields.add(field);
+    }
+
     public void addField(String fieldName, DatabaseType databaseType) {
         fields.add(new PLSQLargument(fieldName, -1, IN, databaseType));
     }

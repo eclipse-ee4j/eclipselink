@@ -649,7 +649,7 @@ public abstract class DatasourceCall implements Call {
             // Must translate field parameters and may get new bound parameters for large data.
             List parameterFields = getParameters();
             List<Integer> parameterTypes = getParameterTypes();
-            setParameters(NonSynchronizedVector.newInstance(parameterFields.size()));
+            setParameters(new ArrayList(parameterFields.size()));
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
                 String token;

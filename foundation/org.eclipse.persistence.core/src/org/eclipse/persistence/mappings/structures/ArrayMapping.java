@@ -86,7 +86,14 @@ public class ArrayMapping extends AbstractCompositeDirectCollectionMapping imple
     public void setElementDataTypeName(String elementDataTypeName) {
         this.elementDataTypeName = elementDataTypeName;
     }
-    
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean isRelationalMapping() {
+        return true;
+    }
     
     /**
      * INTERNAL:

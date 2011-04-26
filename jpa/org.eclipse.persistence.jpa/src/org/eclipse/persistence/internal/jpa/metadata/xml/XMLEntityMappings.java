@@ -73,6 +73,8 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredPro
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
@@ -102,6 +104,8 @@ public class XMLEntityMappings extends ORMetadata {
     private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries;
     private List<NamedPLSQLStoredProcedureQueryMetadata> m_namedPLSQLStoredProcedureQueries;
     private List<NamedPLSQLStoredFunctionQueryMetadata> m_namedPLSQLStoredFunctionQueries;
+    private List<PLSQLRecordMetadata> m_plsqlRecords;
+    private List<PLSQLTableMetadata> m_plsqlTables;
     private List<ObjectTypeConverterMetadata> m_objectTypeConverters;
     private List<SequenceGeneratorMetadata> m_sequenceGenerators;
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings;
@@ -717,6 +721,16 @@ public class XMLEntityMappings extends ORMetadata {
             sqlResultSetMapping.initXMLObject(m_file, this);
             m_project.addSQLResultSetMapping(sqlResultSetMapping);
         }
+        
+        // Add the PLSQL types to the project.
+        for (PLSQLRecordMetadata record : m_plsqlRecords) {
+            record.initXMLObject(m_file, this);
+            m_project.addPLSQLComplexType(record);
+        }
+        for (PLSQLTableMetadata table : m_plsqlTables) {
+            table.initXMLObject(m_file, this);
+            m_project.addPLSQLComplexType(table);
+        }
     }
     
     /**
@@ -1163,4 +1177,21 @@ public class XMLEntityMappings extends ORMetadata {
     public void setVersion(String version) {
         m_version = version;
     }
+
+    public List<PLSQLRecordMetadata> getPLSQLRecords() {
+        return m_plsqlRecords;
+    }
+
+    public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
+        m_plsqlRecords = records;
+    }
+
+    public List<PLSQLTableMetadata> getPLSQLTables() {
+        return m_plsqlTables;
+    }
+
+    public void setPLSQLTables(List<PLSQLTableMetadata> tables) {
+        m_plsqlTables = tables;
+    }
+    
 }

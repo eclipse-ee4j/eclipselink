@@ -85,6 +85,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Transfor
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.structures.ArrayAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.additionalcriteria.AdditionalCriteriaMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
@@ -149,6 +150,8 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLParameterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryHintMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
@@ -157,6 +160,8 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.StoredProcedurePara
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.structures.StructMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.structures.StructureAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
@@ -222,18 +227,24 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildMultitenantDescriptor());
         addDescriptor(buildTenantDiscriminatorDescriptor());
         addDescriptor(buildNamedQueryDescriptor());
-        addDescriptor(buildNamedNativeQueryDescriptor());
-        addDescriptor(buildNamedStoredProcedureQueryDescriptor());
-        addDescriptor(buildNamedStoredFunctionQueryDescriptor());
-        addDescriptor(buildStoredProcedureParameterDescriptor());
-        addDescriptor(buildNamedPLSQLStoredProcedureQueryDescriptor());
-        addDescriptor(buildNamedPLSQLStoredFunctionQueryDescriptor());
-        addDescriptor(buildPLSQLParameterDescriptor());
+        addDescriptor(buildNamedNativeQueryDescriptor());        
         addDescriptor(buildSqlResultSetMappingDescriptor());
         addDescriptor(buildQueryHintDescriptor());
         addDescriptor(buildEntityResultDescriptor());
         addDescriptor(buildFieldResultDescriptor());
         addDescriptor(buildDefaultRedirectorsDescriptor());
+
+        addDescriptor(buildNamedStoredProcedureQueryDescriptor());
+        addDescriptor(buildNamedStoredFunctionQueryDescriptor());
+        addDescriptor(buildStoredProcedureParameterDescriptor());
+        addDescriptor(buildNamedPLSQLStoredProcedureQueryDescriptor());
+        addDescriptor(buildNamedPLSQLStoredFunctionQueryDescriptor());
+        addDescriptor(buildPLSQLRecordDescriptor());
+        addDescriptor(buildPLSQLTableDescriptor());
+        addDescriptor(buildPLSQLParameterDescriptor());
+        addDescriptor(buildArrayDescriptor());
+        addDescriptor(buildStructureDescriptor());
+        addDescriptor(buildStructDescriptor());
         
         addDescriptor(buildIdDescriptor());
         addDescriptor(buildEmbeddedIdDescriptor());
@@ -507,6 +518,22 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         transientsMapping.setReferenceClass(TransientAccessor.class);
         transientsMapping.setXPath("orm:transient");
         descriptor.addMapping(transientsMapping);
+        
+        XMLCompositeCollectionMapping structsMapping = new XMLCompositeCollectionMapping();
+        structsMapping.setAttributeName("m_structures");
+        structsMapping.setGetMethodName("getStructures");
+        structsMapping.setSetMethodName("setStructures");
+        structsMapping.setReferenceClass(StructureAccessor.class);
+        structsMapping.setXPath("orm:structure");
+        descriptor.addMapping(structsMapping);
+        
+        XMLCompositeCollectionMapping arrayMapping = new XMLCompositeCollectionMapping();
+        arrayMapping.setAttributeName("m_arrays");
+        arrayMapping.setGetMethodName("getArrays");
+        arrayMapping.setSetMethodName("setArrays");
+        arrayMapping.setReferenceClass(ArrayAccessor.class);
+        arrayMapping.setXPath("orm:array");
+        descriptor.addMapping(arrayMapping);
         
         return descriptor;
     }
@@ -1108,6 +1135,43 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         return descriptor;
     }
+  
+    /**
+     * INTERNAL:
+     * XSD: array
+     */
+    protected ClassDescriptor buildArrayDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ArrayAccessor.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getColumnMapping());
+        descriptor.addMapping(getTemporalMapping());
+        descriptor.addMapping(getEnumeratedMapping());
+        descriptor.addMapping(getLobMapping());
+        descriptor.addMapping(getConvertMapping());
+        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getTypeConverterMapping());
+        descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getStructConverterMapping());
+        descriptor.addMapping(getPropertyMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
+        
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getTargetClassAttributeMapping());
+        descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
+        
+        XMLDirectMapping databaseTypeMapping = new XMLDirectMapping();
+        databaseTypeMapping.setAttributeName("m_databaseType");
+        databaseTypeMapping.setGetMethodName("getDatabaseType");
+        databaseTypeMapping.setSetMethodName("setDatabaseType");
+        databaseTypeMapping.setXPath("@database-type");
+        descriptor.addMapping(databaseTypeMapping);
+        
+        return descriptor;
+    }
     
     /**
      * INTERNAL:
@@ -1122,6 +1186,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
+        descriptor.addMapping(getStructMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -1162,6 +1227,27 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getAttributeTypeAttributeMapping());
+        
+        return descriptor;
+    }
+        
+    /**
+     * INTERNAL:
+     * XSD: structure
+     */
+    protected ClassDescriptor buildStructureDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(StructureAccessor.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getPropertyMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
+        
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
+        descriptor.addMapping(getTargetClassAttributeMapping());
         
         return descriptor;
     }
@@ -1219,6 +1305,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         secondaryTablesMapping.setXPath("orm:secondary-table");
         descriptor.addMapping(secondaryTablesMapping);
         
+        descriptor.addMapping(getStructMapping());
+        
         descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
         descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getIndexesMapping());
@@ -1270,6 +1358,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedStoredFunctionQueryMapping());
         descriptor.addMapping(getNamedPLSQLStoredProcedureQueryMapping());
         descriptor.addMapping(getNamedPLSQLStoredFunctionQueryMapping());
+        descriptor.addMapping(getPLSQLRecordMapping());
+        descriptor.addMapping(getPLSQLTableMapping());
         descriptor.addMapping(getResultSetMappingMapping());
         descriptor.addMapping(getQueryRedirectorsMapping());
         descriptor.addMapping(getExcludeDefaultListenersMapping());
@@ -1450,6 +1540,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedStoredFunctionQueryMapping());
         descriptor.addMapping(getNamedPLSQLStoredProcedureQueryMapping());
         descriptor.addMapping(getNamedPLSQLStoredFunctionQueryMapping());
+        descriptor.addMapping(getPLSQLRecordMapping());
+        descriptor.addMapping(getPLSQLTableMapping());
         descriptor.addMapping(getResultSetMappingMapping());
         
         XMLCompositeCollectionMapping mappedSuperclassMapping = new XMLCompositeCollectionMapping();
@@ -1931,6 +2023,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNamedStoredFunctionQueryMapping());
         descriptor.addMapping(getNamedPLSQLStoredProcedureQueryMapping());
         descriptor.addMapping(getNamedPLSQLStoredFunctionQueryMapping());
+        descriptor.addMapping(getPLSQLRecordMapping());
+        descriptor.addMapping(getPLSQLTableMapping());
         descriptor.addMapping(getResultSetMappingMapping());
         descriptor.addMapping(getQueryRedirectorsMapping());
         descriptor.addMapping(getExcludeDefaultListenersMapping());
@@ -2091,6 +2185,51 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         procedureNameMapping.setSetMethodName("setProcedureName");
         procedureNameMapping.setXPath("@procedure-name");
         descriptor.addMapping(procedureNameMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: plsql-record
+     */
+    protected ClassDescriptor buildPLSQLRecordDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PLSQLRecordMetadata.class);
+        
+        XMLCompositeCollectionMapping fieldsMapping = new XMLCompositeCollectionMapping();
+        fieldsMapping.setAttributeName("fields");
+        fieldsMapping.setGetMethodName("getFields");
+        fieldsMapping.setSetMethodName("setFields");
+        fieldsMapping.setReferenceClass(PLSQLParameterMetadata.class);
+        fieldsMapping.setXPath("orm:field");
+        descriptor.addMapping(fieldsMapping);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getCompatibleTypeMapping());
+        descriptor.addMapping(getJavaTypeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: plsql-table
+     */
+    protected ClassDescriptor buildPLSQLTableDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PLSQLTableMetadata.class);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getCompatibleTypeMapping());
+        descriptor.addMapping(getJavaTypeMapping());
+        
+        XMLDirectMapping nestedTypeMapping = new XMLDirectMapping();
+        nestedTypeMapping.setAttributeName("nestedType");
+        nestedTypeMapping.setGetMethodName("getNestedType");
+        nestedTypeMapping.setSetMethodName("setNestedType");
+        nestedTypeMapping.setXPath("@nested-type");
+        descriptor.addMapping(nestedTypeMapping);
         
         return descriptor;
     }
@@ -2912,6 +3051,28 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: struct
+     */
+    protected ClassDescriptor buildStructDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(StructMetadata.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        XMLCompositeDirectCollectionMapping fieldsMapping = new XMLCompositeDirectCollectionMapping();
+        fieldsMapping.setAttributeName("m_fields");
+        fieldsMapping.setGetMethodName("getFields");
+        fieldsMapping.setSetMethodName("setFields");
+        fieldsMapping.setXPath("orm:field");
+        descriptor.addMapping(fieldsMapping);
+        
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: table-generator
      */
     protected ClassDescriptor buildTableGeneratorDescriptor() {
@@ -3669,6 +3830,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeObjectMapping getStructMapping() {
+        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+        mapping.setAttributeName("m_struct");
+        mapping.setGetMethodName("getStruct");
+        mapping.setSetMethodName("setStruct");
+        mapping.setReferenceClass(StructMetadata.class);
+        mapping.setXPath("orm:struct");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeCollectionMapping getConverterMapping() {
         XMLCompositeCollectionMapping convertersMapping = new XMLCompositeCollectionMapping();
         convertersMapping.setAttributeName("m_converters");
@@ -4365,6 +4539,44 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         namedStoredFunctionQueryMapping.setReferenceClass(NamedPLSQLStoredFunctionQueryMetadata.class);
         namedStoredFunctionQueryMapping.setXPath("orm:named-plsql-stored-function-query");
         return namedStoredFunctionQueryMapping;
+    }
+
+    protected XMLCompositeCollectionMapping getPLSQLRecordMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_plsqlRecords");
+        mapping.setGetMethodName("getPLSQLRecords");
+        mapping.setSetMethodName("setPLSQLRecords");
+        mapping.setReferenceClass(PLSQLRecordMetadata.class);
+        mapping.setXPath("orm:plsql-record");
+        return mapping;
+    }
+
+    protected XMLCompositeCollectionMapping getPLSQLTableMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_plsqlTables");
+        mapping.setGetMethodName("getPLSQLTables");
+        mapping.setSetMethodName("setPLSQLTables");
+        mapping.setReferenceClass(PLSQLTableMetadata.class);
+        mapping.setXPath("orm:plsql-table");
+        return mapping;
+    }
+
+    protected XMLDirectMapping getCompatibleTypeMapping() {
+        XMLDirectMapping typeMapping = new XMLDirectMapping();
+        typeMapping.setAttributeName("compatibleType");
+        typeMapping.setGetMethodName("getCompatibleType");
+        typeMapping.setSetMethodName("setCompatibleType");
+        typeMapping.setXPath("@compatible-type");
+        return typeMapping;
+    }
+
+    protected XMLDirectMapping getJavaTypeMapping() {
+        XMLDirectMapping javaTypeMapping = new XMLDirectMapping();
+        javaTypeMapping.setAttributeName("javaType");
+        javaTypeMapping.setGetMethodName("getJavaType");
+        javaTypeMapping.setSetMethodName("setJavaType");
+        javaTypeMapping.setXPath("@java-type");
+        return javaTypeMapping;
     }
 
     /**

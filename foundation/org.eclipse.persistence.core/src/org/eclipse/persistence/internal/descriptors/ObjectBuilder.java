@@ -2903,12 +2903,16 @@ public class ObjectBuilder implements Cloneable, Serializable {
             List<Class> classifications = new ArrayList(primaryKeyFields.size());
 
             for (int index = 0; index < primaryKeyFields.size(); index++) {
-                DatabaseMapping mapping = getPrimaryKeyMappings().get(index);
-                DatabaseField field = (DatabaseField)primaryKeyFields.get(index);
-                if (mapping != null) {
-                    classifications.add(Helper.getObjectClass(mapping.getFieldClassification(field)));
-                } else {
+                if (getPrimaryKeyMappings().size() < (index + 1)) { // Check for failed initialization to avoid cascaded errors.
                     classifications.add(null);
+                } else {
+                    DatabaseMapping mapping = getPrimaryKeyMappings().get(index);
+                    DatabaseField field = (DatabaseField)primaryKeyFields.get(index);
+                    if (mapping != null) {
+                        classifications.add(Helper.getObjectClass(mapping.getFieldClassification(field)));
+                    } else {
+                        classifications.add(null);
+                    }
                 }
             }
             primaryKeyClassifications = classifications;

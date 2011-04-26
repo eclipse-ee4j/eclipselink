@@ -41,14 +41,14 @@ public @interface PLSQLParameter {
     Direction direction() default IN;
 
     /**
-     * (Optional) Stored procedure parameter name.
+     * (Required) Stored procedure parameter name.
      */
-    String name() default "";
+    String name();
 
     /**
-     * (Required) The query parameter name.
+     * (Optional) The query parameter name.
      */
-    String queryParameter();
+    String queryParameter() default "";
     
     /**
      * (Optional) Define if the parameter is required, or optional and defaulted by the procedure.
@@ -63,7 +63,7 @@ public @interface PLSQLParameter {
      * @see OraclePLSQLTypes
      * @see JDBCTypes
      */
-    String databaseType() default "VARCHAR";
+    String databaseType() default "VARCHAR_TYPE";
     
     /**
      * (Optional) The max length of the field value.

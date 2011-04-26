@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.structures;
 
-
-// This must be bond to Oracle JDBC currently, JDBC 2.0 should fix this.
 import java.sql.*;
 import java.util.*;
 import org.eclipse.persistence.exceptions.*;
@@ -372,5 +370,13 @@ public class ReferenceMapping extends ObjectReferenceMapping {
         }
 
         record.put(getField(), null);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean isRelationalMapping() {
+        return true;
     }
 }

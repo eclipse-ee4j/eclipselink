@@ -152,9 +152,9 @@ public class PLSQLParameterMetadata extends ORMetadata {
         }
 
         if ((m_optional != null) && m_optional) {
-            call.addOptionalArgument(m_queryParameter);
+            call.addOptionalArgument(procedureParameterName);
         }
-        DatabaseType type = getDatabaseTypeEnum();
+        DatabaseType type = getDatabaseTypeEnum(getDatabaseType(), project);
         // Process the parameter direction
         if (functionReturn) {
             if (getLength() != null) {
@@ -250,18 +250,22 @@ public class PLSQLParameterMetadata extends ORMetadata {
      * Return the DataType enum constant for the String type name.
      * If not a type defined by the enums, then return a record type.
      */
-    public DatabaseType getDatabaseTypeEnum() {
-        if (getDatabaseType() == null) {
+    public static DatabaseType getDatabaseTypeEnum(String type, MetadataProject project) {
+        if (type == null) {
             return JDBCTypes.VARCHAR_TYPE;
         }
         try {
-            return JDBCTypes.valueOf(getDatabaseType());
+            return JDBCTypes.valueOf(type);
         } catch (Exception invalid) {
             try {
-                return OraclePLSQLTypes.valueOf(getDatabaseType());
+                return OraclePLSQLTypes.valueOf(type);
             } catch (Exception alsoInvalid) {
+                PLSQLComplexTypeMetadata typeMetadata = project.getPLSQLComplexType(type);
+                if (typeMetadata != null) {
+                    return typeMetadata.process(project);
+                }
                 PLSQLrecord record = new PLSQLrecord();
-                record.setTypeName(getDatabaseType());
+                record.setTypeName(type);
                 return record;
             }
         }

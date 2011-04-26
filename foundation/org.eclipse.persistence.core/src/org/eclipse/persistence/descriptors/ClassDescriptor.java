@@ -731,7 +731,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return the selection criteria used to IN batch fetching.
      */
     public Expression buildBatchCriteriaByPK(ExpressionBuilder builder, ObjectLevelReadQuery query) {
-        Expression selectionCriteria = null;
         int size = getPrimaryKeyFields().size();
         if (size > 1) {
             // Support composite keys using nested IN.
@@ -3494,7 +3493,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (getCacheKeyType() == null || (getCacheKeyType() == CacheKeyType.AUTO)) {
             if ((getPrimaryKeyFields().size() > 1) || getObjectBuilder().isXMLObjectBuilder()) {
                 setCacheKeyType(CacheKeyType.CACHE_ID);
-            } else if (getPrimaryKeyFields().size() == 1) {
+            } else if ((getPrimaryKeyFields().size() == 1) && (getObjectBuilder().getPrimaryKeyClassifications().size() == 1)) {
                 Class type = getObjectBuilder().getPrimaryKeyClassifications().get(0);
                 if ((type == null) || type.isArray()) {
                     setCacheKeyType(CacheKeyType.CACHE_ID);

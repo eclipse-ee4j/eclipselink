@@ -87,4 +87,11 @@ public class StructureMapping extends AbstractCompositeObjectMapping {
         return aggregateObject;
     }
 
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean isRelationalMapping() {
+        return true;
+    }
 }

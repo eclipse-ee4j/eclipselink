@@ -158,5 +158,12 @@ public class ObjectArrayMapping extends AbstractCompositeCollectionMapping  impl
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
         (new ArrayCollectionMappingHelper(this)).simpleRemoveFromCollectionChangeRecord(referenceKey, changeSetToRemove, changeSet, session);
     }
-    
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean isRelationalMapping() {
+        return true;
+    }
 }

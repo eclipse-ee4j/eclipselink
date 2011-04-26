@@ -66,9 +66,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.Version;
 
+import org.eclipse.persistence.annotations.Array;
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.annotations.ReadTransformer;
+import org.eclipse.persistence.annotations.Structure;
 import org.eclipse.persistence.annotations.TransientCompatibleAnnotations;
 import org.eclipse.persistence.annotations.VariableOneToOne;
 import org.eclipse.persistence.annotations.WriteTransformer;
@@ -495,7 +497,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * annotation is found on the raw/reference class.
      */
     public boolean isEmbedded(ClassAccessor classAccessor) {
-        if (isAnnotationNotPresent(Embedded.class) && isAnnotationNotPresent(EmbeddedId.class)) {
+        if (isAnnotationNotPresent(Embedded.class) && isAnnotationNotPresent(EmbeddedId.class) && ! classAccessor.excludeDefaultMappings()) {
             MetadataClass rawClass = getRawClass(classAccessor.getDescriptor());
             return (rawClass.isAnnotationPresent(Embeddable.class) || classAccessor.getProject().hasEmbeddable(rawClass));
         } else {
@@ -553,6 +555,22 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isManyToMany(ClassAccessor classAccessor) {
         return isAnnotationPresent(ManyToMany.class, classAccessor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this field accessor represents a structure relationship.
+     */
+    public boolean isStructure(ClassAccessor classAccessor) {
+        return isAnnotationPresent(Structure.class, classAccessor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this field accessor represents an array relationship.
+     */
+    public boolean isArray(ClassAccessor classAccessor) {
+        return isAnnotationPresent(Array.class, classAccessor);
     }
     
     /**

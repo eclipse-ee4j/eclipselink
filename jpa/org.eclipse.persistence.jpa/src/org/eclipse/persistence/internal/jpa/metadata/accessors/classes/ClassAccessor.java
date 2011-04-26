@@ -93,6 +93,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import org.eclipse.persistence.annotations.Array;
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.annotations.ChangeTracking;
@@ -103,6 +104,8 @@ import org.eclipse.persistence.annotations.InstantiationCopyPolicy;
 import org.eclipse.persistence.annotations.CloneCopyPolicy;
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
+import org.eclipse.persistence.annotations.Struct;
+import org.eclipse.persistence.annotations.Structure;
 import org.eclipse.persistence.annotations.Transformation;
 import org.eclipse.persistence.annotations.VariableOneToOne;
 
@@ -137,6 +140,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
+import org.eclipse.persistence.internal.jpa.metadata.structures.ArrayAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.changetracking.ChangeTrackingMetadata;
 
@@ -147,6 +151,10 @@ import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicy
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.structures.StructMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.structures.StructureAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
@@ -156,6 +164,10 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
+import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecord;
+import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecords;
+import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLTable;
+import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLTables;
 
 /**
  * INTERNAL:
@@ -207,6 +219,11 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     private XMLAttributes m_attributes;
     
+    private List<PLSQLRecordMetadata> m_plsqlRecords = new ArrayList<PLSQLRecordMetadata>();
+    private List<PLSQLTableMetadata> m_plsqlTables = new ArrayList<PLSQLTableMetadata>();
+    
+    private StructMetadata m_struct;
+        
     /**
      * INTERNAL:
      */
@@ -525,6 +542,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
             return new BasicCollectionAccessor(accessibleObject.getAnnotation(BasicCollection.class), accessibleObject, this);
         } else if (accessibleObject.isBasicMap(this)) {
             return new BasicMapAccessor(accessibleObject.getAnnotation(BasicMap.class), accessibleObject, this);
+        } else if (accessibleObject.isArray(this)) {
+            return new ArrayAccessor(accessibleObject.getAnnotation(Array.class), accessibleObject, this);
         } else if (accessibleObject.isElementCollection(this)) {
             return new ElementCollectionAccessor(accessibleObject.getAnnotation(ElementCollection.class), accessibleObject, this);
         } else if (accessibleObject.isVersion(this)) {
@@ -535,6 +554,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
             return new DerivedIdClassAccessor(accessibleObject, this);
         } else if (accessibleObject.isBasic(this)) {
             return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
+        } else if (accessibleObject.isStructure(this)) {
+            return new StructureAccessor(accessibleObject.getAnnotation(Structure.class), accessibleObject, this);
         } else if (accessibleObject.isEmbedded(this)) {
             return new EmbeddedAccessor(accessibleObject.getAnnotation(Embedded.class), accessibleObject, this);
         } else if (accessibleObject.isEmbeddedId(this)) {
@@ -1008,10 +1029,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
         initXMLObject(m_customCopyPolicy, accessibleObject);
         initXMLObject(m_instantiationCopyPolicy, accessibleObject);
         initXMLObject(m_attributes, accessibleObject);
+        initXMLObject(m_struct, accessibleObject);
         
         // Initialize lists of objects.
         initXMLObjects(m_associationOverrides, accessibleObject);
         initXMLObjects(m_attributeOverrides, accessibleObject);
+        initXMLObjects(m_plsqlRecords, accessibleObject);
+        initXMLObjects(m_plsqlTables, accessibleObject);
         
         // Initialize simple class objects.
         m_customizerClass = initXMLClassName(m_customizerClassName);
@@ -1078,10 +1102,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
         m_customCopyPolicy = (CustomCopyPolicyMetadata) mergeORObjects(m_customCopyPolicy, accessor.getCustomCopyPolicy());
         m_instantiationCopyPolicy = (InstantiationCopyPolicyMetadata) mergeORObjects(m_instantiationCopyPolicy, accessor.getInstantiationCopyPolicy());
         m_changeTracking = (ChangeTrackingMetadata) mergeORObjects(m_changeTracking, accessor.getChangeTracking());
+        m_struct = (StructMetadata) mergeORObjects(m_struct, accessor.getStruct());
         
         // ORMetadata list merging. 
         m_associationOverrides = mergeORObjectLists(m_associationOverrides, accessor.getAssociationOverrides());
         m_attributeOverrides = mergeORObjectLists(m_attributeOverrides, accessor.getAttributeOverrides());
+        m_plsqlRecords = mergeORObjectLists(m_plsqlRecords, accessor.getPLSQLRecords());
+        m_plsqlTables = mergeORObjectLists(m_plsqlTables, accessor.getPLSQLTables());
         
         // ORObjects that merge further ...
         if (m_attributes == null) {
@@ -1097,6 +1124,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * processing. 
      */
     public void preProcess() {
+        // First check for a @Struct annotation to create the correct type of descriptor.
+        processStruct();
+        
         // Process the global converters.
         processConverters();
         
@@ -1170,13 +1200,15 @@ public abstract class ClassAccessor extends MetadataAccessor {
         
         // Process the property metadata.
         processProperties();
+     
+        processPLSQLTypes();
         
         // Process the MappedSuperclass(es) metadata now after all our. There 
         // may be several MappedSuperclasses for any given Entity or Embeddable.
         for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
             processMappedSuperclassMetadata(mappedSuperclass);
         }
-     
+        
         // Mark the class accessor as processed.
         setIsProcessed();
     }
@@ -1490,7 +1522,61 @@ public abstract class ClassAccessor extends MetadataAccessor {
             getDescriptor().addProperty(new PropertyMetadata(property, this));
         }
     }
+
+    /**
+     * Process record and table types.
+     */
+    public void processPLSQLTypes() {
+        // PLSQL types.
+        
+        // Process the XML first.
+        for (PLSQLRecordMetadata record : m_plsqlRecords) {
+            getProject().addPLSQLComplexType(record);
+        }        
+        // Process the annotations.
+        MetadataAnnotation records = getAnnotation(PLSQLRecords.class);
+        if (records != null) {
+            for (Object record : (Object[]) records.getAttribute("value")) { 
+                getProject().addPLSQLComplexType(new PLSQLRecordMetadata((MetadataAnnotation)record, this));
+            }
+        }        
+        MetadataAnnotation record = getAnnotation(PLSQLRecord.class);
+        if (record != null) {
+            getProject().addPLSQLComplexType(new PLSQLRecordMetadata(record, this));
+        }
+        
+        // Process the XML first.
+        for (PLSQLTableMetadata table : m_plsqlTables) {
+            getProject().addPLSQLComplexType(table);
+        }        
+        // Process the annotations.
+        MetadataAnnotation tables = getAnnotation(PLSQLTables.class);
+        if (tables != null) {
+            for (Object table : (Object[]) tables.getAttribute("value")) { 
+                getProject().addPLSQLComplexType(new PLSQLTableMetadata((MetadataAnnotation)table, this));
+            }
+        }
+        MetadataAnnotation table = getAnnotation(PLSQLTable.class);
+        if (table != null) {
+            getProject().addPLSQLComplexType(new PLSQLTableMetadata(table, this));
+        }
+    }
     
+    /**
+     * Check for and process a Struct annotation and configure the correct descriptor type. 
+     */
+    protected void processStruct() {
+        // Check for XML defined struct.
+        if (m_struct != null) {
+            m_struct.process(getDescriptor());
+        }        
+        // Check for a annotation
+        MetadataAnnotation struct = getAnnotation(Struct.class);
+        if (struct != null) {
+            new StructMetadata(struct, this).process(getDescriptor());
+        }
+    }
+
     /**
      * INTERNAL:
      * If this class accessor uses VIRTUAL access and is not accessible, add it
@@ -1699,5 +1785,29 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public boolean usesVirtualAccess() {
         return getAccessType().equals(MetadataConstants.VIRTUAL);
+    }
+
+    public List<PLSQLRecordMetadata> getPLSQLRecords() {
+        return m_plsqlRecords;
+    }
+
+    public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
+        m_plsqlRecords = records;
+    }
+
+    public List<PLSQLTableMetadata> getPLSQLTables() {
+        return m_plsqlTables;
+    }
+
+    public void setPLSQLTables(List<PLSQLTableMetadata> tables) {
+        m_plsqlTables = tables;
+    }
+    
+    public StructMetadata getStruct() {
+        return m_struct;
+    }
+
+    public void setStruct(StructMetadata struct) {
+        m_struct = struct;
     }
 }

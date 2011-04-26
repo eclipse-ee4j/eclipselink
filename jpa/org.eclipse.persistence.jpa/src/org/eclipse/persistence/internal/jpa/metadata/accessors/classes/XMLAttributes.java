@@ -44,6 +44,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Transien
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.structures.ArrayAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.structures.StructureAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
@@ -79,7 +81,9 @@ public class XMLAttributes extends ORMetadata {
     private List<TransformationAccessor> m_transformations;
     private List<TransientAccessor> m_transients;
     private List<VersionAccessor> m_versions;
-    
+    private List<StructureAccessor> m_structures;
+    private List<ArrayAccessor> m_arrays;
+
     /**
      * INTERNAL:
      */
@@ -151,6 +155,14 @@ public class XMLAttributes extends ORMetadata {
                 return false;
             }
             
+            if (! valuesMatch(m_structures, attributes.getStructures())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_arrays, attributes.getArrays())) {
+                return false;
+            }
+            
             return valuesMatch(m_versions, attributes.getVersions());
         }
         
@@ -184,6 +196,8 @@ public class XMLAttributes extends ORMetadata {
         accessors.addAll(m_oneToManys);
         accessors.addAll(m_oneToOnes);
         accessors.addAll(m_variableOneToOnes);
+        accessors.addAll(m_structures);
+        accessors.addAll(m_arrays);
         
         return accessors;
     }
@@ -339,6 +353,8 @@ public class XMLAttributes extends ORMetadata {
         initXMLObjects(m_transformations, accessibleObject);
         initXMLObjects(m_transients, accessibleObject);
         initXMLObjects(m_versions, accessibleObject);
+        initXMLObjects(m_structures, accessibleObject);
+        initXMLObjects(m_arrays, accessibleObject);
     }
     
     /**
@@ -369,6 +385,8 @@ public class XMLAttributes extends ORMetadata {
             m_transformations = mergeORObjectLists(m_transformations, attributes.getTransformations());
             m_transients = mergeORObjectLists(m_transients, attributes.getTransients());
             m_versions = mergeORObjectLists(m_versions, attributes.getVersions());
+            m_structures = mergeORObjectLists(m_structures, attributes.getStructures());
+            m_arrays = mergeORObjectLists(m_arrays, attributes.getArrays());
         }
     }
     
@@ -491,5 +509,22 @@ public class XMLAttributes extends ORMetadata {
     public void setVersions(List<VersionAccessor> versions) {
         m_versions = versions;
     }
+    
+    public List<StructureAccessor> getStructures() {
+        return m_structures;
+    }
+
+    public void setStructures(List<StructureAccessor> structures) {
+        m_structures = structures;
+    }
+
+    public List<ArrayAccessor> getArrays() {
+        return m_arrays;
+    }
+
+    public void setArrays(List<ArrayAccessor> arrays) {
+        m_arrays = arrays;
+    }
+    
 }
     

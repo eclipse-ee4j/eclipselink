@@ -12,6 +12,9 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.testing.tests.jpa.plsql;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -19,9 +22,11 @@ import junit.framework.*;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.plsql.Address;
+import org.eclipse.persistence.testing.models.jpa.plsql.Employee;
+import org.eclipse.persistence.testing.models.jpa.plsql.Phone;
 
 public class PLSQLTestSuite extends JUnitTestCase {
-    public static boolean validDatabase = true;
         
     public static Test suite() {
         TestSuite suite = new TestSuite("PLSQLTests");
@@ -29,6 +34,9 @@ public class PLSQLTestSuite extends JUnitTestCase {
         suite.addTest(new PLSQLTestSuite("testSimpleProcedure"));
         suite.addTest(new PLSQLTestSuite("testSimpleFunction"));
         suite.addTest(new PLSQLTestSuite("testRecordOut"));
+        suite.addTest(new PLSQLTestSuite("testTableOut"));
+        suite.addTest(new PLSQLTestSuite("testEmpRecordInOut"));
+        suite.addTest(new PLSQLTestSuite("testConsultant"));
         return suite;
     }
     
@@ -60,6 +68,9 @@ public class PLSQLTestSuite extends JUnitTestCase {
         // Tables
         try {
             session.executeNonSelectingSQL("DROP TABLE PLSQL_ADDRESS");
+        } catch (Exception ignore) {}
+        try {
+            session.executeNonSelectingSQL("DROP TABLE PLSQL_CONSULTANT");
         } catch (Exception ignore) {}
         session.executeNonSelectingSQL("CREATE TABLE PLSQL_ADDRESS ("
                 + "ADDRESS_ID NUMBER(10) NOT NULL, STREET_NUM NUMBER(10), STREET VARCHAR2(30), CITY VARCHAR2(30), STATE VARCHAR2(30), PRIMARY KEY (ADDRESS_ID))");
@@ -215,6 +226,8 @@ public class PLSQLTestSuite extends JUnitTestCase {
                         + "OPEN P_ADDRESS FOR SELECT * FROM PLSQL_ADDRESS; \n"
                         + "END PLSQL_ADDRESS_REC_CUR_OUT; \n"
                     + "END PLSQL_P; \n");
+        session.executeNonSelectingSQL("CREATE TABLE PLSQL_CONSULTANT ("
+                + "EMP_ID NUMBER(10), NAME VARCHAR2(30), ACTIVE NUMBER(1), ADDRESS PLSQL_P_PLSQL_ADDRESS_REC, PHONES PLSQL_P_PLSQL_PHONE_LIST, PRIMARY KEY (EMP_ID))");
     }
     
     /**
@@ -300,9 +313,80 @@ public class PLSQLTestSuite extends JUnitTestCase {
         try {
             Query query = em.createNamedQuery("PLSQL_ADDRESS_OUT");
             Object result = query.getSingleResult();
-            if (result == null) {
-                fail("Incorrect result.");
+            if (!(result instanceof Address)) {
+                fail("Incorrect result:" + result);
             }
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+    
+    /**
+     * Test a record out procedure.
+     */
+    public void testEmpRecordInOut() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createNamedQuery("PLSQL_EMP_INOUT");
+            Employee employee = new Employee();
+            employee.setId(new BigDecimal(1234));
+            employee.setName("Bob");
+            employee.setAddress(new Address());
+            employee.getAddress().setId(new BigDecimal(1234));
+            employee.getAddress().setCity("Ottawa");
+            employee.getAddress().setNumber(12345);
+            employee.getAddress().setState("ON");
+            employee.getAddress().setStreet("Bank");
+            Phone phone = new Phone();
+            phone.setAreaCode("613");
+            phone.setNumber("1234567");
+            employee.getPhones().add(phone);
+            query.setParameter("P_EMP", employee);
+            Object[] result = (Object[])query.getSingleResult();
+            if (!(result[0] instanceof Employee)) {
+                fail("Incorrect result:" + result);
+            }
+            compareObjects(employee, result[0]);
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+    
+    /**
+     * Test a table out procedure.
+     */
+    public void testTableOut() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createNamedQuery("PLSQL_ADDRESS_LIST_OUT");
+            Object[] result = (Object[])query.getSingleResult();
+            if (!(result[0] instanceof List)) {
+                fail("Incorrect result:" + result);
+            }
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+    
+    /**
+     * Test Consultant, relational object with o/r data-types.
+     */
+    public void testConsultant() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            em.createQuery("Select c from Consultant c").getResultList();
         } finally {
             closeEntityManagerAndTransaction(em);
         }

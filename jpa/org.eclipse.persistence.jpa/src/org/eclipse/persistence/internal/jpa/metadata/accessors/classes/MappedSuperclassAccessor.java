@@ -1238,7 +1238,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         MetadataAnnotation namedStoredFunctionQueries = getAnnotation(NamedStoredFunctionQueries.class);
         if (namedStoredFunctionQueries != null) {
             for (Object namedStoredFunctionQuery : (Object[]) namedStoredFunctionQueries.getAttribute("value")) { 
-                getProject().addQuery(new NamedStoredProcedureQueryMetadata((MetadataAnnotation)namedStoredFunctionQuery, this));
+                getProject().addQuery(new NamedStoredFunctionQueryMetadata((MetadataAnnotation)namedStoredFunctionQuery, this));
             }
         }
         
@@ -1281,7 +1281,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         MetadataAnnotation namedPLSQLStoredFunctionQueries = getAnnotation(NamedPLSQLStoredFunctionQueries.class);
         if (namedPLSQLStoredFunctionQueries != null) {
             for (Object namedPLSQLStoredFunctionQuery : (Object[]) namedPLSQLStoredFunctionQueries.getAttribute("value")) { 
-                getProject().addQuery(new NamedPLSQLStoredProcedureQueryMetadata((MetadataAnnotation)namedPLSQLStoredFunctionQuery, this));
+                getProject().addQuery(new NamedPLSQLStoredFunctionQueryMetadata((MetadataAnnotation)namedPLSQLStoredFunctionQuery, this));
             }
         }
         

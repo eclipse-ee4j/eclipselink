@@ -124,6 +124,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.AbstractPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLComplexTypeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
@@ -219,6 +220,9 @@ public class MetadataProject {
     
     // Metadata converters, that is, EclipseLink converters.
     private Map<String, AbstractConverterMetadata> m_converters;
+    
+    // Store PLSQL record and table types by name, to allow reuse.
+    private Map<String, PLSQLComplexTypeMetadata> m_plsqlComplexTypes;
     
     // Store partitioning policies by name, to allow reuse.
     private Map<String, AbstractPartitioningMetadata> m_partitioningPolicies;
@@ -318,6 +322,7 @@ public class MetadataProject {
         
         m_converters = new HashMap<String, AbstractConverterMetadata>();
         m_partitioningPolicies = new HashMap<String, AbstractPartitioningMetadata>();
+        m_plsqlComplexTypes = new HashMap<String, PLSQLComplexTypeMetadata>();
         m_accessorsWithDerivedId = new HashSet<ClassAccessor>();
         m_interfacesImplementedByEntities = new HashSet<String>();
         
@@ -390,9 +395,19 @@ public class MetadataProject {
      * Add the partitioning policy by name.
      */
     public void addPartitioningPolicy(AbstractPartitioningMetadata policy) {
-        // Check for another converter with the same name.
+        // Check for another policy with the same name.
         if (policy.shouldOverride(m_partitioningPolicies.get(policy.getName()))) {
             m_partitioningPolicies.put(policy.getName(), policy);
+        }
+    }
+
+    /**
+     * Add the named PLSQL type.
+     */
+    public void addPLSQLComplexType(PLSQLComplexTypeMetadata type) {
+        // Check for another type with the same name.
+        if (type.shouldOverride(m_plsqlComplexTypes.get(type.getName()))) {
+            m_plsqlComplexTypes.put(type.getName(), type);
         }
     }
     
@@ -872,6 +887,13 @@ public class MetadataProject {
      */
     public AbstractPartitioningMetadata getPartitioningPolicy(String name) {
         return m_partitioningPolicies.get(name);
+    }
+
+    /**
+     * Return the named PLSQL type.
+     */
+    public PLSQLComplexTypeMetadata getPLSQLComplexType(String name) {
+        return m_plsqlComplexTypes.get(name);
     }
     
     /**
@@ -1588,6 +1610,14 @@ public class MetadataProject {
             // parent.
             if (! entity.isProcessed()) {
                 entity.process();
+            }
+        }
+        
+        for (EmbeddableAccessor embeddable : getEmbeddableAccessors()) {
+            // If the accessor hasn't been processed yet, then process it. An
+            // EmbeddableAccessor is normally fast tracked if it is a reference.
+            if (! embeddable.isProcessed()) {
+                embeddable.process();
             }
         }
     }

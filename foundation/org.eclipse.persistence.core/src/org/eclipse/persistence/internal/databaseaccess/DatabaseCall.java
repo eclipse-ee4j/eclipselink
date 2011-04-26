@@ -954,7 +954,7 @@ public abstract class DatabaseCall extends DatasourceCall {
             List parameters = getParameters();
             List<Integer> parameterTypes = getParameterTypes();
             int size = parameters.size();
-            Vector parametersValues = new Vector(size);
+            List parametersValues = new ArrayList(size);
             for (int index = 0; index < size; index++) {
                 Object parameter = parameters.get(index);
                 Object parameterType = parameterTypes.get(index);
@@ -1047,7 +1047,7 @@ public abstract class DatabaseCall extends DatasourceCall {
 
     /**
      * INTERNAL:
-     * Translate only IN() parameter values (Vector parameters).
+     * Translate only IN() parameter values (List parameters).
      */
     public void translateQueryStringForParameterizedIN(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
         int lastIndex = 0;

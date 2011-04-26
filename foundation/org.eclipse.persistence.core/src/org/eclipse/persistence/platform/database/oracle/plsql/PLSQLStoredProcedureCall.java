@@ -589,7 +589,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     protected void addNestedFunctionsForArgument(List functions, PLSQLargument argument,
                 DatabaseType databaseType, Set<DatabaseType> processed) {
         if ((databaseType == null) || !databaseType.isComplexDatabaseType()
-            || databaseType.isJDBCType() || processed.contains(databaseType)) {
+                || databaseType.isJDBCType() || processed.contains(databaseType)) {
             return;
         }
         ComplexDatabaseType type = (ComplexDatabaseType)databaseType;
@@ -602,7 +602,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             addNestedFunctionsForArgument(functions, argument, nestedType, processed);
         } else if (type instanceof PLSQLrecord) {
             for (PLSQLargument field : ((PLSQLrecord)type).getFields()) {
-	            DatabaseType nestedType = field.databaseType;
+                DatabaseType nestedType = field.databaseType;
                 addNestedFunctionsForArgument(functions, argument, nestedType, processed);
             }
         }
@@ -615,16 +615,14 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             if (!functions.contains(info.sql2PlConv)) {
                 functions.add(info.sql2PlConv);
             }
-        }
-        else if (argument.direction == INOUT) {
+        } else if (argument.direction == INOUT) {
             if (!functions.contains(info.sql2PlConv)) {
                 functions.add(info.sql2PlConv);
             }
             if (!functions.contains(info.pl2SqlConv)) {
                 functions.add(info.pl2SqlConv);
             }
-        }
-        else if (argument.direction == OUT) {
+        } else if (argument.direction == OUT) {
             if (!functions.contains(info.pl2SqlConv)) {
                 functions.add(info.pl2SqlConv);
             }

@@ -2867,6 +2867,20 @@
               </xsd:sequence>
             </xsd:complexType>
           </xsd:element>
+          <xsd:element minOccurs="0" name="optional-arguments">
+            <xsd:annotation>
+              <xsd:documentation>The list of optional arguments.</xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="argument" type="field">
+                  <xsd:annotation>
+                    <xsd:documentation>Defines an optional argument.</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -2969,6 +2983,20 @@
                 <xsd:element minOccurs="0" maxOccurs="unbounded" name="argument" type="plsql-procedure-argument-type">
                   <xsd:annotation>
                     <xsd:documentation>Defines an argument to the procedure.</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="optional-arguments">
+            <xsd:annotation>
+              <xsd:documentation>The list of optional arguments.</xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="argument" type="field">
+                  <xsd:annotation>
+                    <xsd:documentation>Defines an optional argument.</xsd:documentation>
                   </xsd:annotation>
                 </xsd:element>
               </xsd:sequence>
@@ -4182,6 +4210,11 @@
       <xsd:element minOccurs="0" name="value" type="xsd:anySimpleType">
         <xsd:annotation>
           <xsd:documentation>Optional constant value for the argument.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element minOccurs="0" name="nullable" type="xsd:boolean">
+        <xsd:annotation>
+          <xsd:documentation>Defines if the argument is nullable.</xsd:documentation>
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>

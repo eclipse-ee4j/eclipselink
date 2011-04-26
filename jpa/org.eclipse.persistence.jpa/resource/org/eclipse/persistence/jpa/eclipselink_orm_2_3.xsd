@@ -668,6 +668,8 @@
         <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="sql-result-set-mapping" 
                      type="orm:sql-result-set-mapping" 
                      minOccurs="0" maxOccurs="unbounded"/>
@@ -841,8 +843,8 @@
       <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
       <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
       <xsd:element name="table" type="orm:table" minOccurs="0"/>
-      <xsd:element name="secondary-table" type="orm:secondary-table" 
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="secondary-table" type="orm:secondary-table" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="struct" type="orm:struct" minOccurs="0"/>
       <xsd:element name="primary-key-join-column" 
                    type="orm:primary-key-join-column" 
                    minOccurs="0" maxOccurs="unbounded"/>
@@ -882,6 +884,8 @@
       <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="sql-result-set-mapping" 
                    type="orm:sql-result-set-mapping" 
                    minOccurs="0" maxOccurs="unbounded"/>
@@ -1043,8 +1047,9 @@
       <xsd:element name="embedded" type="orm:embedded"
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="transformation" type="orm:transformation" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="transient" type="orm:transient"
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="transient" type="orm:transient" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="structure" type="orm:structure" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="array" type="orm:array" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -2212,6 +2217,78 @@
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="attribute-type" type="xsd:string"/>
   </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="array">
+    <xsd:annotation>
+      <xsd:documentation>
+        
+        /** 
+         * Array types are extended object-relational data-types supported by some databases.
+         * Array types are user define types in the database such as VARRAY types on Oracle.
+         * Arrays can contains basic types (VARCHAR) or other Struct types, and can be stored in
+         * a column or in a Struct type.
+         * This annotation can be defined on a collection attribute that is
+         * persisted to an Array type.  The collection can be of basic types, or embeddable
+         * class mapped using a Struct.
+         * 
+         * @see org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor
+         * @see org.eclipse.persistence.mappings.structures.ArrayMapping
+         * @see org.eclipse.persistence.mappings.structures.ObjectArrayMapping
+         * @author James Sutherland
+         * @since EclipseLink 2.3
+         */
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface Array {
+            /**
+             * (Optional) The basic or embeddable class that is the element
+             * type of the collection.  This element is optional only if the
+             * collection field or property is defined using Java generics,
+             * and must be specified otherwise.  It defaults to the
+             * paramterized type of the collection when defined using
+             * generics.
+             */
+            Class targetClass() default void.class;
+            
+            /**
+             * (Required) The database name of the database array structure type.
+             */
+            String databaseType();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column" minOccurs="0"/>
+      <xsd:choice>
+        <xsd:element name="temporal"
+                     type="orm:temporal"
+                     minOccurs="0"/>
+        <xsd:element name="enumerated"
+                     type="orm:enumerated"
+                     minOccurs="0"/>
+        <xsd:element name="lob"
+                     type="orm:lob"
+                     minOccurs="0"/>
+        <xsd:element name="convert" type="xsd:string" minOccurs="0"/>
+      </xsd:choice>
+      <xsd:choice minOccurs="0" maxOccurs="2">
+        <xsd:element name="converter" type="orm:converter"/>
+        <xsd:element name="type-converter" type="orm:type-converter"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter"/>
+      </xsd:choice>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="database-type" type="xsd:string" use="required"/>
+    <xsd:attribute name="target-class" type="xsd:string"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
+  </xsd:complexType>
 
   <!-- **************************************************** -->
 
@@ -2236,6 +2313,7 @@
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
       <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
       <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
+      <xsd:element name="struct" type="orm:struct" minOccurs="0"/>
       <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
@@ -2243,6 +2321,8 @@
       <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>      
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
@@ -3164,6 +3244,8 @@
       <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>            
       <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="sql-result-set-mapping" 
                    type="orm:sql-result-set-mapping" 
                    minOccurs="0" maxOccurs="unbounded"/>
@@ -3577,6 +3659,106 @@
     <xsd:attribute name="result-class" type="xsd:string"/>
     <xsd:attribute name="result-set-mapping" type="xsd:string"/>
     <xsd:attribute name="procedure-name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="plsql-record">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * A PLSQLRecord annotation is used to define a database PLSQL RECORD type.
+         * This type can be used within PLSQL procedure calls.
+         * 
+         * @see NamedPLSQLStoredProcedureQuery
+         * @author James Sutherland
+         * @since EclipseLink 2.3
+         */
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface PLSQLRecord {
+        
+            /**
+             * (Required) The name of the record type in the database.
+             */
+            String name();
+        
+            /**
+             * (Required) The name of the database OBJECT TYPE that mirrors the record's structure.
+             * The record will be converted to/from this type so it can be passed through JDBC.
+             */
+            String compatibleType();
+            
+            /**
+             * (Optional) The Java class to map the object-type to.
+             * This class must be mapped using a @Struct annotation.
+             */
+            Class javaType() default void.class;
+            
+            /**
+             * (Required) Defines the fields in the record type.
+             */
+            PLSQLParameter[] fields();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="field" type="orm:plsql-parameter" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="compatible-type" type="xsd:string"/>
+    <xsd:attribute name="java-type" type="xsd:string"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="plsql-table">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * A PLSQLRecord annotation is used to define a database PLSQL RECORD type.
+         * This type can be used within PLSQL procedure calls.
+         * 
+         * @see NamedPLSQLStoredProcedureQuery
+         * @author James Sutherland
+         * @since EclipseLink 2.3
+         */
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface PLSQLRecord {
+        
+            /**
+             * (Required) The name of the record type in the database.
+             */
+            String name();
+        
+            /**
+             * (Required) The name of the database OBJECT TYPE that mirrors the record's structure.
+             * The record will be converted to/from this type so it can be passed through JDBC.
+             */
+            String compatibleType();
+            
+            /**
+             * (Optional) The Java class to map the object-type to.
+             * This class must be mapped using a @Struct annotation.
+             */
+            Class javaType() default void.class;
+            
+            /**
+             * (Required) Defines the fields in the record type.
+             */
+            PLSQLParameter[] fields();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="compatible-type" type="xsd:string"/>
+    <xsd:attribute name="java-type" type="xsd:string"/>
+    <xsd:attribute name="nested-type" type="xsd:string"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->
@@ -4496,12 +4678,12 @@
                 Direction direction() default IN;
             
                 /**
-                 * (Optional) Stored procedure parameter name.
+                 * (Required) Stored procedure parameter name.
                  */
                 String name() default "";
             
                 /**
-                 * (Required) The query parameter name.
+                 * (Optional) The query parameter name.
                  */
                 String queryParameter();
                 
@@ -4539,8 +4721,8 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="direction" type="orm:direction-type"/>
-    <xsd:attribute name="name" type="xsd:string"/>
-    <xsd:attribute name="query-parameter" type="xsd:string" use="required"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="query-parameter" type="xsd:string"/>
     <xsd:attribute name="optional" type="xsd:boolean"/>
     <xsd:attribute name="database-type" type="xsd:string"/>
     <xsd:attribute name="length" type="xsd:integer"/>
@@ -4575,6 +4757,83 @@
     </xsd:annotation>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="converter" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="struct">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * Struct types are extended object-relational data-types supported by some databases.
+         * Struct types are user define types in the database such as OBJECT types on Oracle.
+         * Structs can normally contains Arrays (VARRAY) or other Struct types, and can be stored in
+         * a column or a table.
+         * This annotation define a class to map to a database Struct type.
+         * The class should normally be an Embeddable, but could also be an Entity if stored in a object table.
+         * 
+         * @see org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor
+         * @see org.eclipse.persistence.mappings.structures.StructureMapping
+         * @author James Sutherland
+         * @since EclipseLink 2.3
+         */
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface Struct {
+            /**
+             * (Required) The database name of the database structure type.
+             */
+            String name();
+        
+            /**
+             * (Optional) Defines the order of the fields contained in the database structure type.
+             */
+            String[] fields() default {}; 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="field" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="structure">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * Struct types are extended object-relational data-types supported by some databases.
+         * Struct types are user define types in the database such as OBJECT types on Oracle.
+         * Structs can normally contains Arrays (VARRAY) or other Struct types, and can be stored in
+         * a column or a table.
+         * This annotation can be defined on a field/method to define an StructureMapping to an embedded Struct type.
+         * The target Embeddable must be mapped using the Struct annotation.
+         * 
+         * @see Struct
+         * @see org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor
+         * @see org.eclipse.persistence.mappings.structures.StructureMapping
+         * @author James Sutherland
+         * @since EclipseLink 2.3
+         */
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface Structure {
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
