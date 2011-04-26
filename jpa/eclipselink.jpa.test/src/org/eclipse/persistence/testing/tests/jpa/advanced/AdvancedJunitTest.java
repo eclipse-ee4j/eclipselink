@@ -320,7 +320,6 @@ public class AdvancedJunitTest extends JUnitTestCase {
         // Clear Cache.
         clearCache();
         em = createEntityManager();
-        beginTransaction(em);
         SimpleEntity se;
         try {
             se = em.find(SimpleEntity.class, 101L);
