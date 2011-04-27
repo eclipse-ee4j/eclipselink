@@ -72,6 +72,8 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
@@ -463,7 +465,19 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             }
         } else {
             ClassAccessor accessor = getProject().getAccessor(getReferenceClassName());
-            referenceDescriptor = (accessor != null) ? accessor.getDescriptor() : null; 
+            referenceDescriptor = (accessor != null) ? accessor.getDescriptor() : null;
+            if (referenceDescriptor == null) {
+                MetadataProcessor compositeProcessor = getProject().getCompositeProcessor();
+                if (compositeProcessor != null) {
+                    for (MetadataProject pearProject : compositeProcessor.getPearProjects(getProject())) {
+                        accessor = pearProject.getAccessor(getReferenceClassName());
+                        if (accessor != null) {
+                            referenceDescriptor = accessor.getDescriptor();
+                            break;
+                        }
+                    }
+                }
+            }
         }
        
         // Validate the reference descriptor is valid.

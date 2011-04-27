@@ -43,6 +43,8 @@ public class EntityManagerSetupException extends EclipseLinkException {
     public static final int CREATE_CONTAINER_EMF_NOT_SUPPORTED_IN_OSGI=28026;  
     public static final int COULD_NOT_FIND_PERSISTENCE_UNIT_BUNDLE=28027;  
     public static final int FAILED_TO_INSTANTIATE_PROPERTY = 28028;
+    public static final int COMPOSITE_INCOMPATIBLE_WITH_SESSIONS_XML = 28029;
+    public static final int COMPOSITE_MEMBER_CANNOT_BE_USED_STANDALONE = 28030;
     
     /**
      * INTERNAL:
@@ -298,7 +300,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
     
     /**
      * INTERNAL:
-     * An OSGi application is trying to instantiate a persistence unit for which a bundle does nto exist
+     * An OSGi application is trying to instantiate a persistence unit for which a bundle does not exist
      * @param PUName
      * @return
      */
@@ -310,5 +312,32 @@ public class EntityManagerSetupException extends EclipseLinkException {
         return setupException;
     }
 
+    /**
+     * INTERNAL:
+     * Persistence unit tries to use sessions.xml and to be a composite.
+     * @param PUName
+     * @return
+     */
+    public static EntityManagerSetupException compositeIncompatibleWithSessionsXml(String persistenceUnitName) {
+        Object[] args = { persistenceUnitName };
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(
+                EntityManagerSetupException.class, COMPOSITE_INCOMPATIBLE_WITH_SESSIONS_XML, args));
+        setupException.setErrorCode(COMPOSITE_INCOMPATIBLE_WITH_SESSIONS_XML);
+        return setupException;
+    }
+
+    /**
+     * INTERNAL:
+     * Persistence unit tries to use sessions.xml and to be a composite.
+     * @param PUName
+     * @return
+     */
+    public static EntityManagerSetupException compositeMemberCannotBeUsedStandalone(String persistenceUnitName) {
+        Object[] args = { persistenceUnitName };
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(
+                EntityManagerSetupException.class, COMPOSITE_MEMBER_CANNOT_BE_USED_STANDALONE, args));
+        setupException.setErrorCode(COMPOSITE_MEMBER_CANNOT_BE_USED_STANDALONE);
+        return setupException;
+    }
 }
 

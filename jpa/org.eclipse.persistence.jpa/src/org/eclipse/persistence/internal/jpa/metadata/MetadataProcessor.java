@@ -45,6 +45,7 @@ import java.util.Set;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor.Mode;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -86,17 +87,31 @@ public class MetadataProcessor {
     protected MetadataProject m_project;
     protected AbstractSession m_session;
     protected Map m_predeployProperties;
+    protected MetadataProcessor m_compositeProcessor;
+    protected Set<MetadataProcessor> m_compositeMemberProcessors;
 
     /**
      * INTERNAL:
      * Called from EntityManagerSetupImpl. The 'real' EJB 3.0 processing
      * that includes XML and annotations.
      */
-    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, Map predeployProperties) {
+    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, Map predeployProperties, MetadataProcessor compositeProcessor) {
         m_loader = loader;
         m_session = session;
         m_project = new MetadataProject(puInfo, session, weaveLazy, weaveEager, weaveFetchGroups, multitenantSharedEmf);
         m_predeployProperties = predeployProperties;
+        m_compositeProcessor = compositeProcessor;
+        if (m_compositeProcessor != null) {
+            m_compositeProcessor.addCompositeMemberProcessor(this);
+            m_project.setCompositeProcessor(m_compositeProcessor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Empty processor to be used as a composite processor.
+     */
+    public MetadataProcessor() {        
     }
     
     /**
@@ -447,33 +462,35 @@ public class MetadataProcessor {
      * processes the xml metadata.
      * Note: Do not change the order of invocation of various methods.
      */
-    public void processEntityMappings() {
-        m_factory = new MetadataAsmFactory(m_project.getLogger(), m_loader);
-        
-        // 1 - Process persistence unit meta data/defaults defined in ORM XML 
-        // instance documents in the persistence unit. If multiple conflicting 
-        // persistence unit meta data is found, this call will throw an 
-        // exception. The meta data we find here will be applied in the
-        // initialize call below.
-        for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
-            // Since this our first iteration through the entity mappings list,
-            // set the project and loader references. This is very important
-            // and must be done first!
-            entityMappings.setLoader(m_loader);
-            entityMappings.setProject(m_project);
-            entityMappings.setMetadataFactory(m_factory);
+    public void processEntityMappings(PersistenceUnitProcessor.Mode mode) {
+        if (mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
+            m_factory = new MetadataAsmFactory(m_project.getLogger(), m_loader);
             
-            // Process the persistence unit metadata if defined.
-            entityMappings.processPersistenceUnitMetadata();
-        }
-        
-        // 2 - Initialize all the persistence unit class with the meta data we
-        // processed in step 1.
-        initPersistenceUnitClasses();
+            // 1 - Process persistence unit meta data/defaults defined in ORM XML 
+            // instance documents in the persistence unit. If multiple conflicting 
+            // persistence unit meta data is found, this call will throw an 
+            // exception. The meta data we find here will be applied in the
+            // initialize call below.
+            for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
+                // Since this our first iteration through the entity mappings list,
+                // set the project and loader references. This is very important
+                // and must be done first!
+                entityMappings.setLoader(m_loader);
+                entityMappings.setProject(m_project);
+                entityMappings.setMetadataFactory(m_factory);
+                
+                // Process the persistence unit metadata if defined.
+                entityMappings.processPersistenceUnitMetadata();
+            }
+            
+            // 2 - Initialize all the persistence unit class with the meta data we
+            // processed in step 1.
+            initPersistenceUnitClasses();
 
-        // 3 - Now process the entity mappings metadata.
-        for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
-            entityMappings.process();
+            // 3 - Now process the entity mappings metadata.
+            for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
+                entityMappings.process();
+            }
         }
     }
 
@@ -482,10 +499,14 @@ public class MetadataProcessor {
      * Process the ORM metadata on this processors metadata project 
      * (representing a single persistence-unit)
      */
-    public void processORMMetadata() {
-        m_project.processStage1();
-        m_project.processStage2();
-        m_project.processStage3();
+    public void processORMMetadata(PersistenceUnitProcessor.Mode mode) {
+        if (mode == Mode.ALL || mode == Mode.COMPOSITE_MEMBER_INITIAL) {
+            m_project.processStage1();
+            m_project.processStage2();
+        }
+        if (mode != PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
+            m_project.processStage3(mode);
+        }
     }
 
     /**
@@ -501,5 +522,41 @@ public class MetadataProcessor {
         for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
             entityMappings.setLoader(m_loader);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return compositeProcessor.
+     */
+    public MetadataProcessor getCompositeProcessor() {
+        return this.m_compositeProcessor;
+    }
+
+    /**
+     * INTERNAL:
+     * Add containedProcessor to compositeProcessor.
+     */
+    public void addCompositeMemberProcessor(MetadataProcessor compositeMemberProcessor) {
+        if (m_compositeMemberProcessors == null) {
+            m_compositeMemberProcessors = new HashSet();
+        }
+        m_compositeMemberProcessors.add(compositeMemberProcessor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns projects owned by compositeProcessor minus the passed project.
+     */
+    public Set<MetadataProject> getPearProjects(MetadataProject project) {
+        Set<MetadataProject> pearProjects = new HashSet();
+        if (m_compositeMemberProcessors != null) {
+            for(MetadataProcessor processor : m_compositeMemberProcessors) {
+                MetadataProject pearProject = processor.getProject();
+                if(pearProject != project) {
+                    pearProjects.add(pearProject);
+                }
+            }
+        }
+        return pearProjects;
     }
 }

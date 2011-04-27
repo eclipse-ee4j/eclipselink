@@ -65,6 +65,7 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleDefaultFetchGroupTests("joinFetchEmployeeAddressWithDynamicFetchGroup"));
         suite.addTest(new SimpleDefaultFetchGroupTests("joinFetchEmployeeAddressPhoneWithDynamicFetchGroup"));
         suite.addTest(new SimpleDefaultFetchGroupTests("joinFetchEmployeeAddressPhoneWithDynamicFetchGroup_AddressInFetchGroup"));
+        suite.addTest(new SimpleDefaultFetchGroupTests("readThroughServerSession"));
         
         return suite;
     }
@@ -654,6 +655,40 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
+        }
+    }
+
+    @Test
+    public void readThroughServerSession() {
+        List<Employee> emps = null;
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL");
+
+            emps = query.getResultList();
+            assertNotNull(emps);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        
+        EntityManager em2 = createEntityManager();
+        try {
+            beginTransaction(em2);
+            em2.flush();
+            Query query = em2.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL");
+            emps = query.getResultList();
+            Employee emp = emps.get(0);
+            emp.getAddress().setCountry("newCountry");
+            commitTransaction(em2);
+        } finally {
+            if (isTransactionActive(em2)){
+                rollbackTransaction(em2);
+            }
+            closeEntityManager(em2);
         }
     }
 

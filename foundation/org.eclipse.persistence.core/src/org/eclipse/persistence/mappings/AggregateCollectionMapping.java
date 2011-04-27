@@ -1296,6 +1296,14 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
     public void initialize(AbstractSession session) throws DescriptorException {
+        if (session.hasBroker()) {
+            if (getReferenceClass() == null) {
+                throw DescriptorException.referenceClassNotSpecified(this);
+            }
+            // substitute session that owns the mapping for the session that owns reference descriptor.
+            session = session.getBroker().getSessionForClass(getReferenceClass());
+        }
+        
         super.initialize(session);
         if (getDescriptor() != null) { // descriptor will only be null in special case where the mapping has not been added to a descriptor prior to initialization.
             getDescriptor().addMappingsPostCalculateChanges(this); // always equivalent to Private Owned

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
+    <description>XML extended composite advanced member_3 Test Model Instance Document</description>
+    <description>Advanced Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3</package>
+    <entity name="XMLPhoneNumber" class="PhoneNumber" access="PROPERTY">
+        <table name="XML_MBR3_PHONENUMBER"/>
+        <id-class class="PhoneNumberPK"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="OWNER_ID" insertable="false" updatable="false"/>
+            </id>
+            <id name="type">
+                <column name="TYPE"/>
+            </id>
+            <basic name="number">
+                <column name="NUMB"/>
+            </basic>
+            <basic name="areaCode">
+                <column name="AREA_CODE"/>
+            </basic>
+            <many-to-one name="owner" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2.Employee" access="FIELD">
+                <join-column name="OWNER_ID" referenced-column-name="EMP_ID"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLLargeProject" class="LargeProject" access="PROPERTY">
+        <table name="XML_MBR3_LPROJECT"/>
+        <discriminator-value>L</discriminator-value>
+        <named-query name="findXMLLargeProjectsWithBudgetLargerThan">
+            <query>SELECT OBJECT(project) FROM XMLLargeProject project WHERE project.budget >= :amount</query>
+        </named-query>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+    </entity>
+    <entity name="XMLSmallProject" class="SmallProject" access="PROPERTY">
+        <table name="XML_MBR3_PROJECT"/>
+        <discriminator-value>S</discriminator-value>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+    </entity>
+    <entity name="XMLProject" class="Project" access="FIELD">
+        <table name="XML_MBR3_PROJECT"/>
+        <inheritance strategy="JOINED"/>
+        <discriminator-value>P</discriminator-value>
+        <discriminator-column name="PROJ_TYPE"/>
+        <sequence-generator name="XML_MBR3_PROJECT_SEQUENCE_GENERATOR" sequence-name="XML_MBR3_PROJECT_SEQ" allocation-size="10"/>
+        <named-query name="findXMLProjectByName">
+            <query>SELECT OBJECT(project) FROM XMLProject project WHERE project.name = :name</query>
+        </named-query>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <pre-persist method-name="prePersist"/>
+        <post-persist method-name="postPersist"/>
+        <pre-remove method-name="preRemove"/>
+        <post-remove method-name="postRemove"/>
+        <pre-update method-name="preUpdate"/>
+        <post-update method-name="postUpdate"/>
+        <post-load method-name="postLoad"/>
+        <attributes>
+            <id name="id">
+                <column name="PROJ_ID"/>
+                <generated-value strategy="SEQUENCE" generator="XML_MBR3_PROJECT_SEQUENCE_GENERATOR"/>
+            </id>
+            <basic name="name">
+                <column name="PROJ_NAME"/>
+            </basic>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <one-to-one name="teamLeader" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2.Employee" access="PROPERTY">
+                <join-column name="LEADER_ID"/>
+            </one-to-one>
+            <many-to-many name="teamMembers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2.Employee" mapped-by="projects" access="PROPERTY"/>
+            <transient name="pre_update_count"></transient>
+            <transient name="post_update_count"></transient>
+            <transient name="pre_remove_count"></transient>
+            <transient name="post_remove_count"></transient>
+            <transient name="pre_persist_count"></transient>
+            <transient name="post_persist_count"></transient>
+            <transient name="post_load_count"></transient>
+        </attributes>
+    </entity>
+    <entity name="XMLDealer" class="Dealer" access="PROPERTY">
+      <table name="XML_MBR3_DEALER"/>
+        <table-generator name="XML_MBR3_DEALER_TABLE_GENERATOR" table="XML_MBR3_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DEALER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="DEALER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_MBR3_DEALER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="status"/>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <one-to-many name="customers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1.Customer">
+                <join-column name="FK_DEALER_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </one-to-many>
+        </attributes>
+    </entity>
+</entity-mappings>

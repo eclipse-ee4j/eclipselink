@@ -21,8 +21,8 @@ import java.util.HashMap;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
 /**
@@ -93,49 +93,6 @@ public class EntityManagerFactoryProvider {
         }
     }
 
-    protected static void generateDDL(ServerSession session, Map props) {
-        boolean createTables = false, shouldDropFirst = false;
-       
-        if(null == props){
-            return;
-        }
-
-        String ddlGeneration = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION, props, PersistenceUnitProperties.NONE);
-        ddlGeneration = ddlGeneration.toLowerCase();
-        if(ddlGeneration.equals(PersistenceUnitProperties.NONE)) {
-            return;
-        }
-
-        if(ddlGeneration.equals(PersistenceUnitProperties.CREATE_ONLY) || 
-            ddlGeneration.equals(PersistenceUnitProperties.DROP_AND_CREATE)) {
-            createTables = true;
-            if(ddlGeneration.equals(PersistenceUnitProperties.DROP_AND_CREATE)) {
-                shouldDropFirst = true;
-            }
-        } 
-        
-        if (createTables) {
-            String ddlGenerationMode = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION_MODE, props, PersistenceUnitProperties.DEFAULT_DDL_GENERATION_MODE);
-            // Optimize for cases where the value is explicitly set to NONE 
-            if (ddlGenerationMode.equals(PersistenceUnitProperties.NONE)) {                
-                return;
-            }
-
-            SchemaManager mgr = new SchemaManager(session);
-            
-            if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_DATABASE_GENERATION) || ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
-                writeDDLToDatabase(mgr, shouldDropFirst);                
-            }
-
-            if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION)|| ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
-                String appLocation = getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props, PersistenceUnitProperties.DEFAULT_APP_LOCATION);
-                String createDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME);
-                String dropDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, props,  PersistenceUnitProperties.DEFAULT_DROP_JDBC_FILE_NAME);
-                writeDDLsToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc);                
-            }
-        }
-    }
-    
     public static String getConfigPropertyAsString(String propertyKey, Map overrides){
         String value = null;
         if (overrides != null){
@@ -204,6 +161,22 @@ public class EntityManagerFactoryProvider {
         return value;
     }
     
+    protected static Object getConfigProperty(String propertyKey, Map overrides){
+        return getConfigProperty(propertyKey, overrides, true);
+    }
+    
+    protected static Object getConfigProperty(String propertyKey, Map overrides, boolean useSystemAsDefault){
+        Object value = null;
+        if (overrides != null){
+            value = overrides.get(propertyKey);
+        }
+        if ((value == null) && useSystemAsDefault){
+            value = System.getProperty(propertyKey);
+        }
+        
+        return value;
+    }
+    
     /**
      * Return the setup class for a given entity manager name 
      * @param emName 
@@ -225,10 +198,10 @@ public class EntityManagerFactoryProvider {
      * @param session The session to login to.
      * @param properties User specified properties for the persistence unit
      */
-    protected static void login(ServerSession session, Map properties) {
+    protected static void login(DatabaseSessionImpl session, Map properties) {
         String eclipselinkPlatform = (String)properties.get(PersistenceUnitProperties.TARGET_DATABASE);
         if (!session.isConnected()) {
-            if (eclipselinkPlatform == null || eclipselinkPlatform.equals(TargetDatabase.Auto)) {
+            if (eclipselinkPlatform == null || eclipselinkPlatform.equals(TargetDatabase.Auto) || session.isBroker()) {
                 // if user has not specified a database platform, try to detect
                 session.loginAndDetectDatasource();
             } else {
@@ -315,6 +288,41 @@ public class EntityManagerFactoryProvider {
                     in.put(entry.getKey(), entry.getValue());
                 } else {
                     out.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return target;
+    }
+    
+    /**
+     * Source Map is divided between Map[] in target.  
+     * Target's i-th member contains all source's Map.Entries 
+     * keys for which are in keys[i] Collection.
+     * Target's size equals keys' size + 1:
+     * all the source's Map.Entries not found in any of keys Collections
+     * go into the last target's map.
+     * @param source 
+     * @param keys is array of Maps of size n
+     * @return the target object is array of Maps of size n+1
+     */
+    public static Map[] splitProperties(Map source, Collection[] keys){
+        Map[] target = new Map[keys.length + 1];
+        for (int i=0; i <= keys.length; i++) {
+            target[i] = new HashMap();
+        }
+        if (source != null){
+            Iterator<Map.Entry> it = source.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry entry = it.next();
+                boolean isFound = false;
+                for (int i=0; i < keys.length && !isFound; i++) {
+                    if (keys[i].contains(entry.getKey())) {
+                        isFound = true;
+                        target[i].put(entry.getKey(), entry.getValue());
+                    }
+                }
+                if (!isFound) {
+                    target[keys.length].put(entry.getKey(), entry.getValue());
                 }
             }
         }

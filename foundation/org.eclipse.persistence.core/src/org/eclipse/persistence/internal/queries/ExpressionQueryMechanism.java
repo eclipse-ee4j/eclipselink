@@ -272,7 +272,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // instead of the wrong one:
             //   DELETE FROM PROJECT WHERE EXISTS(SELECT PROJ_ID FROM PROJECT WHERE (PROJ_NAME = ?) AND PROJECT.PROJ_ID = PROJECT.PROJ_ID)
             deleteAllStatement.setShouldExtractWhereClauseFromSelectCallForExist(!selectStatementForExist.requiresAliases() && table.equals(selectStatementForExist.getTables().firstElement()));
-            deleteAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, table, getSession().getPlatform()));
+            deleteAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, table, getExecutionSession().getPlatform()));
         } else {
             // inheritanceExpression is irrelevant in case selectCallForExist != null
             if(inheritanceExpression != null) {
@@ -282,7 +282,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         if(selectCallForNotExist != null) {
             deleteAllStatement.setSelectCallForNotExist(selectCallForNotExist);
-            deleteAllStatement.setTableAliasInSelectCallForNotExist(getAliasTableName(selectStatementForNotExist, table, getSession().getPlatform()));
+            deleteAllStatement.setTableAliasInSelectCallForNotExist(getAliasTableName(selectStatementForNotExist, table, getExecutionSession().getPlatform()));
         }
 
         deleteAllStatement.setPrimaryKeyFieldsForAutoJoin(primaryKeyFields);
@@ -314,7 +314,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         deleteAllStatement.setSelectCallForExist(selectCallForExist);
         DatabaseTable sourceTable = ((DatabaseField)sourceFields.firstElement()).getTable();
         if(selectStatementForExist != null) {
-            deleteAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, sourceTable, getSession().getPlatform()));
+            deleteAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, sourceTable, getExecutionSession().getPlatform()));
         }
 
         deleteAllStatement.setAliasedFieldsForJoin(sourceFields);
@@ -685,7 +685,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     databaseFieldsToTableAliases = new HashMap();
                     updateAllStatement.setPrimaryKeyFieldsForAutoJoin(primaryKeyFields);
                 }
-                databaseFieldsToTableAliases.put(field, getAliasTableName(selStatement, table, getSession().getPlatform()));
+                databaseFieldsToTableAliases.put(field, getAliasTableName(selStatement, table, getExecutionSession().getPlatform()));
             } else {
                 // should be Expression
                 databaseFieldsToValuesCopy.put(field, value);
@@ -696,7 +696,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         
         updateAllStatement.setSelectCallForExist(selectCallForExist);
         updateAllStatement.setShouldExtractWhereClauseFromSelectCallForExist(!selectStatementForExist.requiresAliases() && table.equals(selectStatementForExist.getTables().firstElement()));
-        updateAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, table, getSession().getPlatform()));
+        updateAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, table, getExecutionSession().getPlatform()));
         updateAllStatement.setPrimaryKeyFieldsForAutoJoin(primaryKeyFields);
 
         return updateAllStatement;
@@ -1097,9 +1097,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             boolean isMainCase = selectStatementForExist.requiresAliases();            
             if (isMainCase) {
                 if (whereClause != null) {
-                    if (getSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll() && tablesToIgnore == null) {
+                    if (getExecutionSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll() && tablesToIgnore == null) {
                         // currently DeleteAll using Oracle anonymous block is not implemented
-                        if(!getSession().getPlatform().isOracle()) {
+                        if(!getExecutionSession().getPlatform().isOracle()) {
                             prepareDeleteAllUsingTempStorage();
                             return;
                         }
@@ -1111,9 +1111,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     }
                 } else {
                     //whereClause = null
-                    if (getSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll() && tablesToIgnore == null) {
+                    if (getExecutionSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll() && tablesToIgnore == null) {
                         // currently DeleteAll using Oracle anonymous block is not implemented
-                        if (!getSession().getPlatform().isOracle()) {
+                        if (!getExecutionSession().getPlatform().isOracle()) {
                             // the only case to handle without temp storage is inheritance root without inheritanceExpression:
                             // in this case all generated delete calls will have no where clauses.
                             if (hasInheritance && !(inheritanceExpression == null && descriptor.getInheritancePolicy().isRootParentDescriptor())) {
@@ -1126,9 +1126,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             } else {
                 // simple case: Descriptor is mapped to a single table and the query references no other tables.
                 if (whereClause != null) {
-                    if (getSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll() && tablesToIgnore == null) {
+                    if (getExecutionSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll() && tablesToIgnore == null) {
                         // currently DeleteAll using Oracle anonymous block is not implemented
-                        if (!getSession().getPlatform().isOracle()) {
+                        if (!getExecutionSession().getPlatform().isOracle()) {
                             // if there are derived classes with additional tables - use temporary storage
                             if (hasInheritance && descriptor.getInheritancePolicy().hasMultipleTableChild()) {
                                 prepareDeleteAllUsingTempStorage();
@@ -1367,10 +1367,10 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     }
 
     protected void prepareDeleteAllUsingTempStorage() {
-        if(getSession().getPlatform().supportsTempTables()) {
+        if(getExecutionSession().getPlatform().supportsTempTables()) {
             prepareDeleteAllUsingTempTables();
         } else {
-            throw QueryException.tempTablesNotSupported(getQuery(), Helper.getShortClassName(getSession().getPlatform()));
+            throw QueryException.tempTablesNotSupported(getQuery(), Helper.getShortClassName(getExecutionSession().getPlatform()));
         }
     }
     
@@ -1824,7 +1824,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // Main Case: Descriptor is mapped to more than one table and/or the query references other tables
         boolean isMainCase = selectStatementForExist.requiresAliases();            
         if(isMainCase) {
-            if(getSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll()) {
+            if(getExecutionSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll()) {
                 prepareUpdateAllUsingTempStorage(tables_databaseFieldsToValues, tablesToPrimaryKeyFields);
                 return;
             }
@@ -1898,7 +1898,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 if(expRequiresSelectIterator.getResult() == null) {
                     // this one should use SELECT as an assigned expression.
                     // The corresponding SelectionStatement should be assigned to value
-                    if(getSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll()) {
+                    if(getExecutionSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll()) {
                         prepareUpdateAllUsingTempStorage(tables_databaseFieldsToValues, tablesToPrimaryKeyFields);
                         return;
                     }
@@ -2186,12 +2186,12 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     }
     
     protected void prepareUpdateAllUsingTempStorage(HashMap tables_databaseFieldsToValues, HashMap tablesToPrimaryKeyFields) {
-        if(getSession().getPlatform().supportsTempTables()) {
+        if(getExecutionSession().getPlatform().supportsTempTables()) {
             prepareUpdateAllUsingTempTables(tables_databaseFieldsToValues, tablesToPrimaryKeyFields);
-        } else if(getSession().getPlatform().isOracle()) {
+        } else if(getExecutionSession().getPlatform().isOracle()) {
             prepareUpdateAllUsingOracleAnonymousBlock(tables_databaseFieldsToValues, tablesToPrimaryKeyFields);
         } else {
-            throw QueryException.tempTablesNotSupported(getQuery(), Helper.getShortClassName(getSession().getPlatform()));
+            throw QueryException.tempTablesNotSupported(getQuery(), Helper.getShortClassName(getExecutionSession().getPlatform()));
         }
     }
     
@@ -2235,8 +2235,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         getSQLStatements().addAll(updateStatements);
         getSQLStatements().addAll(cleanupStatements);
 
-        if (getSession().getPlatform().dontBindUpdateAllQueryUsingTempTables()) {
-            if(getQuery().shouldBindAllParameters() || (getQuery().shouldIgnoreBindAllParameters() && getSession().getPlatform().shouldBindAllParameters())) {
+        if (getExecutionSession().getPlatform().dontBindUpdateAllQueryUsingTempTables()) {
+            if(getQuery().shouldBindAllParameters() || (getQuery().shouldIgnoreBindAllParameters() && getExecutionSession().getPlatform().shouldBindAllParameters())) {
                 getQuery().setShouldBindAllParameters(false);
                 getSession().warning("update_all_query_cannot_use_binding_on_this_platform", SessionLog.QUERY);
             }
@@ -2425,7 +2425,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // The platform doesn't allow nulls in select clause.
         // Remove all the constant expressions with value null:
         // can do that because all fields initialized to null when temp. table created.
-        if(!getSession().getPlatform().isNullAllowedInSelectClause()) {
+        if(!getExecutionSession().getPlatform().isNullAllowedInSelectClause()) {
             databaseFieldsToValuesForInsert = new HashMap(databaseFieldsToValues.size());
             Iterator itEntries = databaseFieldsToValues.entrySet().iterator();
             while(itEntries.hasNext()) {

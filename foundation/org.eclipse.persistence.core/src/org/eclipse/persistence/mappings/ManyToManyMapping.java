@@ -447,6 +447,14 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
+        if (session.hasBroker()) {
+            if (getReferenceClass() == null) {
+                throw DescriptorException.referenceClassNotSpecified(this);
+            }
+            // substitute session that owns the mapping for the session that owns reference descriptor.
+            session = session.getBroker().getSessionForClass(getReferenceClass());
+        }
+        
         super.initialize(session);
         getDescriptor().addPreDeleteMapping(this);
 
@@ -623,7 +631,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             databaseRow.put(listOrderField, extraData.get(listOrderField));
         }
         
-        query.getSession().executeQuery(this.mechanism.getInsertQuery(), databaseRow);
+        query.getExecutionSession().executeQuery(this.mechanism.getInsertQuery(), databaseRow);
         if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
             getHistoryPolicy().mappingLogicalInsert(this.mechanism.getInsertQuery(), databaseRow, query.getSession());
         }
@@ -657,7 +665,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
             Object wrappedObject = cp.nextEntry(iter, query.getSession());
             Object object = cp.unwrapIteratorResult(wrappedObject);
-            databaseRow = this.mechanism.addRelationTableTargetRow(object, query.getSession(), databaseRow, this);
+            databaseRow = this.mechanism.addRelationTableTargetRow(object, query.getExecutionSession(), databaseRow, this);
 
             ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), databaseRow);
             
@@ -665,7 +673,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                 databaseRow.put(listOrderField, orderIndex++);
             }
 
-            query.getSession().executeQuery(this.mechanism.getInsertQuery(), databaseRow);
+            query.getExecutionSession().executeQuery(this.mechanism.getInsertQuery(), databaseRow);
             if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
                 getHistoryPolicy().mappingLogicalInsert(this.mechanism.getInsertQuery(), databaseRow, query.getSession());
             }

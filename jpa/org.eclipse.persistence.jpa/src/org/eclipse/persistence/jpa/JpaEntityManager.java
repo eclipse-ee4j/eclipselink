@@ -19,6 +19,8 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
@@ -42,9 +44,46 @@ public interface JpaEntityManager extends javax.persistence.EntityManager {
     Session getActiveSession();
     
     /**
+     * Return the underlying database session
+     */
+    DatabaseSessionImpl getDatabaseSession();
+    
+    /**
      * Return the underlying server session
      */
     ServerSession getServerSession();
+    
+    /**
+     * Return the underlying session broker
+     */
+    SessionBroker getSessionBroker();
+    
+    /**
+     * Return the member DatabaseSessionImpl that maps cls in session broker.
+     * Return null if either not a session broker or cls is not mapped.
+     * Session broker implement composite persistence unit.
+     */
+    DatabaseSessionImpl getMemberDatabaseSession(Class cls);
+    
+    /**
+     * Return the member ServerSession that maps cls in session broker.
+     * Return null if either not a session broker or cls is not mapped.
+     * Session broker implement composite persistence unit.
+     */
+    ServerSession getMemberServerSession(Class cls);
+    
+    /**
+     * Return the name of member session that maps cls.
+     * Return null if either not a session broker or cls is not mapped.
+     * Session broker implement composite persistence unit.
+     */
+    String getMemberSessionName(Class cls);
+    
+    /**
+     * Indicates whether the underlying session is a session broker. 
+     * Session broker implement composite persistence unit.
+     */
+    boolean isBroker();
     
     /**
      * This method will return the transactional UnitOfWork during the transaction and null

@@ -63,6 +63,17 @@ import org.eclipse.persistence.jpa.ArchiveFactory;
  * persistence.xml and searching for Entities in a Persistence archive
  */
 public class PersistenceUnitProcessor {    
+    /**
+     * Passed to processORMetadata method to indicate processing mode.
+     * ALL used when independent persistence unit is created.
+     * COMPOSITE_MEMBER_INITIAL, COMPOSITE_MEMBER_MIDDLE and COMPOSITE_MEMBER_FINAL used for a composite member persistence unit.
+     */
+    public enum Mode {
+        ALL,
+        COMPOSITE_MEMBER_INITIAL,
+        COMPOSITE_MEMBER_MIDDLE,
+        COMPOSITE_MEMBER_FINAL
+    }
     
     /**
      * Cache the ArchiveFactory used to derive Archives.  This allows applications
@@ -288,6 +299,65 @@ public class PersistenceUnitProcessor {
         return archives;
     }
 
+    /**
+     * Return a list of Archives representing the root of the persistence descriptor. 
+     * It is the caller's responsibility to close all the archives.
+     * 
+     * @param loader the class loader to get the class path from
+     */
+    public static Set<Archive> findPersistenceArchives(ClassLoader loader, String descriptorPath, List<URL> jarFileUrls) {
+        Archive archive = null;
+
+        Set<Archive> archives = new HashSet<Archive>();
+
+        // See if we are talking about an embedded descriptor
+        // If not embedded descriptor then just use the regular descriptor path
+        int splitPosition = descriptorPath.indexOf("!/");
+        if (splitPosition != -1) {
+            // It is an embedded archive, so split up the parts
+            descriptorPath = descriptorPath.substring(splitPosition+2);
+        }
+
+        try {            
+            for(int i=0; i < jarFileUrls.size(); i++) {
+                URL puRootUrl = jarFileUrls.get(i);
+                archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath, null);
+
+                // archive = new BundleArchive(puRootUrl, descUrl);
+                if (archive != null){
+                    archives.add(archive);
+                }
+            } 
+        } catch (Exception ex){
+            //clean up first
+            for (Archive a : archives){
+                a.close();
+            }
+            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(loader, ex);
+        }
+        return archives;
+    }
+
+    public static Set<SEPersistenceUnitInfo> getPersistenceUnits(ClassLoader loader, Map m, List<URL> jarFileUrls) {
+        String descriptorPath = (String) m.get(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML);
+        if(descriptorPath == null) {
+            descriptorPath = System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+        }
+        Set<Archive> archives = findPersistenceArchives(loader, descriptorPath, jarFileUrls);
+        Set<SEPersistenceUnitInfo> puInfos = new HashSet();
+        try {
+            for(Archive archive : archives) {
+                List<SEPersistenceUnitInfo> puInfosFromArchive = getPersistenceUnits(archive, loader);
+                puInfos.addAll(puInfosFromArchive);
+            }
+        } finally {
+            for(Archive archive : archives) {
+                archive.close();
+            }
+        }
+        return puInfos;
+    }
+    
     public static ArchiveFactory getArchiveFactory(ClassLoader loader){
         if (ARCHIVE_FACTORY != null){
             return ARCHIVE_FACTORY;
@@ -436,22 +506,24 @@ public class PersistenceUnitProcessor {
     /**
      * Process the Object/relational metadata from XML and annotations
      */
-    public static void processORMetadata(MetadataProcessor processor, boolean throwExceptionOnFail) {
-        // DO NOT CHANGE the order of invocation of various methods.
-
-        // 1 - Load the list of mapping files for the persistence unit. Need to 
-        // do this before we start processing entities as the list of entity 
-        // classes depend on metadata read from mapping files.
-        processor.loadMappingFiles(throwExceptionOnFail);
-
+    public static void processORMetadata(MetadataProcessor processor, boolean throwExceptionOnFail, Mode mode) {
+        if (mode == Mode.ALL || mode == Mode.COMPOSITE_MEMBER_INITIAL) {
+            // DO NOT CHANGE the order of invocation of various methods.
+    
+            // 1 - Load the list of mapping files for the persistence unit. Need to 
+            // do this before we start processing entities as the list of entity 
+            // classes depend on metadata read from mapping files.
+            processor.loadMappingFiles(throwExceptionOnFail);
+        }
+    
         // 2 - Process each XML entity mappings file metadata (except for
         // the actual classes themselves). This method is also responsible
         // for handling any XML merging.
-        processor.processEntityMappings();
+        processor.processEntityMappings(mode);
 
         // 3 - Process the persistence unit classes (from XML and annotations)
         // and their metadata now.
-        processor.processORMMetadata();        
+        processor.processORMMetadata(mode);        
     }
 
     /**

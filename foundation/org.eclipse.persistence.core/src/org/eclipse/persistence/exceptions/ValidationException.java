@@ -416,6 +416,9 @@ public class ValidationException extends EclipseLinkException {
     
     public static final int MULTIPLE_CONTEXT_PROPERTY_FOR_TENANT_DISCRIMINATOR_FIELD = 7336;
     public static final int NON_READ_ONLY_MAPPED_TENANT_DISCRIMINATOR_FIELD = 7337;
+
+    public static final int CANNOT_ADD_SEQUENCES_TO_SESSION_BROKER = 7338;
+    public static final int SHARED_DESCRIPTOR_ALIAS = 7339;
     
     /**
      * INTERNAL:
@@ -2834,4 +2837,21 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(DUPLICATE_PARTITION_VALUE);
         return validationException;
     }
+
+    public static ValidationException cannotAddSequencesToSessionBroker() {
+        Object[] args = {  };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CANNOT_ADD_SEQUENCES_TO_SESSION_BROKER, args));
+        validationException.setErrorCode(CANNOT_ADD_SEQUENCES_TO_SESSION_BROKER);
+        return validationException;
+    }
+
+    public static ValidationException sharedDescriptorAlias(String alias, String className1, String className2) {
+        Object[] args = { alias, className1, className2 };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, SHARED_DESCRIPTOR_ALIAS, args));
+        validationException.setErrorCode(SHARED_DESCRIPTOR_ALIAS);
+        return validationException;
+    }
+    
 }

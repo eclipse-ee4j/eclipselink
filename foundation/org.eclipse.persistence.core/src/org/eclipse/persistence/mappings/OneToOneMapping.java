@@ -1043,6 +1043,14 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
+        if (session.hasBroker()) {
+            if (getReferenceClass() == null) {
+                throw DescriptorException.referenceClassNotSpecified(this);
+            }
+            // substitute session that owns the mapping for the session that owns reference descriptor.
+            session = session.getBroker().getSessionForClass(getReferenceClass());
+        }
+        
         super.initialize(session);
         if (isForeignKeyRelationship() && !isMapKeyMapping()) {
             getDescriptor().addPreDeleteMapping(this);
@@ -1935,7 +1943,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     event[2] = targetObject;
                     query.getSession().getCommitManager().addDataModificationEvent(this, event);
                 } else {
-                    AbstractRecord sourceAndTargetRow = this.mechanism.addRelationTableTargetRow(targetObject, query.getSession(), sourceRow, this);
+                    AbstractRecord sourceAndTargetRow = this.mechanism.addRelationTableTargetRow(targetObject, query.getExecutionSession(), sourceRow, this);
                     query.getSession().executeQuery(this.mechanism.insertQuery, sourceAndTargetRow);
                 }
             }

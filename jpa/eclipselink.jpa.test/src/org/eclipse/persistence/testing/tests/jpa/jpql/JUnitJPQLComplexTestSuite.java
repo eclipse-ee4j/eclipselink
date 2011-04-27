@@ -2902,7 +2902,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         };
         
         Set<String> jpqlStringExcluded = new HashSet();
-        if (getDbPlatform().isSQLServer()) {
+        if (getPlatform().isSQLServer()) {
             jpqlStringExcluded.add("SELECT TRIM(LEADING 'A' FROM e.firstName) FROM Employee e");
             jpqlStringExcluded.add("SELECT TRIM(TRAILING 'A' FROM e.firstName) FROM Employee e");
         }

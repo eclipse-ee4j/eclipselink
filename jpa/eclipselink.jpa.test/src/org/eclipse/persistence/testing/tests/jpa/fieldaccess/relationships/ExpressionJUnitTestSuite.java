@@ -46,7 +46,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      *   tests that leftTrim(trim_char) works.
      */
     public void testLeftTrimWithTrimChar() throws Exception {
-        Platform dbPlatform = getDbPlatform("fieldaccess");
+        Platform dbPlatform = getPlatform("fieldaccess");
         if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware())) {
             getServerSession("fieldaccess").logMessage("Test testLeftTrimWithTrimChar skipped for this platform");
             return;
@@ -176,7 +176,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      *   tests that rightTrim(trim_char) works.
      */
     public void testRightTrimWithTrimChar() throws Exception {
-        Platform dbPlatform = getDbPlatform("fieldaccess");
+        Platform dbPlatform = getPlatform("fieldaccess");
         if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware())) {
             getServerSession("fieldaccess").logMessage("Test testRightTrimWithTrimChar skipped for this platform");
             return;
@@ -306,7 +306,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      *   tests that trim(trim_char) works.
      */
     public void testTrimWithTrimChar() throws Exception {
-        Platform dbPlatform = getDbPlatform("fieldaccess");
+        Platform dbPlatform = getPlatform("fieldaccess");
         if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware() )) {
             getServerSession("fieldaccess").logMessage("Test testTrimWithTrimChar skipped for this platform");
             return;
@@ -371,7 +371,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      *   tests that trim() works.
      */
     public void testTrimWithoutTrimChar() throws Exception {
-        Platform dbPlatform = getDbPlatform("fieldaccess");
+        Platform dbPlatform = getPlatform("fieldaccess");
         if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() 
                 || dbPlatform.isInformix() || dbPlatform.isSQLAnywhere() || dbPlatform.isHSQL() || dbPlatform.isSymfoware())) {
             getServerSession("fieldaccess").logMessage("Test testTrimWithoutTrimChar skipped for this platform");

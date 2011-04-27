@@ -49,7 +49,9 @@ public class EntityManagerSetupExceptionResource extends ListResourceBundle {
                                            { "28025", "The persistence unit with name [{0}] has returned a [null] temporary classLoader - weaving has been disabled for this session.  You may use static weaving is an optional workaround." },
                                            { "28026", "org.eclipse.persistence.jpa.osgi.PersistenceProvider does not support container deployment (createContainerEntityManagerFactory).  Use org.eclipse.persistence.jpa.PersistenceProvider instead." },
                                            { "28027", "An attempt has been made to use PersistenceUnit [{0}], but no bundle is available that defines that persistence unit." },
-                                           { "28028", "Failed to instantiate class instance [{0}] for persistence unit property [{1}], ensure constructor is defined correctly." }
+                                           { "28028", "Failed to instantiate class instance [{0}] for persistence unit property [{1}], ensure constructor is defined correctly." },
+                                           { "28029", "PersistenceUnit [{0}] tries both to use sessions.xml (specifies eclipselink.sessions-xml property) and to be a composite (specifies eclipselink.composite-unit property with value true). These modes are incompatible." },
+                                           { "28030", "PersistenceUnit [{0}] specifies eclipselink.composite-unit.member property with value true. That means it cannot be used standalone, but only as a composite member." }
    };
 
     /**

@@ -113,12 +113,12 @@ public class MetamodelImpl implements Metamodel, Serializable {
 
     public MetamodelImpl(EntityManager em) {
         // Create a new Metamodel using the EclipseLink session on the EM
-        this(JpaHelper.getEntityManager(em).getServerSession());
+        this(JpaHelper.getEntityManager(em).getDatabaseSession());
     }
 
     public MetamodelImpl(EntityManagerFactory emf) {
         // Create a new Metamodel using the EclipseLink session on the EMF
-        this(JpaHelper.getServerSession(emf));
+        this(JpaHelper.getDatabaseSession(emf));
     }
 
     /**

@@ -56,7 +56,7 @@ public class CMP3TestModel extends TestModel {
         if (!currentMap.equals(JUnitTestCaseHelper.propertiesMap)) {
             originalProperties = JUnitTestCaseHelper.propertiesMap;
             JUnitTestCaseHelper.propertiesMap = currentMap;
-            JUnitTestCase.closeEntityManagerFactory();
+            JUnitTestCase.closeEntityManagerFactory("default");
             entityManager = null;
         }
     }
@@ -67,7 +67,7 @@ public class CMP3TestModel extends TestModel {
 
     public static void reset(Session originalSession) {
         if (shouldLogoutOnReset) {
-            JUnitTestCase.closeEntityManagerFactory();
+            JUnitTestCase.closeEntityManagerFactory("default");
             entityManager = null;
         }
         if (originalProperties != null) {

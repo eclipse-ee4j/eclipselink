@@ -18,8 +18,10 @@ import org.eclipse.persistence.internal.jpa.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.JpaEntityManager; 
 import org.eclipse.persistence.queries.*; 
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.Server; 
 import org.eclipse.persistence.sessions.server.ServerSession; 
+import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.factories.SessionFactory; 
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
@@ -155,10 +157,24 @@ public class JpaHelper {
     } 
 
     /** 
+     * Retrieve the shared database session from the EMF. 
+     */ 
+    public static DatabaseSession getDatabaseSession(EntityManagerFactory emf) {
+        return getEntityManagerFactory(emf).getDatabaseSession(); 
+    }
+
+    /** 
      * Retrieve the shared server session from the EMF. 
      */ 
     public static Server getServerSession(EntityManagerFactory emf) {
         return getEntityManagerFactory(emf).getServerSession(); 
+    }
+
+    /** 
+     * Retrieve the shared session broker from the EMF. 
+     */ 
+    public static SessionBroker getSessionBroker(EntityManagerFactory emf) {
+        return getEntityManagerFactory(emf).getSessionBroker(); 
     }
 
     /** 

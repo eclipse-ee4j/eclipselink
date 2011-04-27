@@ -781,7 +781,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
        * @exception  DatabaseException - an error has occurred on the database.
        */
     public Integer updateAll() throws DatabaseException {
-        if(((UpdateAllQuery)this.query).isPreparedUsingTempStorage() && getSession().getPlatform().supportsTempTables()) {
+        if(((UpdateAllQuery)this.query).isPreparedUsingTempStorage() && getExecutionSession().getPlatform().supportsTempTables()) {
             return updateAllUsingTempTables();
         } else {
             Integer rowCount = executeNoSelectCall();

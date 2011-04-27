@@ -1,0 +1,29 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="xml-extended-composite-advanced" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
+        <jar-file>eclipselink-xml-extended-composite-advanced-model-member_1.jar</jar-file>
+        <jar-file>eclipselink-xml-extended-composite-advanced-model-member_2.jar</jar-file>
+        <jar-file>eclipselink-xml-extended-composite-advanced-model-member_3.jar</jar-file>
+
+        <properties>
+            <property name="eclipselink.composite-unit" value="true"/>
+            <!--property name="eclipselink.session-name" value="extended-advanced-session"/>
+            <property name="eclipselink.jdbc.read-connections.shared" value="true"/>
+            <property name="eclipselink.jdbc.write-connections.min" value="3"/>
+            <property name="eclipselink.jdbc.write-connections.max" value="8"/>
+            <property name="eclipselink.jdbc.read-connections.min" value="3"/>
+            <property name="eclipselink.jdbc.read-connections.max" value="3"/>
+            <property name="eclipselink.logging.timestamp" value="false"/>
+            <property name="eclipselink.orm.throw.exceptions" value="false"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="extended-xml-advanced-model-create.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="extended-xml-advanced-model-drop.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.logging.level" value="FINE"/>
+            <property name="eclipselink.logging.parameters" value="false"/>
+            <property name="NAME" value="Montreal%"/-->
+        </properties>
+    </persistence-unit> 
+</persistence>

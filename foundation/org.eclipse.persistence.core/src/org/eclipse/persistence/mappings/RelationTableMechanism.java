@@ -507,13 +507,13 @@ public class RelationTableMechanism  implements Cloneable {
      */
     public void initialize(AbstractSession session, ForeignReferenceMapping mapping) throws DescriptorException {
         initializeRelationTable(session, mapping);
-        initializeSourceRelationKeys(session, mapping);
-        initializeTargetRelationKeys(session, mapping);
+        initializeSourceRelationKeys(mapping);
+        initializeTargetRelationKeys(mapping);
 
         if (isSingleSourceRelationKeySpecified()) {
-            initializeSourceKeysWithDefaults(session, mapping);
+            initializeSourceKeysWithDefaults(mapping);
         } else {
-            initializeSourceKeys(session, mapping);
+            initializeSourceKeys(mapping);
         }
 
         if (isSingleTargetRelationKeySpecified()) {
@@ -686,7 +686,7 @@ public class RelationTableMechanism  implements Cloneable {
      * INTERNAL:
      * All the source key field names are converted to DatabaseField and stored.
      */
-    protected void initializeSourceKeys(AbstractSession session, ForeignReferenceMapping mapping) {
+    protected void initializeSourceKeys(ForeignReferenceMapping mapping) {
         for (int index = 0; index < getSourceKeyFields().size(); index++) {
             DatabaseField field = mapping.getDescriptor().buildField(getSourceKeyFields().get(index));
             getSourceKeyFields().set(index, field);
@@ -697,7 +697,7 @@ public class RelationTableMechanism  implements Cloneable {
      * INTERNAL:
      * If a user does not specify the source key then the primary keys of the source table are used.
      */
-    protected void initializeSourceKeysWithDefaults(AbstractSession session, DatabaseMapping mapping) {
+    protected void initializeSourceKeysWithDefaults(DatabaseMapping mapping) {
         List<DatabaseField> primaryKeyFields = mapping.getDescriptor().getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             getSourceKeyFields().addElement(primaryKeyFields.get(index));
@@ -708,7 +708,7 @@ public class RelationTableMechanism  implements Cloneable {
      * INTERNAL:
      * All the source relation key field names are converted to DatabaseField and stored.
      */
-    protected void initializeSourceRelationKeys(AbstractSession session, ForeignReferenceMapping mapping) throws DescriptorException {
+    protected void initializeSourceRelationKeys(ForeignReferenceMapping mapping) throws DescriptorException {
         if (getSourceRelationKeyFields().size() == 0) {
             throw DescriptorException.noSourceRelationKeysSpecified(mapping);
         }
@@ -748,7 +748,7 @@ public class RelationTableMechanism  implements Cloneable {
      * INTERNAL:
      * All the target relation key field names are converted to DatabaseField and stored.
      */
-    protected void initializeTargetRelationKeys(AbstractSession session, ForeignReferenceMapping mapping) {
+    protected void initializeTargetRelationKeys(ForeignReferenceMapping mapping) {
         if (getTargetRelationKeyFields().size() == 0) {
             throw DescriptorException.noTargetRelationKeysSpecified(mapping);
         }

@@ -393,7 +393,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     }
     
     public void testNeg(){
-        if (JUnitTestCase.getDbPlatform().isSymfoware()) {
+        if (getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testNeg skipped for this platform, "
                     + "Symfoware doesn't allow arithmetic expression in subquery. (bug 304907)");
             return;

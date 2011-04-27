@@ -103,6 +103,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
@@ -274,6 +275,8 @@ public class MetadataProject {
     // Contains a list of all interfaces that are implemented by entities in
     // this project/pu.
     private Set<String> m_interfacesImplementedByEntities;
+    
+    private MetadataProcessor m_compositeProcessor;
     
     /**
      * INTERNAL:
@@ -873,6 +876,13 @@ public class MetadataProject {
      */
     public Collection<ClassAccessor> getAllAccessors() {
         return m_allAccessors.values();
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public MetadataProcessor getCompositeProcessor() {
+        return m_compositeProcessor;
     }
     
     /**
@@ -1630,44 +1640,57 @@ public class MetadataProject {
      * process those accessors that rely on them. NOTE: The order of invocation 
      * here is very important here, see the comments.
      */
-    public void processStage3() {
-        // 1 - Process accessors with IDs derived from relationships. This will 
-        // finish up any stage2 processing that relied on the PK processing 
-        // being complete as well. Note: some relationships mappings may be 
-        // processed in this stage. This is ok since it is to determine and
-        // validate the primary key.
-        processAccessorsWithDerivedIDs();
-
-        // 2 - Process all the direct collection accessors we found. This list
-        // does not include direct collections to an embeddable class.
-        processDirectCollectionAccessors();
+    public void processStage3(PersistenceUnitProcessor.Mode mode) {
+        if (mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_MIDDLE) {
+            // 1 - Process accessors with IDs derived from relationships. This will 
+            // finish up any stage2 processing that relied on the PK processing 
+            // being complete as well. Note: some relationships mappings may be 
+            // processed in this stage. This is ok since it is to determine and
+            // validate the primary key.
+            processAccessorsWithDerivedIDs();
+    
+            // 2 - Process all the direct collection accessors we found. This list
+            // does not include direct collections to an embeddable class.
+            processDirectCollectionAccessors();
+            
+            // 3 - Process the sequencing metadata now that every entity has a 
+            // validated primary key.
+            processSequencingAccessors();
+            
+            // 4 - Process the owning relationship accessors now that every entity 
+            // has a validated primary key and we can process join columns.
+            processOwningRelationshipAccessors();
+            
+            // 5 - Process the embeddable mapping accessors. These are the
+            // embedded, embedded id and element collection accessors that map
+            // to an embeddable class. We must hold off on their processing till
+            // now to ensure their owning relationship accessors have been processed 
+            // and we can therefore process any association overrides correctly.
+            processEmbeddableMappingAccessors();
+            
+            // composite persistence unit case
+            if (getCompositeProcessor() != null) {
+                for (EmbeddableAccessor accessor : getEmbeddableAccessors()) {
+                    if (! accessor.isProcessed()) {
+                        accessor.process();
+                    }
+                }
+            }
+        }
         
-        // 3 - Process the sequencing metadata now that every entity has a 
-        // validated primary key.
-        processSequencingAccessors();
-        
-        // 4 - Process the owning relationship accessors now that every entity 
-        // has a validated primary key and we can process join columns.
-        processOwningRelationshipAccessors();
-        
-        // 5 - Process the embeddable mapping accessors. These are the
-        // embedded, embedded id and element collection accessors that map
-        // to an embeddable class. We must hold off on their processing till
-        // now to ensure their owning relationship accessors have been processed 
-        // and we can therefore process any association overrides correctly.
-        processEmbeddableMappingAccessors();
-        
-        // 6 - Process the non owning relationship accessors now that every 
-        // owning relationship should be fully processed.
-        processNonOwningRelationshipAccessors(); 
-        
-        // 7 - Process the interface accessors which will iterate through all 
-        // the entities in the PU and check if we should add them to a variable 
-        // one to one mapping that was either defined (incompletely) or 
-        // defaulted.
-        processInterfaceAccessors();
-        
-        processPartitioning();
+        if (mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_FINAL) {
+            // 6 - Process the non owning relationship accessors now that every 
+            // owning relationship should be fully processed.
+            processNonOwningRelationshipAccessors(); 
+            
+            // 7 - Process the interface accessors which will iterate through all 
+            // the entities in the PU and check if we should add them to a variable 
+            // one to one mapping that was either defined (incompletely) or 
+            // defaulted.
+            processInterfaceAccessors();
+            
+            processPartitioning();
+        }
     }
     
     /**
@@ -1739,6 +1762,14 @@ public class MetadataProject {
      */
     public void removeMappedSuperclassAccessor(MetadataClass metadataClass) {
         m_mappedSuperclasseAccessors.remove(metadataClass.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * set compositeProcessor that owns this and pear MetadataProcessors used to create composite persistence unit.
+     */
+    public void setCompositeProcessor(MetadataProcessor compositeProcessor) {
+        m_compositeProcessor = compositeProcessor;
     }
     
     /** 

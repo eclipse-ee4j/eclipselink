@@ -43,8 +43,10 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -71,7 +73,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     /** Reference to Cache Interface. */
     protected Cache myCache;
     /** Reference to the ServerSession for this deployment. */
-    protected volatile ServerSession serverSession;
+    protected volatile DatabaseSessionImpl session;
     /** EntityManagerSetupImpl that deployed this factory. */
     protected EntityManagerSetupImpl setupImpl;
     /** Stores if closed has been called. */
@@ -132,9 +134,9 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * 
      * @param serverSession
      */
-    public EntityManagerFactoryImpl(ServerSession serverSession) {
-        this.serverSession = serverSession;
-        processProperties(serverSession.getProperties());
+    public EntityManagerFactoryImpl(DatabaseSessionImpl databaseSession) {
+        this.session = databaseSession;
+        processProperties(databaseSession.getProperties());
     }
 
     public EntityManagerFactoryImpl(EntityManagerSetupImpl setupImpl, Map properties) {
@@ -166,13 +168,13 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * partially constructed session stored in our setupImpl and completes its
      * construction
      */
-    public ServerSession getServerSession() {
-        if (this.serverSession == null) {
+    public DatabaseSessionImpl getDatabaseSession() {
+        if (this.session == null) {
             // PERF: Avoid synchronization.
             synchronized (this) {
                 // DCL ok as isLoggedIn is volatile boolean, set after login is
                 // complete.
-                if (this.serverSession == null) {
+                if (this.session == null) {
                     ClassLoader realLoader = setupImpl.getPersistenceUnitInfo().getClassLoader();
                     // splitProperties[0] contains
                     // supportedNonServerSessionProperties; [1] - all the rest.
@@ -182,18 +184,40 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                     properties = splitProperties[0];
                     Map serverSessionProperties = splitProperties[1];
                     // the call to setupImpl.deploy() finishes the session creation
-                    ServerSession tempServerSession = setupImpl.deploy(realLoader, serverSessionProperties);
+                    DatabaseSessionImpl tempSession = setupImpl.deploy(realLoader, serverSessionProperties);
                     // discard all but non server session properties from server
                     // session properties.
-                    Map tempProperties = EntityManagerFactoryProvider.keepSpecifiedProperties(tempServerSession.getProperties(), supportedNonServerSessionProperties);
+                    Map tempProperties = EntityManagerFactoryProvider.keepSpecifiedProperties(tempSession.getProperties(), supportedNonServerSessionProperties);
                     // properties override server session properties
                     Map propertiesToProcess = EntityManagerFactoryProvider.mergeMaps(properties, tempProperties);
                     processProperties(propertiesToProcess);
-                    this.serverSession = tempServerSession;
+                    this.session = tempSession;
                 }
             }
         }
-        return this.serverSession;
+        return this.session;
+    }
+
+    /**
+     * INTERNAL: Returns the ServerSession that the Factory will be using and
+     * initializes it if it is not available. This method makes use of the
+     * partially constructed session stored in our setupImpl and completes its
+     * construction
+     * TODO: should throw IllegalStateException if not ServerSession
+     */
+    public ServerSession getServerSession() {
+        return (ServerSession)getDatabaseSession();
+    }
+
+    /**
+     * INTERNAL: Returns the SessionBroker that the Factory will be using and
+     * initializes it if it is not available. This method makes use of the
+     * partially constructed session stored in our setupImpl and completes its
+     * construction
+     * TODO: should throw IllegalStateException if not SessionBroker
+     */
+    public SessionBroker getSessionBroker() {
+        return (SessionBroker)getDatabaseSession();
     }
 
     /**
@@ -239,7 +263,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     protected EntityManagerImpl createEntityManagerImpl(Map properties) {
         verifyOpen();
-        ServerSession session = getServerSession();
+        DatabaseSessionImpl session = getDatabaseSession();
         if (!session.isLoggedIn()) {
             // PERF: Avoid synchronization.
             synchronized (session) {
@@ -279,7 +303,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                 return value;
             }
         }
-        return getServerSession().getProperty(name);
+        return getDatabaseSession().getProperty(name);
     }
 
     /**
@@ -293,39 +317,39 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * name to PersistenceUnitProperties.supportedNonServerSessionProperties
      */
     protected void processProperties(Map properties) {
-        String beginEarlyTransactionProperty = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, properties, this.serverSession, true);
+        String beginEarlyTransactionProperty = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, properties, this.session, true);
         if (beginEarlyTransactionProperty != null) {
             this.beginEarlyTransaction = "true".equalsIgnoreCase(beginEarlyTransactionProperty);
         }
-        String referenceMode = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE, properties, this.serverSession, true);
+        String referenceMode = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE, properties, this.session, true);
         if (referenceMode != null) {
             this.referenceMode = ReferenceMode.valueOf(referenceMode);
         }
-        String flushMode = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, properties, this.serverSession, true);
+        String flushMode = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, properties, this.session, true);
         if (flushMode != null) {
             this.flushMode = FlushModeType.valueOf(flushMode);
         }
-        String closeOnCommit = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT, properties, this.serverSession, true);
+        String closeOnCommit = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT, properties, this.session, true);
         if (closeOnCommit != null) {
             this.closeOnCommit = "true".equalsIgnoreCase(closeOnCommit);
         }
-        String persistOnCommit = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, properties, this.serverSession, true);
+        String persistOnCommit = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, properties, this.session, true);
         if (persistOnCommit != null) {
             this.persistOnCommit = "true".equalsIgnoreCase(persistOnCommit);
         }
-        String commitWithoutPersist = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, properties, this.serverSession, true);
+        String commitWithoutPersist = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, properties, this.session, true);
         if (commitWithoutPersist != null) {
             this.commitWithoutPersistRules = "true".equalsIgnoreCase(commitWithoutPersist);
         }
-        String shouldValidateExistence = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.VALIDATE_EXISTENCE, properties, this.serverSession, true);
+        String shouldValidateExistence = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.VALIDATE_EXISTENCE, properties, this.session, true);
         if (shouldValidateExistence != null) {
             this.shouldValidateExistence = "true".equalsIgnoreCase(shouldValidateExistence);
         }
-        String shouldOrderUpdates = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.ORDER_UPDATES, properties, this.serverSession, true);
+        String shouldOrderUpdates = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.ORDER_UPDATES, properties, this.session, true);
         if (shouldOrderUpdates != null) {
             this.shouldOrderUpdates = "true".equalsIgnoreCase(shouldOrderUpdates);
         }
-        String flushClearCache = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.FLUSH_CLEAR_CACHE, properties, this.serverSession, true);
+        String flushClearCache = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.FLUSH_CLEAR_CACHE, properties, this.session, true);
         if (flushClearCache != null) {
             this.flushClearCache = flushClearCache;
         }
@@ -495,7 +519,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         if (!this.isOpen()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
         }
-        return Collections.unmodifiableMap(EntityManagerFactoryProvider.mergeMaps(properties, this.getServerSession().getProperties()));
+        return Collections.unmodifiableMap(EntityManagerFactoryProvider.mergeMaps(properties, this.getDatabaseSession().getProperties()));
     }
 
     /**
@@ -528,7 +552,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
          * MappedSuperclass metamodel descriptors.  This is provided for
          * implementations that use the metamodel before the 1st EntityManager creation.
          */        
-        this.getServerSession();
+        this.getDatabaseSession();
         return this.setupImpl.getMetamodel();
     }
 
@@ -559,7 +583,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      *         state has not been loaded, otherwise true
      */
     public boolean isLoaded(Object entity, String attributeName) {
-        if (EntityManagerFactoryImpl.isLoaded(entity, attributeName, serverSession).equals(Boolean.valueOf(true))) {
+        if (EntityManagerFactoryImpl.isLoaded(entity, attributeName, session).equals(Boolean.valueOf(true))) {
             return true;
         }
         return false;
@@ -579,7 +603,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @return false if the entity has not been loaded, else true.
      */
     public boolean isLoaded(Object entity) {
-        if (EntityManagerFactoryImpl.isLoaded(entity, serverSession).equals(Boolean.valueOf(true))) {
+        if (EntityManagerFactoryImpl.isLoaded(entity, session).equals(Boolean.valueOf(true))) {
             return true;
         }
         return false;
@@ -677,7 +701,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      *             if the entity is found not to be an entity.
      */
     public Object getIdentifier(Object entity) {
-        return EntityManagerFactoryImpl.getIdentifier(entity, serverSession);
+        return EntityManagerFactoryImpl.getIdentifier(entity, session);
     }
     
     /**

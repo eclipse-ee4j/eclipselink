@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
+    <description>XML extended composite advanced member_1 Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1</package>
+    <mapped-superclass class="Person" access="PROPERTY">
+        <attributes>
+            <id name="id">
+                <column name="BOGUS_OVERRIDDEN_IN_EL_ORM"/>
+            </id>
+        </attributes>
+    </mapped-superclass>
+    <entity name="XMLAddress" class="Address" access="PROPERTY">
+        <table name="XML_MBR1_ADDRESS"/>
+        <sequence-generator name="XML_MBR1_ADDRESS_SEQUENCE_GENERATOR" sequence-name="XML_MBR1_ADDRESS_SEQ" allocation-size="25"/>
+        <named-query name="findAllXMLAddressesByPostalCode">
+            <query>SELECT OBJECT(address) FROM XMLAddress address WHERE address.postalCode = :postalcode</query>
+        </named-query>
+        <named-native-query name="findAllXMLAddresses" result-class="Address">
+            <query>SELECT * FROM XML_MBR1_ADDRESS</query>
+        </named-native-query>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="ADDRESS_ID"/>
+                <generated-value strategy="SEQUENCE" generator="XML_MBR1_ADDRESS_SEQUENCE_GENERATOR"/>
+            </id>
+            <basic name="postalCode">
+                <column name="P_CODE"/>
+            </basic>
+            <basic name="street"/>
+            <basic name="city"/>
+            <basic name="province"/>
+            <basic name="country"/>
+        </attributes>
+    </entity>
+    <entity name="XMLCustomer" class="Customer" access="PROPERTY">
+      <table name="XML_MBR1_CUSTOMER"/>
+        <table-generator name="XML_MBR1_CUSTOMER_TABLE_GENERATOR" table="XML_MBR1_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CUSTOMER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="budget"/>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+        </attributes>
+    </entity>
+</entity-mappings>

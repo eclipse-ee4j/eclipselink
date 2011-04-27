@@ -30,9 +30,14 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sessions.Connector;
+import org.eclipse.persistence.sessions.DefaultConnector;
+import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.server.JEEPlatform;
 import org.eclipse.persistence.testing.framework.server.ServerPlatform;
@@ -158,18 +163,15 @@ public abstract class JUnitTestCase extends TestCase {
     /**
      * Return if the tests were run using weaving, agent or static.
      */
-    public static boolean isWeavingEnabled() {
-        if("false".equals(JUnitTestCase.getServerSession().getProperty("eclipselink.weaving"))) {
-            return false;
-        }
-        return System.getProperty("TEST_NO_WEAVING") == null;
+    public boolean isWeavingEnabled() {
+        return isWeavingEnabled(getPersistenceUnitName());
     }
     
     /**
      * Return if the tests were run using weaving, agent or static.
      */
     public static boolean isWeavingEnabled(String persistenceUnitName) {
-        if("false".equals(JUnitTestCase.getServerSession(persistenceUnitName).getProperty("eclipselink.weaving"))) {
+        if("false".equals(JUnitTestCase.getDatabaseSession(persistenceUnitName).getProperty("eclipselink.weaving"))) {
             return false;
         }
         return System.getProperty("TEST_NO_WEAVING") == null;
@@ -240,7 +242,7 @@ public abstract class JUnitTestCase extends TestCase {
     
     public void clearCache() {
          try {
-            getServerSession(getPersistenceUnitName()).getIdentityMapAccessor().initializeAllIdentityMaps();
+            getDatabaseSession().getIdentityMapAccessor().initializeAllIdentityMaps();
          } catch (Exception ex) {
             throw new  RuntimeException("An exception occurred trying clear the cache.", ex);
         }   
@@ -248,7 +250,7 @@ public abstract class JUnitTestCase extends TestCase {
     
     public static void clearCache(String persistenceUnitName) {
          try {
-            getServerSession(persistenceUnitName).getIdentityMapAccessor().initializeAllIdentityMaps();
+            getDatabaseSession(persistenceUnitName).getIdentityMapAccessor().initializeAllIdentityMaps();
          } catch (Exception ex) {
             throw new  RuntimeException("An exception occurred trying clear the cache.", ex);
         }
@@ -365,12 +367,12 @@ public abstract class JUnitTestCase extends TestCase {
      * The properties will only be used the first time this entity manager is accessed.
      * If in JEE this will create or return the active managed entity manager.
      */
-    public static EntityManager createEntityManager(Map properties) {
+    public EntityManager createEntityManager(Map properties) {
         if (isOnServer()) {
-            return getServerPlatform().getEntityManager("default");
+            return getServerPlatform().getEntityManager(getPersistenceUnitName());
         } else {
         	// Set properties on both the em factory and the em
-            return getEntityManagerFactory("default", properties).createEntityManager(properties);
+            return getEntityManagerFactory(getPersistenceUnitName(), properties).createEntityManager(properties);
         }      
     }
     
@@ -397,9 +399,21 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public DatabaseSessionImpl getDatabaseSession() {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getServerSession();               
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getDatabaseSession();               
     }
 
+    public static DatabaseSessionImpl getDatabaseSession(String persistenceUnitName) {
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getDatabaseSession();        
+    }
+    
+    public SessionBroker getSessionBroker() {
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getSessionBroker();               
+    }
+
+    public static SessionBroker getSessionBroker(String persistenceUnitName) {
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getSessionBroker();        
+    }
+    
     public static ServerSession getServerSession() {
         return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory("default").createEntityManager()).getServerSession();               
     }
@@ -414,7 +428,7 @@ public abstract class JUnitTestCase extends TestCase {
     
     
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName) {
-        return getEntityManagerFactory(persistenceUnitName,  JUnitTestCaseHelper.getDatabaseProperties(), null);
+        return getEntityManagerFactory(persistenceUnitName,  JUnitTestCaseHelper.getDatabaseProperties(persistenceUnitName), null);
     }
     
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, Map properties) {
@@ -456,12 +470,12 @@ public abstract class JUnitTestCase extends TestCase {
         return getEntityManagerFactory(getPersistenceUnitName());
     }
     
-    public static EntityManagerFactory getEntityManagerFactory(Map properties) {
-        return getEntityManagerFactory("default", properties);
+    public EntityManagerFactory getEntityManagerFactory(Map properties) {
+        return getEntityManagerFactory(getPersistenceUnitName(), properties);
     }
     
-    public static boolean doesEntityManagerFactoryExist() {
-        return doesEntityManagerFactoryExist("default");
+    public boolean doesEntityManagerFactoryExist() {
+        return doesEntityManagerFactoryExist(getPersistenceUnitName());
     }
 
     public static boolean doesEntityManagerFactoryExist(String persistenceUnitName) {
@@ -469,8 +483,8 @@ public abstract class JUnitTestCase extends TestCase {
         return emf != null && emf.isOpen();
     }
 
-    public static void closeEntityManagerFactory() {
-        closeEntityManagerFactory("default");
+    public void closeEntityManagerFactory() {
+        closeEntityManagerFactory(getPersistenceUnitName());
     }
 
     public static void closeEntityManagerFactory(String persistenceUnitName) {
@@ -483,12 +497,20 @@ public abstract class JUnitTestCase extends TestCase {
         }
     }
 
-    public static Platform getDbPlatform() {
-        return getServerSession().getDatasourcePlatform();
+    public Platform getPlatform() {
+        return getPlatform(getPersistenceUnitName());
     }
    
-    public static Platform getDbPlatform(String puName) {
-        return getServerSession(puName).getDatasourcePlatform();
+    public Platform getPlatform(Class cls) {
+        return getPlatform(getPersistenceUnitName(), cls);
+    }
+   
+    public static Platform getPlatform(String puName) {
+        return getDatabaseSession(puName).getPlatform();
+    }
+   
+    public static Platform getPlatform(String puName, Class cls) {
+        return getDatabaseSession(puName).getPlatform(cls);
     }
    
     public void setUp() {
@@ -500,7 +522,7 @@ public abstract class JUnitTestCase extends TestCase {
     /**
      * Used to output a warning.  This does not fail the test, but provides output for someone to review.
      */
-    public void warning(String warning) {
+    public static void warning(String warning) {
         System.out.println("WARNING: " + warning);
     }
 
@@ -600,9 +622,9 @@ public abstract class JUnitTestCase extends TestCase {
     /**
      * Verifies that the object was merged to the cache, and written to the database correctly.
      */
-    public void verifyObject(Object writtenObject, String persistenceUnit) {
-        Object readObject = getServerSession(persistenceUnit).readObject(writtenObject);
-        if (!getServerSession(persistenceUnit).compareObjects(readObject, writtenObject)) {
+    public static void verifyObject(Object writtenObject, String persistenceUnit) {
+        Object readObject = getDatabaseSession(persistenceUnit).readObject(writtenObject);
+        if (!getDatabaseSession(persistenceUnit).compareObjects(readObject, writtenObject)) {
             fail("Object: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
         }
     }
@@ -639,14 +661,15 @@ public abstract class JUnitTestCase extends TestCase {
     /**
      * Verifies that the object was merged to the cache, and written to the database correctly.
      */
-    public void verifyObjectInCacheAndDatabase(Object writtenObject, String persistenceUnit) {
-        Object readObject = getServerSession(persistenceUnit).readObject(writtenObject);
-        if (!getServerSession(persistenceUnit).compareObjects(readObject, writtenObject)) {
+    public static void verifyObjectInCacheAndDatabase(Object writtenObject, String persistenceUnit) {
+        DatabaseSessionImpl dbs = getDatabaseSession(persistenceUnit); 
+        Object readObject = dbs.readObject(writtenObject);
+        if (!dbs.compareObjects(readObject, writtenObject)) {
             fail("Object from cache: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
         }
-        clearCache(persistenceUnit);
-        readObject = getServerSession(persistenceUnit).readObject(writtenObject);
-        if (!getServerSession(persistenceUnit).compareObjects(readObject, writtenObject)) {
+        dbs.getIdentityMapAccessor().initializeAllIdentityMaps();
+        readObject = dbs.readObject(writtenObject);
+        if (!dbs.compareObjects(readObject, writtenObject)) {
             fail("Object from database: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
         }
     }
@@ -662,7 +685,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Compare objects.
      */
     public static void compareObjects(Object obj1, Object obj2, String persistenceUnit) {
-        DatabaseSessionImpl dbs = getServerSession(persistenceUnit); 
+        DatabaseSessionImpl dbs = getDatabaseSession(persistenceUnit); 
         if (!dbs.compareObjects(obj1, obj2)) {
             fail("Objects " + obj1 + " and " + obj2 + " are not equal. See log (on finest) for what did not match.");
         }
@@ -728,7 +751,16 @@ public abstract class JUnitTestCase extends TestCase {
      * Verifies that the object was deleted from the database correctly.
      */
     public void verifyDelete(Object writtenObject, String persistenceUnit) {
-        if (!getServerSession(persistenceUnit).acquireClientSession().verifyDelete(writtenObject)) {
+        DatabaseSessionImpl dbs = getDatabaseSession(persistenceUnit);
+        boolean ok;
+        if (dbs.isServerSession()) {
+            ok = ((ServerSession)dbs).acquireClientSession().verifyDelete(writtenObject);
+        } else if (dbs.isSessionBroker()) {
+            ok = ((SessionBroker)dbs).acquireClientSessionBroker().verifyDelete(writtenObject); 
+        } else {
+            ok = dbs.verifyDelete(writtenObject);
+        }
+        if (!ok) {
             fail("Object not deleted from the database correctly: " + writtenObject);
         }
     }
@@ -738,7 +770,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Logs at at the warning level
      */
     public void logThrowable(Throwable exception){
-        getServerSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+        getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
     }
 
     /**
@@ -750,11 +782,24 @@ public abstract class JUnitTestCase extends TestCase {
      * Derby has some support, but does not work with joins (2008-12-01).
      */
     public boolean isSelectForUpateSupported(){
-        return isSelectForUpateSupported("default");
+        return isSelectForUpateSupported(getPersistenceUnitName());
     }
 
-    public boolean isSelectForUpateSupported(String puName) {
-        DatabasePlatform platform = getServerSession(puName).getPlatform();
+    public static boolean isSelectForUpateSupported(String puName) {
+        DatabaseSessionImpl dbSession = getDatabaseSession(puName);
+        if (dbSession.isBroker()) {
+            for(AbstractSession memberSession : ((SessionBroker)dbSession).getSessionsByName().values()) {
+                if (!isSelectForUpateSupported(memberSession.getPlatform())) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return isSelectForUpateSupported(dbSession.getPlatform());
+        }
+    }
+
+    public static boolean isSelectForUpateSupported(DatabasePlatform platform) {
         // DB2, Derby, Symfoware (bug 304903) and Firebird support pessimistic locking only for a single-table queries.
         // PostgreSQL supports for update, but not on outerjoins, which the test uses.
         // H2 supports pessimistic locking, but has table lock issues with multiple connections used in the tests.
@@ -769,7 +814,24 @@ public abstract class JUnitTestCase extends TestCase {
      * @return true if database supports pessimistic write lock false other wise
      */
     public boolean isPessimisticWriteLockSupported() {
-        DatabasePlatform platform = getServerSession().getPlatform();
+        return isPessimisticWriteLockSupported(getPersistenceUnitName());
+    }
+
+    public static boolean isPessimisticWriteLockSupported(String puName) {
+        DatabaseSessionImpl dbSession = getDatabaseSession(puName);
+        if (dbSession.isBroker()) {
+            for(AbstractSession memberSession : ((SessionBroker)dbSession).getSessionsByName().values()) {
+                if (!isPessimisticWriteLockSupported(memberSession.getPlatform())) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return isPessimisticWriteLockSupported(dbSession.getPlatform());
+        }
+    }
+
+    public static boolean isPessimisticWriteLockSupported(DatabasePlatform platform) {
         if (platform.isSybase()) { //Sybase supports getting Pessimistic Read locks but does not support getting Perssimistic Write locks
             warning("This database does not support Pessimistic Write Lock.");
             return false;
@@ -783,12 +845,24 @@ public abstract class JUnitTestCase extends TestCase {
      * Currently testing supports nowait on Oracle, SQLServer.
      * PostgreSQL also supports NOWAIT, but doesn't support the outer joins used in the tests.
      */
+    public static boolean isSelectForUpateNoWaitSupported(String puName) {
+        DatabaseSessionImpl dbSession = getDatabaseSession(puName);
+        if (dbSession.isBroker()) {
+            for(AbstractSession memberSession : ((SessionBroker)dbSession).getSessionsByName().values()) {
+                if (!isSelectForUpateSupported(memberSession.getPlatform())) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return isSelectForUpateNoWaitSupported(dbSession.getPlatform());
+        }
+    }
     public boolean isSelectForUpateNoWaitSupported(){
-        return isSelectForUpateNoWaitSupported("default");
+        return isSelectForUpateNoWaitSupported(getPersistenceUnitName());
     }
 
-    public boolean isSelectForUpateNoWaitSupported(String puName) {
-        DatabasePlatform platform = getServerSession(puName).getPlatform();
+    public static boolean isSelectForUpateNoWaitSupported(Platform platform) {
         if (platform.isOracle() || platform.isSQLServer()) {
             return true;
         }
@@ -800,11 +874,11 @@ public abstract class JUnitTestCase extends TestCase {
      * Return if stored procedures are supported for the database platform for the test database.
      */
     public boolean supportsStoredProcedures(){
-        return supportsStoredProcedures("default");
+        return supportsStoredProcedures(getPersistenceUnitName());
     }
 
-    public boolean supportsStoredProcedures(String puName) {
-        DatabasePlatform platform = getServerSession(puName).getPlatform();
+    public static boolean supportsStoredProcedures(String puName) {
+        DatabasePlatform platform = getDatabaseSession(puName).getPlatform();
         // PostgreSQL has some level of support for "stored functions", but output parameters do not work as of 8.2.
         // TODO: DB2 should be in this list.
         if (platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer() || platform.isSymfoware()) {
@@ -818,11 +892,11 @@ public abstract class JUnitTestCase extends TestCase {
      * Return if stored functions are supported for the database platform for the test database.
      */
     public boolean supportsStoredFunctions(){
-        return supportsStoredFunctions("default");
+        return supportsStoredFunctions(getPersistenceUnitName());
     }
 
-    public boolean supportsStoredFunctions(String puName) {
-        DatabasePlatform platform = getServerSession(puName).getPlatform();
+    public static boolean supportsStoredFunctions(String puName) {
+        DatabasePlatform platform = getDatabaseSession(puName).getPlatform();
         // PostgreSQL has some level of support for "stored functions", but output parameters do not work as of 8.2.
         // TODO: DB2 should be in this list.
         if (platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSymfoware()) {
@@ -834,5 +908,24 @@ public abstract class JUnitTestCase extends TestCase {
 
     public void setPuName(String name){
         puName = name;
+    }
+    
+    /**
+     * Indicates whether two sessions are connected to the same db
+     */
+    public static boolean usingTheSameDatabase(AbstractSession session1, AbstractSession session2) {
+        Connector conn1 = session1.getLogin().getConnector();
+        Connector conn2 = session2.getLogin().getConnector();
+        if (conn1 instanceof DefaultConnector && conn2 instanceof DefaultConnector) {
+            return ((DefaultConnector)conn1).getDatabaseURL().equals(((DefaultConnector)conn2).getDatabaseURL());
+        } else if (conn1 instanceof JNDIConnector && conn2 instanceof JNDIConnector) {
+            String name1 = ((JNDIConnector)conn1).getName();
+            String name2 = ((JNDIConnector)conn2).getName();
+            if (name1 != null && name1.equals(name2)) {
+                return true;
+            }
+            return ((JNDIConnector)conn1).getDataSource().equals(((JNDIConnector)conn2).getDataSource());
+        }
+        return false;
     }
 }

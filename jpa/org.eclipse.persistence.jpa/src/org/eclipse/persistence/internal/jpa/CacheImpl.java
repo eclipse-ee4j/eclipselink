@@ -175,7 +175,7 @@ public class CacheImpl implements JpaCache {
      */
     public void evictAll() {
         getEntityManagerFactory().verifyOpen();
-        getEntityManagerFactory().getServerSession().getIdentityMapAccessor().invalidateAll();
+        getEntityManagerFactory().getDatabaseSession().getIdentityMapAccessor().invalidateAll();
     }
 
     /**
@@ -195,7 +195,7 @@ public class CacheImpl implements JpaCache {
         if(aDescriptor.hasCMPPolicy()) {
             // we assume that the PK id parameter is correct and do not throw a cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key exception 
             // The primaryKey may be the same object as the id parameter
-            cacheKey = aDescriptor.getCMPPolicy().createPrimaryKeyFromId(id, getEntityManagerFactory().getServerSession());
+            cacheKey = aDescriptor.getCMPPolicy().createPrimaryKeyFromId(id, getEntityManagerFactory().getDatabaseSession());
         }
         return cacheKey;
     }
@@ -389,7 +389,7 @@ public class CacheImpl implements JpaCache {
      * @return
      */
     protected Session getSession() {
-        return getEntityManagerFactory().getServerSession();
+        return getEntityManagerFactory().getDatabaseSession();
     }
 
     /**

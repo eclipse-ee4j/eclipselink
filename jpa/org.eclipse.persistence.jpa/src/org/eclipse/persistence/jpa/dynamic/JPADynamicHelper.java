@@ -40,7 +40,7 @@ public class JPADynamicHelper extends DynamicHelper {
     }
     
     public JPADynamicHelper(EntityManager em) {
-        super(JpaHelper.getEntityManager(em).getServerSession());
+        super(JpaHelper.getEntityManager(em).getDatabaseSession());
     }
     
     /**

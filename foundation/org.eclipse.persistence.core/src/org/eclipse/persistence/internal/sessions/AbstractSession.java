@@ -2578,35 +2578,53 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @see #getQuery(String)
      */
     public DatabaseQuery getQuery(String name, Vector arguments) {
+        return getQuery(name, arguments, true);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the query from the session pre-defined queries with the given name and argument types.
+     * This allows for common queries to be pre-defined, reused and executed by name.
+     * This method should be used if the Session has multiple queries with the same name but
+     * different arguments. 
+     * 
+     * @parameter shouldSearchParent indicates whether parent should be searched if query not found.
+     * @see #getQuery(String, arguments)
+     */    
+    public DatabaseQuery getQuery(String name, Vector arguments, boolean shouldSearchParent) {
         Vector queries = (Vector)getQueries().get(name);
-        if ((queries == null) || queries.isEmpty()) {
-            return null;
+        if ((queries != null) && !queries.isEmpty()) {
+            // Short circuit the simple, most common case of only one query.
+            if (queries.size() == 1) {
+                return (DatabaseQuery)queries.firstElement();
+            }
+    
+            // CR#3754; Predrag; mar 19/2002;
+            // We allow multiple named queries with the same name but
+            // different argument set; we can have only one query with
+            // no arguments; Vector queries is not sorted;
+            // When asked for the query with no parameters the
+            // old version did return the first query - wrong:
+            // return (DatabaseQuery) queries.firstElement();
+            int argumentTypesSize = 0;
+            if (arguments != null) {
+                argumentTypesSize = arguments.size();
+            }
+            Vector argumentTypes = new Vector(argumentTypesSize);
+            for (int i = 0; i < argumentTypesSize; i++) {
+                argumentTypes.addElement(arguments.elementAt(i).getClass());
+            }
+            for (Enumeration queriesEnum = queries.elements(); queriesEnum.hasMoreElements();) {
+                DatabaseQuery query = (DatabaseQuery)queriesEnum.nextElement();
+                if (Helper.areTypesAssignable(argumentTypes, query.getArgumentTypes())) {
+                    return query;
+                }
+            }
         }
-
-        // Short circuit the simple, most common case of only one query.
-        if (queries.size() == 1) {
-            return (DatabaseQuery)queries.firstElement();
-        }
-
-        // CR#3754; Predrag; mar 19/2002;
-        // We allow multiple named queries with the same name but
-        // different argument set; we can have only one query with
-        // no arguments; Vector queries is not sorted;
-        // When asked for the query with no parameters the
-        // old version did return the first query - wrong:
-        // return (DatabaseQuery) queries.firstElement();
-        int argumentTypesSize = 0;
-        if (arguments != null) {
-            argumentTypesSize = arguments.size();
-        }
-        Vector argumentTypes = new Vector(argumentTypesSize);
-        for (int i = 0; i < argumentTypesSize; i++) {
-            argumentTypes.addElement(arguments.elementAt(i).getClass());
-        }
-        for (Enumeration queriesEnum = queries.elements(); queriesEnum.hasMoreElements();) {
-            DatabaseQuery query = (DatabaseQuery)queriesEnum.nextElement();
-            if (Helper.areTypesAssignable(argumentTypes, query.getArgumentTypes())) {
-                return query;
+        if(shouldSearchParent) {
+            AbstractSession parent = getParent();
+            if(parent != null) {
+                return parent.getQuery(name, arguments, true);
             }
         }
         return null;
@@ -2632,6 +2650,18 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         return this;
     }
 
+    /**
+     * INTERNAL:
+     * Return the session by name.
+     * Used for compatibility with the session broker.
+     */
+    public AbstractSession getSessionForName(String name) throws ValidationException {
+        if (hasBroker()) {
+            return getBroker().getSessionForName(name);
+        }
+        return this;
+    }
+    
     /**
      * PUBLIC:
      * Return the session log to which an accessor logs messages and SQL.
@@ -3426,7 +3456,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (externalTransactionController == null) {
             return;
         }
-        externalTransactionController.setSession(this);
+        if (!hasBroker()) {
+            externalTransactionController.setSession(this);
+        }
     }
 
     /**

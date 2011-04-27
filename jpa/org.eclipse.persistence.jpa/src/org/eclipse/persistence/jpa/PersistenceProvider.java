@@ -66,8 +66,8 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         EntityManagerSetupImpl emSetupImpl = null;
         boolean isNew = false;
         // the name that uniquely defines persistence unit
-        String uniqueName;
-        String sessionName;
+        String uniqueName = null;
+        String sessionName = null;
         JPAInitializer initializer = getInitializer(emName, nonNullProperties);
         try {
             SEPersistenceUnitInfo puInfo = initializer.findPersistenceUnitInfo(name, nonNullProperties);
@@ -76,29 +76,39 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
                 return null;
             }
             
-            if(initializer.isPersistenceUnitUniquelyDefinedByName()) {
-                uniqueName = name;
+            if(EntityManagerSetupImpl.mustBeCompositeMember(puInfo)) {
+                // persistence unit cannot be used standalone (only as a composite member).
+                // still the factory will be created but attempt to createEntityManager would cause an exception. 
+                emSetupImpl = new EntityManagerSetupImpl(name, name);
+                // predeploy assigns puInfo and does not do anything else.
+                // the session is not created, no need to add emSetupImpl to the global map.
+                emSetupImpl.predeploy(puInfo, nonNullProperties);
+                isNew = true;
             } else {
-                uniqueName = initializer.createUniquePersistenceUnitName(puInfo);
-            }
-                
-            sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, puInfo, uniqueName);
-            synchronized (EntityManagerFactoryProvider.emSetupImpls) {
-                emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
-                if(emSetupImpl == null) {
-                    // there may be initial emSetupImpl cached in Initializer - remove it and use.
-                    emSetupImpl = initializer.extractInitialEmSetupImpl(name);
-                    if(emSetupImpl != null) {
-                        // change the name
-                        emSetupImpl.changeSessionName(sessionName);
-                    } else {
-                        // create and predeploy a new emSetupImpl
-                        emSetupImpl = initializer.callPredeploy(puInfo, nonNullProperties, uniqueName, sessionName);
+                if(initializer.isPersistenceUnitUniquelyDefinedByName()) {
+                    uniqueName = name;
+                } else {
+                    uniqueName = initializer.createUniquePersistenceUnitName(puInfo);
+                }
+                    
+                sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, puInfo, uniqueName);
+                synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+                    emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
+                    if(emSetupImpl == null) {
+                        // there may be initial emSetupImpl cached in Initializer - remove it and use.
+                        emSetupImpl = initializer.extractInitialEmSetupImpl(name);
+                        if(emSetupImpl != null) {
+                            // change the name
+                            emSetupImpl.changeSessionName(sessionName);
+                        } else {
+                            // create and predeploy a new emSetupImpl
+                            emSetupImpl = initializer.callPredeploy(puInfo, nonNullProperties, uniqueName, sessionName);
+                        }
+                        // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
+                        emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
+                        EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, emSetupImpl);
+                        isNew = true;
                     }
-                    // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
-                    emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
-                    EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, emSetupImpl);
-                    isNew = true;
                 }
             }
         } catch (Exception e) {
@@ -133,7 +143,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         
             // This code has been added to allow validation to occur without actually calling createEntityManager
             if (emSetupImpl.shouldGetSessionOnCreateFactory(nonNullProperties)) {
-                factory.getServerSession();
+                factory.getDatabaseSession();
             }
             return factory;
         } catch (RuntimeException ex) {
@@ -170,47 +180,56 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * by the persistence provider.
      */
     public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties){
-            Map nonNullProperties = (properties == null) ? new HashMap() : properties;
+        Map nonNullProperties = (properties == null) ? new HashMap() : properties;
         
         EntityManagerSetupImpl emSetupImpl = null;
-        boolean isNew = false;
-        ClassTransformer transformer = null;
-        String uniqueName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(), info.getPersistenceUnitName());
-        String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, info, uniqueName);
-        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
-            emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
-            if (emSetupImpl == null){
-                emSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
-                isNew = true;
-                emSetupImpl.setIsInContainerMode(true);        
-                // if predeploy fails then emSetupImpl shouldn't be added to FactoryProvider
-                transformer = emSetupImpl.predeploy(info, nonNullProperties);
-                EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, emSetupImpl);
-            }
-        }
-            
-        if(!isNew) {
-            if(!uniqueName.equals(emSetupImpl.getPersistenceUnitUniqueName())) {
-                throw PersistenceUnitLoadingException.sessionNameAlreadyInUse(sessionName, uniqueName, emSetupImpl.getPersistenceUnitUniqueName());
-            }
-            // synchronized to prevent undeploying by other threads.
-            boolean undeployed = false;
-            synchronized(emSetupImpl) {
-                if(emSetupImpl.isUndeployed()) {
-                    undeployed = true;
+        if(EntityManagerSetupImpl.mustBeCompositeMember(info)) {
+            // persistence unit cannot be used standalone (only as a composite member).
+            // still the factory will be created but attempt to createEntityManager would cause an exception. 
+            emSetupImpl = new EntityManagerSetupImpl(info.getPersistenceUnitName(), info.getPersistenceUnitName());
+            // predeploy assigns puInfo and does not do anything else.
+            // the session is not created, no need to add emSetupImpl to the global map.
+            emSetupImpl.predeploy(info, nonNullProperties);
+        } else {
+            boolean isNew = false;
+            ClassTransformer transformer = null;
+            String uniqueName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(), info.getPersistenceUnitName());
+            String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, info, uniqueName);
+            synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+                emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
+                if (emSetupImpl == null){
+                    emSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
+                    isNew = true;
+                    emSetupImpl.setIsInContainerMode(true);        
+                    // if predeploy fails then emSetupImpl shouldn't be added to FactoryProvider
+                    transformer = emSetupImpl.predeploy(info, nonNullProperties);
+                    EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, emSetupImpl);
                 }
+            }
                 
-                // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
-                transformer = emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
+            if(!isNew) {
+                if(!uniqueName.equals(emSetupImpl.getPersistenceUnitUniqueName())) {
+                    throw PersistenceUnitLoadingException.sessionNameAlreadyInUse(sessionName, uniqueName, emSetupImpl.getPersistenceUnitUniqueName());
+                }
+                // synchronized to prevent undeploying by other threads.
+                boolean undeployed = false;
+                synchronized(emSetupImpl) {
+                    if(emSetupImpl.isUndeployed()) {
+                        undeployed = true;
+                    }
+                    
+                    // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
+                    transformer = emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
+                }
+                if(undeployed) {
+                    // after the emSetupImpl has been obtained from emSetupImpls
+                    // it has been undeployed by factory.close() in another thread - start all over again.
+                    return createContainerEntityManagerFactory(info, properties);
+                }
             }
-            if(undeployed) {
-                // after the emSetupImpl has been obtained from emSetupImpls
-                // it has been undeployed by factory.close() in another thread - start all over again.
-                return createContainerEntityManagerFactory(info, properties);
+            if (transformer != null){
+                info.addTransformer(transformer);
             }
-        }
-        if (transformer != null){
-            info.addTransformer(transformer);
         }
         // When EntityManagerFactory is created, the session is only partially created
         // When the factory is actually accessed, the emSetupImpl will be used to complete the session construction
@@ -218,7 +237,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
 
         // This code has been added to allow validation to occur without actually calling createEntityManager
         if (emSetupImpl.shouldGetSessionOnCreateFactory(nonNullProperties)) {
-            factory.getServerSession();
+            factory.getDatabaseSession();
         }
         return factory;
     }

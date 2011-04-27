@@ -651,12 +651,14 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (this.eventManager != null) {
             this.eventManager.preLogin(this);
         }
-        //setup the external transaction controller
-        getServerPlatform().initializeExternalTransactionController();
-        log(SessionLog.INFO, null, "topLink_version", DatasourceLogin.getVersion());
-        if (getServerPlatform().getServerNameAndVersion() != null && 
-                !getServerPlatform().getServerNameAndVersion().equals(ServerPlatformBase.DEFAULT_SERVER_NAME_AND_VERSION)) {
-            log(SessionLog.INFO, null, "application_server_name_and_version", getServerPlatform().getServerNameAndVersion());
+        if (!hasBroker()) {
+            //setup the external transaction controller
+            getServerPlatform().initializeExternalTransactionController();
+            log(SessionLog.INFO, null, "topLink_version", DatasourceLogin.getVersion());
+            if (getServerPlatform().getServerNameAndVersion() != null && 
+                    !getServerPlatform().getServerNameAndVersion().equals(ServerPlatformBase.DEFAULT_SERVER_NAME_AND_VERSION)) {
+                log(SessionLog.INFO, null, "application_server_name_and_version", getServerPlatform().getServerNameAndVersion());
+            }
         }
         this.isLoggingOff = (getLogLevel() == SessionLog.OFF);
     }
@@ -667,10 +669,13 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * is connected to.
      */
     protected void postConnectDatasource(){
-        initializeDescriptors();
-        //added to process ejbQL query strings
-        if (getCommandManager() != null) {
-            getCommandManager().initialize();
+        if (!hasBroker()) {
+            initializeDescriptors();
+            
+            //added to process ejbQL query strings
+            if (getCommandManager() != null) {
+                getCommandManager().initialize();
+            }
         }
         log(SessionLog.INFO, null, "login_successful", this.getName());
         if (this.eventManager != null) {
@@ -681,12 +686,16 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         this.isLoggedIn = true;
         this.platform = null;
         
-        //register the MBean
-        getServerPlatform().registerMBean();
+        if (!hasBroker()) {
+            //register the MBean
+            getServerPlatform().registerMBean();
+        }
         this.descriptors = getDescriptors();
-        // EclipseLink 23869 - Initialize plaformOperators eagerly to avoid concurrency issues.
-        getDatasourcePlatform().initialize();
-        getIdentityMapAccessorInstance().getIdentityMapManager().checkIsCacheAccessPreCheckRequired();
+        if (!isBroker()) {
+            // EclipseLink 23869 - Initialize plaformOperators eagerly to avoid concurrency issues.
+            getDatasourcePlatform().initialize();
+            getIdentityMapAccessorInstance().getIdentityMapManager().checkIsCacheAccessPreCheckRequired();
+        }
     }
 
     /**
@@ -736,12 +745,14 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         // We're logging out so turn off change propagation.
         this.setShouldPropagateChanges(false);
         
-        if (getCommandManager() != null) {
-            getCommandManager().shutdown();
-        }
+        if (!hasBroker()) {
+            if (getCommandManager() != null) {
+                getCommandManager().shutdown();
+            }
 
-        // Unregister the JMX MBean before logout to avoid a javax.naming.NameNotFoundException
-        getServerPlatform().unregisterMBean();
+            // Unregister the JMX MBean before logout to avoid a javax.naming.NameNotFoundException
+            getServerPlatform().unregisterMBean();
+        }
         
         disconnect();
         getIdentityMapAccessor().initializeIdentityMaps();

@@ -1349,6 +1349,13 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
+        if (session.hasBroker()) {
+            if (getInsertQuery().hasSessionName()) {
+                // substitute session that owns the mapping for the session that owns reference table.
+                session = session.getBroker().getSessionForName(getInsertQuery().getSessionName());
+            }
+        }
+        
         if (isKeyForSourceSpecified()) {
             initializeSourceKeys(session);
         } else {

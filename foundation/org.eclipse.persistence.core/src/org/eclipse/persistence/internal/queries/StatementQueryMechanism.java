@@ -371,9 +371,9 @@ public class StatementQueryMechanism extends CallQueryMechanism {
                 for (Enumeration statementEnum = getSQLStatements().elements(); statementEnum.hasMoreElements();) {
                     DatabaseCall call = null;
                     if (getDescriptor() != null) {
-                        call = getDescriptor().buildCallFromStatement((SQLStatement)statementEnum.nextElement(), getSession());
+                        call = getDescriptor().buildCallFromStatement((SQLStatement)statementEnum.nextElement(), getExecutionSession());
                     } else {
-                        call = ((SQLStatement)statementEnum.nextElement()).buildCall(getSession());
+                        call = ((SQLStatement)statementEnum.nextElement()).buildCall(getExecutionSession());
                     }
     
                     // In case of update call may be null if no update required.
@@ -384,9 +384,9 @@ public class StatementQueryMechanism extends CallQueryMechanism {
             } else {
                 DatabaseCall call = null;
                 if (getDescriptor() != null) {
-                    call = getDescriptor().buildCallFromStatement(getSQLStatement(), getSession());
+                    call = getDescriptor().buildCallFromStatement(getSQLStatement(), getExecutionSession());
                 } else {
-                    call = getSQLStatement().buildCall(getSession());
+                    call = getSQLStatement().buildCall(getExecutionSession());
                 }
     
                 // In case of update call may be null if no update required.

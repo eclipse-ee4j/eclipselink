@@ -314,6 +314,8 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7335", "Duplicate partition value [{1}] given for @ValuePartitioning named [{0}]"},
                                            { "7336", "Multiple context properties [{2}] and [{3}] specified for the same tenant discriminator field [{1}] for class [{0}]"},
                                            { "7337", "The mapped tenant discriminator column [{1}] on the class [{0}] must be marked as read only. In JPA this is done by setting insertable=false and updatable=false on the column e.g. @Column(name=\"TENANT_ID\", insertable=false, updatable=false)."},
+                                           { "7338", "You cannot add sequences to a SessionBroker." },
+                                           { "7339", "Alias [{0}] is used by both [{1}] and [{2}] classes. Descriptor alias must be unique." },
                                            
  };
     

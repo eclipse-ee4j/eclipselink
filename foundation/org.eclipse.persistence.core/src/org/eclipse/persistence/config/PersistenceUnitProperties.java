@@ -2177,6 +2177,56 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_CHANNEL = "eclipselink.cache.coordination.channel";
 
     /**
+     * Indicates if it's a composite persistence unit ("true").
+     * The property must be specified in persistence.xml of a composite persistence unit.
+     * The property passed to createEntityManagerFactory method or in system properties is ignored.
+     * Composite persistence unit would contain all persistence units found in jar files specified by <jar-file> elements in persistence.xml. 
+     *    <jar-file>member1.jar</jar-file>
+     *    <jar-file>member2.jar</jar-file>
+     *    <properties>
+     *        <property name="eclipselink.composite-unit" value="true"/>
+     *    </properties>
+     * @see #COMPOSITE_UNIT_MEMBER
+     * @see #COMPOSITE_UNIT_PROPERTIES
+     */
+    public static final String COMPOSITE_UNIT = "eclipselink.composite-unit";
+    
+    /**
+     * Indicates if the persistence unit must be a member of a composite persistence unit ("true"),
+     * can't be used as an independent persistence unit.
+     * That happens if persistence unit has dependencies on other persistence unit(s).
+     * The property may be specified in persistence.xml.
+     * The property passed to createEntityManagerFactory method or in system properties is ignored.
+     * If this property is set to true, EntityManagerFactory still could be created,
+     * but it can't be connected: an attempt to create entity manager would cause an exception.
+     * @see #COMPOSITE_UNIT
+     * @see #COMPOSITE_UNIT_PROPERTIES
+     */
+    public static final String COMPOSITE_UNIT_MEMBER = "eclipselink.composite-unit.member";
+    
+    /**
+     * The property may be passed to createEntityManagerFactory method of a composite persistence unit
+     * to pass properties to member persistence units.
+     * The value is a map: 
+     * the key is a member persistence unit's name,
+     * the value is a map of properties to be passed to this persistence unit. 
+     * "eclipselink.composite-unit.properties" -> (
+     *   ("memberPu1" -> (   "javax.persistence.jdbc.user" -> "user1", 
+     *                       "javax.persistence.jdbc.password" -> "password1",
+     *                       "javax.persistence.jdbc.driver" -> "oracle.jdbc.OracleDriver",
+     *                       "javax.persistence.jdbc.url" -> "jdbc:oracle:thin:@oracle_db_url:1521:db",
+     *                    ) , 
+     *   ("memberPu2" -> (   "javax.persistence.jdbc.user" -> "user2",
+     *                       "javax.persistence.jdbc.password" -> "password2"
+     *                       "javax.persistence.jdbc.driver" -> "com.mysql.jdbc.Driver",
+     *                       "javax.persistence.jdbc.url" -> "jdbc:mysql://my_sql_db_url:3306/user2",
+     *                    )
+     * )
+     * @see #COMPOSITE_UNIT
+     */
+    public static final String COMPOSITE_UNIT_PROPERTIES = "eclipselink.composite-unit.properties";
+        
+    /**
      * INTERNAL: The following properties will not be displayed through logging
      * but instead have an alternate value shown in the log.
      */

@@ -1219,6 +1219,12 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             properties.put(PersistenceUnitProperties.JDBC_USER, getExecutor().getSession().getDatasourceLogin().getUserName());
             properties.put(PersistenceUnitProperties.JDBC_PASSWORD, getExecutor().getSession().getDatasourceLogin().getPassword());
             properties.put(PersistenceUnitProperties.LOGGING_LEVEL, getExecutor().getSession().getSessionLog().getLevelString());
+            
+            for(Map map : org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper.puPropertiesMap.values()) {
+                if (map.containsKey(PersistenceUnitProperties.LOGGING_LEVEL)) {
+                    map.put(PersistenceUnitProperties.LOGGING_LEVEL, getExecutor().getSession().getSessionLog().getLevelString());
+                }
+            }
         }
         TestExecutor.setDefaultJUnitTestResult(null);
         TestExecutor.setJUnitTestResults(null);

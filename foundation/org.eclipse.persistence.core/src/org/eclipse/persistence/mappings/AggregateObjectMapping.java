@@ -1085,6 +1085,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
     public void initialize(AbstractSession session) throws DescriptorException {
+        AbstractSession referenceSession = session;
+        if( session.hasBroker()) {
+            if (getReferenceClass() == null) {
+                throw DescriptorException.referenceClassNotSpecified(this);
+            }
+            referenceSession = session.getSessionForClass(getReferenceClass());
+        }
         super.initialize(session);
 
         ClassDescriptor clonedDescriptor = (ClassDescriptor)getReferenceDescriptor().clone();
@@ -1146,13 +1153,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
         
         initializeReferenceDescriptor(clonedDescriptor);
-        clonedDescriptor.preInitialize(session);
-        clonedDescriptor.initialize(session);
-        translateFields(clonedDescriptor, session);
+        clonedDescriptor.preInitialize(referenceSession);
+        clonedDescriptor.initialize(referenceSession);
+        translateFields(clonedDescriptor, referenceSession);
 
         if (clonedDescriptor.hasInheritance() && clonedDescriptor.getInheritancePolicy().hasChildren()) {
             //clone child descriptors
-            initializeChildInheritance(clonedDescriptor, session);
+            initializeChildInheritance(clonedDescriptor, referenceSession);
         }
 
         setFields(collectFields());

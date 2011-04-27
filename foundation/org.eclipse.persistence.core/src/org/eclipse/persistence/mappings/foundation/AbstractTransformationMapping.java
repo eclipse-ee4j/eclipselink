@@ -982,7 +982,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 // Object level or attribute level so lets see if we need to raise the event?
                 Object targetAttribute = getRealAttributeValueFromObject(target, mergeManager.getSession());
                 if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
-                        && (((targetAttribute == null) && (attribute != null)) || ((targetAttribute != null) && (!targetAttribute.equals(attribute))))) {
+                        && (((targetAttribute == null) && (attribute != null)) || ((targetAttribute != null) && ((attribute == null) || ((!targetAttribute.equals(attribute)) && (!Helper.comparePotentialArrays(targetAttribute, attribute))))))) {
                     this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), targetAttribute, attribute);
                 }
             }

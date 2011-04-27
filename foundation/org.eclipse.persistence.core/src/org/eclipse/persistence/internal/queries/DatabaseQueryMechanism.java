@@ -353,6 +353,13 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Convenience method
      */
+    protected AbstractSession getExecutionSession() {
+        return this.query.getExecutionSession();
+    }
+
+    /**
+     * Convenience method
+     */
     protected AbstractRecord getTranslationRow() {
         return this.query.getTranslationRow();
     }

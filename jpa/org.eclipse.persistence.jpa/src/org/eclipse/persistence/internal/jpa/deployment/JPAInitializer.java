@@ -14,8 +14,6 @@ package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,7 +27,6 @@ import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
@@ -152,10 +149,16 @@ public abstract class JPAInitializer {
         } else {
             pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader);
         }
-        for (Archive archive: pars) {
-            persistenceUnitInfo = findPersistenceUnitInfoInArchive(puName, archive, m);
-            if(persistenceUnitInfo != null) {
-                break;
+        try {
+            for (Archive archive: pars) {
+                persistenceUnitInfo = findPersistenceUnitInfoInArchive(puName, archive, m);
+                if(persistenceUnitInfo != null) {
+                    break;
+                }
+            }
+        } finally {
+            for (Archive archive: pars) {
+                archive.close();
             }
         }
         return persistenceUnitInfo;
@@ -285,6 +288,11 @@ public abstract class JPAInitializer {
                 // puName uniquely defines the pu on a class loader
                 String puName = persistenceUnitInfo.getPersistenceUnitName();
                 
+                // don't add puInfo that could not be used standalone (only as composite member).
+                if (EntityManagerSetupImpl.mustBeCompositeMember(persistenceUnitInfo)) {
+                    continue;
+                }
+                
                 // If puName is already in the map then there are two jars containing persistence units with the same name.
                 // Because both are loaded from the same classloader there is no way to distinguish between them - throw exception.
                 EntityManagerSetupImpl anotherEmSetupImpl = null;
@@ -292,16 +300,7 @@ public abstract class JPAInitializer {
                     anotherEmSetupImpl = this.initialEmSetupImpls.get(puName);
                 }
                 if(anotherEmSetupImpl != null) {
-                    String puUrl;
-                    String anotherPuUrl;
-                    try {
-                        puUrl = URLDecoder.decode(persistenceUnitInfo.getPersistenceUnitRootUrl().toString(), "UTF8");
-                        anotherPuUrl = URLDecoder.decode(anotherEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitRootUrl().toString(), "UTF8");
-                    } catch (UnsupportedEncodingException e) {
-                        puUrl = persistenceUnitInfo.getPersistenceUnitRootUrl().toString();
-                        anotherPuUrl = anotherEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitRootUrl().toString();
-                    }
-                    throw PersistenceUnitLoadingException.persistenceUnitNameAlreadyInUse(puName, puUrl, anotherPuUrl);
+                    EntityManagerSetupImpl.throwPersistenceUnitNameAlreadyInUseException(puName, persistenceUnitInfo, anotherEmSetupImpl.getPersistenceUnitInfo());
                 }
                 
                 // Note that session name is extracted only from puInfo, the passed properties ignored.

@@ -6268,7 +6268,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * GlassFish Bug854, originally calling with null caused a null-pointer exception.
      */
     public void testCreateEntityManagerFactory() {
-        if (isOnServer() && JUnitTestCase.isWeavingEnabled()) {
+        if (isOnServer() && isWeavingEnabled()) {
             // Bug 297628 - jpa.advanced.EntityManagerJUnitTestSuite.testCreateEntityManagerFactory failed on WLS for only dynamic weaving
             // Dynamic weaving for Persistence.createEntityManagerFactory can't be done on app. server.
             return;
@@ -7825,7 +7825,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      */
     public void testWeaving() {
         // Only test if weaving was on, test runs without weaving must set this system property.
-        if (JUnitTestCase.isWeavingEnabled()) {
+        if (isWeavingEnabled()) {
             internalTestWeaving(new Employee(), true, true);
             internalTestWeaving(new FormerEmployment(), true, false);
             internalTestWeaving(new Address(), true, false);

@@ -667,7 +667,7 @@ public class DatasourcePlatform implements Platform {
         if (seqName == null) {
             return getDefaultSequence();
         } else {
-            if (getSequences() != null) {
+            if (this.sequences != null) {
                 return (Sequence)this.sequences.get(seqName);
             } else {
                 return null;

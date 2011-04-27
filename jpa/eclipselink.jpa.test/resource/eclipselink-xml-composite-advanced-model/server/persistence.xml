@@ -1,0 +1,16 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="xml-composite-advanced" transaction-type="%%transaction-type%%">
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
+
+        <jar-file>eclipselink-xml-composite-advanced-model-member_1.jar</jar-file>
+        <jar-file>eclipselink-xml-composite-advanced-model-member_2.jar</jar-file>
+        <jar-file>eclipselink-xml-composite-advanced-model-member_3.jar</jar-file>
+
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.composite-unit" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

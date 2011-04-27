@@ -277,6 +277,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                            { "deploy_end", "End deploying Persistence Unit {0}; session {1}; state {2}; factoryCount {3}"},
                                            { "undeploy_begin", "Begin undeploying Persistence Unit {0}; session {1}; state {2}; factoryCount {3}"},
                                            { "undeploy_end", "End undeploying Persistence Unit {0}; session {1}; state {2}; factoryCount {3}"},
+                                           { "composite_member_begin_call", "Begin {0} on composite member Persistence Unit {1}; state {2}"},
+                                           { "composite_member_end_call", "End {0} on composite member Persistence Unit {1}; state {2}"},
                                            { "loading_session_xml", "Loading persistence unit from sessions-xml file: {0}, session-name: {1}"},
                                            { "sessions_xml_path_where_session_load_from", "Resource path found for sessions-xml file: {0}"},
 

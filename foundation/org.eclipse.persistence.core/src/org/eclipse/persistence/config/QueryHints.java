@@ -781,4 +781,11 @@ public class QueryHints {
      */
     public static final String PESSIMISTIC_LOCK_SCOPE = "javax.persistence.lock.scope";
 
+    /**
+     * "eclipselink.composite-unit.member"
+     * <p>This must be used on a native query executed on composite persistence unit.
+     * It specifies the name of composite member persistence unit to execute the query on.
+     * @see org.eclipse.persistence.queries.DatabaseQuery#setSessionName(String)
+     */
+    public static final String COMPOSITE_UNIT_MEMBER = "eclipselink.composite-unit.member";    
 }

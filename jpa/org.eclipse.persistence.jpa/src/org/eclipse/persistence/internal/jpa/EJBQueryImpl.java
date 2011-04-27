@@ -139,7 +139,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             this.queryName = queryDescription;
         } else {
             if (databaseQuery == null) {
-                databaseQuery = buildEJBQLDatabaseQuery(queryDescription, this.entityManager.getServerSession());
+                databaseQuery = buildEJBQLDatabaseQuery(queryDescription, this.entityManager.getDatabaseSession());
             }
         }
     }
@@ -566,12 +566,12 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         if ((this.queryName != null) && (this.databaseQuery == null)) {
             // need error checking and appropriate exception for non-existing
             // query
-            this.databaseQuery = this.entityManager.getServerSession().getQuery(this.queryName);
+            this.databaseQuery = this.entityManager.getDatabaseSession().getQuery(this.queryName);
             if (this.databaseQuery != null) {
                 if (!this.databaseQuery.isPrepared()) {
                     // prepare the query before cloning, this ensures we do not
                     // have to continually prepare on each usage
-                    this.databaseQuery.prepareCall(this.entityManager.getServerSession(), new DatabaseRecord());
+                    this.databaseQuery.prepareCall(this.entityManager.getDatabaseSession(), new DatabaseRecord());
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] { this.queryName }));
@@ -1017,7 +1017,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      */
     protected void setHintInternal(String hintName, Object value) {
         cloneSharedQuery();
-        ClassLoader loader = getEntityManager().getServerSession().getLoader();
+        ClassLoader loader = getEntityManager().getDatabaseSession().getLoader();
         DatabaseQuery hintQuery = QueryHintsHandler.apply(hintName, value, getDatabaseQueryInternal(), loader, (AbstractSession) getActiveSession());
         if (hintQuery != null) {
             setDatabaseQuery(hintQuery);

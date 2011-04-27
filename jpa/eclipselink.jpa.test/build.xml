@@ -239,10 +239,46 @@
             </not>
         </condition>
 
+        <condition property="DS2_NAME" value="java:/EclipseLinkDS2">
+            <contains string="${server.name}" substring="jboss"/>
+        </condition>
+        <condition property="DS2_NAME" value="jdbc/EclipseLinkDS2">
+            <not>
+                <isset property="is.jboss"/>
+            </not>
+        </condition>
+
+        <condition property="DS3_NAME" value="java:/EclipseLinkDS3">
+            <contains string="${server.name}" substring="jboss"/>
+        </condition>
+        <condition property="DS3_NAME" value="jdbc/EclipseLinkDS3">
+            <not>
+                <isset property="is.jboss"/>
+            </not>
+        </condition>
+
         <condition property="NONJTA_DS_NAME" value="java:/ELNonJTADS">
             <contains string="${server.name}" substring="jboss"/>
         </condition>
         <condition property="NONJTA_DS_NAME" value="jdbc/ELNonJTADS">
+            <not>
+                <isset property="is.jboss"/>
+            </not>
+        </condition>
+
+        <condition property="NONJTA_DS2_NAME" value="java:/ELNonJTADS2">
+            <contains string="${server.name}" substring="jboss"/>
+        </condition>
+        <condition property="NONJTA_DS2_NAME" value="jdbc/ELNonJTADS2">
+            <not>
+                <isset property="is.jboss"/>
+            </not>
+        </condition>
+
+        <condition property="NONJTA_DS3_NAME" value="java:/ELNonJTADS3">
+            <contains string="${server.name}" substring="jboss"/>
+        </condition>
+        <condition property="NONJTA_DS3_NAME" value="jdbc/ELNonJTADS3">
             <not>
                 <isset property="is.jboss"/>
             </not>
@@ -351,6 +387,14 @@
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.metamodel.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.delimited.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.beanvalidation.model}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_1}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_2}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_3}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_1}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_2}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_3}"/>
     </target>
 
     <target name="model-compile" description="compile models that need canonical processing">
@@ -478,7 +522,10 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation" description="build EclipseLink jar">
+    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation, 
+    package-composite-advanced, package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, 
+    package-xml-composite-advanced, package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
+    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
@@ -548,6 +595,7 @@
                                org/eclipse/persistence/testing/models/jpa/performance/**
                                org/eclipse/persistence/testing/models/jpa/performance2/**
                                org/eclipse/persistence/testing/models/jpa/beanvalidation/**
+                               org/eclipse/persistence/testing/models/jpa/composite/**
                                org/eclipse/persistence/testing/models/weaving/**"/>
         </copy>
         <antcall target="prepare-spring-xmls" inheritRefs="true">
@@ -584,7 +632,8 @@
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.only.model}">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/xml/**"
-                     excludes="org/eclipse/persistence/testing/models/jpa/xml/merge/**"/>
+                     excludes="org/eclipse/persistence/testing/models/jpa/xml/merge/**
+                               org/eclipse/persistence/testing/models/jpa/xml/composite/**"/>
         </copy>
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.xml.only.model}.jar">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.only.model}">
@@ -801,6 +850,174 @@
         </jar>
     </target>
 
+    <target name="package-composite-advanced" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.composite.advanced.model}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/composite/advanced/*"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-composite-advanced-member_1" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_1}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.composite.advanced.model.member_1}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_1}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_1/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_1}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_1}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-composite-advanced-member_2" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_2}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.composite.advanced.model.member_2}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_2}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_2/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_2}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_2}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-composite-advanced-member_3" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_3}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.composite.advanced.model.member_3}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_3}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_3/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_3}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_3}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-xml-composite-advanced" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.xml.composite.advanced.model}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/*"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-xml-composite-advanced-member_1" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_1}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.xml.composite.advanced.model.member_1}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_1}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_1}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_1}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-xml-composite-advanced-member_2" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_2}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.xml.composite.advanced.model.member_2}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_2}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_2}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_2}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-xml-composite-advanced-member_3" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_3}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.xml.composite.advanced.model.member_3}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_3}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_3}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_3}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-xml-extended-composite-advanced" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/${eclipselink.xml.extended.composite.advanced.model}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/*"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-xml-extended-composite-advanced-member_1" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_1}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/${eclipselink.xml.extended.composite.advanced.model.member_1}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_1}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_1}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_1}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-xml-extended-composite-advanced-member_2" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_2}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/${eclipselink.xml.extended.composite.advanced.model.member_2}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_2}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_2}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_2}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-xml-extended-composite-advanced-member_3" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_3}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/${eclipselink.xml.extended.composite.advanced.model.member_3}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_3}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_3}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_3}">
+            </fileset>
+        </jar>
+    </target>
+
     <target name="clean" description="Clean the build" depends="cleanup-merge-inherited-ddl, cleanup-non-jta-ds-servertest">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"/>
@@ -825,6 +1042,14 @@
             <fileset file="${eclipselink.jpa.test}/${eclipselink.cascade.deletes}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.beanvalidation.model}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_1}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_2}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_3}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_1}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_2}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
         </delete>
         
     </target>
@@ -855,6 +1080,14 @@
             <!--pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.beanvalidation.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_1}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_2}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_3}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_1}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_2}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
         </path>
         <path id="run.bean.validation.classpath">
             <path refid="run.classpath"/>
@@ -1038,6 +1271,14 @@
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.metamodel.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.delimited.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.beanvalidation.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_1}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_2}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_3}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_1}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_2}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
@@ -1552,6 +1793,48 @@
                     <path refid="run.classpath"/>
                </classpath>
         </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_1}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.composite.advanced.model.member_1}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_2}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.composite.advanced.model.member_2}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_3}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.composite.advanced.model.member_3}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_1}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.xml.composite.advanced.model.member_1}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_2}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.xml.composite.advanced.model.member_2}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_3}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.xml.composite.advanced.model.member_3}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
     </target>
 
     <target name="run-weaver-server-test">
@@ -1825,6 +2108,12 @@
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%database-platform%%' value="${db.platform}">
             <include name="*.xml"/>
         </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%database2-platform%%' value="${db2.platform}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%database3-platform%%' value="${db3.platform}">
+            <include name="*.xml"/>
+        </replace>
         <!-- Replace datasource type, name and transaction type -->
         <antcall target="replace-datasource-type" inheritRefs="true"/>
         <!-- Copy the canonical metamodel and criteria api test -->
@@ -1863,6 +2152,12 @@
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
             <include name="*.xml"/>
         </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source2-name%%' value="${DS2_NAME}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source3-name%%' value="${DS3_NAME}">
+            <include name="*.xml"/>
+        </replace>
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%transaction-type%%' value="JTA">
             <include name="*.xml"/>
         </replace>
@@ -1876,6 +2171,12 @@
     
     <target name="replace-nonjta-datasource" if="is.nonjta.datasource">
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${NONJTA_DS_NAME}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source2-name%%' value="${NONJTA_DS2_NAME}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source3-name%%' value="${NONJTA_DS3_NAME}">
             <include name="*.xml"/>
         </replace>
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%transaction-type%%' value="RESOURCE_LOCAL">
@@ -1935,7 +2236,7 @@
     <!-- Build, deploy and run a test suite on the server. -->
     <target name="server-run-all" depends="detect-os,set-server-properties">
         <antcall target="server-build" inheritRefs="true"/>
-        <antcall target="recover-server-sessionbeans" inheritRefs="true"/>
+        <!--antcall target="recover-server-sessionbeans" inheritRefs="true"/>
         <antcall target="cleanup-non-jta-ds-servertest" inheritRefs="true"/>
         <antcall target="server-deploy" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
@@ -1944,7 +2245,7 @@
         <antcall target="server-run-test" inheritRefs="true"/>
         <antcall target="server-undeploy" inheritRefs="true">
             <param name="application.name" value="${EAR_NAME}"/>
-        </antcall>
+        </antcall-->
     </target>
 
     <!-- Build, deploy and run a test suite on the server using the prompt runner. -->
@@ -2520,6 +2821,44 @@
             <param name="TEST_NAME" value="eclipselink-xml-servertest-model"/>
             <param name="EAR_NAME" value="eclipselink-xml-servertest-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsServerJUnitTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-composite-advanced">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="composite-advanced"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/composite/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-composite-advanced-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/composite/advanced"/>
+            <param name="TEST_NAME" value="eclipselink-composite-advanced-model"/>
+            <param name="EAR_NAME" value="eclipselink-composite-advanced-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite"/>
+            <param name="MODEL_DIR_CONTAINED_1" value="org/eclipse/persistence/testing/models/jpa/composite/advanced/contained_1"/>
+            <param name="MODEL_NAME_CONTAINED_1" value="eclipselink-composite-advanced-model-contained_1"/>
+            <param name="MODEL_DIR_CONTAINED_2" value="org/eclipse/persistence/testing/models/jpa/composite/advanced/contained_2"/>
+            <param name="MODEL_NAME_CONTAINED_2" value="eclipselink-composite-advanced-model-contained_2"/>
+            <param name="MODEL_DIR_CONTAINED_3" value="org/eclipse/persistence/testing/models/jpa/composite/advanced/contained_3"/>
+            <param name="MODEL_NAME_CONTAINED_3" value="eclipselink-composite-advanced-model-contained_3"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-xml-composite-advanced">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="xml-composite-advanced"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-composite-advanced-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/xml/composite"/>
+            <param name="TEST_NAME" value="eclipselink-xml-composite-advanced-model"/>
+            <param name="EAR_NAME" value="eclipselink-xml-composite-advanced-model"/>
+            <!-- TODO param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.composite.compositeJUnitTestSuite"/-->
+            <param name="MODEL_DIR_CONTAINED_1" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/contained_1"/>
+            <param name="MODEL_NAME_CONTAINED_1" value="eclipselink-xml-composite-advanced-model-contained_1"/>
+            <param name="MODEL_DIR_CONTAINED_2" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/contained_2"/>
+            <param name="MODEL_NAME_CONTAINED_2" value="eclipselink-xml-composite-advanced-model-contained_2"/>
+            <param name="MODEL_DIR_CONTAINED_3" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/contained_3"/>
+            <param name="MODEL_NAME_CONTAINED_3" value="eclipselink-xml-composite-advanced-model-contained_3"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

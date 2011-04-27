@@ -463,6 +463,14 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
+        if (session.hasBroker()) {
+            if (getReferenceClass() == null) {
+                throw DescriptorException.referenceClassNotSpecified(this);
+            }
+            // substitute session that owns the mapping for the session that owns reference descriptor.
+            session = session.getBroker().getSessionForClass(getReferenceClass());
+        }
+        
         super.initialize(session);
 
         getContainerPolicy().initialize(session, getReferenceDescriptor().getDefaultTable());
@@ -470,7 +478,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             setSelectionCriteria(buildDefaultSelectionCriteriaAndAddFieldsToQuery());
         }
 
-        initializeDeleteAllQuery();
+        initializeDeleteAllQuery(session);
         
         if (requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()) {
             initializeAddTargetQuery(session);
@@ -596,7 +604,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * This query is used to delete the collection of objects from the
      * database.
      */
-    protected void initializeDeleteAllQuery() {
+    protected void initializeDeleteAllQuery(AbstractSession session) {
         ((DeleteAllQuery)getDeleteAllQuery()).setReferenceClass(getReferenceClass());
         getDeleteAllQuery().setName(getAttributeName());
         ((DeleteAllQuery)getDeleteAllQuery()).setIsInMemoryOnly(isCascadeOnDeleteSetOnDatabase());
@@ -607,6 +615,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             } else {
                 getDeleteAllQuery().setSelectionCriteria(getSelectionCriteria());
             }
+        }
+        if (!getDeleteAllQuery().hasSessionName()) {
+            getDeleteAllQuery().setSessionName(session.getName());
         }
         if (getDeleteAllQuery().getPartitioningPolicy() == null) {
             getDeleteAllQuery().setPartitioningPolicy(getPartitioningPolicy());

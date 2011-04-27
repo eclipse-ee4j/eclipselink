@@ -69,6 +69,8 @@ public class EntityMappingsJUnitTestSuite extends TestCase {
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
         
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.xml.composite.advanced.EntityMappingsAdvancedJUnitTestCase.suite());
+        
         return suite;
     }
 }

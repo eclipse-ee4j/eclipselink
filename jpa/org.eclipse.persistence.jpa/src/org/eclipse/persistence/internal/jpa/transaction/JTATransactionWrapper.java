@@ -31,7 +31,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
     
     public JTATransactionWrapper(EntityManagerImpl entityManager) {
         super(entityManager);
-        this.txnController = (AbstractTransactionController)entityManager.getServerSession().getExternalTransactionController();
+        this.txnController = (AbstractTransactionController)entityManager.getDatabaseSession().getExternalTransactionController();
     }
 
     /**

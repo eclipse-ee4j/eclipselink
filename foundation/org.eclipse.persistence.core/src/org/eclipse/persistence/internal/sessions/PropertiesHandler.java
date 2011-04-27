@@ -192,6 +192,8 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.VALIDATE_EXISTENCE, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.ORDER_UPDATES, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.COMPOSITE_UNIT, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.COMPOSITE_UNIT_MEMBER, "false"));
             addProp(new ExclusiveConnectionModeProp());
             addProp(new BooleanProp(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY, "true"));
             addProp(new IdValidationProp());

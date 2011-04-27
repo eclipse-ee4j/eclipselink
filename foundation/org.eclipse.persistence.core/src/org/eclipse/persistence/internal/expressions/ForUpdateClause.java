@@ -85,12 +85,12 @@ public class ForUpdateClause implements Serializable, Cloneable {
         // Append lock strings
         if (getLockMode() == ObjectBuildingQuery.LOCK) {
             if (waitTimeout == null) {
-                printer.printString(printer.getSession().getPlatform().getSelectForUpdateString());
+                printer.printString(printer.getPlatform().getSelectForUpdateString());
             } else {
-                printer.printString(printer.getSession().getPlatform().getSelectForUpdateWaitString(waitTimeout));
+                printer.printString(printer.getPlatform().getSelectForUpdateWaitString(waitTimeout));
             }
         } else if (lockMode == ObjectBuildingQuery.LOCK_NOWAIT) {
-            printer.printString(printer.getSession().getPlatform().getSelectForUpdateNoWaitString());
+            printer.printString(printer.getPlatform().getSelectForUpdateNoWaitString());
         }
     }
     

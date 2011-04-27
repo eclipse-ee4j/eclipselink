@@ -283,6 +283,7 @@ public class QueryHintsHandler {
             addHint(new QueryCacheRandomizedExpiryHint());
             // 325167: Make reserved # bind parameter char generic to enable native SQL pass through
             addHint(new ParameterDelimiterHint());
+            addHint(new CompositeMemberHint());
         }
         
         Hint(String name, String defaultValue) {
@@ -1783,6 +1784,17 @@ public class QueryHintsHandler {
                 }
             }
             query.setPartitioningPolicy((PartitioningPolicy)policy);
+            return query;
+        }
+    }
+    
+    protected static class CompositeMemberHint extends Hint {
+        CompositeMemberHint() {
+            super(QueryHints.COMPOSITE_UNIT_MEMBER, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            query.setSessionName((String)valueToApply);
             return query;
         }
     }

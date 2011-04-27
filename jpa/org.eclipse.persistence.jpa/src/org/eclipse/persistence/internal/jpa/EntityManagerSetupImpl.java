@@ -37,9 +37,11 @@ import java.util.*;
 import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
@@ -63,6 +65,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;        
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.*;
@@ -77,6 +80,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
@@ -105,6 +109,7 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
@@ -115,6 +120,7 @@ import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
 
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.*;
@@ -145,7 +151,7 @@ public class EntityManagerSetupImpl {
     protected PersistenceUnitInfo persistenceUnitInfo = null;
     // count a number of open factories that use this object.
     protected int factoryCount = 0;
-    protected ServerSession session = null;
+    protected DatabaseSessionImpl session = null;
     // true if predeploy called by createContainerEntityManagerFactory; false - createEntityManagerFactory
     protected boolean isInContainerMode = false;
     protected boolean isSessionLoadedFromSessionsXML=false;
@@ -168,16 +174,28 @@ public class EntityManagerSetupImpl {
     public static final String STATE_PREDEPLOYED    = "Predeployed";
     
     // factoryCount>0; session != null; session stored in SessionManager
+    // for compositeMember factoryCount is always 0; session is never stored in SessionBroker
     public static final String STATE_DEPLOYED       = "Deployed";
     
     // factoryCount==0; session==null
     public static final String STATE_PREDEPLOY_FAILED="PredeployFailed";
     
     // factoryCount>0; session != null
+    // for compositeMember factoryCount is always 0
     public static final String STATE_DEPLOY_FAILED  = "DeployFailed";
     
     // factoryCount==0; session==null
     public static final String STATE_UNDEPLOYED     = "Undeployed";
+
+    // factoryCount==0; session==null
+    // only composite member persistence unit can be in this state
+    public static final String STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER = "HalfPredeployedCompositeMember";
+    /**
+     *     Initial -----> HalfPredeployedCompositeMember -----> PredeployFailed
+     *                    |        ^                   |
+     *                    V------->|                   V
+     *                                                Predeployed
+     */
 
     protected String state = STATE_INITIAL;
 
@@ -207,6 +225,33 @@ public class EntityManagerSetupImpl {
         PersistenceUnitProperties.JDBC_USER,
     };
     
+    /*
+     * Composite, not null only if it's a composite member.
+     */
+    protected EntityManagerSetupImpl compositeEmSetupImpl;
+
+    /*
+     * Composite members, not null only if it's a composite.
+     */
+    protected Set<EntityManagerSetupImpl> compositeMemberEmSetupImpls;
+    
+    /*
+     * In HalfPredeployedCompositeMember predeploy method called several times,
+     * each call uses mode, then updating it before returning.
+     * So mode value could be viewed as a substate of HalfPredeployedCompositeMember state.
+     * The mode is required for staging of processing OR metadata for composite members:
+     * each processing stage should be completed for ALL composite members before
+     * any one of then could proceed to the next processing stage. 
+     */
+    PersistenceUnitProcessor.Mode mode;
+    
+    boolean throwExceptionOnFail;
+    boolean weaveChangeTracking;
+    boolean weaveLazy;
+    boolean weaveEager;
+    boolean weaveFetchGroups;
+    boolean weaveInternal;
+    
     public EntityManagerSetupImpl(String persistenceUnitUniqueName, String sessionName) {
         this.persistenceUnitUniqueName = persistenceUnitUniqueName;
         this.sessionName = sessionName;
@@ -233,9 +278,14 @@ public class EntityManagerSetupImpl {
         if(sessionName != null && sessionName.length() > 0) {
             return sessionName;
         }
-        // In case no SESSION_NAME specified (or empty String) - build one
-        // by concatenating persistenceUnitUniqueName and suffix build of connection properties' names and values.
-        return persistenceUnitUniqueName + buildSessionNameSuffixFromConnectionProperties(properties);
+
+        if (isComposite(puInfo)) {
+            // In case no SESSION_NAME specified (or empty String) - build one
+            // by concatenating persistenceUnitUniqueName and suffix build of connection properties' names and values.
+            return persistenceUnitUniqueName;
+        } else {
+            return persistenceUnitUniqueName + buildSessionNameSuffixFromConnectionProperties(properties);
+        }
     }
         
     protected static String buildSessionNameSuffixFromConnectionProperties(Map properties) {        
@@ -316,8 +366,11 @@ public class EntityManagerSetupImpl {
      *              In JSE case it allows to alter properties in main (as opposed to preMain where preDeploy is called).
      * @return An EntityManagerFactory to be used by the Container to obtain EntityManagers
      */
-    public ServerSession deploy(ClassLoader realClassLoader, Map additionalProperties) {
+    public DatabaseSessionImpl deploy(ClassLoader realClassLoader, Map additionalProperties) {
         if (state != STATE_PREDEPLOYED && state != STATE_DEPLOYED) {
+            if (mustBeCompositeMember()) {
+                throw new PersistenceException(EntityManagerSetupException.compositeMemberCannotBeUsedStandalone(persistenceUnitInfo.getPersistenceUnitName()));
+            }
             throw new PersistenceException(EntityManagerSetupException.cannotDeployWithoutPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state));
         }
         // state is PREDEPLOYED or DEPLOYED
@@ -326,12 +379,18 @@ public class EntityManagerSetupImpl {
         try {
             Map deployProperties = mergeMaps(additionalProperties, persistenceUnitInfo.getProperties());
             translateOldProperties(deployProperties, session);
+            if (isComposite()) {
+                updateCompositeMembersProperties(deployProperties);
+            }
             
             if (state == STATE_PREDEPLOYED) {
                 synchronized (session) {
                     if (state == STATE_PREDEPLOYED) {
                         try {
                             if (!isSessionLoadedFromSessionsXML) {
+                                if (isComposite()) {
+                                    deployCompositeMembers(deployProperties, realClassLoader);
+                                } else {
                                     // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                                     processor.setClassLoader(realClassLoader);
                                     processor.createDynamicClasses();
@@ -341,22 +400,25 @@ public class EntityManagerSetupImpl {
                                     session.getProject().convertClassNamesToClasses(realClassLoader);
                                     
                                     processor.addEntityListeners();
-                                    addBeanValidationListeners(deployProperties, realClassLoader);
+                                    if (!isCompositeMember()) {
+                                        addBeanValidationListeners(deployProperties, realClassLoader);
+                                    }
                                     processor.addNamedQueries();
                                     
                                     // Process the customizers last.
                                     processor.processCustomizers();
                                     
                                     structConverters = processor.getStructConverters();
-                                    
-                                    processor = null;
+                                }
+                                
+                                processor = null;
                             } else {
                                 // The project is initially created using class names rather than classes.  This call will make the conversion.
                                 // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
                                 session.getProject().convertClassNamesToClasses(realClassLoader);
                             }
                     
-                            initServerSession(deployProperties);
+                            initSession();
                     
                             if (session.getIntegrityChecker().hasErrors()){
                                 session.handleException(new IntegrityException(session.getIntegrityChecker()));
@@ -373,35 +435,43 @@ public class EntityManagerSetupImpl {
                 }
             }
             // state is DEPLOYED
-            if (!session.isConnected()) {
-                synchronized (session) {
-                    if(!session.isConnected()) {
-                        session.setProperties(deployProperties);
-                        updateServerSession(deployProperties, realClassLoader);
-                        if (isValidationOnly(deployProperties, false)) {
-                            /**
-                             * for 324213 we could add a session.loginAndDetectDatasource() call 
-                             * before calling initializeDescriptors when validation-only is True
-                             * to avoid a native sequence exception on a generic DatabasePlatform 
-                             * by auto-detecting the correct DB platform.
-                             * However, this would introduce a DB login when validation is on 
-                             * - in opposition to the functionality of the property (to only validate)
-                             */
-                            session.initializeDescriptors();
-                        } else {
-                            if (isSessionLoadedFromSessionsXML) {
-                                if (!session.isConnected()) {
-                                    session.login();
-                                }
+            if (!isCompositeMember()) {
+                if (!session.isConnected()) {
+                    synchronized (session) {
+                        if(!session.isConnected()) {
+                            session.setProperties(deployProperties);
+                            updateSession(deployProperties, realClassLoader);
+                            if (isValidationOnly(deployProperties, false)) {
+                                /**
+                                 * for 324213 we could add a session.loginAndDetectDatasource() call 
+                                 * before calling initializeDescriptors when validation-only is True
+                                 * to avoid a native sequence exception on a generic DatabasePlatform 
+                                 * by auto-detecting the correct DB platform.
+                                 * However, this would introduce a DB login when validation is on 
+                                 * - in opposition to the functionality of the property (to only validate)
+                                 */
+                                session.initializeDescriptors();
                             } else {
-                                login(session, deployProperties);
+                                if (isSessionLoadedFromSessionsXML) {
+                                    if (!session.isConnected()) {
+                                        session.login();
+                                    }
+                                } else {
+                                    login(session, deployProperties);
+                                }
+                                if (!isSessionLoadedFromSessionsXML) {
+                                    addStructConverters();
+                                }
+                                generateDDL(deployProperties);
                             }
-                            if (!isSessionLoadedFromSessionsXML) {
-                                addStructConverters(session, structConverters);
-                            }
-                            generateDDL(session, deployProperties);
                         }
                     }
+                }
+                // 266912: Initialize the Metamodel, a login should have already occurred.
+                try {
+                    this.getMetamodel();
+                } catch (Exception e) {
+                    session.log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_init_failed", new Object[]{e.getMessage()});
                 }
             }
             // Clear the weaver's reference to meta-data information, as it is held by the class loader and will never gc.
@@ -410,12 +480,6 @@ public class EntityManagerSetupImpl {
                 this.weaver = null;
             }            
             
-            // 266912: Initialize the Metamodel, a login should have already occurred.
-            try {
-                this.getMetamodel();
-            } catch (Exception e) {
-                session.log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_init_failed", new Object[]{e.getMessage()});
-            }
             return session;
         } catch (Exception exception) {
             PersistenceException persistenceException = null;
@@ -430,7 +494,6 @@ public class EntityManagerSetupImpl {
             session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
         }
     }
-
 
     /**
      * Adds descriptors plus sequencing info found on the project to the session.
@@ -476,12 +539,25 @@ public class EntityManagerSetupImpl {
      * @param session
      * @param structConverters
      */
-    public void addStructConverters(Session session, List<StructConverter> structConverters){
-        for (StructConverter structConverter : structConverters){
-            if (session.getPlatform().getTypeConverters().get(structConverter.getJavaType()) != null){
-                throw ValidationException.twoStructConvertersAddedForSameClass(structConverter.getJavaType().getName());
+    public void addStructConverters(){
+        if (this.compositeMemberEmSetupImpls == null) {
+            for (StructConverter structConverter : structConverters){
+                if (session.getPlatform().getTypeConverters().get(structConverter.getJavaType()) != null){
+                    throw ValidationException.twoStructConvertersAddedForSameClass(structConverter.getJavaType().getName());
+                }
+                session.getPlatform().addStructConverter(structConverter);
             }
-            session.getPlatform().addStructConverter(structConverter);
+        } else {
+            // composite
+            for(EntityManagerSetupImpl compositeMemberEmSetupImpl : this.compositeMemberEmSetupImpls) {
+                if (!compositeMemberEmSetupImpl.structConverters.isEmpty()) {
+                    String compositeMemberPuName = compositeMemberEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitName();
+                    // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
+                    compositeMemberEmSetupImpl.session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_begin_call", new Object[]{"addStructConverters", compositeMemberPuName, state});
+                    compositeMemberEmSetupImpl.addStructConverters();
+                    compositeMemberEmSetupImpl.session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_end_call", new Object[]{"addStructConverters", compositeMemberPuName, state});
+                }
+            }
         }
     }
 
@@ -739,7 +815,7 @@ public class EntityManagerSetupImpl {
         }
     }
     
-    public ServerSession getSession(){
+    public DatabaseSessionImpl getSession(){
         return session;
     }
     
@@ -844,8 +920,8 @@ public class EntityManagerSetupImpl {
      * This allows for named connection pools.
      * It also processes "read", "write", "default"  and "sequence" connection pools.
      */
-    protected void updateConnectionSettings(Map properties) {
-        Map<String, Object> connectionsMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CONNECTION_POOL, properties, this.session);
+    protected void updateConnectionSettings(ServerSession serverSession, Map properties) {
+        Map<String, Object> connectionsMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CONNECTION_POOL, properties, serverSession);
         if (connectionsMap.isEmpty()) {
             return;
         }
@@ -864,35 +940,35 @@ public class EntityManagerSetupImpl {
                     poolName = "default";
                 }
                 if (poolName.equals("read")) {
-                    pool = this.session.getReadConnectionPool();
+                    pool = serverSession.getReadConnectionPool();
                     // By default there is no connection pool, so if the default, create a new one.
-                    if ((pool == null) || (pool == this.session.getDefaultConnectionPool())) {
+                    if ((pool == null) || (pool == serverSession.getDefaultConnectionPool())) {
                         if (this.session.getLogin().shouldUseExternalConnectionPooling()) {
-                            pool = new ExternalConnectionPool(poolName, this.session.getLogin(), this.session);                            
+                            pool = new ExternalConnectionPool(poolName, serverSession.getLogin(), serverSession);                            
                         } else {
-                            pool = new ConnectionPool(poolName, this.session.getLogin(), this.session);
+                            pool = new ConnectionPool(poolName, serverSession.getLogin(), serverSession);
                         }
-                        this.session.setReadConnectionPool(pool);
+                        serverSession.setReadConnectionPool(pool);
                     }
                 } else if (poolName.equals("sequence")) {
                     pool = this.session.getSequencingControl().getConnectionPool();
                     if (pool == null) {
                         if (this.session.getLogin().shouldUseExternalConnectionPooling()) {
-                            pool = new ExternalConnectionPool(poolName, this.session.getLogin(), this.session);                            
+                            pool = new ExternalConnectionPool(poolName, serverSession.getLogin(), serverSession);                            
                         } else {
-                            pool = new ConnectionPool(poolName, this.session.getLogin(), this.session);
+                            pool = new ConnectionPool(poolName, serverSession.getLogin(), serverSession);
                         }
                         this.session.getSequencingControl().setConnectionPool(pool);
                     }
                 } else {
-                    pool = this.session.getConnectionPool(poolName);
+                    pool = serverSession.getConnectionPool(poolName);
                     if (pool == null) {
                         if (this.session.getLogin().shouldUseExternalConnectionPooling()) {
-                            pool = new ExternalConnectionPool(poolName, this.session.getLogin(), this.session);                            
+                            pool = new ExternalConnectionPool(poolName, serverSession.getLogin(), serverSession);                            
                         } else {
-                            pool = new ConnectionPool(poolName, this.session.getLogin(), this.session);
+                            pool = new ConnectionPool(poolName, serverSession.getLogin(), serverSession);
                         }
-                        this.session.addConnectionPool(pool);
+                        serverSession.addConnectionPool(pool);
                     }
                 }
                 if (attribute.equals(PersistenceUnitProperties.CONNECTION_POOL_INITIAL)) {
@@ -931,13 +1007,13 @@ public class EntityManagerSetupImpl {
                 } else if (poolName.equals("read") && attribute.equals(PersistenceUnitProperties.CONNECTION_POOL_SHARED)) {
                     boolean shared = Boolean.parseBoolean((String)entry.getValue());
                     if (shared) {
-                        ReadConnectionPool readPool = new ReadConnectionPool(poolName, this.session.getLogin(), this.session);
+                        ReadConnectionPool readPool = new ReadConnectionPool(poolName, serverSession.getLogin(), serverSession);
                         readPool.setInitialNumberOfConnections(pool.getInitialNumberOfConnections());
                         readPool.setMinNumberOfConnections(pool.getMinNumberOfConnections());
                         readPool.setMaxNumberOfConnections(pool.getMaxNumberOfConnections());
                         readPool.setWaitTimeout(pool.getWaitTimeout());
                         readPool.setLogin(pool.getLogin());
-                        this.session.setReadConnectionPool(readPool);
+                        serverSession.setReadConnectionPool(readPool);
                     }
                 }
             } catch (RuntimeException exception) {
@@ -946,14 +1022,14 @@ public class EntityManagerSetupImpl {
         }
     }
     
-    protected void updateConnectionPolicy(Map m) {
+    protected void updateConnectionPolicy(ServerSession serverSession, Map m) {
         String isLazyString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY, m, session);
         if(isLazyString != null) {
-            session.getDefaultConnectionPolicy().setIsLazy(Boolean.parseBoolean(isLazyString));
+            serverSession.getDefaultConnectionPolicy().setIsLazy(Boolean.parseBoolean(isLazyString));
         }
         ConnectionPolicy.ExclusiveMode exclusiveMode = getConnectionPolicyExclusiveModeFromProperties(m, session, true);
         if(exclusiveMode != null) {
-            session.getDefaultConnectionPolicy().setExclusiveMode(exclusiveMode);
+            serverSession.getDefaultConnectionPolicy().setExclusiveMode(exclusiveMode);
         }
     }
 
@@ -1001,138 +1077,222 @@ public class EntityManagerSetupImpl {
             factoryCount++;
             session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             return null;
-        } else if(state == STATE_INITIAL) {
+        } else if (state == STATE_INITIAL) {
             persistenceUnitInfo = info;
+            if (!isCompositeMember()) {
+                if (mustBeCompositeMember(persistenceUnitInfo)) {
+                    return null;
+                }
+            }
+        } else if (state == STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER) {
+            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode, factoryCount});
         }
         
-        // state is INITIAL or PREDEPLOY_FAILED
+        // state is INITIAL or PREDEPLOY_FAILED or STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER
         try {
-            Map predeployProperties = mergeMaps(extendedProperties, persistenceUnitInfo.getProperties());
-            // Translate old properties.
-            // This should be done before using properties (i.e. ServerPlatform).
-            translateOldProperties(predeployProperties, null);
-
-            String sessionsXMLStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML);
-            if (sessionsXMLStr != null) {
-                isSessionLoadedFromSessionsXML = true;
-            }
-            
-            // Create server session (it needs to be done before initializing ServerPlatform and logging).
-            // If a sessions-xml is used this will get replaced later, but is required for logging.
-            session = new ServerSession(new Project(new DatabaseLogin()));            
-            // ServerSession name and ServerPlatform must be set prior to setting the loggers.
-            session.setName(this.sessionName);
-            ClassLoader realClassLoader = persistenceUnitInfo.getClassLoader();
-            updateServerPlatform(predeployProperties, realClassLoader);
-            // Update loggers and settings for the singleton logger and the session logger.
-            updateLoggers(predeployProperties, true, realClassLoader);
-            // Get the temporary classLoader based on the platform
-            JPAClassLoaderHolder privateClassLoaderHolder = session.getServerPlatform().getNewTempClassLoader(info);
-            privateClassLoader = privateClassLoaderHolder.getClassLoader();
-            
-            //Update performance profiler
-            updateProfiler(predeployProperties,realClassLoader);
-            
-            // Cannot start logging until session and log and initialized, so log start of predeploy here.
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
-
-            if (isSessionLoadedFromSessionsXML) {
-                // Loading session from sessions-xml.
-                session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "loading_session_xml", sessionsXMLStr, sessionName);
-                if (sessionName == null) {
-                    throw new PersistenceException(EntityManagerSetupException.sessionNameNeedBeSpecified(info.getPersistenceUnitName(), sessionsXMLStr));
-                }                
-                XMLSessionConfigLoader xmlLoader = new XMLSessionConfigLoader(sessionsXMLStr);
-                // Do not register the session with the SessionManager at this point, create temporary session using a local SessionManager and private class loader.
-                // This allows for the project to be accessed without loading any of the classes to allow weaving.
-                // Note that this method assigns sessionName to session.
-                Session tempSession = new SessionManager().getSession(xmlLoader, sessionName, privateClassLoader, false, false);
-                // Load path of sessions-xml resource before throwing error so user knows which sessions-xml file was found (may be multiple).
-                session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "sessions_xml_path_where_session_load_from", xmlLoader.getSessionName(), xmlLoader.getResourcePath());
-                if (tempSession == null) {
-                    throw new PersistenceException(ValidationException.noSessionFound(sessionName, sessionsXMLStr));
+            // properties not used in STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER
+            Map predeployProperties = null;
+            // composite can't be in STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER
+            boolean isComposite = false;
+            if(state != STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER) {
+                predeployProperties = mergeMaps(extendedProperties, persistenceUnitInfo.getProperties());
+                // Translate old properties.
+                // This should be done before using properties (i.e. ServerPlatform).
+                translateOldProperties(predeployProperties, null);
+                
+                String sessionsXMLStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML);
+                if (sessionsXMLStr != null) {
+                    isSessionLoadedFromSessionsXML = true;
                 }
-                if (tempSession.isServerSession()) {
-                   session = (ServerSession) tempSession;
+                
+                // Create session (it needs to be done before initializing ServerPlatform and logging).
+                // If a sessions-xml is used this will get replaced later, but is required for logging.
+                isComposite = isComposite(persistenceUnitInfo);
+                if (isComposite) {
+                    if (isSessionLoadedFromSessionsXML) {
+                        throw new PersistenceException(EntityManagerSetupException.compositeIncompatibleWithSessionsXml(info.getPersistenceUnitName()));
+                    }
+                    session = new SessionBroker();
+                    ((SessionBroker)session).setShouldUseDescriptorAliases(true);
                 } else {
-                    throw new PersistenceException(EntityManagerSetupException.sessionLoadedFromSessionsXMLMustBeServerSession(info.getPersistenceUnitName(), (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML), tempSession));
+                    session = new ServerSession(new Project(new DatabaseLogin()));
                 }
-                // Must now reset logging and server-platform on the loaded session.
-                // ServerPlatform must be set prior to setting the loggers.
-                updateServerPlatform(predeployProperties, privateClassLoader);
-                // Update loggers and settings for the singleton logger and the session logger.
-                updateLoggers(predeployProperties, true, privateClassLoader);
-            }
-            
-            warnOldProperties(predeployProperties, session);
-            session.getPlatform().setConversionManager(new JPAConversionManager());
-        
-            PersistenceUnitTransactionType transactionType=null;
-            //bug 5867753: find and override the transaction type
-            String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, predeployProperties, session);
-            if ( transTypeString != null ){
-                transactionType=PersistenceUnitTransactionType.valueOf(transTypeString);
-            } else if (persistenceUnitInfo!=null){
-                transactionType=persistenceUnitInfo.getTransactionType();
-            }
-            
-            if (!isValidationOnly(predeployProperties, false) && persistenceUnitInfo != null && transactionType == PersistenceUnitTransactionType.JTA) {
-                if (predeployProperties.get(PersistenceUnitProperties.JTA_DATASOURCE) == null && persistenceUnitInfo.getJtaDataSource() == null) {
-                    throw new PersistenceException(EntityManagerSetupException.jtaPersistenceUnitInfoMissingJtaDataSource(persistenceUnitInfo.getPersistenceUnitName()));
+                session.setName(this.sessionName);
+
+                if (this.compositeEmSetupImpl == null) {
+                    // session name and ServerPlatform must be set prior to setting the loggers.
+                    ClassLoader realClassLoader = persistenceUnitInfo.getClassLoader();
+                    updateServerPlatform(predeployProperties, realClassLoader);
+                    // Update loggers and settings for the singleton logger and the session logger.
+                    updateLoggers(predeployProperties, true, realClassLoader);
+                    // Get the temporary classLoader based on the platform
+                    JPAClassLoaderHolder privateClassLoaderHolder = session.getServerPlatform().getNewTempClassLoader(info);
+                    privateClassLoader = privateClassLoaderHolder.getClassLoader();
+                    
+                    //Update performance profiler
+                    updateProfiler(predeployProperties,realClassLoader);
+                } else {
+                    // composite member
+                    session.setSessionLog(this.compositeEmSetupImpl.session.getSessionLog());
+                    session.setProfiler(this.compositeEmSetupImpl.session.getProfiler());
+                    privateClassLoader = persistenceUnitInfo.getNewTempClassLoader();
                 }
-            }
-            
-            // this flag is used to disable work done as a result of the LAZY hint on OneToOne and ManyToOne mappings
-            if(state == STATE_INITIAL) {
-                if(null == enableWeaving) {                    
-                    enableWeaving = Boolean.TRUE;
+                
+                // Cannot start logging until session and log and initialized, so log start of predeploy here.
+                session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+    
+                if (isSessionLoadedFromSessionsXML) {
+                    // Loading session from sessions-xml.
+                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "loading_session_xml", sessionsXMLStr, sessionName);
+                    if (sessionName == null) {
+                        throw new PersistenceException(EntityManagerSetupException.sessionNameNeedBeSpecified(info.getPersistenceUnitName(), sessionsXMLStr));
+                    }                
+                    XMLSessionConfigLoader xmlLoader = new XMLSessionConfigLoader(sessionsXMLStr);
+                    // Do not register the session with the SessionManager at this point, create temporary session using a local SessionManager and private class loader.
+                    // This allows for the project to be accessed without loading any of the classes to allow weaving.
+                    // Note that this method assigns sessionName to session.
+                    Session tempSession = new SessionManager().getSession(xmlLoader, sessionName, privateClassLoader, false, false);
+                    // Load path of sessions-xml resource before throwing error so user knows which sessions-xml file was found (may be multiple).
+                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "sessions_xml_path_where_session_load_from", xmlLoader.getSessionName(), xmlLoader.getResourcePath());
+                    if (tempSession == null) {
+                        throw new PersistenceException(ValidationException.noSessionFound(sessionName, sessionsXMLStr));
+                    }
+                    if (tempSession.isServerSession()) {
+                       session = (ServerSession) tempSession;
+                    } else {
+                        throw new PersistenceException(EntityManagerSetupException.sessionLoadedFromSessionsXMLMustBeServerSession(info.getPersistenceUnitName(), (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML), tempSession));
+                    }
+                    // Must now reset logging and server-platform on the loaded session.
+                    // ServerPlatform must be set prior to setting the loggers.
+                    updateServerPlatform(predeployProperties, privateClassLoader);
+                    // Update loggers and settings for the singleton logger and the session logger.
+                    updateLoggers(predeployProperties, true, privateClassLoader);
                 }
-                isWeavingStatic = false;
-                String weaving = getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, predeployProperties);
-                if (weaving != null && weaving.equalsIgnoreCase("false")) {
-                    enableWeaving = Boolean.FALSE;
-                }else if (weaving != null && weaving.equalsIgnoreCase("static")) {
-                    isWeavingStatic = true;
+                
+                warnOldProperties(predeployProperties, session);
+                session.getPlatform().setConversionManager(new JPAConversionManager());
+            
+                PersistenceUnitTransactionType transactionType=null;
+                //bug 5867753: find and override the transaction type
+                String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, predeployProperties, session);
+                if ( transTypeString != null ){
+                    transactionType=PersistenceUnitTransactionType.valueOf(transTypeString);
+                } else if (persistenceUnitInfo!=null){
+                    transactionType=persistenceUnitInfo.getTransactionType();
                 }
-            }
-            
-            boolean throwExceptionOnFail = "true".equalsIgnoreCase(
-                    EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.THROW_EXCEPTIONS, predeployProperties, "true", session));                
-            
-            boolean weaveChangeTracking = false;
-            boolean weaveLazy = false;
-            boolean weaveEager = false;
-            boolean weaveFetchGroups = false;
-            boolean weaveInternal = false;
-            if (enableWeaving) {
-                weaveChangeTracking = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING, predeployProperties, "true", session));
-                weaveLazy = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_LAZY, predeployProperties, "true", session));
-                weaveEager = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_EAGER, predeployProperties, "false", session));
-                weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
-                weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
+                
+                if (!isValidationOnly(predeployProperties, false) && persistenceUnitInfo != null && transactionType == PersistenceUnitTransactionType.JTA) {
+                    if (predeployProperties.get(PersistenceUnitProperties.JTA_DATASOURCE) == null && persistenceUnitInfo.getJtaDataSource() == null) {
+                        throw new PersistenceException(EntityManagerSetupException.jtaPersistenceUnitInfoMissingJtaDataSource(persistenceUnitInfo.getPersistenceUnitName()));
+                    }
+                }
+                
+                // this flag is used to disable work done as a result of the LAZY hint on OneToOne and ManyToOne mappings
+                if(state == STATE_INITIAL) {
+                    if (compositeEmSetupImpl == null) {
+                        if(null == enableWeaving) {                    
+                            enableWeaving = Boolean.TRUE;
+                        }
+                        isWeavingStatic = false;
+                        String weaving = getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, predeployProperties);
+                        if (weaving != null && weaving.equalsIgnoreCase("false")) {
+                            enableWeaving = Boolean.FALSE;
+                        }else if (weaving != null && weaving.equalsIgnoreCase("static")) {
+                            isWeavingStatic = true;
+                        }
+                    } else {
+                        // composite member
+                        // no weaving for composite forces no weaving for members
+                        if (!compositeEmSetupImpl.enableWeaving) {
+                            enableWeaving = Boolean.FALSE;
+                        } else {
+                            if(null == enableWeaving) {                    
+                                enableWeaving = Boolean.TRUE;
+                            }
+                            String weaving = getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, predeployProperties);
+                            if (weaving != null && weaving.equalsIgnoreCase("false")) {
+                                enableWeaving = Boolean.FALSE;
+                            }
+                        }
+                        // static weaving is dictated by composite
+                        isWeavingStatic = compositeEmSetupImpl.isWeavingStatic;
+                    }
+                }
+                
+                if (compositeEmSetupImpl == null) {
+                    throwExceptionOnFail = "true".equalsIgnoreCase(
+                            EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.THROW_EXCEPTIONS, predeployProperties, "true", session));
+                } else {
+                    // composite member
+                    throwExceptionOnFail = compositeEmSetupImpl.throwExceptionOnFail; 
+                }
+                
+                weaveChangeTracking = false;
+                weaveLazy = false;
+                weaveEager = false;
+                weaveFetchGroups = false;
+                weaveInternal = false;
+                if (enableWeaving) {
+                    weaveChangeTracking = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING, predeployProperties, "true", session));
+                    weaveLazy = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_LAZY, predeployProperties, "true", session));
+                    weaveEager = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_EAGER, predeployProperties, "false", session));
+                    weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
+                    weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
+                }
             }
             if (!isSessionLoadedFromSessionsXML ) {
-                boolean usesMultitenantSharedEmf = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, predeployProperties, "false", session));
-                
-                // Create an instance of MetadataProcessor for specified persistence unit info
-                processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, usesMultitenantSharedEmf, predeployProperties);
-
-                //bug:299926 - Case insensitive table / column matching with native SQL queries
-                EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
-                
-                // Process the Object/relational metadata from XML and annotations.
-                PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail);
-
-                if (session.getIntegrityChecker().hasErrors()){
-                    session.handleException(new IntegrityException(session.getIntegrityChecker()));
-                }
-
-                // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
-                // be returned if we we are mean to process these mappings
-                if (enableWeaving) {                
-                    // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
-                    Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
-                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+                if (isComposite) {
+                    predeployCompositeMembers(predeployProperties, privateClassLoader);
+                } else {
+                    MetadataProcessor compositeProcessor = null;
+                    if (compositeEmSetupImpl == null) {
+                        mode = PersistenceUnitProcessor.Mode.ALL;
+                    } else {
+                        // composite member
+                        if (state != STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER) {
+                            state = STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER;
+                            mode = PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL;
+                        }
+                        compositeProcessor = compositeEmSetupImpl.processor;
+                    }
+                    
+                    if (mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
+                        boolean usesMultitenantSharedEmf = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, predeployProperties, "false", session));
+    
+                        // Create an instance of MetadataProcessor for specified persistence unit info
+                        processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, usesMultitenantSharedEmf, predeployProperties, compositeProcessor);
+        
+                        //bug:299926 - Case insensitive table / column matching with native SQL queries
+                        EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
+                    }
+                    
+                    // Process the Object/relational metadata from XML and annotations.
+                    PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
+                    
+                    if (mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
+                        mode = PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_MIDDLE;
+                        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode , factoryCount});
+                        return null;
+                    } else if (mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_MIDDLE) {
+                        mode = PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_FINAL;
+                        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode , factoryCount});
+                        return null;
+                    }
+                    // mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_FINAL
+                    // clear mode and proceed
+                    mode = null;
+    
+                    if (session.getIntegrityChecker().hasErrors()){
+                        session.handleException(new IntegrityException(session.getIntegrityChecker()));
+                    }
+    
+                    // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
+                    // be returned if we we are mean to process these mappings
+                    if (enableWeaving) {                
+                        // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
+                        Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
+                        this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+                    }
                 }
             } else {
                 // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
@@ -1150,11 +1310,14 @@ public class EntityManagerSetupImpl {
                 }
             }
             
-            // factoryCount is not incremented only in case of a first call to preDeploy
-            // in non-container mode: this call is not associated with a factory
-            // but rather done by JavaSECMPInitializer.callPredeploy (typically in preMain).
-            if(state != STATE_INITIAL || this.isInContainerMode()) {
-                factoryCount++;
+            // composite member never has a factory - it is predeployed by the composite.
+            if (!isCompositeMember()) {
+                // factoryCount is not incremented only in case of a first call to preDeploy
+                // in non-container mode: this call is not associated with a factory
+                // but rather done by JavaSECMPInitializer.callPredeploy (typically in preMain).
+                if(state != STATE_INITIAL || this.isInContainerMode()) {
+                    factoryCount++;
+                }
             }
             state = STATE_PREDEPLOYED;
             session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
@@ -1166,7 +1329,9 @@ public class EntityManagerSetupImpl {
             }
         } catch (RuntimeException ex) {
             state = STATE_PREDEPLOY_FAILED;
+            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             session = null;
+            mode = null;
             throw new PersistenceException(EntityManagerSetupException.predeployFailed(persistenceUnitInfo.getPersistenceUnitName(), ex));
         }
     }
@@ -1414,19 +1579,21 @@ public class EntityManagerSetupImpl {
             login.setUsesExternalConnectionPooling(true);
         }
 
-        // set readLogin
-        if (readDatasource != null) {
-            DatasourceLogin readLogin = login.clone();
-            readLogin.dontUseExternalTransactionController();
-            JNDIConnector jndiConnector;
-            if (readDatasource instanceof DataSourceImpl) {
-                //Bug5209363  Pass in the datasource name instead of the dummy datasource
-                jndiConnector = new JNDIConnector(((DataSourceImpl)readDatasource).getName());
-            } else {
-                jndiConnector = new JNDIConnector(readDatasource);                    
+        if(this.session.isServerSession()) {
+            // set readLogin
+            if (readDatasource != null) {
+                DatasourceLogin readLogin = login.clone();
+                readLogin.dontUseExternalTransactionController();
+                JNDIConnector jndiConnector;
+                if (readDatasource instanceof DataSourceImpl) {
+                    //Bug5209363  Pass in the datasource name instead of the dummy datasource
+                    jndiConnector = new JNDIConnector(((DataSourceImpl)readDatasource).getName());
+                } else {
+                    jndiConnector = new JNDIConnector(readDatasource);                    
+                }
+                readLogin.setConnector(jndiConnector);
+                ((ServerSession)this.session).setReadConnectionPool(readLogin);
             }
-            readLogin.setConnector(jndiConnector);
-            session.setReadConnectionPool(readLogin);
         }
         
     }
@@ -1485,73 +1652,73 @@ public class EntityManagerSetupImpl {
      * By default if nothing is configured a default shared (exclusive) read/write pool is used with 32 min/max connections and 1 initial.
      */
     @SuppressWarnings("deprecation")
-    protected void updatePools(Map m) {
+    protected void updatePools(ServerSession serverSession, Map m) {
         String value = null;
         String property = null;
         try {
             // Configure default/write connection pool.
             // Sizes are irrelevant for external connection pool
-            if (!session.getDefaultConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
+            if (!serverSession.getDefaultConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
                 // CONNECTION and WRITE_CONNECTION properties both configure the default pool (mean the same thing, but WRITE normally used with READ).
                 property = PersistenceUnitProperties.JDBC_CONNECTIONS_MIN;
-                value = getConfigPropertyAsStringLogDebug(property, m, session);
+                value = getConfigPropertyAsStringLogDebug(property, m, serverSession);
                 if (value != null) {
-                    session.getDefaultConnectionPool().setMinNumberOfConnections(Integer.parseInt(value));
+                    serverSession.getDefaultConnectionPool().setMinNumberOfConnections(Integer.parseInt(value));
                 }
                 property = PersistenceUnitProperties.JDBC_CONNECTIONS_MAX;
-                value = getConfigPropertyAsStringLogDebug(property, m, session);
+                value = getConfigPropertyAsStringLogDebug(property, m, serverSession);
                 if (value != null) {
-                    session.getDefaultConnectionPool().setMaxNumberOfConnections(Integer.parseInt(value));
+                    serverSession.getDefaultConnectionPool().setMaxNumberOfConnections(Integer.parseInt(value));
                 }
                 property = PersistenceUnitProperties.JDBC_CONNECTIONS_INITIAL;
-                value = getConfigPropertyAsStringLogDebug(property, m, session);
+                value = getConfigPropertyAsStringLogDebug(property, m, serverSession);
                 if (value != null) {
-                    session.getDefaultConnectionPool().setInitialNumberOfConnections(Integer.parseInt(value));
+                    serverSession.getDefaultConnectionPool().setInitialNumberOfConnections(Integer.parseInt(value));
                 }
                 property = PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MIN;
-                value = getConfigPropertyAsStringLogDebug(property, m, session);
+                value = getConfigPropertyAsStringLogDebug(property, m, serverSession);
                 if (value != null) {
-                    session.getDefaultConnectionPool().setMinNumberOfConnections(Integer.parseInt(value));
+                    serverSession.getDefaultConnectionPool().setMinNumberOfConnections(Integer.parseInt(value));
                 }
                 property = PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MAX;
-                value = getConfigPropertyAsStringLogDebug(property, m, session);
+                value = getConfigPropertyAsStringLogDebug(property, m, serverSession);
                 if (value != null) {
-                    session.getDefaultConnectionPool().setMaxNumberOfConnections(Integer.parseInt(value));
+                    serverSession.getDefaultConnectionPool().setMaxNumberOfConnections(Integer.parseInt(value));
                 }
                 property = PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_INITIAL;
-                value = getConfigPropertyAsStringLogDebug(property, m, session);
+                value = getConfigPropertyAsStringLogDebug(property, m, serverSession);
                 if (value != null) {
-                    session.getDefaultConnectionPool().setInitialNumberOfConnections(Integer.parseInt(value));
+                    serverSession.getDefaultConnectionPool().setInitialNumberOfConnections(Integer.parseInt(value));
                 }
             }
             
             // Configure read connection pool if set.
             // Sizes and shared option are irrelevant for external connection pool
-            if (!this.session.getReadConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
-                String shared = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_SHARED, m, session);
+            if (!serverSession.getReadConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
+                String shared = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_SHARED, m, serverSession);
                 boolean isShared = false;
                 if (shared != null) {
                     isShared = Boolean.parseBoolean(shared);
                 }            
                 ConnectionPool pool = null;
                 if (isShared) {
-                    pool = new ReadConnectionPool("read", this.session.getReadConnectionPool().getLogin(), this.session);
+                    pool = new ReadConnectionPool("read", serverSession.getReadConnectionPool().getLogin(), serverSession);
                 } else {
-                    pool = new ConnectionPool("read", this.session.getReadConnectionPool().getLogin(), this.session);
+                    pool = new ConnectionPool("read", serverSession.getReadConnectionPool().getLogin(), serverSession);
                 }
-                String min = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, m, session);
+                String min = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, m, serverSession);
                 if (min != null) {
                     value = min;
                     property = PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN;
                     pool.setMinNumberOfConnections(Integer.parseInt(min));
                 }
-                String max = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX, m, session);
+                String max = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX, m, serverSession);
                 if (max != null) {
                     value = max;
                     property = PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX;
                     pool.setMaxNumberOfConnections(Integer.parseInt(max));
                 }
-                String initial = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_INITIAL, m, session);
+                String initial = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_INITIAL, m, serverSession);
                 if (initial != null) {
                     value = initial;
                     property = PersistenceUnitProperties.JDBC_READ_CONNECTIONS_INITIAL;
@@ -1559,50 +1726,50 @@ public class EntityManagerSetupImpl {
                 }
                 // Only set the read pool if they configured it, otherwise use default shared read/write.
                 if (isShared || (min != null) || (max != null) || (initial != null)) {
-                    this.session.setReadConnectionPool(pool);
+                    serverSession.setReadConnectionPool(pool);
                 }
-                String wait = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_CONNECTIONS_WAIT, m, session);
+                String wait = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_CONNECTIONS_WAIT, m, serverSession);
                 if (wait != null) {
                     value = wait;
                     property = PersistenceUnitProperties.JDBC_CONNECTIONS_WAIT;
-                    session.getDefaultConnectionPool().setWaitTimeout(Integer.parseInt(wait));
+                    serverSession.getDefaultConnectionPool().setWaitTimeout(Integer.parseInt(wait));
                     pool.setWaitTimeout(Integer.parseInt(wait));
                 }
             }
             
             // Configure sequence connection pool if set.
-            String sequence = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL, m, session);
+            String sequence = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL, m, serverSession);
             if (sequence != null) {
-                this.session.getSequencingControl().setShouldUseSeparateConnection(Boolean.parseBoolean(sequence));
+                serverSession.getSequencingControl().setShouldUseSeparateConnection(Boolean.parseBoolean(sequence));
             }
-            String sequenceDataSource = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_DATASOURCE, m, session);
+            String sequenceDataSource = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_DATASOURCE, m, serverSession);
             if (sequenceDataSource != null) {
                 DatasourceLogin login = this.session.getLogin().clone();
                 login.dontUseExternalTransactionController();
                 JNDIConnector jndiConnector = new JNDIConnector(sequenceDataSource);
                 login.setConnector(jndiConnector);
-                this.session.getSequencingControl().setLogin(login);
+                serverSession.getSequencingControl().setLogin(login);
             }        
             // Sizes and shared option are irrelevant for external connection pool
-            if (!this.session.getReadConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
-                value = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_MIN, m, session);
+            if (!serverSession.getReadConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
+                value = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_MIN, m, serverSession);
                 if (value != null) {
                     property = PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_MIN;
-                    this.session.getSequencingControl().setMinPoolSize(Integer.parseInt(value));
+                    serverSession.getSequencingControl().setMinPoolSize(Integer.parseInt(value));
                 }
-                value = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_MAX, m, session);
+                value = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_MAX, m, serverSession);
                 if (value != null) {
                     property = PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_MAX;
-                    this.session.getSequencingControl().setMaxPoolSize(Integer.parseInt(value));
+                    serverSession.getSequencingControl().setMaxPoolSize(Integer.parseInt(value));
                 }
-                value = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_INITIAL, m, session);
+                value = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_INITIAL, m, serverSession);
                 if (value != null) {
                     property = PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_INITIAL;
-                    this.session.getSequencingControl().setInitialPoolSize(Integer.parseInt(value));
+                    serverSession.getSequencingControl().setInitialPoolSize(Integer.parseInt(value));
                 }
             }
         } catch (NumberFormatException exception) {
-            this.session.handleException(ValidationException.invalidValueForProperty(value, property, exception));
+            serverSession.handleException(ValidationException.invalidValueForProperty(value, property, exception));
         }
     }
     
@@ -1612,22 +1779,24 @@ public class EntityManagerSetupImpl {
      * different from EclipseLink defaults.
      * This function applies defaults for such properties and registers the session.
      * All other session-related properties are applied in updateServerSession.
-     * Note that updateServerSession may be called several times on the same session
-     * (before login), but initServerSession is called just once - before the first call
-     * to updateServerSession.
+     * Note that updateSession may be called several times on the same session
+     * (before login), but initSession is called just once - before the first call
+     * to updateSession.
      * @param properties the persistence unit properties.
      */
-    protected void initServerSession(Map properties) {
+    protected void initSession() {
         assignCMP3Policy();
 
-        // Register session that has been created earlier.
-        addSessionToGlobalSessionManager();
+        if(!isCompositeMember()) {
+            // Register session that has been created earlier.
+            addSessionToGlobalSessionManager();
+        }
     }
 
     /**
      * Make any changes to our ServerSession that can be made after it is created.
      */
-    protected void updateServerSession(Map m, ClassLoader loader) {
+    protected void updateSession(Map m, ClassLoader loader) {
         if (session == null || session.isConnected()) {
             return;
         }
@@ -1635,16 +1804,26 @@ public class EntityManagerSetupImpl {
         // In deploy ServerPlatform could've changed which will affect the loggers.
         boolean serverPlatformChanged = updateServerPlatform(m, loader);
 
-        updateLoggers(m, serverPlatformChanged, loader);
-        
-        updateProfiler(m,loader);
-
-        String shouldBindString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_BIND_PARAMETERS, m, session);
-        if (shouldBindString != null) {
-            session.getPlatform().setShouldBindAllParameters(Boolean.parseBoolean(shouldBindString));
+        if (!session.hasBroker()) {
+            updateLoggers(m, serverPlatformChanged, loader);        
+            updateProfiler(m,loader);
         }
 
-        updateLogins(m);
+        if(session.isBroker()) {
+            PersistenceUnitTransactionType transactionType = persistenceUnitInfo.getTransactionType();
+            //bug 5867753: find and override the transaction type using properties
+            String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, m, session);
+            if (transTypeString != null) {
+                transactionType = PersistenceUnitTransactionType.valueOf(transTypeString);
+            }
+            session.getLogin().setUsesExternalTransactionController(transactionType == PersistenceUnitTransactionType.JTA);
+        } else {
+            String shouldBindString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_BIND_PARAMETERS, m, session);
+            if (shouldBindString != null) {
+                session.getPlatform().setShouldBindAllParameters(Boolean.parseBoolean(shouldBindString));
+            }
+            updateLogins(m);
+        }
         if (!session.getLogin().shouldUseExternalTransactionController()) {
             session.getServerPlatform().disableJTA();
         }
@@ -1652,33 +1831,58 @@ public class EntityManagerSetupImpl {
         setSessionEventListener(m, loader);
         setExceptionHandler(m, loader);
 
-        updatePools(m);
-        updateConnectionSettings(m);
-        
-        if (!isSessionLoadedFromSessionsXML) {
-             updateDescriptorCacheSettings(m, loader);
+        if(session.isServerSession()) {
+            updatePools((ServerSession)session, m);
+            updateConnectionSettings((ServerSession)session, m);
+            if (!isSessionLoadedFromSessionsXML) {
+                updateDescriptorCacheSettings(m, loader);
+            }
+            updateConnectionPolicy((ServerSession)session, m);
         }
-        updateConnectionPolicy(m);
-        updateBatchWritingSetting(m);
-
-        updateNativeSQLSetting(m);
-        updateSQLCastSetting(m);
-        updateUppercaseSetting(m);
-        updateCacheStatementSettings(m);
-        updateTemporalMutableSetting(m);
-        updateTableCreationSettings(m);
-        updateAllowZeroIdSetting(m);
-        updateIdValidation(m);
-        updatePessimisticLockTimeout(m);
-        updateQueryTimeout(m);
-        updateCacheCoordination(m, loader);
-        updatePartitioning(m, loader);
         
-        // Customizers should be processed last
-        processDescriptorCustomizers(m, loader);
-        processSessionCustomizer(m, loader);
-        
-        setDescriptorNamedQueries(m);
+        if(session.isBroker()) {
+            if (this.compositeMemberEmSetupImpls != null) {
+                // composite
+                Map compositeMemberMapOfProperties = (Map)getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, m);
+                for(EntityManagerSetupImpl compositeMemberEmSetupImpl : this.compositeMemberEmSetupImpls) {
+                    // the properties guaranteed to be non-null after updateCompositeMemberProperties call
+                    String compositeMemberPuName = compositeMemberEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitName();
+                    Map compositeMemberProperties = (Map)compositeMemberMapOfProperties.get(compositeMemberPuName);
+                    // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
+                    compositeMemberEmSetupImpl.session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_begin_call", new Object[]{"updateSession", compositeMemberPuName, state});
+                    compositeMemberEmSetupImpl.updateSession(compositeMemberProperties, loader);
+                    compositeMemberEmSetupImpl.session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_end_call", new Object[]{"updateSession", compositeMemberPuName, state});
+                }
+                updateAllowZeroIdSetting(m);
+                updateCacheCoordination(m, loader);
+            }
+            processSessionCustomizer(m, loader);
+        } else {
+            updateBatchWritingSetting(m);
+    
+            updateNativeSQLSetting(m);
+            updateSQLCastSetting(m);
+            updateUppercaseSetting(m);
+            updateCacheStatementSettings(m);
+            updateTemporalMutableSetting(m);
+            updateTableCreationSettings(m);
+            if (!session.hasBroker()) {
+                updateAllowZeroIdSetting(m);
+            }
+            updateIdValidation(m);
+            updatePessimisticLockTimeout(m);
+            updateQueryTimeout(m);
+            if (!session.hasBroker()) {
+                updateCacheCoordination(m, loader);
+            }
+            updatePartitioning(m, loader);
+            
+            // Customizers should be processed last
+            processDescriptorCustomizers(m, loader);
+            processSessionCustomizer(m, loader);
+            
+            setDescriptorNamedQueries(m);
+        }
     }
 
     /** 
@@ -1805,7 +2009,11 @@ public class EntityManagerSetupImpl {
     public boolean isDeployFailed() {
         return state == STATE_DEPLOY_FAILED;
     }
-
+    
+    public boolean isHalfPredeployedCompositeMember() {
+        return state == STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER;
+    }
+    
     public String getPersistenceUnitUniqueName() {
         return this.persistenceUnitUniqueName;
     }
@@ -2038,10 +2246,10 @@ public class EntityManagerSetupImpl {
         String statmentsNeedBeCached = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_STATEMENTS, m, session);
         if (statmentsNeedBeCached!=null) {
             if (statmentsNeedBeCached.equalsIgnoreCase("true")) {
-                if (session.getConnectionPools().size()>0){//And if connection pooling is configured,
-                    session.getProject().getLogin().setShouldCacheAllStatements(true);
-                 } else {
+                if (session.isServerSession() && ((ServerSession)session).getConnectionPools().isEmpty()){
                     session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "persistence_unit_ignores_statments_cache_setting", new Object[]{null});
+                 } else {
+                     session.getProject().getLogin().setShouldCacheAllStatements(true);
                  }
             } else if (statmentsNeedBeCached.equalsIgnoreCase("false")) {
                 session.getProject().getLogin().setShouldCacheAllStatements(false);
@@ -2288,4 +2496,297 @@ public class EntityManagerSetupImpl {
         this.metaModel = aMetamodel;
     }
     
+    public boolean mustBeCompositeMember() {
+        return mustBeCompositeMember(this.persistenceUnitInfo);
+    }
+    
+    public boolean isCompositeMember() {
+        return this.compositeEmSetupImpl != null;
+    }
+    
+    public boolean isComposite() {
+        return this.compositeMemberEmSetupImpls != null;
+    }
+    
+    public static boolean mustBeCompositeMember(PersistenceUnitInfo puInfo) {
+        String mustBeCompositeMemberStr = PropertiesHandler.getPropertyValue(PersistenceUnitProperties.COMPOSITE_UNIT_MEMBER, puInfo.getProperties(), false);
+        if(mustBeCompositeMemberStr != null) {
+            return mustBeCompositeMemberStr.equals("true");
+        } else {
+            return false;
+        }
+    }
+    public static boolean isComposite(PersistenceUnitInfo puInfo) {
+        String isCompositeString = PropertiesHandler.getPropertyValue(PersistenceUnitProperties.COMPOSITE_UNIT, puInfo.getProperties(), false);
+        if(isCompositeString != null) {
+            return isCompositeString.equals("true");
+        } else {
+            return false;
+        }
+    }
+    
+    public void setCompositeEmSetupImpl(EntityManagerSetupImpl compositeEmSetupImpl) {
+        this.compositeEmSetupImpl = compositeEmSetupImpl;
+    }
+
+    public EntityManagerSetupImpl getCompositeEmSetupImpl() {
+        return this.compositeEmSetupImpl;
+    }
+    
+    protected void predeployCompositeMembers(Map predeployProperties, ClassLoader tempClassLoader) {
+        // get all puInfos found in jar-files specified in composite's persistence.xml
+        // all these puInfos are not composite because composites are recursively "taken appart", too. 
+        Set<SEPersistenceUnitInfo> compositeMemberPuInfos = getCompositeMemberPuInfoSet(persistenceUnitInfo, predeployProperties);
+        // makes sure each member has a non-null property, overrides where required properties with composite's predeploy properties.
+        updateCompositeMembersProperties(compositeMemberPuInfos, predeployProperties);
+        // Don't log these properties - may contain passwords. The properties will be logged by contained persistence units.
+        Map compositeMemberMapOfProperties = (Map)getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, predeployProperties);
+        this.compositeMemberEmSetupImpls = new HashSet(compositeMemberPuInfos.size());
+        this.processor = new MetadataProcessor();
+        if (enableWeaving) {
+            this.weaver = new PersistenceWeaver(this.session, new HashMap());
+        }
+        
+        // create containedEmSetupImpls and predeploy them for the first time.
+        // predeploy divided in three stages (modes):
+        // all composite members should complete a stage before any of them can move to the next one.
+        for (SEPersistenceUnitInfo compositeMemberPuInfo : compositeMemberPuInfos) {
+            // set composite's temporary classloader
+            compositeMemberPuInfo.setNewTempClassLoader(tempClassLoader);
+            String containedPuName = compositeMemberPuInfo.getPersistenceUnitName();
+            EntityManagerSetupImpl containedEmSetupImpl = new EntityManagerSetupImpl(containedPuName, containedPuName);
+            // set composite
+            containedEmSetupImpl.setCompositeEmSetupImpl(this);
+            // the properties guaranteed to be non-null after updateCompositeMemberProperties call
+            Map compositeMemberProperties = (Map)compositeMemberMapOfProperties.get(containedPuName);
+            containedEmSetupImpl.predeploy(compositeMemberPuInfo, compositeMemberProperties);
+            // reset temporary classloader back to the original
+            compositeMemberPuInfo.setNewTempClassLoader(compositeMemberPuInfo.getClassLoader());
+            this.compositeMemberEmSetupImpls.add(containedEmSetupImpl);
+        }
+        
+        // after the first loop containedEmSetupImpls are in HalfPredeployed state, 
+        // mode = COMPOSITE_MEMBER_MIDDLE mode
+        for(EntityManagerSetupImpl containedEmSetupImpl : this.compositeMemberEmSetupImpls) {
+            // properties not used, puInfo already set
+            containedEmSetupImpl.predeploy(null, null);
+        }
+
+        // after the second loop containedEmSetupImpls are still in HalfPredeployed state, 
+        // mode = COMPOSITE_MEMBER_FINAL mode
+        for(EntityManagerSetupImpl containedEmSetupImpl : this.compositeMemberEmSetupImpls) {
+            // properties not used, puInfo already set
+            PersistenceWeaver containedWeaver = (PersistenceWeaver)containedEmSetupImpl.predeploy(null, null);
+            // containedEmSetupImpl is finally in Predeployed state.
+            // if both composite and composite member weavings enabled copy class details from member's weaver to composite's one.
+            if(enableWeaving && containedWeaver != null) {
+                this.weaver.getClassDetailsMap().putAll(containedWeaver.getClassDetailsMap());
+            }
+        }
+
+        if(enableWeaving && this.weaver.getClassDetailsMap().isEmpty()) {
+            this.weaver = null;
+        }
+    }
+
+    protected void deployCompositeMembers(Map deployProperties, ClassLoader realClassLoader) {
+        // Don't log these properties - may contain passwords. The properties will be logged by contained persistence units.
+        Map compositeMemberMapOfProperties = (Map)getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, deployProperties);
+        for(EntityManagerSetupImpl compositeMemberEmSetupImpl : this.compositeMemberEmSetupImpls) {
+            // the properties guaranteed to be non-null after updateCompositeMemberProperties call
+            Map compositeMemberProperties = (Map)compositeMemberMapOfProperties.get(compositeMemberEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitName());
+            compositeMemberEmSetupImpl.deploy(realClassLoader, compositeMemberProperties);
+            AbstractSession containedSession = compositeMemberEmSetupImpl.getSession(); 
+            ((SessionBroker)session).registerSession(containedSession.getName(), containedSession);
+        }
+    }
+
+    /*
+     * Overide composite member properties' map with a new one, which
+     * has (possibly empty but non-null) properties for each composite member,
+     * for required properties overrides values with those from composite properties. 
+     */
+    protected void updateCompositeMembersProperties(Map compositeProperties) {
+        Set<SEPersistenceUnitInfo> compositePuInfos = new HashSet(compositeMemberEmSetupImpls.size());
+        for (EntityManagerSetupImpl compositeMemberEmSetupImpl : compositeMemberEmSetupImpls) {
+            compositePuInfos.add((SEPersistenceUnitInfo)compositeMemberEmSetupImpl.persistenceUnitInfo);
+        }
+        updateCompositeMembersProperties(compositePuInfos, compositeProperties);
+    }
+
+    /*
+     * Overide composite member properties' map with a new one, which
+     * has (possibly empty but non-null) properties for each composite member,
+     * for required properties overrides values with those from composite properties. 
+     * Parameter compositePuInfo indicates whether compositeMemberPreoperties should be merged (overriding) with its puInfo properties
+     * (false for predeploy, true for deploy).
+     */
+    protected void updateCompositeMembersProperties(Set<SEPersistenceUnitInfo> compositePuInfos, Map compositeProperties) {
+        // Don't log these properties - may contain passwords. The properties will be logged by contained persistence units.
+        Map compositeMemberMapOfProperties = (Map)getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, compositeProperties);
+        Map newCompositeMemberMapOfProperties;
+        if (compositeMemberMapOfProperties == null) {
+            newCompositeMemberMapOfProperties = new HashMap(compositePuInfos.size());
+        } else {
+            // Don't alter user-supplied properties' map - create a copy instead
+            newCompositeMemberMapOfProperties = new HashMap(compositeMemberMapOfProperties);
+        }
+        
+        for (SEPersistenceUnitInfo compositePuInfo : compositePuInfos) {
+            String compositeMemberPuName = compositePuInfo.getPersistenceUnitName();
+            Map compositeMemberProperties = (Map)newCompositeMemberMapOfProperties.get(compositeMemberPuName);
+            Map newCompositeMemberProperties;
+            if (compositeMemberProperties == null) {
+                newCompositeMemberProperties = new HashMap();
+            } else {
+                // Don't alter user-supplied properties - create a copy instead
+                newCompositeMemberProperties = new HashMap(compositeMemberProperties);
+            }
+            overrideMemberProperties(newCompositeMemberProperties, compositeProperties);
+            newCompositeMemberProperties = mergeMaps(newCompositeMemberProperties, compositePuInfo.getProperties());
+            translateOldProperties(newCompositeMemberProperties, session);
+            newCompositeMemberMapOfProperties.put(compositeMemberPuName, newCompositeMemberProperties);
+        }
+        
+        // set the new COMPOSITE_PROPERTIES into compositeProperties
+        compositeProperties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, newCompositeMemberMapOfProperties);
+    }
+
+    protected void generateDDL(Map props) {
+        if (this.compositeMemberEmSetupImpls == null) {
+            boolean createTables = false, shouldDropFirst = false;
+           
+            String ddlGeneration = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION, props, PersistenceUnitProperties.NONE);
+            ddlGeneration = ddlGeneration.toLowerCase();
+            if(ddlGeneration.equals(PersistenceUnitProperties.NONE)) {
+                return;
+            }
+    
+            if(ddlGeneration.equals(PersistenceUnitProperties.CREATE_ONLY) || 
+                ddlGeneration.equals(PersistenceUnitProperties.DROP_AND_CREATE)) {
+                createTables = true;
+                if(ddlGeneration.equals(PersistenceUnitProperties.DROP_AND_CREATE)) {
+                    shouldDropFirst = true;
+                }
+            } 
+            
+            if (createTables) {
+                String ddlGenerationMode = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION_MODE, props, PersistenceUnitProperties.DEFAULT_DDL_GENERATION_MODE);
+                // Optimize for cases where the value is explicitly set to NONE 
+                if (ddlGenerationMode.equals(PersistenceUnitProperties.NONE)) {                
+                    return;
+                }
+    
+                if (isCompositeMember()) {
+                    // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
+                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_begin_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
+                }
+                SchemaManager mgr = new SchemaManager(session);
+                
+                if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_DATABASE_GENERATION) || ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
+                    writeDDLToDatabase(mgr, shouldDropFirst);                
+                }
+    
+                if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION)|| ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
+                    String appLocation = getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props, PersistenceUnitProperties.DEFAULT_APP_LOCATION);
+                    String createDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME);
+                    String dropDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, props,  PersistenceUnitProperties.DEFAULT_DROP_JDBC_FILE_NAME);
+                    writeDDLsToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc);                
+                }
+                if (isCompositeMember()) {
+                    // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
+                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_end_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
+                }
+            }
+        } else {
+            // composite
+            Map compositeMemberMapOfProperties = (Map)getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, props);
+            for(EntityManagerSetupImpl compositeMemberEmSetupImpl : this.compositeMemberEmSetupImpls) {
+                // the properties guaranteed to be non-null after updateCompositeMemberProperties call
+                Map compositeMemberProperties = (Map)compositeMemberMapOfProperties.get(compositeMemberEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitName());
+                compositeMemberEmSetupImpl.generateDDL(compositeMemberProperties);
+            }
+        }
+    }
+    
+    /*
+     * For required properties overrides values with those from composite properties. 
+     */
+    protected static void overrideMemberProperties(Map memberProperties, Map compositeProperties) {
+        String transactionTypeProp =  (String)compositeProperties.get(PersistenceUnitProperties.TRANSACTION_TYPE);
+        if (transactionTypeProp != null) {
+            memberProperties.put(PersistenceUnitProperties.TRANSACTION_TYPE, transactionTypeProp);
+        } else {
+            memberProperties.remove(PersistenceUnitProperties.TRANSACTION_TYPE);
+        }
+
+        String serverPlatformProp =  (String)compositeProperties.get(PersistenceUnitProperties.TARGET_SERVER);
+        if (serverPlatformProp != null) {
+            memberProperties.put(PersistenceUnitProperties.TARGET_SERVER, serverPlatformProp);
+        } else {
+            memberProperties.remove(PersistenceUnitProperties.TARGET_SERVER);
+        }
+    }
+    
+    /*
+     * If a member is composite then add its members instead.
+     * All members' puNames must be unique.
+     * Return a Map of composite member SEPersistenceUnitInfo keyed by persistence unit name.
+     */
+    protected static Map<String, SEPersistenceUnitInfo> getCompositeMemberPuInfoMap(PersistenceUnitInfo puInfo, Map predeployProperties) {
+        Set<SEPersistenceUnitInfo> memeberPuInfoSet = PersistenceUnitProcessor.getPersistenceUnits(puInfo.getClassLoader(), predeployProperties, puInfo.getJarFileUrls());
+        HashMap<String, SEPersistenceUnitInfo> memberPuInfoMap = new HashMap(memeberPuInfoSet.size());        
+        for (SEPersistenceUnitInfo memberPuInfo : memeberPuInfoSet) {
+            // override transaction type with composite's transaction type
+            memberPuInfo.setTransactionType(puInfo.getTransactionType());
+            // override properties that should be overridden by composit's properties
+            overrideMemberProperties(memberPuInfo.getProperties(), puInfo.getProperties());
+            if (isComposite(memberPuInfo)) {
+                Map<String, SEPersistenceUnitInfo> containedMemberPuInfoMap = getCompositeMemberPuInfoMap(memberPuInfo, memberPuInfo.getProperties());
+                Iterator<Map.Entry<String, SEPersistenceUnitInfo>> it = containedMemberPuInfoMap.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<String, SEPersistenceUnitInfo> entry = it.next();
+                    String containedMemberPuName = entry.getKey();
+                    SEPersistenceUnitInfo containedMemberPuInfo = entry.getValue();
+                    SEPersistenceUnitInfo anotherMemeberPuInfo = memberPuInfoMap.get(containedMemberPuName); 
+                    if (anotherMemeberPuInfo == null) {
+                        memberPuInfoMap.put(containedMemberPuName, containedMemberPuInfo);
+                    } else {
+                        throwPersistenceUnitNameAlreadyInUseException(containedMemberPuName, containedMemberPuInfo, anotherMemeberPuInfo);
+                    }
+                }
+            } else {
+                String memberPuName = memberPuInfo.getPersistenceUnitName();
+                SEPersistenceUnitInfo anotherMemeberPuInfo = memberPuInfoMap.get(memberPuName); 
+                if (anotherMemeberPuInfo == null) {
+                    memberPuInfoMap.put(memberPuName, memberPuInfo);
+                } else {
+                    throwPersistenceUnitNameAlreadyInUseException(memberPuName, memberPuInfo, anotherMemeberPuInfo);
+                }
+            }
+        }
+        return memberPuInfoMap;
+    }
+
+    /*
+     * If a member is composite then add its members instead.
+     * All members' puNames must be unique.
+     * Return a Set of composite member SEPersistenceUnitInfo.
+     */
+    protected static Set<SEPersistenceUnitInfo> getCompositeMemberPuInfoSet(PersistenceUnitInfo puInfo, Map predeployProperties) {
+        return new HashSet(getCompositeMemberPuInfoMap(puInfo, predeployProperties).values());
+    }
+    
+    public static void throwPersistenceUnitNameAlreadyInUseException(String puName, PersistenceUnitInfo newPuInfo, PersistenceUnitInfo exsitingPuInfo) { 
+        String puUrl;
+        String anotherPuUrl;
+        try {
+            puUrl = URLDecoder.decode(newPuInfo.getPersistenceUnitRootUrl().toString(), "UTF8");
+            anotherPuUrl = URLDecoder.decode(exsitingPuInfo.getPersistenceUnitRootUrl().toString(), "UTF8");
+        } catch (UnsupportedEncodingException e) {
+            puUrl = newPuInfo.getPersistenceUnitRootUrl().toString();
+            anotherPuUrl = exsitingPuInfo.getPersistenceUnitRootUrl().toString();
+        }
+        throw PersistenceUnitLoadingException.persistenceUnitNameAlreadyInUse(puName, puUrl, anotherPuUrl);
+    }
 }

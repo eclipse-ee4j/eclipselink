@@ -50,8 +50,8 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -85,9 +85,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     protected RepeatableWriteUnitOfWork extendedPersistenceContext;
 
     /**
-     * References the ServerSession that this deployment is using.
+     * References the DatabaseSession that this deployment is using.
      */
-    protected ServerSession serverSession;
+    protected DatabaseSessionImpl databaseSession;
 
     /**
      * References to the parent factory that has created this entity manager.
@@ -243,40 +243,40 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
     /**
      * Constructor returns an EntityManager assigned to the a particular
-     * ServerSession.
+     * DatabaseSession.
      * 
      * @param sessionName
-     *            the ServerSession name that should be used. This constructor
+     *            the DatabaseSession name that should be used. This constructor
      *            can potentially throw EclipseLink exceptions regarding the
      *            existence, or errors with the specified session.
      */
     public EntityManagerImpl(String sessionName) {
-        this((ServerSession) SessionManager.getManager().getSession(sessionName), null);
+        this((DatabaseSessionImpl) SessionManager.getManager().getSession(sessionName), null);
     }
 
     /**
      * Constructor called from the EntityManagerFactory to create an
      * EntityManager
      * 
-     * @param serverSession
-     *            the serverSession assigned to this deployment.
+     * @param databaseSession
+     *            the databaseSession assigned to this deployment.
      */
-    public EntityManagerImpl(ServerSession serverSession) {
-        this(serverSession, null);
+    public EntityManagerImpl(DatabaseSessionImpl databaseSession) {
+        this(databaseSession, null);
     }
 
     /**
      * Constructor called from the EntityManagerFactory to create an
      * EntityManager
      * 
-     * @param serverSession
-     *            the serverSession assigned to this deployment. Note: The
+     * @param databaseSession
+     *            the databaseSession assigned to this deployment. Note: The
      *            properties argument is provided to allow properties to be
      *            passed into this EntityManager, but there are currently no
      *            such properties implemented
      */
-    public EntityManagerImpl(ServerSession serverSession, Map properties) {
-        this.serverSession = serverSession;
+    public EntityManagerImpl(DatabaseSessionImpl databaseSession, Map properties) {
+        this.databaseSession = databaseSession;
         this.referenceMode = ReferenceMode.HARD;
         this.flushMode = FlushModeType.AUTO;
         this.flushClearCache = FlushClearCache.DEFAULT;
@@ -299,7 +299,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public EntityManagerImpl(EntityManagerFactoryImpl factory, Map properties) {
         this.factory = factory;
-        this.serverSession = factory.getServerSession();
+        this.databaseSession = factory.getDatabaseSession();
         this.beginEarlyTransaction = factory.getBeginEarlyTransaction();
         this.closeOnCommit = factory.getCloseOnCommit();
         this.flushMode = factory.getFlushMode();
@@ -321,7 +321,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         detectTransactionWrapper();
         // Cache default ConnectionPolicy. If ConnectionPolicy property(ies) specified 
         // then connectionPolicy will be set to null and re-created when when active persistence context is created. 
-        this.connectionPolicy = this.serverSession.getDefaultConnectionPolicy();
+        if(this.databaseSession.isServerSession()) {
+            this.connectionPolicy = ((ServerSession)this.databaseSession).getDefaultConnectionPolicy();
+        }
         // bug 236249: In JPA session.setProperty() throws
         // UnsupportedOperationException.
         if (properties != null) {
@@ -607,7 +609,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode, Map<String, Object> properties) {
         try {
             verifyOpen();
-            AbstractSession session = this.serverSession;
+            AbstractSession session = this.databaseSession;
             ClassDescriptor descriptor = session.getDescriptor(entityClass);
             // PERF: Avoid uow creation for read-only.
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
@@ -759,7 +761,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     protected void detectTransactionWrapper() {
-        if (this.serverSession.hasExternalTransactionController()) {
+        if (this.databaseSession.hasExternalTransactionController()) {
             setJTATransactionWrapper();
         } else {
             setEntityTransactionWrapper();
@@ -791,7 +793,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             // the query was executed using a wait timeout value)
             if (lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_)) {
                 // ask the platform if it is a lock timeout
-                if (session.getPlatform().isLockTimeoutException(e)) {
+                if (query.getExecutionSession().getPlatform().isLockTimeoutException(e)) {
                     throw new LockTimeoutException(e);
                 } else {
                     throw new PessimisticLockException(e);
@@ -949,7 +951,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (entity == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
-            ClassDescriptor descriptor = this.serverSession.getDescriptors().get(entity.getClass());
+            ClassDescriptor descriptor = this.databaseSession.getDescriptors().get(entity.getClass());
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
@@ -979,7 +981,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes) {
         try {
             verifyOpen();
-            ClassDescriptor descriptor = this.serverSession.getDescriptor(descriptorClass);
+            ClassDescriptor descriptor = this.databaseSession.getDescriptor(descriptorClass);
             if (descriptor != null) {
                 DatabaseQuery query = descriptor.getQueryManager().getLocalQueryByArgumentTypes(queryName, argumentTypes);
                 if (query != null) {
@@ -1038,7 +1040,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public Query createNativeQuery(String sqlString) {
         try {
             verifyOpen();
-            return new EJBQueryImpl(EJBQueryImpl.buildSQLDatabaseQuery(sqlString, this.serverSession.getLoader(), this.serverSession), this);
+            return new EJBQueryImpl(EJBQueryImpl.buildSQLDatabaseQuery(sqlString, this.databaseSession.getLoader(), this.databaseSession), this);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -1139,7 +1141,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public Session getSession() {
         if (checkForTransaction(false) == null) {
-            return this.serverSession.acquireNonSynchronizedUnitOfWork(this.referenceMode);
+            return this.databaseSession.acquireNonSynchronizedUnitOfWork(this.referenceMode);
         }
         return null;
     }
@@ -1178,7 +1180,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             propertyValue = this.properties.get(name);
         }
         if (propertyValue == null) {
-            propertyValue = this.factory.getServerSession().getProperty(name);
+            propertyValue = this.factory.getDatabaseSession().getProperty(name);
         }
         return propertyValue;
     }
@@ -1200,7 +1202,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         ReadObjectQuery query = new ReadObjectQuery();
 
         // Apply the properties if there are some.
-        QueryHintsHandler.apply(properties, query, this.serverSession.getDatasourcePlatform().getConversionManager().getLoader(), this.serverSession);
+        QueryHintsHandler.apply(properties, query, this.databaseSession.getDatasourcePlatform().getConversionManager().getLoader(), this.databaseSession);
         query.setIsExecutionClone(true);
         return query;
     }
@@ -1257,16 +1259,77 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (this.extendedPersistenceContext != null && this.extendedPersistenceContext.isActive()) {
             return this.extendedPersistenceContext.getParent();
         }
-        return this.serverSession.acquireClientSession(connectionPolicy, properties);
+        if(this.databaseSession.isServerSession()) {
+            return ((ServerSession)this.databaseSession).acquireClientSession(connectionPolicy, properties);
+        } else if(this.databaseSession.isBroker()) {
+            // TODO: should handle properties
+            return ((SessionBroker)this.databaseSession).acquireClientSessionBroker();
+        } else {
+            // currently this can't happen - the databaseSession is either ServerSession or SessionBroker. 
+            return this.databaseSession;
+        }
     }
 
     /**
-     * Return the underlying server session
+     * Return the underlying database session
      */
-    public ServerSession getServerSession() {
-        return this.serverSession;
+    public DatabaseSessionImpl getDatabaseSession() {
+        return this.databaseSession;
     }
 
+    /**
+     * Return the underlying server session, throws ClassCastException if it's not a ServerSession.
+     */
+    public ServerSession getServerSession() {
+        return (ServerSession)this.databaseSession;
+    }
+
+    /**
+     * Return the underlying session broker, throws ClassCastException if it's not a SessionBroker.
+     */
+    public SessionBroker getSessionBroker() {
+        return (SessionBroker)this.databaseSession;
+    }
+
+    /**
+     * Return the member DatabaseSessionImpl that maps cls in session broker.
+     * Return null if either not a session broker or cls is not mapped.
+     * Session broker implement composite persistence unit.
+     */
+    public DatabaseSessionImpl getMemberDatabaseSession(Class cls) {
+        if(this.databaseSession.isBroker()) {
+            return (DatabaseSessionImpl)((SessionBroker)this.databaseSession).getSessionForClass(cls);
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Return the member ServerSession that maps cls in session broker.
+     * Return null if either not a session broker or cls is not mapped.
+     * Session broker implement composite persistence unit.
+     */
+    public ServerSession getMemberServerSession(Class cls) {
+        if(this.databaseSession.isBroker()) {
+            return (ServerSession)((SessionBroker)this.databaseSession).getSessionForClass(cls);
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Return the name of member session that maps cls.
+     * Return null if either not a session broker or cls is not mapped.
+     * Session broker implement composite persistence unit.
+     */
+    public String getMemberSessionName(Class cls) {
+        if(this.databaseSession.isBroker()) {
+            return ((SessionBroker)this.databaseSession).getSessionForClass(cls).getName();
+        } else {
+            return null;
+        }
+    }
+    
     /**
      * This method is used to create a query using SQL. The class, must be the
      * expected return type.
@@ -1434,7 +1497,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             verifyOpen();
             isOpen = false;
             factory = null;
-            serverSession = null;
+            databaseSession = null;
             // Do not invalidate the metaModel field 
             // (a reopened emf will re-populate the same metaModel)
             // (a new persistence unit will generate a new metaModel)
@@ -1574,10 +1637,18 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public RepeatableWriteUnitOfWork getActivePersistenceContext(Object txn) {
         // use local uow as it will be local to this EM and not on the txn
         if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
-            if(this.connectionPolicy == null) {
-                createConnectionPolicy();
+            AbstractSession client;
+            if(this.databaseSession.isServerSession()) {
+                if(this.connectionPolicy == null) {
+                    createConnectionPolicy();
+                }
+                client = ((ServerSession)this.databaseSession).acquireClientSession(connectionPolicy, properties);
+            } else if(this.databaseSession.isBroker()) {
+                // TODO: should handle properties
+                client = ((SessionBroker)this.databaseSession).acquireClientSessionBroker();
+            } else {
+                client = this.databaseSession;
             }
-            ClientSession client = this.serverSession.acquireClientSession(connectionPolicy, properties);
             this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(client, this.referenceMode);
             this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(!this.closeOnCommit);
             this.extendedPersistenceContext.setShouldDiscoverNewObjects(this.persistOnCommit);
@@ -1779,6 +1850,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Default connection policy created if no connection properties specified.
      */
     protected void createConnectionPolicy() {
+        ServerSession serverSession = getServerSession();
         ConnectionPolicy policy = serverSession.getDefaultConnectionPolicy();
 
         if (properties == null || properties.isEmpty()) {
@@ -2037,6 +2109,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
+     * Indicates whether the underlying session is a session broker. 
+     * Session broker implement composite persistence unit.
+     */
+    public boolean isBroker() {
+        return this.databaseSession.isBroker();
+    }
+    
+    /**
      * Property value is to be added if it's non null and not an empty string.
      */
     protected static boolean isPropertyToBeAdded(String value) {
@@ -2110,7 +2190,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (entity == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
-            ClassDescriptor descriptor = this.serverSession.getDescriptors().get(entity.getClass());
+            ClassDescriptor descriptor = this.databaseSession.getDescriptors().get(entity.getClass());
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
@@ -2270,7 +2350,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @since Java Persistence API 2.0
      */
     public Map<String, Object> getProperties() {
-        Map sessionMap = new HashMap(this.getServerSession().getProperties());
+        Map sessionMap = new HashMap(this.getDatabaseSession().getProperties());
         if (this.properties != null) {
             sessionMap.putAll(this.properties);
         }
@@ -2317,8 +2397,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 return (T) this.getUnitOfWork();
             } else if (cls.equals(JpaEntityManager.class)) {
                 return (T) this;
-            } else if (cls.equals(Session.class) || cls.equals(Server.class) || cls.equals(ServerSession.class) || cls.equals(AbstractSession.class)) {            
+            } else if (cls.equals(Session.class) || cls.equals(AbstractSession.class) || cls.equals(DatabaseSession.class) || cls.equals(DatabaseSessionImpl.class)) {            
+                return (T) this.getDatabaseSession();
+            } else if (cls.equals(Server.class) || cls.equals(ServerSession.class)) {            
                 return (T) this.getServerSession();
+            } else if (cls.equals(SessionBroker.class)) {            
+                return (T) this.getSessionBroker();
             } else if (cls.equals(java.sql.Connection.class)) {
                 UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
                 if(unitOfWork.isInTransaction() || unitOfWork.getParent().isExclusiveIsolatedClientSession()) {

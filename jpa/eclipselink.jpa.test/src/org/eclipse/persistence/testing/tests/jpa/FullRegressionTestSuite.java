@@ -291,6 +291,9 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTest(PLSQLTestSuite.suite());
         fullSuite.addTest(XMLPLSQLTestSuite.suite());
 
+        // Composite tests.
+        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite.suite());
+        
         return fullSuite;
     }
 }

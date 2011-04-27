@@ -176,12 +176,12 @@ public class StaticWeaveClassTransformer {
         }
         
         // Create an instance of MetadataProcessor for specified persistence unit info
-        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, multitenantSharedEmf, null);
+        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, multitenantSharedEmf, null, null);
         
         //bug:299926 - Case insensitive table / column matching with native SQL queries
         EntityManagerSetupImpl.updateCaseSensitivitySettings(unitInfo.getProperties(), processor.getProject(), session);
         // Process the Object/relational metadata from XML and annotations.
-        PersistenceUnitProcessor.processORMetadata(processor, false);
+        PersistenceUnitProcessor.processORMetadata(processor, false, PersistenceUnitProcessor.Mode.ALL);
 
         Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
 

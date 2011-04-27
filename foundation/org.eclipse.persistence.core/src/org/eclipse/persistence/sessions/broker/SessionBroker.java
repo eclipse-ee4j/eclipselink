@@ -20,6 +20,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.identitymaps.*;
@@ -45,6 +47,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     protected Map<Class, String> sessionNamesByClass;
     protected Map<String, AbstractSession> sessionsByName;
     protected Sequencing sequencing;
+    protected boolean shouldUseDescriptorAliases;
 
     /**
      * PUBLIC:
@@ -181,6 +184,14 @@ public class SessionBroker extends DatabaseSessionImpl {
      */
     public void addDescriptors(org.eclipse.persistence.sessions.Project project) throws ValidationException {
         throw ValidationException.cannotAddDescriptorsToSessionBroker();
+    }
+
+    /**
+     * PUBLIC:
+     * You cannot add a sequence to a session broker, you must add it to its session.
+     */
+    public void addSequence(Sequence sequence) {
+        throw ValidationException.cannotAddSequencesToSessionBroker();
     }
 
     /**
@@ -363,60 +374,45 @@ public class SessionBroker extends DatabaseSessionImpl {
 
     /**
      * PUBLIC:
-     * Return the query from the session pre-defined queries with the given name.
-     * This allows for common queries to be pre-defined, reused and executed by name.
-     */
-    public DatabaseQuery getQuery(String name) {
-        //Bug#3473441 Should always call super first to ensure any change in Session will be reflected here.
-        DatabaseQuery query = super.getQuery(name);
-        if (isClientSessionBroker() && (query == null)) {
-            String sessionName = null;
-            AbstractSession ssession = null;
-            Iterator names = this.getSessionsByName().keySet().iterator();
-            while (names.hasNext()) {
-                sessionName = (String)names.next();
-                ssession = getSessionForName(sessionName);
-                if (ssession instanceof org.eclipse.persistence.sessions.server.ClientSession) {
-                    query = ((ClientSession)ssession).getParent().getBroker().getQuery(name);
-                    if (query != null) {
-                        return query;
-                    }
-                }
-            }
-        }
-
-        return query;
-    }
-
-    /**
-     * PUBLIC:
      * Return the query from the session pre-defined queries with the given name and argument types.
      * This allows for common queries to be pre-defined, reused and executed by name.
      * This method should be used if the Session has multiple queries with the same name but
      * different arguments.
+     * 
+     * The search order is: 
+     *    for ClientSessionBroker:
+     *      the broker; 
+     *      it's member ClientSessions (but not their parent ServerSessions);
+     *      the parent SessionBroker.
+     *      
+     *    for ServerSession or DatabaseSession SessionBroker:
+     *      the broker;
+     *      it's member ServerSessions (or DatabaseSessions). 
      */
-
     //Bug#3551263  Override getQuery(String name, Vector arguments) in Session search through 
     //the server session broker as well
-    public DatabaseQuery getQuery(String name, Vector arguments) {
-        DatabaseQuery query = super.getQuery(name, arguments);
-        if (isClientSessionBroker() && (query == null)) {
-            String sessionName = null;
-            AbstractSession ssession = null;
-            Iterator names = this.getSessionsByName().keySet().iterator();
-            while (names.hasNext()) {
-                sessionName = (String)names.next();
-                ssession = getSessionForName(sessionName);
-                if (ssession instanceof org.eclipse.persistence.sessions.server.ClientSession) {
-                    query = ((ClientSession)ssession).getParent().getBroker().getQuery(name, arguments);
-                    if (query != null) {
-                        return query;
-                    }
-                }
+    public DatabaseQuery getQuery(String name, Vector arguments, boolean shouldSearchParent) {
+        // First search the broker
+        DatabaseQuery query = super.getQuery(name, arguments, shouldSearchParent);
+        if(query != null) {
+            return query;
+        }
+        Iterator<AbstractSession> it = this.sessionsByName.values().iterator();
+        while(it.hasNext()) {
+            // Note that ClientSession's parent ServerSessions should not be searched at this time
+            query = it.next().getQuery(name, arguments, false);
+            if(query != null) {
+                return query;
             }
         }
-
-        return query;
+        if(shouldSearchParent) {
+            AbstractSession parent = getParent();
+            if(parent != null) {
+                // Search SessionBroker and it's member ServerSessions
+                return parent.getQuery(name, arguments, true);
+            }
+        }
+        return null;
     }
 
     /**
@@ -500,6 +496,25 @@ public class SessionBroker extends DatabaseSessionImpl {
         if (!isClientSessionBroker()) {
             for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
                 DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();
+                String sessionName = databaseSession.getName();
+
+                // Copy jpa queries from member sessions into SessionBroker before descriptors' initialization.
+                int nJPAQueriesSize = databaseSession.getJPAQueries().size();
+                for(int i=0; i < nJPAQueriesSize; i++) {
+                    DatabaseQuery query = databaseSession.getJPAQueries().get(i);
+                    query.setSessionName(sessionName);
+                    getJPAQueries().add(query);
+                }
+
+                // assign session name to each query
+                Iterator<List<DatabaseQuery>> it = databaseSession.getQueries().values().iterator();
+                while(it.hasNext()) {
+                    List<DatabaseQuery> queryList = it.next();
+                    for(int i=0; i < queryList.size(); i++) {
+                        queryList.get(i).setSessionName(sessionName);
+                    }
+                }
+                
                 databaseSession.initializeSequencing();
             }
             if(hasExternalTransactionController()) {
@@ -518,8 +533,14 @@ public class SessionBroker extends DatabaseSessionImpl {
             if (databaseSession.getProject().hasIsolatedClasses()) {
                 getProject().setHasIsolatedClasses(true);
             }
+            if (databaseSession.getProject().hasMappingsPostCalculateChangesOnDeleted()) {
+                getProject().setHasMappingsPostCalculateChangesOnDeleted(true);
+            }
             if (databaseSession.getProject().hasNonIsolatedUOWClasses()) {
                 getProject().setHasNonIsolatedUOWClasses(true);
+            }
+            if (databaseSession.getProject().hasProxyIndirection()) {
+                getProject().setHasProxyIndirection(true);
             }
             getProject().getDefaultReadOnlyClasses().addAll(databaseSession.getProject().getDefaultReadOnlyClasses());
         }
@@ -629,39 +650,49 @@ public class SessionBroker extends DatabaseSessionImpl {
      * This connects all of the child sessions and expects that they are in a valid state to be connected.
      */
     public void login() throws DatabaseException {
-        //Bug#3440544 Check if logged in already to stop the attempt to login more than once
-        if (isLoggedIn) {
-            throw ValidationException.alreadyLoggedIn(this.getName());
-        } else {
-            if (this.eventManager != null) {
-                this.eventManager.preLogin(this);
+        preConnectDatasource();
+        // Connection all sessions and initialize
+        for (Iterator sessionEnum = getSessionsByName().values().iterator();
+                 sessionEnum.hasNext();) {
+            DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
+            if (session.hasEventManager()) {
+                session.getEventManager().preLogin(session);
             }
-            // Bug 3848021 - ensure the external transaction controller is initialized
-            if (!isConnected()) {
-                getServerPlatform().initializeExternalTransactionController();
+            if (!session.isConnected()) {
+                session.login();
             }
-
-            // Connection all sessions and initialize
-            for (Iterator sessionEnum = getSessionsByName().values().iterator();
-                     sessionEnum.hasNext();) {
-                DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
-                if (session.hasEventManager()) {
-                    session.getEventManager().preLogin(session);
-                }
-                if (!session.isConnected()) {
-                    session.connect();
-                }
-            }
-            initializeDescriptors();
-            if (getCommandManager() != null) {
-                getCommandManager().initialize();
-            }
-            isLoggedIn = true;
-            if (this.eventManager != null) {
-                this.eventManager.postLogin(this);
-            }
-
         }
+        postConnectDatasource();
+    }
+
+    /**
+     * PUBLIC:
+     * Connect to the database using the predefined login.
+     * During connection, attempt to auto detect the required database platform.
+     * This method can be used in systems where for ease of use developers have
+     * EclipseLink autodetect the platform.
+     * To be safe, however, the platform should be configured directly.
+     * The login must have been assigned when or after creating the session.
+     *
+     */
+    public void loginAndDetectDatasource() throws DatabaseException {
+        preConnectDatasource();
+        // Connection all sessions and initialize
+        for (Iterator sessionEnum = getSessionsByName().values().iterator();
+                 sessionEnum.hasNext();) {
+            DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
+            if (session.hasEventManager()) {
+                session.getEventManager().preLogin(session);
+            }
+            if (!session.isConnected()) {
+                if(session.getDatasourcePlatform().getClass().getName().equals("org.eclipse.persistence.platform.database.DatabasePlatform")) {
+                    session.loginAndDetectDatasource();
+                } else {
+                    session.login();
+                }
+            }
+        }
+        postConnectDatasource();
     }
 
     /**
@@ -670,35 +701,21 @@ public class SessionBroker extends DatabaseSessionImpl {
      * This connects all of the child sessions and expects that they are in a valid state to be connected.
      */
     public void login(String userName, String password) throws DatabaseException {
-        //Bug#3440544 Check if logged in already to stop the attempt to login more than once
-        if (isLoggedIn) {
-            throw ValidationException.alreadyLoggedIn(this.getName());
-        } else {
-            if (this.eventManager != null) {
-                this.eventManager.preLogin(this);
+        preConnectDatasource();
+        // Connection all sessions and initialize
+        for (Iterator sessionEnum = getSessionsByName().values().iterator();
+                 sessionEnum.hasNext();) {
+            DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
+            session.getDatasourceLogin().setUserName(userName);
+            session.getDatasourceLogin().setPassword(password);
+            if (session.hasEventManager()) {
+                session.getEventManager().preLogin(session);
             }
-            // Bug 3848021 - ensure the external transaction controller is initialized
-            if (!isConnected()) {
-                getServerPlatform().initializeExternalTransactionController();
+            if (!session.isConnected()) {
+                session.login();
             }
-
-            // Connection all sessions and initialize
-            for (Iterator sessionEnum = getSessionsByName().values().iterator();
-                     sessionEnum.hasNext();) {
-                DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
-                if (session.hasEventManager()) {
-                    session.getEventManager().preLogin(session);
-                }
-                session.getDatasourceLogin().setUserName(userName);
-                session.getDatasourceLogin().setPassword(password);
-
-                if (!session.isConnected()) {
-                    session.connect();
-                }
-            }
-            initializeDescriptors();
-            this.isLoggedIn = true;
         }
+        postConnectDatasource();
     }
 
     /**
@@ -710,14 +727,14 @@ public class SessionBroker extends DatabaseSessionImpl {
      * or a general error occurs.
      */
     public void logout() throws DatabaseException {
-        for (Iterator sessionEnum = getSessionsByName().values().iterator();
-                 sessionEnum.hasNext();) {
-            DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
-            session.logout();
+        if(!isLoggedIn) {
+            return;
         }
         if (!isClientSessionBroker()) {
-            if(hasExternalTransactionController()) {
-                getExternalTransactionController().clearSequencingListeners();
+            for (Iterator sessionEnum = getSessionsByName().values().iterator();
+                     sessionEnum.hasNext();) {
+                DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
+                session.logout();
             }
         }
         sequencing = null;
@@ -743,6 +760,18 @@ public class SessionBroker extends DatabaseSessionImpl {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
             Class descriptorClass = (Class)classes.next();
             getSessionNamesByClass().put(descriptorClass, name);
+            if(this.shouldUseDescriptorAliases) {
+                String alias = descriptor.getAlias();
+                if(alias != null && alias.length() > 0) {
+                    ClassDescriptor anotherDescriptor = getDescriptorForAlias(alias);
+                    if(anotherDescriptor != null) {
+                        if(anotherDescriptor.getJavaClass() != descriptor.getJavaClass()) {
+                            throw ValidationException.sharedDescriptorAlias(alias, descriptor.getJavaClass().getName(), anotherDescriptor.getJavaClass().getName());
+                        }
+                    }
+                    addAlias(alias, descriptor);
+                }
+            }
             getDescriptors().put(descriptorClass, descriptor);
         }
     }
@@ -797,6 +826,18 @@ public class SessionBroker extends DatabaseSessionImpl {
             session.release();
         }
         super.release();
+    }
+
+    /**
+     * INTERNAL:
+     * Used for JTS integration internally by ServerPlatform.
+     */
+    public void setExternalTransactionController(ExternalTransactionController externalTransactionController) {
+        super.setExternalTransactionController(externalTransactionController);
+        for (AbstractSession session : getSessionsByName().values()) {
+            DatabaseSessionImpl dbSession = (DatabaseSessionImpl)session;
+            dbSession.setExternalTransactionController(externalTransactionController);
+        }
     }
 
     /**
@@ -966,5 +1007,23 @@ public class SessionBroker extends DatabaseSessionImpl {
      */
     public boolean isSequencingCallbackRequired() {
         return howManySequencingCallbacks() > 0;
+    }
+    
+    /**
+     * PUBLIC:
+     * Indicates whether descriptors should use aliasDescriptors map.
+     * If aliasDescriptors is used then descriptors' aliases should be unique.
+     */
+    public boolean shouldUseDescriptorAliases() {
+        return this.shouldUseDescriptorAliases;
+    }
+
+    /**
+     * PUBLIC:
+     * Indicates whether descriptors should use aliasDescriptors map.
+     * If aliasDescriptors is used then descriptors' aliases should be unique.
+     */
+    public void setShouldUseDescriptorAliases(boolean shouldUseDescriptorAliases) {
+        this.shouldUseDescriptorAliases = shouldUseDescriptorAliases;
     }
 }
