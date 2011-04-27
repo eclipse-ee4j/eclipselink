@@ -25,7 +25,7 @@ import org.eclipse.persistence.internal.libraries.asm.*;
  * 
  */
 
-public class MethodWeaver extends CodeAdapter implements Constants {
+public class MethodWeaver extends MethodAdapter implements Opcodes {
 
     protected ClassWeaver tcw;
     protected String methodName;
@@ -34,13 +34,14 @@ public class MethodWeaver extends CodeAdapter implements Constants {
     /** Determines if we are at the first line of a method. */
     protected boolean methodStarted = false;
         
-    public MethodWeaver(ClassWeaver tcw, String methodName, String methodDescriptor, CodeVisitor cv) {        
-        super(cv);
+    public MethodWeaver(ClassWeaver tcw, String methodName, String methodDescriptor, MethodVisitor mv) {        
+        super(mv);
         this.tcw = tcw;
         this.methodName = methodName;
         this.methodDescriptor = methodDescriptor;
     }
 
+    @Override
     public void visitInsn (final int opcode) {
         weaveBeginningOfMethodIfRequired();
         if (opcode == RETURN) {
@@ -49,26 +50,31 @@ public class MethodWeaver extends CodeAdapter implements Constants {
         super.visitInsn(opcode);
     }
 
+    @Override
     public void visitIntInsn (final int opcode, final int operand) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitIntInsn(opcode, operand);
+        super.visitIntInsn(opcode, operand);
     }
 
+    @Override
     public void visitVarInsn (final int opcode, final int var) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitVarInsn(opcode, var);
+        super.visitVarInsn(opcode, var);
     }
 
+    @Override
     public void visitTypeInsn (final int opcode, final String desc) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitTypeInsn(opcode, desc);
+        super.visitTypeInsn(opcode, desc);
     }
 
+    @Override
     public void visitFieldInsn (final int opcode, final String owner, final String name, final String desc) {
         weaveBeginningOfMethodIfRequired();
         weaveAttributesIfRequired(opcode, owner, name, desc);
     }
 
+    @Override
     public void visitMethodInsn (final int opcode, final String owner, final String name, final String desc) {
         weaveBeginningOfMethodIfRequired();
         String descClassName = "";
@@ -91,64 +97,76 @@ public class MethodWeaver extends CodeAdapter implements Constants {
         }
     }
 
+    @Override
     public void visitJumpInsn (final int opcode, final Label label) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitJumpInsn(opcode, label);
+        super.visitJumpInsn(opcode, label);
     }
 
+    @Override
     public void visitLabel (final Label label) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitLabel(label);
+        super.visitLabel(label);
     }
 
+    @Override
     public void visitLdcInsn (final Object cst) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitLdcInsn(cst);
+        super.visitLdcInsn(cst);
     }
 
+    @Override
     public void visitIincInsn (final int var, final int increment) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitIincInsn(var, increment);
+        super.visitIincInsn(var, increment);
     }
 
-    public void visitTableSwitchInsn (final int min, final int max, final Label dflt, final Label labels[]) {
+    @Override
+    public void visitTableSwitchInsn (final int min, final int max, final Label dflt, final Label ...labels) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitTableSwitchInsn(min, max, dflt, labels);
+        super.visitTableSwitchInsn(min, max, dflt, labels);
     }
 
+    @Override
     public void visitLookupSwitchInsn (final Label dflt, final int keys[], final Label labels[]) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitLookupSwitchInsn(dflt, keys, labels);
+        super.visitLookupSwitchInsn(dflt, keys, labels);
     }
 
+    @Override
     public void visitMultiANewArrayInsn (final String desc, final int dims) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitMultiANewArrayInsn(desc, dims);
+        super.visitMultiANewArrayInsn(desc, dims);
     }
 
+    @Override
     public void visitTryCatchBlock (final Label start, final Label end,final Label handler, final String type) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitTryCatchBlock(start, end, handler, type);
+        super.visitTryCatchBlock(start, end, handler, type);
     }
 
+    @Override
     public void visitMaxs (final int maxStack, final int maxLocals) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitMaxs(0, 0);
+        super.visitMaxs(maxStack, maxLocals);
     }
 
-    public void visitLocalVariable (final String name, final String desc, final Label start, final Label end, final int index) {
+    @Override
+    public void visitLocalVariable (final String name, final String desc, String signature, final Label start, final Label end, final int index) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitLocalVariable(name, desc, start, end, index);
+        super.visitLocalVariable(name, desc, signature, start, end, index);
     }
 
+    @Override
     public void visitLineNumber (final int line, final Label start) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitLineNumber(line, start);
+        super.visitLineNumber(line, start);
     }
 
+    @Override
     public void visitAttribute (final Attribute attr) {
         weaveBeginningOfMethodIfRequired();
-        cv.visitAttribute(attr);
+        super.visitAttribute(attr);
     }
 
     /**
@@ -170,13 +188,13 @@ public class MethodWeaver extends CodeAdapter implements Constants {
         }
         if (opcode == GETFIELD) {
             if (attributeDetails.weaveValueHolders() || tcw.classDetails.shouldWeaveFetchGroups()) {
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_GET + name, "()" + attributeDetails.getReferenceClassType().getDescriptor());
+                mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_GET + name, "()" + attributeDetails.getReferenceClassType().getDescriptor());
             } else {
                 super.visitFieldInsn(opcode, owner, name, desc);
             }
         } else if (opcode == PUTFIELD) {
             if ((attributeDetails.weaveValueHolders()) || (tcw.classDetails.shouldWeaveChangeTracking()) || (tcw.classDetails.shouldWeaveFetchGroups())) {
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_SET + name, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_SET + name, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
             } else {
                 super.visitFieldInsn(opcode, owner, name, desc);
             }
@@ -237,50 +255,50 @@ public class MethodWeaver extends CodeAdapter implements Constants {
         boolean isGetMethod = (attributeDetails != null) && this.methodDescriptor.startsWith("()");
         if (isGetMethod && !attributeDetails.hasField()) {
             if (tcw.classDetails.shouldWeaveFetchGroups()) {
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitLdcInsn(attributeDetails.getAttributeName());
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitLdcInsn(attributeDetails.getAttributeName());
                 // _persistence_checkFetched("attributeName");
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetched", "(Ljava/lang/String;)V");                
+                mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetched", "(Ljava/lang/String;)V");                
             }
             if (attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_attributeName_vh();
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, "()V");
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, "()V");
                 
                 // if (!_persistence_attributeName_vh.isInstantiated()) {
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                cv.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "isInstantiated", "()Z");
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                mv.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "isInstantiated", "()Z");
                 Label l0 = new Label();
-                cv.visitJumpInsn(IFNE, l0);
+                mv.visitJumpInsn(IFNE, l0);
     
                 // Need to disable change tracking when the set method is called to avoid thinking the attribute changed.
                 if (tcw.classDetails.shouldWeaveChangeTracking()) {
                     // PropertyChangeListener temp_persistence_listener = _persistence_listener;
-                    cv.visitVarInsn(ALOAD, 0);
-                    cv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), "_persistence_listener", ClassWeaver.PCL_SIGNATURE);
-                    cv.visitVarInsn(ASTORE, 4);
+                    mv.visitVarInsn(ALOAD, 0);
+                    mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), "_persistence_listener", ClassWeaver.PCL_SIGNATURE);
+                    mv.visitVarInsn(ASTORE, 4);
                     // _persistence_listener = null;
-                    cv.visitVarInsn(ALOAD, 0);
-                    cv.visitInsn(ACONST_NULL);
-                    cv.visitFieldInsn(PUTFIELD, tcw.classDetails.getClassName(), "_persistence_listener", ClassWeaver.PCL_SIGNATURE);
+                    mv.visitVarInsn(ALOAD, 0);
+                    mv.visitInsn(ACONST_NULL);
+                    mv.visitFieldInsn(PUTFIELD, tcw.classDetails.getClassName(), "_persistence_listener", ClassWeaver.PCL_SIGNATURE);
                 }
                 // setAttributeName((AttributeType)_persistence_attributeName_vh.getValue());
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                cv.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
-                cv.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getSetterMethodName(), "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                mv.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
+                mv.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
+                mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getSetterMethodName(), "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
                 
                 if (tcw.classDetails.shouldWeaveChangeTracking()) {
                     // _persistence_listener = temp_persistence_listener;
-                    cv.visitVarInsn(ALOAD, 0);
-                    cv.visitVarInsn(ALOAD, 4);
-                    cv.visitFieldInsn(PUTFIELD, tcw.classDetails.getClassName(), "_persistence_listener", ClassWeaver.PCL_SIGNATURE);
+                    mv.visitVarInsn(ALOAD, 0);
+                    mv.visitVarInsn(ALOAD, 4);
+                    mv.visitFieldInsn(PUTFIELD, tcw.classDetails.getClassName(), "_persistence_listener", ClassWeaver.PCL_SIGNATURE);
                 }
                 // }
-                cv.visitLabel(l0);
+                mv.visitLabel(l0);
             }        
         } else {
             attributeDetails = tcw.classDetails.getSetterMethodToAttributeDetails().get(methodName);
@@ -291,17 +309,17 @@ public class MethodWeaver extends CodeAdapter implements Constants {
                         // if this is a primitive, get the wrapper class
                         String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
                         
-                        cv.visitInsn(ACONST_NULL);
+                        mv.visitInsn(ACONST_NULL);
                         if (wrapper != null){
-                            cv.visitVarInsn(ASTORE, 3);
+                            mv.visitVarInsn(ASTORE, 3);
                         } else {
-                            cv.visitVarInsn(ASTORE, 2);
+                            mv.visitVarInsn(ASTORE, 2);
                         }
         
-                        cv.visitVarInsn(ALOAD, 0);
-                        cv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), "_persistence_listener", "Ljava/beans/PropertyChangeListener;");
+                        mv.visitVarInsn(ALOAD, 0);
+                        mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), "_persistence_listener", "Ljava/beans/PropertyChangeListener;");
                         Label l0 = new Label();
-                        cv.visitJumpInsn(IFNULL, l0);
+                        mv.visitJumpInsn(IFNULL, l0);
         
                         /**
                          * The code below constructs the following code
@@ -312,49 +330,49 @@ public class MethodWeaver extends CodeAdapter implements Constants {
                          */                
                         // 1st part of invoking constructor for primitives to wrap them
                         if (wrapper != null) {
-                            cv.visitTypeInsn(NEW, wrapper);
-                            cv.visitInsn(DUP);
+                            mv.visitTypeInsn(NEW, wrapper);
+                            mv.visitInsn(DUP);
                         }
                         
                         // Call the getter
                         // getAttribute()
-                        cv.visitVarInsn(ALOAD, 0);
-                        cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()" + attributeDetails.getReferenceClassType().getDescriptor());               
+                        mv.visitVarInsn(ALOAD, 0);
+                        mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()" + attributeDetails.getReferenceClassType().getDescriptor());               
                         if (wrapper != null){
                             // 2nd part of using constructor.
-                            cv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
-                            cv.visitVarInsn(ASTORE, 3);
+                            mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                            mv.visitVarInsn(ASTORE, 3);
                         } else {
                             // store the result
-                            cv.visitVarInsn(ASTORE, 2);
+                            mv.visitVarInsn(ASTORE, 2);
                         }
                         
                         Label l1 = new Label();
-                        cv.visitJumpInsn(GOTO, l1);
-                        cv.visitLabel(l0);
-                        cv.visitVarInsn(ALOAD, 0);
+                        mv.visitJumpInsn(GOTO, l1);
+                        mv.visitLabel(l0);
+                        mv.visitVarInsn(ALOAD, 0);
                         
-                        cv.visitLdcInsn(attributeDetails.getAttributeName());
-                        cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
-                        cv.visitLabel(l1);
+                        mv.visitLdcInsn(attributeDetails.getAttributeName());
+                        mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
+                        mv.visitLabel(l1);
                         
-                        cv.visitVarInsn(ALOAD, 0);
-                        cv.visitLdcInsn(attributeDetails.getAttributeName());
+                        mv.visitVarInsn(ALOAD, 0);
+                        mv.visitLdcInsn(attributeDetails.getAttributeName());
                         
                         if (wrapper != null) {
-                            cv.visitVarInsn(ALOAD, 3);
-                            cv.visitTypeInsn(NEW, wrapper);
-                            cv.visitInsn(DUP);
+                            mv.visitVarInsn(ALOAD, 3);
+                            mv.visitTypeInsn(NEW, wrapper);
+                            mv.visitInsn(DUP);
                         } else {
-                            cv.visitVarInsn(ALOAD, 2);
+                            mv.visitVarInsn(ALOAD, 2);
                         }
                         // get an appropriate load opcode for the type
-                        int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.ILOAD);
-                        cv.visitVarInsn(opcode, 1);
+                        int opcode = attributeDetails.getReferenceClassType().getOpcode(ILOAD);
+                        mv.visitVarInsn(opcode, 1);
                         if (wrapper != null){
-                            cv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                            mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
                         }
-                        cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
+                        mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
                     } else {
                         // tcw.classDetails.shouldWeaveFetchGroups()
                         /**
@@ -369,46 +387,46 @@ public class MethodWeaver extends CodeAdapter implements Constants {
                         
                         // 1st part of invoking constructor for primitives to wrap them
                         if (wrapper != null) {
-                            cv.visitTypeInsn(NEW, wrapper);
-                            cv.visitInsn(DUP);
+                            mv.visitTypeInsn(NEW, wrapper);
+                            mv.visitInsn(DUP);
                         }
                         
                         // Call the getter
                         // getAttribute()
-                        cv.visitVarInsn(ALOAD, 0);
-                        cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()" + attributeDetails.getReferenceClassType().getDescriptor());               
+                        mv.visitVarInsn(ALOAD, 0);
+                        mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()" + attributeDetails.getReferenceClassType().getDescriptor());               
                         if (wrapper != null){
                             // 2nd part of using constructor.
-                            cv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
-                            cv.visitVarInsn(ASTORE, 3);
+                            mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                            mv.visitVarInsn(ASTORE, 3);
                         } else {
                             // store the result
-                            cv.visitVarInsn(ASTORE, 3);
+                            mv.visitVarInsn(ASTORE, 3);
                         }
 
                         // makes use of the value stored in weaveBeginningOfMethodIfRequired to call property change method
                         // _persistence_propertyChange("attributeName", oldAttribute, argument);
-                        cv.visitVarInsn(ALOAD, 0);
-                        cv.visitLdcInsn(attributeDetails.getAttributeName());
-                        cv.visitVarInsn(ALOAD, 3);
+                        mv.visitVarInsn(ALOAD, 0);
+                        mv.visitLdcInsn(attributeDetails.getAttributeName());
+                        mv.visitVarInsn(ALOAD, 3);
                         if (wrapper != null) {
-                            cv.visitTypeInsn(NEW, wrapper);
-                            cv.visitInsn(DUP);
+                            mv.visitTypeInsn(NEW, wrapper);
+                            mv.visitInsn(DUP);
                         }
-                        int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.ILOAD);
-                        cv.visitVarInsn(opcode, 1);
+                        int opcode = attributeDetails.getReferenceClassType().getOpcode(ILOAD);
+                        mv.visitVarInsn(opcode, 1);
                         if (wrapper != null) {
-                            cv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                            mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
                         }
-                        cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
+                        mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
                     }
                 } else {
                     // !tcw.classDetails.shouldWeaveChangeTracking()
                     if(tcw.classDetails.shouldWeaveFetchGroups()) {
-                        cv.visitVarInsn(ALOAD, 0);
-                        cv.visitLdcInsn(attributeDetails.getAttributeName());
+                        mv.visitVarInsn(ALOAD, 0);
+                        mv.visitLdcInsn(attributeDetails.getAttributeName());
                         // _persistence_checkFetchedForSet("variableName");
-                        cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
+                        mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
                     }
 
                 }
@@ -436,20 +454,20 @@ public class MethodWeaver extends CodeAdapter implements Constants {
         boolean isSetMethod = (attributeDetails != null) && this.methodDescriptor.equals(attributeDetails.getSetterMethodSignature());
         if (isSetMethod  && !attributeDetails.hasField()) {
             if (attributeDetails.weaveValueHolders()) {
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, "()V");
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, "()V");
                 
                 //_persistence_attributeName_vh.setValue(argument);
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                cv.visitVarInsn(ALOAD, 1);
-                cv.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "setValue", "(Ljava/lang/Object;)V");
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                mv.visitVarInsn(ALOAD, 1);
+                mv.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "setValue", "(Ljava/lang/Object;)V");
     
                 //  _persistence_attributeName_vh.setIsCoordinatedWithProperty(true);
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                cv.visitInsn(ICONST_1);
-                cv.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "setIsCoordinatedWithProperty", "(Z)V");
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                mv.visitInsn(ICONST_1);
+                mv.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "setIsCoordinatedWithProperty", "(Z)V");
             }
         }
     }

@@ -16,6 +16,9 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.DriverManager;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
+
 import javax.sql.DataSource;
 import org.eclipse.persistence.internal.jpa.transaction.TransactionManagerImpl;
 
@@ -152,6 +155,12 @@ public class DataSourceImpl implements DataSource {
      */
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;
+    }
+
+    // Added for JDK 1.7 compatibility
+    //@Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new SQLFeatureNotSupportedException();
     }
 
 }

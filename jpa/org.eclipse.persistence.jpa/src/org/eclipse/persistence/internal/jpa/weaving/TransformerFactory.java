@@ -12,24 +12,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.eclipse.persistence.internal.libraries.asm.Type;
-
-import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedChangeTracking;
-import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * This class creates a ClassFileTransformer that is used for dynamic bytecode

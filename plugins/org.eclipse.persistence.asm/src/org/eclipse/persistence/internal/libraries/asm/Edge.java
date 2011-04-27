@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000,2002,2003 INRIA, France Telecom 
+ * Copyright (c) 2000-2007 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.eclipse.persistence.internal.libraries.asm;
 
 /**
@@ -35,34 +34,42 @@ package org.eclipse.persistence.internal.libraries.asm;
  * 
  * @author Eric Bruneton
  */
-
 class Edge {
 
-  /**
-   * The (relative) stack size in the basic block from which this edge
-   * originates. This size is equal to the stack size at the "jump" instruction
-   * to which this edge corresponds, relatively to the stack size at the
-   * beginning of the originating basic block.
-   */
+    /**
+     * Denotes a normal control flow graph edge.
+     */
+    static final int NORMAL = 0;
 
-  int stackSize;
+    /**
+     * Denotes a control flow graph edge corresponding to an exception handler.
+     * More precisely any {@link Edge} whose {@link #info} is strictly positive
+     * corresponds to an exception handler. The actual value of {@link #info} is
+     * the index, in the {@link ClassWriter} type table, of the exception that
+     * is catched.
+     */
+    static final int EXCEPTION = 0x7FFFFFFF;
 
-  /**
-   * The successor block of the basic block from which this edge originates.
-   */
+    /**
+     * Information about this control flow graph edge. If
+     * {@link ClassWriter#COMPUTE_MAXS} is used this field is the (relative)
+     * stack size in the basic block from which this edge originates. This size
+     * is equal to the stack size at the "jump" instruction to which this edge
+     * corresponds, relatively to the stack size at the beginning of the
+     * originating basic block. If {@link ClassWriter#COMPUTE_FRAMES} is used,
+     * this field is the kind of this control flow graph edge (i.e. NORMAL or
+     * EXCEPTION).
+     */
+    int info;
 
-  Label successor;
+    /**
+     * The successor block of the basic block from which this edge originates.
+     */
+    Label successor;
 
-  /**
-   * The next edge in the list of successors of the originating basic block.
-   * See {@link Label#successors successors}.
-   */
-
-  Edge next;
-
-  /**
-   * The next available edge in the pool. See {@link CodeWriter}.
-   */
-
-  Edge poolNext;
+    /**
+     * The next edge in the list of successors of the originating basic block.
+     * See {@link Label#successors successors}.
+     */
+    Edge next;
 }

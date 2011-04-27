@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.compiler;
 
 import java.awt.Image;
 import java.beans.Introspector;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -72,15 +73,13 @@ import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Constants;
+import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.Type;
-import org.eclipse.persistence.internal.libraries.asm.attrs.Annotation;
-import org.eclipse.persistence.internal.libraries.asm.attrs.LocalVariableTypeTableAttribute;
-import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
-import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
@@ -211,7 +210,7 @@ public class AnnotationsProcessor {
     private JAXBMetadataLogger logger;
 
     private boolean isDefaultNamespaceAllowed;
-    
+
     private boolean hasSwaRef;
 
     public AnnotationsProcessor(Helper helper) {
@@ -258,7 +257,7 @@ public class AnnotationsProcessor {
                                     xmlMimeType = javaAnnotation.value();
                                 } else if (nextAnnotation instanceof XmlAttachmentRef) {
                                     xmlAttachmentRef = true;
-                                    if(!this.hasSwaRef) {
+                                    if (!this.hasSwaRef) {
                                         this.hasSwaRef = true;
                                     }
                                 }
@@ -322,7 +321,7 @@ public class AnnotationsProcessor {
                             element.setJavaType(helper.getJavaClass(generatedClass));
                         }
                         if (nextInfo.getElementScope() == TypeMappingInfo.ElementScope.Global) {
-                            if(this.getGlobalElements().get(element.getElementName()) == null) {
+                            if (this.getGlobalElements().get(element.getElementName()) == null) {
                                 this.getGlobalElements().put(element.getElementName(), element);
                             } else {
                                 this.localElements.add(element);
@@ -331,7 +330,7 @@ public class AnnotationsProcessor {
                             this.localElements.add(element);
                         }
                         String rootNamespace = element.getElementName().getNamespaceURI();
-                        if(rootNamespace == null) {
+                        if (rootNamespace == null) {
                             rootNamespace = XMLConstants.EMPTY_STRING;
                         }
                         if (rootNamespace.equals(XMLConstants.EMPTY_STRING)) {
@@ -559,10 +558,11 @@ public class AnnotationsProcessor {
 
     /**
      * Process any additional classes (i.e. inner classes, @XmlSeeAlso,
+     * 
      * @XmlRegistry, etc.) for a given set of JavaClasses, then complete
-     * building all of the required TypeInfo objects. This method
-     * is typically called after init and preBuildTypeInfo have
-     * been called.
+     *               building all of the required TypeInfo objects. This method
+     *               is typically called after init and preBuildTypeInfo have
+     *               been called.
      * 
      * @param javaClasses
      * @return updated array of JavaClasses, made up of the original classes
@@ -576,7 +576,7 @@ public class AnnotationsProcessor {
         javaClasses = processAdditionalClasses(javaClasses);
         preBuildTypeInfo(javaClasses);
         buildTypeInfo(javaClasses);
-        updateGlobalElements(javaClasses);        
+        updateGlobalElements(javaClasses);
         return javaClasses;
     }
 
@@ -607,36 +607,35 @@ public class AnnotationsProcessor {
 
             NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
 
-            
             XMLNameTransformer transformer = info.getXmlNameTransformer();
-            if(transformer == TypeInfo.DEFAULT_NAME_TRANSFORMER){
-            	XMLNameTransformer nsInfoXmlNameTransformer = packageNamespace.getXmlNameTransformer();
+            if (transformer == TypeInfo.DEFAULT_NAME_TRANSFORMER) {
+                XMLNameTransformer nsInfoXmlNameTransformer = packageNamespace.getXmlNameTransformer();
 
-            	if(nsInfoXmlNameTransformer != null){
+                if (nsInfoXmlNameTransformer != null) {
                     info.setXmlNameTransformer(nsInfoXmlNameTransformer);
-            	}else if (helper.isAnnotationPresent(javaClass, XmlNameTransformer.class)) {
-                   XmlNameTransformer nameTranformer = (XmlNameTransformer) helper.getAnnotation(javaClass, XmlNameTransformer.class);
-                    Class nameTransformerClass = nameTranformer.value();	                                    
-                    try {				
+                } else if (helper.isAnnotationPresent(javaClass, XmlNameTransformer.class)) {
+                    XmlNameTransformer nameTranformer = (XmlNameTransformer) helper.getAnnotation(javaClass, XmlNameTransformer.class);
+                    Class nameTransformerClass = nameTranformer.value();
+                    try {
                         info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.newInstance());
                     } catch (InstantiationException ex) {
                         throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
                     } catch (IllegalAccessException ex) {
                         throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
-                    }	             		
-          	}else if (helper.isAnnotationPresent(javaClass.getPackage(), XmlNameTransformer.class)) {
-                  XmlNameTransformer nameTranformer = (XmlNameTransformer) helper.getAnnotation(javaClass.getPackage(), XmlNameTransformer.class);
-                  Class nameTransformerClass = nameTranformer.value();	                                    
-                  try {				
-                      info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.newInstance());
-                  } catch (InstantiationException ex) {
-                      throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
-                  } catch (IllegalAccessException ex) {
-                      throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
-                  }	                              
-              }	            
-            }   
-            
+                    }
+                } else if (helper.isAnnotationPresent(javaClass.getPackage(), XmlNameTransformer.class)) {
+                    XmlNameTransformer nameTranformer = (XmlNameTransformer) helper.getAnnotation(javaClass.getPackage(), XmlNameTransformer.class);
+                    Class nameTransformerClass = nameTranformer.value();
+                    try {
+                        info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.newInstance());
+                    } catch (InstantiationException ex) {
+                        throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
+                    } catch (IllegalAccessException ex) {
+                        throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
+                    }
+                }
+            }
+
             // handle @XmlAccessorType
             postProcessXmlAccessorType(info, packageNamespace);
 
@@ -686,19 +685,19 @@ public class AnnotationsProcessor {
             if (tInfo.isTransient()) {
                 continue;
             }
-            
-            if(!jClass.isInterface() && !tInfo.isEnumerationType() && !jClass.isAbstract()) {
+
+            if (!jClass.isInterface() && !tInfo.isEnumerationType() && !jClass.isAbstract()) {
                 if (tInfo.getFactoryMethodName() == null && tInfo.getObjectFactoryClassName() == null) {
                     JavaConstructor zeroArgConstructor = jClass.getDeclaredConstructor(new JavaClass[] {});
                     if (zeroArgConstructor == null) {
-                        if(tInfo.isSetXmlJavaTypeAdapter()) {
+                        if (tInfo.isSetXmlJavaTypeAdapter()) {
                             tInfo.setTransient(true);
                         } else {
                             throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(jClass.getName());
                         }
                     }
                 }
-            }            
+            }
             // validate XmlValue
             if (tInfo.getXmlValueProperty() != null) {
                 validateXmlValueFieldOrProperty(jClass, tInfo.getXmlValueProperty());
@@ -710,7 +709,8 @@ public class AnnotationsProcessor {
                 if (targetInfo != null && targetInfo.isTransient()) {
                     throw JAXBException.invalidReferenceToTransientClass(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
                 }
-                // only one XmlValue is allowed per class, and if there is one only XmlAttributes are allowed
+                // only one XmlValue is allowed per class, and if there is one
+                // only XmlAttributes are allowed
                 if (tInfo.isSetXmlValueProperty()) {
                     if (property.isXmlValue() && !(tInfo.getXmlValueProperty().getPropertyName().equals(property.getPropertyName()))) {
                         throw JAXBException.xmlValueAlreadySet(property.getPropertyName(), tInfo.getXmlValueProperty().getPropertyName(), jClass.getName());
@@ -719,16 +719,18 @@ public class AnnotationsProcessor {
                         throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
                     }
                 }
-                if(property.isSwaAttachmentRef() && !this.hasSwaRef) {
+                if (property.isSwaAttachmentRef() && !this.hasSwaRef) {
                     this.hasSwaRef = true;
                 }
                 // validate XmlIDREF
                 if (property.isXmlIdRef()) {
-                    // the target class must have an associated TypeInfo unless it is Object
+                    // the target class must have an associated TypeInfo unless
+                    // it is Object
                     if (targetInfo == null && !typeClass.getQualifiedName().equals(JAVA_LANG_OBJECT)) {
                         throw JAXBException.invalidIDREFClass(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
                     }
-                    // if the property is an XmlIDREF, the target must have an XmlID set
+                    // if the property is an XmlIDREF, the target must have an
+                    // XmlID set
                     if (targetInfo != null && targetInfo.getIDProperty() == null) {
                         throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
                     }
@@ -756,7 +758,8 @@ public class AnnotationsProcessor {
                     }
                 }
 
-                // handle XmlElementRef(s) - validate and build the required ElementDeclaration object
+                // handle XmlElementRef(s) - validate and build the required
+                // ElementDeclaration object
                 if (property.isReference()) {
                     processReferenceProperty(property, tInfo, jClass);
                 }
@@ -813,7 +816,7 @@ public class AnnotationsProcessor {
             // all types is completed
             processXmlIDREF(property);
 
-            if(property.isMap()) {
+            if (property.isMap()) {
                 JavaClass keyType = property.getKeyType();
                 if (shouldGenerateTypeInfo(keyType)) {
                     JavaClass[] jClassArray = new JavaClass[] { keyType };
@@ -830,12 +833,12 @@ public class AnnotationsProcessor {
     }
 
     void processPropertyTypes(JavaClass[] classes) {
-        for (JavaClass next:classes) {
+        for (JavaClass next : classes) {
             TypeInfo info = getTypeInfo().get(next.getQualifiedName());
-            if(info != null) {
+            if (info != null) {
                 for (Property property : info.getPropertyList()) {
-                    if(property.isTransient()) {
-                       continue;
+                    if (property.isTransient()) {
+                        continue;
                     }
                     JavaClass type = property.getActualType();
                     if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
@@ -843,9 +846,9 @@ public class AnnotationsProcessor {
                         JavaClass[] jClassArray = new JavaClass[] { type };
                         buildNewTypeInfo(jClassArray);
                     }
-                    if(property.isChoice()) {
+                    if (property.isChoice()) {
                         processChoiceProperty(property, info, next, type);
-                        for(Property choiceProp:property.getChoiceProperties()) {
+                        for (Property choiceProp : property.getChoiceProperties()) {
                             type = choiceProp.getActualType();
                             if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
                                 CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
@@ -858,6 +861,7 @@ public class AnnotationsProcessor {
             }
         }
     }
+
     /**
      * This method was initially designed to handle processing one or more
      * JavaClass instances. Over time its functionality has been broken apart
@@ -1181,7 +1185,7 @@ public class AnnotationsProcessor {
 
     /**
      * Process @XmlExtensible annotation on a given JavaClass.
-     *
+     * 
      * @param javaClass
      * @param info
      */
@@ -1231,12 +1235,12 @@ public class AnnotationsProcessor {
             // set factoryMethodName
             xmlType.setFactoryMethod(typeAnnotation.factoryMethod());
         } else {
-            // set defaults        	            
-            try{                
+            // set defaults
+            try {
                 xmlType.setName(info.getXmlNameTransformer().transformTypeName(javaClass.getName()));
-            }catch (Exception ex){
-             	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
-            }            
+            } catch (Exception ex) {
+                throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+            }
             xmlType.setNamespace(packageNamespace.getNamespace());
         }
         info.setXmlType(xmlType);
@@ -1261,7 +1265,8 @@ public class AnnotationsProcessor {
 
         if (factoryClassName.equals("javax.xml.bind.annotation.XmlType.DEFAULT")) {
             if (factoryMethodName != null && !factoryMethodName.equals(EMPTY_STRING)) {
-                // factory method applies to the current class - verify method exists
+                // factory method applies to the current class - verify method
+                // exists
                 JavaMethod method = javaClass.getDeclaredMethod(factoryMethodName, new JavaClass[] {});
                 if (method == null) {
                     throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodNotDeclared(factoryMethodName, javaClass.getName());
@@ -1278,12 +1283,12 @@ public class AnnotationsProcessor {
 
         // figure out type name
         String typeName = xmlType.getName();
-        if (typeName.equals(XMLProcessor.DEFAULT)) {    
-            try {                
+        if (typeName.equals(XMLProcessor.DEFAULT)) {
+            try {
                 typeName = info.getXmlNameTransformer().transformTypeName(javaClass.getName());
-            }catch (Exception ex){
-                throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);             
-            }                    	        	
+            } catch (Exception ex) {
+                throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+            }
         }
         info.setSchemaTypeName(typeName);
 
@@ -1332,11 +1337,11 @@ public class AnnotationsProcessor {
      */
     private void postProcessXmlAccessorType(TypeInfo info, NamespaceInfo packageNamespace) {
         if (!info.isSetXmlAccessType()) {
-            //Check for super class
+            // Check for super class
             JavaClass next = helper.getJavaClass(info.getJavaClassName()).getSuperclass();
-            while(next != null && !(next.getName().equals(JAVA_LANG_OBJECT))) {
+            while (next != null && !(next.getName().equals(JAVA_LANG_OBJECT))) {
                 TypeInfo parentInfo = this.typeInfo.get(next.getName());
-                if(parentInfo != null && parentInfo.isSetXmlAccessType()) {
+                if (parentInfo != null && parentInfo.isSetXmlAccessType()) {
                     info.setXmlAccessType(parentInfo.getXmlAccessType());
                     break;
                 }
@@ -1452,7 +1457,7 @@ public class AnnotationsProcessor {
             TypeInfo ptypeInfo = typeInfo.get(ptype.getQualifiedName());
             org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xmlJavaTypeAdapter;
             if (ptypeInfo == null && shouldGenerateTypeInfo(ptype)) {
-                if(helper.isAnnotationPresent(ptype, XmlJavaTypeAdapter.class)) {
+                if (helper.isAnnotationPresent(ptype, XmlJavaTypeAdapter.class)) {
                     XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(ptype, XmlJavaTypeAdapter.class);
                     org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
                     xja.setValue(adapter.value().getName());
@@ -1469,10 +1474,10 @@ public class AnnotationsProcessor {
                     try {
                         property.setXmlJavaTypeAdapter(xmlJavaTypeAdapter);
                     } catch (JAXBException e) {
-                        throw JAXBException.invalidTypeAdapterClass(xmlJavaTypeAdapter.getValue(), javaClass.getName());                    
+                        throw JAXBException.invalidTypeAdapterClass(xmlJavaTypeAdapter.getValue(), javaClass.getName());
                     }
                 }
-            } 
+            }
             if (info.getPackageLevelAdaptersByClass().get(ptype.getQualifiedName()) != null && !property.isSetXmlJavaTypeAdapter()) {
                 adapterClass = info.getPackageLevelAdapterClass(ptype);
 
@@ -1543,7 +1548,7 @@ public class AnnotationsProcessor {
                         returnList.addAll(getPublicMemberPropertiesForClass(superClass, superClassInfo));
                     } else {
                         returnList.addAll(getNoAccessTypePropertiesForClass(superClass, superClassInfo));
-                    }                   
+                    }
                     superClass = superClass.getSuperclass();
                     superClassInfo = typeInfo.get(superClass.getQualifiedName());
                 }
@@ -1569,7 +1574,7 @@ public class AnnotationsProcessor {
     public ArrayList<Property> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
         return getFieldPropertiesForClass(cls, info, onlyPublic, false);
     }
-    
+
     public ArrayList<Property> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic, boolean onlyExplicit) {
         ArrayList<Property> properties = new ArrayList<Property>();
         if (cls == null) {
@@ -1582,7 +1587,7 @@ public class AnnotationsProcessor {
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
                 if (!Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
                     if (!Modifier.isStatic(modifiers)) {
-                        if((onlyExplicit && hasJAXBAnnotations(nextField)) || !onlyExplicit) {
+                        if ((onlyExplicit && hasJAXBAnnotations(nextField)) || !onlyExplicit) {
                             Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
                             properties.add(property);
                         }
@@ -1590,7 +1595,7 @@ public class AnnotationsProcessor {
                         try {
                             Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
                             Object value = ((JavaFieldImpl) nextField).get(null);
-                            if(value != null) {
+                            if (value != null) {
                                 String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
                                 property.setFixedValue(stringValue);
                             } else {
@@ -1694,7 +1699,7 @@ public class AnnotationsProcessor {
         } else {
             property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getNamespaceInfoForPackage(cls), info));
         }
-        
+
         ptype = property.getActualType();
         if (ptype.isPrimitive()) {
             property.setIsRequired(true);
@@ -1754,8 +1759,8 @@ public class AnnotationsProcessor {
             org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes xmlJoinNodes;
             org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode xmlJoinNode;
             List<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes> xmlJoinNodesList = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes>();
-            List<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode> xmlJoinNodeList = null; 
-            
+            List<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode> xmlJoinNodeList = null;
+
             for (XmlJoinNodes xmlJNs : ((XmlElementsJoinNodes) helper.getAnnotation(javaHasAnnotations, XmlElementsJoinNodes.class)).value()) {
                 xmlJoinNodeList = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode>();
                 for (XmlJoinNode xmlJN : xmlJNs.value()) {
@@ -1840,11 +1845,11 @@ public class AnnotationsProcessor {
         // validate XmlElementsXmlJoinNodes (if set)
         if (choiceProperty.isSetXmlJoinNodesList()) {
             // there must be one XmlJoinNodes entry per XmlElement
-            if (choiceProperty.getXmlElements().getXmlElement().size() !=  choiceProperty.getXmlJoinNodesList().size()) {
+            if (choiceProperty.getXmlElements().getXmlElement().size() != choiceProperty.getXmlJoinNodesList().size()) {
                 throw JAXBException.incorrectNumberOfXmlJoinNodesOnXmlElements(propertyName, cls.getQualifiedName());
             }
         }
-        
+
         XmlPath[] paths = null;
         if (helper.isAnnotationPresent(choiceProperty.getElement(), XmlPaths.class)) {
             XmlPaths pathAnnotation = (XmlPaths) helper.getAnnotation(choiceProperty.getElement(), XmlPaths.class);
@@ -1860,7 +1865,8 @@ public class AnnotationsProcessor {
 
             // handle XmlPath - if xml-path is set, we ignore name/namespace
             if (paths != null && next.getXmlPath() == null) {
-                // Only set the path, if the path hasn't already been set from xml
+                // Only set the path, if the path hasn't already been set from
+                // xml
                 XmlPath nextPath = paths[i];
                 next.setXmlPath(nextPath.value());
             }
@@ -1910,8 +1916,10 @@ public class AnnotationsProcessor {
             }
 
             choiceProp.setPropertyName(name);
-            // figure out the property's type - note that for DEFAULT, if from  XML the value will 
-            // be "XmlElement.DEFAULT", and from annotations the value will be "XmlElement$DEFAULT"
+            // figure out the property's type - note that for DEFAULT, if from
+            // XML the value will
+            // be "XmlElement.DEFAULT", and from annotations the value will be
+            // "XmlElement$DEFAULT"
             if (next.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT") || next.getType().equals("javax.xml.bind.annotation.XmlElement$DEFAULT")) {
                 choiceProp.setType(propertyType);
             } else {
@@ -1919,7 +1927,8 @@ public class AnnotationsProcessor {
             }
             // handle case of XmlJoinNodes w/XmlElements
             if (choiceProperty.isSetXmlJoinNodesList()) {
-                // assumes one corresponding xml-join-nodes entry per xml-element
+                // assumes one corresponding xml-join-nodes entry per
+                // xml-element
                 org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes xmlJoinNodes = choiceProperty.getXmlJoinNodesList().get(i);
                 if (xmlJoinNodes != null) {
                     choiceProp.setXmlJoinNodes(xmlJoinNodes);
@@ -1942,7 +1951,7 @@ public class AnnotationsProcessor {
             if (!(this.typeInfo.containsKey(choiceProp.getType().getQualifiedName())) && shouldGenerateTypeInfo(choiceProp.getType())) {
                 JavaClass[] jClassArray = new JavaClass[] { choiceProp.getType() };
                 buildNewTypeInfo(jClassArray);
-            }            
+            }
         }
         choiceProperty.setChoiceProperties(choiceProperties);
     }
@@ -2010,7 +2019,8 @@ public class AnnotationsProcessor {
                 }
             }
 
-            // for DEFAULT, if from XML the type will be "XmlElementRef.DEFAULT",
+            // for DEFAULT, if from XML the type will be
+            // "XmlElementRef.DEFAULT",
             // and from annotations the value will be "XmlElementref$DEFAULT"
             if (!(nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef.DEFAULT") || nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef$DEFAULT"))) {
                 typeName = nextRef.getType();
@@ -2082,7 +2092,7 @@ public class AnnotationsProcessor {
 
             property.setInverseReference(true);
         }
-        
+
         processXmlJavaTypeAdapter(property, info, cls);
         if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(property.getActualType(), JAVAX_ACTIVATION_DATAHANDLER)) {
             property.setIsSwaAttachmentRef(true);
@@ -2090,7 +2100,7 @@ public class AnnotationsProcessor {
         }
         processXmlElement(property, info);
 
-        //JavaClass ptype = property.getActualType();
+        // JavaClass ptype = property.getActualType();
         if (!(property.isSwaAttachmentRef()) && isMtomAttachment(property)) {
             property.setIsMtomAttachment(true);
             property.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
@@ -2412,13 +2422,13 @@ public class AnnotationsProcessor {
                     } else {
                         isPropertyTransient = true;
                     }
-                } else if((onlyExplicit && hasJAXBAnnotations(getMethod)) || !onlyExplicit) {
+                } else if ((onlyExplicit && hasJAXBAnnotations(getMethod)) || !onlyExplicit) {
                     if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
                         propertyMethod = getMethod;
                     } else {
                         isPropertyTransient = true;
                     }
-                } else if(onlyExplicit){
+                } else if (onlyExplicit) {
                     continue;
                 }
             } else {
@@ -2440,13 +2450,13 @@ public class AnnotationsProcessor {
                     } else {
                         isPropertyTransient = true;
                     }
-                } else if((onlyExplicit && hasJAXBAnnotations(setMethod)) || !onlyExplicit) {
-                    if(!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
+                } else if ((onlyExplicit && hasJAXBAnnotations(setMethod)) || !onlyExplicit) {
+                    if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
                         propertyMethod = setMethod;
                     } else {
                         isPropertyTransient = true;
                     }
-                } else if(onlyExplicit) {
+                } else if (onlyExplicit) {
                     continue;
                 }
                 // use the JavaBean API to correctly decapitalize the first
@@ -2509,7 +2519,8 @@ public class AnnotationsProcessor {
         revisedProperties.addAll(properties);
 
         // Check for any get() methods that are overridden in the subclass.
-        // If we find any, remove the property, because it is already defined on the superclass.
+        // If we find any, remove the property, because it is already defined on
+        // the superclass.
         JavaClass superClass = cls.getSuperclass();
         if (null != superClass) {
             TypeInfo superClassInfo = typeInfo.get(superClass.getQualifiedName());
@@ -2602,7 +2613,7 @@ public class AnnotationsProcessor {
         // doesn't appear in the other list, add it to the final list
         List<Property> fieldProperties = getFieldPropertiesForClass(cls, info, false);
         Map<String, Property> fields = new HashMap<String, Property>(fieldProperties.size());
-        for(Property next : fieldProperties) {
+        for (Property next : fieldProperties) {
             JavaHasAnnotations elem = next.getElement();
             if (!hasJAXBAnnotations(elem)) {
                 next.setTransient(true);
@@ -2612,7 +2623,7 @@ public class AnnotationsProcessor {
         }
 
         List<Property> methodProperties = getPropertyPropertiesForClass(cls, info, false);
-        for(Property next : methodProperties) {
+        for (Property next : methodProperties) {
             JavaHasAnnotations elem = next.getElement();
             if (hasJAXBAnnotations(elem)) {
                 // If the property is annotated remove the corresponding field
@@ -2623,7 +2634,7 @@ public class AnnotationsProcessor {
                 // If the property is not annotated only add it if there is no
                 // corresponding field.
                 next.setTransient(true);
-                if(fields.get(next.getPropertyName()) == null) {
+                if (fields.get(next.getPropertyName()) == null) {
                     list.add(next);
                 }
             }
@@ -2679,12 +2690,13 @@ public class AnnotationsProcessor {
                 info.addJavaFieldToXmlEnumValuePair(field.getName(), enumValue);
             }
         }
-        //Add a non-named element declaration for each enumeration to trigger class generation
+        // Add a non-named element declaration for each enumeration to trigger
+        // class generation
         ElementDeclaration elem = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false);
 
-        //if(this.javaClassToTypeMappingInfos.get(javaClass) != null) {
-            //elem.setTypeMappingInfo(this.javaClassToTypeMappingInfos.get(javaClass));
-        //}
+        // if(this.javaClassToTypeMappingInfos.get(javaClass) != null) {
+        // elem.setTypeMappingInfo(this.javaClassToTypeMappingInfos.get(javaClass));
+        // }
         this.getLocalElements().add(elem);
     }
 
@@ -2782,7 +2794,7 @@ public class AnnotationsProcessor {
     }
 
     public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo, TypeInfo info) {
-    	String uri = info.getClassNamespace();
+        String uri = info.getClassNamespace();
         String name = XMLProcessor.DEFAULT;
         String namespace = XMLProcessor.DEFAULT;
         QName qName = null;
@@ -2793,13 +2805,13 @@ public class AnnotationsProcessor {
 
             if (name.equals(XMLProcessor.DEFAULT)) {
                 name = defaultName;
-                try{
+                try {
                     name = info.getXmlNameTransformer().transformAttributeName(name);
-                 }catch (Exception ex){
-                 	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
-                 }
-            }                  
-         
+                } catch (Exception ex) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
+                }
+            }
+
             if (!namespace.equals(XMLProcessor.DEFAULT)) {
                 qName = new QName(namespace, name);
                 isDefaultNamespaceAllowed = false;
@@ -2810,7 +2822,7 @@ public class AnnotationsProcessor {
                     qName = new QName(name);
                 }
             }
-        } else {      
+        } else {
             if (helper.isAnnotationPresent(element, XmlElement.class)) {
                 XmlElement xmlElement = (XmlElement) helper.getAnnotation(element, XmlElement.class);
                 name = xmlElement.name();
@@ -2819,11 +2831,11 @@ public class AnnotationsProcessor {
 
             if (name.equals(XMLProcessor.DEFAULT)) {
                 name = defaultName;
-                
-                try{
-                	name = info.getXmlNameTransformer().transformElementName(name);
-                }catch (Exception ex){
-                 	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
+
+                try {
+                    name = info.getXmlNameTransformer().transformElementName(name);
+                } catch (Exception ex) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
                 }
             }
 
@@ -2842,7 +2854,7 @@ public class AnnotationsProcessor {
         }
         return qName;
     }
-    
+
     public HashMap<String, NamespaceInfo> getPackageToNamespaceMappings() {
         return packageToNamespaceMappings;
     }
@@ -2963,7 +2975,7 @@ public class AnnotationsProcessor {
 
     public JavaClass[] processObjectFactory(JavaClass objectFactoryClass, ArrayList<JavaClass> classes) {
         // if there is an xml-registry from XML for this JavaClass, create a map
-        // of method names to XmlElementDecl objects to simplify processing 
+        // of method names to XmlElementDecl objects to simplify processing
         // later on in this method
         Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl> elemDecls = new HashMap<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl>();
         org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry xmlReg = xmlRegistries.get(objectFactoryClass.getQualifiedName());
@@ -2984,7 +2996,7 @@ public class AnnotationsProcessor {
                 JavaClass type = next.getReturnType();
                 if (JAVAX_XML_BIND_JAXBELEMENT.equals(type.getName())) {
                     Object[] actutalTypeArguments = next.getReturnType().getActualTypeArguments().toArray();
-                    if(actutalTypeArguments.length == 0) {
+                    if (actutalTypeArguments.length == 0) {
                         type = helper.getJavaClass(Object.class);
                     } else {
                         type = (JavaClass) next.getReturnType().getActualTypeArguments().toArray()[0];
@@ -3127,14 +3139,14 @@ public class AnnotationsProcessor {
                 namespaceInfo = getNamespaceInfoForPackage(javaClass);
 
                 String elementName = xmlRE.getName();
-                if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {                	
+                if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {
                     XMLNameTransformer transformer = info.getXmlNameTransformer();
-                    try{                
+                    try {
                         elementName = transformer.transformRootElementName(javaClass.getName());
-                    }catch (Exception ex){
-                     	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
-                    }  
-                    
+                    } catch (Exception ex) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                    }
+
                 }
                 String rootNamespace = xmlRE.getNamespace();
                 QName rootElemName = null;
@@ -3188,33 +3200,7 @@ public class AnnotationsProcessor {
      * annotations.
      */
     private boolean hasJAXBAnnotations(JavaHasAnnotations elem) {
-    	return (helper.isAnnotationPresent(elem, XmlElement.class) || 
-    			helper.isAnnotationPresent(elem, XmlAttribute.class) || 
-    			helper.isAnnotationPresent(elem, XmlAnyElement.class) || 
-    			helper.isAnnotationPresent(elem, XmlAnyAttribute.class) || 
-    			helper.isAnnotationPresent(elem, XmlValue.class) || 
-    			helper.isAnnotationPresent(elem, XmlElements.class) || 
-    			helper.isAnnotationPresent(elem, XmlElementRef.class) || 
-    			helper.isAnnotationPresent(elem, XmlElementRefs.class) || 
-    			helper.isAnnotationPresent(elem, XmlID.class) || 
-    			helper.isAnnotationPresent(elem, XmlInlineBinaryData.class) || 
-    			helper.isAnnotationPresent(elem, XmlSchemaType.class) || 
-    			helper.isAnnotationPresent(elem, XmlElementWrapper.class) || 
-    			helper.isAnnotationPresent(elem, XmlList.class) || 
-    			helper.isAnnotationPresent(elem, XmlMimeType.class) || 
-    			helper.isAnnotationPresent(elem, XmlIDREF.class) || 
-    			helper.isAnnotationPresent(elem, XmlTransient.class) || 
-    			helper.isAnnotationPresent(elem, XmlPath.class) || 
-    			helper.isAnnotationPresent(elem, XmlPaths.class) || 
-    			helper.isAnnotationPresent(elem, XmlInverseReference.class) ||
-    			helper.isAnnotationPresent(elem, XmlJoinNode.class) ||
-    			helper.isAnnotationPresent(elem, XmlJoinNodes.class) ||
-    			helper.isAnnotationPresent(elem, XmlReadOnly.class) || 
-    			helper.isAnnotationPresent(elem, XmlWriteOnly.class) || 
-    			helper.isAnnotationPresent(elem, XmlCDATA.class) || 
-    			helper.isAnnotationPresent(elem, XmlAccessMethods.class) || 
-    			helper.isAnnotationPresent(elem, XmlNullPolicy.class) ||
-    			helper.isAnnotationPresent(elem, XmlJavaTypeAdapter.class));
+        return (helper.isAnnotationPresent(elem, XmlElement.class) || helper.isAnnotationPresent(elem, XmlAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyElement.class) || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) || helper.isAnnotationPresent(elem, XmlValue.class) || helper.isAnnotationPresent(elem, XmlElements.class) || helper.isAnnotationPresent(elem, XmlElementRef.class) || helper.isAnnotationPresent(elem, XmlElementRefs.class) || helper.isAnnotationPresent(elem, XmlID.class) || helper.isAnnotationPresent(elem, XmlInlineBinaryData.class) || helper.isAnnotationPresent(elem, XmlSchemaType.class) || helper.isAnnotationPresent(elem, XmlElementWrapper.class) || helper.isAnnotationPresent(elem, XmlList.class) || helper.isAnnotationPresent(elem, XmlMimeType.class) || helper.isAnnotationPresent(elem, XmlIDREF.class) || helper.isAnnotationPresent(elem, XmlTransient.class) || helper.isAnnotationPresent(elem, XmlPath.class) || helper.isAnnotationPresent(elem, XmlPaths.class) || helper.isAnnotationPresent(elem, XmlInverseReference.class) || helper.isAnnotationPresent(elem, XmlJoinNode.class) || helper.isAnnotationPresent(elem, XmlJoinNodes.class) || helper.isAnnotationPresent(elem, XmlReadOnly.class) || helper.isAnnotationPresent(elem, XmlWriteOnly.class) || helper.isAnnotationPresent(elem, XmlCDATA.class) || helper.isAnnotationPresent(elem, XmlAccessMethods.class) || helper.isAnnotationPresent(elem, XmlNullPolicy.class) || helper.isAnnotationPresent(elem, XmlJavaTypeAdapter.class));
     }
 
     private void validateElementIsInPropOrder(TypeInfo info, String name) {
@@ -3360,23 +3346,22 @@ public class AnnotationsProcessor {
 
         Type mapType = Type.getType(L + mapClass.getRawName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
 
-        ClassWriter cw = new ClassWriter(false);
-        CodeVisitor cv;
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
-        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/MapValue", null, "StringEmployeeMap.java");
+        String sig = "Lorg/eclipse/persistence/internal/jaxb/many/MapValue<L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;>;";
+        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
 
-        // FIELD ATTRIBUTES
-        RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
-
+        // Write Field: @... public Map entry
+        String fieldSig = L + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;";
+        FieldVisitor fv = cw.visitField(Opcodes.ACC_PUBLIC, "entry", L + mapType.getInternalName() + SEMI_COLON, fieldSig, null);
         if (typeMappingInfo != null) {
-            java.lang.annotation.Annotation[] annotations = typeMappingInfo.getAnnotations();
+            Annotation[] annotations = typeMappingInfo.getAnnotations();
             if (annotations != null) {
                 for (int i = 0; i < annotations.length; i++) {
-                    java.lang.annotation.Annotation nextAnnotation = annotations[i];
+                    Annotation nextAnnotation = annotations[i];
                     if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {
                         String annotationClassName = nextAnnotation.annotationType().getName();
-                        Annotation fieldAttrs1ann0 = new Annotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
-                        fieldAttrs1.annotations.add(fieldAttrs1ann0);
+                        AnnotationVisitor av = fv.visitAnnotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
                         for (Method next : nextAnnotation.annotationType().getDeclaredMethods()) {
                             try {
                                 Object nextValue = next.invoke(nextAnnotation, new Object[] {});
@@ -3384,89 +3369,77 @@ public class AnnotationsProcessor {
                                     Type nextType = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                                     nextValue = nextType;
                                 }
-                                fieldAttrs1ann0.add(next.getName(), nextValue);
+                                av.visit(next.getName(), nextValue);
                             } catch (InvocationTargetException ex) {
                                 // ignore the invocation target exception here.
                             } catch (IllegalAccessException ex) {
                             }
                         }
+                        av.visitEnd();
                     }
                 }
             }
         }
-        // FIELD ATTRIBUTES
-        SignatureAttribute fieldAttrs2 = new SignatureAttribute(L + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;");
-        fieldAttrs1.next = fieldAttrs2;
-        cw.visitField(Constants.ACC_PUBLIC, "entry", L + mapType.getInternalName() + SEMI_COLON, null, fieldAttrs1);
+        fv.visitEnd();
+        
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/MapValue", "<init>", "()V");
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
 
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/MapValue", "<init>", "()V");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(1, 1);
-
-        // METHOD ATTRIBUTES
-        RuntimeVisibleAnnotations methodAttrs1 = new RuntimeVisibleAnnotations();
-
-        Annotation methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
-        methodAttrs1.annotations.add(methodAttrs1ann0);
-
-        SignatureAttribute methodAttrs2 = new SignatureAttribute("(L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;)V");
-        methodAttrs1.next = methodAttrs2;
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setItem", "(L" + mapType.getInternalName() + ";)V", null, methodAttrs1);
+        // Write: @XmlTransitent public void setItem(???)
+        String methodSig = "(L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;)V";
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setItem", "(L" + mapType.getInternalName() + ";)V", methodSig, null);
+        // TODO: Verify that we really want to put @XmlTranient on setItem
+        // method
+        mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlTransient;", true);
         Label l0 = new Label();
-        cv.visitLabel(l0);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
-        cv.visitInsn(Constants.RETURN);
+        mv.visitLabel(l0);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
+        mv.visitInsn(Opcodes.RETURN);
         Label l1 = new Label();
-        cv.visitLabel(l1);
-        // CODE ATTRIBUTE
+        mv.visitLabel(l1);
 
-        LocalVariableTypeTableAttribute cvAttr = new LocalVariableTypeTableAttribute();
-        cv.visitAttribute(cvAttr);
+        // Replacement?:LocalVariableTypeTableAttribute cvAttr = new
+        // LocalVariableTypeTableAttribute();
+        // mv.visitAttribute(cvAttr);
 
-        cv.visitMaxs(2, 2);
+        mv.visitMaxs(2, 2);
+        mv.visitEnd();
 
-        // METHOD ATTRIBUTES
-        methodAttrs1 = new RuntimeVisibleAnnotations();
+        // Write @XmlTransient public ??? getItem()
+        methodSig = "()L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;";
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON, methodSig, null);
+        mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlTransient;", true);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
 
-        methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
-        methodAttrs1.annotations.add(methodAttrs1ann0);
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON);
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
 
-        methodAttrs2 = new SignatureAttribute("()L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;");
-        methodAttrs1.next = methodAttrs2;
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON, null, methodAttrs1);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(1, 1);
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "setItem", "(Ljava/lang/Object;)V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitTypeInsn(Opcodes.CHECKCAST, mapType.getInternalName());
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L" + mapType.getInternalName() + ";)V");
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(2, 2);
+        mv.visitEnd();
 
-        cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON);
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(1, 1);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "setItem", "(Ljava/lang/Object;)V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitTypeInsn(Constants.CHECKCAST, mapType.getInternalName());
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L" + mapType.getInternalName() + ";)V");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(2, 2);
-
-        // CLASS ATTRIBUTE
-        RuntimeVisibleAnnotations annotationsAttr = new RuntimeVisibleAnnotations();
-
-        Annotation attrann0 = new Annotation("Ljavax/xml/bind/annotation/XmlType;");
-        attrann0.add("namespace", namespace);
-        annotationsAttr.annotations.add(attrann0);
-        cw.visitAttribute(annotationsAttr);
-
-        SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/MapValue<L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;>;");
-        cw.visitAttribute(attr);
+        // Write @XmlType(namespace)
+        AnnotationVisitor av = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlType;", true);
+        av.visit("namespace", namespace);
 
         cw.visitEnd();
 
@@ -3482,12 +3455,12 @@ public class AnnotationsProcessor {
             componentClass = arrayClass.getComponentType();
         }
         if (componentClass.isArray()) {
-            Class nestedArrayClass = arrayClassesToGeneratedClasses.get(componentClass.getName()); 
-            if(nestedArrayClass == null) {
+            Class nestedArrayClass = arrayClassesToGeneratedClasses.get(componentClass.getName());
+            if (nestedArrayClass == null) {
                 nestedArrayClass = generateWrapperForArrayClass(componentClass, typeMappingInfo, xmlElementType, classesToProcess);
                 arrayClassesToGeneratedClasses.put(componentClass.getName(), nestedArrayClass);
                 classesToProcess.add(helper.getJavaClass(nestedArrayClass));
-            }                
+            }
             return generateArrayValue(arrayClass, componentClass, helper.getJavaClass(nestedArrayClass), typeMappingInfo);
         } else {
             return generateArrayValue(arrayClass, componentClass, componentClass, typeMappingInfo);
@@ -3537,62 +3510,69 @@ public class AnnotationsProcessor {
             superClassName = "org/eclipse/persistence/internal/jaxb/many/ArrayValue";
         }
 
-        ClassWriter cw = new ClassWriter(false);
-        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, superClassName, null, null);
-        CodeVisitor cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKESPECIAL, superClassName, "<init>", "()V");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(1, 1);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        // Write public class ???
+        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, null, superClassName, null);
+
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superClassName, "<init>", "()V");
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(1, 1);
 
         if (componentClass.isArray()) {
-            cv = cw.visitMethod(Constants.ACC_PROTECTED, "adaptedClass", "()Ljava/lang/Class;", null, null);
-            cv.visitLdcInsn(Type.getType(L + nestedClass.getQualifiedName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
-            cv.visitInsn(Constants.ARETURN);
-            cv.visitMaxs(1, 1);
+            // Write: protected Class adaptedClass()
+            mv = cw.visitMethod(Opcodes.ACC_PROTECTED, "adaptedClass", "()Ljava/lang/Class;", null, null);
+            mv.visitLdcInsn(Type.getType(L + nestedClass.getQualifiedName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(1, 1);
         }
 
-        cv = cw.visitMethod(Constants.ACC_PROTECTED, "componentClass", "()Ljava/lang/Class;", null, null);
+        // Write: protected Class componentClass()
+        mv = cw.visitMethod(Opcodes.ACC_PROTECTED, "componentClass", "()Ljava/lang/Class;", null, null);
         JavaClass baseComponentClass = getBaseComponentType(componentClass);
         if (baseComponentClass.isPrimitive()) {
-            cv.visitFieldInsn(Constants.GETSTATIC, getObjectType(baseComponentClass).getQualifiedName().replace(DOT_CHR, SLASH_CHR), "TYPE", "Ljava/lang/Class;");
+            mv.visitFieldInsn(Opcodes.GETSTATIC, getObjectType(baseComponentClass).getQualifiedName().replace(DOT_CHR, SLASH_CHR), "TYPE", "Ljava/lang/Class;");
         } else {
-            cv.visitLdcInsn(Type.getType(L + baseComponentClass.getQualifiedName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
+            mv.visitLdcInsn(Type.getType(L + baseComponentClass.getQualifiedName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
         }
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(1, 1);
-       
-        RuntimeVisibleAnnotations getAdaptedValueMethodAnnotations = new RuntimeVisibleAnnotations();
-        // process any annotations set on the TypeMappingInfo instance
-        java.lang.annotation.Annotation[] annotations;
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
+
+        // Write: public List getAdaptedValue()
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getAdaptedValue", "()Ljava/util/List;", null, null);
+        // @XmlElement(name, type)
+        AnnotationVisitor av = mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
+        av.visit("name", ITEM);
+        av.visit("type", Type.getType(L + getObjectType(nestedClass).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
+        av.visitEnd();
+        // Copy annotations
+        Annotation[] annotations;
         if (typeMappingInfo != null && ((annotations = getAnnotations(typeMappingInfo)) != null)) {
-        	for (java.lang.annotation.Annotation nextAnnotation : annotations) {
-                if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {
-                    Annotation annotation = new Annotation(L + nextAnnotation.annotationType().getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
-                    for (Method next : nextAnnotation.annotationType().getDeclaredMethods()) {
-                        try {
-                            Object nextValue = next.invoke(nextAnnotation, new Object[] {});
-                            if (nextValue instanceof Class) {
-                            	nextValue = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
-                            }
-                            annotation.add(next.getName(), nextValue);
-                        } catch (InvocationTargetException ex) {
-                        } catch (IllegalAccessException ex) {
+            for (Annotation annotation : annotations) {
+                av = mv.visitAnnotation(L + annotation.annotationType().getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
+                for (Method next : annotation.annotationType().getDeclaredMethods()) {
+                    try {
+                        Object nextValue = next.invoke(annotation, new Object[] {});
+                        if (nextValue instanceof Class) {
+                            nextValue = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                         }
+                        av.visit(next.getName(), nextValue);
+                    } catch (InvocationTargetException ex) {
+                    } catch (IllegalAccessException ex) {
                     }
-                	getAdaptedValueMethodAnnotations.annotations.add(annotation);
                 }
+                av.visitEnd();
             }
-        }        
-        Annotation xmlElementAnnotation = new Annotation("Ljavax/xml/bind/annotation/XmlElement;");
-        xmlElementAnnotation.add("name", ITEM);
-        xmlElementAnnotation.add("type", Type.getType(L + getObjectType(nestedClass).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
-        getAdaptedValueMethodAnnotations.annotations.add(xmlElementAnnotation);
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getAdaptedValue", "()Ljava/util/List;", null, getAdaptedValueMethodAnnotations);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "adaptedValue", "Ljava/util/List;");
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(1, 1);
+        }
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, qualifiedInternalClassName, "adaptedValue", "Ljava/util/List;");
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
+
         return generateClassFromBytes(qualifiedClassName, cw.toByteArray());
     }
 
@@ -3687,26 +3667,26 @@ public class AnnotationsProcessor {
         String suggestedClassName = collectionClassShortName + "Of" + name;
         String qualifiedClassName = packageName + DOT_CHR + suggestedClassName;
         qualifiedClassName = getNextAvailableClassName(qualifiedClassName);
-        String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf(DOT_CHR) + 1);
 
         Type collectionType = Type.getType(L + collectionClassRawName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
         String qualifiedInternalClassName = qualifiedClassName.replace(DOT_CHR, SLASH_CHR);
-        ClassWriter cw = new ClassWriter(false);
-        CodeVisitor cv;
 
-        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", null, className.replace(DOT_CHR, SLASH_CHR) + ".java");
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
-        // FIELD ATTRIBUTES
-        RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
+        String classSig = "Lorg/eclipse/persistence/internal/jaxb/many/CollectionValue<L" + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;>;";
+        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, classSig, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", null);
+
+        // Write Field: @... public {collectionType} item; 
+        String fieldSig = L + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;";
+        FieldVisitor fv =  cw.visitField(Opcodes.ACC_PUBLIC, ITEM, L + collectionType.getInternalName() + SEMI_COLON, fieldSig, null);
         if (typeMappingInfo != null) {
-            java.lang.annotation.Annotation[] annotations = getAnnotations(typeMappingInfo);
+            Annotation[] annotations = getAnnotations(typeMappingInfo);
             if (annotations != null) {
                 for (int i = 0; i < annotations.length; i++) {
-                    java.lang.annotation.Annotation nextAnnotation = annotations[i];
+                    Annotation nextAnnotation = annotations[i];
                     if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {
                         String annotationClassName = nextAnnotation.annotationType().getName();
-                        Annotation fieldAttrs1ann0 = new Annotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
-                        fieldAttrs1.annotations.add(fieldAttrs1ann0);
+                        AnnotationVisitor av = fv.visitAnnotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
                         for (Method next : nextAnnotation.annotationType().getDeclaredMethods()) {
                             try {
                                 Object nextValue = next.invoke(nextAnnotation, new Object[] {});
@@ -3714,7 +3694,7 @@ public class AnnotationsProcessor {
                                     Type nextType = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                                     nextValue = nextType;
                                 }
-                                fieldAttrs1ann0.add(next.getName(), nextValue);
+                                av.visit(next.getName(), nextValue);
                             } catch (InvocationTargetException ex) {
                                 // ignore the invocation target exception here.
                             } catch (IllegalAccessException ex) {
@@ -3724,79 +3704,62 @@ public class AnnotationsProcessor {
                 }
             }
         }
+        fv.visitEnd();
+        
+        // Write Constructor:
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", "<init>", "()V");
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
 
-        SignatureAttribute fieldAttrs2 = new SignatureAttribute(L + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;");
-        fieldAttrs1.next = fieldAttrs2;
-        cw.visitField(Constants.ACC_PUBLIC, ITEM, L + collectionType.getInternalName() + SEMI_COLON, null, fieldAttrs1);
+        // Write: public void setItem({collectionType})
+        String methodSig = "(L" + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;)V";
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setItem", "(L" + collectionType.getInternalName() + ";)V", methodSig, null);
+        mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlTransient;", true);
+        Label l0 = new Label(); // ??
+        mv.visitLabel(l0);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, qualifiedInternalClassName, ITEM, L + collectionType.getInternalName() + SEMI_COLON);
+        mv.visitInsn(Opcodes.RETURN);
+        Label l1 = new Label(); // ??
+        mv.visitLabel(l1);
+        mv.visitMaxs(2, 2);
+        mv.visitEnd();
 
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/CollectionValue", "<init>", "()V");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(1, 1);
+        // Write: public {collectionType} getItem()
+        methodSig = "()L" + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;";
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getItem", "()L" + collectionType.getInternalName() + SEMI_COLON, methodSig, null);
+        mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlTransient;", true);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, qualifiedInternalClassName, ITEM, L + collectionType.getInternalName() + SEMI_COLON);
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
 
-        // METHOD ATTRIBUTES
-        RuntimeVisibleAnnotations methodAttrs1 = new RuntimeVisibleAnnotations();
+        // Write: public Object getItem();
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + collectionType.getInternalName() + SEMI_COLON);
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
 
-        Annotation methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
-        methodAttrs1.annotations.add(methodAttrs1ann0);
+        // Write: public void setItem(Object)
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "setItem", "(Ljava/lang/Object;)V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitTypeInsn(Opcodes.CHECKCAST, EMPTY_STRING + collectionType.getInternalName() + EMPTY_STRING);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L" + collectionType.getInternalName() + ";)V");
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(2, 2);
+        mv.visitEnd();
 
-        SignatureAttribute methodAttrs2 = new SignatureAttribute("(L" + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;)V");
-        methodAttrs1.next = methodAttrs2;
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setItem", "(L" + collectionType.getInternalName() + ";)V", null, methodAttrs1);
-        Label l0 = new Label();
-        cv.visitLabel(l0);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, ITEM, L + collectionType.getInternalName() + SEMI_COLON);
-        cv.visitInsn(Constants.RETURN);
-        Label l1 = new Label();
-        cv.visitLabel(l1);
-
-        // CODE ATTRIBUTE
-        LocalVariableTypeTableAttribute cvAttr = new LocalVariableTypeTableAttribute();
-        cv.visitAttribute(cvAttr);
-
-        cv.visitMaxs(2, 2);
-
-        // METHOD ATTRIBUTES
-        methodAttrs1 = new RuntimeVisibleAnnotations();
-
-        methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
-        methodAttrs1.annotations.add(methodAttrs1ann0);
-
-        methodAttrs2 = new SignatureAttribute("()L" + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;");
-        methodAttrs1.next = methodAttrs2;
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()L" + collectionType.getInternalName() + SEMI_COLON, null, methodAttrs1);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, ITEM, L + collectionType.getInternalName() + SEMI_COLON);
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(1, 1);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + collectionType.getInternalName() + SEMI_COLON);
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(1, 1);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "setItem", "(Ljava/lang/Object;)V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitTypeInsn(Constants.CHECKCAST, EMPTY_STRING + collectionType.getInternalName() + EMPTY_STRING);
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L" + collectionType.getInternalName() + ";)V");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(2, 2);
-
-        // CLASS ATTRIBUTE
-        RuntimeVisibleAnnotations annotationsAttr = new RuntimeVisibleAnnotations();
-
-        Annotation attrann0 = new Annotation("Ljavax/xml/bind/annotation/XmlType;");
-        attrann0.add("namespace", namespace);
-        annotationsAttr.annotations.add(attrann0);
-        cw.visitAttribute(annotationsAttr);
-
-        SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/CollectionValue<L" + collectionType.getInternalName() + "<" + componentTypeInternalName + ">;>;");
-        cw.visitAttribute(attr);
+        // Write @XmlType(namespace)
+        AnnotationVisitor av = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlType;", true);
+        av.visit("namespace", namespace);
 
         cw.visitEnd();
 
@@ -3930,12 +3893,12 @@ public class AnnotationsProcessor {
         if (info.isSetXmlRootElement()) {
             org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = info.getXmlRootElement();
             String elementName = xmlRE.getName();
-            if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {            	
-                try{                
+            if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {
+                try {
                     elementName = info.getXmlNameTransformer().transformRootElementName(javaClass.getName());
-                }catch (Exception ex){
-                 	throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
-                }  
+                } catch (Exception ex) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                }
             }
             String rootNamespace = xmlRE.getNamespace();
             QName rootElemName = null;
@@ -4077,17 +4040,12 @@ public class AnnotationsProcessor {
         }
         return propMap;
     }
-    
+
     /**
-     * Indicates if a given Property represents an MTOM attachment.  Will return true
-     * if the given Property's actual type is one of:
+     * Indicates if a given Property represents an MTOM attachment. Will return
+     * true if the given Property's actual type is one of:
      * 
-     * - DataHandler
-     * - byte[]
-     * - Byte[]
-     * - Image
-     * - Source
-     * - MimeMultipart
+     * - DataHandler - byte[] - Byte[] - Image - Source - MimeMultipart
      * 
      * @param property
      * @return
@@ -4096,11 +4054,11 @@ public class AnnotationsProcessor {
         JavaClass ptype = property.getActualType();
         return (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART));
     }
-    
+
     public boolean hasSwaRef() {
         return this.hasSwaRef;
     }
-    
+
     public void setHasSwaRef(boolean swaRef) {
         this.hasSwaRef = swaRef;
     }

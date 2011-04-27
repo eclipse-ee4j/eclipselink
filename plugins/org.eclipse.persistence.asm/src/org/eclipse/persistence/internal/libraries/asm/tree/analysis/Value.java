@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000,2002,2003 INRIA, France Telecom 
+ * Copyright (c) 2000-2007 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.eclipse.persistence.internal.libraries.asm.tree.analysis;
 
 /**
@@ -35,23 +34,12 @@ package org.eclipse.persistence.internal.libraries.asm.tree.analysis;
  * 
  * @author Eric Bruneton
  */
-
 public interface Value {
-  
-  /**
-   * Returns the size of this value in words.
-   * 
-   * @return either 1 or 2.
-   */
-  
-  int getSize ();
-  
-  /**
-   * Compares this value with the given value.
-   * 
-   * @param value a value.
-   * @return <tt>true</tt> if the values are equals, <tt>false</tt> otherwise.
-   */
-  
-  boolean equals (Value value);
+
+    /**
+     * Returns the size of this value in words.
+     * 
+     * @return either 1 or 2.
+     */
+    int getSize();
 }

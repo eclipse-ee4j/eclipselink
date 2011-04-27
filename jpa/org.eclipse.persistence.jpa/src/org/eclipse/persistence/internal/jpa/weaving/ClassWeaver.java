@@ -17,14 +17,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.weaving;
 
-import java.util.*;
+import java.util.Iterator;
+
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.libraries.asm.*;
-import org.eclipse.persistence.internal.libraries.asm.commons.*;
-import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
-import org.eclipse.persistence.internal.libraries.asm.attrs.Annotation;
+import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Attribute;
+import org.eclipse.persistence.internal.libraries.asm.ClassAdapter;
+import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Label;
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * INTERNAL:
@@ -35,7 +42,7 @@ import org.eclipse.persistence.internal.libraries.asm.attrs.Annotation;
  * @see org.eclipse.persistence.internal.weaving.MethodWeaver
  */
 
-public class ClassWeaver extends ClassAdapter implements Constants {
+public class ClassWeaver extends ClassAdapter implements Opcodes {
 
     // PersistenceWeaved
     public static final String PERSISTENCE_WEAVED_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeaved";
@@ -88,8 +95,6 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     
     /** Stores information on the class gathered from the temp class loader and descriptor. */
     protected ClassDetails classDetails;
-    /** Used to generate the serialization serial UUID based on the original class. */
-    protected SerialVersionUIDAdder uuidGenerator;
     
     // Keep track of what was weaved.
     protected boolean alreadyWeaved = false;
@@ -127,7 +132,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     /**
      * Used for primitive conversion.  Returns the name conversion method for the given type.
      */
-    public static void unwrapPrimitive(AttributeDetails attribute, CodeVisitor visitor) {
+    public static void unwrapPrimitive(AttributeDetails attribute, MethodVisitor visitor) {
         String wrapper = wrapperFor(attribute.getReferenceClassType().getSort());
         switch (attribute.getReferenceClassType().getSort()) {
             case Type.BOOLEAN:
@@ -186,10 +191,9 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         return isJAXBOnPath;
     }
     
-    public ClassWeaver(ClassWriter classWriter, ClassDetails classDetails) {
-        super(classWriter);
+    public ClassWeaver(ClassVisitor classVisitor, ClassDetails classDetails) {
+        super(classVisitor);
         this.classDetails = classDetails;
-        this.uuidGenerator = new SerialVersionUIDAdder(classWriter);
     }
 
     /**
@@ -200,23 +204,28 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      */
     public void addValueHolder(AttributeDetails attributeDetails){
         String attribute = attributeDetails.getAttributeName();
-        RuntimeVisibleAnnotations annotations = null;
+        FieldVisitor fv = cv.visitField(ACC_PROTECTED, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE, null, null);
         // only mark @Transient if this is property access.  Otherwise, the @Transient annotation could mistakenly
         // cause the class to use attribute access.
         if (attributeDetails.getGetterMethodName() == null || attributeDetails.getGetterMethodName().equals("") || attributeDetails.weaveTransientFieldValueHolders()) {
-            annotations = getTransientAnnotation();
+            addTransientAnnotation(fv);
         }
-        cv.visitField(ACC_PROTECTED, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE, null, annotations);
+        if (fv != null) {
+            fv.visitEnd();
+        }
     }
     
-    /**
+	/**
      * Add a variable of type PropertyChangeListener to the class.  When this method has been run, the class
      * will contain a variable declaration similar to the following
      * 
      * private transient _persistence_listener;
      */
     public void addPropertyChangeListener(boolean attributeAccess){
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_listener", PCL_SIGNATURE, null, null);
+        FieldVisitor fv = cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_listener", PCL_SIGNATURE, null, null);
+        if (fv != null) {
+            fv.visitEnd();
+        }
     }
     
     /**
@@ -228,11 +237,12 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * }
      */
     public void addGetPropertyChangeListener(ClassDetails classDetails) {
-        CodeVisitor cv_getPCL =  cv.visitMethod(ACC_PUBLIC, "_persistence_getPropertyChangeListener", "()" + PCL_SIGNATURE, null, null);
+        MethodVisitor cv_getPCL =  cv.visitMethod(ACC_PUBLIC, "_persistence_getPropertyChangeListener", "()" + PCL_SIGNATURE, null, null);
         cv_getPCL.visitVarInsn(ALOAD, 0);
         cv_getPCL.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
         cv_getPCL.visitInsn(ARETURN);
         cv_getPCL.visitMaxs(0, 0);
+        cv_getPCL.visitEnd();
     }
         
     /**
@@ -244,13 +254,14 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * }
      */
     public void addSetPropertyChangeListener(ClassDetails classDetails){
-        RuntimeVisibleAnnotations annotations = null;
-        CodeVisitor cv_setPCL =  cv.visitMethod(ACC_PUBLIC, "_persistence_setPropertyChangeListener", "(" + PCL_SIGNATURE + ")V", null, annotations);
+        MethodVisitor cv_setPCL =  cv.visitMethod(ACC_PUBLIC, "_persistence_setPropertyChangeListener", "(" + PCL_SIGNATURE + ")V", null, null);
+        // TODO: Add annotations?
         cv_setPCL.visitVarInsn(ALOAD, 0);
         cv_setPCL.visitVarInsn(ALOAD, 1);
         cv_setPCL.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
         cv_setPCL.visitInsn(RETURN);
         cv_setPCL.visitMaxs(0, 0);
+        cv_setPCL.visitEnd();
     }
 
     /**
@@ -264,7 +275,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      */
     public void addPropertyChange(ClassDetails classDetails){
         // create the _toplink_propertyChange() method
-        CodeVisitor cv_addPC = cv.visitMethod(ACC_PUBLIC, "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", null, null);
+        MethodVisitor cv_addPC = cv.visitMethod(ACC_PUBLIC, "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", null, null);
         
         // if (_toplink_Listener != null)
         cv_addPC.visitVarInsn(ALOAD, 0);
@@ -296,6 +307,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
 
         cv_addPC.visitInsn(RETURN);
         cv_addPC.visitMaxs(0, 0);
+        cv_addPC.visitEnd();
     }
     
     /**
@@ -315,7 +327,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         
         // Create a getter method for the new valueholder
         // protected void _persistence_initialize_attribute_vh(){
-        CodeVisitor cv_init_VH = cv.visitMethod(ACC_PROTECTED, "_persistence_initialize_" + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()V", null, null);
+        MethodVisitor cv_init_VH = cv.visitMethod(ACC_PROTECTED, "_persistence_initialize_" + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()V", null, null);
 
         // if(_persistence_attribute_vh == null){
         cv_init_VH.visitVarInsn(ALOAD, 0);
@@ -347,6 +359,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         
         cv_init_VH.visitInsn(RETURN);
         cv_init_VH.visitMaxs(0, 0);        
+        cv_init_VH.visitEnd();        
     }
     
     /**
@@ -367,7 +380,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
         // Create a getter method for the new valueholder
-        CodeVisitor cv_get_VH = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()" + VHI_SIGNATURE, null, null);
+        MethodVisitor cv_get_VH = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()" + VHI_SIGNATURE, null, null);
         
         // _persistence_initialize_attributeName_vh();
         cv_get_VH.visitVarInsn(ALOAD, 0);
@@ -421,6 +434,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_get_VH.visitInsn(ARETURN);
 
         cv_get_VH.visitMaxs(0, 0);
+        cv_get_VH.visitEnd();
     }
     
     /**
@@ -441,7 +455,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
         // create a setter method for the new valueholder
-        CodeVisitor cv_set_value = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "(" + VHI_SIGNATURE + ")V", null, null);                                 
+        MethodVisitor cv_set_value = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "(" + VHI_SIGNATURE + ")V", null, null);                                 
         
         // _toplink_foo_vh = valueholderinterface;
         cv_set_value.visitVarInsn(ALOAD, 0);
@@ -487,7 +501,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
 
         cv_set_value.visitInsn(RETURN);
         cv_set_value.visitMaxs(0, 0);
-        
+        cv_set_value.visitEnd();
     }
     
     /**
@@ -506,10 +520,10 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         String attribute = attributeDetails.getAttributeName();
         
         // create _persistence_set_variableName
-        CodeVisitor cv_set = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", null, null);
+        MethodVisitor cv_set = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", null, null);
         
         // Get the opcode for the load instruction.  This may be different depending on the type
-        int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.ILOAD);
+        int opcode = attributeDetails.getReferenceClassType().getOpcode(ILOAD);
         
         if (classDetails.shouldWeaveFetchGroups()) {
             cv_set.visitVarInsn(ALOAD, 0);
@@ -607,6 +621,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         
         cv_set.visitInsn(RETURN);
         cv_set.visitMaxs(0 ,0);
+        cv_set.visitEnd();
     }
     
     /**
@@ -624,7 +639,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         String attribute = attributeDetails.getAttributeName();
 
         // create the _persistenc_getvariableName method
-        CodeVisitor cv_get = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor(), null, null);
+        MethodVisitor cv_get = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor(), null, null);
         
         if (classDetails.shouldWeaveFetchGroups()) {
             cv_get.visitVarInsn(ALOAD, 0);
@@ -655,9 +670,10 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_get.visitVarInsn(ALOAD, 0);
         cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
         // Get the opcode for the return insturction.  This may be different depending on the type.
-        int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.IRETURN);
+        int opcode = attributeDetails.getReferenceClassType().getOpcode(IRETURN);
         cv_get.visitInsn(opcode);
         cv_get.visitMaxs(0, 0);
+        cv_get.visitEnd();
     }
     
     /**
@@ -667,7 +683,10 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      *  private Object _persistence_primaryKey;
      */
     public void addPersistenceEntityVariables() {
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_primaryKey", OBJECT_SIGNATURE, null, null);
+        FieldVisitor fv = cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_primaryKey", OBJECT_SIGNATURE, null, null);
+        if (fv != null) {
+            fv.visitEnd();
+        }
     }
     
     /**
@@ -683,7 +702,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      */
     public void addPersistencePostClone(ClassDetails classDetails) {
         // create the _persistence_post_clone() method
-        CodeVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_post_clone", "()Ljava/lang/Object;", null, null);
+        MethodVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_post_clone", "()Ljava/lang/Object;", null, null);
 
         // if there is a weaved superclass, it will implement _persistence_post_clone.  Call that method
         // super._persistence_post_clone()
@@ -739,6 +758,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_clone.visitVarInsn(ALOAD, 0);
         cv_clone.visitInsn(ARETURN);
         cv_clone.visitMaxs(0, 0);
+        cv_clone.visitEnd();
     }
     
     /**
@@ -751,7 +771,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      */
     public void addShallowClone(ClassDetails classDetails) {
         // create the _persistence_shallow_clone() method
-        CodeVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_shallow_clone", "()Ljava/lang/Object;", null, null);
+        MethodVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_shallow_clone", "()Ljava/lang/Object;", null, null);
 
         // return super.clone();
         cv_clone.visitVarInsn(ALOAD, 0);
@@ -759,6 +779,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         
         cv_clone.visitInsn(ARETURN);
         cv_clone.visitMaxs(0, 0);
+        cv_clone.visitEnd();
     }
     
     /**
@@ -775,7 +796,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      */
     public void addPersistenceNew(ClassDetails classDetails) {
         // create the _persistence_new() method
-        CodeVisitor cv_new = cv.visitMethod(ACC_PUBLIC, "_persistence_new", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")Ljava/lang/Object;", null, null);
+        MethodVisitor cv_new = cv.visitMethod(ACC_PUBLIC, "_persistence_new", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")Ljava/lang/Object;", null, null);
         
         // return new ClassType(factory);
         cv_new.visitTypeInsn(NEW, classDetails.getClassName());
@@ -784,6 +805,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
             cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "()V");
             cv_new.visitInsn(ARETURN);
             cv_new.visitMaxs(0, 0);
+            cv_new.visitEnd();
             return;
         } else {
             cv_new.visitVarInsn(ALOAD, 1);
@@ -791,9 +813,10 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         }
         cv_new.visitInsn(ARETURN);
         cv_new.visitMaxs(0, 0);
+        cv_new.visitEnd();
         
         // create the ClassType() method
-        CodeVisitor cv_constructor = cv.visitMethod(ACC_PUBLIC, "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", null, null);
+        MethodVisitor cv_constructor = cv.visitMethod(ACC_PUBLIC, "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", null, null);
 
         cv_constructor.visitVarInsn(ALOAD, 0);
         if (classDetails.getSuperClassDetails() == null) {
@@ -806,6 +829,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         }
         cv_constructor.visitInsn(RETURN);
         cv_constructor.visitMaxs(0, 0);
+        cv_constructor.visitEnd();
     }
     
     /**
@@ -832,7 +856,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      */
     public void addPersistenceGetSet(ClassDetails classDetails) {
         // create the _persistence_get() method
-        CodeVisitor cv_get = cv.visitMethod(ACC_PUBLIC, "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;", null, null);
+        MethodVisitor cv_get = cv.visitMethod(ACC_PUBLIC, "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;", null, null);
 
         Label label = null;
         for (AttributeDetails attributeDetails : classDetails.getAttributesMap().values()) {
@@ -873,9 +897,10 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         
         cv_get.visitInsn(ARETURN);
         cv_get.visitMaxs(0, 0);
+        cv_get.visitEnd();
         
         // create the _persistence_set() method
-        CodeVisitor cv_set = cv.visitMethod(ACC_PUBLIC, "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", null, null);
+        MethodVisitor cv_set = cv.visitMethod(ACC_PUBLIC, "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", null, null);
 
         label = null;
         for (AttributeDetails attribute : classDetails.getAttributesMap().values()) {
@@ -916,6 +941,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         
         cv_set.visitInsn(RETURN);
         cv_set.visitMaxs(0, 0);
+        cv_set.visitEnd();
     }
     
     /**
@@ -930,18 +956,20 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      *  }
      */
     public void addPersistenceEntityMethods(ClassDetails classDetails) {        
-        CodeVisitor cv_getPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_getId", "()" + OBJECT_SIGNATURE, null, null);
+        MethodVisitor cv_getPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_getId", "()" + OBJECT_SIGNATURE, null, null);
         cv_getPKVector.visitVarInsn(ALOAD, 0);
         cv_getPKVector.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
         cv_getPKVector.visitInsn(ARETURN);
         cv_getPKVector.visitMaxs(0, 0);
+        cv_getPKVector.visitEnd();
         
-        CodeVisitor cv_setPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_setId", "(" + OBJECT_SIGNATURE + ")V", null, null);
+        MethodVisitor cv_setPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_setId", "(" + OBJECT_SIGNATURE + ")V", null, null);
         cv_setPKVector.visitVarInsn(ALOAD, 0);
         cv_setPKVector.visitVarInsn(ALOAD, 1);
         cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
         cv_setPKVector.visitInsn(RETURN);
         cv_setPKVector.visitMaxs(0 ,0);
+        cv_setPKVector.visitEnd();
     }
     
     /**
@@ -953,21 +981,33 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      *  private Session _persistence_session;
      */
     public void addFetchGroupVariables() {
-        RuntimeVisibleAnnotations attrs = null;
         
         // Only add javax.persistence.Transient annotation if attribute access is being used
+        FieldVisitor fv = cv.visitField(ACC_PROTECTED, EntityManagerImpl.PERSITENCE_FETCH_GROUP_WEAVED_FIELD_NAME, FETCHGROUP_SIGNATURE, null, null);
         if (classDetails.usesAttributeAccess()){
-            attrs = getTransientAnnotation();
-        } else if (isJAXBOnPath()) {
-            try {
-                attrs = new RuntimeVisibleAnnotations();
-                attrs.annotations.add(new Annotation(Type.getDescriptor(Class.forName("javax.xml.bind.annotation.XmlTransient"))));
-            } catch (Exception exception) {}
+            addTransientAnnotation(fv);
+        } 
+        if (fv != null) {
+            fv.visitEnd();
         }
-        cv.visitField(ACC_PROTECTED, EntityManagerImpl.PERSITENCE_FETCH_GROUP_WEAVED_FIELD_NAME, FETCHGROUP_SIGNATURE, null, attrs);
         
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE, null, null);
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_session", SESSION_SIGNATURE, null, null);
+        // TODO: Why was this not made transient before?
+        fv = cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE, null, null);
+        if (classDetails.usesAttributeAccess()){
+            addTransientAnnotation(fv);
+        } 
+        if (fv != null) {
+            fv.visitEnd();
+        }
+
+        // TODO: Why was this not made transient before?
+        fv = cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_session", SESSION_SIGNATURE, null, null);
+        if (classDetails.usesAttributeAccess()){
+            addTransientAnnotation(fv);
+        }         
+        if (fv != null) {
+            fv.visitEnd();
+        }
     }
     
     /**
@@ -1016,50 +1056,57 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      *  }
      */
     public void addFetchGroupMethods(ClassDetails classDetails) {
-        CodeVisitor cv_getSession = cv.visitMethod(ACC_PUBLIC, "_persistence_getSession", "()" + SESSION_SIGNATURE, null, null);
+        MethodVisitor cv_getSession = cv.visitMethod(ACC_PUBLIC, "_persistence_getSession", "()" + SESSION_SIGNATURE, null, null);
         cv_getSession.visitVarInsn(ALOAD, 0);
         cv_getSession.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
         cv_getSession.visitInsn(ARETURN);
         cv_getSession.visitMaxs(0, 0);
+        cv_getSession.visitEnd();
         
-        CodeVisitor cv_setSession = cv.visitMethod(ACC_PUBLIC, "_persistence_setSession", "(" + SESSION_SIGNATURE + ")V", null, null);
+        MethodVisitor cv_setSession = cv.visitMethod(ACC_PUBLIC, "_persistence_setSession", "(" + SESSION_SIGNATURE + ")V", null, null);
         cv_setSession.visitVarInsn(ALOAD, 0);
         cv_setSession.visitVarInsn(ALOAD, 1);
         cv_setSession.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
         cv_setSession.visitInsn(RETURN);
         cv_setSession.visitMaxs(0 ,0);
+        cv_setSession.visitEnd();
         
-        CodeVisitor cv_getFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_getFetchGroup", "()" + FETCHGROUP_SIGNATURE, null, null);
+        MethodVisitor cv_getFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_getFetchGroup", "()" + FETCHGROUP_SIGNATURE, null, null);
         cv_getFetchGroup.visitVarInsn(ALOAD, 0);
         cv_getFetchGroup.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
         cv_getFetchGroup.visitInsn(ARETURN);
         cv_getFetchGroup.visitMaxs(0, 0);
+        cv_getFetchGroup.visitEnd();
         
-        CodeVisitor cv_setFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_setFetchGroup", "(" + FETCHGROUP_SIGNATURE + ")V", null, null);
+        MethodVisitor cv_setFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_setFetchGroup", "(" + FETCHGROUP_SIGNATURE + ")V", null, null);
         cv_setFetchGroup.visitVarInsn(ALOAD, 0);
         cv_setFetchGroup.visitVarInsn(ALOAD, 1);
         cv_setFetchGroup.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
         cv_setFetchGroup.visitInsn(RETURN);
         cv_setFetchGroup.visitMaxs(0 ,0);
+        cv_setFetchGroup.visitEnd();
         
-        CodeVisitor cv_shouldRefreshFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_shouldRefreshFetchGroup", "()" + PBOOLEAN_SIGNATURE, null, null);
+        MethodVisitor cv_shouldRefreshFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_shouldRefreshFetchGroup", "()" + PBOOLEAN_SIGNATURE, null, null);
         cv_shouldRefreshFetchGroup.visitVarInsn(ALOAD, 0);
         cv_shouldRefreshFetchGroup.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE);
         cv_shouldRefreshFetchGroup.visitInsn(IRETURN);
         cv_shouldRefreshFetchGroup.visitMaxs(0, 0);
+        cv_shouldRefreshFetchGroup.visitEnd();
         
-        CodeVisitor cv_setShouldRefreshFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_setShouldRefreshFetchGroup", "(" + PBOOLEAN_SIGNATURE + ")V", null, null);
+        MethodVisitor cv_setShouldRefreshFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_setShouldRefreshFetchGroup", "(" + PBOOLEAN_SIGNATURE + ")V", null, null);
         cv_setShouldRefreshFetchGroup.visitVarInsn(ALOAD, 0);
         cv_setShouldRefreshFetchGroup.visitVarInsn(ILOAD, 1);
         cv_setShouldRefreshFetchGroup.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE);
         cv_setShouldRefreshFetchGroup.visitInsn(RETURN);
         cv_setShouldRefreshFetchGroup.visitMaxs(0 ,0);
+        cv_setShouldRefreshFetchGroup.visitEnd();
         
-        CodeVisitor cv_resetFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_resetFetchGroup", "()V", null, null);
+        MethodVisitor cv_resetFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_resetFetchGroup", "()V", null, null);
         cv_resetFetchGroup.visitInsn(RETURN);
         cv_resetFetchGroup.visitMaxs(0, 0);
+        cv_resetFetchGroup.visitEnd();
         
-        CodeVisitor cv_isAttributeFetched = cv.visitMethod(ACC_PUBLIC, "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", null, null);
+        MethodVisitor cv_isAttributeFetched = cv.visitMethod(ACC_PUBLIC, "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", null, null);
         cv_isAttributeFetched.visitVarInsn(ALOAD, 0);
         cv_isAttributeFetched.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
         Label gotoTrue = new Label();
@@ -1079,8 +1126,9 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_isAttributeFetched.visitLabel(gotoReturn);
         cv_isAttributeFetched.visitInsn(IRETURN);
         cv_isAttributeFetched.visitMaxs(0 ,0);
+        cv_isAttributeFetched.visitEnd();
         
-        CodeVisitor cv_checkFetched = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetched", "(Ljava/lang/String;)V", null, null);
+        MethodVisitor cv_checkFetched = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetched", "(Ljava/lang/String;)V", null, null);
         cv_checkFetched.visitVarInsn(ALOAD, 0);
         cv_checkFetched.visitVarInsn(ALOAD, 1);
         cv_checkFetched.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z");
@@ -1093,8 +1141,9 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_checkFetched.visitLabel(gotoReturn);
         cv_checkFetched.visitInsn(RETURN);
         cv_checkFetched.visitMaxs(0 ,0);
+        cv_checkFetched.visitEnd();
         
-        CodeVisitor cv_checkFetchedForSet = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", null, null);
+        MethodVisitor cv_checkFetchedForSet = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", null, null);
         cv_checkFetchedForSet.visitVarInsn(ALOAD, 0);
         cv_checkFetchedForSet.visitVarInsn(ALOAD, 1);
         cv_checkFetchedForSet.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z");
@@ -1107,38 +1156,42 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_checkFetchedForSet.visitLabel(gotoReturn);
         cv_checkFetchedForSet.visitInsn(RETURN);
         cv_checkFetchedForSet.visitMaxs(0 ,0);
+        cv_checkFetchedForSet.visitEnd();
     }
-
+   
     /**
-     * Return the JPA transient annotation for weaving.
+     * TODO 
      */
-    protected RuntimeVisibleAnnotations getTransientAnnotation(){
-        RuntimeVisibleAnnotations attrs = new RuntimeVisibleAnnotations();
-        //Annotation transientAnnotation = new Annotation("Ljavax/persistence/Transient;");
-        Annotation transientAnnotation = new Annotation(Type.getDescriptor(javax.persistence.Transient.class));
+    private void addTransientAnnotation(FieldVisitor fv) {
+		AnnotationVisitor av = fv.visitAnnotation(Type.getDescriptor(Transient.class), true);
+		if (av != null) {
+			av.visitEnd();
+		}
         if (isJAXBOnPath()) {
             try {
-                attrs.annotations.add(new Annotation(Type.getDescriptor(Class.forName("javax.xml.bind.annotation.XmlTransient"))));
+            	// TODO: Class.forName???
+            	av = fv.visitAnnotation(Type.getDescriptor(Class.forName("javax.xml.bind.annotation.XmlTransient")), true);
+        		if (av != null) {
+        			av.visitEnd();
+        		}
             } catch (Exception exception) {}
         }
-        attrs.annotations.add(transientAnnotation);
-        return attrs;
     }
-    
+
     /**
      * Visit the class byte-codes and modify to weave Persistence interfaces.
      * This add PersistenceWeaved, PersistenceWeavedLazy, PersistenceWeavedChangeTracking, PersistenceEntity, ChangeTracker.
      * The new interfaces are pass to the super weaver.
      */
-    public void visit(int version, int access, String name, String superName, String[] interfaces, String sourceFile) {
-        this.uuidGenerator.visit(version, access, name, superName, interfaces, sourceFile);
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         boolean weaveCloneable = true;
         // To prevent 'double' weaving: scan for PersistenceWeaved interface.
         for (int index = 0; index < interfaces.length; index++) {
             String existingInterface = interfaces[index];
             if (PERSISTENCE_WEAVED_SHORT_SIGNATURE.equals(existingInterface)) {
                 this.alreadyWeaved = true;
-                super.visit(version, access, name, superName, interfaces, sourceFile);
+                super.visit(version, access, name, null, superName, interfaces);
                 return;
             } else if (CT_SHORT_SIGNATURE.equals(existingInterface)) {
                 // Disable weaving of change tracking if already implemented (such as by user).
@@ -1238,29 +1291,24 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         if (classDetails.shouldWeaveChangeTracking()) {
             newInterfaces[persistenceWeavedChangeTrackingIndex] = TW_CT_SHORT_SIGNATURE;
         }
-        super.visit(version, access, name, superName, newInterfaces, sourceFile);
+        super.visit(version, access, name, signature, superName, newInterfaces);
     }
     
-    public void visitField (int access, String name, String desc, Object value, Attribute attrs) {
-        this.uuidGenerator.visitField(access, name, desc, value, attrs);        
-        super.visitField(access, name, desc, value, attrs);
-    }
-  
     /**
      * Construct a MethodWeaver and allow it to process the method.
      */
-    public CodeVisitor visitMethod(int access, String methodName, String desc, String[] exceptions, Attribute attrs) {
-        this.uuidGenerator.visitMethod(access, methodName, desc, exceptions, attrs);
+    @Override
+    public MethodVisitor visitMethod(int access, String methodName, String desc, String signature, String[] exceptions) {
         if (!alreadyWeaved) {
             // skip constructors, they will not changed
             if ("<init>".equals(methodName)||"<cinit>".equals(methodName)) {
-                return super.visitMethod(access, methodName, desc, exceptions, attrs);
+                return super.visitMethod(access, methodName, desc, signature, exceptions);
             } else {
                 // remaining modifications to the 'body' of the class are delegated to MethodWeaver
-                return new MethodWeaver(this, methodName, desc, cv.visitMethod(access, methodName, desc, exceptions, attrs));                
+                return new MethodWeaver(this, methodName, desc, cv.visitMethod(access, methodName, desc, signature,exceptions));                
             }
         } else {
-            return super.visitMethod(access, methodName, desc, exceptions, attrs);
+            return super.visitMethod(access, methodName, desc, signature, exceptions);
         }
     }    
 
@@ -1276,17 +1324,13 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * Visit the end of the class byte codes.
      * Add any new methods or variables to the end.
      */
+    @Override
     public void visitEnd() {
         if (alreadyWeaved) {
             return;
         }
         
         if (this.classDetails.shouldWeaveInternal()) {
-            // Add a serial UID if one was not defined in the class to allow portable serialization.
-            if (!this.uuidGenerator.hasSVUID()) {
-                long suid = this.uuidGenerator.computeSVUID();
-                this.cv.visitField(ACC_PUBLIC + ACC_STATIC + ACC_FINAL, "serialVersionUID", LONG_SIGNATURE, suid, null);
-            }
             // Add a persistence and shallow clone method.
             addPersistencePostClone(this.classDetails);
             if (this.classDetails.getSuperClassDetails() == null) {

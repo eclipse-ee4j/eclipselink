@@ -4,5 +4,6 @@
 	<classpathentry excluding="**/.svn/**" kind="src" path="resource"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.validation"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

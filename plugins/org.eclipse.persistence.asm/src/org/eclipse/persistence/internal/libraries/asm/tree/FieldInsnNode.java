@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000,2002,2003 INRIA, France Telecom 
+ * Copyright (c) 2000-2007 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,10 +27,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
-import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
+import java.util.Map;
+
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 
 /**
  * A node that represents a field instruction. A field instruction is an
@@ -38,64 +39,65 @@ import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
  * 
  * @author Eric Bruneton
  */
-
 public class FieldInsnNode extends AbstractInsnNode {
 
-  /**
-   * The internal name of the field's owner class (see {@link
-   * org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}).
-   */
+    /**
+     * The internal name of the field's owner class (see
+     * {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}).
+     */
+    public String owner;
 
-  public String owner;
+    /**
+     * The field's name.
+     */
+    public String name;
 
-  /**
-   * The field's name.
-   */
+    /**
+     * The field's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
+     */
+    public String desc;
 
-  public String name;
+    /**
+     * Constructs a new {@link FieldInsnNode}.
+     * 
+     * @param opcode the opcode of the type instruction to be constructed. This
+     *        opcode must be GETSTATIC, PUTSTATIC, GETFIELD or PUTFIELD.
+     * @param owner the internal name of the field's owner class (see
+     *        {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}).
+     * @param name the field's name.
+     * @param desc the field's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
+     */
+    public FieldInsnNode(
+        final int opcode,
+        final String owner,
+        final String name,
+        final String desc)
+    {
+        super(opcode);
+        this.owner = owner;
+        this.name = name;
+        this.desc = desc;
+    }
 
-  /**
-   * The field's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type Type}).
-   */
+    /**
+     * Sets the opcode of this instruction.
+     * 
+     * @param opcode the new instruction opcode. This opcode must be GETSTATIC,
+     *        PUTSTATIC, GETFIELD or PUTFIELD.
+     */
+    public void setOpcode(final int opcode) {
+        this.opcode = opcode;
+    }
 
-  public String desc;
+    public int getType() {
+        return FIELD_INSN;
+    }
 
-  /**
-   * Constructs a new {@link FieldInsnNode FieldInsnNode} object.
-   *
-   * @param opcode the opcode of the type instruction to be constructed. This
-   *      opcode must be GETSTATIC, PUTSTATIC, GETFIELD or PUTFIELD.
-   * @param owner the internal name of the field's owner class (see {@link
-   *      org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}).
-   * @param name the field's name.
-   * @param desc the field's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type
-   *      Type}).
-   */
+    public void accept(final MethodVisitor cv) {
+        cv.visitFieldInsn(opcode, owner, name, desc);
+    }
 
-  public FieldInsnNode (
-    final int opcode,
-    final String owner,
-    final String name,
-    final String desc)
-  {
-    super(opcode);
-    this.owner = owner;
-    this.name = name;
-    this.desc = desc;
-  }
-
-  /**
-   * Sets the opcode of this instruction.
-   *
-   * @param opcode the new instruction opcode. This opcode must be GETSTATIC,
-   *      PUTSTATIC, GETFIELD or PUTFIELD.
-   */
-
-  public void setOpcode (final int opcode) {
-    this.opcode = opcode;
-  }
-
-  public void accept (final CodeVisitor cv) {
-    cv.visitFieldInsn(opcode, owner, name, desc);
-  }
+    public AbstractInsnNode clone(final Map labels) {
+        return new FieldInsnNode(opcode, owner, name, desc);
+    }
 }

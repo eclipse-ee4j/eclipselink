@@ -160,7 +160,7 @@ Export-Package: org.eclipse.persistence.internal.jpa.metadata.queries;
  ;uses:="org.eclipse.persistence.internal.jpa.metadata,org.eclipse.per
  sistence.exceptions,org.eclipse.persistence.annotations,org.eclipse.p
  ersistence.indirection,javax.persistence,org.eclipse.persistence.inte
- rnal.libraries.asm.attrs,org.eclipse.persistence.internal.libraries.a
+ rnal.libraries.asm.signature,org.eclipse.persistence.internal.libraries.a
  sm,org.eclipse.persistence.internal.helper,org.eclipse.persistence.in
  ternal.jpa.deployment,org.eclipse.persistence.internal.jpa.metadata.x
  ml";version="2.2.0.qualifier",org.eclipse.persistence.internal.jpa.me
@@ -366,7 +366,7 @@ Import-Package: javax.persistence;jpa="2.0";version="[1.1.0,2.1)",java
  clipse.persistence.internal.jpa.parsing;version="2.2.0.qualifier",org
  .eclipse.persistence.internal.jpa.parsing.jpql;version="2.2.0.qualifi
  er",org.eclipse.persistence.internal.libraries.asm,org.eclipse.persis
- tence.internal.libraries.asm.attrs,org.eclipse.persistence.internal.l
+ tence.internal.libraries.asm.signature,org.eclipse.persistence.internal.l
  ibraries.asm.commons,org.eclipse.persistence.internal.localization;ve
  rsion="2.2.0.qualifier",org.eclipse.persistence.internal.queries;vers
  ion="2.2.0.qualifier",org.eclipse.persistence.internal.security;versi

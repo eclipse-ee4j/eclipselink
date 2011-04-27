@@ -53,10 +53,9 @@ import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.jaxb.many.MapValueAttributeAccessor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Constants;
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
-import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -1483,86 +1482,91 @@ public class MappingsGenerator {
 
     private Class generateMapEntryClass(String className, String keyType, String valueType){
 
-        ClassWriter cw = new ClassWriter(false);
-        CodeVisitor cv;
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         String qualifiedInternalClassName = className.replace('.', '/');
         String qualifiedInternalKeyClassName = keyType.replace('.', '/');
         String qualifiedInternalValueClassName = valueType.replace('.', '/');
 
-        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" }, className.substring(className.lastIndexOf(".")));
+        String sig = "Ljava/lang/Object;Lorg/eclipse/persistence/internal/jaxb/many/MapEntry<L"+qualifiedInternalKeyClassName+";L"+qualifiedInternalValueClassName+";>;";
+        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" });
 
-        cw.visitField(Constants.ACC_PRIVATE, "key", "L"+qualifiedInternalKeyClassName+";", null, null);
+        cw.visitField(Opcodes.ACC_PRIVATE, "key", "L"+qualifiedInternalKeyClassName+";", null, null);
 
-        cw.visitField(Constants.ACC_PRIVATE, "value", "L"+qualifiedInternalValueClassName+";", null, null);
+        cw.visitField(Opcodes.ACC_PRIVATE, "value", "L"+qualifiedInternalValueClassName+";", null, null);
 
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(1, 1);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getKey", "()L"+qualifiedInternalKeyClassName+";", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "key", "L"+qualifiedInternalKeyClassName+";");
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(1, 1);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setKey", "(L"+qualifiedInternalKeyClassName+";)V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "key", "L"+qualifiedInternalKeyClassName+";");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(2, 2);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getValue", "()L"+qualifiedInternalValueClassName+";", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "value", "L"+qualifiedInternalValueClassName+";");
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(1, 1);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setValue", "(L"+qualifiedInternalValueClassName+";)V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "value", "L"+qualifiedInternalValueClassName+";");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(2, 2);
-
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
+        
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getKey", "()L"+qualifiedInternalKeyClassName+";", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, qualifiedInternalClassName, "key", "L"+qualifiedInternalKeyClassName+";");
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
+        
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setKey", "(L"+qualifiedInternalKeyClassName+";)V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, qualifiedInternalClassName, "key", "L"+qualifiedInternalKeyClassName+";");
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(2, 2);
+        mv.visitEnd();
+        
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getValue", "()L"+qualifiedInternalValueClassName+";", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, qualifiedInternalClassName, "value", "L"+qualifiedInternalValueClassName+";");
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
+        
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setValue", "(L"+qualifiedInternalValueClassName+";)V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, qualifiedInternalClassName, "value", "L"+qualifiedInternalValueClassName+";");
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(2, 2);
+        mv.visitEnd();
+        
         if(!qualifiedInternalValueClassName.equals("java/lang/Object")){
-	        cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getValue", "()Ljava/lang/Object;", null, null);
-	        cv.visitVarInsn(Constants.ALOAD, 0);
-	        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getValue", "()L"+qualifiedInternalValueClassName+";");
-	        cv.visitInsn(Constants.ARETURN);
-	        cv.visitMaxs(1, 1);
-
-	        cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "setValue", "(Ljava/lang/Object;)V", null, null);
-	        cv.visitVarInsn(Constants.ALOAD, 0);
-	        cv.visitVarInsn(Constants.ALOAD, 1);
-	        cv.visitTypeInsn(Constants.CHECKCAST, qualifiedInternalValueClassName);
-	        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setValue", "(L"+qualifiedInternalValueClassName+";)V");
-	        cv.visitInsn(Constants.RETURN);
-	        cv.visitMaxs(2, 2);
+	        mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "getValue", "()Ljava/lang/Object;", null, null);
+	        mv.visitVarInsn(Opcodes.ALOAD, 0);
+	        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "getValue", "()L"+qualifiedInternalValueClassName+";");
+	        mv.visitInsn(Opcodes.ARETURN);
+	        mv.visitMaxs(1, 1);
+	        mv.visitEnd();
+	        
+	        mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "setValue", "(Ljava/lang/Object;)V", null, null);
+	        mv.visitVarInsn(Opcodes.ALOAD, 0);
+	        mv.visitVarInsn(Opcodes.ALOAD, 1);
+	        mv.visitTypeInsn(Opcodes.CHECKCAST, qualifiedInternalValueClassName);
+	        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setValue", "(L"+qualifiedInternalValueClassName+";)V");
+	        mv.visitInsn(Opcodes.RETURN);
+	        mv.visitMaxs(2, 2);
+	        mv.visitEnd();
         }
 
         if(!qualifiedInternalKeyClassName.equals("java/lang/Object")){
-            cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getKey", "()Ljava/lang/Object;", null, null);
-            cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitMethodInsn(Constants.INVOKEVIRTUAL,qualifiedInternalClassName, "getKey", "()L"+qualifiedInternalKeyClassName+";");
-            cv.visitInsn(Constants.ARETURN);
-            cv.visitMaxs(1, 1);
-
-            cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "setKey", "(Ljava/lang/Object;)V", null, null);
-            cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitVarInsn(Constants.ALOAD, 1);
-            cv.visitTypeInsn(Constants.CHECKCAST, qualifiedInternalKeyClassName);
-            cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setKey", "(L"+qualifiedInternalKeyClassName+";)V");
-            cv.visitInsn(Constants.RETURN);
-            cv.visitMaxs(2, 2);
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "getKey", "()Ljava/lang/Object;", null, null);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,qualifiedInternalClassName, "getKey", "()L"+qualifiedInternalKeyClassName+";");
+            mv.visitInsn(Opcodes.ARETURN);
+            mv.visitMaxs(1, 1);
+            mv.visitEnd();
+            
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "setKey", "(Ljava/lang/Object;)V", null, null);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, qualifiedInternalKeyClassName);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setKey", "(L"+qualifiedInternalKeyClassName+";)V");
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(2, 2);
+            mv.visitEnd();
         }
-
-  		// CLASS ATRIBUTE
-        SignatureAttribute attr = new SignatureAttribute("Ljava/lang/Object;Lorg/eclipse/persistence/internal/jaxb/many/MapEntry<L"+qualifiedInternalKeyClassName+";L"+qualifiedInternalValueClassName+";>;");
-        cw.visitAttribute(attr);
 
         cw.visitEnd();
 
@@ -2646,10 +2650,10 @@ public class MappingsGenerator {
     }
 
     public Class generateWrapperClass(String className, String attributeType, boolean isList, QName theQName) {
-        org.eclipse.persistence.internal.libraries.asm.ClassWriter cw = new org.eclipse.persistence.internal.libraries.asm.ClassWriter(false);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
-        CodeVisitor cv;
-        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC, className.replace(".", "/"), org.eclipse.persistence.internal.libraries.asm.Type.getType(WrappedValue.class).getInternalName(), new String[0], null);
+        String sig = null;
+        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, className.replace(".", "/"), sig, Type.getType(WrappedValue.class).getInternalName(), null);
 
         String fieldType = null;
         if(isList){
@@ -2665,20 +2669,21 @@ public class MappingsGenerator {
         		theQName = RESERVED_QNAME;
         	}
 
-	        cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
+	        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
 
-	        cv.visitVarInsn(Constants.ALOAD, 0);
-	        cv.visitTypeInsn(Constants.NEW, "javax/xml/namespace/QName");
-	        cv.visitInsn(Constants.DUP);
-	        cv.visitLdcInsn(theQName.getNamespaceURI());
-	        cv.visitLdcInsn(theQName.getLocalPart());
-	        cv.visitMethodInsn(Constants.INVOKESPECIAL, "javax/xml/namespace/QName", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
-	        cv.visitLdcInsn(Type.getType(fieldType));
-	        cv.visitInsn(Constants.ACONST_NULL);
+	        mv.visitVarInsn(Opcodes.ALOAD, 0);
+	        mv.visitTypeInsn(Opcodes.NEW, "javax/xml/namespace/QName");
+	        mv.visitInsn(Opcodes.DUP);
+	        mv.visitLdcInsn(theQName.getNamespaceURI());
+	        mv.visitLdcInsn(theQName.getLocalPart());
+	        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "javax/xml/namespace/QName", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
+	        mv.visitLdcInsn(Type.getType(fieldType));
+	        mv.visitInsn(Opcodes.ACONST_NULL);
 
-	        cv.visitMethodInsn(Constants.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/WrappedValue", "<init>", "(Ljavax/xml/namespace/QName;Ljava/lang/Class;Ljava/lang/Object;)V");
-	        cv.visitInsn(Constants.RETURN);
-	        cv.visitMaxs(5, 1);
+	        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/WrappedValue", "<init>", "(Ljavax/xml/namespace/QName;Ljava/lang/Class;Ljava/lang/Object;)V");
+	        mv.visitInsn(Opcodes.RETURN);
+	        mv.visitMaxs(5, 1);
+	        mv.visitEnd();
 
 
         cw.visitEnd();
@@ -2709,8 +2714,10 @@ public class MappingsGenerator {
     }
 
     private class MapEntryGeneratedKey {
-      	String keyClassName;
-		String valueClassName;
+      	@SuppressWarnings("unused")
+        String keyClassName;
+		@SuppressWarnings("unused")
+        String valueClassName;
 
     	public MapEntryGeneratedKey(String keyClass, String valueClass){
     		keyClassName = keyClass;

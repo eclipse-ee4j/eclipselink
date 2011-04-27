@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.libraries.asm.Constants;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * INTERNAL:
@@ -427,7 +427,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return if this is an interface (super is null).
      */
     public boolean isInterface() {
-        return (Constants.ACC_INTERFACE & m_modifiers) != 0;
+        return (Opcodes.ACC_INTERFACE & m_modifiers) != 0;
     }
     
     /**

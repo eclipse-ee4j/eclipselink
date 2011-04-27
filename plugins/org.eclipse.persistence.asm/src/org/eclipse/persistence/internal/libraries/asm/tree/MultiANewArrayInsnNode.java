@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000,2002,2003 INRIA, France Telecom 
+ * Copyright (c) 2000-2007 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,52 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
-import org.eclipse.persistence.internal.libraries.asm.Constants;
-import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
+import java.util.Map;
+
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A node that represents a MULTIANEWARRAY instruction.
  * 
  * @author Eric Bruneton
  */
-
 public class MultiANewArrayInsnNode extends AbstractInsnNode {
 
-  /**
-   * An array type descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type Type}).
-   */
+    /**
+     * An array type descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
+     */
+    public String desc;
 
-  public String desc;
+    /**
+     * Number of dimensions of the array to allocate.
+     */
+    public int dims;
 
-  /**
-   * Number of dimensions of the array to allocate.
-   */
+    /**
+     * Constructs a new {@link MultiANewArrayInsnNode}.
+     * 
+     * @param desc an array type descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
+     * @param dims number of dimensions of the array to allocate.
+     */
+    public MultiANewArrayInsnNode(final String desc, final int dims) {
+        super(Opcodes.MULTIANEWARRAY);
+        this.desc = desc;
+        this.dims = dims;
+    }
 
-  public int dims;
+    public int getType() {
+        return MULTIANEWARRAY_INSN;
+    }
 
-  /**
-   * Constructs a new {@link MultiANewArrayInsnNode MultiANewArrayInsnNode}
-   * object.
-   *
-   * @param desc an array type descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type
-   *      Type}).
-   * @param dims number of dimensions of the array to allocate.
-   */
+    public void accept(final MethodVisitor mv) {
+        mv.visitMultiANewArrayInsn(desc, dims);
+    }
 
-  public MultiANewArrayInsnNode (final String desc, final int dims) {
-    super(Constants.MULTIANEWARRAY);
-    this.desc = desc;
-    this.dims = dims;
-  }
+    public AbstractInsnNode clone(final Map labels) {
+        return new MultiANewArrayInsnNode(desc, dims);
+    }
 
-  public void accept (final CodeVisitor cv) {
-    cv.visitMultiANewArrayInsn(desc, dims);
-  }
 }

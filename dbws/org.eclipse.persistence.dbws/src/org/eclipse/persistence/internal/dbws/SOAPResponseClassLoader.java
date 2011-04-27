@@ -19,13 +19,13 @@ package org.eclipse.persistence.internal.dbws;
 
 // EclipseLink imports
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PUBLIC;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_SUPER;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ALOAD;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKESPECIAL;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.RETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.V1_5;
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_PUBLIC;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_SUPER;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECIAL;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
 
 /**
  * <p><b>INTERNAL</b>: A subclass of {@link ClassLoader} that exposes a build method to the hidden
@@ -59,14 +59,15 @@ public class SOAPResponseClassLoader extends ClassLoader {
        *     }
        *   }
        */
-      ClassWriter cw = new ClassWriter(true);
-      cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, className, SOAP_RESPONSE_CLASSNAME_SLASHES, null, null);
+      ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+      cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
 
-      CodeVisitor cv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-      cv.visitVarInsn(ALOAD, 0);
-      cv.visitMethodInsn(INVOKESPECIAL, SOAP_RESPONSE_CLASSNAME_SLASHES, "<init>", "()V");
-      cv.visitInsn(RETURN);
-      cv.visitMaxs(0, 0);
+      MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+      mv.visitVarInsn(ALOAD, 0);
+      mv.visitMethodInsn(INVOKESPECIAL, SOAP_RESPONSE_CLASSNAME_SLASHES, "<init>", "()V");
+      mv.visitInsn(RETURN);
+      mv.visitMaxs(0, 0);
+      mv.visitEnd();
 
       cw.visitEnd();
       return cw.toByteArray();

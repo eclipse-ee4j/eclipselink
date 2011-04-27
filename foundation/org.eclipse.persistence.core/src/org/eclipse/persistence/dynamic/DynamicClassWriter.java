@@ -25,39 +25,38 @@ import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Type;
-import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
 import static org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.AASTORE;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_ENUM;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_FINAL;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PRIVATE;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PUBLIC;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_STATIC;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_SUPER;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_SYNTHETIC;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ALOAD;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ANEWARRAY;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ARETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.BIPUSH;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.CHECKCAST;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.DUP;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.GETSTATIC;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ICONST_0;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ICONST_1;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ICONST_2;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ICONST_3;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ICONST_4;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ICONST_5;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ILOAD;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKESPECIAL;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKESTATIC;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.INVOKEVIRTUAL;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.NEW;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.PUTSTATIC;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.RETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.V1_5;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.AASTORE;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_ENUM;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_FINAL;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_PRIVATE;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_PUBLIC;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_STATIC;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_SUPER;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_SYNTHETIC;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ANEWARRAY;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ARETURN;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.BIPUSH;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.CHECKCAST;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.DUP;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.GETSTATIC;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ICONST_0;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ICONST_1;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ICONST_2;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ICONST_3;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ICONST_4;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ICONST_5;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ILOAD;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECIAL;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESTATIC;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKEVIRTUAL;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.NEW;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.PUTSTATIC;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
 
 /**
  * Write the byte codes of a dynamic entity class. The class writer will create
@@ -78,31 +77,24 @@ import static org.eclipse.persistence.internal.libraries.asm.Constants.V1_5;
  * @since EclipseLink 1.2
  */
 public class DynamicClassWriter {
-    
+
     /*
-     * Pattern is as follows:
-     * <pre>
-     * public class Foo extends DynamicEntityImpl {
-     *
-     *     public static DynamicPropertiesManager DPM = new DynamicPropertiesManager();
-     *     
-     *     public Foo() {
-     *         super();
-     *     }
-     *     public DynamicPropertiesManager fetchPropertiesManager() {
-     *         return DPM;
-     *     }
-     * }
+     * Pattern is as follows: <pre> public class Foo extends DynamicEntityImpl {
      * 
-     * later on, the DPM field is populated:
-     *     Field dpmField = myDynamicClass.getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
-     *     DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
-     *     dpm.setType(...)
-     * </pre>
+     * public static DynamicPropertiesManager DPM = new
+     * DynamicPropertiesManager();
+     * 
+     * public Foo() { super(); } public DynamicPropertiesManager
+     * fetchPropertiesManager() { return DPM; } }
+     * 
+     * later on, the DPM field is populated: Field dpmField =
+     * myDynamicClass.getField
+     * (DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
+     * DynamicPropertiesManager dpm =
+     * (DynamicPropertiesManager)dpmField.get(null); dpm.setType(...) </pre>
      */
-    
-    protected static final String DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES =
-       DynamicPropertiesManager.class.getName().replace('.', '/');
+
+    protected static final String DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES = DynamicPropertiesManager.class.getName().replace('.', '/');
     protected static final String INIT = "<init>";
     protected static final String CLINIT = "<clinit>";
 
@@ -150,7 +142,7 @@ public class DynamicClassWriter {
     public String getParentClassName() {
         return this.parentClassName;
     }
-    
+
     /**
      * Return the {@link #parentClass} converting the {@link #parentClassName}
      * using the provided loader if required.
@@ -171,58 +163,52 @@ public class DynamicClassWriter {
         if (enumInfo != null) {
             return createEnum(enumInfo);
         }
-            
+
         Class<?> parent = getParentClass(loader);
         parentClassName = parent.getName();
-        if (parent == null || parent.isPrimitive() || parent.isArray() || parent.isEnum() ||
-            parent.isInterface() || Modifier.isFinal(parent.getModifiers())) {
+        if (parent == null || parent.isPrimitive() || parent.isArray() || parent.isEnum() || parent.isInterface() || Modifier.isFinal(parent.getModifiers())) {
             throw new IllegalArgumentException("Invalid parent class: " + parent);
         }
         String classNameAsSlashes = className.replace('.', '/');
         String parentClassNameAsSlashes = parentClassName.replace('.', '/');
-        
-        ClassWriter cw = new ClassWriter(true);
-        CodeVisitor cv;
-        
+
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
         // public class Foo extends DynamicEntityImpl {
-        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, parentClassNameAsSlashes, null,
-            null);
-        
-        // public static DynamicPropertiesManager DPM = new DynamicPropertiesManager();
-        cw.visitField(ACC_PUBLIC + ACC_STATIC, PROPERTIES_MANAGER_FIELD,
-            "L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
-        cv = cw.visitMethod(ACC_STATIC, CLINIT, "()V", null, null);
-        cv.visitTypeInsn(NEW, DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES);
-        cv.visitInsn(DUP);
-        cv.visitMethodInsn(INVOKESPECIAL, DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES, INIT, "()V");
-        cv.visitFieldInsn(PUTSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD,
-            "L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
-        cv.visitInsn(RETURN);
-        cv.visitMaxs(0, 0);
-        
+        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, null);
+
+        // public static DynamicPropertiesManager DPM = new
+        // DynamicPropertiesManager();
+        cw.visitField(ACC_PUBLIC + ACC_STATIC, PROPERTIES_MANAGER_FIELD, "L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_STATIC, CLINIT, "()V", null, null);
+        mv.visitTypeInsn(NEW, DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES);
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKESPECIAL, DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES, INIT, "()V");
+        mv.visitFieldInsn(PUTSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(0, 0);
+
         // public Foo() {
-        //     super();
+        // super();
         // }
-        cv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
-        cv.visitVarInsn(ALOAD, 0);
-        cv.visitMethodInsn(INVOKESPECIAL, parentClassNameAsSlashes, INIT, "()V");
-        cv.visitInsn(RETURN);
-        cv.visitMaxs(0, 0);
-        
-        cv = cw.visitMethod(ACC_PUBLIC, "fetchPropertiesManager", 
-            "()L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
-        cv.visitFieldInsn(GETSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD,
-            "L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
-        cv.visitInsn(ARETURN);
-        cv.visitMaxs(0, 0);
-        
+        mv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESPECIAL, parentClassNameAsSlashes, INIT, "()V");
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(0, 0);
+
+        mv = cw.visitMethod(ACC_PUBLIC, "fetchPropertiesManager", "()L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
+        mv.visitFieldInsn(GETSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(0, 0);
+
         cw.visitEnd();
         return cw.toByteArray();
-        
+
     }
 
-    public static int[] ICONST = 
-        new int[] { ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4, ICONST_5 };
+    public static int[] ICONST = new int[] { ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4, ICONST_5 };
+
     protected byte[] createEnum(EnumInfo enumInfo) {
 
         String[] enumValues = enumInfo.getLiteralLabels();
@@ -230,99 +216,84 @@ public class DynamicClassWriter {
 
         String internalClassName = className.replace('.', '/');
 
-        CodeVisitor cv;
-
-        ClassWriter cw = new ClassWriter(true);
-        cw.visit(V1_5, ACC_PUBLIC + ACC_FINAL + ACC_SUPER + ACC_ENUM, internalClassName,
-            "java/lang/Enum", null, null);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(V1_5, ACC_PUBLIC + ACC_FINAL + ACC_SUPER + ACC_ENUM, internalClassName, null, "java/lang/Enum", null);
 
         // Add the individual enum values
         for (String enumValue : enumValues) {
-            cw.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC + ACC_ENUM, enumValue, "L"
-                + internalClassName + ";", null, null);
+            cw.visitField(ACC_PUBLIC + ACC_FINAL + ACC_STATIC + ACC_ENUM, enumValue, "L" + internalClassName + ";", null, null);
         }
 
         // add the synthetic "$VALUES" field
-        cw.visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC, "$VALUES", "[L"
-            + internalClassName + ";", null, null);
+        cw.visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC, "$VALUES", "[L" + internalClassName + ";", null, null);
 
         // Add the "values()" method
-        cv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "values", "()[L" + internalClassName + ";",
-            null, null);
-        cv.visitFieldInsn(GETSTATIC, internalClassName, "$VALUES", "[L" + internalClassName + ";");
-        cv.visitMethodInsn(INVOKEVIRTUAL, "[L" + internalClassName + ";", "clone",
-            "()Ljava/lang/Object;");
-        cv.visitTypeInsn(CHECKCAST, "[L" + internalClassName + ";");
-        cv.visitInsn(ARETURN);
-        cv.visitMaxs(1, 0);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "values", "()[L" + internalClassName + ";", null, null);
+        mv.visitFieldInsn(GETSTATIC, internalClassName, "$VALUES", "[L" + internalClassName + ";");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "[L" + internalClassName + ";", "clone", "()Ljava/lang/Object;");
+        mv.visitTypeInsn(CHECKCAST, "[L" + internalClassName + ";");
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(1, 0);
 
         // Add the "valueOf()" method
-        cv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "valueOf", "(Ljava/lang/String;)L"
-            + internalClassName + ";", null, null);
-        cv.visitLdcInsn(Type.getType("L" + internalClassName + ";"));
-        cv.visitVarInsn(ALOAD, 0);
-        cv.visitMethodInsn(INVOKESTATIC, "java/lang/Enum", "valueOf",
-            "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;");
-        cv.visitTypeInsn(CHECKCAST, internalClassName);
-        cv.visitInsn(ARETURN);
-        cv.visitMaxs(2, 1);
+        mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "valueOf", "(Ljava/lang/String;)L" + internalClassName + ";", null, null);
+        mv.visitLdcInsn(Type.getType("L" + internalClassName + ";"));
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Enum", "valueOf", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;");
+        mv.visitTypeInsn(CHECKCAST, internalClassName);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(2, 1);
 
         // Add constructors
-        SignatureAttribute methodAttrs1 = new SignatureAttribute("()V");
-        cv = cw.visitMethod(ACC_PRIVATE, "<init>", "(Ljava/lang/String;I)V", null, methodAttrs1);
-        cv.visitVarInsn(ALOAD, 0);
-        cv.visitVarInsn(ALOAD, 1);
-        cv.visitVarInsn(ILOAD, 2);
-        cv.visitMethodInsn(INVOKESPECIAL, "java/lang/Enum", "<init>", "(Ljava/lang/String;I)V");
-        cv.visitInsn(RETURN);
-        cv.visitMaxs(3, 3);
+        // SignatureAttribute methodAttrs1 = new SignatureAttribute("()V");
+        mv = cw.visitMethod(ACC_PRIVATE, "<init>", "(Ljava/lang/String;I)V", null, null);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitVarInsn(ILOAD, 2);
+        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Enum", "<init>", "(Ljava/lang/String;I)V");
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(3, 3);
 
         // Add enum constants
-        cv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
+        mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
 
         int lastCount = 0;
         for (int i = 0; i < enumValues.length; i++) {
             String enumValue = enumValues[i];
-            cv.visitTypeInsn(NEW, internalClassName);
-            cv.visitInsn(DUP);
-            cv.visitLdcInsn(enumValue);
+            mv.visitTypeInsn(NEW, internalClassName);
+            mv.visitInsn(DUP);
+            mv.visitLdcInsn(enumValue);
             if (i <= 5) {
-                cv.visitInsn(ICONST[i]);
+                mv.visitInsn(ICONST[i]);
+            } else {
+                mv.visitIntInsn(BIPUSH, i);
             }
-            else {
-                cv.visitIntInsn(BIPUSH, i);
-            }
-            cv.visitMethodInsn(INVOKESPECIAL, internalClassName, "<init>",
-                    "(Ljava/lang/String;I)V");
-            cv.visitFieldInsn(PUTSTATIC, internalClassName, enumValue, "L" + internalClassName
-                + ";");
+            mv.visitMethodInsn(INVOKESPECIAL, internalClassName, "<init>", "(Ljava/lang/String;I)V");
+            mv.visitFieldInsn(PUTSTATIC, internalClassName, enumValue, "L" + internalClassName + ";");
             lastCount = i;
         }
 
         if (lastCount < 5) {
-            cv.visitInsn(ICONST[lastCount + 1]);
+            mv.visitInsn(ICONST[lastCount + 1]);
+        } else {
+            mv.visitIntInsn(BIPUSH, lastCount + 1);
         }
-        else {
-            cv.visitIntInsn(BIPUSH, lastCount + 1);
-        }
-        cv.visitTypeInsn(ANEWARRAY, internalClassName);
+        mv.visitTypeInsn(ANEWARRAY, internalClassName);
 
         for (int i = 0; i < enumValues.length; i++) {
             String enumValue = enumValues[i];
-            cv.visitInsn(DUP);
+            mv.visitInsn(DUP);
             if (i <= 5) {
-                cv.visitInsn(ICONST[i]);
+                mv.visitInsn(ICONST[i]);
+            } else {
+                mv.visitIntInsn(BIPUSH, i);
             }
-            else {
-                cv.visitIntInsn(BIPUSH, i);
-            }
-            cv.visitFieldInsn(GETSTATIC, internalClassName, enumValue, "L" + internalClassName
-                + ";");
-            cv.visitInsn(AASTORE);
+            mv.visitFieldInsn(GETSTATIC, internalClassName, enumValue, "L" + internalClassName + ";");
+            mv.visitInsn(AASTORE);
         }
-        cv.visitFieldInsn(PUTSTATIC, internalClassName, "$VALUES", "[L" + internalClassName + ";");
-        cv.visitInsn(RETURN);
-        cv.visitMaxs(4, 0);
+        mv.visitFieldInsn(PUTSTATIC, internalClassName, "$VALUES", "[L" + internalClassName + ";");
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(4, 0);
 
         cw.visitEnd();
         return cw.toByteArray();
@@ -334,13 +305,12 @@ public class DynamicClassWriter {
      * a subclass of the {@link #parentClass}
      * 
      * @param dynamicClass
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     protected boolean verify(Class<?> dynamicClass, ClassLoader loader) throws ClassNotFoundException {
         Class<?> parent = getParentClass(loader);
         return dynamicClass != null && parent.isAssignableFrom(dynamicClass);
     }
-
 
     /**
      * Interfaces the dynamic entity class implements. By default this is none

@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000,2002,2003 INRIA, France Telecom 
+ * Copyright (c) 2000-2007 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,10 +27,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
-import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
+import java.util.Map;
+
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 
 /**
  * A node that represents a local variable instruction. A local variable
@@ -39,44 +40,48 @@ import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
  * 
  * @author Eric Bruneton
  */
-
 public class VarInsnNode extends AbstractInsnNode {
 
-  /**
-   * The operand of this instruction. This operand is the index of a local
-   * variable.
-   */
+    /**
+     * The operand of this instruction. This operand is the index of a local
+     * variable.
+     */
+    public int var;
 
-  public int var;
+    /**
+     * Constructs a new {@link VarInsnNode}.
+     * 
+     * @param opcode the opcode of the local variable instruction to be
+     *        constructed. This opcode must be ILOAD, LLOAD, FLOAD, DLOAD,
+     *        ALOAD, ISTORE, LSTORE, FSTORE, DSTORE, ASTORE or RET.
+     * @param var the operand of the instruction to be constructed. This operand
+     *        is the index of a local variable.
+     */
+    public VarInsnNode(final int opcode, final int var) {
+        super(opcode);
+        this.var = var;
+    }
 
-  /**
-   * Visits a local variable instruction. A local variable instruction is an
-   * instruction that loads or stores the value of a local variable.
-   *
-   * @param opcode the opcode of the local variable instruction to be
-   *      constructed. This opcode must be ILOAD, LLOAD, FLOAD, DLOAD, ALOAD,
-   *      ISTORE, LSTORE, FSTORE, DSTORE, ASTORE or RET.
-   * @param var the operand of the instruction to be constructed. This operand
-   *      is the index of a local variable.
-   */
+    /**
+     * Sets the opcode of this instruction.
+     * 
+     * @param opcode the new instruction opcode. This opcode must be ILOAD,
+     *        LLOAD, FLOAD, DLOAD, ALOAD, ISTORE, LSTORE, FSTORE, DSTORE, ASTORE
+     *        or RET.
+     */
+    public void setOpcode(final int opcode) {
+        this.opcode = opcode;
+    }
 
-  public VarInsnNode (final int opcode, final int var) {
-    super(opcode);
-    this.var = var;
-  }
+    public int getType() {
+        return VAR_INSN;
+    }
 
-  /**
-   * Sets the opcode of this instruction.
-   *
-   * @param opcode the new instruction opcode. This opcode must be ILOAD, LLOAD,
-   *      FLOAD, DLOAD, ALOAD, ISTORE, LSTORE, FSTORE, DSTORE, ASTORE or RET.
-   */
+    public void accept(final MethodVisitor mv) {
+        mv.visitVarInsn(opcode, var);
+    }
 
-  public void setOpcode (final int opcode) {
-    this.opcode = opcode;
-  }
-
-  public void accept (final CodeVisitor cv) {
-    cv.visitVarInsn(opcode, var);
-  }
+    public AbstractInsnNode clone(final Map labels) {
+        return new VarInsnNode(opcode, var);
+    }
 }
