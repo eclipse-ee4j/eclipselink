@@ -987,7 +987,7 @@
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
-            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
             <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
