@@ -195,9 +195,10 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             dynamicProjects.add(p);
         }
 
-        this.xmlContext = new XMLContext(dynamicProjects);
+        XMLContext xmlContext = new XMLContext(dynamicProjects);
+        setXMLContext(xmlContext);
 
-        List<Session> sessions = (List<Session>) this.xmlContext.getSessions();
+        List<Session> sessions = (List<Session>) xmlContext.getSessions();
         for (Object session : sessions) {
             this.helpers.add(new DynamicHelper((DatabaseSession) session));
         }
@@ -221,9 +222,10 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
 
-        this.xmlContext = new XMLContext(dp, dClassLoader);
+        XMLContext xmlContext = new XMLContext(dp, dClassLoader);
+        setXMLContext(xmlContext);
 
-        List<Session> sessions = (List<Session>) this.xmlContext.getSessions();
+        List<Session> sessions = (List<Session>) xmlContext.getSessions();
         for (Object session : sessions) {
             this.helpers.add(new DynamicHelper((DatabaseSession) session));
         }
