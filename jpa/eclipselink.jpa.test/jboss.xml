@@ -122,9 +122,9 @@
         <java classname="org.jboss.Main" 
             fork="true"
             failonerror="false" >
-            <jvmarg value="-XX:MaxPermSize=128m"/>
-            <jvmarg value="-Xms128m"/>
-            <jvmarg value="-Xmx560m"/>
+            <jvmarg value="-XX:MaxPermSize=512m"/>
+            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-Xmx960m"/>
             <sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/>
             <sysproperty key="http.proxyPort" value="80"/>
             <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
@@ -139,6 +139,7 @@
                 <pathelement location="${jboss.home}/bin/run.jar"/>
                 <pathelement location="${jdbc.driver.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
+                <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             </classpath>           
         </java>
