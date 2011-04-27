@@ -54,8 +54,17 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Lobtest</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.LobtestPK</class>
         
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Boss</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Capo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Contract</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.MafiaFamily</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Mafioso</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Soldier</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Underboss</class>
+        
         <properties>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.multitenant.tenants-share-cache" value="true"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlGeneration.jdbc"/>
@@ -64,6 +73,7 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
+    
     <persistence-unit name="ddlTablePerClass" transaction-type="RESOURCE_LOCAL">
         <!-- This persistence unit is configured to use 
         name="eclipselink.ddl-generation" value="drop-and-create-tables",
@@ -97,6 +107,7 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
+    
     <persistence-unit name="ddlTableSuffix" transaction-type="RESOURCE_LOCAL">
         <!-- This persistence unit is configured to use 
         name="eclipselink.ddl-generation" value="drop-and-create-tables",
