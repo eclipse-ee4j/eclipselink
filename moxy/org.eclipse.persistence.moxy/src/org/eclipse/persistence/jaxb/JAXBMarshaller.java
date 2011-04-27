@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -79,7 +80,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private XMLMarshaller xmlMarshaller;
     private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
-    private HashMap<QName, Class> qNameToGeneratedClasses;
 
     /**
      * This constructor initializes various settings on the XML marshaller, and
@@ -142,6 +142,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             xmlroot.setObject(elt);
             return xmlroot;
         }
+        Map<QName, Class> qNameToGeneratedClasses = jaxbContext.getQNameToGeneratedClasses();
         if (qNameToGeneratedClasses != null) {
             Class theClass = qNameToGeneratedClasses.get(qname);
             if (theClass != null && WrappedValue.class.isAssignableFrom(theClass)) {
@@ -553,10 +554,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     public void setSchema(Schema schema) {
         this.xmlMarshaller.setSchema(schema);
-    }
-
-    public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {
-        this.qNameToGeneratedClasses = qNameToClass;
     }
 
     private HashMap<String, Class> getClassToGeneratedClasses() {

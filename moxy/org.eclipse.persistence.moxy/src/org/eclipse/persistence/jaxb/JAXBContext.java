@@ -13,6 +13,9 @@
 package org.eclipse.persistence.jaxb;
 
 import java.awt.Image;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
 import javax.xml.bind.SchemaOutputResolver;
@@ -27,9 +31,16 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.exceptions.SessionLoaderException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.jaxb.SessionEventListener;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -38,10 +49,20 @@ import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
 import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
+import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.platform.SAXPlatform;
+import org.eclipse.persistence.oxm.platform.XMLPlatform;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -102,19 +123,15 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);
     }
 
-    protected XMLContext xmlContext;
-    private org.eclipse.persistence.jaxb.compiler.Generator generator;
-    private HashMap<QName, Class> qNameToGeneratedClasses;
-    private HashMap<String, Class> classToGeneratedClasses;
-    private HashMap<QName, Class> qNamesToDeclaredClasses;
-    private HashMap<Type, QName> typeToSchemaType;
-    private TypeMappingInfo[] boundTypes;
-    private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedType;
-    private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
-    private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToJavaTypeAdapters;
+    private JAXBContextState contextState;
 
     protected JAXBContext() {
         super();
+        contextState = new JAXBContextState();
+    }
+
+    protected JAXBContext (JAXBContextInput contextInput) throws javax.xml.bind.JAXBException {
+        this.contextState = contextInput.createContextState();
     }
 
     /**
@@ -122,8 +139,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * metadata about the Object to XML mappings.
      */
     public JAXBContext(XMLContext context) {
-        super();
-        xmlContext = context;
+        contextState = new JAXBContextState(context);
     }
 
     /**
@@ -131,44 +147,28 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Object to XML mappings.
      */
     public JAXBContext(XMLContext context, Generator generator, Type[] boundTypes) {
-
-        this(context);
-        this.generator = generator;
-        this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
-        this.classToGeneratedClasses = generator.getMappingsGenerator().getClassToGeneratedClasses();
-        this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
-        this.boundTypes = new TypeMappingInfo[boundTypes.length];
-        for(int i =0; i< boundTypes.length; i++){
-        	TypeMappingInfo newTypeInfo = new TypeMappingInfo();
-        	newTypeInfo.setType(boundTypes[i]);
-        	this.boundTypes[i] = newTypeInfo;
-        }
+        contextState = new JAXBContextState(context, generator, boundTypes);
     }
-    
 
     /**
      * Create a JAXBContext.  The XMLContext contains the metadata about the 
      * Object to XML mappings.
      */
     public JAXBContext(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
-
-        this(context);
-        this.generator = generator;
-        this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
-        this.classToGeneratedClasses = generator.getMappingsGenerator().getClassToGeneratedClasses();
-        this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
-        this.typeMappingInfoToGeneratedType = generator.getAnnotationsProcessor().getTypeMappingInfoToGeneratedClasses();
-        this.setTypeMappingInfoToJavaTypeAdapaters(createAdaptersForAdapterClasses(generator.getAnnotationsProcessor().getTypeMappingInfoToAdapterClasses()));
-        this.boundTypes = boundTypes;
+        contextState = new JAXBContextState(context, generator, boundTypes);
     }
 
     /**
      * Return the XMLContext associated with this JAXBContext. 
      */
     public XMLContext getXMLContext() {
-        return this.xmlContext;
+        return contextState.getXMLContext();
     }
-        
+
+    public void setXMLContext(XMLContext xmlContext) {
+        contextState.setXMLContext(xmlContext);
+    }
+
     /**
      * Generate a Schema for this JAXBContext
      *  
@@ -187,6 +187,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * then the element generated from this map will be the one that is present in the XSD.
      */
     public void generateSchema(SchemaOutputResolver outputResolver, Map<QName, Type> additonalGlobalElements) {
+        JAXBContextState currentJAXBContextState = contextState;
+        XMLContext xmlContext = currentJAXBContextState.getXMLContext();
+        Generator generator = currentJAXBContextState.getGenerator();
         if (generator == null) {
             List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
             List<Session> sessions = xmlContext.getSessions();
@@ -208,6 +211,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * to XML.
      */    
     public JAXBMarshaller createMarshaller() {
+        JAXBContextState currentJAXBContextState = contextState;
+        XMLContext xmlContext = currentJAXBContextState.getXMLContext();
+        Generator generator = currentJAXBContextState.getGenerator();
         // create a JAXBIntrospector and set it on the marshaller
         JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), new JAXBIntrospector(xmlContext));
         if (generator != null && generator.hasMarshalCallbacks()) {
@@ -218,7 +224,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
             marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
         }
-        marshaller.setQNameToGeneratedClasses(this.qNameToGeneratedClasses);
         //marshaller.setClassToGeneratedClasses(this.classToGeneratedClasses);
         marshaller.setJaxbContext(this);
         return marshaller;
@@ -229,6 +234,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Java objects.    
      */    
     public JAXBUnmarshaller createUnmarshaller() {
+        JAXBContextState currentJAXBContextState = contextState;
+        XMLContext xmlContext = currentJAXBContextState.getXMLContext();
+        Generator generator = currentJAXBContextState.getGenerator();
         JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
         if (generator != null && generator.hasUnmarshalCallbacks()) {
             // initialize each callback in the map
@@ -247,14 +255,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * an XSD.   
      */ 
     public JAXBValidator createValidator() {
-        return new JAXBValidator(xmlContext.createValidator());
+        return new JAXBValidator(getXMLContext().createValidator());
     }
 
     /** 
      * Create a JAXBBinder.  The JAXBBinder is used to preserve unmapped XML Data.     
      */ 
     public JAXBBinder createBinder() {
-        return new JAXBBinder(this.xmlContext);
+        return new JAXBBinder(getXMLContext());
     }     
 
     /** 
@@ -264,7 +272,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      */ 
     public <T> JAXBBinder createBinder(Class<T> nodeClass) {
         if (nodeClass.getName().equals("org.w3c.dom.Node")) {
-            return new JAXBBinder(this.xmlContext);
+            return new JAXBBinder(getXMLContext());
         } else {
             throw new UnsupportedOperationException(JAXBException.unsupportedNodeClass(nodeClass.getName()));
         }
@@ -275,7 +283,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * access certain pieces of metadata about an instance of a JAXB bound class.
      */
     public JAXBIntrospector createJAXBIntrospector() {
-        return new JAXBIntrospector(xmlContext);
+        return new JAXBIntrospector(getXMLContext());
     }
 
     /**
@@ -283,7 +291,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Set the map containing which QName corresponds to which generated class.
      */
     public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {
-        this.qNameToGeneratedClasses = qNameToClass;
+        contextState.setQNameToGeneratedClasses(qNameToClass);
     }
 
     /**
@@ -291,7 +299,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Get the map containing which Class (by name) corresponds to which generated class.
      */
     public HashMap<String, Class> getClassToGeneratedClasses() {
-        return classToGeneratedClasses;
+        return contextState.getClassToGeneratedClasses();
     }
 
     /**
@@ -299,15 +307,15 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Set the map containing which Class (by name) corresponds to which generated class.
      */
     public void setClassToGeneratedClasses(HashMap<String, Class> classToClass) {
-        this.classToGeneratedClasses = classToClass;
+        contextState.setClassToGeneratedClasses(classToClass);
     }
 
     /**
      * ADVANCED:
-     * Adjust the OXM metadata to take into accound ORM mapping metadata
+     * Adjust the OXM metadata to take into account ORM mapping metadata
      */
      public void applyORMMetadata(AbstractSession ormSession) {
-        this.xmlContext.applyORMMetadata(ormSession);
+        getXMLContext().applyORMMetadata(ormSession);
      }
 
      /**
@@ -315,16 +323,23 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
       * Get the map of which QName corresponds to which declared class.
       */
     public HashMap<QName, Class> getQNamesToDeclaredClasses() {
-        return qNamesToDeclaredClasses;
+        return contextState.getQNamesToDeclaredClasses();
     }
+
+    /**
+     * INTERNAL:
+     * Get the map of which QName corresponds to which generated class.
+     */
+   Map<QName, Class> getQNameToGeneratedClasses() {
+       return contextState.getQNameToGeneratedClasses();
+   }
 
     /**
      *  INTERNAL:
      *  Set the map of which QName corresponds to which declared class.
      */
-    public void setQNamesToDeclaredClasses(
-            HashMap<QName, Class> nameToDeclaredClasses) {
-        qNamesToDeclaredClasses = nameToDeclaredClasses;
+    public void setQNamesToDeclaredClasses(HashMap<QName, Class> nameToDeclaredClasses) {
+        contextState.setQNamesToDeclaredClasses(nameToDeclaredClasses);
     }
 
     /**
@@ -332,7 +347,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Get the map for which array class (by name) corresponds to which generated class
      */
     public Map<String, Class>getArrayClassesToGeneratedClasses(){
-        return generator.getAnnotationsProcessor().getArrayClassesToGeneratedClasses();
+        return contextState.getGenerator().getAnnotationsProcessor().getArrayClassesToGeneratedClasses();
     }
 
     /**
@@ -340,7 +355,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Get the map for which collection class (by Type) corresponds to which generated class
      */
     public Map<Type, Class>getCollectionClassesToGeneratedClasses(){
-        return generator.getAnnotationsProcessor().getCollectionClassesToGeneratedClasses();
+        return contextState.getGenerator().getAnnotationsProcessor().getCollectionClassesToGeneratedClasses();
     }
     
     /**
@@ -351,103 +366,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * this Map will be empty.
      */
     public void initTypeToSchemaType() {
-        this.typeToSchemaType = new HashMap<Type, QName>();
-        
-        if(typeToTypeMappingInfo == null || typeToTypeMappingInfo.size() == 0){
-        	return;
-        }
-        
-        Iterator descriptors = xmlContext.getSession(0).getProject().getOrderedDescriptors().iterator();
-
-        //Add schema types generated for mapped domain classes
-        while (descriptors.hasNext()) {
-            XMLDescriptor next = (XMLDescriptor)descriptors.next();
-            Class javaClass = next.getJavaClass();
-
-            if (next.getSchemaReference() != null){
-                QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
-                Type type = null;
-                if (generator != null) {
-                	
-                    type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
-                    
-                    if (type == null) {
-                        JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
-                        if (arrayClass != null) {
-                            String arrayClassName = arrayClass.getName();
-                            try {
-                                type = PrivilegedAccessHelper.getClassForName(arrayClassName);
-                            } catch (Exception ex) {}
-                        }      
-                        
-                        if(type == null && getTypeMappingInfoToGeneratedType() != null){                             	
-                        	Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
-                        	while(iter.hasNext()){
-                        		Map.Entry<TypeMappingInfo, Class> entry = iter.next();
-                        		if(entry.getValue().equals(javaClass)){
-                        			type = entry.getKey().getType();
-                        			break;
-                        		}
-                        	}
-                        }
-                    }
-                    if (type == null) {
-                        type = javaClass;
-                    }
-                    
-                } else {
-                    type = javaClass;
-                }
-                this.typeToSchemaType.put(type, schemaType);
-            }
-        }
-
-        //Add any types that we didn't generate descriptors for (built in types)
-        if (boundTypes != null) {
-        	for (TypeMappingInfo next:this.boundTypes) {
-                if (this.typeToSchemaType.get(next) == null) {
-                	Type nextType = next.getType();
-                	QName name = getSchemaTypeForTypeMappingInfo(nextType);
-                	if (name != null) {
-                        this.typeToSchemaType.put(nextType, name);
-                    }                	                	
-                }
-            }
-        }
+        contextState.initTypeToSchemaType();
     }
-    
-    /**
-     * INTERNAL:
-     * Get the QName which the given Type corresponds to.
-     * Valid types should be all the boundTypes used to create the JAXBContext.
-     * If the JAXBContext was not created with the construction that takes a Type[] then 
-     * this will be return null.
-     */
-    private QName getSchemaTypeForTypeMappingInfo(Type type){    	
-        QName name = null;
-        //Check for annotation overrides
-        if (type instanceof Class) {
-            name = this.generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class)type).getName());
-            if (name == null) {        	
-            	Class theClass = (Class)type;
-                //Change default for byte[] to Base64 (JAXB 2.0 default)
-                if (type == ClassConstants.ABYTE || type == ClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("javax.activation.DataHandler") ) {
-                    name = XMLConstants.BASE_64_BINARY_QNAME;
-                } else if(type == ClassConstants.OBJECT){
-                	name = XMLConstants.ANY_TYPE_QNAME;
-                } else if(type == ClassConstants.XML_GREGORIAN_CALENDAR) {
-                    name = XMLConstants.ANY_SIMPLE_TYPE_QNAME;
-                } else {
-                    name = (QName)XMLConversionManager.getDefaultJavaTypes().get(type);
-                }
-            }
-            
-        }
-        
-    	return name;
-    }
-    
-    
+
     /**
      * INTERNAL:
      * Get the map of which TypeMappingInfo corresponds to which QName.
@@ -456,11 +377,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * this Map will be empty.
      */    
     public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
-        if(typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() >0){
-        	return new HashMap<TypeMappingInfo, QName>();
-        }
-
-        return generator.getAnnotationsProcessor().getTypeMappingInfoToSchemaType();
+        return contextState.getTypeMappingInfoToSchemaType();
     }
 
     /**
@@ -471,61 +388,25 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * this Map will be empty.
      */
     public HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {
-    	if(typeToSchemaType == null){
-    		initTypeToSchemaType();
-    	}   
-        return typeToSchemaType;
+        return contextState.getTypeToSchemaType();
     }
-     
-    Map<TypeMappingInfo, Class> getTypeMappingInfoToGeneratedType() {
-        return this.typeMappingInfoToGeneratedType;
-    }
-    
-    Map<Type, TypeMappingInfo> getTypeToTypeMappingInfo() {
-        return this.typeToTypeMappingInfo;
-    }
-    
-    void setTypeToTypeMappingInfo(Map<Type, TypeMappingInfo> typeToMappingInfo) {
-        this.typeToTypeMappingInfo = typeToMappingInfo;
-        this.generator.setTypeToTypeMappingInfo(typeToMappingInfo);
-    }
-    
-    void setTypeMappingInfoToJavaTypeAdapaters(Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters) {
-        this.typeMappingInfoToJavaTypeAdapters = typeMappingInfoToAdapters;
-    }
-    
-    private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> createAdaptersForAdapterClasses(Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses) {
-        Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters = new HashMap<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter>();
-        for(Entry<TypeMappingInfo, Class> entry : typeMappingInfoToAdapterClasses.entrySet()) {
-            Class adapterClass = entry.getValue();
-            if(adapterClass != null) {
-                try {
-                    XmlAdapter adapter = (XmlAdapter)adapterClass.newInstance();
-                    Class boundType = getBoundTypeForXmlAdapterClass(adapterClass);
-                    RootLevelXmlAdapter rootLevelXmlAdapter = new RootLevelXmlAdapter(adapter, boundType);
-                    
-                    typeMappingInfoToAdapters.put(entry.getKey(), rootLevelXmlAdapter);
-                } catch(Exception ex) {}
-            }
-        }
-        return typeMappingInfoToAdapters;
-    }
-    
-    private Class getBoundTypeForXmlAdapterClass(Class adapterClass) {
-        Class boundType = Object.class;
 
-        for (Method method:PrivilegedAccessHelper.getDeclaredMethods(adapterClass)) {
-            if (method.getName().equals("marshal")) {
-                Class returnType = PrivilegedAccessHelper.getMethodReturnType(method);
-                if(!returnType.getName().equals(boundType.getName())) {
-                    boundType = returnType;
-                    break;
-                }
-            }
-        }
-        return boundType;
+    Map<TypeMappingInfo, Class> getTypeMappingInfoToGeneratedType() {
+        return contextState.getTypeMappingInfoToGeneratedType();
     }
-    
+
+    Map<Type, TypeMappingInfo> getTypeToTypeMappingInfo() {
+        return contextState.getTypeToTypeMappingInfo();
+    }
+
+    void setTypeToTypeMappingInfo(Map<Type, TypeMappingInfo> typeToMappingInfo) {
+        contextState.setTypeToTypeMappingInfo(typeToMappingInfo);
+    }
+
+    void setTypeMappingInfoToJavaTypeAdapaters(Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters) {
+        contextState.setTypeMappingInfoToJavaTypeAdapaters(typeMappingInfoToAdapters);
+    }
+
     static class RootLevelXmlAdapter {
         private XmlAdapter xmlAdapter;
         private Class boundType;
@@ -551,10 +432,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             this.boundType = boundType;
         }
     }
+
     Map<TypeMappingInfo, RootLevelXmlAdapter> getTypeMappingInfoToJavaTypeAdapters() {
-        return this.typeMappingInfoToJavaTypeAdapters;
+        return contextState.getTypeMappingInfoToJavaTypeAdapters();
     }
-    
+
     /**
      * Get a value from an object based on an XPath statement.
      * 
@@ -573,7 +455,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      *      The object corresponding to the XPath or null if no result was found.
      */
     public <T> T getValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
-        return this.xmlContext.getValueByXPath(object, xPath, namespaceResolver, returnType);
+        return getXMLContext().getValueByXPath(object, xPath, namespaceResolver, returnType);
     }
 
     /**
@@ -589,7 +471,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      *      The value to be set.
      */
     public void setValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Object value) {
-        this.xmlContext.setValueByXPath(object, xPath, namespaceResolver, value);
+        getXMLContext().setValueByXPath(object, xPath, namespaceResolver, value);
     }
 
     /**
@@ -608,7 +490,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      *      if no result was found.
      */
     public Object createByQualifiedName(String namespace, String typeName, boolean isGlobalType) {
-        return this.xmlContext.createByQualifiedName(namespace, typeName, isGlobalType);
+        return getXMLContext().createByQualifiedName(namespace, typeName, isGlobalType);
     }
 
     /**
@@ -630,7 +512,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      *      if no result was found.
      */
     public <T> T createByXPath(Object parentObject, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
-        return this.xmlContext.createByXPath(parentObject, xPath, namespaceResolver, returnType);
+        return getXMLContext().createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }
     
     /**
@@ -639,6 +521,630 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * @return
      */
     public boolean hasSwaRef() {
-        return this.generator.getAnnotationsProcessor().hasSwaRef();
+        return contextState.getGenerator().getAnnotationsProcessor().hasSwaRef();
     }
+
+    static abstract class JAXBContextInput {
+
+        protected Map properties;
+        protected ClassLoader classLoader;
+
+        public JAXBContextInput(Map properties, ClassLoader classLoader) {
+            this.properties = properties;
+            if(null == classLoader) {
+                this.classLoader = Thread.currentThread().getContextClassLoader();
+            } else {
+                this.classLoader = classLoader;
+            }
+        }
+
+        protected abstract JAXBContextState createContextState() throws javax.xml.bind.JAXBException;
+
+    }
+
+    static class ContextPathInput extends JAXBContextInput {
+
+        private String contextPath;
+
+        ContextPathInput(String contextPath, Map properties, ClassLoader classLoader) {
+            super(properties, classLoader);
+            this.contextPath = contextPath;
+        }
+
+        @Override
+        protected JAXBContextState createContextState() throws javax.xml.bind.JAXBException {
+            EclipseLinkException sessionLoadingException = null;
+            try {
+                XMLContext xmlContext = new XMLContext(contextPath, classLoader);
+                return new JAXBContextState(xmlContext);
+            } catch (ValidationException vex) {
+                if (vex.getErrorCode() != ValidationException.NO_SESSIONS_XML_FOUND) {
+                    sessionLoadingException = vex;
+                }
+            } catch (SessionLoaderException ex) {
+                sessionLoadingException = ex;
+            } catch (Exception ex) {
+                throw new javax.xml.bind.JAXBException(ex);
+            }
+            List<Class> classes = new ArrayList<Class>();
+
+            // Check properties map for eclipselink-oxm.xml entries
+            Map<String, XmlBindings> xmlBindingMap = JAXBContextFactory.getXmlBindingsFromProperties(properties, classLoader);
+            classes = getXmlBindingsClassesFromMap(xmlBindingMap, classLoader, classes);
+
+            StringTokenizer tokenizer = new StringTokenizer(contextPath, ":");
+            while (tokenizer.hasMoreElements()) {
+                String path = tokenizer.nextToken();
+                try {
+                    Class objectFactory = classLoader.loadClass(path + ".ObjectFactory");
+                    if (isJAXB2ObjectFactory(objectFactory)) {
+                        classes.add(objectFactory);
+                    }
+                } catch (Exception ex) {
+                    // if there's no object factory, don't worry about it. Check for jaxb.index next
+                }
+                try {
+                    // try to load package info just to be safe
+                    classLoader.loadClass(path + ".package-info");
+                } catch (Exception ex) {
+                }
+                // Next check for a jaxb.index file in case there's one available
+                InputStream jaxbIndex = classLoader.getResourceAsStream(path.replace('.', '/') + "/jaxb.index");
+                if (jaxbIndex != null) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(jaxbIndex));
+                    try {
+                        String line = reader.readLine();
+                        while (line != null) {
+                            String className = path + JAXBContextFactory.PKG_SEPARATOR + line.trim();
+                            try {
+                                classes.add(classLoader.loadClass(className));
+                            } catch (Exception ex) {
+                                // just ignore for now if the class isn't available.
+                            }
+                            line = reader.readLine();
+                        }
+                    } catch (Exception ex) {
+                    }
+                }
+            }
+            if (classes.size() == 0) {
+                org.eclipse.persistence.exceptions.JAXBException jaxbException = org.eclipse.persistence.exceptions.JAXBException.noObjectFactoryOrJaxbIndexInPath(contextPath);
+                if (sessionLoadingException != null) {
+                    jaxbException.setInternalException(sessionLoadingException);
+                }
+                throw new javax.xml.bind.JAXBException(jaxbException);
+            }
+            Class[] classArray = new Class[classes.size()];
+            for (int i = 0; i < classes.size(); i++) {
+                classArray[i] = (Class) classes.get(i);
+            }
+            return createContextState(classArray, xmlBindingMap);
+        }
+
+        /**
+         * This means of creating a JAXBContext is aimed at creating a JAXBContext
+         * based on method parameters.  This method is useful when JAXB is used as
+         * the binding layer for a Web Service provider.
+         */
+        private JAXBContextState createContextState(Class[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws javax.xml.bind.JAXBException {
+            JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound);
+            String defaultTargetNamespace = null;
+            AnnotationHelper annotationHelper = null;
+            if(properties != null) {
+                defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
+                annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
+            }
+            
+            JavaModelImpl jModel;
+            if(annotationHelper != null) {
+                jModel = new JavaModelImpl(loader, annotationHelper);
+            } else {
+                jModel = new JavaModelImpl(loader);
+            }
+            
+            // create Map of package names to metadata complete indicators
+            Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
+            for (String packageName : xmlBindings.keySet()) {
+                if (xmlBindings.get(packageName).isXmlMappingMetadataComplete()) {
+                    metadataComplete.put(packageName, true);
+                }
+            }
+            if (metadataComplete.size() > 0) {
+                jModel.setMetadataCompletePackageMap(metadataComplete);
+            }
+            
+            JavaModelInputImpl inputImpl = new JavaModelInputImpl(classesToBeBound, jModel);
+            try {
+                Generator generator = new Generator(inputImpl, xmlBindings, loader, defaultTargetNamespace);
+                return createContextState(generator, loader, classesToBeBound);
+            } catch (Exception ex) {
+                throw new javax.xml.bind.JAXBException(ex.getMessage(), ex);
+            }
+        }
+
+        private JAXBContextState createContextState(Generator generator, JaxbClassLoader loader, Type[] typesToBeBound) throws Exception {
+            Project proj = generator.generateProject();
+            ConversionManager conversionManager = null;
+            if (classLoader != null) {
+                conversionManager = new ConversionManager();
+                conversionManager.setLoader(loader);
+            } else {
+                conversionManager = ConversionManager.getDefaultManager();
+            }
+            proj.convertClassNamesToClasses(conversionManager.getLoader());
+            // need to make sure that the java class is set properly on each
+            // descriptor when using java classname - req'd for JOT api implementation
+            for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext();) {
+                ClassDescriptor descriptor = descriptorIt.next();
+                if (descriptor.getJavaClass() == null) {
+                    descriptor.setJavaClass(conversionManager.convertClassNameToClass(descriptor.getJavaClassName()));
+                }
+            }
+
+            // disable instantiation policy validation during descriptor initialization
+            SessionEventListener eventListener = new SessionEventListener();
+            eventListener.setShouldValidateInstantiationPolicy(false);
+            XMLPlatform platform = new SAXPlatform();
+            platform.getConversionManager().setLoader(loader);
+            XMLContext xmlContext = new XMLContext(proj, loader, eventListener);
+
+            if(generator.getAnnotationsProcessor().getPackageToNamespaceMappings().size() > 1){
+                ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
+            }
+
+            return new JAXBContextState(xmlContext, generator, typesToBeBound);
+        }
+
+        /**
+         * Convenience method that returns an array of Classes based on a map given XmlBindings and an
+         * array of existing classes. The resulting array will not contain duplicate entries.
+         */
+        private List<Class> getXmlBindingsClassesFromMap(Map<String, XmlBindings> xmlBindingMap, ClassLoader classLoader, List<Class> existingClasses) {
+            List<Class> additionalClasses = existingClasses;
+            // for each xmlBindings
+            for (Entry<String, XmlBindings> entry : xmlBindingMap.entrySet()) {
+                additionalClasses = getXmlBindingsClasses(entry.getValue(), classLoader, additionalClasses);
+            }
+            return additionalClasses;
+        }
+
+        /**
+         * Convenience method that returns a list of Classes based on a given XmlBindings and an array
+         * of existing classes. The resulting array will not contain duplicate entries.
+         */
+        private List<Class> getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, List<Class> existingClasses) {
+            List<Class> additionalClasses = existingClasses;
+            JavaTypes jTypes = xmlBindings.getJavaTypes();
+            if (jTypes != null) {
+                for (JavaType javaType : jTypes.getJavaType()) {
+                    try {
+                        Class jClass = classLoader.loadClass(javaType.getName());
+                        if (!additionalClasses.contains(jClass)) {
+                            additionalClasses.add(jClass);
+                        }
+                    } catch (ClassNotFoundException e) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
+                    }
+                }
+            }
+            return additionalClasses;
+        }
+
+        private boolean isJAXB2ObjectFactory(Class objectFactoryClass) {
+            try {
+                Class xmlRegistry = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlRegistry");
+                if (objectFactoryClass.isAnnotationPresent(xmlRegistry)) {
+                    return true;
+                }
+                return false;
+            } catch (Exception ex) {
+                return false;
+            }
+        }
+
+    }
+
+    static class TypeMappingInfoInput extends JAXBContextInput {
+
+        private TypeMappingInfo[] typeMappingInfo;
+
+        TypeMappingInfoInput(TypeMappingInfo[] typeMappingInfo, Map properties, ClassLoader classLoader) {
+            super(properties, classLoader);
+            this.typeMappingInfo = typeMappingInfo;
+        }
+
+        protected JAXBContextState createContextState() throws javax.xml.bind.JAXBException {
+            // Check properties map for eclipselink-oxm.xml entries
+            Map<String, XmlBindings> xmlBindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, classLoader);
+            String defaultTargetNamespace = null;
+            AnnotationHelper annotationHelper = null;
+            if(properties != null) {
+                defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
+                annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
+            }
+            TypeMappingInfo[] typesToBeBound = typeMappingInfo;
+            for (Entry<String, XmlBindings> entry : xmlBindings.entrySet()) {
+                typesToBeBound = getXmlBindingsClasses(entry.getValue(), classLoader, typesToBeBound);
+            }
+
+            JaxbClassLoader loader = new JaxbClassLoader(classLoader, typesToBeBound);
+            typesToBeBound = updateTypesWithObjectFactory(typesToBeBound, loader);
+
+            JavaModelImpl jModel;
+            if(annotationHelper != null) {
+                jModel = new JavaModelImpl(loader, annotationHelper);
+            } else {
+                jModel = new JavaModelImpl(loader);
+            }
+            
+            // create Map of package names to metadata complete indicators
+            Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
+            for (String packageName : xmlBindings.keySet()) {
+                if (xmlBindings.get(packageName).isXmlMappingMetadataComplete()) {
+                    metadataComplete.put(packageName, true);
+                }
+            }
+            if (metadataComplete.size() > 0) {
+                jModel.setMetadataCompletePackageMap(metadataComplete);
+            }
+            
+            JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, jModel);
+            try {
+                Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace);
+                return createContextState(generator, loader, typesToBeBound);
+            } catch (Exception ex) {
+                throw new javax.xml.bind.JAXBException(ex.getMessage(), ex);
+            }
+        }
+
+        private JAXBContextState createContextState(Generator generator, JaxbClassLoader loader, TypeMappingInfo[] typesToBeBound) throws Exception {
+            Project proj = generator.generateProject();
+            ConversionManager conversionManager = null;
+            if (classLoader != null) {
+                conversionManager = new ConversionManager();
+                conversionManager.setLoader(loader);
+            } else {
+                conversionManager = ConversionManager.getDefaultManager();
+            }
+            proj.convertClassNamesToClasses(conversionManager.getLoader());
+            // need to make sure that the java class is set properly on each
+            // descriptor when using java classname - req'd for JOT api implementation
+            for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext();) {
+                ClassDescriptor descriptor = descriptorIt.next();
+                if (descriptor.getJavaClass() == null) {
+                    descriptor.setJavaClass(conversionManager.convertClassNameToClass(descriptor.getJavaClassName()));
+                }
+            }
+
+            // disable instantiation policy validation during descriptor initialization
+            SessionEventListener eventListener = new SessionEventListener();
+            eventListener.setShouldValidateInstantiationPolicy(false);
+            XMLPlatform platform = new SAXPlatform();
+            platform.getConversionManager().setLoader(loader);
+            XMLContext xmlContext = new XMLContext(proj, loader, eventListener);
+
+            if(generator.getAnnotationsProcessor().getPackageToNamespaceMappings().size() > 1){
+                ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
+            }
+            return new JAXBContextState(xmlContext, generator, typesToBeBound);
+        }
+
+        /**
+         * Convenience method that returns an array of Types based on a given XmlBindings. The resulting
+         * array will not contain duplicate entries.
+         */
+        private static TypeMappingInfo[] getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, TypeMappingInfo[] existingTypes) {
+            JavaTypes jTypes = xmlBindings.getJavaTypes();
+            if (jTypes != null) {
+                List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);
+                 for (TypeMappingInfo typeMappingInfo : existingTypes) {
+                    Type type  = typeMappingInfo.getType();
+                    if(type == null){
+                        throw org.eclipse.persistence.exceptions.JAXBException.nullTypeOnTypeMappingInfo(typeMappingInfo.getXmlTagName());
+                    }
+                     // ignore ParameterizedTypes
+                     if (type instanceof Class) {
+                         Class cls = (Class) type;
+                         existingClasses.add(cls);
+                     }
+                 }
+
+                 List<TypeMappingInfo> additionalTypeMappingInfos = new ArrayList<TypeMappingInfo>(jTypes.getJavaType().size());
+
+                 for (JavaType javaType : jTypes.getJavaType()) {
+                    try {
+                        Class nextClass = classLoader.loadClass(javaType.getName());
+                        if(!(existingClasses.contains(nextClass))){
+                            TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
+                            typeMappingInfo.setType(nextClass);
+                            additionalTypeMappingInfos.add(typeMappingInfo);
+                            existingClasses.add(nextClass);
+                        }
+                    } catch (ClassNotFoundException e) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
+                    }
+                }
+
+                TypeMappingInfo[] allTypeMappingInfos = new TypeMappingInfo[existingTypes.length + additionalTypeMappingInfos.size()];
+                System.arraycopy(existingTypes, 0, allTypeMappingInfos, 0, existingTypes.length);
+                Object[] additionalTypes = additionalTypeMappingInfos.toArray();
+                System.arraycopy(additionalTypes, 0, allTypeMappingInfos, existingTypes.length, additionalTypes.length);
+                return allTypeMappingInfos;
+            }else{
+                return existingTypes;
+            }
+        }
+
+        private static TypeMappingInfo[] updateTypesWithObjectFactory(TypeMappingInfo[] typeMappingInfos, ClassLoader loader) {
+            ArrayList<TypeMappingInfo> updatedTypes = new ArrayList<TypeMappingInfo>();
+            for (TypeMappingInfo next : typeMappingInfos) {
+                if (!(updatedTypes.contains(next))) {
+                    updatedTypes.add(next);
+                }
+                Type theType = next.getType();
+                if (theType instanceof Class) {
+                    if (((Class) theType).getPackage() != null) {
+                        String packageName = ((Class) theType).getPackage().getName();
+                        try {
+                            Class objectFactoryClass = loader.loadClass(packageName + ".ObjectFactory");
+                            if (!(updatedTypes.contains(objectFactoryClass))) {
+                                TypeMappingInfo objectFactoryTypeMappingInfo = new TypeMappingInfo();
+                                objectFactoryTypeMappingInfo.setType(objectFactoryClass);
+                                updatedTypes.add(objectFactoryTypeMappingInfo);
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                }
+            }
+            return updatedTypes.toArray(new TypeMappingInfo[updatedTypes.size()]);
+        }
+
+    }
+
+    private static class JAXBContextState {
+
+        private XMLContext xmlContext;
+        private org.eclipse.persistence.jaxb.compiler.Generator generator;
+        private Map<QName, Class> qNameToGeneratedClasses;
+        private HashMap<String, Class> classToGeneratedClasses;
+        private HashMap<QName, Class> qNamesToDeclaredClasses;
+        private HashMap<Type, QName> typeToSchemaType;
+        private TypeMappingInfo[] boundTypes;
+        private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedType;
+        private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
+        private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToJavaTypeAdapters;
+
+        private JAXBContextState() {
+        }
+
+        private JAXBContextState(XMLContext context) {
+            xmlContext = context;
+        }
+
+        private JAXBContextState(XMLContext context, Generator generator, Type[] boundTypes) {
+            this(context);
+            this.generator = generator;
+            this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
+            this.classToGeneratedClasses = generator.getMappingsGenerator().getClassToGeneratedClasses();
+            this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
+            this.boundTypes = new TypeMappingInfo[boundTypes.length];
+            for(int i =0; i< boundTypes.length; i++){
+                TypeMappingInfo newTypeInfo = new TypeMappingInfo();
+                newTypeInfo.setType(boundTypes[i]);
+                this.boundTypes[i] = newTypeInfo;
+            }
+        }
+
+        private JAXBContextState(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
+            this(context);
+            this.generator = generator;
+            this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
+            this.classToGeneratedClasses = generator.getMappingsGenerator().getClassToGeneratedClasses();
+            this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
+            this.typeMappingInfoToGeneratedType = generator.getAnnotationsProcessor().getTypeMappingInfoToGeneratedClasses();
+            this.setTypeMappingInfoToJavaTypeAdapaters(createAdaptersForAdapterClasses(generator.getAnnotationsProcessor().getTypeMappingInfoToAdapterClasses()));
+            this.boundTypes = boundTypes;
+        }
+
+        private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> createAdaptersForAdapterClasses(Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses) {
+            Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters = new HashMap<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter>();
+            for(Entry<TypeMappingInfo, Class> entry : typeMappingInfoToAdapterClasses.entrySet()) {
+                Class adapterClass = entry.getValue();
+                if(adapterClass != null) {
+                    try {
+                        XmlAdapter adapter = (XmlAdapter)adapterClass.newInstance();
+                        Class boundType = getBoundTypeForXmlAdapterClass(adapterClass);
+                        RootLevelXmlAdapter rootLevelXmlAdapter = new RootLevelXmlAdapter(adapter, boundType);
+                        
+                        typeMappingInfoToAdapters.put(entry.getKey(), rootLevelXmlAdapter);
+                    } catch(Exception ex) {}
+                }
+            }
+            return typeMappingInfoToAdapters;
+        }
+
+        private Class getBoundTypeForXmlAdapterClass(Class adapterClass) {
+            Class boundType = Object.class;
+
+            for (Method method:PrivilegedAccessHelper.getDeclaredMethods(adapterClass)) {
+                if (method.getName().equals("marshal")) {
+                    Class returnType = PrivilegedAccessHelper.getMethodReturnType(method);
+                    if(!returnType.getName().equals(boundType.getName())) {
+                        boundType = returnType;
+                        break;
+                    }
+                }
+            }
+            return boundType;
+        }
+
+        private HashMap<String, Class> getClassToGeneratedClasses() {
+            return classToGeneratedClasses;
+        }
+
+        private Generator getGenerator() {
+            return generator;
+        }
+
+        private XMLContext getXMLContext() {
+            return this.xmlContext;
+        }
+
+        private HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {
+            if(typeToSchemaType == null){
+                initTypeToSchemaType();
+            }   
+            return typeToSchemaType;
+        }
+
+        private Map<TypeMappingInfo, Class> getTypeMappingInfoToGeneratedType() {
+            return this.typeMappingInfoToGeneratedType;
+        }
+
+        private Map<TypeMappingInfo, RootLevelXmlAdapter> getTypeMappingInfoToJavaTypeAdapters() {
+            return this.typeMappingInfoToJavaTypeAdapters;
+        }
+
+        private Map<Type, TypeMappingInfo> getTypeToTypeMappingInfo() {
+            return this.typeToTypeMappingInfo;
+        }
+
+        private Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
+            if(typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() >0){
+                return new HashMap<TypeMappingInfo, QName>();
+            }
+            return generator.getAnnotationsProcessor().getTypeMappingInfoToSchemaType();
+        }
+
+        private HashMap<QName, Class> getQNamesToDeclaredClasses() {
+            return qNamesToDeclaredClasses;
+        }
+
+        /**
+         * INTERNAL:
+         * Get the QName which the given Type corresponds to.
+         * Valid types should be all the boundTypes used to create the JAXBContext.
+         * If the JAXBContext was not created with the construction that takes a Type[] then 
+         * this will be return null.
+         */
+        private QName getSchemaTypeForTypeMappingInfo(Type type) {
+            QName name = null;
+            //Check for annotation overrides
+            if (type instanceof Class) {
+                name = generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class)type).getName());
+                if (name == null) {         
+                    Class theClass = (Class)type;
+                    //Change default for byte[] to Base64 (JAXB 2.0 default)
+                    if (type == ClassConstants.ABYTE || type == ClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("javax.activation.DataHandler") ) {
+                        name = XMLConstants.BASE_64_BINARY_QNAME;
+                    } else if(type == ClassConstants.OBJECT){
+                        name = XMLConstants.ANY_TYPE_QNAME;
+                    } else if(type == ClassConstants.XML_GREGORIAN_CALENDAR) {
+                        name = XMLConstants.ANY_SIMPLE_TYPE_QNAME;
+                    } else {
+                        name = (QName)XMLConversionManager.getDefaultJavaTypes().get(type);
+                    }
+                }
+            }
+            return name;
+        }
+
+        private Map<QName, Class> getQNameToGeneratedClasses() {
+            return qNameToGeneratedClasses;
+        }
+
+        private void initTypeToSchemaType() {
+            this.typeToSchemaType = new HashMap<Type, QName>();
+            
+            if(typeToTypeMappingInfo == null || typeToTypeMappingInfo.size() == 0){
+                return;
+            }
+            
+            Iterator descriptors = xmlContext.getSession(0).getProject().getOrderedDescriptors().iterator();
+
+            //Add schema types generated for mapped domain classes
+            while (descriptors.hasNext()) {
+                XMLDescriptor next = (XMLDescriptor)descriptors.next();
+                Class javaClass = next.getJavaClass();
+
+                if (next.getSchemaReference() != null){
+                    QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
+                    Type type = null;
+                    if (generator != null) {
+                        
+                        type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
+                        
+                        if (type == null) {
+                            JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
+                            if (arrayClass != null) {
+                                String arrayClassName = arrayClass.getName();
+                                try {
+                                    type = PrivilegedAccessHelper.getClassForName(arrayClassName);
+                                } catch (Exception ex) {}
+                            }      
+                            
+                            if(type == null && getTypeMappingInfoToGeneratedType() != null){                                
+                                Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
+                                while(iter.hasNext()){
+                                    Map.Entry<TypeMappingInfo, Class> entry = iter.next();
+                                    if(entry.getValue().equals(javaClass)){
+                                        type = entry.getKey().getType();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (type == null) {
+                            type = javaClass;
+                        }
+                        
+                    } else {
+                        type = javaClass;
+                    }
+                    this.typeToSchemaType.put(type, schemaType);
+                }
+            }
+
+            //Add any types that we didn't generate descriptors for (built in types)
+            if (boundTypes != null) {
+                for (TypeMappingInfo next:this.boundTypes) {
+                    if (this.typeToSchemaType.get(next) == null) {
+                        Type nextType = next.getType();
+                        QName name = getSchemaTypeForTypeMappingInfo(nextType);
+                        if (name != null) {
+                            this.typeToSchemaType.put(nextType, name);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void setClassToGeneratedClasses(HashMap<String, Class> classToClass) {
+            this.classToGeneratedClasses = classToClass;
+        }
+
+        private void setTypeToTypeMappingInfo(Map<Type, TypeMappingInfo> typeToMappingInfo) {
+            this.typeToTypeMappingInfo = typeToMappingInfo;
+            this.generator.setTypeToTypeMappingInfo(typeToMappingInfo);
+        }
+
+        private void setTypeMappingInfoToJavaTypeAdapaters(Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters) {
+            this.typeMappingInfoToJavaTypeAdapters = typeMappingInfoToAdapters;
+        }
+
+        private void setQNamesToDeclaredClasses(HashMap<QName, Class> nameToDeclaredClasses) {
+            qNamesToDeclaredClasses = nameToDeclaredClasses;
+        }
+
+        private void setQNameToGeneratedClasses(Map<QName, Class> qNameToClass) {
+            this.qNameToGeneratedClasses = qNameToClass;
+        }
+
+        private void setXMLContext(XMLContext xmlContext) {
+            this.xmlContext = xmlContext;
+        }
+
+    }
+
 }
