@@ -170,7 +170,6 @@ public class MetadataAsmFactory extends MetadataFactory {
         ClassMetadataVisitor() {
         }
 
-        @Override
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
             String className = toClassName(name);
             classMetadata = new MetadataClass(MetadataAsmFactory.this, className);
@@ -188,13 +187,12 @@ public class MetadataAsmFactory extends MetadataFactory {
             }
         }
 
-        @Override
+        /**
+         * Reference to the inner class, the inner class must be processed independently
+         */
         public void visitInnerClass(String name, String outerName, String innerName, int access) {
-            // Reference to the inner class, the inner class with be processed
-            // on its own.
         }
 
-        @Override
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
             if (classMetadata.isJDK()) {
                 return null;
@@ -202,7 +200,6 @@ public class MetadataAsmFactory extends MetadataFactory {
             return new MetadataFieldVisitor(this.classMetadata, access, name, desc, signature, value);
         }
 
-        @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
             if (classMetadata.isJDK() || name.indexOf("init>") != -1) {
                 return null;
@@ -210,26 +207,14 @@ public class MetadataAsmFactory extends MetadataFactory {
             return new MetadataMethodVisitor(this.classMetadata, access, name, signature, desc, exceptions);
         }
 
-        @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             return new MetadataAnnotationVisitor(this.classMetadata, desc);
         }
 
-        @Override
-        public void visitAttribute(Attribute attr) {
-        }
-
-        @Override
-        public void visitEnd() {
-        }
-
-        @Override
-        public void visitSource(String source, String debug) {
-        }
-
-        @Override
-        public void visitOuterClass(String owner, String name, String desc) {
-        }
+        public void visitAttribute(Attribute attr) {}
+        public void visitEnd() {}
+        public void visitSource(String source, String debug) {}
+        public void visitOuterClass(String owner, String name, String desc) {}
     }
 
     /**
@@ -262,17 +247,14 @@ public class MetadataAsmFactory extends MetadataFactory {
             this.annotation = annotation;
         }
 
-        @Override
         public void visit(String name, Object value) {
             this.annotation.addAttribute(name, annotationValue(null, value));
         }
 
-        @Override
         public void visitEnum(String name, String desc, String value) {
             this.annotation.addAttribute(name, annotationValue(desc, value));
         }
 
-        @Override
         public AnnotationVisitor visitAnnotation(String name, String desc) {
             MetadataAnnotation mda = new MetadataAnnotation();
             mda.setName(processDescription(desc, false).get(0));
@@ -280,18 +262,15 @@ public class MetadataAsmFactory extends MetadataFactory {
             return new MetadataAnnotationVisitor(mda);
         }
 
-        @Override
         public AnnotationVisitor visitArray(String name) {
             return new MetadataAnnotationArrayVisitor(this.annotation, name);
         }
 
-        @Override
         public void visitEnd() {
             if (this.element != null) {
                 this.element.addAnnotation(this.annotation);
             }
         }
-
     }
 
     /**
@@ -312,17 +291,14 @@ public class MetadataAsmFactory extends MetadataFactory {
             this.values = new ArrayList<Object>();
         }
 
-        @Override
         public void visit(String name, Object value) {
             this.values.add(annotationValue(null, value));
         }
 
-        @Override
         public void visitEnum(String name, String desc, String value) {
             this.values.add(annotationValue(desc, value));
         }
 
-        @Override
         public AnnotationVisitor visitAnnotation(String name, String desc) {
             MetadataAnnotation mda = new MetadataAnnotation();
             mda.setName(processDescription(desc, false).get(0));
@@ -330,17 +306,14 @@ public class MetadataAsmFactory extends MetadataFactory {
             return new MetadataAnnotationVisitor(mda);
         }
 
-        @Override
         public AnnotationVisitor visitArray(String name) {
             // Ignore nested array case?
             return null;
         }
 
-        @Override
         public void visitEnd() {
             this.annotation.addAttribute(this.attributeName, this.values.toArray());
         }
-
     }
 
     /**
@@ -360,17 +333,13 @@ public class MetadataAsmFactory extends MetadataFactory {
             this.field.setType(processDescription(desc, false).get(0));
         }
 
-        @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             return new MetadataAnnotationVisitor(this.field, desc);
         }
 
-        // Ignore
-        @Override
         public void visitAttribute(Attribute attr) {
         }
 
-        @Override
         public void visitEnd() {
             this.field.getDeclaringClass().addField(this.field);
         }
