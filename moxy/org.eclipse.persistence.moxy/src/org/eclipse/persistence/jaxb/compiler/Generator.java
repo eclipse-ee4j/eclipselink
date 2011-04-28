@@ -171,13 +171,13 @@ public class Generator {
 
     public Project generateProject() throws Exception {
         mappingsGenerator.getClassToGeneratedClasses().putAll(annotationsProcessor.getArrayClassesToGeneratedClasses());
-        Project p = mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getLocalElements(), annotationsProcessor.getTypeMappingInfoToGeneratedClasses(), annotationsProcessor.getTypeMappingInfoToAdapterClasses(),annotationsProcessor.isDefaultNamespaceAllowed());
+        Project p = mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getLocalElements(), annotationsProcessor.getTypeMappingInfoToGeneratedClasses(), annotationsProcessor.getTypeMappingInfoToAdapterClasses(),annotationsProcessor.isDefaultNamespaceAllowed());
         annotationsProcessor.getArrayClassesToGeneratedClasses().putAll(mappingsGenerator.getClassToGeneratedClasses());
         return p;
     }
 
     public java.util.Collection<Schema> generateSchema() {
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), null, annotationsProcessor.getArrayClassesToGeneratedClasses());
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), null, annotationsProcessor.getArrayClassesToGeneratedClasses());
         return schemaGenerator.getAllSchemas();
     }
     
@@ -185,7 +185,7 @@ public class Generator {
         // process any additional global elements
         processAdditionalElements(additionalGlobalElements, annotationsProcessor);
 
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses());
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses());
         Project proj = new SchemaModelProject();
         XMLContext context = new XMLContext(proj);
         XMLMarshaller marshaller = context.createMarshaller();
@@ -208,7 +208,7 @@ public class Generator {
         // process any additional global elements
         processAdditionalElements(additionalGlobalElements, annotationsProcessor);
         
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses());
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses());
         Project proj = new SchemaModelProject();
         XMLContext context = new XMLContext(proj);
         XMLMarshaller marshaller = context.createMarshaller();

@@ -35,8 +35,6 @@ public class NamespaceInfo {
     private boolean attributeFormQualified = false;
     private boolean elementFormQualified = false;
     private NamespaceResolver namespaceResolver;
-    private XmlAccessType accessType = XmlAccessType.PUBLIC_MEMBER;
-    private XmlAccessOrder accessOrder = XmlAccessOrder.UNDEFINED;
     private String location;
     private NamespaceResolver namespaceResolverForDescriptor;
     
@@ -72,22 +70,6 @@ public class NamespaceInfo {
         namespaceResolver = resolver;
     }
     
-    public XmlAccessType getAccessType() {
-        return accessType;
-    }
-    
-    public void setAccessType(XmlAccessType type) {
-        this.accessType = type;
-    }
-
-    public XmlAccessOrder getAccessOrder() {
-        return accessOrder;
-    }
-    
-    public void setAccessOrder(XmlAccessOrder order) {
-        this.accessOrder = order;
-    }
-
     public String getLocation() {
         return location;
     }

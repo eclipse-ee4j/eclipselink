@@ -169,7 +169,7 @@ public class AnnotationsProcessor {
     private static final String AT_SIGN = "@";
 
     private ArrayList<JavaClass> typeInfoClasses;
-    private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
+    private HashMap<String, PackageInfo> packageToPackageInfoMappings;
     private HashMap<String, MarshalCallback> marshalCallbacks;
     private HashMap<String, QName> userDefinedSchemaTypes;
     private HashMap<String, TypeInfo> typeInfo;
@@ -381,8 +381,8 @@ public class AnnotationsProcessor {
         typeInfo = new HashMap<String, TypeInfo>();
         typeQNames = new ArrayList<QName>();
         userDefinedSchemaTypes = new HashMap<String, QName>();
-        if (packageToNamespaceMappings == null) {
-            packageToNamespaceMappings = new HashMap<String, NamespaceInfo>();
+        if (packageToPackageInfoMappings == null) {
+            packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
         }
         this.factoryMethods = new HashMap<String, JavaMethod>();
         this.xmlRegistries = new HashMap<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry>();
@@ -467,16 +467,16 @@ public class AnnotationsProcessor {
             // handle @XmlSeeAlso
             processXmlSeeAlso(javaClass, info);
 
-            NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
+            PackageInfo packageInfo = getPackageInfoForPackage(javaClass);
 
             // handle @XmlType
-            preProcessXmlType(javaClass, info, packageNamespace);
+            preProcessXmlType(javaClass, info, packageInfo.getNamespaceInfo());
 
             // handle @XmlAccessorType
-            preProcessXmlAccessorType(javaClass, info, packageNamespace);
+            preProcessXmlAccessorType(javaClass, info, packageInfo.getNamespaceInfo());
 
             // handle @XmlAccessorOrder
-            preProcessXmlAccessorOrder(javaClass, info, packageNamespace);
+            preProcessXmlAccessorOrder(javaClass, info, packageInfo.getNamespaceInfo());
 
             // handle package level @XmlJavaTypeAdapters
             processPackageLevelAdapters(javaClass, info);
@@ -572,13 +572,13 @@ public class AnnotationsProcessor {
             // handle factory methods
             processFactoryMethods(javaClass, info);
 
-            NamespaceInfo packageNamespace = getNamespaceInfoForPackage(javaClass);
+            PackageInfo packageInfo = getPackageInfoForPackage(javaClass);
 
             // handle @XmlAccessorType
-            postProcessXmlAccessorType(info, packageNamespace);
+            postProcessXmlAccessorType(info, packageInfo);
 
             // handle @XmlType
-            postProcessXmlType(javaClass, info, packageNamespace);
+            postProcessXmlType(javaClass, info, packageInfo);
 
             // handle @XmlEnum
             if (info.isEnumerationType()) {
@@ -587,7 +587,7 @@ public class AnnotationsProcessor {
             }
 
             // process schema type name
-            processTypeQName(javaClass, info, packageNamespace);
+            processTypeQName(javaClass, info, packageInfo.getNamespaceInfo());
 
             // handle superclass if necessary
             JavaClass superClass = (JavaClass) javaClass.getSuperclass();
@@ -603,7 +603,7 @@ public class AnnotationsProcessor {
             processTypeInfoProperties(javaClass, info);
 
             // handle @XmlAccessorOrder
-            postProcessXmlAccessorOrder(info, packageNamespace);
+            postProcessXmlAccessorOrder(info, packageInfo);
 
             validatePropOrderForInfo(info);
         }
@@ -1159,7 +1159,7 @@ public class AnnotationsProcessor {
      * @param info
      * @param packageNamespace
      */
-    private void postProcessXmlType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
+    private void postProcessXmlType(JavaClass javaClass, TypeInfo info, PackageInfo packageNamespace) {
         // assumes that the TypeInfo has an XmlType set from
         org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType = info.getXmlType();
 
@@ -1234,7 +1234,7 @@ public class AnnotationsProcessor {
      * 
      * @param info
      */
-    private void postProcessXmlAccessorType(TypeInfo info, NamespaceInfo packageNamespace) {
+    private void postProcessXmlAccessorType(TypeInfo info, PackageInfo packageNamespace) {
         if (!info.isSetXmlAccessType()) {
             // use value in package-info.java as last resort - will default if
             // not set
@@ -1267,7 +1267,7 @@ public class AnnotationsProcessor {
      * @param javaClass
      * @param info
      */
-    private void postProcessXmlAccessorOrder(TypeInfo info, NamespaceInfo packageNamespace) {
+    private void postProcessXmlAccessorOrder(TypeInfo info, PackageInfo packageNamespace) {
         if (!info.isSetXmlAccessOrder()) {
             // use value in package-info.java as last resort - will default if
             // not set
@@ -1572,7 +1572,7 @@ public class AnnotationsProcessor {
             // set schema name
             String schemaName = XMLProcessor.getNameFromXPath(xmlPath.value(), property.getPropertyName(), property.isAttribute());
             QName qName;
-            NamespaceInfo nsInfo = getNamespaceInfoForPackage(cls);
+            NamespaceInfo nsInfo = getPackageInfoForPackage(cls).getNamespaceInfo();
             if (nsInfo.isElementFormQualified()) {
                 qName = new QName(nsInfo.getNamespace(), schemaName);
             } else {
@@ -1580,7 +1580,7 @@ public class AnnotationsProcessor {
             }
             property.setSchemaName(qName);
         } else {
-            property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getNamespaceInfoForPackage(cls), info.getClassNamespace()));
+            property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getPackageInfoForPackage(cls).getNamespaceInfo(), info.getClassNamespace()));
         }
 
         ptype = property.getActualType();
@@ -1789,7 +1789,7 @@ public class AnnotationsProcessor {
             if (!namespace.equals(XMLProcessor.DEFAULT)) {
                 qName = new QName(namespace, name);
             } else {
-                NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(cls);
+                NamespaceInfo namespaceInfo = getPackageInfoForPackage(cls).getNamespaceInfo();
                 if (namespaceInfo.isElementFormQualified()) {
                     qName = new QName(namespaceInfo.getNamespace(), name);
                 } else {
@@ -2734,8 +2734,8 @@ public class AnnotationsProcessor {
         return qName;
     }
 
-    public HashMap<String, NamespaceInfo> getPackageToNamespaceMappings() {
-        return packageToNamespaceMappings;
+    public HashMap<String, PackageInfo> getPackageToPackageInfoMappings() {
+        return packageToPackageInfoMappings;
     }
 
     /**
@@ -2745,43 +2745,80 @@ public class AnnotationsProcessor {
      * @return
      */
     public void addPackageToNamespaceMapping(String packageName, NamespaceInfo nsInfo) {
-        if (packageToNamespaceMappings == null) {
-            packageToNamespaceMappings = new HashMap<String, NamespaceInfo>();
+        if (packageToPackageInfoMappings == null) {
+            packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
         }
-        packageToNamespaceMappings.put(packageName, nsInfo);
+        PackageInfo info = packageToPackageInfoMappings.get(packageName);
+        if(info == null) {
+            info = new PackageInfo();
+            packageToPackageInfoMappings.put(packageName, info);
+        }
+        info.setNamespaceInfo(nsInfo);
     }
 
-    public NamespaceInfo getNamespaceInfoForPackage(JavaClass javaClass) {
+    public void addPackageToPackageInfoMapping(String packageName, PackageInfo packageInfo) {
+        if(packageToPackageInfoMappings == null) {
+            packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
+        }
+        packageToPackageInfoMappings.put(packageName, packageInfo);
+    }
+    
+    public PackageInfo getPackageInfoForPackage(JavaClass javaClass) {
         String packageName = javaClass.getPackageName();
-        NamespaceInfo packageNamespace = packageToNamespaceMappings.get(packageName);
-        if (packageNamespace == null) {
-            packageNamespace = getNamespaceInfoForPackage(javaClass.getPackage(), packageName);
+        PackageInfo packageInfo = packageToPackageInfoMappings.get(packageName);
+        if (packageInfo == null) {
+            packageInfo = getPackageInfoForPackage(javaClass.getPackage(), packageName);
         }
-        return packageNamespace;
+        return packageInfo;
     }
 
-    public NamespaceInfo getNamespaceInfoForPackage(JavaPackage pack, String packageName) {
-        NamespaceInfo packageNamespace = packageToNamespaceMappings.get(packageName);
-        if (packageNamespace == null) {
+    public PackageInfo getPackageInfoForPackage(JavaPackage pack, String packageName) {
+        PackageInfo packageInfo = packageToPackageInfoMappings.get(packageName);
+        if (packageInfo == null) {
             XmlSchema xmlSchema = (XmlSchema) helper.getAnnotation(pack, XmlSchema.class);
-            packageNamespace = processNamespaceInformation(xmlSchema);
+            packageInfo = new PackageInfo();
+            NamespaceInfo namespaceInfo = null;
+            if(xmlSchema != null) {
+                namespaceInfo = findInfoForNamespace(xmlSchema.namespace());
+            }
+            if(namespaceInfo == null) {
+                namespaceInfo = processNamespaceInformation(xmlSchema);
+            }
+            
+            packageInfo.setNamespaceInfo(namespaceInfo);
 
             // if it's still null, generate based on package name
-            if (packageNamespace.getNamespace() == null) {
-                packageNamespace.setNamespace(EMPTY_STRING);
+            if (namespaceInfo.getNamespace() == null) {
+                namespaceInfo.setNamespace(EMPTY_STRING);
             }
             if (helper.isAnnotationPresent(pack, XmlAccessorType.class)) {
                 XmlAccessorType xmlAccessorType = (XmlAccessorType) helper.getAnnotation(pack, XmlAccessorType.class);
-                packageNamespace.setAccessType(XmlAccessType.fromValue(xmlAccessorType.value().name()));
+                packageInfo.setAccessType(XmlAccessType.fromValue(xmlAccessorType.value().name()));
             }
             if (helper.isAnnotationPresent(pack, XmlAccessorOrder.class)) {
                 XmlAccessorOrder xmlAccessorOrder = (XmlAccessorOrder) helper.getAnnotation(pack, XmlAccessorOrder.class);
-                packageNamespace.setAccessOrder(XmlAccessOrder.fromValue(xmlAccessorOrder.value().name()));
+                packageInfo.setAccessOrder(XmlAccessOrder.fromValue(xmlAccessorOrder.value().name()));
             }
-
-            packageToNamespaceMappings.put(packageName, packageNamespace);
+            packageToPackageInfoMappings.put(packageName, packageInfo);
         }
-        return packageNamespace;
+        return packageInfo;
+    }
+
+    private NamespaceInfo findInfoForNamespace(String namespace) {
+        for(PackageInfo next:this.packageToPackageInfoMappings.values()) {
+            String nextUri = next.getNamespace();
+            if(nextUri == null) {
+                nextUri = XMLConstants.EMPTY_STRING;
+            }
+            if(namespace == null) {
+                namespace = XMLConstants.EMPTY_STRING;
+            }
+            
+            if(nextUri.equals(namespace)) {
+                return next.getNamespaceInfo();
+            }
+        }
+        return null;
     }
 
     private void checkForCallbackMethods() {
@@ -2868,7 +2905,7 @@ public class AnnotationsProcessor {
 
         Collection methods = objectFactoryClass.getDeclaredMethods();
         Iterator methodsIter = methods.iterator();
-        NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(objectFactoryClass);
+        PackageInfo packageInfo = getPackageInfoForPackage(objectFactoryClass);
         while (methodsIter.hasNext()) {
             JavaMethod next = (JavaMethod) methodsIter.next();
             if (next.getName().startsWith(CREATE)) {
@@ -2911,7 +2948,7 @@ public class AnnotationsProcessor {
                             String subHeadLocal = xmlEltDecl.getSubstitutionHeadName();
                             String subHeadNamespace = xmlEltDecl.getSubstitutionHeadNamespace();
                             if (subHeadNamespace.equals(XMLProcessor.DEFAULT)) {
-                                subHeadNamespace = namespaceInfo.getNamespace();
+                                subHeadNamespace = packageInfo.getNamespace();
                             }
                             substitutionHead = new QName(subHeadNamespace, subHeadLocal);
                         }
@@ -2929,7 +2966,7 @@ public class AnnotationsProcessor {
                             String subHeadLocal = elementDecl.substitutionHeadName();
                             String subHeadNamespace = elementDecl.substitutionHeadNamespace();
                             if (subHeadNamespace.equals(XMLProcessor.DEFAULT)) {
-                                subHeadNamespace = namespaceInfo.getNamespace();
+                                subHeadNamespace = packageInfo.getNamespace();
                             }
 
                             substitutionHead = new QName(subHeadNamespace, subHeadLocal);
@@ -2940,7 +2977,7 @@ public class AnnotationsProcessor {
                     }
 
                     if (XMLProcessor.DEFAULT.equals(url)) {
-                        url = namespaceInfo.getNamespace();
+                        url = packageInfo.getNamespace();
                     }
                     qname = new QName(url, localName);
 
@@ -3015,7 +3052,7 @@ public class AnnotationsProcessor {
             if (!info.isTransient() && info.isSetXmlRootElement()) {
                 org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = info.getXmlRootElement();
                 NamespaceInfo namespaceInfo;
-                namespaceInfo = getNamespaceInfoForPackage(javaClass);
+                namespaceInfo = getPackageInfoForPackage(javaClass).getNamespaceInfo();
 
                 String elementName = xmlRE.getName();
                 if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {
@@ -3169,7 +3206,7 @@ public class AnnotationsProcessor {
         if (!helper.isBuiltInJavaType(keyClass)) {
             String keyPackageName = keyClass.getPackageName();
             packageName = packageName + "." + keyPackageName;
-            NamespaceInfo keyNamespaceInfo = getNamespaceInfoForPackage(keyClass);
+            NamespaceInfo keyNamespaceInfo = getPackageInfoForPackage(keyClass).getNamespaceInfo();
             if (keyNamespaceInfo != null) {
                 java.util.Vector<Namespace> namespaces = keyNamespaceInfo.getNamespaceResolver().getNamespaces();
                 for (Namespace n : namespaces) {
@@ -3182,7 +3219,7 @@ public class AnnotationsProcessor {
         if (!helper.isBuiltInJavaType(valueClass)) {
             String valuePackageName = valueClass.getPackageName();
             packageName = packageName + "." + valuePackageName;
-            NamespaceInfo valueNamespaceInfo = getNamespaceInfoForPackage(valueClass);
+            NamespaceInfo valueNamespaceInfo = getPackageInfoForPackage(valueClass).getNamespaceInfo();
             if (valueNamespaceInfo != null) {
                 java.util.Vector<Namespace> namespaces = valueNamespaceInfo.getNamespaceResolver().getNamespaces();
                 for (Namespace n : namespaces) {
@@ -3194,21 +3231,22 @@ public class AnnotationsProcessor {
         if (namespace == null) {
             namespace = EMPTY_STRING;
         }
-        NamespaceInfo namespaceInfo = packageToNamespaceMappings.get(mapClass.getPackageName());
-        if (namespaceInfo == null) {
-            namespaceInfo = getPackageToNamespaceMappings().get(packageName);
+        PackageInfo packageInfo = packageToPackageInfoMappings.get(mapClass.getPackageName());
+        if (packageInfo == null) {
+            packageInfo = getPackageToPackageInfoMappings().get(packageName);
         } else {
-            if (namespaceInfo.getNamespace() != null) {
-                namespace = namespaceInfo.getNamespace();
+            if (packageInfo.getNamespace() != null) {
+                namespace = packageInfo.getNamespace();
             }
-            getPackageToNamespaceMappings().put(packageName, namespaceInfo);
+            getPackageToPackageInfoMappings().put(packageName, packageInfo);
         }
-        if (namespaceInfo == null) {
-            namespaceInfo = new NamespaceInfo();
-            namespaceInfo.setNamespace(namespace);
-            namespaceInfo.setNamespaceResolver(combinedNamespaceResolver);
+        if (packageInfo == null) {
+            packageInfo = new PackageInfo();
+            packageInfo.setNamespaceInfo(new NamespaceInfo());
+            packageInfo.setNamespace(namespace);
+            packageInfo.setNamespaceResolver(combinedNamespaceResolver);
 
-            getPackageToNamespaceMappings().put(packageName, namespaceInfo);
+            getPackageToPackageInfoMappings().put(packageName, packageInfo);
         }
 
         int beginIndex = keyClass.getName().lastIndexOf(".") + 1;
@@ -3389,16 +3427,17 @@ public class AnnotationsProcessor {
             }
 
             if (componentClass.isPrimitive() || helper.isBuiltInJavaType(componentClass)) {
-                NamespaceInfo namespaceInfo = getPackageToNamespaceMappings().get(packageName);
+                PackageInfo namespaceInfo = getPackageToPackageInfoMappings().get(packageName);
                 if (namespaceInfo == null) {
-                    namespaceInfo = new NamespaceInfo();
+                    namespaceInfo = new PackageInfo();
+                    namespaceInfo.setNamespaceInfo(new NamespaceInfo());
                     namespaceInfo.setNamespace(ARRAY_NAMESPACE);
                     namespaceInfo.setNamespaceResolver(new NamespaceResolver());
-                    getPackageToNamespaceMappings().put(packageName, namespaceInfo);
+                    getPackageToPackageInfoMappings().put(packageName, namespaceInfo);
                 }
             } else {
-                NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(componentClass.getPackage(), componentClass.getPackageName());
-                getPackageToNamespaceMappings().put(packageName, namespaceInfo);
+                PackageInfo namespaceInfo = getPackageInfoForPackage(componentClass.getPackage(), componentClass.getPackageName());
+                getPackageToPackageInfoMappings().put(packageName, namespaceInfo);
             }
         }
 
@@ -3486,32 +3525,33 @@ public class AnnotationsProcessor {
             componentClass = helper.getJavaClass(getObjectClass(primitiveClass));
         }
 
-        NamespaceInfo namespaceInfo = packageToNamespaceMappings.get(collectionClass.getPackageName());
+        PackageInfo packageInfo = packageToPackageInfoMappings.get(collectionClass.getPackageName());
 
         String namespace = EMPTY_STRING;
         if (this.defaultTargetNamespace != null) {
             namespace = this.defaultTargetNamespace;
         }
 
-        NamespaceInfo componentNamespaceInfo = getNamespaceInfoForPackage(componentClass);
+        PackageInfo componentNamespaceInfo = getPackageInfoForPackage(componentClass);
         String packageName = componentClass.getPackageName();
         packageName = "jaxb.dev.java.net." + packageName;
-        if (namespaceInfo == null) {
-            namespaceInfo = getPackageToNamespaceMappings().get(packageName);
+        if (packageInfo == null) {
+            packageInfo = getPackageToPackageInfoMappings().get(packageName);
         } else {
-            getPackageToNamespaceMappings().put(packageName, namespaceInfo);
-            if (namespaceInfo.getNamespace() != null) {
-                namespace = namespaceInfo.getNamespace();
+            getPackageToPackageInfoMappings().put(packageName, packageInfo);
+            if (packageInfo.getNamespace() != null) {
+                namespace = packageInfo.getNamespace();
             }
         }
-        if (namespaceInfo == null) {
+        if (packageInfo == null) {
             if (componentNamespaceInfo != null) {
-                namespaceInfo = componentNamespaceInfo;
+                packageInfo = componentNamespaceInfo;
             } else {
-                namespaceInfo = new NamespaceInfo();
-                namespaceInfo.setNamespaceResolver(new NamespaceResolver());
+                packageInfo = new PackageInfo();
+                packageInfo.setNamespaceInfo(new NamespaceInfo());
+                packageInfo.setNamespaceResolver(new NamespaceResolver());
             }
-            getPackageToNamespaceMappings().put(packageName, namespaceInfo);
+            getPackageToPackageInfoMappings().put(packageName, packageInfo);
         }
 
         String name = componentClass.getName();
@@ -3754,7 +3794,11 @@ public class AnnotationsProcessor {
      * @param packageToNamespaceMappings
      */
     public void setPackageToNamespaceMappings(HashMap<String, NamespaceInfo> packageToNamespaceMappings) {
-        this.packageToNamespaceMappings = packageToNamespaceMappings;
+        //this.packageToNamespaceMappings = packageToNamespaceMappings;
+    }
+    
+    public void setPackageToPackageInfoMappings(HashMap<String, PackageInfo> packageToPackageInfoMappings) {
+        this.packageToPackageInfoMappings = packageToPackageInfoMappings;
     }
 
     public SchemaTypeInfo addClass(JavaClass javaClass) {
@@ -3770,7 +3814,7 @@ public class AnnotationsProcessor {
             this.typeInfo = new HashMap<String, TypeInfo>();
             this.typeQNames = new ArrayList<QName>();
             this.userDefinedSchemaTypes = new HashMap<String, QName>();
-            this.packageToNamespaceMappings = new HashMap<String, NamespaceInfo>();
+            this.packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
             this.namespaceResolver = new NamespaceResolver();
         }
 
@@ -3778,9 +3822,9 @@ public class AnnotationsProcessor {
         buildNewTypeInfo(jClasses);
         TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
 
-        NamespaceInfo namespaceInfo;
+        PackageInfo packageInfo;
         String packageName = javaClass.getPackageName();
-        namespaceInfo = this.packageToNamespaceMappings.get(packageName);
+        packageInfo = this.packageToPackageInfoMappings.get(packageName);
 
         SchemaTypeInfo schemaInfo = new SchemaTypeInfo();
         schemaInfo.setSchemaTypeName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
@@ -3809,7 +3853,7 @@ public class AnnotationsProcessor {
             String rootNamespace = xmlRE.getNamespace();
             QName rootElemName = null;
             if (rootNamespace.equals(XMLProcessor.DEFAULT)) {
-                rootElemName = new QName(namespaceInfo.getNamespace(), elementName);
+                rootElemName = new QName(packageInfo.getNamespace(), elementName);
             } else {
                 rootElemName = new QName(rootNamespace, elementName);
             }
