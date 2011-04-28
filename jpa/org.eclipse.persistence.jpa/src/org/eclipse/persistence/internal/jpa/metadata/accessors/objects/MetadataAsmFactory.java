@@ -188,7 +188,8 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         /**
-         * Reference to the inner class, the inner class must be processed independently
+         * Reference to the inner class, the inner class must be processed
+         * independently
          */
         public void visitInnerClass(String name, String outerName, String innerName, int access) {
         }
@@ -208,13 +209,23 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            return new MetadataAnnotationVisitor(this.classMetadata, desc);
+            if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Lorg/eclipse/persistence")) {
+                return new MetadataAnnotationVisitor(this.classMetadata, desc);
+            }
+            return null;
         }
 
-        public void visitAttribute(Attribute attr) {}
-        public void visitEnd() {}
-        public void visitSource(String source, String debug) {}
-        public void visitOuterClass(String owner, String name, String desc) {}
+        public void visitAttribute(Attribute attr) {
+        }
+
+        public void visitEnd() {
+        }
+
+        public void visitSource(String source, String debug) {
+        }
+
+        public void visitOuterClass(String owner, String name, String desc) {
+        }
     }
 
     /**
@@ -334,7 +345,10 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            return new MetadataAnnotationVisitor(this.field, desc);
+            if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Lorg/eclipse/persistence")) {
+                return new MetadataAnnotationVisitor(this.field, desc);
+            }
+            return null;
         }
 
         public void visitAttribute(Attribute attr) {
@@ -374,7 +388,10 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            return new MetadataAnnotationVisitor(this.method, desc);
+            if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Lorg/eclipse/persistence")) {
+                return new MetadataAnnotationVisitor(this.method, desc);
+            }
+            return null;
         }
 
         /**
