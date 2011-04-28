@@ -261,12 +261,13 @@ public class JUnitTestCaseHelper {
     }
     
     public static boolean shouldUseSingleDb() {
-        boolean shouldUseSingleDb;
+        boolean shouldUseSingleDb = false;
         String property = System.getProperty(SINGLE_DB);
+        if (property == null) {
+            property = (String) propertiesFromFile.get(SINGLE_DB);
+        }
         if (property != null) {
             shouldUseSingleDb = property.toUpperCase().equals("TRUE");
-        } else {
-            shouldUseSingleDb = false;
         }
         return shouldUseSingleDb;
     }
