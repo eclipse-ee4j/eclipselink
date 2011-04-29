@@ -246,26 +246,26 @@ public class ConversionManager implements Serializable, Cloneable {
             switch (Character.toLowerCase(((Character)sourceObject).charValue())) {
             case '1':
             case 't':
-                return Boolean.valueOf(true);
+                return Boolean.TRUE;
             case '0':
             case 'f':
-                return Boolean.valueOf(false);
+                return Boolean.FALSE;
             }
         }
         if (sourceObject instanceof String) {
             String stringValue = ((String)sourceObject).toLowerCase();
             if (stringValue.equals("t") || stringValue.equals("true") || stringValue.equals("1")) {
-                return Boolean.valueOf(true);
+                return Boolean.TRUE;
             } else if (stringValue.equals("f") || stringValue.equals("false") || stringValue.equals("0")) {
-                return Boolean.valueOf(false);
+                return Boolean.FALSE;
             }
         }
         if (sourceObject instanceof Number) {
             int intValue = ((Number)sourceObject).intValue();
             if (intValue != 0) {
-                return Boolean.valueOf(true);
+                return Boolean.TRUE;
             } else if (intValue == 0) {
-                return Boolean.valueOf(false);
+                return Boolean.FALSE;
             }
         }
         throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BOOLEAN);

@@ -553,8 +553,8 @@ public abstract class ORMetadata {
      * the element was not specified)
      */
     protected boolean mergePrimitiveBoolean(boolean value1, boolean value2, ORMetadata otherMetadata, String xmlElement) {    
-        Boolean bool1 = (value1) ? Boolean.valueOf(true) : null;
-        Boolean bool2 = (value2) ? Boolean.valueOf(true) : null;
+        Boolean bool1 = (value1) ? Boolean.TRUE : null;
+        Boolean bool2 = (value2) ? Boolean.TRUE : null;
         
         if (bool1 == null && bool2 == null) {
             return false;

@@ -37,7 +37,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
  */
 public class ArgumentListFunctionExpression extends FunctionExpression {
 
-    protected Boolean hasLastChild = Boolean.valueOf(false);
+    protected Boolean hasLastChild = Boolean.FALSE;
 
     /**
      * INTERNAL:
@@ -71,7 +71,7 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
         } else {
             this.addChild(argument);
         }
-        this.hasLastChild = Boolean.valueOf(true);
+        this.hasLastChild = Boolean.TRUE;
     }
     
     /**

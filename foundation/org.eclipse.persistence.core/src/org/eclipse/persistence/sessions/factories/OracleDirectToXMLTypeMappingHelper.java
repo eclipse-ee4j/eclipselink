@@ -67,7 +67,7 @@ public class OracleDirectToXMLTypeMappingHelper extends DirectToXMLTypeMappingHe
             directtofieldmapping.setGetMethodName("shouldReadWholeDocument");
             directtofieldmapping.setSetMethodName("setShouldReadWholeDocument");
             directtofieldmapping.setXPath(namespaceXPath + "read-whole-document/text()");
-            directtofieldmapping.setNullValue(Boolean.valueOf(false));
+            directtofieldmapping.setNullValue(Boolean.FALSE);
             descriptor.addMapping(directtofieldmapping);
     
             // Need to set the namespace resolver.

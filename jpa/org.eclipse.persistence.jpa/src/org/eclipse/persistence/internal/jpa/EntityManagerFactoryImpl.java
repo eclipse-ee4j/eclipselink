@@ -583,7 +583,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      *         state has not been loaded, otherwise true
      */
     public boolean isLoaded(Object entity, String attributeName) {
-        if (EntityManagerFactoryImpl.isLoaded(entity, attributeName, session).equals(Boolean.valueOf(true))) {
+        if (EntityManagerFactoryImpl.isLoaded(entity, attributeName, session).equals(Boolean.TRUE)) {
             return true;
         }
         return false;
@@ -603,7 +603,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @return false if the entity has not been loaded, else true.
      */
     public boolean isLoaded(Object entity) {
-        if (EntityManagerFactoryImpl.isLoaded(entity, session).equals(Boolean.valueOf(true))) {
+        if (EntityManagerFactoryImpl.isLoaded(entity, session).equals(Boolean.TRUE)) {
             return true;
         }
         return false;

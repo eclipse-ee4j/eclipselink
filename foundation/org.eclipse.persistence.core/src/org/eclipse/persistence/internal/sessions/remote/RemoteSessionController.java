@@ -577,7 +577,7 @@ public class RemoteSessionController {
             if (stream != null) {
                 transporter.setObject(Boolean.valueOf(stream.absolute(rows)));
             } else {
-                transporter.setObject(Boolean.valueOf(false));
+                transporter.setObject(Boolean.FALSE);
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -662,7 +662,7 @@ public class RemoteSessionController {
             if (stream != null) {
                 transporter.setObject(Boolean.valueOf(stream.first()));
             } else {
-                transporter.setObject(Boolean.valueOf(false));
+                transporter.setObject(Boolean.FALSE);
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -680,7 +680,7 @@ public class RemoteSessionController {
             if (stream != null) {
                 transporter.setObject(Boolean.valueOf(stream.isAfterLast()));
             } else {
-                transporter.setObject(Boolean.valueOf(false));
+                transporter.setObject(Boolean.FALSE);
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -698,7 +698,7 @@ public class RemoteSessionController {
             if (stream != null) {
                 transporter.setObject(Boolean.valueOf(stream.isBeforeFirst()));
             } else {
-                transporter.setObject(Boolean.valueOf(false));
+                transporter.setObject(Boolean.FALSE);
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -716,7 +716,7 @@ public class RemoteSessionController {
             if (stream != null) {
                 transporter.setObject(Boolean.valueOf(stream.isFirst()));
             } else {
-                transporter.setObject(Boolean.valueOf(false));
+                transporter.setObject(Boolean.FALSE);
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -734,7 +734,7 @@ public class RemoteSessionController {
             if (stream != null) {
                 transporter.setObject(Boolean.valueOf(stream.isLast()));
             } else {
-                transporter.setObject(Boolean.valueOf(false));
+                transporter.setObject(Boolean.FALSE);
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -752,7 +752,7 @@ public class RemoteSessionController {
             if (stream != null) {
                 transporter.setObject(Boolean.valueOf(stream.last()));
             } else {
-                transporter.setObject(Boolean.valueOf(false));
+                transporter.setObject(Boolean.FALSE);
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -830,7 +830,7 @@ public class RemoteSessionController {
             if (stream != null) {
                 transporter.setObject(Boolean.valueOf(stream.relative(rows)));
             } else {
-                transporter.setObject(Boolean.valueOf(false));
+                transporter.setObject(Boolean.FALSE);
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);

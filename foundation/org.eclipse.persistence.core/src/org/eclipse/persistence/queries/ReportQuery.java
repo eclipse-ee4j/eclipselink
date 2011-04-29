@@ -78,7 +78,7 @@ public class ReportQuery extends ReadAllQuery {
     public static final int NO_PRIMARY_KEY = 0;
     
     //GF_ISSUE_395
-    protected static final Boolean RESULT_IGNORED = Boolean.valueOf(true);
+    protected static final Boolean RESULT_IGNORED = Boolean.TRUE;
     //end GF_ISSUE
     
     /** Flag indicating whether the primary key values should also be retrieved for the reference class. */
