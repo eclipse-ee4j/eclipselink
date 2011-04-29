@@ -163,8 +163,8 @@ public class XMLProcessor {
                 }
             }
 
-            nsInfo = annotationsProcessor.getPackageToNamespaceMappings().get(packageName);
-
+            PackageInfo packageInfo = annotationsProcessor.getPackageToPackageInfoMappings().get(packageName);
+            //nsInfo = packageInfo.getNamespaceInfo();
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
@@ -202,7 +202,7 @@ public class XMLProcessor {
                             info.setXmlAccessOrder(xmlBindings.getXmlAccessorOrder());
                         } else {
                             // finally, check the NamespaceInfo
-                            info.setXmlAccessOrder(nsInfo.getAccessOrder());
+                            info.setXmlAccessOrder(packageInfo.getAccessOrder());
                         }
                     }
 
@@ -215,7 +215,7 @@ public class XMLProcessor {
                             info.setXmlAccessType(xmlBindings.getXmlAccessorType());
                         } else {
                             // finally, check the NamespaceInfo
-                            info.setXmlAccessType(nsInfo.getAccessType());
+                            info.setXmlAccessType(packageInfo.getAccessType());
                         }
                     }
                     // handle @XmlInlineBinaryData override
@@ -271,7 +271,7 @@ public class XMLProcessor {
             
             XMLNameTransformer transformer = getXMLNameTransformerClassFromString(transformerClassName);
             if(transformer != null){
-               nsInfo.setXmlNameTransformer(transformer);
+               packageInfo.setXmlNameTransformer(transformer);
             }
             // apply package-level @XmlJavaTypeAdapters
             for (TypeInfo tInfo : typeInfos.values()) {
@@ -333,7 +333,7 @@ public class XMLProcessor {
 
             // update TypeInfo objects based on the JavaTypes
             JavaTypes jTypes = xmlBindings.getJavaTypes();
-            NamespaceInfo nsInfo = annotationsProcessor.getPackageToNamespaceMappings().get(packageName);
+            NamespaceInfo nsInfo = annotationsProcessor.getPackageToPackageInfoMappings().get(packageName).getNamespaceInfo();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
                     processJavaType(javaType, typeInfosForPackage.get(javaType.getName()), nsInfo);
@@ -1271,7 +1271,10 @@ public class XMLProcessor {
             return null;
         }
         // create NamespaceInfo
-        NamespaceInfo nsInfo = new NamespaceInfo();
+        NamespaceInfo nsInfo = this.aProcessor.findInfoForNamespace(schema.getNamespace());
+        if(nsInfo == null) {
+            nsInfo = new NamespaceInfo();
+        }
         // process XmlSchema
         XmlNsForm form = schema.getAttributeFormDefault();
         nsInfo.setAttributeFormQualified(form.equals(form.QUALIFIED));

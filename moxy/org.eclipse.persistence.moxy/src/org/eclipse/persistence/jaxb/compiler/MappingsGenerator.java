@@ -140,7 +140,7 @@ public class MappingsGenerator {
     private JavaClass jotArrayList;
     private JavaClass jotHashSet;
     private JavaClass jotHashMap;
-    private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
+    private HashMap<String, PackageInfo> packageToPackageInfoMappings;
     private HashMap<String, TypeInfo> typeInfo;
     private HashMap<QName, Class> qNamesToGeneratedClasses;
     private HashMap<String, Class> classToGeneratedClasses;
@@ -166,10 +166,10 @@ public class MappingsGenerator {
         isDefaultNamespaceAllowed = true;
     }
 
-    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses,  boolean isDefaultNamespaceAllowed) throws Exception {
+    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, PackageInfo> packageToPackageInfoMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses,  boolean isDefaultNamespaceAllowed) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
-        this.packageToNamespaceMappings = packageToNamespaceMappings;
+        this.packageToPackageInfoMappings = packageToPackageInfoMappings;
         this.isDefaultNamespaceAllowed = isDefaultNamespaceAllowed;
         this.globalElements = globalElements;
         this.localElements = localElements;
@@ -224,7 +224,7 @@ public class MappingsGenerator {
         if (info.isTransient()){
             return;
         }
-        NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(javaClass.getPackageName());
+        NamespaceInfo namespaceInfo = this.packageToPackageInfoMappings.get(javaClass.getPackageName()).getNamespaceInfo();
         String packageNamespace = namespaceInfo.getNamespace();
         String elementName;
         String namespace;
@@ -1974,7 +1974,7 @@ public class MappingsGenerator {
             String next = (String)javaClasses.next();
             JavaClass javaClass = helper.getJavaClass(next);
             TypeInfo info = (TypeInfo) this.typeInfo.get(next);
-            NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(javaClass.getPackageName());
+            NamespaceInfo namespaceInfo = this.packageToPackageInfoMappings.get(javaClass.getPackageName()).getNamespaceInfo();
             if (info.isEnumerationType()) {
                 continue;
             }
@@ -2629,9 +2629,9 @@ public class MappingsGenerator {
     }
 
     private NamespaceInfo getNamespaceInfoForURI(String namespaceUri) {
-        Iterator<NamespaceInfo> namespaces = this.packageToNamespaceMappings.values().iterator();
+        Iterator<PackageInfo> namespaces = this.packageToPackageInfoMappings.values().iterator();
         while(namespaces.hasNext()) {
-            NamespaceInfo next = namespaces.next();
+            NamespaceInfo next = namespaces.next().getNamespaceInfo();
             if(next.getNamespace().equals(namespaceUri)) {
                 return next;
             }
@@ -2641,8 +2641,8 @@ public class MappingsGenerator {
 
     @SuppressWarnings("unused")
     private String getPackageNameForURI(String namespaceUri) {
-        for(String next:this.packageToNamespaceMappings.keySet()) {
-            if(packageToNamespaceMappings.get(next).getNamespace().equals(namespaceUri)) {
+        for(String next:this.packageToPackageInfoMappings.keySet()) {
+            if(packageToPackageInfoMappings.get(next).getNamespace().equals(namespaceUri)) {
                 return next;
             }
         }

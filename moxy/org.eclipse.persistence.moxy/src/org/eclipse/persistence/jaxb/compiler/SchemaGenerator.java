@@ -90,7 +90,7 @@ public class SchemaGenerator {
     private int schemaCount;
     private Helper helper;
     private HashMap<String, TypeInfo> typeInfo;
-    private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
+    private HashMap<String, PackageInfo> packageToPackageInfoMappings;
     private HashMap<String, SchemaTypeInfo> schemaTypeInfo;
     private HashMap<String, QName> userDefinedSchemaTypes;
     private Map<String, Class> arrayClassesToGeneratedClasses;
@@ -122,15 +122,15 @@ public class SchemaGenerator {
         this.helper = helper;
     }
 
-    public Schema generateSchema(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses, SchemaOutputResolver outputResolver) {
+    public Schema generateSchema(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, PackageInfo> packageToPackageInfoMappings, HashMap<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses, SchemaOutputResolver outputResolver) {
         this.outputResolver = outputResolver;
-        return generateSchema(typeInfoClasses, typeInfo, userDefinedSchemaTypes, packageToNamespaceMappings, additionalGlobalElements, arrayClassesToGeneratedClasses);
+        return generateSchema(typeInfoClasses, typeInfo, userDefinedSchemaTypes, packageToPackageInfoMappings, additionalGlobalElements, arrayClassesToGeneratedClasses);
     }
     
-    public Schema generateSchema(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses) {
+    public Schema generateSchema(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, PackageInfo> packageToPackageInfoMappings, HashMap<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses) {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
-        this.packageToNamespaceMappings = packageToNamespaceMappings;
+        this.packageToPackageInfoMappings = packageToPackageInfoMappings;
         this.schemaCount = 0;
         this.schemaTypeInfo = new HashMap<String, SchemaTypeInfo>(typeInfo.size());
         this.arrayClassesToGeneratedClasses = arrayClassesToGeneratedClasses;
@@ -156,7 +156,7 @@ public class SchemaGenerator {
         SchemaTypeInfo schemaTypeInfo = new SchemaTypeInfo();
         schemaTypeInfo.setSchemaTypeName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
         this.schemaTypeInfo.put(myClass.getQualifiedName(), schemaTypeInfo);
-        NamespaceInfo namespaceInfo = this.packageToNamespaceMappings.get(myClass.getPackageName());
+        NamespaceInfo namespaceInfo = this.packageToPackageInfoMappings.get(myClass.getPackageName()).getNamespaceInfo();
         if (namespaceInfo.getLocation() != null && !namespaceInfo.getLocation().equals(GENERATE)) {
             return;
         }
@@ -644,10 +644,10 @@ public class SchemaGenerator {
     }
 
     public NamespaceInfo getNamespaceInfoForNamespace(String namespace) {
-        Collection<NamespaceInfo> namespaceInfo = packageToNamespaceMappings.values();
-        for (NamespaceInfo info : namespaceInfo) {
+        Collection<PackageInfo> packageInfo = packageToPackageInfoMappings.values();
+        for (PackageInfo info : packageInfo) {
             if (info.getNamespace().equals(namespace)) {
-                return info;
+                return info.getNamespaceInfo();
             }
         }
         return null;
