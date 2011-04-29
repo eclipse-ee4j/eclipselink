@@ -60,6 +60,8 @@ public class JUnitTestCaseHelper {
      **/
     public static final String SINGLE_DB = "single.db";
     
+    public static Boolean shouldUseSingleDb;
+    
     static {
         // These following properties used for property processing testing.
         // Some (or all) of them may override persistence properties.
@@ -261,13 +263,20 @@ public class JUnitTestCaseHelper {
     }
     
     public static boolean shouldUseSingleDb() {
-        boolean shouldUseSingleDb = false;
-        String property = System.getProperty(SINGLE_DB);
-        if (property == null) {
-            property = (String) propertiesFromFile.get(SINGLE_DB);
-        }
-        if (property != null) {
-            shouldUseSingleDb = property.toUpperCase().equals("TRUE");
+        if (shouldUseSingleDb == null) {
+            shouldUseSingleDb = Boolean.TRUE;
+            String property = System.getProperty(SINGLE_DB);
+            if (property == null) {
+                if (propertiesFromFile == null) {                
+                    createPropertiesFromFile();
+                }
+                property = (String) propertiesFromFile.get(SINGLE_DB);
+            }
+            if (property != null) {
+                if (property.toUpperCase().equals("FALSE")) {
+                    shouldUseSingleDb = Boolean.FALSE;
+                }
+            }
         }
         return shouldUseSingleDb;
     }
