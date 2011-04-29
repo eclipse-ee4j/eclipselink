@@ -2236,7 +2236,7 @@
     <!-- Build, deploy and run a test suite on the server. -->
     <target name="server-run-all" depends="detect-os,set-server-properties">
         <antcall target="server-build" inheritRefs="true"/>
-        <!--antcall target="recover-server-sessionbeans" inheritRefs="true"/>
+        <antcall target="recover-server-sessionbeans" inheritRefs="true"/>
         <antcall target="cleanup-non-jta-ds-servertest" inheritRefs="true"/>
         <antcall target="server-deploy" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
@@ -2245,7 +2245,7 @@
         <antcall target="server-run-test" inheritRefs="true"/>
         <antcall target="server-undeploy" inheritRefs="true">
             <param name="application.name" value="${EAR_NAME}"/>
-        </antcall-->
+        </antcall>
     </target>
 
     <!-- Build, deploy and run a test suite on the server using the prompt runner. -->
