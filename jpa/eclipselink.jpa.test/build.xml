@@ -395,6 +395,10 @@
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_1}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_2}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.composite.advanced.model.member_3}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_1}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_2}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_3}"/>
     </target>
 
     <target name="model-compile" description="compile models that need canonical processing">
@@ -1050,6 +1054,10 @@
             <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_1}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_2}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_1}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_2}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_3}.jar"/>
         </delete>
         
     </target>
@@ -1102,6 +1110,10 @@
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_1}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_2}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_3}.jar"/>
         </path>
         <path id="run.performance.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
@@ -1285,7 +1297,10 @@
             <path refid="compile.path"/>
         </path>
         <path id="run.extended.classpath.static">
-            <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.composite.advanced.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.composite.advanced.model.member_1}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.composite.advanced.model.member_2}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
@@ -1830,6 +1845,27 @@
         </weave>
         <weave source= "${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_3}.jar"
                target = "${eclipselink.jpa.test}/woven-${eclipselink.xml.composite.advanced.model.member_3}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_1}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.composite.advanced.model.member_1}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_2}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.xmlextended..composite.advanced.model.member_2}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink.xmlextended..composite.advanced.model.member_3}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.xmlextended..composite.advanced.model.member_3}.jar"
                loglevel="${logging.level}">
                <classpath>
                     <path refid="run.classpath"/>
