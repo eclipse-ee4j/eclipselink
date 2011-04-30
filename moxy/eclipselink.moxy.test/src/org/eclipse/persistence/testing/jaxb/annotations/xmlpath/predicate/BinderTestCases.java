@@ -16,12 +16,9 @@ import java.io.InputStream;
 
 import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.persistence.jaxb.JAXBBinder;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.oxm.XMLBinder;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.testing.oxm.XMLTestCase;
@@ -51,7 +48,7 @@ public class BinderTestCases extends XMLTestCase {
         assertEquals(getControlObject(), test);
     }
 
-    public void testMarshal() throws Exception { 
+    /*public void testMarshal() throws Exception { 
         JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Customer.class}, null);
         Binder binder = jc.createBinder();
         
@@ -60,7 +57,7 @@ public class BinderTestCases extends XMLTestCase {
         Document testDocument = db.newDocument();
         binder.marshal(getControlObject(), testDocument);
         assertXMLIdentical(getControlDocument(), testDocument);
-    }
+    }*/
 
     protected Object getControlObject() {
         Customer customer = new Customer();
@@ -87,12 +84,7 @@ public class BinderTestCases extends XMLTestCase {
 
     protected Document getControlDocument() throws Exception {
         InputStream xml = Thread.currentThread().getContextClassLoader().getResourceAsStream(XML_RESOURCE);
-        /*DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        dbf.setIgnoringElementContentWhitespace(true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        db.i
-        Document document = db.parse(xml);*/
+
         XMLParser parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
         parser.setWhitespacePreserving(false);
         Document document = parser.parse(xml);
