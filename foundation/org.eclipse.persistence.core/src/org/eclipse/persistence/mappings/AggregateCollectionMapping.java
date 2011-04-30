@@ -352,7 +352,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         //aggregate objects are not registered but their mappings should be.
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(object);
@@ -370,8 +370,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             Object nextObject = cp.unwrapIteratorResult(wrappedObject);
             if (nextObject != null) {
                 builder = getReferenceDescriptor(nextObject.getClass(), uow).getObjectBuilder();
-                builder.cascadeDiscoverAndPersistUnregisteredNewObjects(nextObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
-                cp.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                builder.cascadeDiscoverAndPersistUnregisteredNewObjects(nextObject, newObjects, unregisteredExistingObjects, visitedObjects, uow, cascadeErrors);
+                cp.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow, cascadeErrors);
             }
         }
     }

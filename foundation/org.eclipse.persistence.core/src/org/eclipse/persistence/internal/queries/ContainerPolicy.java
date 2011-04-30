@@ -403,7 +403,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * Cascade DiscoverAndPersistUnregisteredNewObjects to any mappings managed by the container policy.  Be default, this is a no-op, but
      * will be overridden by subclasses
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
     }
     
     /**

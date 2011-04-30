@@ -4057,7 +4057,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @param newObjects any new objects found must be added to this collection.
      * @param cascadePersist determines if this call is cascading from a cascadePersist mapping or not.
      */
-    public void discoverAndPersistUnregisteredNewObjects(Object object, boolean cascadePersist, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects) {
+    public void discoverAndPersistUnregisteredNewObjects(Object object, boolean cascadePersist, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, Set cascadeErrors) {
         if (object == null) {
             return;
         }
@@ -4068,7 +4068,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             undeleteObject(object);
         }
         
-        if (visitedObjects.containsKey(object)) {
+        // EL Bug 343925 - Add all unregistered objects which are not marked as cascade persist 
+        // to cascadeErrors so that all the registered objects and their mappings are iterated 
+        // to discover if the object is marked with CascadeType.PERSIST using a different mapping
+        // of a different registered object. Throw IllegalStateException only after iterating through 
+        // all the registered objects and their mappings is completed, and if cascadeErrors 
+        // collection contains any unregistered object.
+        if (visitedObjects.containsKey(object) && !cascadeErrors.contains(object)) {
             return;
         }
         visitedObjects.put(object, object);
@@ -4089,6 +4095,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // This will also throw an exception if it is an unregistered existing object (which the spec seems to state).
                 registerNotRegisteredNewObjectForPersist(object, descriptor);
                 newObjects.put(object, object);
+                if (cascadeErrors.contains(object)) {
+                    cascadeErrors.remove(object);
+                }
             } else if (checkForUnregisteredExistingObject(object)) {
                 // Always ignore unregistered existing objects in JPA (when not cascade persist).
                 // If the object exists we need to keep a record of this object to ignore it,
@@ -4098,10 +4107,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 return;
             } else {
                 // It is new but not referenced by a cascade persist mapping, throw an error.
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("new_object_found_during_commit", new Object[]{object}));
+                cascadeErrors.add(object);
+                return;
             }
         }
-        descriptor.getObjectBuilder().cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, this);        
+        descriptor.getObjectBuilder().cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, this, cascadeErrors);        
     }
     
     /**

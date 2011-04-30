@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -291,8 +292,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * Cascade discover and persist new objects during commit to the map key
      */
     @Override
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
-        keyMapping.cascadeDiscoverAndPersistUnregisteredNewObjects(((Map.Entry)object).getKey(), newObjects, unregisteredExistingObjects, visitedObjects, uow, false);     
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
+        keyMapping.cascadeDiscoverAndPersistUnregisteredNewObjects(((Map.Entry)object).getKey(), newObjects, unregisteredExistingObjects, visitedObjects, uow, false, cascadeErrors);     
     }
     
     /**

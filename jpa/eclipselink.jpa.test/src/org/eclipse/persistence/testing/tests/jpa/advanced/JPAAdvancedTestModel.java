@@ -53,6 +53,7 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
         tests.setName("ReportQueryAdvancedJUnitTest");
         tests.addTests(JUnitTestCase.suite(ReportQueryAdvancedJUnitTest.class));
         addTest(tests);
+        addTest(CascadePersistJUnitTestSuite.suite());
     }
     
     public static TestSuite getEntityManagerTestSuite() {

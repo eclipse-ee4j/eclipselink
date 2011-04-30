@@ -14,6 +14,7 @@ package org.eclipse.persistence.mappings.foundation;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -96,7 +97,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * INTERNAL:
      * Cascade discover and persist new objects during commit to the map key
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, boolean getAttributeValueFromObject);
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, boolean getAttributeValueFromObject, Set cascadeErrors);
 
     /**
      * INTERNAL:

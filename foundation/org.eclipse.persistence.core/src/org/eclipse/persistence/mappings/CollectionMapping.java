@@ -359,7 +359,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Cascade discover and persist new objects during commit.
      */
     @Override
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         Object cloneAttribute = getAttributeValueFromObject(object);
         if ((cloneAttribute == null) || (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
             if (cloneAttribute instanceof IndirectCollection)  {
@@ -373,7 +373,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         if (isCandidateForPrivateOwnedRemoval()){
                             uow.removePrivateOwnedObject(this, nextObject);
                         }
-                        uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
+                        uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects, cascadeErrors);
                     }
                 }
             }
@@ -391,8 +391,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             if (isCandidateForPrivateOwnedRemoval()) {
                 uow.removePrivateOwnedObject(this, nextObject);
             }
-            uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
-            containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+            uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects, cascadeErrors);
+            containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow, cascadeErrors);
         }
     }
     

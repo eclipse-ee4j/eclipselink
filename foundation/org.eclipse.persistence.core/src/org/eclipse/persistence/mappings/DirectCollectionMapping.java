@@ -460,7 +460,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Cascade discover and persist new objects during commit.
      */
     @Override
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         // Direct mappings do not require any cascading.
     }
 

@@ -881,15 +881,15 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Cascade discover and persist new objects during commit.
      */
     @Override
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
-        cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow, true);
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
+        cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow, true, cascadeErrors);
     }
     
     /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, boolean getAttributeValueFromObject) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, boolean getAttributeValueFromObject, Set cascadeErrors) {
         Object attributeValue = null;
         if (getAttributeValueFromObject){
             attributeValue = getAttributeValueFromObject(object);
@@ -904,7 +904,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             if (isCandidateForPrivateOwnedRemoval()) {
                 uow.removePrivateOwnedObject(this, attributeValue);
             }
-            uow.discoverAndPersistUnregisteredNewObjects(attributeValue, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects);
+            uow.discoverAndPersistUnregisteredNewObjects(attributeValue, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects, cascadeErrors);
         }
     }
     

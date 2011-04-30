@@ -22,6 +22,7 @@ import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.exceptions.DatabaseException; 
@@ -291,8 +292,14 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         if (this.discoverUnregisteredNewObjectsWithoutPersist){
             super.discoverUnregisteredNewObjects(clones, newObjects, unregisteredExistingObjects, visitedObjects);
         }else{
+            Set<Object> cascadePersistErrors = new HashSet<Object>();
             for (Iterator clonesEnum = clones.keySet().iterator(); clonesEnum.hasNext(); ) {        
-                discoverAndPersistUnregisteredNewObjects(clonesEnum.next(), false, newObjects, unregisteredExistingObjects, visitedObjects);
+                discoverAndPersistUnregisteredNewObjects(clonesEnum.next(), false, newObjects, unregisteredExistingObjects, visitedObjects, cascadePersistErrors);
+            }
+            // EL Bug 343925 - Throw IllegalStateException with all unregistered objects which 
+            // are not marked with CascadeType.PERSIST after iterating through all mappings.
+            if (!cascadePersistErrors.isEmpty()) {
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("new_object_found_during_commit", cascadePersistErrors.toArray()));
             }
         }
     }

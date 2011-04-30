@@ -177,14 +177,14 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Cascade discover and persist new objects during commit.
      */
     @Override
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         if (containerPolicy.isMappedKeyMapPolicy()){
             Object values = getAttributeValueFromObject(object);
             if (values != null){
                 Object iterator = containerPolicy.iteratorFor(values);
                 while (containerPolicy.hasNext(iterator)){
                     Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
-                    containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                    containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow, cascadeErrors);
                 }
             }
         }

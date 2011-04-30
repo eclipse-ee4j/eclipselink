@@ -75,7 +75,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         Object objectReferenced = getRealAttributeValueFromObject(object, uow);
         if (objectReferenced != null) {
             ObjectBuilder builder = getReferenceDescriptor(objectReferenced.getClass(), uow).getObjectBuilder();

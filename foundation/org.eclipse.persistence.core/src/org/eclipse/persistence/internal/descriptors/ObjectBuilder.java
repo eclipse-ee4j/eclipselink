@@ -1898,7 +1898,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Cascade discover and persist new objects during commit.
      * It may raise exceptions as described in the EJB3 specification
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         ObjectBuilder builder = this.descriptor.getObjectBuilder();
         // PERF: Only process relationships.
         if (!builder.isSimple()) {
@@ -1910,13 +1910,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 for (int index = 0; index < size; index++) {
                     DatabaseMapping mapping = mappings.get(index);
                     if (fetchGroupManager.isAttributeFetched(object, mapping.getAttributeName())) {
-                        mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                        mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow, cascadeErrors);
                     }
                 }
             } else {
                 for (int index = 0; index < size; index++) {
                     DatabaseMapping mapping = mappings.get(index);
-                    mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                    mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow, cascadeErrors);
                 }
             }
         }

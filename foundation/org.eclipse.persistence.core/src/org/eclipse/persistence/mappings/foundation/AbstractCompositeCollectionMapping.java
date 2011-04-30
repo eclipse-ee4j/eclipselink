@@ -180,7 +180,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         Object cloneAttribute = getAttributeValueFromObject(object);
         if (cloneAttribute == null ) {
             return;
@@ -192,7 +192,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             Object nextObject = containerPolicy.next(iterator, uow);
             if (nextObject != null) {
                 ObjectBuilder builder = getReferenceDescriptor(nextObject.getClass(), uow).getObjectBuilder();
-                builder.cascadeDiscoverAndPersistUnregisteredNewObjects(nextObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                builder.cascadeDiscoverAndPersistUnregisteredNewObjects(nextObject, newObjects, unregisteredExistingObjects, visitedObjects, uow, cascadeErrors);
             }
         }
     }
