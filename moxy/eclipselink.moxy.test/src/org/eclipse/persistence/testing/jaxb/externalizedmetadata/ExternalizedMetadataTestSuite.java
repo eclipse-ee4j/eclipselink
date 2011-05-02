@@ -63,6 +63,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype.X
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes.XmlSchemaTypesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlseealso.XmlSeeAlsoTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.XmlTransientTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.splitpackage.SplitPackageTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.XmlTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueTestCases;
 
@@ -122,6 +123,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlAdapterListTestCases.class);
         suite.addTestSuite(MultipleBindingsSimpleTestCases.class);
         suite.addTestSuite(MultipleBindingsFourFilesTestCases.class);
+        suite.addTestSuite(SplitPackageTestCases.class);
         return suite;
     }
     

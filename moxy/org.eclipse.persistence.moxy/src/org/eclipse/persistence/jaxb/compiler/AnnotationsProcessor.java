@@ -1503,6 +1503,9 @@ public class AnnotationsProcessor {
      * @param info
      */
     private void processTypeQName(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
+        if(info.isTransient()) {
+            return;
+        }
         String typeName = info.getSchemaTypeName();
         if (typeName != null && !(EMPTY_STRING.equals(typeName))) {
             QName typeQName = new QName(info.getClassNamespace(), typeName);
