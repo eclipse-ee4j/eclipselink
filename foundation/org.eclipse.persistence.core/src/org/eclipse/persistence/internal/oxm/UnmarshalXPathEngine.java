@@ -26,6 +26,7 @@ import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLNodeList;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -308,7 +309,21 @@ public class UnmarshalXPathEngine {
                 elementNamespaceURI = xmlNamespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
             }
             if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment.getLocalName()) && sameNamespaceURI(child, elementNamespaceURI)) {
-                xmlNodeList.add(child);
+                XPathPredicate predicate = xPathFragment.getPredicate();
+                if(predicate != null) {
+                    XPathFragment predicateFragment = predicate.getXPathFragment();
+                    if(predicateFragment.isAttribute() && child.getAttributes() != null) {
+                        Attr attr = (Attr)child.getAttributes().getNamedItemNS(predicateFragment.getNamespaceURI(), predicateFragment.getLocalName());
+                        if(attr != null) {
+                            String attribute = attr.getValue();
+                            if(xPathFragment.getPredicate().getValue().equals(attribute)) {
+                                xmlNodeList.add(child);
+                            }
+                        }
+                    }
+                } else { 
+                    xmlNodeList.add(child);
+                }
             }
             child = child.getNextSibling();
         }

@@ -643,7 +643,7 @@ public class SDOUtil {
         }
     }
 
-    private static String escapeUnicode(StringBuffer stringbuffer, char c) {
+    public static String escapeUnicode(StringBuffer stringbuffer, char c) {
         String s = Integer.toString(c, 16);
         int i = s.length();
         stringbuffer.setLength(6);

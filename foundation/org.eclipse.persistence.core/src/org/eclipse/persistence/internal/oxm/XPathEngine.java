@@ -472,6 +472,21 @@ public class XPathEngine {
         if (value == this) {
             String namespace = resolveNamespacePrefix(fragment, getNamespaceResolverForField(xmlField));
             Element newElement = parent.getOwnerDocument().createElementNS(namespace, fragment.getShortName());
+            XPathPredicate predicate = fragment.getPredicate();
+            if(predicate != null) {
+                XPathFragment predicateFragment = predicate.getXPathFragment();
+                if(predicateFragment.isAttribute()) {
+                    if(predicateFragment.getNamespaceURI() == null || predicateFragment.getNamespaceURI().length() == 0) {
+                        newElement.setAttribute(predicateFragment.getLocalName(), fragment.getPredicate().getValue());
+                    } else {
+                        String name = predicateFragment.getLocalName();
+                        if(predicateFragment.getPrefix() != null && predicateFragment.getPrefix().length() != 0) {
+                            name = predicateFragment.getPrefix() + XMLConstants.COLON + name;
+                        }
+                        newElement.setAttributeNS(predicateFragment.getNamespaceURI(), name, fragment.getPredicate().getValue());
+                    }
+                }
+            }
             elementsToReturn.add(newElement);
             docPresPolicy.getNodeOrderingPolicy().appendNode(parent, newElement, sibling);
 
@@ -490,7 +505,21 @@ public class XPathEngine {
                         newElement = (Element) createElement(parent, fragment, xmlField, XMLConstants.EMPTY_STRING, session);
                         newElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":" + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
                     }
-
+                    XPathPredicate predicate = fragment.getPredicate();
+                    if(predicate != null) {
+                        XPathFragment predicateFragment = predicate.getXPathFragment();
+                        if(predicateFragment.isAttribute()) {
+                            if(predicateFragment.getNamespaceURI() == null || predicateFragment.getNamespaceURI().length() == 0) {
+                                newElement.setAttribute(predicateFragment.getLocalName(), fragment.getPredicate().getValue());
+                            } else {
+                                String name = predicateFragment.getLocalName();
+                                if(predicateFragment.getPrefix() != null && predicateFragment.getPrefix().length() != 0) {
+                                    name = predicateFragment.getPrefix() + XMLConstants.COLON + name;
+                                }
+                                newElement.setAttributeNS(predicateFragment.getNamespaceURI(), name, fragment.getPredicate().getValue());
+                            }
+                        }
+                    }
                     docPresPolicy.getNodeOrderingPolicy().appendNode(parent, newElement, sibling);
                     elementsToReturn.add(newElement);
                     sibling = newElement;
@@ -503,6 +532,22 @@ public class XPathEngine {
                     newElement = (Element) createElement(parent, fragment, xmlField, XMLConstants.EMPTY_STRING, session);
                     newElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":" + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
                 }
+                XPathPredicate predicate = fragment.getPredicate();
+                if(predicate != null) {
+                    XPathFragment predicateFragment = predicate.getXPathFragment();
+                    if(predicateFragment.isAttribute()) {
+                        if(predicateFragment.getNamespaceURI() == null || predicateFragment.getNamespaceURI().length() == 0) {
+                            newElement.setAttribute(predicateFragment.getLocalName(), fragment.getPredicate().getValue());
+                        } else {
+                            String name = predicateFragment.getLocalName();
+                            if(predicateFragment.getPrefix() != null && predicateFragment.getPrefix().length() != 0) {
+                                name = predicateFragment.getPrefix() + XMLConstants.COLON + name;
+                            }
+                            newElement.setAttributeNS(predicateFragment.getNamespaceURI(), name, fragment.getPredicate().getValue());
+                        }
+                    }
+                }
+                
                 docPresPolicy.getNodeOrderingPolicy().appendNode(parent, newElement, sibling);
                 elementsToReturn.add(newElement);
             }
@@ -529,9 +574,16 @@ public class XPathEngine {
             element = ((Document)parent).getDocumentElement();
         } else {
             String namespace = resolveNamespacePrefix(fragment, getNamespaceResolverForField(xmlField));
-            element = parent.getOwnerDocument().createElementNS(namespace, fragment.getXPath());
+            element = parent.getOwnerDocument().createElementNS(namespace, fragment.getShortName());
             if (fragment.isGeneratedPrefix()) {
                 element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + fragment.getPrefix(), fragment.getNamespaceURI());
+            }
+            XPathPredicate predicate = fragment.getPredicate();
+            if(predicate != null) {
+                XPathFragment predicateFragment = predicate.getXPathFragment();
+                if(predicateFragment.isAttribute()) {
+                    element.setAttributeNS(predicateFragment.getNamespaceURI(), predicateFragment.getLocalName(), fragment.getPredicate().getValue());
+                }
             }
         }
 
@@ -655,7 +707,7 @@ public class XPathEngine {
         } else {
             // Need to reset the node name.
             String namespace = resolveNamespacePrefix(fragment, namespaceResolver);
-            Element clone = document.createElementNS(namespace, elementName);
+            Element clone = document.createElementNS(namespace, fragName);
             NamedNodeMap attributes = value.getAttributes();
             int attributesLength = attributes.getLength();
 
