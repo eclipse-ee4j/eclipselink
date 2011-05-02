@@ -237,10 +237,10 @@ public class SDOClassGenerator {
                 packageDir = packageDir.replace('.', '/');
 
                 if(interfaceGenerator) {
-                    getCodeWriter().writeInterface(packageDir, theType.getInstanceClassName() + ".java", nextBuffer.getInterfaceBuffer());
+                    getCodeWriter().writeInterface(packageDir, nextBuffer.getInterfaceName() + ".java", nextBuffer.getInterfaceBuffer());
                 }
                 if(implGenerator) {
-                    getCodeWriter().writeImpl(packageDir, theType.getImplClassName() + ".java", nextBuffer.getClassBuffer());
+                    getCodeWriter().writeImpl(packageDir, nextBuffer.getClassName() + ".java", nextBuffer.getClassBuffer());
                 }
             }
         }
