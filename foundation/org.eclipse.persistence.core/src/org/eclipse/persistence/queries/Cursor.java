@@ -297,7 +297,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
                 objectQuery.getBatchFetchPolicy().addDataResults(row);
             }
             if (this.session.isUnitOfWork() && (!query.isReportQuery()) && query.shouldMaintainCache()
-                    && objectQuery.shouldConformResultsInUnitOfWork() || objectQuery.getDescriptor().shouldAlwaysConformResultsInUnitOfWork()) {
+                    && (objectQuery.shouldConformResultsInUnitOfWork() || objectQuery.getDescriptor().shouldAlwaysConformResultsInUnitOfWork())) {
                 Object object = objectQuery.conformIndividualResult(
                         objectQuery.buildObject(row), (UnitOfWorkImpl)this.session, this.translationRow, this.selectionCriteriaClone, this.initiallyConformingIndex);
                 // Notifies caller to continue until conforming instance found
