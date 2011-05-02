@@ -26,7 +26,7 @@ public class CascadePersistTableCreator extends org.eclipse.persistence.tools.sc
     
     public TableDefinition buildEntityX_CPTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("EntityX_CP");
+        table.setName("ENTITYX_CP");
         
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -53,7 +53,7 @@ public class CascadePersistTableCreator extends org.eclipse.persistence.tools.sc
     
     public TableDefinition buildEntityY_CPTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("EntityY_CP");
+        table.setName("ENTITYY_CP");
         
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -94,9 +94,9 @@ public class CascadePersistTableCreator extends org.eclipse.persistence.tools.sc
         fieldEntityX_ID.setUnique(false);
         fieldEntityX_ID.setShouldAllowNull(false);
         table.addField(fieldEntityX_ID);
-        
+
         ForeignKeyConstraint FK_ENTITYY_YZENTITYRELATION_ID = new ForeignKeyConstraint();
-        FK_ENTITYY_YZENTITYRELATION_ID.setName("FK_ENTITYY_YZENTITYRELATION_ID");
+        FK_ENTITYY_YZENTITYRELATION_ID.setName("FK_YZENTITYRELATION_ID");
         FK_ENTITYY_YZENTITYRELATION_ID.setTargetTable("ENTITYZ_CP");
         FK_ENTITYY_YZENTITYRELATION_ID.addSourceField("YZENTITYRELATION_ID");
         FK_ENTITYY_YZENTITYRELATION_ID.addTargetField("ID");
@@ -114,7 +114,7 @@ public class CascadePersistTableCreator extends org.eclipse.persistence.tools.sc
     
     public TableDefinition buildEntityZ_CPTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("EntityZ_CP");
+        table.setName("ENTITYZ_CP");
         
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
