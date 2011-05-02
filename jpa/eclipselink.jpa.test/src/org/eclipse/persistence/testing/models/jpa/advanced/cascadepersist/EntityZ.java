@@ -22,7 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table (name="EntityZ_CP")
+@Table (name="ENTITYZ_CP")
 public class EntityZ {
     @Id
     private int id;

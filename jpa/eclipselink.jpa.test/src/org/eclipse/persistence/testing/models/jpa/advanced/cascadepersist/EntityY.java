@@ -19,7 +19,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table (name="EntityY_CP")
+@Table (name="ENTITYY_CP")
 public class EntityY {
     @Id
     private int id;

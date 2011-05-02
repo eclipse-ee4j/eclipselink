@@ -18,7 +18,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table (name="EntityX_CP")
+@Table (name="ENTITYX_CP")
 public class EntityX {
     @Id
     private int id;
