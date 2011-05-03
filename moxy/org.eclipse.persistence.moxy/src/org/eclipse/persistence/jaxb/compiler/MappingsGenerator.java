@@ -480,7 +480,7 @@ public class MappingsGenerator {
         if (property.isSwaAttachmentRef() || property.isMtomAttachment()) {
             return generateBinaryMapping(property, descriptor, namespaceInfo);
         }
-        if (referenceClass.getQualifiedName().equals(OBJECT_CLASS_NAME)) {
+        if (referenceClass.getQualifiedName().equals(OBJECT_CLASS_NAME) && !property.isAttribute() ) {
             XMLCompositeObjectMapping coMapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, null);
             coMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
             return coMapping;
