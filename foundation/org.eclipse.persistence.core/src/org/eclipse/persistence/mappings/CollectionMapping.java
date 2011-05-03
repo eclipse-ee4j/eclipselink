@@ -456,17 +456,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * Cascade the merge to the component object, if appropriate.
-     */
-    @Override
-    public void cascadeMerge_(Object sourceElement, MergeManager mergeManager, AbstractSession targetSession) {
-        if (shouldMergeCascadeParts(mergeManager)) {
-            mergeManager.mergeChanges(mergeManager.getObjectToMerge(sourceElement, referenceDescriptor, targetSession), null, targetSession);
-        }
-    }
-
-    /**
-     * INTERNAL:
      * The mapping clones itself to create deep copy.
      */
     @Override

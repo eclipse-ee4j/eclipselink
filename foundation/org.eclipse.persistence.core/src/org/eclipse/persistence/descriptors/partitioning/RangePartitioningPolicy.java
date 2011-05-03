@@ -15,6 +15,7 @@ package org.eclipse.persistence.descriptors.partitioning;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -126,5 +127,29 @@ public class RangePartitioningPolicy extends FieldPartitioningPolicy {
         }
         return accessors;
     }
-    
+
+    /**
+     * INTERNAL:
+     * Allow for the persist call to assign the partition.
+     */
+    @Override
+    public void partitionPersist(AbstractSession session, Object object, ClassDescriptor descriptor) {
+        Object value = extractPartitionValueForPersist(session, object, descriptor);
+        if (value == null) {
+            return;
+        }
+        int size = this.partitions.size();
+        for (int index = 0; index < size; index++) {
+            RangePartition partition = this.partitions.get(index);
+            if (partition.isInRange(value)) {
+                if (session.getPlatform().hasPartitioningCallback()) {
+                    // UCP support.
+                    session.getPlatform().getPartitioningCallback().setPartitionId(index);
+                } else {
+                    getAccessor(partition.getConnectionPool(), session, null, false);
+                }
+                return;
+            }
+        }        
+    }
 }

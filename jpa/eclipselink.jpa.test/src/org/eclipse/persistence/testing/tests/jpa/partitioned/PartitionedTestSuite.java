@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.persistence.*;
 import junit.framework.*;
 
+import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.partitioning.CustomPartitioningPolicy;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
@@ -49,6 +50,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
         suite.addTest(new PartitionedTestSuite("testRemoveProject"));
         suite.addTest(new PartitionedTestSuite("testUpdateProject"));
         suite.addTest(new PartitionedTestSuite("testPartitioning"));
+        suite.addTest(new PartitionedTestSuite("testPersistPartitioning"));
         return suite;
     }
     
@@ -469,6 +471,54 @@ public class PartitionedTestSuite extends JUnitTestCase {
             throw e;
         } finally {
             closeEntityManager(em);            
+        }
+    }
+    
+    /**
+     * Test exclusive partitioning with persist.
+     * The persist should decide the connection, not the query.
+     */
+    public void testPersistPartitioning() throws Exception {
+        if (!this.validDatabase) {
+            return;
+        }
+        if (isOnServer()) {
+            return;
+        }
+        for (int count = 0; count < 2; count++) {
+            Map properties = new HashMap();
+            properties.put(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
+            EntityManager em = createEntityManager(properties);
+            try {
+                beginTransaction(em);
+                Employee employee1 = new Employee();
+                employee1.setLocation("Ottawa");
+                em.persist(employee1);
+                commitTransaction(em);
+                closeEntityManager(em);
+                clearCache();
+                em = createEntityManager(properties);
+                beginTransaction(em);
+                Employee employee2 = new Employee();
+                employee2.setLocation("Ottawa");
+                em.persist(employee2);
+                Employee result = em.find(Employee.class, new EmployeePK(employee1.getId(), "Toronto"));
+                if (result != null) {
+                    fail("Employee should not exist.");
+                }
+                result = em.find(Employee.class, new EmployeePK(employee1.getId(), "Ottawa"));
+                rollbackTransaction(em);
+                if (result == null) {
+                    // Retry once, as sequence select could use wrong node.
+                    if (count == 1) {
+                        fail("Employee not found, wrong partition used.");
+                    }
+                } else {
+                    return;
+                }
+            } finally {
+                closeEntityManagerAndTransaction(em);            
+            }
         }
     }
 }

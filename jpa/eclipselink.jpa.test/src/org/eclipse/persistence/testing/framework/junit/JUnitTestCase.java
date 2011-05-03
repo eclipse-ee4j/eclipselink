@@ -368,12 +368,11 @@ public abstract class JUnitTestCase extends TestCase {
      * If in JEE this will create or return the active managed entity manager.
      */
     public EntityManager createEntityManager(Map properties) {
-        if (isOnServer()) {
+        if (isOnServer() && isJTA()) {
             return getServerPlatform().getEntityManager(getPersistenceUnitName());
         } else {
-        	// Set properties on both the em factory and the em
             return getEntityManagerFactory(getPersistenceUnitName(), properties).createEntityManager(properties);
-        }      
+        }
     }
     
     /**
@@ -391,7 +390,7 @@ public abstract class JUnitTestCase extends TestCase {
      * If in JEE this will create or return the active managed entity manager.
      */
     public static EntityManager createEntityManager(String persistenceUnitName, Map properties, List<ClassDescriptor> descriptors) {
-        if (isOnServer()) {
+        if (isOnServer() && isJTA()) {
             return getServerPlatform().getEntityManager(persistenceUnitName);
         } else {
             return getEntityManagerFactory(persistenceUnitName, properties, descriptors).createEntityManager();

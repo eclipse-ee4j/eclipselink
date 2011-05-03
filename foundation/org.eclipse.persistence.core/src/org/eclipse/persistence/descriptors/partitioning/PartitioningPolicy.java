@@ -14,6 +14,7 @@ package org.eclipse.persistence.descriptors.partitioning;
 
 import java.util.List;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -38,6 +39,12 @@ public abstract class PartitioningPolicy implements java.io.Serializable {
     protected String name;
 
     public abstract List<Accessor> getConnectionsForQuery(AbstractSession session, DatabaseQuery query, AbstractRecord arguments);
+
+    /**
+     * INTERNAL:
+     * Allow for the persist call to assign the partition.
+     */
+    public void partitionPersist(AbstractSession session, Object object, ClassDescriptor descriptor) { }
     
     /**
      * INTERNAL:
@@ -75,7 +82,7 @@ public abstract class PartitioningPolicy implements java.io.Serializable {
      */
     public Accessor getAccessor(String poolName, AbstractSession session, DatabaseQuery query, boolean returnNullIfDead) {
         Accessor accessor = null;
-        if (session.isClientSession()) {                    
+        if (session.isClientSession()) {
             ClientSession client = (ClientSession)session;
             // If the client session is exclusive and has a connection then just use the existing connection.
             if (client.isExclusiveIsolatedClientSession() && client.hasWriteConnection()) {

@@ -1928,12 +1928,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * It may raise exceptions as described in the EJB3 specification
      */
     public void cascadeRegisterNewForCreate(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-        ObjectBuilder builder = this.descriptor.getObjectBuilder();
         // PERF: Only process relationships.
-        if (!builder.isSimple()) {
-            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+        if (!this.isSimple) {
+            List<DatabaseMapping> mappings = this.relationshipMappings;
             int size = mappings.size();
-            FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
+            FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
             // Only cascade fetched mappings.
             if ((fetchGroupManager != null) && fetchGroupManager.isPartialObject(object)) {
                 for (int index = 0; index < size; index++) {
@@ -1948,6 +1947,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     mapping.cascadeRegisterNewIfRequired(object, uow, visitedObjects);
                 }
             }
+        }
+        // Allow persist to set the partitioning connection.
+        if (this.descriptor.getPartitioningPolicy() != null) {
+            this.descriptor.getPartitioningPolicy().partitionPersist(uow.getParent(), object, this.descriptor);
         }
     }
 

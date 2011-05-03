@@ -286,19 +286,12 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     public void calculateDeferredChanges(ChangeRecord changeRecord, AbstractSession session){
         throw DescriptorException.invalidMappingOperation(this, "calculatedDeferredChanges");
     }
-    
-    /**
-     * INTERNAL:
-     * Cascade the merge to the component object, if appropriate.
-     */
-    public void cascadeMerge_(Object sourceElement, MergeManager mergeManager, AbstractSession targetSession) {
-        throw DescriptorException.invalidMappingOperation(this, "cascadeMerge");
-    }
 
     /**
      * INTERNAL:
      * Clones itself.
      */
+    @Override
     public Object clone() {
         // Bug 3037701 - clone the AttributeAccessor
         DatabaseMapping mapping = null;

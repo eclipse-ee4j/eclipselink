@@ -198,7 +198,6 @@ public class ValidationModel extends TestModel {
         suite.addTest(new InvalidSetMethodParameterTypeForProxyIndirectionTest()); //ian added  
         suite.addTest(new InvalidMappingOperationTest("buildBackupCloneForPartObject")); //ian added
         suite.addTest(new InvalidMappingOperationTest("buildCloneForPartObject")); //ian added
-        suite.addTest(new InvalidMappingOperationTest("cascadeMerge")); //ian added
         suite.addTest(new InvalidMappingOperationTest("createUnitOfWorkValueHolder")); //ian added
         suite.addTest(new InvalidMappingOperationTest("getContainerPolicy")); //ian added
         suite.addTest(new InvalidMappingOperationTest("getRealCollectionAttributeValueFromObject")); //ian added

@@ -41,8 +41,6 @@ public class InvalidMappingOperationTest extends ExceptionTest {
                 mapping.buildBackupCloneForPartObject(null, null, null, null);
             } else if (methodName.equals("buildCloneForPartObject")) {
                 mapping.buildCloneForPartObject(null, null, null, null, null, true);
-            } else if (methodName.equals("cascadeMerge")) {
-                mapping.cascadeMerge_(null, null, null);
             } else if (methodName.equals("createUnitOfWorkValueHolder")) {
                 mapping.createCloneValueHolder(null, null, null, null, null, false);
             } else if (methodName.equals("getContainerPolicy")) {

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -132,5 +133,26 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
         accessors.add(getAccessor(poolName, session, query, false));
         return accessors;
     }
-    
+
+    /**
+     * INTERNAL:
+     * Allow for the persist call to assign the partition.
+     */
+    @Override
+    public void partitionPersist(AbstractSession session, Object object, ClassDescriptor descriptor) {
+        Object value = extractPartitionValueForPersist(session, object, descriptor);
+        if (value == null) {
+            return;
+        }
+        String poolName = this.partitions.get(value);
+        if (poolName == null) {
+            return;
+        }
+        if (session.getPlatform().hasPartitioningCallback()) {
+            // UCP support.
+            session.getPlatform().getPartitioningCallback().setPartitionId(Integer.parseInt(poolName));
+        } else {
+            getAccessor(poolName, session, null, false);
+        }
+    }
 }

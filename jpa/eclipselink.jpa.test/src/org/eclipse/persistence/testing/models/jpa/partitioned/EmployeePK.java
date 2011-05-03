@@ -19,6 +19,10 @@ public class EmployeePK {
 
     public EmployeePK() {
     }
+    public EmployeePK(int id, String location) {
+        this.id = id;
+        this.location = location;
+    }
 
     public String getLocation() {
         return location;

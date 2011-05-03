@@ -12,7 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors.partitioning;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.server.ClientSession;
 
 /**
  * PUBLIC:
@@ -112,4 +115,19 @@ public abstract class FieldPartitioningPolicy extends PartitioningPolicy {
         this.unionUnpartitionableQueries = unionUnpartitionableQueries;
     }
     
+    /**
+     * INTERNAL:
+     * If persist should be partitioned, extra value from object.
+     */
+    protected Object extractPartitionValueForPersist(AbstractSession session, Object object, ClassDescriptor descriptor) {
+        if (!session.isClientSession()) {
+            return null;
+        }
+        ClientSession client = (ClientSession)session;
+        // Only assign the connection if exclusive.
+        if (!client.isExclusiveIsolatedClientSession() || client.hasWriteConnection()) {
+            return null;
+        }
+        return descriptor.getObjectBuilder().extractValueFromObjectForField(object, this.partitionField, session);
+    }
 }
