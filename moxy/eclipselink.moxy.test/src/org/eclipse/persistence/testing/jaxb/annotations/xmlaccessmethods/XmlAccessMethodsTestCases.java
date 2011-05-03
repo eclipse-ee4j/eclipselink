@@ -24,20 +24,42 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
 
 public class XmlAccessMethodsTestCases extends JAXBTestCases {
+
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlaccessmethods/employee.xml";
+    private static final String WRITE_XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlaccessmethods/employee_write.xml";
+
     public XmlAccessMethodsTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class});
         setControlDocument(XML_RESOURCE);
+        setWriteControlDocument(WRITE_XML_RESOURCE);
     }
-    
+
     public Object getControlObject() {
         Employee emp = new Employee();
         emp.property1 = "Value1";
         emp.property2 = "Value2";
-        
+
         emp.wasProp1SetCalled = true;
         emp.wasProp2SetCalled = true;
         return emp;
     }
+
+    @Override
+    public Object getWriteControlObject() {
+        Employee emp = new Employee();
+        emp.property1 = "Value1";
+        emp.setName(5);
+        emp.property2 = "Value2";
+
+        emp.wasProp1SetCalled = true;
+        emp.wasProp2SetCalled = true;
+        return emp;
+    }
+
+    @Override
+    public void testRoundTrip() throws Exception {
+        return;
+    }
+
 }
