@@ -42,7 +42,7 @@ public class Employee {
     public Map<String, Object> extensions = new HashMap<String, Object>();
 
     @XmlTransient
-    public Map<String, Object> intExtensions = new HashMap<String, Object>();
+    public Map<String, Integer> intExtensions = new HashMap<String, Integer>();
 
     public Object get(String name) {
         return extensions.get(name);
@@ -52,11 +52,11 @@ public class Employee {
         extensions.put(name, value);
     }
 
-    public Object getInt(String name) {
+    public Integer getInt(String name) {
         return intExtensions.get(name);
     }
 
-    public void setInt(String name, Object value) {
+    public void setInt(String name, Integer value) {
         intExtensions.put(name, value);
     }
 

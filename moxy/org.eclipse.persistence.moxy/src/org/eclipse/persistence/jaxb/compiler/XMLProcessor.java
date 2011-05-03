@@ -26,6 +26,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
+import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
@@ -413,6 +414,21 @@ public class XMLProcessor {
                         Property newProperty = new Property(this.aProcessor.getHelper());
                         newProperty.setPropertyName(javaAttribute.getJavaAttribute());
                         newProperty.setExtension(true);
+
+                        String attributeType = null;
+
+                        if (javaAttribute instanceof XmlElement) {
+                            attributeType = ((XmlElement) javaAttribute).getType();
+                        } else if (javaAttribute instanceof XmlAttribute) {
+                            attributeType = ((XmlAttribute) javaAttribute).getType();
+                        }
+
+                        if (attributeType != null && attributeType.equals("DEFAULT")) {
+                            newProperty.setType(jModelInput.getJavaModel().getClass(attributeType));
+                        } else {
+                            newProperty.setType(jModelInput.getJavaModel().getClass(Helper.STRING));
+                        }
+
                         originalProperty = newProperty;
                         typeInfo.addProperty(javaAttribute.getJavaAttribute(), newProperty);
                     } else {

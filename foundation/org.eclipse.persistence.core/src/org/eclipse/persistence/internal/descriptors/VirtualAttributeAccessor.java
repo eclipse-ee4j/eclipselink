@@ -14,8 +14,12 @@
 package org.eclipse.persistence.internal.descriptors;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 
 public class VirtualAttributeAccessor extends MethodAttributeAccessor {
+
+    private Class valueType = ClassConstants.OBJECT;
+
     /**
      * Gets the value of an instance variable in the object.
      */
@@ -30,7 +34,7 @@ public class VirtualAttributeAccessor extends MethodAttributeAccessor {
      */
     @Override
     public Class getGetMethodReturnType() {
-        return Object.class;
+        return valueType;
     }
 
     /**
@@ -67,4 +71,13 @@ public class VirtualAttributeAccessor extends MethodAttributeAccessor {
     public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
         setAttributeValueInObject(domainObject, attributeValue, new Object[] {getAttributeName(), attributeValue});
     }
+
+    /**
+     * Override the class of the values being stored.
+     * @since EclipseLink 2.3
+     */
+    public void setValueType(Class value) {
+        valueType = value;
+    }
+    
 }

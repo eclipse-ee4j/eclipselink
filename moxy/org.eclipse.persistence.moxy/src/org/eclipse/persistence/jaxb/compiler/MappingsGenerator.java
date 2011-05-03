@@ -2027,9 +2027,11 @@ public class MappingsGenerator {
                     String getMethod = info.getXmlExtensible().getGetMethod();
                     String setMethod = info.getXmlExtensible().getSetMethod();
 
+                    // Check to see if get/set were overridden in the mapping
                     if (mapping.getAttributeAccessor().isMethodAttributeAccessor()) {
                         getMethod = ((MethodAttributeAccessor) mapping.getAttributeAccessor()).getGetMethodName();
                         setMethod = ((MethodAttributeAccessor) mapping.getAttributeAccessor()).getSetMethodName();
+                        accessor.setValueType(mapping.getAttributeClassification());
                     }
 
                     accessor.setGetMethodName(getMethod);
