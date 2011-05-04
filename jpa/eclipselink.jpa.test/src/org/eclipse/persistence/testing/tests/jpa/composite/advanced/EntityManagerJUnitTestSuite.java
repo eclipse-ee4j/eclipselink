@@ -16,6 +16,13 @@
  *         testDeleteEmployee*() will fail on DB2 9.7 Universal because cascade deletes
  *         of an uninstantiated collection of enums must inherently be deleted even if
  *         the actual collection is empty.  DB2 warns of nothing deleted - we convert it to a FINEST log
+ *     04/29/2011 - 2.3 Andrei Ilitchev
+ *       - Bug 328404 - JPA Persistence Unit Composition
+ *         Adapted org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite 
+ *         for composite persistence unit.
+ *         Try to keep one-to-one correspondence between the two in the future, too.
+ *         The tests that could not (or not yet) adapted for composite persistence unit
+ *         are commented out, the quick explanation why the test can't run is provided.
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.composite.advanced;
 

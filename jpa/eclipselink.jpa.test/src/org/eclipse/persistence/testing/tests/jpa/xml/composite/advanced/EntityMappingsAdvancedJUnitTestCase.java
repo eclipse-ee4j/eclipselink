@@ -9,6 +9,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/29/2011 - 2.3 Andrei Ilitchev
+ *       - Bug 328404 - JPA Persistence Unit Composition
+ *         Adapted org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsAdvancedJUnitTestCase
+ *         for composite persistence unit.
+ *         Try to keep one-to-one correspondence between the two in the future, too.
+ *         The tests that could not (or not yet) adapted for composite persistence unit
+ *         are commented out, the quick explanation why the test can't run is provided.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.composite.advanced;
 

@@ -42,6 +42,10 @@ import org.apache.tools.ant.types.Path;
 * <ul><li>source  - specify source location. In the default configuration StaticWeaveAntTask assumes the source contains the persistence.xml,if this is not the case, the location containing the persistence.xml must be explicitly identified by the attribute 'persistenceinfo'.
 * <li>target - specify the output location (either a directory or a jar).  
 * <li>persistenceinfo - specify the location containing the persistence.xml. This is optional and should only be specified if the source does not contain the persistence.xml.
+* Weaving is not required for composite persistence unit - only for its members.
+* If composite persistence unit member can't be used independently from its composite (specifies <property name="eclipselink.composite-unit.member" value="true"/>) 
+* then it must specify both its source and persistenceInfo of its composite.
+* Otherwise composite persistence unit member may or may not specify persistenceInfo of its composite.
 * <li>log - specify a logging file. This is optional.
 * <li>loglevel - specify a literal value of EclipseLink logging level(OFF,SEVERE,WARNING,INFO,CONFIG,FINE,FINER,FINEST) The default value is OFF(8). This is optional.
 * </ul>

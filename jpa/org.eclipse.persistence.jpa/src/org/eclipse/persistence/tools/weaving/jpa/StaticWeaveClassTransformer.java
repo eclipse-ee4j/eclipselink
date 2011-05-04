@@ -20,13 +20,13 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipException;
 
 import javax.persistence.spi.ClassTransformer;
-import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
@@ -35,14 +35,7 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.StaticWeaveException;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
-import org.eclipse.persistence.internal.helper.JPAConversionManager;
-import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
 import org.eclipse.persistence.jpa.Archive;
 
 /**
@@ -85,6 +78,13 @@ public class StaticWeaveClassTransformer {
     }
 
 
+    public Writer getLogWriter() {
+        return logWriter;
+    }
+    
+    public int getLogLevel() {
+        return logLevel;
+    }
     /**
      * The method performs weaving function on the given class.
      * @return the converted(woven) class
@@ -119,12 +119,19 @@ public class StaticWeaveClassTransformer {
             if (persistenceUnitsList==null) {
                 throw PersistenceUnitLoadingException.couldNotGetUnitInfoFromUrl(inputArchiveURL);
             }
+            Map emptyMap = new HashMap(0);
             Iterator<SEPersistenceUnitInfo> persistenceUnitsIterator = persistenceUnitsList.iterator();
             while (persistenceUnitsIterator.hasNext()) {
                 SEPersistenceUnitInfo unitInfo = persistenceUnitsIterator.next();
                 //build class transformer.
-                ClassTransformer transformer = buildTransformer(unitInfo,this.logWriter,this.logLevel);
-                classTransformers.add(transformer);
+                String puName = unitInfo.getPersistenceUnitName();
+                EntityManagerSetupImpl emSetupImpl = new EntityManagerSetupImpl(puName, puName);
+                //indicates that predeploy is used for static weaving, also passes logging parameters
+                emSetupImpl.setStaticWeaveClassTransformer(this);
+                ClassTransformer transformer = emSetupImpl.predeploy(unitInfo, emptyMap);
+                if (transformer != null) {
+                    classTransformers.add(transformer);
+                }
             }
         } catch (ZipException e) {
             throw StaticWeaveException.exceptionOpeningArchive(inputArchiveURL,e);
@@ -133,73 +140,5 @@ public class StaticWeaveClassTransformer {
                 archive.close();
             }
         }
-    }
-    
-    /**
-     * This method builds the classtransformer for the specified persistence unit.
-     */        
-    private ClassTransformer buildTransformer(PersistenceUnitInfo unitInfo, Writer logWriter, int logLevel) {
-        //persistenceUnitInfo = unitInfo;
-        ClassLoader privateClassLoader = unitInfo.getNewTempClassLoader();
-
-        // create server session (it should be done before initializing ServerPlatform)
-        ServerSession session = new ServerSession(new Project(new DatabaseLogin()));
-        session.setLogLevel(logLevel);
-        if(logWriter!=null){
-            ((DefaultSessionLog)session.getSessionLog()).setWriter(logWriter);
-         }
-        
-        session.getPlatform().setConversionManager(new JPAConversionManager());
-
-        boolean weaveEager = false;
-        String weaveEagerString = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_EAGER);
-        if (weaveEagerString != null && weaveEagerString.equalsIgnoreCase("true")) {
-            weaveEager = true;
-        }
-
-        boolean weaveLazy = true;
-        String weaveL = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_LAZY);
-        if (weaveL != null && weaveL.equalsIgnoreCase("false")) {
-            weaveLazy = false;
-        }
-        
-        boolean weaveFetchGroups = true;
-        String weaveFetchGroupsProperty = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_FETCHGROUPS);
-        if (weaveFetchGroupsProperty != null && weaveFetchGroupsProperty.equalsIgnoreCase("false")) {
-            weaveFetchGroups = false;
-        }
-        
-        boolean multitenantSharedEmf = false;
-        String multitenantSharedEmfString = (String) unitInfo.getProperties().get(PersistenceUnitProperties.MULTITENANT_SHARED_EMF);
-        if (multitenantSharedEmfString != null && multitenantSharedEmfString.equalsIgnoreCase("true")) {
-            multitenantSharedEmf = true;
-        }
-        
-        // Create an instance of MetadataProcessor for specified persistence unit info
-        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, multitenantSharedEmf, null, null);
-        
-        //bug:299926 - Case insensitive table / column matching with native SQL queries
-        EntityManagerSetupImpl.updateCaseSensitivitySettings(unitInfo.getProperties(), processor.getProject(), session);
-        // Process the Object/relational metadata from XML and annotations.
-        PersistenceUnitProcessor.processORMetadata(processor, false, PersistenceUnitProcessor.Mode.ALL);
-
-        Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
-
-        
-        boolean weaveChangeTracking = true;
-        String weaveCT = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING);
-        if (weaveCT != null && weaveCT.equalsIgnoreCase("false")) {
-            weaveChangeTracking = false;
-        }
-        
-        boolean weaveFetchInternal = true;
-        String weaveInternalProperty = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_INTERNAL);
-        if (weaveInternalProperty != null && weaveInternalProperty.equalsIgnoreCase("false")) {
-            weaveFetchInternal = false;
-        }
-
-        // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
-        // be returned if we are meant to process these mappings
-        return TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveFetchInternal);
-    }
+    }    
 }
