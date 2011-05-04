@@ -72,6 +72,7 @@ public class ProcedureOperationModel extends OperationModel {
     protected boolean isAdvancedJDBC = false;
     protected List<DbStoredProcedure> dbStoredProcedures = null;
     protected List<DatabaseType[]> argumentTypes = null;
+    protected DatabaseType dbStoredFunctionReturnType = null;
 
     public ProcedureOperationModel() {
         super();
@@ -508,5 +509,23 @@ public class ProcedureOperationModel extends OperationModel {
      */
     public void setArgumentTypes(List<DatabaseType[]> argumentTypes) {
         this.argumentTypes = argumentTypes;
+    }
+    
+    /**
+     * Get the DatabaseType of the stored function's return argument.
+     * 
+     * @return the stored function's return type
+     */
+    public DatabaseType getDbStoredFunctionReturnType() {
+        return dbStoredFunctionReturnType;
+    }
+
+    /**
+     * Set the DatabaseType of the stored function's return argument.
+     * 
+     * @param dbStoredFunctionReturnType
+     */
+    public void setDbStoredFunctionReturnType(DatabaseType dbStoredFunctionReturnType) {
+        this.dbStoredFunctionReturnType = dbStoredFunctionReturnType;
     }
 }

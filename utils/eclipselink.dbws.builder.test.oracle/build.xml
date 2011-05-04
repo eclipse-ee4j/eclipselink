@@ -375,6 +375,10 @@
     <RunTestsuite testsuite-name="LocalTableTypeTest"/>
     <RunTestsuite testsuite-name="OverloadedPLSQLStoredProcedureSimpleArgsTest"/>
     <RunTestsuite testsuite-name="BuildROWTYPETest"/>
+    <RunTestsuite testsuite-name="F1testWebService"/>
+    <RunTestsuite testsuite-name="F2testWebService"/>
+    <RunTestsuite testsuite-name="F3testWebService"/>
+    <RunTestsuite testsuite-name="F4testWebService"/>
     <TeardownDatabase filename="alltests"/>
     <junitreport
       todir="${run.dir}"

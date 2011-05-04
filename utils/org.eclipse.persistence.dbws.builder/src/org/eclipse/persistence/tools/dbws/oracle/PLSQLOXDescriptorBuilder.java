@@ -109,6 +109,7 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
             xdesc.setAlias(tableHelper.tableAlias());
             xdesc.setJavaClassName(tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
             xdesc.getQueryManager();
+            xdesc.setDefaultRootElement(tableHelper.targetTypeName());
             XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
             schemaReference.setSchemaContext("/" + tableHelper.targetTypeName());
             schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
@@ -183,6 +184,7 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
             xdesc = new XMLDescriptor();
             xdesc.setAlias(recordAlias);
             xdesc.setJavaClassName(plsqlRecordName.toLowerCase());
+            xdesc.setDefaultRootElement(targetTypeName);
             xdesc.getQueryManager();
             XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
             schemaReference.setSchemaContext("/" + targetTypeName);

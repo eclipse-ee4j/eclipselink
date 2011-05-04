@@ -98,43 +98,19 @@ public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
                         result.setType(SXF_QNAME_CURSOR);
                     }
                     else {
-                        result = new Result();
-                        result.setType(getXMLTypeFromJDBCType(rarg.getJdbcType()));
+                        // if user overrides returnType, assume they're right
+                        if (returnType != null) {
+                            result = buildResultBasedOnReturnType(builder);
+                        } else {
+                            result = new Result();
+                            result.setType(getXMLTypeFromJDBCType(rarg.getJdbcType()));
+                        }
                     }
                 }
                 else  {
                     // if user overrides returnType, assume they're right
                     if (returnType != null) {
-                        String nsURI = null;
-                        String prefix = null;
-                        String localPart = null;
-                        int colonIdx = returnType.indexOf(':');
-                        result = new Result();
-                        if (colonIdx > 0) {
-                            QName qName = null;
-                            prefix = returnType.substring(0, colonIdx);
-                            nsURI = builder.schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
-                            if (nsURI == null) {
-                                nsURI = DEFAULT_NS_PREFIX;
-                            }
-                            localPart = returnType.substring(colonIdx+1);
-                            if (W3C_XML_SCHEMA_NS_URI.equals(nsURI)) {
-                                qName = SCHEMA_QNAMES.get(localPart);
-                                if (qName == null) { // unknown W3C_XML_SCHEMA_NS_URI type ?
-                                    qName = new QName(W3C_XML_SCHEMA_NS_URI, localPart,
-                                        prefix == null ? DEFAULT_NS_PREFIX : prefix);
-                                }
-                            }
-                            else {
-                                qName = new QName(nsURI == null ? NULL_NS_URI : nsURI,
-                                    localPart, prefix == null ? DEFAULT_NS_PREFIX : prefix);
-                            }
-                            result.setType(qName);
-                        }
-                        else {
-                            result.setType(qNameFromString("{" + builder.getTargetNamespace() +
-                                "}" + returnType, builder.schema));
-                        }
+                        result = buildResultBasedOnReturnType(builder);
                     }
                     else {
                         if (isCollection) {
@@ -242,5 +218,41 @@ public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
         }
         addSimpleXMLFormat(builder.schema);
 
+    }
+    
+    /**
+     * Create a new Result based on the returnType.
+     * 
+     * @param builder
+     * @return
+     */
+    private Result buildResultBasedOnReturnType(DBWSBuilder builder) {
+        String nsURI = null;
+        String prefix = null;
+        String localPart = null;
+        int colonIdx = returnType.indexOf(':');
+        Result result = new Result();
+        if (colonIdx > 0) {
+            QName qName = null;
+            prefix = returnType.substring(0, colonIdx);
+            nsURI = builder.schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
+            if (nsURI == null) {
+                nsURI = DEFAULT_NS_PREFIX;
+            }
+            localPart = returnType.substring(colonIdx+1);
+            if (W3C_XML_SCHEMA_NS_URI.equals(nsURI)) {
+                qName = SCHEMA_QNAMES.get(localPart);
+                if (qName == null) { // unknown W3C_XML_SCHEMA_NS_URI type ?
+                    qName = new QName(W3C_XML_SCHEMA_NS_URI, localPart, prefix == null ? DEFAULT_NS_PREFIX : prefix);
+                }
+            }
+            else {
+                qName = new QName(nsURI == null ? NULL_NS_URI : nsURI, localPart, prefix == null ? DEFAULT_NS_PREFIX : prefix);
+            }
+            result.setType(qName);
+        } else {
+            result.setType(qNameFromString("{" + builder.getTargetNamespace() + "}" + returnType, builder.schema));
+        }
+        return result;
     }
 }

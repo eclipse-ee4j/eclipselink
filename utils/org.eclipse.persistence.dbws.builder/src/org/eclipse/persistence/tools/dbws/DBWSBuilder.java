@@ -115,6 +115,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.platform.database.oracle.publisher.visit.PublisherListenerChainAdapter;
@@ -874,8 +875,19 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                         break;
                     }
                 }
+                
+                PLSQLStoredProcedureCall call;
+                if (storedProcedure.isFunction()) {
+                    if (procOpModel.getDbStoredFunctionReturnType() != null) {
+                        call = new PLSQLStoredFunctionCall(procOpModel.getDbStoredFunctionReturnType());
+                    } else {
+                        call = new PLSQLStoredFunctionCall();
+                    }
+                } else {
+                    call = new PLSQLStoredProcedureCall();
+                }
+                
                 if (isPLSQLStoredProc) {
-                    PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
                     String catalogPrefix = null;
                     String cat = storedProcedure.getCatalog();
                     if (cat == null | cat.length() == 0) {

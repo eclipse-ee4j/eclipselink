@@ -85,6 +85,34 @@ public class DBWSTestHelper {
     public static final String PROC8_SERVICE_NAMESPACE = "urn:" + PROC8_SERVICE;
     public static final String PROC8_PORT = PROC8_SERVICE + "Port";
 
+    public static final String FUNC1 = "f1";
+    public static final String FUNC1_TEST = FUNC1 + "Test";
+    public static final String FUNC1_SERVICE = FUNC1_TEST + "Service";
+    public static final String FUNC1_NAMESPACE = "urn:" + FUNC1_TEST;
+    public static final String FUNC1_SERVICE_NAMESPACE = "urn:" + FUNC1_SERVICE;
+    public static final String FUNC1_PORT = FUNC1_SERVICE + "Port";
+
+    public static final String FUNC2 = "f2";
+    public static final String FUNC2_TEST = FUNC2 + "Test";
+    public static final String FUNC2_SERVICE = FUNC2_TEST + "Service";
+    public static final String FUNC2_NAMESPACE = "urn:" + FUNC2_TEST;
+    public static final String FUNC2_SERVICE_NAMESPACE = "urn:" + FUNC2_SERVICE;
+    public static final String FUNC2_PORT = FUNC2_SERVICE + "Port";
+
+    public static final String FUNC3 = "f3";
+    public static final String FUNC3_TEST = FUNC3 + "Test";
+    public static final String FUNC3_SERVICE = FUNC3_TEST + "Service";
+    public static final String FUNC3_NAMESPACE = "urn:" + FUNC3_TEST;
+    public static final String FUNC3_SERVICE_NAMESPACE = "urn:" + FUNC3_SERVICE;
+    public static final String FUNC3_PORT = FUNC3_SERVICE + "Port";
+
+    public static final String FUNC4 = "f4";
+    public static final String FUNC4_TEST = FUNC4 + "Test";
+    public static final String FUNC4_SERVICE = FUNC4_TEST + "Service";
+    public static final String FUNC4_NAMESPACE = "urn:" + FUNC4_TEST;
+    public static final String FUNC4_SERVICE_NAMESPACE = "urn:" + FUNC4_SERVICE;
+    public static final String FUNC4_PORT = FUNC4_SERVICE + "Port";
+
     public static final String TBL1_COMPATIBLETYPE = "SOMEPACKAGE_TBL1";
     public static final String TBL1_DATABASETYPE = "SOMEPACKAGE.TBL1";
     public static final String TBL1_DESCRIPTOR_ALIAS = TBL1_COMPATIBLETYPE.toLowerCase();

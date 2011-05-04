@@ -46,6 +46,7 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
     protected int currentMethodArgIdx = -1;
     protected DBWSBuilder dbwsBuilder;
     protected ProcedureOperationModel opModel;
+    protected boolean processingMethodReturnType = false;
 
     public PLSQLHelperObjectsBuilder(DBWSBuilder dbwsBuilder) {
         this(dbwsBuilder, null);
@@ -241,6 +242,13 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
     @Override
     public void beginMethodArg(String argName, String direction, int idx) {
         currentMethodArgIdx = idx;
+        //  may have processed a return type (stored function)
+        if (processingMethodReturnType) {
+            processingMethodReturnType = false;
+            if (opModel != null && !typeStack.empty()) {
+                opModel.setDbStoredFunctionReturnType(typeStack.pop());
+            }
+        }
     }
 
     @Override
@@ -253,11 +261,24 @@ public class PLSQLHelperObjectsBuilder extends PublisherDefaultListener {
     public void endMethod(String methodName) {
         if (opModel != null) {
             opModel.addArgumentTypes(methodTypeMap.get(methodName));
+            // handle case where we have processed a  return
+            // type for a stored function with no input args
+            if (processingMethodReturnType) {
+                processingMethodReturnType = false;
+                if (!typeStack.empty()) {
+                    opModel.setDbStoredFunctionReturnType(typeStack.pop());
+                }
+            }
         }
         currentMethodName = null;
         currentMethodArgIdx = -1;
     }
-
+    
+    @Override
+    public void handleMethodReturn(String returnTypeName) {
+        processingMethodReturnType = true;
+    }
+    
     @Override
     public void handleSqlType(String sqlTypeName, int typecode, String targetType) {
         DatabaseType databaseType = JDBCTypes.getDatabaseTypeForCode(typecode);
