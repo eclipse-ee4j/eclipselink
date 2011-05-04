@@ -576,6 +576,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         ((DirectCollectionChangeRecord)changeRecord).clearChanges();
         ((DirectCollectionChangeRecord)changeRecord).addAdditionChange(cloneKeyValues, databaseCount);
         ((DirectCollectionChangeRecord)changeRecord).addRemoveChange(originalKeyValues, databaseCount);
+        ((DirectCollectionChangeRecord)changeRecord).setIsDeferred(false);
+        ((DirectCollectionChangeRecord)changeRecord).setLatestCollection(null);
         //For CR#2258, produce a changeRecord which reflects the addition and removal of null values.
         if (numberOfNewNulls != 0) {
             ((DirectCollectionChangeRecord)changeRecord).getCommitAddMap().put(null, Integer.valueOf(databaseNullCount));

@@ -74,6 +74,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
                         DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName((String)iterator.next());
                         mapping.calculateDeferredChanges((ChangeRecord)changes.getChangesForAttributeNamed(mapping.getAttributeName()), session);
                     }
+                    changes.getDeferredSet().clear();
                 }
             } else {
                 changes = descriptor.getObjectBuilder().createObjectChangeSet(clone, changeSet, isNew, session);            

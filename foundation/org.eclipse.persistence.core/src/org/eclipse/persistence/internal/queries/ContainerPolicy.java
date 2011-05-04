@@ -554,6 +554,8 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         changeRecord.clearChanges();
         changeRecord.addAdditionChange(cloneKeyValues, this, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
         changeRecord.addRemoveChange(originalKeyValues, this, (UnitOfWorkChangeSet) changeRecord.getOwner().getUOWChangeSet(), session);
+        changeRecord.setIsDeferred(false);
+        changeRecord.setLatestCollection(null);
     }
     
     public void buildChangeSetForNewObjectInCollection(Object object, ClassDescriptor referenceDescriptor, UnitOfWorkChangeSet uowChangeSet, AbstractSession session){

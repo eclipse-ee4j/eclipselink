@@ -242,6 +242,19 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * This method will be used to merge one record into another.
      */
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
+        if (((DeferrableChangeRecord)mergeFromRecord).isDeferred()){
+            if (this.hasChanges()){
+                //merging into existing change record need to combine changes
+                ((DeferrableChangeRecord)mergeFromRecord).getMapping().calculateDeferredChanges(mergeFromRecord, mergeToChangeSet.getSession());
+            }else{
+                if (! this.isDeferred){
+                    this.originalCollection = ((DeferrableChangeRecord)mergeFromRecord).originalCollection;
+                }
+                this.isDeferred = true;
+                this.latestCollection = ((DeferrableChangeRecord)mergeFromRecord).latestCollection;
+                return;
+            }
+        }
         Iterator addEnum = ((CollectionChangeRecord)mergeFromRecord).getAddObjectList().keySet().iterator();
         while (addEnum.hasNext()) {
             ObjectChangeSet mergingObject = (ObjectChangeSet)addEnum.next();

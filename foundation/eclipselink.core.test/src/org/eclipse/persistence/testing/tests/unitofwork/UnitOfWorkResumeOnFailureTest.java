@@ -107,7 +107,7 @@ public class UnitOfWorkResumeOnFailureTest extends WriteObjectTest {
         changeInFirstUnitOfWork();
 
         // Use the original session for comparision
-        if (!compareObjects(this.originalObject, this.objectToBeWritten)) {
+        if (compareObjects(this.originalObject, this.unitOfWorkWorkingCopy)) {
             throw new TestErrorException("The original object was changed through changing the clone.");
         }
 
@@ -124,12 +124,38 @@ public class UnitOfWorkResumeOnFailureTest extends WriteObjectTest {
         }
 
         // Use the original session for comparision
-        if (!compareObjects(this.originalObject, this.objectToBeWritten)) {
+        if (compareObjects(this.originalObject, this.unitOfWorkWorkingCopy)) {
             throw new TestErrorException("The original object was changed through changing the clone.");
         }
 
         this.unitOfWork.commitAndResumeOnFailure();
 
         this.unitOfWork.release();
+    }
+
+    /**
+     * Verify if the objects match completely through allowing the session 
+     * to use the descriptors.  This will compare the objects and all of 
+     * their privately owned parts.
+     */
+    protected void verify() {
+        getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        // Acquire first unit of work
+        this.unitOfWork = getSession().acquireUnitOfWork();
+        this.unitOfWork.beginEarlyTransaction();
+        this.objectFromDatabase = this.unitOfWork.executeQuery(this.query);
+
+        try{
+            if (!(compareObjects(this.unitOfWorkWorkingCopy, this.objectFromDatabase))) {
+                throw new TestErrorException("The object inserted into the database, '"
+                    + this.objectFromDatabase + "' does not match the original, '" 
+                    + this.unitOfWorkWorkingCopy + "'.");
+            }
+            if (!((Employee)this.objectFromDatabase).getResponsibilitiesList().contains("eat not buy donuts")){
+                throw new TestErrorException("The Changes made after the resume were lost because the deferred set was not merged into new ChangeSet");
+            }
+        }finally{
+            this.unitOfWork.release();
+        }
     }
 }

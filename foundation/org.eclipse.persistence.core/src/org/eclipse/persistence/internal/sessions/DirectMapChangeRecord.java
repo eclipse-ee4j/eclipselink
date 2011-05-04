@@ -43,6 +43,17 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
      * This method will be used to merge one record into another.
      */
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
+        if (((DeferrableChangeRecord)mergeFromRecord).isDeferred()){
+            if (this.hasChanges()){
+                //merging into existing change record need to combine changes
+                ((DeferrableChangeRecord)mergeFromRecord).getMapping().calculateDeferredChanges(mergeFromRecord, mergeToChangeSet.getSession());
+            }else{
+                this.isDeferred = true;
+                this.originalCollection = ((DeferrableChangeRecord)mergeFromRecord).originalCollection;
+                this.latestCollection = ((DeferrableChangeRecord)mergeFromRecord).latestCollection;
+                return;
+            }
+        }
         Iterator addKeys = ((DirectMapChangeRecord)mergeFromRecord).getAddObjects().keySet().iterator();
         while (addKeys.hasNext()) {
             Object key = addKeys.next();

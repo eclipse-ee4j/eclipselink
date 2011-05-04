@@ -124,6 +124,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         this.shouldBeDeleted = false;
         this.changes = null;
         this.attributesToChanges = null;
+        this.deferredSet = null;
         if (clearKeys){
             this.setOldKey(null);
             this.setNewKey(null);
@@ -726,6 +727,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         this.shouldModifyVersionField = changeSetToMergeFrom.shouldModifyVersionField;
         this.hasCmpPolicyForcedUpdate = changeSetToMergeFrom.hasCmpPolicyForcedUpdate;
         this.hasChangesFromCascadeLocking = changeSetToMergeFrom.hasChangesFromCascadeLocking;
+        this.deferredSet = changeSetToMergeFrom.deferredSet;
     }
 
     /**
