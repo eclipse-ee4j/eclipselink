@@ -3295,7 +3295,7 @@ public class AnnotationsProcessor {
         JavaClass parent = cls.getSuperclass();
         while (parent != null && !(parent.getQualifiedName().equals(JAVA_LANG_OBJECT))) {
             TypeInfo parentTypeInfo = typeInfo.get(parent.getQualifiedName());
-            if (parentTypeInfo != null || shouldGenerateTypeInfo(parent)) {
+            if(hasElementMappedProperties(parentTypeInfo)) {
                 throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);
             }
             parent = parent.getSuperclass();
@@ -3317,6 +3317,15 @@ public class AnnotationsProcessor {
                 throw JAXBException.invalidTypeForXmlValueField(propName);
             }
         }
+    }
+
+    private boolean hasElementMappedProperties(TypeInfo typeInfo) {
+        for(Property property : typeInfo.getPropertyList()) {
+            if(!(property.isTransient()|| property.isAttribute() || property.isAnyAttribute())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isMapType(JavaClass type) {
