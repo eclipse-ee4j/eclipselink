@@ -190,6 +190,7 @@ public class QueryException extends ValidationException {
     public final static int PARTIONING_NOT_SUPPORTED = 6171;
     public final static int MISSING_CONNECTION_POOL = 6172;
     public final static int FAILOVER_FAILED = 6173;
+    public final static int TENANT_DISCRIMINATOR_COLUMN_CONTEXT_PROPERTY_MISSING = 6174;
 
     /**
      * INTERNAL:
@@ -250,6 +251,14 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
+    public static QueryException tenantDiscriminatorColumnContextPropertyValueMissing(DatabaseQuery query, String contextProperty, String fieldName) {
+        Object[] args = { contextProperty, fieldName };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, TENANT_DISCRIMINATOR_COLUMN_CONTEXT_PROPERTY_MISSING, args), query);
+        queryException.setErrorCode(TENANT_DISCRIMINATOR_COLUMN_CONTEXT_PROPERTY_MISSING);
+        return queryException;
+    }
+    
     public static QueryException namedArgumentNotFoundInQueryParameters(String argumentName) {
         Object[] args = {argumentName};
         

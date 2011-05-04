@@ -1850,7 +1850,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                     DatabaseField additionalCriteriaField = new DatabaseField(additionalCriteriaParameter);
                     
                     if (getDescriptor().getTenantDiscriminatorFields().containsKey(additionalCriteriaField)) {
-                        propertyValue = session.getProperty(getDescriptor().getTenantDiscriminatorFields().get(additionalCriteriaField));
+                        String property = getDescriptor().getTenantDiscriminatorFields().get(additionalCriteriaField);
+                        propertyValue = session.getProperty(property);
+                        
+                        if (propertyValue == null) {
+                            throw QueryException.tenantDiscriminatorColumnContextPropertyValueMissing(this, property, additionalCriteriaParameter);
+                        }
                     }
                 }
                 
