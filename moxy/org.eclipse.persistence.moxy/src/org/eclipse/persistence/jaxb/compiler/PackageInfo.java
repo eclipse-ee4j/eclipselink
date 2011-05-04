@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
+import java.util.HashMap;
+
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -28,11 +31,21 @@ public class PackageInfo {
     private XmlAccessOrder accessOrder = XmlAccessOrder.UNDEFINED;
     private XMLNameTransformer xmlNameTransformer;
     private NamespaceInfo namespaceInfo;
-    
+    private HashMap<String, JavaClass> packageLevelAdaptersByClass;
+
     public PackageInfo() {
-        
+    	packageLevelAdaptersByClass = new HashMap<String, JavaClass>();
     }
     
+    public HashMap<String, JavaClass> getPackageLevelAdaptersByClass() {
+        return packageLevelAdaptersByClass;
+    }
+
+    public void setPackageLevelAdaptersByClass(
+        HashMap<String, JavaClass> packageLevelAdaptersByClass) {
+        this.packageLevelAdaptersByClass = packageLevelAdaptersByClass;
+    }
+	
     public void setAccessType(XmlAccessType accessType) {
         this.accessType = accessType;
     }

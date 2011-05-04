@@ -165,7 +165,9 @@ public class XMLProcessor {
             }
 
             PackageInfo packageInfo = annotationsProcessor.getPackageToPackageInfoMappings().get(packageName);
-            //nsInfo = packageInfo.getNamespaceInfo();
+            if (packageInfo == null) {
+                packageInfo = new PackageInfo();                             
+            }
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
@@ -284,6 +286,7 @@ public class XMLProcessor {
 	                        JavaClass boundType = jModelInput.getJavaModel().getClass(xja.getType());
 	                        if (boundType != null) {
 	                            tInfo.addPackageLevelAdapterClass(adapterClass, boundType);
+	                            packageInfo.getPackageLevelAdaptersByClass().put(boundType.getQualifiedName(), adapterClass);
 	                        }
 	                    } catch(JAXBException e) {
 	                        throw JAXBException.invalidPackageAdapterClass(xja.getValue(), packageName);
@@ -334,8 +337,8 @@ public class XMLProcessor {
 
             // update TypeInfo objects based on the JavaTypes
             JavaTypes jTypes = xmlBindings.getJavaTypes();
-            NamespaceInfo nsInfo = annotationsProcessor.getPackageToPackageInfoMappings().get(packageName).getNamespaceInfo();
             if (jTypes != null) {
+            	NamespaceInfo nsInfo = annotationsProcessor.getPackageToPackageInfoMappings().get(packageName).getNamespaceInfo();
                 for (JavaType javaType : jTypes.getJavaType()) {
                     processJavaType(javaType, typeInfosForPackage.get(javaType.getName()), nsInfo);
                 }

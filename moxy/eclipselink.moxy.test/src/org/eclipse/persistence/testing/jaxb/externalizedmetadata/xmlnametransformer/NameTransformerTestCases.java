@@ -52,10 +52,9 @@ public class NameTransformerTestCases extends JAXBTestCases{
     }
 
     public void init() throws Exception {	
-        Type[] types = new Type[3];
+        Type[] types = new Type[2];
         types[0] = Employee.class;
-        types[1] = Address.class;
-        types[2] = Phone.class;
+        types[1] = Address.class;       
         setTypes(types);
     }
 	

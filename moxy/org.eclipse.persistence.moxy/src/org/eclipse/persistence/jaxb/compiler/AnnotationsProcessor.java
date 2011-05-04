@@ -506,7 +506,12 @@ public class AnnotationsProcessor {
             processXmlSeeAlso(javaClass, info);
 
             PackageInfo packageInfo = getPackageInfoForPackage(javaClass);
-
+            if(packageInfo != null && packageInfo.getPackageLevelAdaptersByClass().size() > 0){
+            	for(String adapterClass :packageInfo.getPackageLevelAdaptersByClass().keySet()){
+            		JavaClass boundType = packageInfo.getPackageLevelAdaptersByClass().get(adapterClass);
+            		info.getPackageLevelAdaptersByClass().put(adapterClass, boundType);            	    
+            	}
+            }
             // handle @XmlType
             preProcessXmlType(javaClass, info, packageInfo.getNamespaceInfo());
 
@@ -2424,6 +2429,7 @@ public class AnnotationsProcessor {
 
                 JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
                 setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
+
                 if (setMethod != null && hasJAXBAnnotations(setMethod)) {
                     // use the set method if it exists and is annotated
                     if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
@@ -2450,7 +2456,7 @@ public class AnnotationsProcessor {
                 if (getMethod == null) {
                     // try is instead of get
                     getMethodName = IS_STR + propertyName;
-                    getMethod = cls.getDeclaredMethod(getMethodName, new JavaClass[] {});
+                    getMethod = cls.getDeclaredMethod(getMethodName, new JavaClass[] {});                 
                 }
                 if (getMethod != null && hasJAXBAnnotations(getMethod)) {
                     // use the set method if it exists and is annotated
