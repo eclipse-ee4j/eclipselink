@@ -32,13 +32,13 @@
 *     bdoughan - initial API and implementation
 *     egwin - update to adopt calling standards
 #******************************************************************************/-->
-<project name="org.eclipse.persistence.moxy.dynamic" default="build" basedir=".">
+<project name="org.eclipse.persistence.moxy.dynamicxjc" default="build" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="dynamic.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="dynamic.is.local"/>
 
-    <dirname  property="dynamic.build.location_temp" file="${ant.file.org.eclipse.persistence.moxy.dynami}"/>
+    <dirname  property="dynamic.build.location_temp" file="${ant.file.org.eclipse.persistence.moxy.dynamicxjc}"/>
     <pathconvert targetos="unix" property="dynamic.build.location">
         <path>
             <pathelement location="${dynamic.build.location_temp}"/>
