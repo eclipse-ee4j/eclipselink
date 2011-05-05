@@ -3,7 +3,6 @@
         <provider>
             org.eclipse.persistence.jpa.PersistenceProvider
         </provider>
-        <!--mapping-file>META-INF/advanced-entity-mappings.xml</mapping-file-->
         <%%datasource-type%%>%%data-source3-name%%</%%datasource-type%%>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>

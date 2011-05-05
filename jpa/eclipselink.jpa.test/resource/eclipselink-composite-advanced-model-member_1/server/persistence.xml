@@ -8,8 +8,6 @@
         <properties>
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <property name="eclipselink.composite-unit.member" value="true"/>
-			<property name="eclipselink.logging.parameters" value="true"/>
-			<property name="eclipselink.logging.logger" value="DefaultLogger"/>
         </properties>
     </persistence-unit>
 </persistence>

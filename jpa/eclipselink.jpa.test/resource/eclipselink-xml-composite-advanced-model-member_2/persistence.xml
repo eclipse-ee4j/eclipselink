@@ -3,7 +3,6 @@
         <provider>
             org.eclipse.persistence.jpa.PersistenceProvider
         </provider>
-        <!--mapping-file>META-INF/advanced-entity-mappings.xml</mapping-file-->
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.composite-unit.member" value="true"/>

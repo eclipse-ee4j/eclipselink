@@ -14,6 +14,8 @@
             <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.composite.advanced.Customizer"/>
             <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
             <property name="eclipselink.validate-existence" value="true"/>
+			<property name="eclipselink.logging.parameters" value="true"/>
+			<property name="eclipselink.logging.logger" value="DefaultLogger"/>
         </properties>
     </persistence-unit>
 </persistence>

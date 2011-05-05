@@ -3,12 +3,13 @@
         <provider>
             org.eclipse.persistence.jpa.PersistenceProvider
         </provider>
-        <!--mapping-file>META-INF/advanced-entity-mappings.xml</mapping-file-->
         <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <!--property name="eclipselink.composite-unit.member" value="true"/-->
+			<property name="eclipselink.logging.parameters" value="true"/>
+			<property name="eclipselink.logging.logger" value="DefaultLogger"/>
         </properties>
     </persistence-unit>
 </persistence>
