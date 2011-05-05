@@ -2044,7 +2044,7 @@ public class AnnotationsProcessor {
             boolean missingReference = true;
             for (Entry<String, ElementDeclaration> entry : xmlRootElements.entrySet()) {
                 ElementDeclaration entryValue = entry.getValue();
-                if (type.isAssignableFrom(entryValue.getJavaType())) {
+                if (!(areEquals(type, Object.class)) && type.isAssignableFrom(entryValue.getJavaType())) {
                     addReferencedElement(property, entryValue);
                     missingReference = false;
                 }

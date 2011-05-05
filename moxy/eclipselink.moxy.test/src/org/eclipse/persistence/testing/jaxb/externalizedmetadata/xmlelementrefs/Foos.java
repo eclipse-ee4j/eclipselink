@@ -26,18 +26,18 @@ public class Foos {
     //    @javax.xml.bind.annotation.XmlElementRef(name="integer-root", namespace="myns"), 
     //    @javax.xml.bind.annotation.XmlElementRef(name="root")
     //})
-    public List<JAXBElement> items;
+    public List<Object> items;
     public List<Object> stuff;
     
     @XmlTransient
     public boolean accessedViaMethod = false;
     
-    public List<JAXBElement> getItemList() {
+    public List<Object> getItemList() {
         accessedViaMethod = true;
         return items;
     }
     
-    public void setItemList(List<JAXBElement> items) {
+    public void setItemList(List<Object> items) {
         this.items = items;
     }
 }
