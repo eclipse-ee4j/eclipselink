@@ -14,6 +14,7 @@ package org.eclipse.persistence.oxm.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -26,7 +27,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface XmlExtensible {
 
+    /*
+     * (Optional) Defines the name of the method used to retrieve XML Extensions.
+     */
     String getMethod() default "get";
+
+    /*
+     * (Optional) Defines the name of the method used to store XML Extensions.
+     */
     String setMethod() default "set";
 
 }
