@@ -128,23 +128,12 @@ public class JAXBClassLevelUpperNameTransformerTestCases extends JAXBTestCases {
         }
     }  
     
-    public void testSchemaGen() throws IOException, SAXException{
-        MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-    	jaxbContext.generateSchema(outputResolver);
-    	
-    	List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
-
-        for(int i=0;i<generatedSchemas.size(); i++){
-
-            Writer sw = generatedSchemas.get(i);
-            InputSource nextGeneratedValue = new InputSource(new StringReader(sw.toString()));
-
-            Document test = parser.parse(nextGeneratedValue);
-
-            logDocument(test);
-        }
-    	
-    	
+   
+    public void testSchemaGen() throws Exception {
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();		
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlnametransformer/classlevel/employeeUpper.xsd");
+        controlSchemas.add(is);		
+        super.testSchemaGen(controlSchemas);
     }
 
 }
