@@ -146,4 +146,8 @@ public class JAXBArrayAttributeAccessor extends AttributeAccessor {
         return dimensions;
     }
 
+    public void setNestedAccessor(AttributeAccessor a) {
+        this.nestedAccessor = a;
+    }
+
 }

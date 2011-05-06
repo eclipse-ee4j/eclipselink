@@ -1123,7 +1123,10 @@ public class MappingsGenerator {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.SWA_REF_QNAME);
             mapping.setSwaRef(true);
         } else if (property.isMtomAttachment()) {
-            ((XMLField) mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+            XMLField f = ((XMLField) mapping.getField());
+            if (!f.getSchemaType().equals(XMLConstants.HEX_BINARY_QNAME)) {
+                f.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+            }
         }
         if (property.isInlineBinaryData()) {
             mapping.setShouldInlineBinaryData(true);
@@ -2036,7 +2039,13 @@ public class MappingsGenerator {
 
                     accessor.setGetMethodName(getMethod);
                     accessor.setSetMethodName(setMethod);
-                    mapping.setAttributeAccessor(accessor);
+
+                    if (mapping.getAttributeAccessor() instanceof JAXBArrayAttributeAccessor) {
+                        JAXBArrayAttributeAccessor jaa = (JAXBArrayAttributeAccessor) mapping.getAttributeAccessor();
+                        jaa.setNestedAccessor(accessor);
+                    } else {
+                        mapping.setAttributeAccessor(accessor);
+                    }
                 }
                 descriptor.addMapping(mapping);
                 // set user-defined properties if necessary

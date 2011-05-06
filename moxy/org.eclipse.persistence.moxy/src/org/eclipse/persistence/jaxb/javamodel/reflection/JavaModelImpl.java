@@ -70,6 +70,12 @@ public class JavaModelImpl implements JavaModel {
 
     public JavaClass getClass(String className) {
         try {
+            if (className.contains("[")) {
+                Class clazz = Class.forName(className);
+                if (clazz != null) {
+                    return getClass(clazz);
+                }
+            }
             Class clazz = this.classLoader.loadClass(className);
             return getClass(clazz);
         } catch(ClassNotFoundException e) {

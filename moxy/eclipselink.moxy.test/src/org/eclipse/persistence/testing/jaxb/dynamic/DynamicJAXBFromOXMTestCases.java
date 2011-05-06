@@ -41,6 +41,7 @@ import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.ClassExtractor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -1257,6 +1258,19 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
         Document personDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         jaxbContext.createMarshaller().marshal(person, personDoc);
+
+        // Check Binary formats
+        String base64Str =
+            XMLConversionManager.getDefaultXMLManager().convertObject(b, String.class, XMLConstants.BASE_64_BINARY_QNAME).toString();
+        String hexStr =
+            XMLConversionManager.getDefaultXMLManager().convertObject(b, String.class, XMLConstants.HEX_BINARY_QNAME).toString();
+
+        Element docElement = personDoc.getDocumentElement();
+        Element base64Elem = (Element) docElement.getElementsByTagName("base64").item(0);
+        Element hexElem = (Element) docElement.getElementsByTagName("hex").item(0);
+
+        assertEquals(base64Str, base64Elem.getFirstChild().getNodeValue());
+        assertEquals(hexStr, hexElem.getFirstChild().getNodeValue());
     }
 
     // Utility methods

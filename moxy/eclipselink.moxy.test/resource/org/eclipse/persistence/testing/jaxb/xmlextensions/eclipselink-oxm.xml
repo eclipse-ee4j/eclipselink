@@ -55,15 +55,15 @@
                 <xml-element java-attribute="idref" type="org.eclipse.persistence.testing.jaxb.xmlextensions.ExtObjectB" xml-idref="true" />
                 <xml-element java-attribute="anEnum" type="org.eclipse.persistence.testing.jaxb.xmlextensions.ExtEnum" />
 
-                <!--  NOT WORKING -->
-                <!--
-                <xml-element java-attribute="base64">
-                    <xml-schema-type name="base64Binary" />
+                <xml-element java-attribute="base64" type="[B">
+                    <xml-schema-type name="base64Binary"/>
                 </xml-element>
-                <xml-element java-attribute="hex">
+                <xml-element java-attribute="hex" type="[B">
                     <xml-schema-type name="hexBinary" />
                 </xml-element>
-                -->
+                <xml-element java-attribute="bigByteArray" type="[Ljava.lang.Byte;"/>
+
+                <xml-element java-attribute="stringArray" type="[Ljava.lang.String;"/>
 
                 <xml-element java-attribute="xmllist" type="java.lang.String" container-type="java.util.ArrayList" xml-list="true" />
                 <xml-any-element java-attribute="mixed" container-type="java.util.ArrayList" />
@@ -85,12 +85,7 @@
             <java-attributes>
                 <xml-attribute java-attribute="directatt" type="java.lang.String" />
                 <xml-element java-attribute="directelem" type="java.lang.String" />
-
-                <!-- NOT WORKING -->
-                <!--
                 <xml-inverse-reference java-attribute="inverse" type="org.eclipse.persistence.testing.jaxb.xmlextensions.ExtObjectB" mapped-by="references" />
-                -->
-
             </java-attributes>
         </java-type>
 

@@ -13,10 +13,10 @@
             <java-attributes>
                 <xml-element java-attribute="name" type="java.lang.String"/>
                 <xml-element java-attribute="abyte" type="java.lang.Byte"/>
-                <xml-element java-attribute="base64">
+                <xml-element java-attribute="base64" type="[B">
                     <xml-schema-type name="base64Binary"/>
                 </xml-element>
-                <xml-element java-attribute="hex">
+                <xml-element java-attribute="hex" type="[B">
                     <xml-schema-type name="hexBinary"/>
                 </xml-element>
             </java-attributes>

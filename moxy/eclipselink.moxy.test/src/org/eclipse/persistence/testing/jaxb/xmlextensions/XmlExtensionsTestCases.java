@@ -18,17 +18,22 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.oxm.XMLTestCase;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -36,6 +41,9 @@ public class XmlExtensionsTestCases extends XMLTestCase {
 
     private JAXBContext ctx;
     private Map<String, Object> ctxProperties;
+
+    private byte[] bytes = new byte[] {23,1,112,12,1,64,1,14,3,2};
+    private Byte[] bigBytes = new Byte[] {23,1,112,12,1,64,1,14,3,2};
 
     public XmlExtensionsTestCases(String name) {
         super(name);
@@ -103,6 +111,10 @@ public class XmlExtensionsTestCases extends XMLTestCase {
          *       - idref
          *       - xmllist
          *       - references
+         *       - base64
+         *       - hex
+         *       - bigByteArray
+         *       - stringArray
          */
 
         ctx = JAXBContextFactory.createContext(new Class[] {ExtObjectRoot.class, ExtObjectA.class,
@@ -115,7 +127,7 @@ public class XmlExtensionsTestCases extends XMLTestCase {
         m.marshal(getControlObjectComplete(), marshalDoc);
 
         String[] extensions = new String[] {
-                "directelem", "nullpol", "join", "idref", "xmllist", "references"
+                "directelem", "nullpol", "join", "idref", "xmllist", "references", "base64", "hex", "bigByteArray", "stringArray"
         };
 
         Node attNode = marshalDoc.getDocumentElement().getChildNodes().item(0).getAttributes().getNamedItem("directatt");
@@ -127,6 +139,34 @@ public class XmlExtensionsTestCases extends XMLTestCase {
             boolean found = nodeList != null && nodeList.getLength() > 0;
             assertTrue("'" + extensions[i] + "' extension not found.", found);
         }
+
+        Unmarshaller u = ctx.createUnmarshaller();
+        ExtObjectRoot root = (ExtObjectRoot) u.unmarshal(marshalDoc);
+
+        // Check that the Inverse Reference was set
+        try {
+            ExtObjectA a = root.flexObjectAs.get(0);
+            ExtObjectB b = (ExtObjectB) a.get("join");
+            List refs = (List) b.get("references");
+            ExtObjectC c = (ExtObjectC) refs.get(0);
+            assertTrue("Inverse Reference not set correctly.", c.get("inverse") == b);
+        } catch (Exception e) {
+            fail("Error testing inverse reference.");
+        }
+
+        // Check Binary formats
+        String base64Str =
+            XMLConversionManager.getDefaultXMLManager().convertObject(bytes, String.class, XMLConstants.BASE_64_BINARY_QNAME).toString();
+        String hexStr =
+            XMLConversionManager.getDefaultXMLManager().convertObject(bytes, String.class, XMLConstants.HEX_BINARY_QNAME).toString();
+
+        Element docElement = marshalDoc.getDocumentElement();
+        Element flexObjectAsElem = (Element) docElement.getChildNodes().item(0);
+        Element base64Elem = (Element) flexObjectAsElem.getElementsByTagName("base64").item(0);
+        Element hexElem = (Element) flexObjectAsElem.getElementsByTagName("hex").item(0);
+
+        assertEquals(base64Str, base64Elem.getFirstChild().getNodeValue());
+        assertEquals(hexStr, hexElem.getFirstChild().getNodeValue());
     }
 
     /*
@@ -218,6 +258,13 @@ public class XmlExtensionsTestCases extends XMLTestCase {
         objB.set("directatt", "123");
         objB.set("directelem", "Bar");
 
+        ArrayList<ExtObjectC> references = new ArrayList<ExtObjectC>();
+        references.add(objC);
+        references.add(objC2);
+        objB.set("references", references);
+        objC.set("inverse", objB);
+        objC2.set("inverse", objB);
+        
         ExtObjectA objA = new ExtObjectA();
         objA.set("directatt", "888");
         objA.set("directelem", "Foo");
@@ -239,17 +286,13 @@ public class XmlExtensionsTestCases extends XMLTestCase {
         mixed.add("Visit www.rewards.com!");
         objA.set("mixed", mixed);
 
-        byte[] bytes = new byte[] {23,1,112,12,1,64,1,14,3,2};
         objA.set("base64", bytes);
         objA.set("hex", bytes);
+        objA.set("bigByteArray", bigBytes);
 
-        ArrayList<ExtObjectC> references = new ArrayList<ExtObjectC>();
-        references.add(objC);
-        references.add(objC2);
-        objB.set("references", references);
-        objC.set("inverse", objB);
-        objC2.set("inverse", objB);
-
+        String[] s = new String[] {"one", "two", "three", "for"};
+        objA.set("stringArray", s);
+        
         ExtObjectRoot root = new ExtObjectRoot();
         root.flexObjectAs.add(objA);
         root.flexObjectBs.add(objB);
