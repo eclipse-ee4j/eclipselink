@@ -2406,7 +2406,7 @@
     <!-- Run all the JPA tests in the server -->
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
-        <!-- The "cacheable" test suite need multiple persistence_unit setting in persistence.xml -->
+        <antcall target="server-test-advanced-multitenant" inheritRefs="true"/>
         <antcall target="server-test-cacheable" inheritRefs="true"/>
         <antcall target="server-test-criteria" inheritRefs="true"/>
         <antcall target="server-test-datatypes" inheritRefs="true"/>
@@ -2464,6 +2464,19 @@
             <param name="TEST_NAME" value="eclipselink-advanced-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+    <target name="server-test-advanced-multitenant">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-advanced-multitenant-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>
+            <param name="TEST_NAME" value="eclipselink-advanced-multitenant-model"/>
+            <param name="EAR_NAME" value="eclipselink-advanced-multitenant-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
