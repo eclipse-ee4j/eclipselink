@@ -58,6 +58,11 @@
     <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
     <property name="temp.dir" value="temp"/>
 
+    <!-- This checks if the tests are run on Derby database -->
+    <condition property="is.derby">
+        <contains string="${db.driver}" substring="derby"/>
+    </condition>
+
     <condition property="is.v1030">
         <contains string="${server.version}" substring="10.3.0"/>
     </condition>
@@ -94,7 +99,13 @@
         <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.jar}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}" todir="${weblogic.domain}/lib"/>
         <antcall target="copy-eclipselink-jar-to-domain-lib" inheritRefs="true"/>
+        <antcall target="copy-jdbc-driver-jar-to-domain-lib" inheritRefs="true"/>
     </target>
+
+    <target name="copy-jdbc-driver-jar-to-domain-lib" if="is.derby">
+        <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
+    </target>
+
 
     <target name="copy-eclipselink-jar-to-domain-lib" if="is.v1030">
         <copy file="${eclipselink.lib}" todir="${weblogic.domain}/lib"/>
@@ -132,7 +143,23 @@
             <replacefilter token="%%DBUSR%%" value="${db.user}"/>
             <replacefilter token="%%DBPWD%%" value="${db.pwd}"/>
         </replace>
+        <antcall target="weblogic-datasource-setup" inheritRefs="true"/>
+    </target>
 
+    <target name="weblogic-datasource-setup" depends="weblogic-derby-setup,weblogic-non-derby-setup"/>
+
+    <!-- This creates datasource on derby and deploy to the server. -->
+    <target name="weblogic-derby-setup" if="is.derby">
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_derby_setup.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
+    </target>
+
+    <!-- This creates datasource on non-derby database and deploy to the server. -->
+    <target name="weblogic-non-derby-setup" unless="is.derby">
         <java classname="weblogic.WLST" fork="yes">
             <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_setup.py"/>
             <classpath>
