@@ -178,6 +178,10 @@
             <fileset dir="${asm.classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.html"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
+            </fileset>
         </jar>
         <jar jarfile="${asm.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
@@ -199,6 +203,8 @@
             </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
+                <include name="org/eclipse/persistence/**/*.html"/>
+                <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
         </jar>
     </target>
