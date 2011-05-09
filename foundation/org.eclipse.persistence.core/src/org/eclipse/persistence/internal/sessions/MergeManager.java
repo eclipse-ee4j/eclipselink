@@ -661,7 +661,7 @@ public class MergeManager {
                 original = cacheKey.getObject();
             }
         }
-        if (original == null){
+        if (original == null  && !descriptor.getFullyMergeEntity()){
             original = unitOfWork.getOriginalVersionOfObjectOrNull(clone, objectChangeSet, descriptor, targetSession);
             //original was not in cache.  Make sure it is placed in the cache.
             if (original != null){
@@ -678,7 +678,7 @@ public class MergeManager {
         }
         // Always merge into the original.
         try {
-            if (original == null) {
+            if (original == null || descriptor.getFullyMergeEntity()) {
                 // If original does not exist then we must merge the entire object.
                 if (original == null){
                     original = unitOfWork.buildOriginal(clone);

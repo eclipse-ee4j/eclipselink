@@ -1805,7 +1805,7 @@ public class PersistenceUnitProperties {
      * factory. Note that if the property set to "true" then objects read during
      * transaction won't be placed into the shared cache unless they have been
      * updated. Alternatively, to apply the property only to some
-     * SessionManagers pass it to createEntityManager method.
+     * EntityManagers pass it to createEntityManager method.
      * <p>
      * Values (caseinsensitive):
      * <ul>

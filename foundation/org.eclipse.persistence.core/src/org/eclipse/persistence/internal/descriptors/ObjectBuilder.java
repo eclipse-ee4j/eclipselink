@@ -1616,7 +1616,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             // If not refreshing can get the object from the cache.
             if ((!isARefresh) && (!isIsolated) && !query.shouldRetrieveBypassCache() && !unitOfWork.shouldReadFromDB() && (!unitOfWork.shouldForceReadFromDB(query, primaryKey))) {
                 AbstractSession session = unitOfWork.getParentIdentityMapSession(query);            
-                originalCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor);
+                originalCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor, false);
                 if (originalCacheKey != null) {
                     // PERF: Read-lock is not required on object as unit of work will acquire this on clone and object cannot gc and object identity is maintained.
                     original = originalCacheKey.getObject();

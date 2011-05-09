@@ -87,7 +87,7 @@ public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservat
             if ((pk == null) || (pk instanceof CacheId) && (((CacheId)pk).getPrimaryKey().length == 0)) {
                 pk = new CacheId(new Object[]{ new WeakObjectWrapper(obj) });
             }
-            CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
+            CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(pk, xmlDescriptor.getJavaClass(), xmlDescriptor,false);
             if(cacheKey != null && cacheKey.getRecord() != null) {
                 return ((DOMRecord)cacheKey.getRecord()).getDOM();
             }

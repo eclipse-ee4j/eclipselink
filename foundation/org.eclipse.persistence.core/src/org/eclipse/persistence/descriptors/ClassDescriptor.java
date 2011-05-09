@@ -272,7 +272,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     
     /** caches if this descriptor has any non cacheable mappings */
     protected boolean hasNoncacheableMappings = false;
-
+    
+    /** This flag controls how the MergeManager should merge an Entity when merging into the shared cache.*/
+    protected boolean fullyMergeEntity = false;
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -4168,6 +4170,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
+     * @param fullyMergeEntity the fullyMergeEntity to set
+     */
+    public void setFullyMergeEntity(boolean fullyMergeEntity) {
+        this.fullyMergeEntity = fullyMergeEntity;
+    }
+
+    /**
      * PUBLIC:
      * Set the class of identity map to be used by this descriptor.
      * The default is the "FullIdentityMap".
@@ -5689,6 +5698,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public FetchGroupManager getFetchGroupManager() {
         return this.fetchGroupManager;
+    }
+
+    /**
+     * @return the fullyMergeEntity
+     */
+    public boolean getFullyMergeEntity() {
+        return fullyMergeEntity;
     }
 
     /**

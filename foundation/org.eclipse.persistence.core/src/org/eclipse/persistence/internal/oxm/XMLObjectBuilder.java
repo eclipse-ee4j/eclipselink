@@ -82,7 +82,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             if ((pk == null) || (pk instanceof CacheId) && (((CacheId)pk).getPrimaryKey().length == 0)) {
                 pk = new CacheId(new Object[]{ new WeakObjectWrapper(object) });
             }
-            CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(pk, getDescriptor().getJavaClass(), getDescriptor());
+            CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(pk, getDescriptor().getJavaClass(), getDescriptor(), false);
             if ((cacheKey != null) && (cacheKey.getRecord() != null)) {
                 XMLRecord nestedRecord = (XMLRecord)cacheKey.getRecord();
                 nestedRecord.setMarshaller(parentRecord.getMarshaller());

@@ -70,7 +70,7 @@ public class CacheImpl implements JpaCache {
 
         // we can assume that all implementors of IdentityMapAccessor implement getCacheKeyforObject
         CacheKey key = ((org.eclipse.persistence.internal.sessions.IdentityMapAccessor)getAccessor())
-            .getCacheKeyForObject(pk, cls, descriptor);
+            .getCacheKeyForObject(pk, cls, descriptor, false);
         return key != null && key.getObject() != null && 
             !descriptor.getCacheInvalidationPolicy().isInvalidated(key);    
     }

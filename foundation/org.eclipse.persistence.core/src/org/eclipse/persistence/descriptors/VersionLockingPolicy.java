@@ -746,7 +746,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             // Mark the object as invalid in the session cache, only if version is the same as in query.
             Object primaryKey = query.getPrimaryKey();
             AbstractSession session = query.getSession().getParentIdentityMapSession(query, true, true);
-            CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, query.getReferenceClass(), query.getDescriptor());
+            CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, query.getReferenceClass(), query.getDescriptor(), false);
             if ((cacheKey != null) && (cacheKey.getObject() != null) && (query.getObjectChangeSet() != null)) {
                 Object queryVersion = query.getObjectChangeSet().getInitialWriteLockValue();
                 Object cacheVersion = getWriteLockValue(cacheKey.getObject(), primaryKey, session);
@@ -767,7 +767,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             // Mark the object as invalid in the session cache, only if version is the same as in query.
             Object primaryKey = query.getPrimaryKey();
             AbstractSession session = query.getSession().getParentIdentityMapSession(query, true, true);
-            CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, query.getReferenceClass(), query.getDescriptor());
+            CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, query.getReferenceClass(), query.getDescriptor(), false);
             if ((cacheKey != null) && (cacheKey.getObject() != null) && (query.getObjectChangeSet() != null)) {
                 Object queryVersion = query.getObjectChangeSet().getInitialWriteLockValue();
                 Object cacheVersion = getWriteLockValue(cacheKey.getObject(), primaryKey, session);

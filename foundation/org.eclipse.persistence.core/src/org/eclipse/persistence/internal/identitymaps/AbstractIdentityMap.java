@@ -80,7 +80,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Other threads will get deferred locks, all threads will wait until all other threads are complete before releasing their locks.
      */
     public CacheKey acquireDeferredLock(Object primaryKey) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKey(primaryKey, false);
         if (cacheKey == null) {
             // Create and lock a new cacheKey.
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
@@ -104,7 +104,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This is used by reading (when using indirection or no relationships) and by merge.
      */
     public CacheKey acquireLock(Object primaryKey, boolean forMerge) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             // Create and lock a new cacheKey.
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
@@ -128,7 +128,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This is used by merge for missing existing objects.
      */
     public CacheKey acquireLockNoWait(Object primaryKey, boolean forMerge) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             // Create and lock a new cacheKey.
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
@@ -155,7 +155,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This is used by merge for missing existing objects.
      */
     public CacheKey acquireLockWithWait(Object primaryKey, boolean forMerge, int wait) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             // Create and lock a new cacheKey.
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
@@ -183,7 +183,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
     public CacheKey acquireReadLockOnCacheKey(Object primaryKey) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKey(primaryKey, false);
         if (cacheKey == null) {
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
             // Lock new cacheKey.
@@ -204,7 +204,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
     public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKey(primaryKey, false);
         if (cacheKey == null) {
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
             // Lock new cacheKey.
@@ -293,7 +293,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
         CacheKey cachedObject = null;
         long currentTime = System.currentTimeMillis();
         for (Object pk : pkList){
-            cachedObject = getCacheKey(pk);
+            cachedObject = getCacheKey(pk, false);
             if ((cachedObject != null && cachedObject.getObject() != null && !descriptor.getCacheInvalidationPolicy().isInvalidated(cachedObject, currentTime))){
                 map.put(pk, cachedObject.getObject());
             }
@@ -304,13 +304,13 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     /**
      * Get the cache key (with object) for the primary key.
      */
-    public abstract CacheKey getCacheKey(Object primaryKey);
+    public abstract CacheKey getCacheKey(Object primaryKey, boolean forMerge);
 
     /**
      * Get the cache key (with object) for the primary key.
      */
     public CacheKey getCacheKeyForLock(Object primaryKey) {
-        return getCacheKey(primaryKey);
+        return getCacheKey(primaryKey, true);
     }
     
     /**
@@ -324,7 +324,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Get the cache key (with object) for the primary key with read lock.
      */
     protected CacheKey getCacheKeyWithReadLock(Object primaryKey) {
-        CacheKey key = getCacheKey(primaryKey);
+        CacheKey key = getCacheKey(primaryKey, false);
         if (key != null) {
             key.checkReadLock();
         }

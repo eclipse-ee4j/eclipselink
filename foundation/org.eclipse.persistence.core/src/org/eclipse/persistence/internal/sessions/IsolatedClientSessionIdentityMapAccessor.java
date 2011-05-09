@@ -197,14 +197,14 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * @param myClass the class of the cache key to be retrieved.
      */
     @Override
-    public CacheKey getCacheKeyForObject(Object primaryKey, Class myClass, ClassDescriptor descriptor) {
+    public CacheKey getCacheKeyForObject(Object primaryKey, Class myClass, ClassDescriptor descriptor, boolean forMerge) {
         if (!descriptor.isSharedIsolation()) {
             if (this.identityMapManager == null) {
                 return null;
             }
-            return getIdentityMapManager().getCacheKeyForObject(primaryKey, myClass, descriptor);
+            return getIdentityMapManager().getCacheKeyForObject(primaryKey, myClass, descriptor, forMerge);
         } else {
-            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, myClass, descriptor);
+            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, myClass, descriptor, forMerge);
         }
     }
 
@@ -249,7 +249,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
 
     protected Object getAndCloneCacheKeyFromParent(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         org.eclipse.persistence.internal.sessions.IdentityMapAccessor parentIdentityMapAccessor = session.getParent().getIdentityMapAccessorInstance();
-        CacheKey cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor);
+        CacheKey cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor, false);
         Object objectFromCache = null;
         // this check could be simplified to one line but would create a window
         // in which GC could remove the object and we would end up with a null pointer

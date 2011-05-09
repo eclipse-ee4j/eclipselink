@@ -177,8 +177,8 @@ public abstract class CacheInterceptor implements IdentityMap {
     /**
      * Get the cache key (with object) for the primary key.
      */
-    public CacheKey getCacheKey(Object primaryKey) {
-        return this.targetIdentityMap.getCacheKey(primaryKey);
+    public CacheKey getCacheKey(Object primaryKey, boolean forMerge) {
+        return this.targetIdentityMap.getCacheKey(primaryKey, forMerge);
     }
 
     /**

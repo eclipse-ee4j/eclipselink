@@ -100,7 +100,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * If no object for the key exists, return null.
      */
     @Override
-    public CacheKey getCacheKey(Object searchKey) {
+    public CacheKey getCacheKey(Object searchKey, boolean forMerge) {
         return this.cacheKeys.get(searchKey);
     }    
         

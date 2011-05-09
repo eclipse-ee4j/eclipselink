@@ -668,7 +668,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Retrieve the cache key for the given identity information.
      */
-    public CacheKey getCacheKeyForObject(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public CacheKey getCacheKeyForObject(Object primaryKey, Class theClass, ClassDescriptor descriptor, boolean forMerge) {
         if (primaryKey == null) {
             return null;
         }
@@ -681,13 +681,13 @@ public class IdentityMapManager implements Serializable, Cloneable {
             this.session.startOperationProfile(SessionProfiler.Caching);
             acquireReadLock();
             try {
-                cacheKey = map.getCacheKey(primaryKey);
+                cacheKey = map.getCacheKey(primaryKey, forMerge);
             } finally {
                 releaseReadLock();
                 this.session.endOperationProfile(SessionProfiler.Caching);
             }
         } else {
-            cacheKey = map.getCacheKey(primaryKey);
+            cacheKey = map.getCacheKey(primaryKey, forMerge);
         }
         return cacheKey;
     }
@@ -748,12 +748,12 @@ public class IdentityMapManager implements Serializable, Cloneable {
             this.session.startOperationProfile(SessionProfiler.Caching);
             acquireReadLock();
             try {
-                cacheKey = map.getCacheKey(key);
+                cacheKey = map.getCacheKey(key, false);
             } finally {
                 releaseReadLock();
             }
         } else {
-            cacheKey = map.getCacheKey(key);
+            cacheKey = map.getCacheKey(key, false);
         }
 
         if ((cacheKey != null) && (shouldReturnInvalidatedObjects || !descriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey))) {
@@ -880,12 +880,12 @@ public class IdentityMapManager implements Serializable, Cloneable {
             this.session.startOperationProfile(SessionProfiler.Caching);
             acquireReadLock();
             try {
-                cacheKey = map.getCacheKey(key);
+                cacheKey = map.getCacheKey(key, false);
             } finally {
                 releaseReadLock();
             }
         } else {
-            cacheKey = map.getCacheKey(key);
+            cacheKey = map.getCacheKey(key, false);
         }
 
         if ((cacheKey != null) && (shouldReturnInvalidatedObjects || !descriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey))) {
@@ -996,7 +996,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             lookupParameters = new CacheId(parameters.toArray());
         }
 
-        CacheKey key = map.getCacheKey(lookupParameters);
+        CacheKey key = map.getCacheKey(lookupParameters, false);
         if ((key == null) || (shouldCheckExpiry && query.getQueryResultsCachePolicy().getCacheInvalidationPolicy().isInvalidated(key))) {
             return null;
         }

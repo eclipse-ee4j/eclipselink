@@ -180,7 +180,7 @@ public class DoesExistQuery extends DatabaseQuery {
                 tempSession = ((UnitOfWorkImpl)tempSession).getParentIdentityMapSession(descriptor, false, true);
             }
             // Did not find it registered in UOW so check main cache and check for invalidation.
-            cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey,objectClass, descriptor);
+            cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey,objectClass, descriptor, false);
                 
             if ((cacheKey != null)) {
                 // Assume that if there is a cachekey, object exists.

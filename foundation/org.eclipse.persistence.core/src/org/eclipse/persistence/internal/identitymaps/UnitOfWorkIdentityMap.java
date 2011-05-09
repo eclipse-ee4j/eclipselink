@@ -47,7 +47,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      */
     @Override
     public CacheKey acquireDeferredLock(Object primaryKey) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKey(primaryKey, false);
         if (cacheKey == null) {
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
             cacheKey = putCacheKeyIfAbsent(newCacheKey);
@@ -63,7 +63,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      */
     @Override
     public CacheKey acquireLock(Object primaryKey, boolean forMerge) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
             cacheKey = putCacheKeyIfAbsent(newCacheKey);
@@ -79,7 +79,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      */
     @Override
     public CacheKey acquireLockNoWait(Object primaryKey, boolean forMerge) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
             cacheKey = putCacheKeyIfAbsent(newCacheKey);
@@ -95,7 +95,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      */
     @Override
     public CacheKey acquireLockWithWait(Object primaryKey, boolean forMerge, int wait) {
-        CacheKey cacheKey = getCacheKey(primaryKey);
+        CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
             cacheKey = putCacheKeyIfAbsent(newCacheKey);
@@ -120,7 +120,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     @Override
     public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey) {
         CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        CacheKey cacheKey = getCacheKey(newCacheKey);
+        CacheKey cacheKey = getCacheKey(newCacheKey, false);
         if (cacheKey == null) {
             return newCacheKey;
         }
@@ -132,7 +132,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      */
     @Override
     protected CacheKey getCacheKeyWithReadLock(Object primaryKey) {
-        return getCacheKey(primaryKey);
+        return getCacheKey(primaryKey, false);
     }
     
     /**

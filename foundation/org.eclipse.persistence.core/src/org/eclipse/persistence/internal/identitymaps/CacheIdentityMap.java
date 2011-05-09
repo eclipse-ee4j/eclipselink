@@ -84,8 +84,8 @@ public class CacheIdentityMap extends FullIdentityMap {
      * @return the LinkedCacheKey or null if none found for primaryKey
      */
     @Override
-    public CacheKey getCacheKey(Object primaryKeys) {
-        LinkedCacheKey cacheKey = (LinkedCacheKey)super.getCacheKey(primaryKeys);
+    public CacheKey getCacheKey(Object primaryKeys, boolean forMerge) {
+        LinkedCacheKey cacheKey = (LinkedCacheKey)super.getCacheKey(primaryKeys, forMerge);
         if (cacheKey != null) {
             synchronized (this.first) {
                 removeLink(cacheKey);

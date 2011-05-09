@@ -243,7 +243,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param object the object to get the cache key for.
      */
     public CacheKey getCacheKeyForObject(Object object, ClassDescriptor descriptor) {
-        return getCacheKeyForObject(getSession().keyFromObject(object, descriptor), object.getClass(), descriptor);
+        return getCacheKeyForObject(getSession().keyFromObject(object, descriptor), object.getClass(), descriptor, false);
     }
 
     /**
@@ -332,7 +332,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @return CacheKey
      */
     public CacheKey getCacheKeyForObject(Object object) {
-        return getCacheKeyForObject(getSession().getId(object), object.getClass(), getSession().getDescriptor(object.getClass()));
+        return getCacheKeyForObject(getSession().getId(object), object.getClass(), getSession().getDescriptor(object.getClass()), false);
     }
     
     /**
@@ -351,8 +351,8 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param primaryKey the primary key of the cache key to be retrieved.
      * @param myClass the class of the cache key to be retrieved.
      */
-    public CacheKey getCacheKeyForObject(Object primaryKey, Class myClass, ClassDescriptor descriptor) {
-        return getIdentityMapManager().getCacheKeyForObject(primaryKey, myClass, descriptor);
+    public CacheKey getCacheKeyForObject(Object primaryKey, Class myClass, ClassDescriptor descriptor, boolean forMerge) {
+        return getIdentityMapManager().getCacheKeyForObject(primaryKey, myClass, descriptor, forMerge);
     }
 
     /**

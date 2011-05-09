@@ -130,13 +130,13 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
         // check in the UnitOfWork.
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
         org.eclipse.persistence.internal.sessions.IdentityMapAccessor parentIdentityMapAccessor = unitOfWork.getParentIdentityMapSession(descriptor, false, false).getIdentityMapAccessorInstance();
-        CacheKey cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor);
+        CacheKey cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor, false);
         if ((cacheKey == null) && unitOfWork.getParentIdentityMapSession(descriptor, false, false).isUnitOfWork()) {
             //for nested unit of work
             //make parent clone and register object
             ((UnitOfWorkIdentityMapAccessor)parentIdentityMapAccessor).getAndCloneCacheKeyFromParent(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
             //get the cachekey that was created in the parent.
-            cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor);
+            cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor, false);
         }
 
         Object objectFromCache = null;

@@ -2369,14 +2369,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
        }
        CacheKey cacheKey = null;
        if (mergeManager == null){
-           cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
+           cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor, true);
            if (cacheKey != null){
                cacheKey.checkReadLock();
            }
            return cacheKey;
        }
        
-       cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor);
+       cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor, true);
        if (cacheKey != null) {
            if (cacheKey.acquireReadLockNoWait()) {
                original = cacheKey.getObject();

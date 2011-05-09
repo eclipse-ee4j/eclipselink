@@ -119,7 +119,7 @@ public interface IdentityMap extends Cloneable{
     /**
      * Get the cache key (with object) for the primary key.
      */
-    public CacheKey getCacheKey(Object primaryKey);
+    public CacheKey getCacheKey(Object primaryKey, boolean forMerge);
 
     /**
      * Get the cache key (with object) for the primary key in order to acquire a lock.

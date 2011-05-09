@@ -67,7 +67,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * Return null as no objects are cached.
      */
     @Override
-    public CacheKey getCacheKey(Object searchKey) {
+    public CacheKey getCacheKey(Object searchKey, boolean forMerge) {
         return null;
     }
     

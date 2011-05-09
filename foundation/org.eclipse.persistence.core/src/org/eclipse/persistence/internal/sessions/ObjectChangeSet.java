@@ -467,7 +467,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         if (primaryKey == null) {
             return null;
         }
-        CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor);
+        CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor, true);
         if (cacheKey != null) {
             if (cacheKey.acquireReadLockNoWait()) {
                 domainObject = cacheKey.getObject();
