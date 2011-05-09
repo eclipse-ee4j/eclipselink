@@ -74,21 +74,15 @@
     <!-- This creates the server domain. -->
     <target name="weblogic-install">
         <delete dir="${weblogic.domain}"/>
+        <delete>
+            <fileset dir="." includes="std*.log"/>
+        </delete>
         <delete dir="${eclipselink.jpa.test}/${temp.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${temp.dir}"/>
         <copy todir="${eclipselink.jpa.test}/${temp.dir}" overwrite="true">
             <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="*.py"/>
         </copy>
-        <replace dir="${eclipselink.jpa.test}/${temp.dir}">
-            <include name="**/*.py"/>
-            <replacefilter token="%%WL_HOME%%" value="${weblogic.installdir}"/>
-            <replacefilter token="%%WL_HOST%%" value="${weblogic.host}"/>
-            <replacefilter token="%%WL_PORT%%" value="${weblogic.port}"/>
-            <replacefilter token="%%WL_USR%%" value="${server.user}"/>
-            <replacefilter token="%%WL_PWD%%" value="${server.pwd}"/>
-            <replacefilter token="%%WL_DOMAIN%%" value="${weblogic.domain}"/>
-        </replace>
-
+        <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <java classname="weblogic.WLST" fork="yes">
             <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_install.py"/>
             <classpath>
@@ -106,9 +100,24 @@
         <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
     </target>
 
-
     <target name="copy-eclipselink-jar-to-domain-lib" if="is.v1030">
         <copy file="${eclipselink.lib}" todir="${weblogic.domain}/lib"/>
+    </target>
+
+    <target name="pass-weblogic-and-database-info">
+        <replace dir="${eclipselink.jpa.test}/${temp.dir}">
+            <include name="**/*.py"/>
+            <replacefilter token="%%WL_HOME%%" value="${weblogic.installdir}"/>
+            <replacefilter token="%%WL_HOST%%" value="${weblogic.host}"/>
+            <replacefilter token="%%WL_PORT%%" value="${weblogic.port}"/>
+            <replacefilter token="%%WL_USR%%" value="${server.user}"/>
+            <replacefilter token="%%WL_PWD%%" value="${server.pwd}"/>
+            <replacefilter token="%%WL_DOMAIN%%" value="${weblogic.domain}"/>
+            <replacefilter token="%%DBDRV%%" value="${db.driver}"/>
+            <replacefilter token="%%DBURL%%" value="${db.url}"/>
+            <replacefilter token="%%DBUSR%%" value="${db.user}"/>
+            <replacefilter token="%%DBPWD%%" value="${db.pwd}"/>
+        </replace>
     </target>
 
     <!-- Start the server. -->
@@ -132,17 +141,7 @@
         <copy todir="${eclipselink.jpa.test}/${temp.dir}" overwrite="true">
             <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="*.py"/>
         </copy>
-        <replace dir="${eclipselink.jpa.test}/${temp.dir}">
-            <include name="**/*.py"/>
-            <replacefilter token="%%WL_HOST%%" value="${weblogic.host}"/>
-            <replacefilter token="%%WL_PORT%%" value="${weblogic.port}"/>
-            <replacefilter token="%%WL_USR%%" value="${server.user}"/>
-            <replacefilter token="%%WL_PWD%%" value="${server.pwd}"/>
-            <replacefilter token="%%DBDRV%%" value="${db.driver}"/>
-            <replacefilter token="%%DBURL%%" value="${db.url}"/>
-            <replacefilter token="%%DBUSR%%" value="${db.user}"/>
-            <replacefilter token="%%DBPWD%%" value="${db.pwd}"/>
-        </replace>
+        <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <antcall target="weblogic-datasource-setup" inheritRefs="true"/>
     </target>
 
@@ -150,6 +149,7 @@
 
     <!-- This creates datasource on derby and deploy to the server. -->
     <target name="weblogic-derby-setup" if="is.derby">
+        <echo message="WebLogic will run on Derby Database ......"/>
         <java classname="weblogic.WLST" fork="yes">
             <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_derby_setup.py"/>
             <classpath>
@@ -218,12 +218,9 @@
         <copy todir="${eclipselink.jpa.test}/${temp.dir}" overwrite="true">
             <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="wls_*deploy.py"/>
         </copy>
+        <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <replace dir="${eclipselink.jpa.test}/${temp.dir}">
             <include name="**/wls_*deploy.py"/>
-            <replacefilter token="%%WL_HOST%%" value="${weblogic.host}"/>
-            <replacefilter token="%%WL_PORT%%" value="${weblogic.port}"/>
-            <replacefilter token="%%WL_USR%%" value="${server.user}"/>
-            <replacefilter token="%%WL_PWD%%" value="${server.pwd}"/>
             <replacefilter token="%%appName%%" value="${application.name}"/>
             <replacefilter token="%%testDir%%" value="${ear.dir}"/>
             <replacefilter token="%%earName%%" value="${ear.name}"/>
