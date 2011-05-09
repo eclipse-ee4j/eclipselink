@@ -214,7 +214,10 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         // @Transient annotation could mistakenly
         // cause the class to use attribute access.
         if (attributeDetails.getGetterMethodName() == null || attributeDetails.getGetterMethodName().equals("") || attributeDetails.weaveTransientFieldValueHolders()) {
-            fv.visitAnnotation(XML_TRANSIENT_DESCRIPTION, true).visitEnd();
+            fv.visitAnnotation(JPA_TRANSIENT_DESCRIPTION, true).visitEnd();
+            if (isJAXBOnPath()) {
+                fv.visitAnnotation(XML_TRANSIENT_DESCRIPTION, true).visitEnd();
+            }
         }
         fv.visitEnd();
     }
@@ -954,7 +957,8 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         // is being used
         if (classDetails.usesAttributeAccess()) {
             fv.visitAnnotation(JPA_TRANSIENT_DESCRIPTION, true).visitEnd();
-        } else if (isJAXBOnPath()) {
+        }
+        if (isJAXBOnPath()) {
             fv.visitAnnotation(XML_TRANSIENT_DESCRIPTION, true).visitEnd();
         }
         fv.visitEnd();
@@ -1098,7 +1102,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
      */
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        
+
         // Capture original values for SerialVersionUID generation (if needed)
         this.computeSVUID = (access & Opcodes.ACC_INTERFACE) == 0;
         if (computeSVUID) {
@@ -1106,7 +1110,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             this.access = access;
             this.interfaces = interfaces;
         }
-        
+
         boolean weaveCloneable = true;
         // To prevent 'double' weaving: scan for PersistenceWeaved interface.
         for (int index = 0; index < interfaces.length; index++) {
@@ -1244,7 +1248,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
      */
     public void visitEnd() {
         if (!alreadyWeaved) {
-            
+
             // Add 'serialversionUID' if one does not exist.
             if (computeSVUID && !hasSVUID) {
                 try {
