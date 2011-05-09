@@ -14,54 +14,46 @@
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
-import java.util.Iterator;
-
-import javax.persistence.Transient;
+import java.util.*;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Attribute;
-import org.eclipse.persistence.internal.libraries.asm.ClassAdapter;
-import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Label;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.libraries.asm.*;
+import org.eclipse.persistence.internal.libraries.asm.commons.*;
 
 /**
- * INTERNAL:
- * Weaves classes to allow them to support EclipseLink indirection.
- * Classes are weaved to add a variable of type ValueHolderInterface for each attribute
- * that uses indirection.  In addition, access methods are added for the new variable.
- * Also, triggers the process of weaving the methods of the class.  
+ * INTERNAL: Weaves classes to allow them to support EclipseLink indirection.
+ * Classes are weaved to add a variable of type ValueHolderInterface for each
+ * attribute that uses indirection. In addition, access methods are added for
+ * the new variable. Also, triggers the process of weaving the methods of the
+ * class.
+ * 
  * @see org.eclipse.persistence.internal.weaving.MethodWeaver
  */
 
-public class ClassWeaver extends ClassAdapter implements Opcodes {
+public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
 
     // PersistenceWeaved
     public static final String PERSISTENCE_WEAVED_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeaved";
-    
+
     // ValueHolders
     public static final String TW_LAZY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeavedLazy";
     public static final String VHI_CLASSNAME = "org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface";
     public static final String VH_SHORT_SIGNATURE = "org/eclipse/persistence/indirection/ValueHolder";
     public static final String VHI_SHORT_SIGNATURE = "org/eclipse/persistence/indirection/WeavedAttributeValueHolderInterface";
-    public static final String VHI_SIGNATURE = "L" + VHI_SHORT_SIGNATURE +";";
-    
+    public static final String VHI_SIGNATURE = "L" + VHI_SHORT_SIGNATURE + ";";
+
     // Change tracking
     public static final String TW_CT_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeavedChangeTracking";
     public static final String PCL_SHORT_SIGNATURE = "java/beans/PropertyChangeListener";
-    public static final String PCL_SIGNATURE = "L" + PCL_SHORT_SIGNATURE +";";
+    public static final String PCL_SIGNATURE = "L" + PCL_SHORT_SIGNATURE + ";";
     public static final String CT_SHORT_SIGNATURE = "org/eclipse/persistence/descriptors/changetracking/ChangeTracker";
     public static final String PCE_SHORT_SIGNATURE = "java/beans/PropertyChangeEvent";
-    public static final String PCE_SIGNATURE = "L" + PCE_SHORT_SIGNATURE +";";
-    
+    public static final String PCE_SIGNATURE = "L" + PCE_SHORT_SIGNATURE + ";";
+
     // PersistenceEntity
     public static final String PERSISTENCE_ENTITY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/descriptors/PersistenceEntity";
     public static final String PERSISTENCE_OBJECT_SHORT_SIGNATURE = "org/eclipse/persistence/internal/descriptors/PersistenceObject";
@@ -69,7 +61,7 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
     public static final String VECTOR_SIGNATURE = "Ljava/util/Vector;";
     public static final String OBJECT_SIGNATURE = "Ljava/lang/Object;";
     public static final String CACHEKEY_SIGNATURE = "Lorg/eclipse/persistence/internal/identitymaps/CacheKey;";
-    
+
     // Fetch groups
     public static final String WEAVED_FETCHGROUPS_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeavedFetchGroups";
     public static final String FETCHGROUP_TRACKER_SIGNATURE = "Lorg/eclipse/persistence/queries/FetchGroupTracker;";
@@ -80,22 +72,30 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
     public static final String ENTITY_MANAGER_IMPL_SHORT_SIGNATURE = "org/eclipse/persistence/internal/jpa/EntityManagerImpl";
     public static final String PBOOLEAN_SIGNATURE = "Z";
     public static final String LONG_SIGNATURE = "J";
-    
+
     // Cloneable
     public static final String CLONEABLE_SHORT_SIGNATURE = "java/lang/Cloneable";
-    
+
+    // Transient
+    public static final String JPA_TRANSIENT_DESCRIPTION = "Ljavax/persistence/Transient;";
+    public static final String XML_TRANSIENT_DESCRIPTION = "Ljavax/xml/bind/annotation/XmlTransient;";
+
     public static final String PERSISTENCE_SET = Helper.PERSISTENCE_SET;
     public static final String PERSISTENCE_GET = Helper.PERSISTENCE_GET;
-  
-    // 323403: These constants are used to search for missing weaved functions - a copy is in the foundation project under internal.Helper
+
+    // 323403: These constants are used to search for missing weaved functions -
+    // a copy is in the foundation project under internal.Helper
     public static final String PERSISTENCE_FIELDNAME_PREFIX = "_persistence_";
-    public static final String PERSISTENCE_FIELDNAME_POSTFIX = "_vh";    
+    public static final String PERSISTENCE_FIELDNAME_POSTFIX = "_vh";
     /** Store if JAXB is no the classpath. */
     protected static Boolean isJAXBOnPath;
-    
-    /** Stores information on the class gathered from the temp class loader and descriptor. */
+
+    /**
+     * Stores information on the class gathered from the temp class loader and
+     * descriptor.
+     */
     protected ClassDetails classDetails;
-    
+
     // Keep track of what was weaved.
     protected boolean alreadyWeaved = false;
     public boolean weaved = false;
@@ -103,62 +103,64 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
     public boolean weavedPersistenceEntity = false;
     public boolean weavedChangeTracker = false;
     public boolean weavedFetchGroups = false;
-    
+
     /**
-     * Used for primitive conversion.  Returns the name of the class that wraps a given type.
+     * Used for primitive conversion. Returns the name of the class that wraps a
+     * given type.
      */
     public static String wrapperFor(int sort) {
         switch (sort) {
-            case Type.BOOLEAN:
-                return "java/lang/Boolean";
-            case Type.BYTE:
-                return "java/lang/Byte";
-            case Type.CHAR:
-                return "java/lang/Character";
-            case Type.SHORT:
-                return "java/lang/Short";
-            case Type.INT:
-                return "java/lang/Integer";
-            case Type.FLOAT:
-                return "java/lang/Float";
-            case Type.LONG:
-                return "java/lang/Long";
-            case Type.DOUBLE:
-                return "java/lang/Double";
+        case Type.BOOLEAN:
+            return "java/lang/Boolean";
+        case Type.BYTE:
+            return "java/lang/Byte";
+        case Type.CHAR:
+            return "java/lang/Character";
+        case Type.SHORT:
+            return "java/lang/Short";
+        case Type.INT:
+            return "java/lang/Integer";
+        case Type.FLOAT:
+            return "java/lang/Float";
+        case Type.LONG:
+            return "java/lang/Long";
+        case Type.DOUBLE:
+            return "java/lang/Double";
         }
         return null;
     }
-    
+
     /**
-     * Used for primitive conversion.  Returns the name conversion method for the given type.
+     * Used for primitive conversion. Returns the name conversion method for the
+     * given type.
      */
     public static void unwrapPrimitive(AttributeDetails attribute, MethodVisitor visitor) {
         String wrapper = wrapperFor(attribute.getReferenceClassType().getSort());
         switch (attribute.getReferenceClassType().getSort()) {
-            case Type.BOOLEAN:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "booleanValue", "()Z");
-                return;
-            case Type.BYTE:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "byteValue", "()B");
-                return;
-            case Type.CHAR:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "charValue", "()C");
-                return;
-            case Type.SHORT:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "shortValue", "()S");
-                return;
-            case Type.INT:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "intValue", "()I");
-                return;
-            case Type.FLOAT:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "floatValue", "()F");
-                return;
-            case Type.LONG:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "longValue", "()J");
-                return;
-            case Type.DOUBLE:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "doubleValue", "()D");
-                return;
+        case Type.BOOLEAN:
+            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "booleanValue", "()Z");
+            return;
+        case Type.BYTE:
+            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "byteValue", "()B");
+            return;
+        case Type.CHAR:
+            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "charValue", "()C");
+            return;
+        case Type.SHORT:
+            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "shortValue", "()S");
+            return;
+        case Type.INT:
+            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "intValue", "()I");
+            return;
+        case Type.FLOAT:
+            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "floatValue", "()F");
+            return;
+        case Type.LONG:
+            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "longValue", "()J");
+            return;
+        case Type.DOUBLE:
+            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "doubleValue", "()D");
+            return;
         }
     }
 
@@ -168,16 +170,17 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
     public static String getWeavedValueHolderGetMethodName(String attributeName) {
         return Helper.getWeavedValueHolderGetMethodName(attributeName);
     }
-    
+
     /**
      * Return the set method name weaved for a value-holder attribute.
      */
     public static String getWeavedValueHolderSetMethodName(String attributeName) {
         return Helper.getWeavedValueHolderSetMethodName(attributeName);
     }
-    
+
     /**
-     * Return if the JAXB classes are on the classpath (if they are the XmlTransient annotation is added).
+     * Return if the JAXB classes are on the classpath (if they are the
+     * XmlTransient annotation is added).
      */
     public static boolean isJAXBOnPath() {
         isJAXBOnPath = true;
@@ -190,110 +193,104 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         }
         return isJAXBOnPath;
     }
-    
-    public ClassWeaver(ClassVisitor classVisitor, ClassDetails classDetails) {
-        super(classVisitor);
+
+    public ClassWeaver(ClassWriter classWriter, ClassDetails classDetails) {
+        super(classWriter);
         this.classDetails = classDetails;
     }
 
     /**
-     * Add a variable of type ValueHolderInterface to the class.  When this method has been run, the
-     * class will contain a variable declaration similar to the following:
-     *  
+     * Add a variable of type ValueHolderInterface to the class. When this
+     * method has been run, the class will contain a variable declaration
+     * similar to the following:
+     * 
      * private ValueHolderInterface _persistence_variableName_vh;
      */
-    public void addValueHolder(AttributeDetails attributeDetails){
+    public void addValueHolder(AttributeDetails attributeDetails) {
         String attribute = attributeDetails.getAttributeName();
         FieldVisitor fv = cv.visitField(ACC_PROTECTED, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE, null, null);
-        // only mark @Transient if this is property access.  Otherwise, the @Transient annotation could mistakenly
+
+        // only mark @Transient if this is property access. Otherwise, the
+        // @Transient annotation could mistakenly
         // cause the class to use attribute access.
         if (attributeDetails.getGetterMethodName() == null || attributeDetails.getGetterMethodName().equals("") || attributeDetails.weaveTransientFieldValueHolders()) {
-            addTransientAnnotation(fv);
+            fv.visitAnnotation(XML_TRANSIENT_DESCRIPTION, true).visitEnd();
         }
-        if (fv != null) {
-            fv.visitEnd();
-        }
+        fv.visitEnd();
     }
-    
-	/**
-     * Add a variable of type PropertyChangeListener to the class.  When this method has been run, the class
-     * will contain a variable declaration similar to the following
+
+    /**
+     * Add a variable of type PropertyChangeListener to the class. When this
+     * method has been run, the class will contain a variable declaration
+     * similar to the following
      * 
      * private transient _persistence_listener;
      */
-    public void addPropertyChangeListener(boolean attributeAccess){
-        FieldVisitor fv = cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_listener", PCL_SIGNATURE, null, null);
-        if (fv != null) {
-            fv.visitEnd();
-        }
+    public void addPropertyChangeListener(boolean attributeAccess) {
+        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_listener", PCL_SIGNATURE, null, null);
     }
-    
+
     /**
-     * Add the implementation of the changeTracker_getPropertyChangeListener method to the class.  The
-     * result is a method that looks as follows:
+     * Add the implementation of the changeTracker_getPropertyChangeListener
+     * method to the class. The result is a method that looks as follows:
      * 
      * public PropertyChangeListener _persistence_getPropertyChangeListener() {
-     *     return _persistence_listener;
-     * }
+     * return _persistence_listener; }
      */
     public void addGetPropertyChangeListener(ClassDetails classDetails) {
-        MethodVisitor cv_getPCL =  cv.visitMethod(ACC_PUBLIC, "_persistence_getPropertyChangeListener", "()" + PCL_SIGNATURE, null, null);
+        MethodVisitor cv_getPCL = cv.visitMethod(ACC_PUBLIC, "_persistence_getPropertyChangeListener", "()" + PCL_SIGNATURE, null, null);
         cv_getPCL.visitVarInsn(ALOAD, 0);
         cv_getPCL.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
         cv_getPCL.visitInsn(ARETURN);
         cv_getPCL.visitMaxs(0, 0);
-        cv_getPCL.visitEnd();
     }
-        
+
     /**
-     * Add the implementation of the changeTracker_setPropertyChangeListener method to the class.  The
-     * result is a method that looks as follows:
+     * Add the implementation of the changeTracker_setPropertyChangeListener
+     * method to the class. The result is a method that looks as follows:
      * 
-     * public void _persistence_setPropertyChangeListener(PropertyChangeListener propertychangelistener){
-     *     _persistence_listener = propertychangelistener;
+     * public void _persistence_setPropertyChangeListener(PropertyChangeListener
+     * propertychangelistener){ _persistence_listener = propertychangelistener;
      * }
      */
-    public void addSetPropertyChangeListener(ClassDetails classDetails){
-        MethodVisitor cv_setPCL =  cv.visitMethod(ACC_PUBLIC, "_persistence_setPropertyChangeListener", "(" + PCL_SIGNATURE + ")V", null, null);
-        // TODO: Add annotations?
+    public void addSetPropertyChangeListener(ClassDetails classDetails) {
+        MethodVisitor cv_setPCL = cv.visitMethod(ACC_PUBLIC, "_persistence_setPropertyChangeListener", "(" + PCL_SIGNATURE + ")V", null, null);
         cv_setPCL.visitVarInsn(ALOAD, 0);
         cv_setPCL.visitVarInsn(ALOAD, 1);
         cv_setPCL.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
         cv_setPCL.visitInsn(RETURN);
         cv_setPCL.visitMaxs(0, 0);
-        cv_setPCL.visitEnd();
     }
 
     /**
-     * Add a method to track property changes.  The method will look as follows:
+     * Add a method to track property changes. The method will look as follows:
      * 
      * public void _toplink_propertyChange(String s, Object obj, Object obj1){
-     *     if(_persistence_listener != null && obj != obj1){
-     *         _persistence_listener.propertyChange(new PropertyChangeEvent(this, s, obj, obj1));
-     *     }
-     * }
+     * if(_persistence_listener != null && obj != obj1){
+     * _persistence_listener.propertyChange(new PropertyChangeEvent(this, s,
+     * obj, obj1)); } }
      */
-    public void addPropertyChange(ClassDetails classDetails){
+    public void addPropertyChange(ClassDetails classDetails) {
         // create the _toplink_propertyChange() method
         MethodVisitor cv_addPC = cv.visitMethod(ACC_PUBLIC, "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", null, null);
-        
+
         // if (_toplink_Listener != null)
         cv_addPC.visitVarInsn(ALOAD, 0);
         cv_addPC.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
         Label l0 = new Label();
         cv_addPC.visitJumpInsn(IFNULL, l0);
-        
+
         // if (obj != obj1)
         cv_addPC.visitVarInsn(ALOAD, 2);
         cv_addPC.visitVarInsn(ALOAD, 3);
         cv_addPC.visitJumpInsn(IF_ACMPEQ, l0);
-        
+
         // _toplink_listener.propertyChange(...);
         cv_addPC.visitVarInsn(ALOAD, 0);
         cv_addPC.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
         cv_addPC.visitTypeInsn(NEW, PCE_SHORT_SIGNATURE);
         cv_addPC.visitInsn(DUP);
-        
+
         // new PropertyChangeEvent(this, s, obj, obj1)
         cv_addPC.visitVarInsn(ALOAD, 0);
         cv_addPC.visitVarInsn(ALOAD, 1);
@@ -301,30 +298,28 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         cv_addPC.visitVarInsn(ALOAD, 3);
         cv_addPC.visitMethodInsn(INVOKESPECIAL, PCE_SHORT_SIGNATURE, "<init>", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
         cv_addPC.visitMethodInsn(INVOKEINTERFACE, PCL_SHORT_SIGNATURE, "propertyChange", "(" + PCE_SIGNATURE + ")V");
-        
+
         // }
-        cv_addPC.visitLabel(l0);        
+        cv_addPC.visitLabel(l0);
 
         cv_addPC.visitInsn(RETURN);
         cv_addPC.visitMaxs(0, 0);
-        cv_addPC.visitEnd();
     }
-    
+
     /**
-     * Add a method that allows us to lazily initialize a valueholder we have woven in
-     * This allows us to avoid initializing valueholders in the constructor.
+     * Add a method that allows us to lazily initialize a valueholder we have
+     * woven in This allows us to avoid initializing valueholders in the
+     * constructor.
      * 
      * protected void _persistence_initialize_attribute_vh(){
-     *     if(_persistence_attribute_vh == null){
-     *          _persistence_attribute_vh = new ValueHolder(this.attribute); // or new ValueHolder() if property access.
-     *          _persistence_attribute_vh.setIsNewlyWeavedValueHolder(true);
-     *      }
-     *  }
+     * if(_persistence_attribute_vh == null){ _persistence_attribute_vh = new
+     * ValueHolder(this.attribute); // or new ValueHolder() if property access.
+     * _persistence_attribute_vh.setIsNewlyWeavedValueHolder(true); } }
      */
     public void addInitializerForValueHolder(ClassDetails classDetails, AttributeDetails attributeDetails) {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
-        
+
         // Create a getter method for the new valueholder
         // protected void _persistence_initialize_attribute_vh(){
         MethodVisitor cv_init_VH = cv.visitMethod(ACC_PROTECTED, "_persistence_initialize_" + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()V", null, null);
@@ -334,7 +329,7 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         cv_init_VH.visitFieldInsn(GETFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         Label l0 = new Label();
         cv_init_VH.visitJumpInsn(IFNONNULL, l0);
-        
+
         // _persistence_attribute_vh = new ValueHolder(this.attribute);
         cv_init_VH.visitVarInsn(ALOAD, 0);
         cv_init_VH.visitTypeInsn(NEW, VH_SHORT_SIGNATURE);
@@ -347,49 +342,46 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
             cv_init_VH.visitMethodInsn(INVOKESPECIAL, VH_SHORT_SIGNATURE, "<init>", "()V");
         }
         cv_init_VH.visitFieldInsn(PUTFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        
+
         // _persistence_attribute_vh.setIsNewlyWeavedValueHolder(true);
         cv_init_VH.visitVarInsn(ALOAD, 0);
         cv_init_VH.visitFieldInsn(GETFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         cv_init_VH.visitInsn(ICONST_1);
         cv_init_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "setIsNewlyWeavedValueHolder", "(Z)V");
-        
+
         // }
         cv_init_VH.visitLabel(l0);
-        
+
         cv_init_VH.visitInsn(RETURN);
-        cv_init_VH.visitMaxs(0, 0);        
-        cv_init_VH.visitEnd();        
+        cv_init_VH.visitMaxs(0, 0);
     }
-    
+
     /**
-     * Add a get method for the newly added valueholder.  Adds a method of the following form:
+     * Add a get method for the newly added valueholder. Adds a method of the
+     * following form:
      * 
-     *  public WeavedAttributeValueHolderInterface _persistence_getfoo_vh(){
-     *      _persistence_initialize_attributeName_vh();
-     *      if (_persistence_vh.isCoordinatedWithProperty() || _persistence_foo_vh.isNewlyWeavedValueHolder()){
-     *          EntityC object = (EntityC)getFoo();
-     *          if (object != _persistence_foo_vh.getValue()){
-     *              setFoo(object);
-     *          }
-     *      }
-     *      return _persistence_foo_vh;
-     *  }
+     * public WeavedAttributeValueHolderInterface _persistence_getfoo_vh(){
+     * _persistence_initialize_attributeName_vh(); if
+     * (_persistence_vh.isCoordinatedWithProperty() ||
+     * _persistence_foo_vh.isNewlyWeavedValueHolder()){ EntityC object =
+     * (EntityC)getFoo(); if (object != _persistence_foo_vh.getValue()){
+     * setFoo(object); } } return _persistence_foo_vh; }
      */
-    public void addGetterMethodForValueHolder(ClassDetails classDetails, AttributeDetails attributeDetails){
+    public void addGetterMethodForValueHolder(ClassDetails classDetails, AttributeDetails attributeDetails) {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
         // Create a getter method for the new valueholder
         MethodVisitor cv_get_VH = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()" + VHI_SIGNATURE, null, null);
-        
+
         // _persistence_initialize_attributeName_vh();
         cv_get_VH.visitVarInsn(ALOAD, 0);
         cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
 
-        // if (_toplink_foo_vh.isCoordinatedWithProperty() || _toplink_foo_vh.isNewlyWeavedValueHolder()){
+        // if (_toplink_foo_vh.isCoordinatedWithProperty() ||
+        // _toplink_foo_vh.isNewlyWeavedValueHolder()){
         cv_get_VH.visitVarInsn(ALOAD, 0);
         cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isCoordinatedWithProperty", "()Z");       
+        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isCoordinatedWithProperty", "()Z");
         Label l0 = new Label();
         cv_get_VH.visitJumpInsn(IFNE, l0);
         cv_get_VH.visitVarInsn(ALOAD, 0);
@@ -398,14 +390,14 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         Label l1 = new Label();
         cv_get_VH.visitJumpInsn(IFEQ, l1);
         cv_get_VH.visitLabel(l0);
-        cv_get_VH.visitVarInsn(ALOAD, 0);    
-        
+        cv_get_VH.visitVarInsn(ALOAD, 0);
+
         // EntityC object = (EntityC)getFoo();
-        if (attributeDetails.getGetterMethodName() != null){
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.','/') + ";");    
-            cv_get_VH.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
+        if (attributeDetails.getGetterMethodName() != null) {
+            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";");
+            cv_get_VH.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
         } else {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.','/') + ";");                
+            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";");
         }
         cv_get_VH.visitVarInsn(ASTORE, 1);
 
@@ -415,116 +407,112 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
         cv_get_VH.visitJumpInsn(IF_ACMPEQ, l1);
-        
+
         // setFoo(object);
         cv_get_VH.visitVarInsn(ALOAD, 0);
         cv_get_VH.visitVarInsn(ALOAD, 1);
-        if (attributeDetails.getSetterMethodName() != null){
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.','/') + ";)V");
+        if (attributeDetails.getSetterMethodName() != null) {
+            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V");
         } else {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.','/') + ";)V");
+            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V");
         }
-        
+
         // }
-        cv_get_VH.visitLabel(l1); 
-        
+        cv_get_VH.visitLabel(l1);
+
         // return _toplink_foo_vh;
         cv_get_VH.visitVarInsn(ALOAD, 0);
         cv_get_VH.visitFieldInsn(GETFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         cv_get_VH.visitInsn(ARETURN);
 
         cv_get_VH.visitMaxs(0, 0);
-        cv_get_VH.visitEnd();
     }
-    
+
     /**
-     * Add a set method for the newly added ValueHolder.  Adds a method of this form:
+     * Add a set method for the newly added ValueHolder. Adds a method of this
+     * form:
      * 
-     *  public void _persistence_setfoo_vh(WeavedAttributeValueHolderInterface valueholderinterface){
-     *      _persistence_foo_vh = valueholderinterface;
-     *      if (valueholderinterface.isInstantiated()){
-     *          Object object = getFoo();
-     *          Object value = valueholderinterface.getValue();
-     *              if (object != value){
-     *                  setFoo((EntityC)value);
-     *              }  
-     *      }
-     *  }
+     * public void _persistence_setfoo_vh(WeavedAttributeValueHolderInterface
+     * valueholderinterface){ _persistence_foo_vh = valueholderinterface; if
+     * (valueholderinterface.isInstantiated()){ Object object = getFoo(); Object
+     * value = valueholderinterface.getValue(); if (object != value){
+     * setFoo((EntityC)value); } } }
      */
-    public void addSetterMethodForValueHolder(ClassDetails classDetails, AttributeDetails attributeDetails){
+    public void addSetterMethodForValueHolder(ClassDetails classDetails, AttributeDetails attributeDetails) {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
         // create a setter method for the new valueholder
-        MethodVisitor cv_set_value = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "(" + VHI_SIGNATURE + ")V", null, null);                                 
-        
+        MethodVisitor cv_set_value = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "(" + VHI_SIGNATURE + ")V", null, null);
+
         // _toplink_foo_vh = valueholderinterface;
         cv_set_value.visitVarInsn(ALOAD, 0);
         cv_set_value.visitVarInsn(ALOAD, 1);
-        cv_set_value.visitFieldInsn(PUTFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);    
-        
+        cv_set_value.visitFieldInsn(PUTFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
+
         // if (valueholderinterface.isInstantiated()){
         cv_set_value.visitVarInsn(ALOAD, 1);
         cv_set_value.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isInstantiated", "()Z");
         Label l0 = new Label();
         cv_set_value.visitJumpInsn(IFEQ, l0);
-        
+
         // Object object = getFoo();
-        cv_set_value.visitVarInsn(ALOAD, 0);            
-         if (attributeDetails.getGetterMethodName() != null){
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.','/') + ";");    
-         } else {
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.','/') + ";");                
+        cv_set_value.visitVarInsn(ALOAD, 0);
+        if (attributeDetails.getGetterMethodName() != null) {
+            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";");
+        } else {
+            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";");
         }
         cv_set_value.visitVarInsn(ASTORE, 2);
-        
+
         // Object value = valueholderinterface.getValue();
         cv_set_value.visitVarInsn(ALOAD, 1);
         cv_set_value.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
-        cv_set_value.visitVarInsn(ASTORE, 3);       
-        
+        cv_set_value.visitVarInsn(ASTORE, 3);
+
         // if (object != value){
         cv_set_value.visitVarInsn(ALOAD, 2);
         cv_set_value.visitVarInsn(ALOAD, 3);
         cv_set_value.visitJumpInsn(IF_ACMPEQ, l0);
-        
+
         // setFoo((EntityC)value);
         cv_set_value.visitVarInsn(ALOAD, 0);
         cv_set_value.visitVarInsn(ALOAD, 3);
-        cv_set_value.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
-         if (attributeDetails.getSetterMethodName() != null){
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.','/') + ";)V");
+        cv_set_value.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
+        if (attributeDetails.getSetterMethodName() != null) {
+            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V");
         } else {
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.','/') + ";)V");
+            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V");
         }
 
         cv_set_value.visitLabel(l0);
 
         cv_set_value.visitInsn(RETURN);
         cv_set_value.visitMaxs(0, 0);
-        cv_set_value.visitEnd();
+
     }
-    
+
     /**
-     * Adds a convenience method used to replace a PUTFIELD when field access is used. The method follows
-     * the following form:
-     *     
-     *     public void _persistence_set_variableName((VariableClas) argument) {
-     *          _persistence_checkFetchedForSet("variableName");
-     *          _persistence_initialize_variableName_vh();
-     *          _persistence_propertyChange("variableName", this.variableName, argument); // if change tracking enabled, wrapping primitives, i.e. new Long(item)
-     *          this.variableName = argument;
-     *          _persistence_variableName_vh.setValue(variableName); // if lazy enabled
-     *      }
+     * Adds a convenience method used to replace a PUTFIELD when field access is
+     * used. The method follows the following form:
+     * 
+     * public void _persistence_set_variableName((VariableClas) argument) {
+     * _persistence_checkFetchedForSet("variableName");
+     * _persistence_initialize_variableName_vh();
+     * _persistence_propertyChange("variableName", this.variableName, argument);
+     * // if change tracking enabled, wrapping primitives, i.e. new Long(item)
+     * this.variableName = argument;
+     * _persistence_variableName_vh.setValue(variableName); // if lazy enabled }
      */
-    public void addSetterMethodForFieldAccess(ClassDetails classDetails, AttributeDetails attributeDetails){
+    public void addSetterMethodForFieldAccess(ClassDetails classDetails, AttributeDetails attributeDetails) {
         String attribute = attributeDetails.getAttributeName();
-        
+
         // create _persistence_set_variableName
         MethodVisitor cv_set = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", null, null);
-        
-        // Get the opcode for the load instruction.  This may be different depending on the type
+
+        // Get the opcode for the load instruction. This may be different
+        // depending on the type
         int opcode = attributeDetails.getReferenceClassType().getOpcode(ILOAD);
-        
+
         if (classDetails.shouldWeaveFetchGroups()) {
             cv_set.visitVarInsn(ALOAD, 0);
             cv_set.visitLdcInsn(attribute);
@@ -537,42 +525,45 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
                 // _persistence_initialize_variableName_vh();
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
-                
+
                 // _persistenc_variableName_vh.getValue();
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                 cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
-                
-                // Add the cast: (<VariableClass>)_persistenc_variableName_vh.getValue()
-                cv_set.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
-                
-                // add the assignment: this.variableName = (<VariableClass>)_persistenc_variableName_vh.getValue();
+
+                // Add the cast:
+                // (<VariableClass>)_persistenc_variableName_vh.getValue()
+                cv_set.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
+
+                // add the assignment: this.variableName =
+                // (<VariableClass>)_persistenc_variableName_vh.getValue();
                 cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
             }
 
-            // load the string attribute name as the first argument of the property change call
+            // load the string attribute name as the first argument of the
+            // property change call
             cv_set.visitVarInsn(ALOAD, 0);
             cv_set.visitLdcInsn(attribute);
-            
+
             // if the attribute is a primitive, wrap it
             // e.g. if it is an integer: new Integer(attribute)
             // This is the first part of the wrapping
             String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
-            if (wrapper != null){
+            if (wrapper != null) {
                 cv_set.visitTypeInsn(NEW, wrapper);
                 cv_set.visitInsn(DUP);
             }
-            
+
             // load the method argument
             cv_set.visitVarInsn(ALOAD, 0);
             cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
-    
-            if (wrapper != null){
+
+            if (wrapper != null) {
                 // invoke the constructor for wrapping
                 // e.g. new Integer(variableName)
                 cv_set.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
-                
+
                 // wrap the method argument
                 // e.g. new Integer(argument)
                 cv_set.visitTypeInsn(NEW, wrapper);
@@ -583,34 +574,38 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
                 // if we are not wrapping the argument, just load it
                 cv_set.visitVarInsn(ALOAD, 1);
             }
-            // _persistence_propertyChange("variableName", variableName, argument);
+            // _persistence_propertyChange("variableName", variableName,
+            // argument);
             cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
         } else {
             if (attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_variableName_vh();
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
-                
+
                 // _persistenc_variableName_vh.getValue();
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                 cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
-                
-                // Add the cast: (<VariableClass>)_persistenc_variableName_vh.getValue()
-                cv_set.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
-                
-                // add the assignment: this.variableName = (<VariableClass>)_persistenc_variableName_vh.getValue();
+
+                // Add the cast:
+                // (<VariableClass>)_persistenc_variableName_vh.getValue()
+                cv_set.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
+
+                // add the assignment: this.variableName =
+                // (<VariableClass>)_persistenc_variableName_vh.getValue();
                 cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
             }
         }
-        
-        // Must set variable after raising change event, so event has old and new value.
+
+        // Must set variable after raising change event, so event has old and
+        // new value.
         // variableName = argument
         cv_set.visitVarInsn(ALOAD, 0);
         cv_set.visitVarInsn(opcode, 1);
         cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
-        
+
         if (attributeDetails.weaveValueHolders()) {
             // _persistence_variableName_vh.setValue(argument);
             cv_set.visitVarInsn(ALOAD, 0);
@@ -618,103 +613,101 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
             cv_set.visitVarInsn(ALOAD, 1);
             cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "setValue", "(Ljava/lang/Object;)V");
         }
-        
+
         cv_set.visitInsn(RETURN);
-        cv_set.visitMaxs(0 ,0);
-        cv_set.visitEnd();
+        cv_set.visitMaxs(0, 0);
     }
-    
+
     /**
-     * Adds a convenience method used to replace a GETFIELD when field access is used. The method follows
-     * the following form:
+     * Adds a convenience method used to replace a GETFIELD when field access is
+     * used. The method follows the following form:
      * 
-     *      public (VariableClass) _persistence_get_variableName() {
-     *          _persistence_checkFetched("variableName");
-     *          _persistence_initialize_variableName_vh();
-     *          this.variableName = ((VariableClass))_persistence_variableName_vh.getValue();
-     *          return this.variableName;
-     *      }
+     * public (VariableClass) _persistence_get_variableName() {
+     * _persistence_checkFetched("variableName");
+     * _persistence_initialize_variableName_vh(); this.variableName =
+     * ((VariableClass))_persistence_variableName_vh.getValue(); return
+     * this.variableName; }
      */
-    public void addGetterMethodForFieldAccess(ClassDetails classDetails, AttributeDetails attributeDetails){
+    public void addGetterMethodForFieldAccess(ClassDetails classDetails, AttributeDetails attributeDetails) {
         String attribute = attributeDetails.getAttributeName();
 
         // create the _persistenc_getvariableName method
         MethodVisitor cv_get = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor(), null, null);
-        
+
         if (classDetails.shouldWeaveFetchGroups()) {
             cv_get.visitVarInsn(ALOAD, 0);
             cv_get.visitLdcInsn(attribute);
             // _persistence_checkFetched("variableName");
             cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetched", "(Ljava/lang/String;)V");
         }
-        
+
         if (attributeDetails.weaveValueHolders()) {
             // _persistence_initialize_variableName_vh();
             cv_get.visitVarInsn(ALOAD, 0);
             cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
-            
+
             // _persistenc_variableName_vh.getValue();
             cv_get.visitVarInsn(ALOAD, 0);
             cv_get.visitVarInsn(ALOAD, 0);
             cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
             cv_get.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
-            
-            // Add the cast: (<VariableClass>)_persistenc_variableName_vh.getValue()
-            cv_get.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
-            
-            // add the assignment: this.variableName = (<VariableClass>)_persistenc_variableName_vh.getValue();
+
+            // Add the cast:
+            // (<VariableClass>)_persistenc_variableName_vh.getValue()
+            cv_get.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
+
+            // add the assignment: this.variableName =
+            // (<VariableClass>)_persistenc_variableName_vh.getValue();
             cv_get.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
         }
-        
+
         // return this.variableName;
         cv_get.visitVarInsn(ALOAD, 0);
         cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
-        // Get the opcode for the return insturction.  This may be different depending on the type.
+        // Get the opcode for the return insturction. This may be different
+        // depending on the type.
         int opcode = attributeDetails.getReferenceClassType().getOpcode(IRETURN);
         cv_get.visitInsn(opcode);
         cv_get.visitMaxs(0, 0);
-        cv_get.visitEnd();
     }
-    
+
     /**
-     * Add a variable of type Object to the class.
-     * When this method has been run, the class will contain a variable declarations similar to the following:
-     *  
-     *  private Object _persistence_primaryKey;
+     * Add a variable of type Object to the class. When this method has been
+     * run, the class will contain a variable declarations similar to the
+     * following:
+     * 
+     * private Object _persistence_primaryKey;
      */
     public void addPersistenceEntityVariables() {
-        FieldVisitor fv = cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_primaryKey", OBJECT_SIGNATURE, null, null);
-        if (fv != null) {
-            fv.visitEnd();
-        }
+        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_primaryKey", OBJECT_SIGNATURE, null, null);
     }
-    
+
     /**
-     * Add an internal post clone method.
-     * This will clone value holders to avoid change original/clone to effect the other.
+     * Add an internal post clone method. This will clone value holders to avoid
+     * change original/clone to effect the other.
      * 
-     * public Object _persistence_post_clone() {
-     *     this._attribute_vh = this._attribute_vh.clone();
-     *     ...
-     *     this._persistence_listener = null;
-     *     return this;
-     * }
+     * public Object _persistence_post_clone() { this._attribute_vh =
+     * this._attribute_vh.clone(); ... this._persistence_listener = null; return
+     * this; }
      */
     public void addPersistencePostClone(ClassDetails classDetails) {
         // create the _persistence_post_clone() method
         MethodVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_post_clone", "()Ljava/lang/Object;", null, null);
 
-        // if there is a weaved superclass, it will implement _persistence_post_clone.  Call that method
+        // if there is a weaved superclass, it will implement
+        // _persistence_post_clone. Call that method
         // super._persistence_post_clone()
-        if (classDetails.getSuperClassDetails() != null && classDetails.getSuperClassDetails().shouldWeaveInternal()){
-           cv_clone.visitVarInsn(ALOAD, 0);
+        if (classDetails.getSuperClassDetails() != null && classDetails.getSuperClassDetails().shouldWeaveInternal()) {
+            cv_clone.visitVarInsn(ALOAD, 0);
             cv_clone.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_post_clone", "()Ljava/lang/Object;");
         }
 
         if (classDetails.shouldWeaveValueHolders()) {
-            for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext(); ) {
-                AttributeDetails attributeDetails = (AttributeDetails)iterator.next();
-                if (attributeDetails.weaveValueHolders()) { // && !attributeDetails.isAttributeOnSuperClass()) {
+            for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
+                AttributeDetails attributeDetails = (AttributeDetails) iterator.next();
+                if (attributeDetails.weaveValueHolders()) { // &&
+                                                            // !attributeDetails.isAttributeOnSuperClass())
+                                                            // {
                     // clone._attribute_vh = this._attribute_vh.clone();
                     cv_clone.visitVarInsn(ALOAD, 0);
                     cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
@@ -746,28 +739,25 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
             cv_clone.visitInsn(ACONST_NULL);
             cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
         }
-        
-        if (!classDetails.isEmbedable()){
-	        // clone._persistence_primaryKey = null;
-	        cv_clone.visitVarInsn(ALOAD, 0);
-	        cv_clone.visitInsn(ACONST_NULL);
-	        cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
+
+        if (!classDetails.isEmbedable()) {
+            // clone._persistence_primaryKey = null;
+            cv_clone.visitVarInsn(ALOAD, 0);
+            cv_clone.visitInsn(ACONST_NULL);
+            cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
         }
-        
+
         // return clone;
         cv_clone.visitVarInsn(ALOAD, 0);
         cv_clone.visitInsn(ARETURN);
         cv_clone.visitMaxs(0, 0);
-        cv_clone.visitEnd();
     }
-    
+
     /**
-     * Add an internal shallow clone method.
-     * This can be used to optimize uow cloning.
+     * Add an internal shallow clone method. This can be used to optimize uow
+     * cloning.
      * 
-     * public Object _persistence_shallow_clone() {
-     *     return super.clone();
-     * }
+     * public Object _persistence_shallow_clone() { return super.clone(); }
      */
     public void addShallowClone(ClassDetails classDetails) {
         // create the _persistence_shallow_clone() method
@@ -776,36 +766,31 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         // return super.clone();
         cv_clone.visitVarInsn(ALOAD, 0);
         cv_clone.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "clone", "()Ljava/lang/Object;");
-        
+
         cv_clone.visitInsn(ARETURN);
         cv_clone.visitMaxs(0, 0);
-        cv_clone.visitEnd();
     }
-    
+
     /**
-     * Add an internal empty constructor, and new method.
-     * This is used to avoid unnecessary initialization and avoid reflection.
+     * Add an internal empty constructor, and new method. This is used to avoid
+     * unnecessary initialization and avoid reflection.
      * 
-     * public void _persistence_new(PersistenceObject factory) {
-     *   return new ClassType(factory);
-     * }
+     * public void _persistence_new(PersistenceObject factory) { return new
+     * ClassType(factory); }
      * 
-     * public ClassType(PersistenceObject factory) {
-     *   super();
-     * }
+     * public ClassType(PersistenceObject factory) { super(); }
      */
     public void addPersistenceNew(ClassDetails classDetails) {
         // create the _persistence_new() method
         MethodVisitor cv_new = cv.visitMethod(ACC_PUBLIC, "_persistence_new", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")Ljava/lang/Object;", null, null);
-        
+
         // return new ClassType(factory);
         cv_new.visitTypeInsn(NEW, classDetails.getClassName());
         cv_new.visitInsn(DUP);
-        if (!classDetails.canWeaveConstructorOptimization()){
+        if (!classDetails.canWeaveConstructorOptimization()) {
             cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "()V");
             cv_new.visitInsn(ARETURN);
             cv_new.visitMaxs(0, 0);
-            cv_new.visitEnd();
             return;
         } else {
             cv_new.visitVarInsn(ALOAD, 1);
@@ -813,8 +798,7 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         }
         cv_new.visitInsn(ARETURN);
         cv_new.visitMaxs(0, 0);
-        cv_new.visitEnd();
-        
+
         // create the ClassType() method
         MethodVisitor cv_constructor = cv.visitMethod(ACC_PUBLIC, "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", null, null);
 
@@ -825,34 +809,23 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         } else {
             // super(factory);
             cv_constructor.visitVarInsn(ALOAD, 1);
-            cv_constructor.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V");          
+            cv_constructor.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V");
         }
         cv_constructor.visitInsn(RETURN);
         cv_constructor.visitMaxs(0, 0);
-        cv_constructor.visitEnd();
     }
-    
+
     /**
-     * Add an internal generic get and set method.
-     * This is used to avoid reflection.
+     * Add an internal generic get and set method. This is used to avoid
+     * reflection.
      * 
-     * public Object _persistence_get(String attribute) {
-     *   if (attribute == "address") {
-     *     return this.address;
-     *   }
-     *   if (attribute == "city") {
-     *     return this.city;
-     *   }
-     *   return null;
-     * }
+     * public Object _persistence_get(String attribute) { if (attribute ==
+     * "address") { return this.address; } if (attribute == "city") { return
+     * this.city; } return null; }
      * 
-     * public void _persistence_set(int index, Object value) {
-     *   if (attribute == "address") {
-     *     this.address = (String)value;
-     *   } else if (attribute == "city") {
-     *     this.city = (String)city;
-     *   }
-     * }
+     * public void _persistence_set(int index, Object value) { if (attribute ==
+     * "address") { this.address = (String)value; } else if (attribute ==
+     * "city") { this.city = (String)city; } }
      */
     public void addPersistenceGetSet(ClassDetails classDetails) {
         // create the _persistence_get() method
@@ -875,10 +848,11 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
                 // if this is a primitive, get the wrapper class
                 String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
                 if (wrapper != null) {
-                    // Call valueOf on the wrapper (more optimal than constructor).
+                    // Call valueOf on the wrapper (more optimal than
+                    // constructor).
                     cv_get.visitMethodInsn(INVOKESTATIC, wrapper, "valueOf", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")L" + wrapper + ";");
                 }
-                
+
                 cv_get.visitInsn(ARETURN);
             }
         }
@@ -894,11 +868,10 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
             cv_get.visitVarInsn(ALOAD, 1);
             cv_get.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;");
         }
-        
+
         cv_get.visitInsn(ARETURN);
         cv_get.visitMaxs(0, 0);
-        cv_get.visitEnd();
-        
+
         // create the _persistence_set() method
         MethodVisitor cv_set = cv.visitMethod(ACC_PUBLIC, "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", null, null);
 
@@ -912,7 +885,7 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
                 cv_set.visitVarInsn(ALOAD, 1);
                 cv_set.visitLdcInsn(attribute.getAttributeName().intern());
                 label = new Label();
-                cv_set.visitJumpInsn(IF_ACMPNE, label);            
+                cv_set.visitJumpInsn(IF_ACMPNE, label);
                 // this.address = (String)value;
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitVarInsn(ALOAD, 2);
@@ -938,122 +911,90 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
             cv_set.visitVarInsn(ALOAD, 2);
             cv_set.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V");
         }
-        
+
         cv_set.visitInsn(RETURN);
         cv_set.visitMaxs(0, 0);
-        cv_set.visitEnd();
     }
-    
+
     /**
-     * Adds get/set method for PersistenceEntity interface.
-     * This adds the following methods:
-     *   
-     *  public Object _persistence_getId() {
-     *      return _persistence_primaryKey;
-     *  }
-     *  public void _persistence_setId(Object primaryKey) {
-     *      this._persistence_primaryKey = primaryKey;
-     *  }
+     * Adds get/set method for PersistenceEntity interface. This adds the
+     * following methods:
+     * 
+     * public Object _persistence_getId() { return _persistence_primaryKey; }
+     * public void _persistence_setId(Object primaryKey) {
+     * this._persistence_primaryKey = primaryKey; }
      */
-    public void addPersistenceEntityMethods(ClassDetails classDetails) {        
+    public void addPersistenceEntityMethods(ClassDetails classDetails) {
         MethodVisitor cv_getPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_getId", "()" + OBJECT_SIGNATURE, null, null);
         cv_getPKVector.visitVarInsn(ALOAD, 0);
         cv_getPKVector.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
         cv_getPKVector.visitInsn(ARETURN);
         cv_getPKVector.visitMaxs(0, 0);
-        cv_getPKVector.visitEnd();
-        
+
         MethodVisitor cv_setPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_setId", "(" + OBJECT_SIGNATURE + ")V", null, null);
         cv_setPKVector.visitVarInsn(ALOAD, 0);
         cv_setPKVector.visitVarInsn(ALOAD, 1);
         cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
         cv_setPKVector.visitInsn(RETURN);
-        cv_setPKVector.visitMaxs(0 ,0);
-        cv_setPKVector.visitEnd();
+        cv_setPKVector.visitMaxs(0, 0);
     }
-    
+
     /**
-     * Add a variable of type FetchGroup, Session to the class.
-     * When this method has been run, the class will contain a variable declarations similar to the following:
-     *  
-     *  private FetchGroup _persistence_fetchGroup;
-     *  private boolean _persistence_shouldRefreshFetchGroup;
-     *  private Session _persistence_session;
+     * Add a variable of type FetchGroup, Session to the class. When this method
+     * has been run, the class will contain a variable declarations similar to
+     * the following:
+     * 
+     * private FetchGroup _persistence_fetchGroup; private boolean
+     * _persistence_shouldRefreshFetchGroup; private Session
+     * _persistence_session;
      */
     public void addFetchGroupVariables() {
-        
-        // Only add javax.persistence.Transient annotation if attribute access is being used
         FieldVisitor fv = cv.visitField(ACC_PROTECTED, EntityManagerImpl.PERSITENCE_FETCH_GROUP_WEAVED_FIELD_NAME, FETCHGROUP_SIGNATURE, null, null);
-        if (classDetails.usesAttributeAccess()){
-            addTransientAnnotation(fv);
-        } 
-        if (fv != null) {
-            fv.visitEnd();
+        // Only add javax.persistence.Transient annotation if attribute access
+        // is being used
+        if (classDetails.usesAttributeAccess()) {
+            fv.visitAnnotation(JPA_TRANSIENT_DESCRIPTION, true).visitEnd();
+        } else if (isJAXBOnPath()) {
+            fv.visitAnnotation(XML_TRANSIENT_DESCRIPTION, true).visitEnd();
         }
-        
-        // TODO: Why was this not made transient before?
-        fv = cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE, null, null);
-        if (classDetails.usesAttributeAccess()){
-            addTransientAnnotation(fv);
-        } 
-        if (fv != null) {
-            fv.visitEnd();
-        }
+        fv.visitEnd();
 
-        // TODO: Why was this not made transient before?
-        fv = cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_session", SESSION_SIGNATURE, null, null);
-        if (classDetails.usesAttributeAccess()){
-            addTransientAnnotation(fv);
-        }         
-        if (fv != null) {
-            fv.visitEnd();
-        }
+        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE, null, null).visitEnd();
+        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_session", SESSION_SIGNATURE, null, null).visitEnd();
     }
-    
+
     /**
-     * Adds get/set method for FetchGroupTracker interface.
-     * This adds the following methods:
+     * Adds get/set method for FetchGroupTracker interface. This adds the
+     * following methods:
      * 
-     *  public Session _persistence_getSession() {
-     *      return _persistence_session;
-     *  }
-     *  public void _persistence_setSession(Session session) {
-     *      this._persistence_session = session;
-     *  }
-     *  
-     *  public FetchGroup _persistence_getFetchGroup() {
-     *      return _persistence_fetchGroup;
-     *  }
-     *  public void _persistence_setFetchGroup(FetchGroup fetchGroup) {
-     *      this._persistence_fetchGroup = fetchGroup;
-     *  }
-     *  
-     *  public boolean _persistence_shouldRefreshFetchGroup() {
-     *      return _persistence_shouldRefreshFetchGroup;
-     *  }
-     *  public void _persistence_setShouldRefreshFetchGroup(boolean shouldRefreshFetchGroup) {
-     *      this._persistence_shouldRefreshFetchGroup = shouldRefreshFetchGroup;
-     *  }
-     *  
-     *  public void _persistence_resetFetchGroup() {
-     *  }
-     *
-     *  public void _persistence_isAttributeFetched(String attribute) {
-     *      return this._persistence_fetchGroup == null || _persistence_fetchGroup.containsAttribute(attribute);
-     *  }
-     *  
-     *  public void _persistence_checkFetched(String attribute) {
-     *      if (this._persistence_fetchGroup != null) {
-     *          EntityManagerImpl.processUnfetchedAttribute(this, attribute);
-     *      }
-     *  }
-     *
-     *  
-     *  public void _persistence_checkSetFetched(String attribute) {
-     *      if (this._persistence_fetchGroup != null) {
-     *          EntityManagerImpl.processUnfetchedAttributeForSet(this, attribute);
-     *      }
-     *  }
+     * public Session _persistence_getSession() { return _persistence_session; }
+     * public void _persistence_setSession(Session session) {
+     * this._persistence_session = session; }
+     * 
+     * public FetchGroup _persistence_getFetchGroup() { return
+     * _persistence_fetchGroup; } public void
+     * _persistence_setFetchGroup(FetchGroup fetchGroup) {
+     * this._persistence_fetchGroup = fetchGroup; }
+     * 
+     * public boolean _persistence_shouldRefreshFetchGroup() { return
+     * _persistence_shouldRefreshFetchGroup; } public void
+     * _persistence_setShouldRefreshFetchGroup(boolean shouldRefreshFetchGroup)
+     * { this._persistence_shouldRefreshFetchGroup = shouldRefreshFetchGroup; }
+     * 
+     * public void _persistence_resetFetchGroup() { }
+     * 
+     * public void _persistence_isAttributeFetched(String attribute) { return
+     * this._persistence_fetchGroup == null ||
+     * _persistence_fetchGroup.containsAttribute(attribute); }
+     * 
+     * public void _persistence_checkFetched(String attribute) { if
+     * (this._persistence_fetchGroup != null) {
+     * EntityManagerImpl.processUnfetchedAttribute(this, attribute); } }
+     * 
+     * 
+     * public void _persistence_checkSetFetched(String attribute) { if
+     * (this._persistence_fetchGroup != null) {
+     * EntityManagerImpl.processUnfetchedAttributeForSet(this, attribute); } }
      */
     public void addFetchGroupMethods(ClassDetails classDetails) {
         MethodVisitor cv_getSession = cv.visitMethod(ACC_PUBLIC, "_persistence_getSession", "()" + SESSION_SIGNATURE, null, null);
@@ -1061,51 +1002,44 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         cv_getSession.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
         cv_getSession.visitInsn(ARETURN);
         cv_getSession.visitMaxs(0, 0);
-        cv_getSession.visitEnd();
-        
+
         MethodVisitor cv_setSession = cv.visitMethod(ACC_PUBLIC, "_persistence_setSession", "(" + SESSION_SIGNATURE + ")V", null, null);
         cv_setSession.visitVarInsn(ALOAD, 0);
         cv_setSession.visitVarInsn(ALOAD, 1);
         cv_setSession.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
         cv_setSession.visitInsn(RETURN);
-        cv_setSession.visitMaxs(0 ,0);
-        cv_setSession.visitEnd();
-        
+        cv_setSession.visitMaxs(0, 0);
+
         MethodVisitor cv_getFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_getFetchGroup", "()" + FETCHGROUP_SIGNATURE, null, null);
         cv_getFetchGroup.visitVarInsn(ALOAD, 0);
         cv_getFetchGroup.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
         cv_getFetchGroup.visitInsn(ARETURN);
         cv_getFetchGroup.visitMaxs(0, 0);
-        cv_getFetchGroup.visitEnd();
-        
+
         MethodVisitor cv_setFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_setFetchGroup", "(" + FETCHGROUP_SIGNATURE + ")V", null, null);
         cv_setFetchGroup.visitVarInsn(ALOAD, 0);
         cv_setFetchGroup.visitVarInsn(ALOAD, 1);
         cv_setFetchGroup.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
         cv_setFetchGroup.visitInsn(RETURN);
-        cv_setFetchGroup.visitMaxs(0 ,0);
-        cv_setFetchGroup.visitEnd();
-        
+        cv_setFetchGroup.visitMaxs(0, 0);
+
         MethodVisitor cv_shouldRefreshFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_shouldRefreshFetchGroup", "()" + PBOOLEAN_SIGNATURE, null, null);
         cv_shouldRefreshFetchGroup.visitVarInsn(ALOAD, 0);
         cv_shouldRefreshFetchGroup.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE);
         cv_shouldRefreshFetchGroup.visitInsn(IRETURN);
         cv_shouldRefreshFetchGroup.visitMaxs(0, 0);
-        cv_shouldRefreshFetchGroup.visitEnd();
-        
+
         MethodVisitor cv_setShouldRefreshFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_setShouldRefreshFetchGroup", "(" + PBOOLEAN_SIGNATURE + ")V", null, null);
         cv_setShouldRefreshFetchGroup.visitVarInsn(ALOAD, 0);
         cv_setShouldRefreshFetchGroup.visitVarInsn(ILOAD, 1);
         cv_setShouldRefreshFetchGroup.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE);
         cv_setShouldRefreshFetchGroup.visitInsn(RETURN);
-        cv_setShouldRefreshFetchGroup.visitMaxs(0 ,0);
-        cv_setShouldRefreshFetchGroup.visitEnd();
-        
+        cv_setShouldRefreshFetchGroup.visitMaxs(0, 0);
+
         MethodVisitor cv_resetFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_resetFetchGroup", "()V", null, null);
         cv_resetFetchGroup.visitInsn(RETURN);
         cv_resetFetchGroup.visitMaxs(0, 0);
-        cv_resetFetchGroup.visitEnd();
-        
+
         MethodVisitor cv_isAttributeFetched = cv.visitMethod(ACC_PUBLIC, "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", null, null);
         cv_isAttributeFetched.visitVarInsn(ALOAD, 0);
         cv_isAttributeFetched.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
@@ -1125,9 +1059,8 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         cv_isAttributeFetched.visitInsn(ICONST_0);
         cv_isAttributeFetched.visitLabel(gotoReturn);
         cv_isAttributeFetched.visitInsn(IRETURN);
-        cv_isAttributeFetched.visitMaxs(0 ,0);
-        cv_isAttributeFetched.visitEnd();
-        
+        cv_isAttributeFetched.visitMaxs(0, 0);
+
         MethodVisitor cv_checkFetched = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetched", "(Ljava/lang/String;)V", null, null);
         cv_checkFetched.visitVarInsn(ALOAD, 0);
         cv_checkFetched.visitVarInsn(ALOAD, 1);
@@ -1140,9 +1073,8 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         cv_checkFetched.visitMethodInsn(INVOKESTATIC, ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttribute", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V");
         cv_checkFetched.visitLabel(gotoReturn);
         cv_checkFetched.visitInsn(RETURN);
-        cv_checkFetched.visitMaxs(0 ,0);
-        cv_checkFetched.visitEnd();
-        
+        cv_checkFetched.visitMaxs(0, 0);
+
         MethodVisitor cv_checkFetchedForSet = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", null, null);
         cv_checkFetchedForSet.visitVarInsn(ALOAD, 0);
         cv_checkFetchedForSet.visitVarInsn(ALOAD, 1);
@@ -1155,46 +1087,37 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         cv_checkFetchedForSet.visitMethodInsn(INVOKESTATIC, ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttributeForSet", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V");
         cv_checkFetchedForSet.visitLabel(gotoReturn);
         cv_checkFetchedForSet.visitInsn(RETURN);
-        cv_checkFetchedForSet.visitMaxs(0 ,0);
-        cv_checkFetchedForSet.visitEnd();
-    }
-   
-    /**
-     * TODO 
-     */
-    private void addTransientAnnotation(FieldVisitor fv) {
-		AnnotationVisitor av = fv.visitAnnotation(Type.getDescriptor(Transient.class), true);
-		if (av != null) {
-			av.visitEnd();
-		}
-        if (isJAXBOnPath()) {
-            try {
-            	// TODO: Class.forName???
-            	av = fv.visitAnnotation(Type.getDescriptor(Class.forName("javax.xml.bind.annotation.XmlTransient")), true);
-        		if (av != null) {
-        			av.visitEnd();
-        		}
-            } catch (Exception exception) {}
-        }
+        cv_checkFetchedForSet.visitMaxs(0, 0);
     }
 
     /**
      * Visit the class byte-codes and modify to weave Persistence interfaces.
-     * This add PersistenceWeaved, PersistenceWeavedLazy, PersistenceWeavedChangeTracking, PersistenceEntity, ChangeTracker.
-     * The new interfaces are pass to the super weaver.
+     * This add PersistenceWeaved, PersistenceWeavedLazy,
+     * PersistenceWeavedChangeTracking, PersistenceEntity, ChangeTracker. The
+     * new interfaces are pass to the super weaver.
      */
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        
+        // Capture original values for SerialVersionUID generation (if needed)
+        this.computeSVUID = (access & Opcodes.ACC_INTERFACE) == 0;
+        if (computeSVUID) {
+            this.name = name;
+            this.access = access;
+            this.interfaces = interfaces;
+        }
+        
         boolean weaveCloneable = true;
         // To prevent 'double' weaving: scan for PersistenceWeaved interface.
         for (int index = 0; index < interfaces.length; index++) {
             String existingInterface = interfaces[index];
             if (PERSISTENCE_WEAVED_SHORT_SIGNATURE.equals(existingInterface)) {
                 this.alreadyWeaved = true;
-                super.visit(version, access, name, null, superName, interfaces);
+                super.visit(version, access, name, signature, superName, interfaces);
                 return;
             } else if (CT_SHORT_SIGNATURE.equals(existingInterface)) {
-                // Disable weaving of change tracking if already implemented (such as by user).
+                // Disable weaving of change tracking if already implemented
+                // (such as by user).
                 classDetails.setShouldWeaveChangeTracking(false);
             } else if (CLONEABLE_SHORT_SIGNATURE.equals(existingInterface)) {
                 weaveCloneable = false;
@@ -1255,21 +1178,24 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
             persistenceWeavedChangeTrackingIndex = newInterfacesLength;
             newInterfacesLength++;
         }
-        
+
         String[] newInterfaces = new String[newInterfacesLength];
         System.arraycopy(interfaces, 0, newInterfaces, 0, interfaces.length);
-        // Add 'marker' org.eclipse.persistence.internal.weaving.PersistenceWeaved interface.
-        newInterfaces[persistenceWeavedIndex] = PERSISTENCE_WEAVED_SHORT_SIGNATURE;            
+        // Add 'marker'
+        // org.eclipse.persistence.internal.weaving.PersistenceWeaved interface.
+        newInterfaces[persistenceWeavedIndex] = PERSISTENCE_WEAVED_SHORT_SIGNATURE;
         weaved = true;
         // Add Cloneable interface.
         if (weaveCloneable) {
             newInterfaces[cloneableIndex] = CLONEABLE_SHORT_SIGNATURE;
         }
-        // Add org.eclipse.persistence.internal.descriptors.PersistenceEntity interface.
+        // Add org.eclipse.persistence.internal.descriptors.PersistenceEntity
+        // interface.
         if (persistenceEntity) {
             newInterfaces[persistenceEntityIndex] = PERSISTENCE_ENTITY_SHORT_SIGNATURE;
         }
-        // Add org.eclipse.persistence.internal.descriptors.PersistenceObject interface.
+        // Add org.eclipse.persistence.internal.descriptors.PersistenceObject
+        // interface.
         if (persistenceObject) {
             newInterfaces[persistenceObjectIndex] = PERSISTENCE_OBJECT_SHORT_SIGNATURE;
         }
@@ -1284,119 +1210,129 @@ public class ClassWeaver extends ClassAdapter implements Opcodes {
         if (classDetails.shouldWeaveValueHolders()) {
             newInterfaces[persistenceWeavedLazyIndex] = TW_LAZY_SHORT_SIGNATURE;
         }
-        // Add marker interface and change tracker interface for change tracking.
+        // Add marker interface and change tracker interface for change
+        // tracking.
         if (changeTracker) {
             newInterfaces[changeTrackerIndex] = CT_SHORT_SIGNATURE;
         }
         if (classDetails.shouldWeaveChangeTracking()) {
             newInterfaces[persistenceWeavedChangeTrackingIndex] = TW_CT_SHORT_SIGNATURE;
         }
-        super.visit(version, access, name, signature, superName, newInterfaces);
+        cv.visit(version, access, name, signature, superName, newInterfaces);
     }
-    
+
     /**
      * Construct a MethodWeaver and allow it to process the method.
      */
     @Override
     public MethodVisitor visitMethod(int access, String methodName, String desc, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, methodName, desc, signature, exceptions);
         if (!alreadyWeaved) {
             // skip constructors, they will not changed
-            if ("<init>".equals(methodName)||"<cinit>".equals(methodName)) {
-                return super.visitMethod(access, methodName, desc, signature, exceptions);
-            } else {
-                // remaining modifications to the 'body' of the class are delegated to MethodWeaver
-                return new MethodWeaver(this, methodName, desc, cv.visitMethod(access, methodName, desc, signature,exceptions));                
+            if (!"<init>".equals(methodName) && !"<cinit>".equals(methodName)) {
+                // remaining modifications to the 'body' of the class are
+                // delegated to MethodWeaver
+                mv = new MethodWeaver(this, methodName, desc, mv);
             }
-        } else {
-            return super.visitMethod(access, methodName, desc, signature, exceptions);
         }
-    }    
-
-    public void visitAttribute(Attribute attr) {
-        if (!alreadyWeaved) {
-            cv.visitAttribute(attr);
-        } else {
-            super.visitAttribute(attr);
-        }
+        return mv;
     }
 
     /**
-     * Visit the end of the class byte codes.
-     * Add any new methods or variables to the end.
+     * Visit the end of the class byte codes. Add any new methods or variables
+     * to the end.
      */
-    @Override
     public void visitEnd() {
-        if (alreadyWeaved) {
-            return;
-        }
-        
-        if (this.classDetails.shouldWeaveInternal()) {
-            // Add a persistence and shallow clone method.
-            addPersistencePostClone(this.classDetails);
-            if (this.classDetails.getSuperClassDetails() == null) {
-                addShallowClone(this.classDetails);        
-                if (!this.classDetails.isEmbedable()) {
-                    // Add PersistenceEntity variables and methods.
-                    addPersistenceEntityVariables();
-                    addPersistenceEntityMethods(this.classDetails);
-                    this.weavedPersistenceEntity = true;
+        if (!alreadyWeaved) {
+            
+            // Add 'serialversionUID' if one does not exist.
+            if (computeSVUID && !hasSVUID) {
+                try {
+                    cv.visitField(Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, "serialVersionUID", "J", null, new Long(computeSVUID()));
+                } catch (Throwable e) {
+                    throw new RuntimeException("Error while computing SVUID for " + name, e);
                 }
             }
-            // Add empty new method and generic get/set methods.
-            addPersistenceNew(this.classDetails);
-            addPersistenceGetSet(this.classDetails);
-        }
-        
-        boolean attributeAccess = false;
-        // For each attribute we need to check what methods and variables to add.
-        for (Iterator iterator = this.classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
-            AttributeDetails attributeDetails = (AttributeDetails)iterator.next();
-            // Only add to classes that actually contain the attribute we are processing
-            // an attribute could be in the classDetails but not actually in the class
-            // if it is owned by a MappedSuperClass.
-            if (!attributeDetails.isAttributeOnSuperClass()) {
-                if (attributeDetails.weaveValueHolders()) {
-                    // We will add valueholders and methods to classes that have not already been weaved
-                    // and classes that actually contain the attribute we are processing
-                    // an attribute could be in the classDetails but not actually in the class
-                    // if it is owned by a MappedSuperClass.
-                    if (!attributeDetails.isAttributeOnSuperClass()) {
-                        weaved = true;
-                        weavedLazy = true;
-                        addValueHolder(attributeDetails);
-                        addInitializerForValueHolder(classDetails, attributeDetails);
-                        addGetterMethodForValueHolder(classDetails, attributeDetails);
-                        addSetterMethodForValueHolder(classDetails, attributeDetails);                        
+
+            if (this.classDetails.shouldWeaveInternal()) {
+
+                // Add a persistence and shallow clone method.
+                addPersistencePostClone(this.classDetails);
+                if (this.classDetails.getSuperClassDetails() == null) {
+                    addShallowClone(this.classDetails);
+                    if (!this.classDetails.isEmbedable()) {
+                        // Add PersistenceEntity variables and methods.
+                        addPersistenceEntityVariables();
+                        addPersistenceEntityMethods(this.classDetails);
+                        this.weavedPersistenceEntity = true;
                     }
                 }
-                if (classDetails.shouldWeaveChangeTracking() || classDetails.shouldWeaveFetchGroups() || attributeDetails.weaveValueHolders()) {
-                    if (attributeDetails.hasField()) {
-                        weaved = true;
-                        addGetterMethodForFieldAccess(classDetails, attributeDetails);
-                        addSetterMethodForFieldAccess(classDetails, attributeDetails);
-                        attributeAccess = true;
+                // Add empty new method and generic get/set methods.
+                addPersistenceNew(this.classDetails);
+                addPersistenceGetSet(this.classDetails);
+            }
+
+            boolean attributeAccess = false;
+            // For each attribute we need to check what methods and variables to
+            // add.
+            for (Iterator iterator = this.classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
+                AttributeDetails attributeDetails = (AttributeDetails) iterator.next();
+                // Only add to classes that actually contain the attribute we
+                // are
+                // processing
+                // an attribute could be in the classDetails but not actually in
+                // the
+                // class
+                // if it is owned by a MappedSuperClass.
+                if (!attributeDetails.isAttributeOnSuperClass()) {
+                    if (attributeDetails.weaveValueHolders()) {
+                        // We will add valueholders and methods to classes that
+                        // have
+                        // not already been weaved
+                        // and classes that actually contain the attribute we
+                        // are
+                        // processing
+                        // an attribute could be in the classDetails but not
+                        // actually in the class
+                        // if it is owned by a MappedSuperClass.
+                        if (!attributeDetails.isAttributeOnSuperClass()) {
+                            weaved = true;
+                            weavedLazy = true;
+                            addValueHolder(attributeDetails);
+                            addInitializerForValueHolder(classDetails, attributeDetails);
+                            addGetterMethodForValueHolder(classDetails, attributeDetails);
+                            addSetterMethodForValueHolder(classDetails, attributeDetails);
+                        }
+                    }
+                    if (classDetails.shouldWeaveChangeTracking() || classDetails.shouldWeaveFetchGroups() || attributeDetails.weaveValueHolders()) {
+                        if (attributeDetails.hasField()) {
+                            weaved = true;
+                            addGetterMethodForFieldAccess(classDetails, attributeDetails);
+                            addSetterMethodForFieldAccess(classDetails, attributeDetails);
+                            attributeAccess = true;
+                        }
                     }
                 }
             }
-        }
-        if (classDetails.shouldWeaveChangeTracking()) {
-            weaved = true;
-            weavedChangeTracker = true;
-            if ((classDetails.getSuperClassDetails() == null) || (!classDetails.doesSuperclassWeaveChangeTracking())) {
-                addPropertyChangeListener(attributeAccess);
-                addGetPropertyChangeListener(classDetails);
-                addSetPropertyChangeListener(classDetails);
-                addPropertyChange(classDetails);
+            if (classDetails.shouldWeaveChangeTracking()) {
+                weaved = true;
+                weavedChangeTracker = true;
+                if ((classDetails.getSuperClassDetails() == null) || (!classDetails.doesSuperclassWeaveChangeTracking())) {
+                    addPropertyChangeListener(attributeAccess);
+                    addGetPropertyChangeListener(classDetails);
+                    addSetPropertyChangeListener(classDetails);
+                    addPropertyChange(classDetails);
+                }
+            }
+            if (classDetails.shouldWeaveFetchGroups()) {
+                weaved = true;
+                weavedFetchGroups = true;
+                if (classDetails.getSuperClassDetails() == null) {
+                    addFetchGroupVariables();
+                    addFetchGroupMethods(this.classDetails);
+                }
             }
         }
-        if (classDetails.shouldWeaveFetchGroups()) {
-            weaved = true;
-            weavedFetchGroups = true;
-            if (classDetails.getSuperClassDetails() == null) {          
-                addFetchGroupVariables();
-                addFetchGroupMethods(this.classDetails);
-            }
-        }
-        super.visitEnd();
+        cv.visitEnd();
     }
 }

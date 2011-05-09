@@ -122,7 +122,7 @@ public class MethodWeaver extends MethodAdapter implements Opcodes {
     }
 
     @Override
-    public void visitTableSwitchInsn (final int min, final int max, final Label dflt, final Label ...labels) {
+    public void visitTableSwitchInsn (final int min, final int max, final Label dflt, final Label[] labels) {
         weaveBeginningOfMethodIfRequired();
         super.visitTableSwitchInsn(min, max, dflt, labels);
     }
