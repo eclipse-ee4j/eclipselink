@@ -1060,7 +1060,7 @@ public class AnnotationsProcessor {
         Class xmlSeeAlsoClass = null;
         Method valueMethod = null;
         try {
-            xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlSeeAlso");
+            xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlSeeAlso", false, helper.getClassLoader());
             valueMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlSeeAlsoClass, "value", new Class[] {});
         } catch (ClassNotFoundException ex) {
             // Ignore this exception. If SeeAlso isn't available, don't try to

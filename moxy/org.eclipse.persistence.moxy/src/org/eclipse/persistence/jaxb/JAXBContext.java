@@ -577,7 +577,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 String path = tokenizer.nextToken();
                 try {
                     Class objectFactory = classLoader.loadClass(path + ".ObjectFactory");
-                    if (isJAXB2ObjectFactory(objectFactory)) {
+                    if (isJAXB2ObjectFactory(objectFactory, classLoader)) {
                         classes.add(objectFactory);
                     }
                 } catch (Exception ex) {
@@ -730,9 +730,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             return additionalClasses;
         }
 
-        private boolean isJAXB2ObjectFactory(Class objectFactoryClass) {
+        private boolean isJAXB2ObjectFactory(Class objectFactoryClass, ClassLoader classLoader) {
             try {
-                Class xmlRegistry = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlRegistry");
+                Class xmlRegistry = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlRegistry", false, classLoader);
                 if (objectFactoryClass.isAnnotationPresent(xmlRegistry)) {
                     return true;
                 }
