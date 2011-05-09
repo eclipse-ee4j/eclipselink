@@ -558,6 +558,11 @@ public class MetadataProject {
             // Make sure you apply the persistence unit metadata and defaults.
             processPersistenceUnitMetadata(metadataDescriptor);
             
+            // Need to apply the mapping file defaults (if there is one that loaded this mapped superclass).
+            if (accessor.getEntityMappings() != null) {
+                accessor.getEntityMappings().processEntityMappingsDefaults(accessor);
+            }
+            
             // After the pu metadata and defaults have been applied, it is safe to process the access type.
             accessor.processAccessType();
             

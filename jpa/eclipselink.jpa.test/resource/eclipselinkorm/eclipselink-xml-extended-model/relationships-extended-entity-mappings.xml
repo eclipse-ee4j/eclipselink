@@ -3,9 +3,6 @@
     <description>Relationships Test Model Instance Document</description>
     <persistence-unit-metadata>
         <exclude-default-mappings/>
-        <persistence-unit-defaults>
-            <access>PROPERTY</access>
-        </persistence-unit-defaults>
     </persistence-unit-metadata>
     <package>org.eclipse.persistence.testing.models.jpa.xml.relationships</package>
     <access>PROPERTY</access>

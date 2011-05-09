@@ -229,7 +229,6 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
             // ORMetadata list merging. 
             m_entityListeners = mergeORObjectLists(m_entityListeners, persistenceUnitDefaults.getEntityListeners());
             m_tenantDiscriminatorColumns = mergeORObjectLists(m_tenantDiscriminatorColumns, persistenceUnitDefaults.getTenantDiscriminatorColumns());
-            
         }
     }
     

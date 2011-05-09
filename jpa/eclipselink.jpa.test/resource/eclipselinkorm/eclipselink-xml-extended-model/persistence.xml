@@ -27,6 +27,7 @@
     <persistence-unit name="extended-relationships" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/relationships-extended-entity-mappings.xml</mapping-file>
+        <mapping-file>META-INF/relationships-extended-entity-mappings2.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
@@ -136,4 +137,5 @@
             <property name="eclipselink.session-name" value="extended-multi-tenant-123"/>
         </properties>
     </persistence-unit>
+
 </persistence>

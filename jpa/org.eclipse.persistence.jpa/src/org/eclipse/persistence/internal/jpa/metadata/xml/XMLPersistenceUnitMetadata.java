@@ -155,7 +155,11 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
         m_excludeDefaultMappings = mergePrimitiveBoolean(m_excludeDefaultMappings, persistenceUnitMetadata.excludeDefaultMappings(), persistenceUnitMetadata, "<exclude-default-mappings>");
         
         // Merge the persistence unit defaults.
-        m_persistenceUnitDefaults.merge(persistenceUnitMetadata.getPersistenceUnitDefaults());
+        if (m_persistenceUnitDefaults == null) {
+            m_persistenceUnitDefaults = persistenceUnitMetadata.getPersistenceUnitDefaults();
+        } else {
+            m_persistenceUnitDefaults.merge(persistenceUnitMetadata.getPersistenceUnitDefaults());
+        }
     }
     
     /**
