@@ -123,8 +123,6 @@ import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
-import org.eclipse.persistence.tools.weaving.jpa.StaticWeaveClassTransformer;
-
 
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.*;
 
@@ -163,7 +161,7 @@ public class EntityManagerSetupImpl {
     // indicates that classes have already been woven
     protected boolean isWeavingStatic = false;
     // used by static weaving
-    protected StaticWeaveClassTransformer staticWeaveClassTransformer;
+    protected StaticWeaveInfo staticWeaveInfo;
     protected SecurableObjectHolder securableObjectHolder = new SecurableObjectHolder();
 
     // 266912: Criteria API and Metamodel API (See Ch 5 of the JPA 2.0 Specification)
@@ -1086,7 +1084,7 @@ public class EntityManagerSetupImpl {
             persistenceUnitInfo = info;
             if (!isCompositeMember()) {
                 if (mustBeCompositeMember(persistenceUnitInfo)) {
-                    if (this.staticWeaveClassTransformer == null) {
+                    if (this.staticWeaveInfo == null) {
                         return null;
                     } else {
                         // predeploy is used for static weaving
@@ -1132,7 +1130,7 @@ public class EntityManagerSetupImpl {
                 if (this.compositeEmSetupImpl == null) {
                     // session name and ServerPlatform must be set prior to setting the loggers.
                     ClassLoader realClassLoader = persistenceUnitInfo.getClassLoader();
-                    if (this.staticWeaveClassTransformer == null) {
+                    if (this.staticWeaveInfo == null) {
                         updateServerPlatform(predeployProperties, realClassLoader);
                         // Update loggers and settings for the singleton logger and the session logger.
                         updateLoggers(predeployProperties, true, realClassLoader);
@@ -1144,11 +1142,11 @@ public class EntityManagerSetupImpl {
                         updateProfiler(predeployProperties,realClassLoader);
                     } else {
                         // predeploy is used for static weaving
-                        Writer writer = this.staticWeaveClassTransformer.getLogWriter(); 
+                        Writer writer = this.staticWeaveInfo.getLogWriter(); 
                         if (writer != null) {
                             ((DefaultSessionLog)session.getSessionLog()).setWriter(writer);
                         }
-                        session.setLogLevel(this.staticWeaveClassTransformer.getLogLevel());
+                        session.setLogLevel(this.staticWeaveInfo.getLogLevel());
                         privateClassLoader = persistenceUnitInfo.getNewTempClassLoader();
                     }
                 } else {
@@ -1161,39 +1159,39 @@ public class EntityManagerSetupImpl {
                 // Cannot start logging until session and log and initialized, so log start of predeploy here.
                 session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
     
-                if (this.staticWeaveClassTransformer == null) {
-                    if (isSessionLoadedFromSessionsXML) {
-                        // Loading session from sessions-xml.
-                        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "loading_session_xml", sessionsXMLStr, sessionName);
-                        if (sessionName == null) {
-                            throw new PersistenceException(EntityManagerSetupException.sessionNameNeedBeSpecified(persistenceUnitInfo.getPersistenceUnitName(), sessionsXMLStr));
-                        }                
-                        XMLSessionConfigLoader xmlLoader = new XMLSessionConfigLoader(sessionsXMLStr);
-                        // Do not register the session with the SessionManager at this point, create temporary session using a local SessionManager and private class loader.
-                        // This allows for the project to be accessed without loading any of the classes to allow weaving.
-                        // Note that this method assigns sessionName to session.
-                        Session tempSession = new SessionManager().getSession(xmlLoader, sessionName, privateClassLoader, false, false);
-                        // Load path of sessions-xml resource before throwing error so user knows which sessions-xml file was found (may be multiple).
-                        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "sessions_xml_path_where_session_load_from", xmlLoader.getSessionName(), xmlLoader.getResourcePath());
-                        if (tempSession == null) {
-                            throw new PersistenceException(ValidationException.noSessionFound(sessionName, sessionsXMLStr));
-                        }
-                        // Currently the session must be either a ServerSession or a SessionBroker, cannot be just a DatabaseSessionImpl. 
-                        if (tempSession.isServerSession() || tempSession.isSessionBroker()) {
-                           session = (DatabaseSessionImpl) tempSession;
-                        } else {
-                            throw new PersistenceException(EntityManagerSetupException.sessionLoadedFromSessionsXMLMustBeServerSession(persistenceUnitInfo.getPersistenceUnitName(), (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML), tempSession));
-                        }
-                        // Must now reset logging and server-platform on the loaded session.
-                        // ServerPlatform must be set prior to setting the loggers.
-                        updateServerPlatform(predeployProperties, privateClassLoader);
-                        // Update loggers and settings for the singleton logger and the session logger.
-                        updateLoggers(predeployProperties, true, privateClassLoader);
+                if (isSessionLoadedFromSessionsXML) {
+                    // Loading session from sessions-xml.
+                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "loading_session_xml", sessionsXMLStr, sessionName);
+                    if (sessionName == null) {
+                        throw new PersistenceException(EntityManagerSetupException.sessionNameNeedBeSpecified(persistenceUnitInfo.getPersistenceUnitName(), sessionsXMLStr));
+                    }                
+                    XMLSessionConfigLoader xmlLoader = new XMLSessionConfigLoader(sessionsXMLStr);
+                    // Do not register the session with the SessionManager at this point, create temporary session using a local SessionManager and private class loader.
+                    // This allows for the project to be accessed without loading any of the classes to allow weaving.
+                    // Note that this method assigns sessionName to session.
+                    Session tempSession = new SessionManager().getSession(xmlLoader, sessionName, privateClassLoader, false, false);
+                    // Load path of sessions-xml resource before throwing error so user knows which sessions-xml file was found (may be multiple).
+                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "sessions_xml_path_where_session_load_from", xmlLoader.getSessionName(), xmlLoader.getResourcePath());
+                    if (tempSession == null) {
+                        throw new PersistenceException(ValidationException.noSessionFound(sessionName, sessionsXMLStr));
                     }
-                    
-                    warnOldProperties(predeployProperties, session);
-                    session.getPlatform().setConversionManager(new JPAConversionManager());
+                    // Currently the session must be either a ServerSession or a SessionBroker, cannot be just a DatabaseSessionImpl. 
+                    if (tempSession.isServerSession() || tempSession.isSessionBroker()) {
+                       session = (DatabaseSessionImpl) tempSession;
+                    } else {
+                        throw new PersistenceException(EntityManagerSetupException.sessionLoadedFromSessionsXMLMustBeServerSession(persistenceUnitInfo.getPersistenceUnitName(), (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML), tempSession));
+                    }
+                    // Must now reset logging and server-platform on the loaded session.
+                    // ServerPlatform must be set prior to setting the loggers.
+                    updateServerPlatform(predeployProperties, privateClassLoader);
+                    // Update loggers and settings for the singleton logger and the session logger.
+                    updateLoggers(predeployProperties, true, privateClassLoader);
+                }
                 
+                warnOldProperties(predeployProperties, session);
+                session.getPlatform().setConversionManager(new JPAConversionManager());
+                
+                if (this.staticWeaveInfo == null) {
                     PersistenceUnitTransactionType transactionType=null;
                     //bug 5867753: find and override the transaction type
                     String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, predeployProperties, session);
@@ -1250,7 +1248,6 @@ public class EntityManagerSetupImpl {
                     }
                 } else {
                     // predeploy is used for static weaving
-                    session.getPlatform().setConversionManager(new JPAConversionManager());
                     enableWeaving = Boolean.TRUE;
                 }
                 
@@ -2561,13 +2558,13 @@ public class EntityManagerSetupImpl {
     }
     
     // predeploy method will be used for static weaving
-    public void setStaticWeaveClassTransformer(StaticWeaveClassTransformer staticWeaveClassTransformer) {
-        this.staticWeaveClassTransformer = staticWeaveClassTransformer;
+    public void setStaticWeaveInfo(StaticWeaveInfo staticWeaveInfo) {
+        this.staticWeaveInfo = staticWeaveInfo;
     }
 
     protected void predeployCompositeMembers(Map predeployProperties, ClassLoader tempClassLoader) {
         // get all puInfos found in jar-files specified in composite's persistence.xml
-        // all these puInfos are not composite because composites are recursively "taken appart", too. 
+        // all these puInfos are not composite because composites are recursively "taken apart", too. 
         Set<SEPersistenceUnitInfo> compositeMemberPuInfos = getCompositeMemberPuInfoSet(persistenceUnitInfo, predeployProperties);
         // makes sure each member has a non-null property, overrides where required properties with composite's predeploy properties.
         updateCompositeMembersProperties(compositeMemberPuInfos, predeployProperties);
@@ -2590,7 +2587,7 @@ public class EntityManagerSetupImpl {
             // set composite
             containedEmSetupImpl.setCompositeEmSetupImpl(this);
             // non-null only in case predeploy is used for static weaving
-            containedEmSetupImpl.setStaticWeaveClassTransformer(this.staticWeaveClassTransformer);
+            containedEmSetupImpl.setStaticWeaveInfo(this.staticWeaveInfo);
             // the properties guaranteed to be non-null after updateCompositeMemberProperties call
             Map compositeMemberProperties = (Map)compositeMemberMapOfProperties.get(containedPuName);
             containedEmSetupImpl.predeploy(compositeMemberPuInfo, compositeMemberProperties);

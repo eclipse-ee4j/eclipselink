@@ -1195,7 +1195,9 @@ public class SessionsFactory {
         SessionLog javaLog = null;
         try {
             // use ConversionManager to avoid loading the JDK 1.4 class unless it is needed.
-            javaLog = (SessionLog)((Class)ConversionManager.getDefaultManager().convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).newInstance();
+            ConversionManager conversionManager = new ConversionManager();
+            conversionManager.setLoader(getClass().getClassLoader());
+            javaLog = (SessionLog)((Class)conversionManager.convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).newInstance();
             javaLog.setSession(session);
         } catch (Exception exception) {
             throw ValidationException.unableToLoadClass("org.eclipse.persistence.logging.JavaLog", exception);

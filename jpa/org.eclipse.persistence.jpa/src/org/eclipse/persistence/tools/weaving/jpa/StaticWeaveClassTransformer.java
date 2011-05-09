@@ -29,6 +29,7 @@ import java.util.zip.ZipException;
 import javax.persistence.spi.ClassTransformer;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.internal.jpa.StaticWeaveInfo;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
@@ -56,8 +57,7 @@ import org.eclipse.persistence.jpa.Archive;
 
 public class StaticWeaveClassTransformer {
     private ArrayList<ClassTransformer> classTransformers;
-    private Writer logWriter;
-    private int logLevel = SessionLog.OFF;    
+    StaticWeaveInfo info;
     private ClassLoader aClassLoader;
     
     /**
@@ -72,19 +72,10 @@ public class StaticWeaveClassTransformer {
      */
     public StaticWeaveClassTransformer(URL inputArchiveURL, String persistenceXMLLocation, ClassLoader aclassloader, Writer logWriter, int loglevel) throws URISyntaxException,IOException {
         this.aClassLoader = aclassloader;
-        this.logWriter=logWriter;
-        this.logLevel=loglevel;
-        buildClassTransformers(inputArchiveURL, persistenceXMLLocation ,aclassloader);
+        this.info = new StaticWeaveInfo(logWriter, loglevel);
+        buildClassTransformers(inputArchiveURL, persistenceXMLLocation, aclassloader);
     }
 
-
-    public Writer getLogWriter() {
-        return logWriter;
-    }
-    
-    public int getLogLevel() {
-        return logLevel;
-    }
     /**
      * The method performs weaving function on the given class.
      * @return the converted(woven) class
@@ -125,9 +116,13 @@ public class StaticWeaveClassTransformer {
                 SEPersistenceUnitInfo unitInfo = persistenceUnitsIterator.next();
                 //build class transformer.
                 String puName = unitInfo.getPersistenceUnitName();
-                EntityManagerSetupImpl emSetupImpl = new EntityManagerSetupImpl(puName, puName);
+                String sessionName = (String)unitInfo.getProperties().get(PersistenceUnitProperties.SESSION_NAME);
+                if (sessionName == null) {
+                    sessionName = puName;
+                }
+                EntityManagerSetupImpl emSetupImpl = new EntityManagerSetupImpl(puName, sessionName);
                 //indicates that predeploy is used for static weaving, also passes logging parameters
-                emSetupImpl.setStaticWeaveClassTransformer(this);
+                emSetupImpl.setStaticWeaveInfo(this.info);
                 ClassTransformer transformer = emSetupImpl.predeploy(unitInfo, emptyMap);
                 if (transformer != null) {
                     classTransformers.add(transformer);
