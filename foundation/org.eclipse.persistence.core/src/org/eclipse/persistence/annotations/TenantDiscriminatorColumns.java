@@ -19,6 +19,14 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/** 
+ * A TenantDiscriminatorColumns annotation allows the definition of multiple
+ * TenantDiscriminatorColumn.
+ * 
+ * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
+ * @author Guy Pelletier
+ * @since EclipseLink 2.3
+ */ 
 @Target({TYPE}) 
 @Retention(RUNTIME)
 public @interface TenantDiscriminatorColumns {

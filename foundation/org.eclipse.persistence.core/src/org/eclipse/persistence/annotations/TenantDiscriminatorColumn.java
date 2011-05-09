@@ -21,6 +21,24 @@ import javax.persistence.DiscriminatorType;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * Tenant discriminator column(s) are used with a SINGLE_TABLE multitenant 
+ * strategy. Tenant discriminator column(s) are completely user specified and
+ * there is no limit on how many tenant discriminator columns an application
+ * can define (using the TenantDiscriminatorColumns annotation)
+ * 
+ * Tenant discriminator column(s) can be specified at the Entity or 
+ * MappedSuperclass level and must always be accompanied with a 
+ * Multitenant(SINGLE_TABLE) specification. It is not sufficient to specify
+ * only tenant discriminator column(s).
+ * 
+ * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumns
+ * @see org.eclipse.persistence.annotations.Multitenant
+ * @see org.eclipse.persistence.annotations.MultitenantType
+ * 
+ * @author Guy Pelletier
+ * @since EclipseLink 2.3
+ */
 @Target({TYPE}) 
 @Retention(RUNTIME)
 public @interface TenantDiscriminatorColumn {

@@ -19,6 +19,20 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Multitenant specifies that a given entity is shared amongst multiple tenants
+ * of a given application. The multitenant type specifies how the data for these
+ * entities are to be stored on the database for each tenant. 
+ * 
+ * Multitenant can be specified at the Entity or MappedSuperclass level.
+ * 
+ * @see org.eclipse.persistence.annotations.MultitenantType
+ * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
+ * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumns
+ * 
+ * @author Guy Pelletier
+ * @since EclipseLink 2.3
+ */
 @Target({TYPE}) 
 @Retention(RUNTIME)
 public @interface Multitenant {
