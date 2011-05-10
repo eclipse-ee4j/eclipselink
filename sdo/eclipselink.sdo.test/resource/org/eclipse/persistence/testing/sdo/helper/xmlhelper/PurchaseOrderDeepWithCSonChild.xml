@@ -74,7 +74,6 @@
          </ns0:billTo>
          <ns0:comment>results/dividend is a ComplexSingle of a Complex Single off a child</ns0:comment>
          <ns0:comment>Stock is a ComplexMany off the root</ns0:comment>
-         <ns0:comment></ns0:comment>
          <ns0:items>
             <ns0:item partNum="901-AA">
                <ns0:product>
@@ -145,7 +144,6 @@
          </ns0:billTo>
          <ns0:comment>results/dividend is a ComplexSingle of a Complex Single off a child</ns0:comment>
          <ns0:comment>Stock is a ComplexMany off the root</ns0:comment>
-         <ns0:comment></ns0:comment>
          <ns0:items>
             <ns0:item partNum="901-AA">
                <ns0:product>

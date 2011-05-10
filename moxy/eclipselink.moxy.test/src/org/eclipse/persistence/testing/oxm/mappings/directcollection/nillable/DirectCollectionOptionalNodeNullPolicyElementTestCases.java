@@ -51,7 +51,7 @@ public class DirectCollectionOptionalNodeNullPolicyElementTestCases extends XMLM
         Vector aVector = new Vector();
         aVector.add(null);
         aVector.add("write code");
-        aVector.add(null);
+        aVector.add("");
         anEmployee.setTasks(aVector);
         anEmployee.setLastName("Doe");
         return anEmployee;
@@ -63,6 +63,7 @@ public class DirectCollectionOptionalNodeNullPolicyElementTestCases extends XMLM
         anEmployee.setFirstName(null);
         Vector aVector = new Vector();
         aVector.add("write code");
+        aVector.add("");
         anEmployee.setTasks(aVector);
         anEmployee.setLastName("Doe");
         return anEmployee;

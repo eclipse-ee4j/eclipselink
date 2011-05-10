@@ -1,0 +1,10 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="listsTestObject">
+      <xsd:sequence>
+         <xsd:element name="bigDecimals" type="xsd:decimal" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+         <xsd:element name="integers" type="xsd:int" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+         <xsd:element name="strings" type="xsd:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="listsTestObject" type="listsTestObject"/>
+</xsd:schema>

@@ -11,7 +11,7 @@
    </xsd:complexType>
    <xsd:complexType name="listOfString">
       <xsd:sequence>
-         <xsd:element name="item" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="item" type="xsd:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
    </xsd:complexType>
 </xsd:schema>

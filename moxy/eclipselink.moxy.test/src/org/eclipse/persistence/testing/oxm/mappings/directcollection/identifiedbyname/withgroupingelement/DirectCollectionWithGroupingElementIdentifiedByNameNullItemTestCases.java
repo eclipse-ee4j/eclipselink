@@ -68,7 +68,9 @@ public class DirectCollectionWithGroupingElementIdentifiedByNameNullItemTestCase
     Employee employee = new Employee();
     employee.setID(CONTROL_ID);		
 		Vector responsibilities = new Vector();
+		responsibilities.addElement(null);
 		responsibilities.addElement(CONTROL_RESPONSIBILITY1);
+		responsibilities.addElement(null);
 		employee.setResponsibilities(responsibilities);
     return employee;	
 	}

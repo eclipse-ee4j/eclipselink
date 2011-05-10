@@ -3,7 +3,7 @@
    <xsd:import namespace="listOfObjectsNamespace" schemaLocation="schema0.xsd"/>
    <xsd:complexType name="listOfEmployee">
       <xsd:sequence>
-         <xsd:element name="item" type="ns0:employee" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="item" nillable="true" type="ns0:employee" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
    </xsd:complexType>
 </xsd:schema>

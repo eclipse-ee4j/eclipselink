@@ -2,15 +2,15 @@
 <xsd:schema targetNamespace="listOfObjectsNamespace" xmlns:x="listOfObjectsNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="listofObjects">
       <xsd:sequence>
-         <xsd:element name="empList" type="x:employee" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="empTreeSet" type="x:employee" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="empArrayList" type="x:employee" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="integerList" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="empArray" type="x:employee" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="integerArray" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="floatArray" type="xsd:float" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="intArray" type="xsd:int" maxOccurs="unbounded"/>
-         <xsd:element name="booleanArray" type="xsd:boolean" maxOccurs="unbounded"/>
+         <xsd:element name="empList" type="x:employee" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="empTreeSet" type="x:employee" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="empArrayList" type="x:employee" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="integerList" type="xsd:int" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="empArray" type="x:employee" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="integerArray" type="xsd:int" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="floatArray" type="xsd:float" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="intArray" type="xsd:int" nillable="true" maxOccurs="unbounded"/>
+         <xsd:element name="booleanArray" type="xsd:boolean" nillable="true" maxOccurs="unbounded"/>
          <xsd:element name="stringIntegerHashMap" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
@@ -25,7 +25,7 @@
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
-         <xsd:element maxOccurs="unbounded" minOccurs="0" name="integerLinkedList" type="xsd:int"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" nillable="true" name="integerLinkedList" type="xsd:int"/>
          <xsd:element name="stringEmployeeHashtable" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
@@ -40,8 +40,8 @@
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
-         <xsd:element maxOccurs="unbounded" minOccurs="0" name="bigDecimalStack" type="xsd:decimal"/>
-         <xsd:element maxOccurs="unbounded" minOccurs="0" name="stringMyList" type="xsd:string"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" nillable="true" name="bigDecimalStack" type="xsd:decimal"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" nillable="true" name="stringMyList" type="xsd:string"/>
          <xsd:element name="stringIntegerConcurrentMap" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
@@ -56,8 +56,8 @@
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
-         <xsd:element name="integerSet" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="stringQueue" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="integerSet" type="xsd:int" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="stringQueue" type="xsd:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="employee">

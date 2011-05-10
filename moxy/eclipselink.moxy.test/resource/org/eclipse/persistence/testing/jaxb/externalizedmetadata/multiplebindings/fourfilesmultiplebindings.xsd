@@ -13,7 +13,7 @@
                <xsd:element minOccurs="0" name="address" type="xsd:string"/>
                <xsd:element minOccurs="0" name="bytes" type="xsd:base64Binary"/>
                <xsd:element minOccurs="0" name="jobTitle" type="xsd:string"/>
-               <xsd:element maxOccurs="unbounded" minOccurs="0" name="departments" type="department"/>
+               <xsd:element maxOccurs="unbounded" minOccurs="0" nillable="true" name="departments" type="department"/>
                <xsd:element minOccurs="0" name="contact-info">
                   <xsd:complexType>
                      <xsd:sequence>

@@ -658,6 +658,9 @@ public class Property implements Cloneable {
      */
     public void setIsXmlList(boolean isXmlList) {
         this.isXmlList = isXmlList;
+        if(isXmlList){
+            this.setNillable(false);
+        }
     }
     
     /**

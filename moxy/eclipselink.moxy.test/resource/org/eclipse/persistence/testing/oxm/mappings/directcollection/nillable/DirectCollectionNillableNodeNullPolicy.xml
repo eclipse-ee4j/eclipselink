@@ -4,5 +4,6 @@
 	<task xsi:nil="true"/>
 	<task>write code</task>
 	<task xsi:nil="true"/>
+	<task></task>
 	<last-name>Doe</last-name>
 </employee>

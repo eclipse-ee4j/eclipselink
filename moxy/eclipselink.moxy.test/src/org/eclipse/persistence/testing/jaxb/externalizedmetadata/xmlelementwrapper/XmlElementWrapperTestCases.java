@@ -70,7 +70,7 @@ public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
     public void testXmlElementWrapperNoOverride() {
         outputResolver = generateSchema(new Class[] { Employee.class }, 1);
         // validate schema
-        String controlSchema = PATH + "schema.xsd";
+        String controlSchema = PATH + "schemaNoOverride.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
         
         String src = PATH + "employee.xml";

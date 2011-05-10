@@ -3,7 +3,7 @@
    <xsd:complexType name="employee">
       <xsd:sequence>
          <xsd:element minOccurs="0" name="address" type="address"/>
-         <xsd:element maxOccurs="unbounded" minOccurs="0" name="phoneNumbers" type="phoneNumber"/>
+         <xsd:element nillable="true" maxOccurs="unbounded" minOccurs="0" name="phoneNumbers" type="phoneNumber"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="phoneNumber">

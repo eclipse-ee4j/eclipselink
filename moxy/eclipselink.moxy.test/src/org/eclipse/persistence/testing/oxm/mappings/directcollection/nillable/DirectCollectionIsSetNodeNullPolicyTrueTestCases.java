@@ -53,6 +53,7 @@ public class DirectCollectionIsSetNodeNullPolicyTrueTestCases extends XMLMapping
         aVector.add(null);
         aVector.add("write code");
         aVector.add(null);
+        aVector.add("");
         anEmployee.setTasks(aVector);
         anEmployee.setLastName("Doe");
         return anEmployee;

@@ -12,7 +12,7 @@
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
-         <xsd:element maxOccurs="unbounded" minOccurs="0" name="RESPONSIBILITIES2ELEM" type="xsd:anyType"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" nillable="true" name="RESPONSIBILITIES2ELEM" type="xsd:anyType"/>
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:int" use="required"/>
       <xsd:attribute name="BIRTHDAYATTR" type="xsd:dateTime"/>

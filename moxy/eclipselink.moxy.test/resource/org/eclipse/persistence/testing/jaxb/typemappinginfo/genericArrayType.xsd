@@ -2,12 +2,12 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="listOfbyteArray">
       <xsd:sequence>
-         <xsd:element name="item" type="xsd:base64Binary" maxOccurs="unbounded" minOccurs="0"/>
+         <xsd:element name="item" type="xsd:base64Binary" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="listOfString">
       <xsd:sequence>
-         <xsd:element name="item" type="xsd:string" maxOccurs="unbounded" minOccurs="0"/>
+         <xsd:element name="item" type="xsd:string" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="testTagname" type="listOfbyteArray"/>

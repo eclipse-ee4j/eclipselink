@@ -1693,7 +1693,9 @@ public class AnnotationsProcessor {
                 parent = parent.getSuperclass();
             }
         }
-
+        if((ptype.isArray()  && !areEquals(ptype, byte[].class))  || (property.isCollectionType(ptype) && !helper.isAnnotationPresent(javaHasAnnotations, XmlList.class)) ){
+        	property.setNillable(true);
+        }
         processPropertyAnnotations(info, cls, javaHasAnnotations, property);
 
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlPath.class)) {
@@ -3613,6 +3615,7 @@ public class AnnotationsProcessor {
         // @XmlElement(name, type)
         AnnotationVisitor av = mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
         av.visit("name", ITEM);
+        av.visit("nillable", true);
         av.visit("type", Type.getType(L + getObjectType(nestedClass).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
         av.visitEnd();
         // Copy annotations

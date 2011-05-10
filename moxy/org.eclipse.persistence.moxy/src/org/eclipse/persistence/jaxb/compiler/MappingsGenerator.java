@@ -1800,9 +1800,7 @@ public class MappingsGenerator {
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
             mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
         }
-        if (property.getActualType() == null || property.getActualType().getRawName().equals("java.lang.String")) {
-            mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
-        }
+        mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);

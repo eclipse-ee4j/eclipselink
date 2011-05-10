@@ -11,7 +11,7 @@
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
-         <xsd:element maxOccurs="unbounded" minOccurs="0" name="RESPONSIBILITIES2" type="xsd:anyType"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="RESPONSIBILITIES2" nillable="true" type="xsd:anyType"/>
          <xsd:element name="SOMENUMBER" type="xsd:int"/>
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:int" use="required"/>

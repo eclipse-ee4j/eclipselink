@@ -8,7 +8,7 @@
    </xsd:complexType>
    <xsd:complexType name="listOfEmployee">
       <xsd:sequence>
-         <xsd:element maxOccurs="unbounded" minOccurs="0" name="item" type="ns0:employee"/>
+         <xsd:element maxOccurs="unbounded" nillable="true" minOccurs="0" name="item" type="ns0:employee"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="listOfString2">
@@ -22,7 +22,7 @@
    </xsd:complexType>
    <xsd:complexType name="listOfString">
       <xsd:sequence>
-         <xsd:element name="item" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="item" type="xsd:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="testTagName3" type="ns0:listOfEmployee"/>
