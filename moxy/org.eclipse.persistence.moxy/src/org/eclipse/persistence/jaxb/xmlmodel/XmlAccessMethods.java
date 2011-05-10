@@ -27,8 +27,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="xml-access-methods">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="get-method" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="set-method" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="get-method" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="set-method" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -40,9 +40,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "xml-access-methods")
 public class XmlAccessMethods {
 
-    @XmlAttribute(name = "get-method", required = true)
+    @XmlAttribute(name = "get-method")
     protected String getMethod;
-    @XmlAttribute(name = "set-method", required = true)
+    @XmlAttribute(name = "set-method")
     protected String setMethod;
 
     /**

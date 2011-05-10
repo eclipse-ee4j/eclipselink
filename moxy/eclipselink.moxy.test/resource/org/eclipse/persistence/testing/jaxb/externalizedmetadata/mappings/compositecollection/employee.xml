@@ -3,7 +3,7 @@
     <info>
         <c:contact-info>
             <addresses>
-                <address id="67">
+                <address id="67" readOnlyString="some garbage text">
                     <city>Kanata</city>
                     <street>66 Lakview Drive</street>
                     <province>ON</province>

@@ -9,6 +9,7 @@
          <xsd:element name="postalCode" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:int" use="required"/>
+      <xsd:attribute name="readOnlyString" type="xsd:string" />
    </xsd:complexType>
    <xsd:complexType name="employee">
       <xsd:sequence>

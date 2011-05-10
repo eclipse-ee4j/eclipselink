@@ -31,6 +31,7 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/";
     private static final int HOME_ID = 67;
+    private static final String HOME_RO_STRING = "some garbage text";
     private static final String HOME_CITY = "Kanata";
     private static final String HOME_STREET = "66 Lakview Drive";
     private static final String HOME_PROVINCE = "ON";
@@ -85,6 +86,7 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
         // setup Addresses
         Address hAddress = new Address();
         hAddress.id = HOME_ID;
+        hAddress.readOnlyString = HOME_RO_STRING;
         hAddress.city = HOME_CITY;
         hAddress.street = HOME_STREET;
         hAddress.province = HOME_PROVINCE;

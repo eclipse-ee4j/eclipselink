@@ -88,7 +88,7 @@ public class Employee {
         return (homeAddress.equals(empObj.homeAddress) &&
                 workAddress.equals(empObj.workAddress) &&
                 alternateAddress.equals(empObj.alternateAddress) &&
-                foo.equals(empObj.foo) &&
+                ((foo == null && empObj.foo == null) || foo != null && empObj != null && foo.equals(empObj.foo)) &&
                 department.equals(empObj.department) &&
                 phone1.equals(empObj.phone1) &&
                 phone2.equals(empObj.phone2));

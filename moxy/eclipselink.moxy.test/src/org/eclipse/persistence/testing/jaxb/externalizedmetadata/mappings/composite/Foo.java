@@ -15,6 +15,10 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compo
 public class Foo {
     public String foodata = "";
     
+    public String getFoodata() { 
+        return foodata; 
+    }
+    
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
         

@@ -111,8 +111,8 @@
     </xs:complexType>
     <xs:element name="xml-access-methods" type="xml-access-methods" />
     <xs:complexType name="xml-access-methods">
-        <xs:attribute name="get-method" type="xs:string" use="required"/>
-        <xs:attribute name="set-method" type="xs:string" use="required"/>
+        <xs:attribute name="get-method" type="xs:string" />
+        <xs:attribute name="set-method" type="xs:string" />
     </xs:complexType>
     <xs:element name="xml-class-extractor" type="xml-class-extractor" />
     <xs:complexType name="xml-class-extractor">

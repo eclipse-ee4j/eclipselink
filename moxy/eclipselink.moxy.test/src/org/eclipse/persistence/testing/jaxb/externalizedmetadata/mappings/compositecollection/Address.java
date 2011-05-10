@@ -19,6 +19,11 @@ public class Address {
     public String province = "";
     public String postalCode = "";
     
+    public String readOnlyString = "";
+    public void setReadOnlyString(String val) {
+        readOnlyString = val;
+    }
+    
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
         
@@ -33,6 +38,7 @@ public class Address {
                 city.equals(addObj.city) &&
                 street.equals(addObj.street) &&
                 province.equals(addObj.province) &&
-                postalCode.equals(addObj.postalCode));
+                postalCode.equals(addObj.postalCode) &&
+                readOnlyString.equals(addObj.readOnlyString));
     }
 }

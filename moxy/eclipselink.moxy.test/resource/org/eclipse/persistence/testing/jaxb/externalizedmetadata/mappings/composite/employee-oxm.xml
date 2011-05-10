@@ -25,7 +25,10 @@
 		</java-type>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.Foo" xml-accessor-type="FIELD">
             <java-attributes>
-                <xml-attribute java-attribute="foodata" />
+                <xml-attribute java-attribute="foodata">
+                    <!--  foodata will be write only -->
+                    <xml-access-methods get-method="getFoodata" />
+                </xml-attribute>
             </java-attributes>        
         </java-type>
 	</java-types>

@@ -97,7 +97,7 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
      * 
      * @return
      */
-    public Employee getControlObject() {
+    public Employee getControlObject(boolean marshal) {
         Address hAddress = new Address();
         hAddress.city = HOME_CITY;
         hAddress.street = HOME_STREET;
@@ -127,9 +127,12 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         Department dept = new Department();
         dept.deptId = DEPT_ID;
         dept.deptName = DEPT_NAME;
-        
+
+        // foodata is write only 
         Foo foo = new Foo();
-        foo.foodata = FOO_NAME;
+        if (marshal) {
+            foo.foodata = FOO_NAME;
+        }
         
         Phone pPhone = new Phone();
         pPhone.number = PRIVATE_NUMBER;
@@ -220,7 +223,7 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         }
 
         // setup control Employee
-        Employee ctrlEmp = getControlObject();
+        Employee ctrlEmp = getControlObject(false);
         // 'privatePhone' is write only, so no value should be unmarshalled for it
         ctrlEmp.privatePhone = null;
 
@@ -260,7 +263,7 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         // test marshal
         try {
             Marshaller marshaller = jaxbContext.createMarshaller();
-            Employee ctrlEmp = getControlObject();
+            Employee ctrlEmp = getControlObject(true);
             marshaller.marshal(ctrlEmp, testDoc);
             //marshaller.marshal(ctrlEmp, System.out);
             assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);

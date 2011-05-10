@@ -16,9 +16,13 @@
                 <xml-element java-attribute="writeOnlyAddressList" xml-path="info/write-only/address" write-only="true" />
             </java-attributes>
         </java-type>
-        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.Address">
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.Address" xml-accessor-type="FIELD">
             <java-attributes>
                 <xml-attribute java-attribute="id" />
+                <xml-attribute java-attribute="readOnlyString">
+                    <!-- readOnlyString will be read only -->
+                    <xml-access-methods set-method="setReadOnlyString" />
+                </xml-attribute>
             </java-attributes>
         </java-type>
 	</java-types>
