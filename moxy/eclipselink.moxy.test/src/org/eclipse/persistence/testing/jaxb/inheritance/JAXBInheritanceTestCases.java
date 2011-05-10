@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
@@ -70,5 +71,42 @@ public class JAXBInheritanceTestCases extends JAXBTestCases {
  		controlSchema.add(instream1);
  		return controlSchema;
     }    
+    
+    public void testUnmarshalToSubClass() throws Exception{
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            StreamSource ss = new StreamSource(instream);
+            JAXBElement testObject = getJAXBUnmarshaller().unmarshal(ss, A.class);
+            Object value = testObject.getValue();
+            instream.close();
+            assertTrue(value instanceof E);
+            assertEquals(5, ((E)value).getEee());
+            
+            log("\n**xmlToObjectTest**");
+            log("Expected:");
+            log(getReadControlObject().toString());
+            log("Actual:");
+            log(testObject.toString());
+
+            JAXBElement controlObj = (JAXBElement)getUnmarshalToSubClssControlObject();            
+            JAXBElement testObj = (JAXBElement)testObject;
+            compareJAXBElementObjects(controlObj, testObj);           
+        }
+    }
+    
+    public Object getUnmarshalToSubClssControlObject() {
+		// reads a document that also contains a value for "ddd" and makes sure
+		// we ignore it
+		E object = new E();
+		object.setAaa(1);
+		object.setBbb(2);
+		object.setCcc(3);
+		object.setDdd(4);
+		object.setEee(5);
+		QName qname = new QName("", "a-element");
+		JAXBElement jaxbElement = new JAXBElement(qname, E.class, object);
+
+		return jaxbElement;
+	}
 	
 }

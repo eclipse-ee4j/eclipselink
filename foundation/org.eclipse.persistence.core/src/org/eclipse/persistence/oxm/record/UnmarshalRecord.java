@@ -402,7 +402,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private void initializeRecord(Attributes attrs) throws SAXException{
     	XMLDescriptor xmlDescriptor = (XMLDescriptor) treeObjectBuilder.getDescriptor();    	
     	if(!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().getClassIndicatorField() == null){
-    		treeObjectBuilder = (TreeObjectBuilder)xmlDescriptor.getObjectBuilder();
+    		initialize((TreeObjectBuilder)xmlDescriptor.getObjectBuilder());
     		initializeRecord((XMLMapping)null);
         	return;
         }
@@ -422,8 +422,8 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
          }
          if (classValue != null) {
              xmlDescriptor = (XMLDescriptor)session.getDescriptor(classValue);             
-         }    
-         treeObjectBuilder = (TreeObjectBuilder)xmlDescriptor.getObjectBuilder();
+         }
+         initialize((TreeObjectBuilder)xmlDescriptor.getObjectBuilder());         
          initializeRecord((XMLMapping)null);
     }
     
