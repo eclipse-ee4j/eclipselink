@@ -43,6 +43,9 @@ public class E extends D {
 	    if(getCcc() != objE.getCcc()){
 	    	return false;
 	    }
+		if(getFoo() != objE.getFoo()){
+	    	return false;
+	    }
 	    if(getBbb() != objE.getBbb()){
 	    	return false;
 	    }

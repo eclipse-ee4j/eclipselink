@@ -2,7 +2,8 @@
 <a-element xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="e-type">
   <aaa>1</aaa>
   <bbb>2</bbb>
-  <ccc>3</ccc>
   <ddd>4</ddd>
+  <foo>0</foo>
+  <ccc>3</ccc>
   <eee>5</eee>
 </a-element>

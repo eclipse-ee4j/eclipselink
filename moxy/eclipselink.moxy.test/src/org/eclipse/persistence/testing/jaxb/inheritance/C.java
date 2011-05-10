@@ -14,8 +14,11 @@ package org.eclipse.persistence.testing.jaxb.inheritance;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-//@XmlTransient
+@XmlTransient
 public class C extends B{
+	@XmlElement(name="foo")
+	protected int foo;
+
 	@XmlElement(name="ccc")
 	protected int ccc;
 
@@ -25,5 +28,12 @@ public class C extends B{
 
 	public void setCcc(int ccc) {
 		this.ccc = ccc;
+	}
+	public int getFoo() {
+		return foo;
+	}
+
+	public void setFoo(int foo) {
+		this.foo = foo;
 	}
 }

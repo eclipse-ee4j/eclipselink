@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.testing.jaxb.events.Employee;
 
-//@XmlTransient
+@XmlTransient
 public class D extends C{
 	protected int ddd;
 
