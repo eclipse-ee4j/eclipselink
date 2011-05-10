@@ -316,6 +316,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7337", "The mapped tenant discriminator column [{1}] on the class [{0}] must be marked as read only. In JPA this is done by setting insertable=false and updatable=false on the column e.g. @Column(name=\"TENANT_ID\", insertable=false, updatable=false)."},
                                            { "7338", "You cannot add sequences to a SessionBroker." },
                                            { "7339", "Alias [{0}] is used by both [{1}] and [{2}] classes. Descriptor alias must be unique." },
+                                           { "7340", "There are multiple mapping files called [{0}] in classpath."},
                                            
  };
     

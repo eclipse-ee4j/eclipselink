@@ -116,6 +116,8 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
+import org.eclipse.persistence.jpa.MetadataRepositoryReader;
+import org.eclipse.persistence.jpa.XMLMetadataRepository;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
@@ -1285,6 +1287,9 @@ public class EntityManagerSetupImpl {
     
                         // Create an instance of MetadataProcessor for specified persistence unit info
                         processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, usesMultitenantSharedEmf, predeployProperties, compositeProcessor);
+                        
+                        //need to use the real classloader to create the repository class
+                        updateMetadataRepository(predeployProperties, persistenceUnitInfo.getClassLoader()); 
         
                         //bug:299926 - Case insensitive table / column matching with native SQL queries
                         EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
@@ -2169,7 +2174,26 @@ public class EntityManagerSetupImpl {
             }
         }
     }
-    
+
+    /**
+     * Load the Metadata Repository for Extensibility
+     */
+    protected void updateMetadataRepository(Map m, ClassLoader loader){
+        String repository = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.METADATA_REPOSITORY, m, null, session);
+        if (repository!=null) {
+            if (repository.equalsIgnoreCase("XML")) {
+                processor.setMetadataRepository(new XMLMetadataRepository());
+            } else {
+                Class transportClass = findClassForProperty(repository, PersistenceUnitProperties.METADATA_REPOSITORY, loader);
+                try {
+                    processor.setMetadataRepository((MetadataRepositoryReader)transportClass.newInstance());
+                } catch (Exception invalid) {
+                    session.handleException(EntityManagerSetupException.failedToInstantiateProperty(repository, PersistenceUnitProperties.METADATA_REPOSITORY,invalid));
+                }
+            }
+        }
+    }
+
     /**
      * Enable or disable the capability of Native SQL function.  
      * The method needs to be called in deploy stage.

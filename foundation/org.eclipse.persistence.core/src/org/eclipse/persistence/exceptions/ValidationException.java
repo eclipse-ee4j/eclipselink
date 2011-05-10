@@ -420,6 +420,9 @@ public class ValidationException extends EclipseLinkException {
     public static final int CANNOT_ADD_SEQUENCES_TO_SESSION_BROKER = 7338;
     public static final int SHARED_DESCRIPTOR_ALIAS = 7339;
     
+    // XML Metadata Repository
+    public static final int NON_UNIQUE_REPOSITORY_FILE_NAME = 7340;
+
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -1348,11 +1351,18 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(NON_UNIQUE_ENTITY_NAME);
         return validationException;
     }
-    
+
     public static ValidationException nonUniqueMappingFileName(String puName, String mf) {
         Object[] args = {puName, mf};
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NON_UNIQUE_MAPPING_FILE_NAME, args));
         validationException.setErrorCode(NON_UNIQUE_MAPPING_FILE_NAME);
+        return validationException;
+    }
+
+    public static ValidationException nonUniqueRepositoryFileName(String fileName) {
+        Object[] args = {fileName};
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NON_UNIQUE_REPOSITORY_FILE_NAME, args));
+        validationException.setErrorCode(NON_UNIQUE_REPOSITORY_FILE_NAME);
         return validationException;
     }
     

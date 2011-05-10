@@ -68,9 +68,16 @@ public class XMLEntityMappingsReader {
     private static Schema m_eclipseLinkOrmSchema;
 
     /**
-     * Check the orm.xml to determine which project and schema to use.
+     * Check the orm.xml to determine which project and schema to use.  
+     * EclipseLink ORM is used if input Reader is null
      */
     private static Object[] determineXMLContextAndSchema(String file, Reader input) throws Exception {
+        Object[] context = new Object[2];
+        if (input == null) {
+            context[0] = getEclipseLinkOrmProject();
+            context[1] = getEclipseLinkOrmSchema();
+            return context;
+        }
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
         
@@ -85,7 +92,6 @@ public class XMLEntityMappingsReader {
         InputSource inputSource = new InputSource(input);
         xmlReader.parse(inputSource);
         
-        Object[] context = new Object[2];
         if (contentHandler.isEclipseLink()) {
             context[0] = getEclipseLinkOrmProject();
             context[1] = getEclipseLinkOrmSchema();
@@ -123,6 +129,13 @@ public class XMLEntityMappingsReader {
             xmlEntityMappings.setMappingFile(mappingFile);
         }
         return xmlEntityMappings;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public static XMLEntityMappings read(String sourceName, Reader reader, ClassLoader classLoader, Properties properties){
+        return read(sourceName, null, reader, classLoader, properties);
     }
    
     /**

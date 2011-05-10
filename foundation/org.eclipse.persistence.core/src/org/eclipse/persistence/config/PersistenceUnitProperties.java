@@ -1607,6 +1607,45 @@ public class PersistenceUnitProperties {
      * @see #DDL_GENERATION
      */
     public static final String NONE = "none";
+    
+    /**
+     * The <code>"eclipselink.metadata-repository"</code>property configures the type of
+     * MetadataRepositoryReader implementation to use to read from the MetadataRepository
+     * <p>
+     * Values (case insensitive):
+     * <ul>
+     * <li>"XML": Use {@link MetadataRepositoryReader}
+     * <li>Custom MetadataRepositoryReader - Specify a custom class name which
+     * implements {@link MetadataRepositoryReader}
+     * </ul>
+     * 
+     * @see MetadataRepositoryReader
+     */
+    public static final String METADATA_REPOSITORY = "eclipselink.metadata-repository";
+    
+    /**
+     * The property <code>"eclipselink.metadata-repository.xml.file"</code>
+     * 
+     * <p>Specifies the name of the metadata repository xml file to read from using classloader to find the resource</p>
+     * 
+     * <p>This property should be used in conjunction with the 
+     * <code>"eclipselink.metadata-repository"</code> when an XML repository is being used.</p>
+     * 
+     * @see #METADATA_REPOSITORY
+     */
+    public static final String METADATA_REPOSITORY_XML_FILE = "eclipselink.metadata-repository.xml.file";
+    
+    /**
+     * The property <code>"eclipselink.metadata-repository.xml.URL"</code>
+     * 
+     * <p>Specifies the name of the metadata repository xml URL to read from.</p>
+     * 
+     * <p>This property should be used in conjunction with the 
+     * <code>"eclipselink.metadata-repository"</code> when an XML repository is being used.</p>
+     * 
+     * @see #METADATA_REPOSITORY
+     */
+    public static final String METADATA_REPOSITORY_XML_URL = "eclipselink.metadata-repository.xml.url";
 
     /**
      * The property <code>"eclipselink.application-location"</code>
