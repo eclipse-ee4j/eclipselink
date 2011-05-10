@@ -68,11 +68,21 @@
   <!-- **************************************************** -->
 
   <xsd:complexType name="emptyType"/>
+  
   <xsd:simpleType name="versionType">
     <xsd:restriction base="xsd:token">
       <xsd:pattern value="[0-9]+(\.[0-9]+)*"/>
     </xsd:restriction>
   </xsd:simpleType>
+  
+  <xsd:simpleType name="supported-versions-type">
+    <xsd:restriction base="orm:versionType">
+      <xsd:enumeration value="2.0"/>
+      <xsd:enumeration value="2.1"/>
+      <xsd:enumeration value="2.2"/>
+      <xsd:enumeration value="2.3"/>
+    </xsd:restriction>
+  </xsd:simpleType> 
 
   <!-- **************************************************** -->
 
@@ -680,7 +690,7 @@
         <xsd:element name="embeddable" type="orm:embeddable" 
                      minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
-      <xsd:attribute name="version" type="orm:versionType" 
+      <xsd:attribute name="version" type="orm:supported-versions-type" 
                      fixed="2.3" use="required"/>
     </xsd:complexType>
   </xsd:element>
