@@ -20,6 +20,8 @@ NaImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/na.gif\" align=
 #      Results summary in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
 unset genResultSummary
 genResultSummary() {
+    #    Need to save current location
+    currdir=`pwd`
     #    Need to be in dir to generate proper strings
     cd ${BaseDownloadNFSDir}/nightly/${version}
     content_dir_index=`ls -dr * | grep -n ${contentdir} | cut -d: -f1`
@@ -65,7 +67,7 @@ genResultSummary() {
         echo "    ${summary}(${failures}:${errors})"
         echo "${summary}" >> ${result_file}
     done
-    cd ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}
+    cd ${currdir}
     echo "    done."
 }
 
@@ -104,6 +106,50 @@ genResultEntry() {
         echo "              ${Image}" >> $tmp/index.xml
     fi
     echo "            </td>" >> $tmp/index.xml
+}
+
+unset validateSummaryFile
+validateSummaryFile() {
+    host=$1
+
+    # create summary file if one doesn't exist (should only be true if host=Eclipse and tests not published yet)
+    if [ ! -f ${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/${summaryfile} ] ; then
+        echo "No ${summaryfile} file found in '${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${host}' directory... creating."
+        genResultSummary
+        echo "done."
+    fi
+    # test summary files exist in host dir
+    if [ `ls | grep -c .` -gt 1 ] ; then
+        #DEBUG
+        #echo "Test Summaries exist in Host: '${host}'"
+        #echo "pwd="`pwd`
+        #echo "host='$host'"
+        #echo "sf='${summaryfile}'"
+
+        message=""
+        initialSuiteTestCount=`cat ${summaryfile} | grep -m1 . | cut -d: -f2`
+        summaryVersion=`cat ${summaryfile} | grep -m1 . | cut -d: -f1 | cut -d. -f4`
+        latestTestedBuild=`ls *core* | sort -r | grep -m1 . |  cut -d. -f4` # need to fix other 'hosts' may not publish core
+
+        #DEBUG
+        #echo "initialSuiteTestCount='${initialSuiteTestCount}'"
+        #echo "summaryVersion='${summaryVersion}'"
+        #echo "latestTestedBuild='${latestTestedBuild}'"
+
+        #    if summary is 'blank' (no results), then regen
+        if [ ${initialSuiteTestCount} -eq 0 ] ; then
+            message="Result Summary 'blank', but test results now exist. Recreating..."
+        fi
+        #    if summary is 'old' (based upon an older build) then regen
+        if [ ! "${summaryVersion}" == "${latestTestedBuild}" ] ; then
+            message="Result Summary is old (${summaryVersion}), newer test results now exist (${latestTestedBuild}). Recreating..."
+        fi
+        if [ ! "${message}" = "" ] ; then
+            echo ${message}
+            genResultSummary
+            echo "done."
+        fi
+    fi
 }
 
 buildir=/shared/rt/eclipselink
@@ -259,11 +305,6 @@ for version in `ls -dr [0-9]*` ; do
             mv eclipselink-*.html ${hostdir}/.
             echo "done."
         fi
-        if [ ! -f ${hostdir}/${summaryfile} ] ; then
-            echo "No ${hostdir}/${summaryfile} file... creating."
-            genResultSummary
-            echo "done."
-        fi
 
         #   Set a counter to track the number of times through the "hosts" loop
         count=0
@@ -279,14 +320,9 @@ for version in `ls -dr [0-9]*` ; do
                 borderstyle=
                 echo "            <tr>" >> $tmp/index.xml
             fi
-            #    if summary is 'blank', and it isn't the only file in host dir, then regen
-            if [ `cat ${summaryfile} | grep -m1 . | cut -d: -f2` -eq 0 ] ; then
-                if [ `ls | grep -c .` -gt 1 ] ; then
-                    echo "Result Summary 'blank', but test results now exist. Recreating..."
-                    genResultSummary
-                    echo "done."
-                fi
-            fi
+
+            # Check summary file is up-to-date and valid
+            validateSummaryFile ${hostdir}
 
             #   Add "Host" entry
             echo "            <td ${borderstyle} align=\"middle\">" >> $tmp/index.xml
