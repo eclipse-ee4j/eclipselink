@@ -43,6 +43,9 @@ import java.lang.annotation.Target;
  *     public Employee manager;
  * }
  * </pre>
+ * 
+ * @see XmlJoinNode
+ * @see XmlJoinNodes
  */
 @Target({METHOD, FIELD}) 
 @Retention(RUNTIME)

@@ -18,7 +18,34 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
+/**
+ * <p><b>XmlJoinNodes</b> is a holder for multiple {@code XmlJoinNode} annotations. This is used to specify the source to target
+ * associations in a reference mapping with multiple keys. XmlJoinNodes will contain one XmlJoinNode for each key. The
+ * targets of the individual XmlJoinNode annotations must be annotated with either {@code XmlID} or {@code XmlKey}. 
+ *
+ * <p><b>Example:</b>
+ * <pre>
+ * &#64;XmlRootElement 
+ * &#64;XmlAccessorType(XmlAccessType.FIELD)
+ * public class Employee {
+ *     
+ *     &#64;XmlKey
+ *     public String id;
+ *
+ *     &#64;XmlKey
+ *     public String department;
+ *     
+ *     &#64;XmlJoinNodes({
+ *         &#64;XmlJoinNode(xmlPath="manager/id/text()", referencedXmlPath="id/text()"),
+ *         &#64;XmlJoinNode(xmlPath="manager/dept/text()", referencedXmlPath="department/text()")
+ *     })
+ *     public Employee manager;
+ * }
+ * </pre>
+ * 
+ * @see XmlJoinNode
+ * @see XmlKey
+ */ 
 @Target({METHOD, FIELD}) 
 @Retention(RUNTIME)
 public @interface XmlJoinNodes {

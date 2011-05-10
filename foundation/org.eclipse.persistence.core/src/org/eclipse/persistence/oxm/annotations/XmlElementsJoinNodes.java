@@ -19,6 +19,40 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * XmlElementsJoinNodes is used in conjunction with {@code XmlElements} in order to specify the key references for the
+ * targets of the XmlElements annotation. There must be one XmlJoinNodes for each XmlElement This is similar to using {@code XmlIDREF} 
+ * with {@code XmlElements} but allows customisation of the xpath for the source keys and allows for composite key 
+ * relationships.
+ * 
+ * <p><b>Example:</b></p>
+ * <pre>
+ * &#64;XmlRootElement
+ * public class Client {
+ *   
+ *   ...
+ *   
+ *   &#64;XmlElements({
+ *       &#64;XmlElement(name="mail", type=Address.class),
+ *       &#64;XmlElement(name="phone", type=PhoneNumber.class)
+ *   })
+ *   &#64;XmlElementsJoinNodes({
+ *       &#64;XmlJoinNodes({
+ *           &#64;XmlJoinNode(xmlPath="mail/@id", referencedXmlPath="@aid"),
+ *           &#64;XmlJoinNode(xmlPath="mail/type/text()", referencedXmlPath="@type")
+ *       }),
+ *       &#64;XmlJoinNodes({
+ *           &#64;XmlJoinNode(xmlPath="phone/@id", referencedXmlPath="@pid"),
+ *           &#64;XmlJoinNode(xmlPath="phone/type/text()", referencedXmlPath="@type")
+ *       })
+ *   })
+ *   public Object preferredContactMethod;
+ *   
+ *   @see XmlJoinNodes
+ *   @see XmlJoinNode
+ *   @see XmlElements
+ *   @see XmlKey
+ */
 @Target({METHOD, FIELD}) 
 @Retention(RUNTIME)
 public @interface XmlElementsJoinNodes {

@@ -18,7 +18,30 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
+/**
+ * <p><b>XmlJoinNode</b> is used in conjunction with {@code XmlKey} to specify a reference mapping. This is similar
+ * to XmlID and XmlIDREF but allows for keys that are of types other than ID. When used with {@code XmlJoinNodes} can
+ * be used to allow composite keys. The referencedXmlPath must match the xpath of a field on the target class that has 
+ * been annotated with either XmlID or XmlKey.
+ * 
+ * <p><b>Example:</b>
+ * <pre>
+ * &#64;XmlRootElement 
+ * &#64;XmlAccessorType(XmlAccessType.FIELD)
+ * public class Employee {
+ *     
+ *     &#64;XmlKey
+ *     public String id;
+ *
+ *     public String department;
+ *     
+       &#64;XmlJoinNode(xmlPath="manager/id/text()", referencedXmlPath="id/text()")
+ *     public Employee manager;
+ * }
+ * </pre>
+ * @see XmlKey
+ * @see XmlJoinNodes
+ */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface XmlJoinNode {
