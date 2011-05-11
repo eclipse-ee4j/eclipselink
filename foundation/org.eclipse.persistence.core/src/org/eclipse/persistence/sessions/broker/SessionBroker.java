@@ -101,7 +101,7 @@ public class SessionBroker extends DatabaseSessionImpl {
                 if (serverSession.getProject().hasIsolatedCacheClassWithoutUOWIsolation()) {
                     throw ValidationException.isolatedDataNotSupportedInSessionBroker(sessionName);
                 }
-                clientBroker.internalRegisterSession(sessionName, ((org.eclipse.persistence.sessions.server.ServerSession)serverSession).acquireClientSession());
+                clientBroker.registerSession(sessionName, ((org.eclipse.persistence.sessions.server.ServerSession)serverSession).acquireClientSession());
             } else {
                 throw ValidationException.cannotAcquireClientSessionFromSession();
             }
@@ -122,13 +122,14 @@ public class SessionBroker extends DatabaseSessionImpl {
 
         // ? logMessage("acquire_client_session_broker", (Object[])null);
         SessionBroker historicalBroker = copySessionBroker();
+        historicalBroker.parent = this;
         String sessionName;
         AbstractSession session;
         Iterator names = this.getSessionsByName().keySet().iterator();
         while (names.hasNext()) {
             sessionName = (String)names.next();
             session = getSessionForName(sessionName);
-            historicalBroker.registerSession(sessionName, session.acquireHistoricalSession(clause));
+            historicalBroker.registerSession(sessionName, (AbstractSession)session.acquireHistoricalSession(clause));
         }
         return historicalBroker;
     }
@@ -283,11 +284,16 @@ public class SessionBroker extends DatabaseSessionImpl {
 
         broker.accessors = getAccessors();
         broker.name = getName();
+        broker.isLoggingOff = isLoggingOff();
         broker.sessionLog = getSessionLog();
+        broker.profiler = getProfiler();
+        broker.isInProfile = isInProfile();
         broker.project = project;
         if (hasEventManager()) {
             broker.eventManager = getEventManager().clone(broker);
         }
+        broker.exceptionHandler = getExceptionHandler();
+        broker.descriptors = getDescriptors();
         broker.shouldPropagateChanges = shouldPropagateChanges;
 	
         return broker;
@@ -745,34 +751,43 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * Register the session under its name.
      * All of the session's descriptors must have already been registered.
-     * The session should not be connected and descriptors should not be initialized.
+     * DatabaseSession/ServerSession should not be connected and descriptors should not be initialized.
      */
     public void registerSession(String name, AbstractSession session) {
         session.setIsInBroker(true);
         getSessionsByName().put(name, session);
         session.setBroker(this);
         session.setName(name);
-
-        // The keys/classes must also be used as some descriptors may be under multiple classes.
-        Iterator descriptors = session.getDescriptors().values().iterator();
-        Iterator classes = session.getDescriptors().keySet().iterator();
-        while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
-            Class descriptorClass = (Class)classes.next();
-            getSessionNamesByClass().put(descriptorClass, name);
-            if(this.shouldUseDescriptorAliases) {
-                String alias = descriptor.getAlias();
-                if(alias != null && alias.length() > 0) {
-                    ClassDescriptor anotherDescriptor = getDescriptorForAlias(alias);
-                    if(anotherDescriptor != null) {
-                        if(anotherDescriptor.getJavaClass() != descriptor.getJavaClass()) {
-                            throw ValidationException.sharedDescriptorAlias(alias, descriptor.getJavaClass().getName(), anotherDescriptor.getJavaClass().getName());
-                        }
-                    }
-                    addAlias(alias, descriptor);
-                }
+        if (session.isDatabaseSession()) {
+            if (hasEventManager()) {
+                // add broker's listeners to member sessions.
+                // each time a listener added to broker it is added to member sessions, too
+                // (see SessionEventManager#addListener) therefore at all times
+                // each member session has all broker's listeners.
+                session.getEventManager().getListeners().addAll(getEventManager().getListeners());
             }
-            getDescriptors().put(descriptorClass, descriptor);
+    
+            // The keys/classes must also be used as some descriptors may be under multiple classes.
+            Iterator descriptors = session.getDescriptors().values().iterator();
+            Iterator classes = session.getDescriptors().keySet().iterator();
+            while (descriptors.hasNext()) {
+                ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+                Class descriptorClass = (Class)classes.next();
+                getSessionNamesByClass().put(descriptorClass, name);
+                if(this.shouldUseDescriptorAliases) {
+                    String alias = descriptor.getAlias();
+                    if(alias != null && alias.length() > 0) {
+                        ClassDescriptor anotherDescriptor = getDescriptorForAlias(alias);
+                        if(anotherDescriptor != null) {
+                            if(anotherDescriptor.getJavaClass() != descriptor.getJavaClass()) {
+                                throw ValidationException.sharedDescriptorAlias(alias, descriptor.getJavaClass().getName(), anotherDescriptor.getJavaClass().getName());
+                            }
+                        }
+                        addAlias(alias, descriptor);
+                    }
+                }
+                getDescriptors().put(descriptorClass, descriptor);
+            }
         }
     }
 
@@ -780,36 +795,11 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * Register the session under its name.
      * All of the session's descriptors must have already been registered.
-     * The session should not be connected and descriptors should not be initialized.
+     * DatabaseSession/ServerSession should not be connected and descriptors should not be initialized.
      */
     public void registerSession(String name, org.eclipse.persistence.sessions.Session session) {
         registerSession(name, (AbstractSession)session);
     }
-
-    /**
-     * INTERNAL:
-     * Register the session under its name.
-     * All of the session's descriptors must have already been registered.
-     * The session should not be connected and descriptors should not be initialized.
-     * Used for client session broker
-     */
- 
-    public void internalRegisterSession(String name, AbstractSession session) {
-        //Bug#3911318  Removed session brokers and sessions point to the same descriptors.  
-        //They don't need to be reassigned.  Also the code to add read only classes has been removed
-        //because client broker and server broker point to the same project.
-        session.setIsInBroker(true);
-        getSessionsByName().put(name, session);
-        session.setBroker(this);
-        session.setName(name);
-
- /*       // The keys/classes must also be used as some descriptors may be under multiple classes.
-        Iterator classes = session.getDescriptors().keySet().iterator();
-        while (classes.hasNext()) {
-            Class descriptorClass = (Class)classes.next();
-            getSessionNamesByClass().put(descriptorClass, session);
-        }
-  */  }
 
     /**
      * PUBLIC:

@@ -2713,9 +2713,22 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             logThrowable(SessionLog.WARNING, null, exception);
         }
         if (hasExceptionHandler()) {
-            return getExceptionHandler().handleException(exception);
+            if (this.broker != null && this.broker.hasExceptionHandler()) {
+                try {
+                    return getExceptionHandler().handleException(exception);
+                } catch (RuntimeException ex) {
+                    // handle the original exception
+                    return this.broker.getExceptionHandler().handleException(exception);
+                }
+            } else {
+                return getExceptionHandler().handleException(exception);
+            }
         } else {
-            throw exception;
+            if (this.broker != null && this.broker.hasExceptionHandler()) {
+                return this.broker.getExceptionHandler().handleException(exception);
+            } else {
+                throw exception;
+            }
         }
     }
 

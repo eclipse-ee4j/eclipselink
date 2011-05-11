@@ -17,6 +17,7 @@ import java.io.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
@@ -53,9 +54,35 @@ public class SessionEventManager implements Cloneable, Serializable {
      * Add the event listener to the session.
      * The listener will receive all events raised by this session.
      * Also unit of works acquire from this session will inherit the listeners.
+     * If session is a broker then its members add the listener, too.
      */
     public void addListener(SessionEventListener listener) {
-        getListeners().add(listener);
+        if (this.session != null) {
+            if (this.session.isConnected()) {
+                synchronized(this) {
+                    if (this.listeners != null) {
+                        ArrayList<SessionEventListener> listenersCopy = new ArrayList(listeners);
+                        listenersCopy.add(listener);
+                        this.listeners = listenersCopy;
+                    } else {
+                        this.listeners = new ArrayList();
+                        this.listeners.add(listener);
+                    }
+                }
+            } else {
+                getListeners().add(listener);
+            }
+            if (this.session.isSessionBroker()) {
+                // add listener to member sessions
+                Iterator<AbstractSession> memberSessions = ((SessionBroker)this.session).getSessionsByName().values().iterator();
+                while (memberSessions.hasNext()) {
+                    AbstractSession memberSession = memberSessions.next();
+                    memberSession.getEventManager().addListener(listener);
+                }
+            }
+        } else {
+            getListeners().add(listener);
+        }
     }
 
     /**
@@ -122,9 +149,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.MissingDescriptor, getSession());
         event.setResult(missingClass);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).missingDescriptor(event);
+            listeners.get(index).missingDescriptor(event);
         }
         endOperationProfile();
     }
@@ -140,9 +168,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.MoreRowsDetected, getSession());
         event.setResult(call);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).moreRowsDetected(event);
+            listeners.get(index).moreRowsDetected(event);
         }
         endOperationProfile();
     }
@@ -159,9 +188,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         SessionEvent event = new SessionEvent(SessionEvent.NoRowsModified, getSession());
         event.setQuery(query);
         event.setResult(object);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).noRowsModified(event);
+            listeners.get(index).noRowsModified(event);
         }
         endOperationProfile();
     }
@@ -179,9 +209,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         event.setResult(outputRow);
         event.setProperty("call", call);
         event.setQuery(call.getQuery());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).outputParametersDetected(event);
+            listeners.get(index).outputParametersDetected(event);
         }
         endOperationProfile();
     }
@@ -196,9 +227,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostAcquireClientSession, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postAcquireClientSession(event);
+            listeners.get(index).postAcquireClientSession(event);
         }
         endOperationProfile();
     }
@@ -214,9 +246,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostAcquireConnection, getSession());
         event.setResult(accessor);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postAcquireConnection(event);
+            listeners.get(index).postAcquireConnection(event);
         }
         endOperationProfile();
     }
@@ -232,9 +265,10 @@ public class SessionEventManager implements Cloneable, Serializable {
 
         SessionEvent event = new SessionEvent(SessionEvent.PostAcquireExclusiveConnection, clientSession);
         event.setResult(accessor);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postAcquireExclusiveConnection(event);
+            listeners.get(index).postAcquireExclusiveConnection(event);
         }
     }
 
@@ -248,9 +282,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostAcquireUnitOfWork, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postAcquireUnitOfWork(event);
+            listeners.get(index).postAcquireUnitOfWork(event);
         }
         endOperationProfile();
     }
@@ -265,9 +300,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostBeginTransaction, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postBeginTransaction(event);
+            listeners.get(index).postBeginTransaction(event);
         }
         endOperationProfile();
     }
@@ -282,9 +318,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostCommitTransaction, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postCommitTransaction(event);
+            listeners.get(index).postCommitTransaction(event);
         }
         endOperationProfile();
     }
@@ -299,9 +336,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostCommitUnitOfWork, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postCommitUnitOfWork(event);
+            listeners.get(index).postCommitUnitOfWork(event);
         }
         endOperationProfile();
     }
@@ -317,9 +355,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostConnect, getSession());
         event.setResult(accessor);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postConnect(event);
+            listeners.get(index).postConnect(event);
         }
         endOperationProfile();
     }
@@ -336,7 +375,8 @@ public class SessionEventManager implements Cloneable, Serializable {
         SessionEvent event = new SessionEvent(SessionEvent.PostExecuteQuery, getSession());
         event.setQuery(query);
         event.setResult(result);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
             this.listeners.get(index).postExecuteQuery(event);
         }
@@ -353,9 +393,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostReleaseClientSession, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postReleaseClientSession(event);
+            listeners.get(index).postReleaseClientSession(event);
         }
         endOperationProfile();
     }
@@ -370,9 +411,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostReleaseUnitOfWork, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postReleaseUnitOfWork(event);
+            listeners.get(index).postReleaseUnitOfWork(event);
         }
         endOperationProfile();
     }
@@ -387,9 +429,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostResumeUnitOfWork, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postResumeUnitOfWork(event);
+            listeners.get(index).postResumeUnitOfWork(event);
         }
         endOperationProfile();
     }
@@ -404,9 +447,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostRollbackTransaction, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postRollbackTransaction(event);
+            listeners.get(index).postRollbackTransaction(event);
         }
         endOperationProfile();
     }
@@ -422,9 +466,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostDistributedMergeUnitOfWorkChangeSet, getSession());
         event.setProperty("UnitOfWorkChangeSet", changeSet);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postDistributedMergeUnitOfWorkChangeSet(event);
+            listeners.get(index).postDistributedMergeUnitOfWorkChangeSet(event);
         }
         endOperationProfile();
     }
@@ -440,9 +485,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostMergeUnitOfWorkChangeSet, getSession());
         event.setProperty("UnitOfWorkChangeSet", changeSet);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postMergeUnitOfWorkChangeSet(event);
+            listeners.get(index).postMergeUnitOfWorkChangeSet(event);
         }
         endOperationProfile();
     }
@@ -457,9 +503,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreBeginTransaction, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preBeginTransaction(event);
+            listeners.get(index).preBeginTransaction(event);
         }
         endOperationProfile();
     }
@@ -474,9 +521,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreCalculateUnitOfWorkChangeSet, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preCalculateUnitOfWorkChangeSet(event);
+            listeners.get(index).preCalculateUnitOfWorkChangeSet(event);
         }
         endOperationProfile();
     }
@@ -492,9 +540,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostCalculateUnitOfWorkChangeSet, getSession());
         event.setProperty("UnitOfWorkChangeSet", changeSet);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postCalculateUnitOfWorkChangeSet(event);
+            listeners.get(index).postCalculateUnitOfWorkChangeSet(event);
         }
         endOperationProfile();
     }
@@ -509,9 +558,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreCommitTransaction, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preCommitTransaction(event);
+            listeners.get(index).preCommitTransaction(event);
         }
         endOperationProfile();
     }
@@ -526,9 +576,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreCommitUnitOfWork, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preCommitUnitOfWork(event);
+            listeners.get(index).preCommitUnitOfWork(event);
         }
         endOperationProfile();
     }
@@ -544,9 +595,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreExecuteQuery, getSession());
         event.setQuery(query);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preExecuteQuery(event);
+            listeners.get(index).preExecuteQuery(event);
         }
         endOperationProfile();
     }
@@ -561,9 +613,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreLogin, session);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preLogin(event);
+            listeners.get(index).preLogin(event);
         }
         endOperationProfile();
     }
@@ -578,9 +631,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PostLogin, session);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).postLogin(event);
+            listeners.get(index).postLogin(event);
         }
         endOperationProfile();
     }
@@ -595,9 +649,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PrepareUnitOfWork, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).prepareUnitOfWork(event);
+            listeners.get(index).prepareUnitOfWork(event);
         }
         endOperationProfile();
     }
@@ -612,9 +667,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreReleaseClientSession, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preReleaseClientSession(event);
+            listeners.get(index).preReleaseClientSession(event);
         }
         endOperationProfile();
     }
@@ -630,9 +686,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreReleaseConnection, getSession());
         event.setResult(accessor);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preReleaseConnection(event);
+            listeners.get(index).preReleaseConnection(event);
         }
         endOperationProfile();
     }
@@ -649,9 +706,10 @@ public class SessionEventManager implements Cloneable, Serializable {
 
         SessionEvent event = new SessionEvent(SessionEvent.PreReleaseExclusiveConnection, clientSession);
         event.setResult(accessor);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preReleaseExclusiveConnection(event);
+            listeners.get(index).preReleaseExclusiveConnection(event);
         }
     }
 
@@ -665,9 +723,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreReleaseUnitOfWork, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preReleaseUnitOfWork(event);
+            listeners.get(index).preReleaseUnitOfWork(event);
         }
         endOperationProfile();
     }
@@ -682,9 +741,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         }
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreRollbackTransaction, getSession());
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preRollbackTransaction(event);
+            listeners.get(index).preRollbackTransaction(event);
         }
         endOperationProfile();
     }
@@ -700,9 +760,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreDistributedMergeUnitOfWorkChangeSet, getSession());
         event.setProperty("UnitOfWorkChangeSet", changeSet);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preDistributedMergeUnitOfWorkChangeSet(event);
+            listeners.get(index).preDistributedMergeUnitOfWorkChangeSet(event);
         }
         endOperationProfile();
     }
@@ -718,9 +779,10 @@ public class SessionEventManager implements Cloneable, Serializable {
         startOperationProfile();
         SessionEvent event = new SessionEvent(SessionEvent.PreMergeUnitOfWorkChangeSet, getSession());
         event.setProperty("UnitOfWorkChangeSet", changeSet);
-        int size = this.listeners.size();
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
         for (int index = 0; index < size; index++) {
-            this.listeners.get(index).preMergeUnitOfWorkChangeSet(event);
+            listeners.get(index).preMergeUnitOfWorkChangeSet(event);
         }
         endOperationProfile();
     }
@@ -728,9 +790,35 @@ public class SessionEventManager implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Remove the event listener from the session.
+     * If session is a broker and the listener was in its list, then its members remove the listener, too.
      */
     public void removeListener(SessionEventListener listener) {
-        getListeners().remove(listener);
+        if (this.session != null) {
+            boolean isRemoved = false;
+            if (this.session.isConnected()) {
+                synchronized(this) {
+                    if (this.listeners != null) {
+                        ArrayList<SessionEventListener> listenersCopy = new ArrayList(listeners);
+                        isRemoved = listenersCopy.remove(listener); 
+                        if (isRemoved) {
+                            this.listeners = listenersCopy;
+                        }
+                    }
+                }
+            } else {
+                isRemoved = getListeners().remove(listener);
+            }
+            if (this.session.isSessionBroker() && isRemoved) {
+                // remove listener from member sessions
+                Iterator<AbstractSession> memberSessions = ((SessionBroker)this.session).getSessionsByName().values().iterator();
+                while (memberSessions.hasNext()) {
+                    AbstractSession memberSession = memberSessions.next();
+                    memberSession.getEventManager().removeListener(listener);
+                }
+            }
+        } else {
+            getListeners().remove(listener);
+        }
     }
 
     /**
