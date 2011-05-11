@@ -15,6 +15,7 @@ package org.eclipse.persistence.jaxb.compiler;
 import java.awt.Image;
 import java.beans.Introspector;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -24,9 +25,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -115,6 +116,8 @@ public class SchemaGenerator {
     private static final String ID = "ID";
     private static final String IDREF = "IDREF";
     private static final Character DOT_CHAR = '.';
+    private static final Character SLASH = '/';
+    private static final Character SLASHES = '\\';
 
     private SchemaOutputResolver outputResolver;
     
@@ -606,6 +609,8 @@ public class SchemaGenerator {
                     schema.setResult(res);
                     if (res.getSystemId() != null) {
                         schemaName = res.getSystemId();
+                        // may use schema name to create a URI, which expects '/' as file separator
+                        schemaName = schemaName.replace(SLASHES, SLASH);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -829,6 +834,28 @@ public class SchemaGenerator {
                 schemaName = nInfo.getLocation();
             }
 
+            // may need to relativize the schema name
+            if (schemaName != null) {
+                URI relativizedURI = null;
+                try {
+                    // need to strip off the last slash and the file name that follows
+                    String schemaPath = sourceSchema.getName();
+                    int idx;
+                    if ((idx = schemaPath.lastIndexOf(SLASH)) != -1) {
+                        schemaPath = schemaPath.substring(0, idx);
+                    }
+                    URI baseURI = new URI(schemaPath);
+                    URI importURI = new URI(schemaName);
+                    relativizedURI = baseURI.relativize(importURI);
+                } catch (Exception e) {
+                    // at this point we will leave schemaName as is
+                    relativizedURI = null;
+                }
+                if (relativizedURI != null) {
+                    schemaName = relativizedURI.getPath();
+                }
+            }
+            
             if (schemaName != null && !importExists(sourceSchema, schemaName)) {
                 Import schemaImport = new Import();
                 schemaImport.setSchemaLocation(schemaName);
