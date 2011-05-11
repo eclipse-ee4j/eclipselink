@@ -46,7 +46,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor.Mode;
-import org.eclipse.persistence.jpa.MetadataRepositoryReader;
+import org.eclipse.persistence.jpa.metadata.MetadataRepositoryReader;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.PersistenceUnitProperties;

@@ -11,7 +11,7 @@
  *     05/05/2011-2.3 Chris Delahunt 
  *       - 344837: Extensibility - Metadata Repository
  ******************************************************************************/  
-package org.eclipse.persistence.jpa;
+package org.eclipse.persistence.jpa.metadata;
 
 import java.util.Properties;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;

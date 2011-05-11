@@ -422,6 +422,7 @@ public class ValidationException extends EclipseLinkException {
     
     // XML Metadata Repository
     public static final int NON_UNIQUE_REPOSITORY_FILE_NAME = 7340;
+    public static final int  MISSING_XML_FILE_FOR_METADATA_REPOSITORY = 7341;
 
     /**
      * INTERNAL:
@@ -1363,6 +1364,13 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = {fileName};
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NON_UNIQUE_REPOSITORY_FILE_NAME, args));
         validationException.setErrorCode(NON_UNIQUE_REPOSITORY_FILE_NAME);
+        return validationException;
+    }
+    
+    public static ValidationException missingXMLMetadataRepositoryConfig(){
+        Object[] args = {};
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_XML_FILE_FOR_METADATA_REPOSITORY, args));
+        validationException.setErrorCode(MISSING_XML_FILE_FOR_METADATA_REPOSITORY);
         return validationException;
     }
     

@@ -317,6 +317,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7338", "You cannot add sequences to a SessionBroker." },
                                            { "7339", "Alias [{0}] is used by both [{1}] and [{2}] classes. Descriptor alias must be unique." },
                                            { "7340", "There are multiple mapping files called [{0}] in classpath."},
+                                           { "7341", "No eclipselink-orm.xml was specified for the XMLMetadataRepository.  Please specify one using either persitence unit property eclipselink.metadata-repository.xml.file or eclipselink.metadata-repository.xml.url"},
                                            
  };
     

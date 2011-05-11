@@ -11,7 +11,7 @@
  *     05/05/2011-2.3 Chris Delahunt 
  *       - 344837: Extensibility - Metadata Repository
  ******************************************************************************/  
-package org.eclipse.persistence.jpa;
+package org.eclipse.persistence.jpa.metadata;
 
 import java.io.IOException;
 
@@ -33,16 +33,13 @@ import org.eclipse.persistence.logging.SessionLog;
  * or URL.  If undefined, it will look for  repository-orm.xml as a URL and then as a file.  
  */
 public class XMLMetadataRepository extends MetadataRepositoryAdapter {
-    public static final String ECLIPSELINK_ORM_FILE = "repository-orm.xml";
-
     public Reader getEntityMappingsStream(Properties properties, ClassLoader classLoader, SessionLog log) {
         InputStreamReader reader = null;
         
         //read from a URL
         String mappingURLName = EntityManagerFactoryProvider.getConfigPropertyAsString(
                 PersistenceUnitProperties.METADATA_REPOSITORY_XML_URL,
-                properties,
-                ECLIPSELINK_ORM_FILE);
+                properties);
         if (mappingURLName !=null && !mappingURLName.isEmpty()) {
             try {
                 URL url = new URL(mappingURLName);
@@ -54,11 +51,10 @@ public class XMLMetadataRepository extends MetadataRepositoryAdapter {
         }
         
         //read a file using the classloader
-        if (reader == null){
+        if (reader == null) {
             String mappingFileName = EntityManagerFactoryProvider.getConfigPropertyAsString(
                     PersistenceUnitProperties.METADATA_REPOSITORY_XML_FILE,
-                    properties,
-                    ECLIPSELINK_ORM_FILE);
+                    properties);
             try {
                 Enumeration<URL> mappingFileURLs = classLoader.getResources(mappingFileName);
                 
@@ -80,6 +76,9 @@ public class XMLMetadataRepository extends MetadataRepositoryAdapter {
             } catch (IOException exception) {
                 throw ValidationException.fileError(exception);
             }
+        }
+        if (reader == null) {
+            throw ValidationException.missingXMLMetadataRepositoryConfig();
         }
         return reader;
     }
