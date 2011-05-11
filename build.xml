@@ -249,9 +249,9 @@
     <target name="build-core" depends="clean-runtime-checkedin">
         <ant antfile="build.xml"    dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="build.xml"    dir="${eclipselink.antlr}"            target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
         <ant antfile="build.xml"    dir="${eclipselink.core}"             target="build"/>
         <ant antfile="build.xml"    dir="${eclipselink.extension.oracle}" target="repackage"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
         <ant antfile="build.xml"    dir="${eclipselink.jpa}"              target="build"/>
         <ant antfile="build.xml"    dir="${eclipselink.osgi}"             target="build"/>
         <ant antfile="build.xml"    dir="${eclipselink.modelgen}"         target="build"/>
@@ -272,9 +272,9 @@
     <target name="dev-package-bundles" depends="clean-runtime-checkedin">
         <ant antfile="build.xml"    dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="build.xml"    dir="${eclipselink.antlr}"            target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="jar"/>
         <ant antfile="build.xml"    dir="${eclipselink.core}"             target="jar"/>
         <ant antfile="build.xml"    dir="${eclipselink.extension.oracle}" target="jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="jar"/>
         <ant antfile="build.xml"    dir="${eclipselink.jpa}"              target="jar"/>
         <ant antfile="build.xml"    dir="${eclipselink.osgi}"             target="jar"/>
         <ant antfile="build.xml"    dir="${eclipselink.modelgen}"         target="jar"/>

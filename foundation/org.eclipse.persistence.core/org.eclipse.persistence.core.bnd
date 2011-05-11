@@ -4,7 +4,8 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core
 Require-Bundle:                                                                           \
  org.eclipse.persistence.antlr;bundle-version="${version.string}";resolution:=optional,   \
- org.eclipse.persistence.asm;bundle-version="${version.string}";resolution:=optional
+ org.eclipse.persistence.asm;bundle-version="${version.string}";resolution:=optional,     \
+ org.eclipse.persistence.jpa.jpql;bundle-version="1.0.0";resolution:=optional
 Implementation-Vendor: ${implementation.vendor}
 Implementation-Version: ${version.string}
 Specification-Vendor: ${specification.vendor}
@@ -39,6 +40,8 @@ Import-Package:                                                           \
  javax.xml.*;resolution:=optional,                                        \
  org.eclipse.persistence.internal.libraries.antlr.*;resolution:=optional, \
  org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional,   \
+ org.eclipse.persistence.jpa.internal.jpql.*;resolution:=optional,        \
+ org.eclipse.persistence.jpa.jpql.*;resolution:=optional,                 \
  org.omg.CORBA*;resolution:=optional,                                     \
  org.w3c.*;resolution:=optional,                                          \
  org.xml.sax.*;resolution:=optional, *
