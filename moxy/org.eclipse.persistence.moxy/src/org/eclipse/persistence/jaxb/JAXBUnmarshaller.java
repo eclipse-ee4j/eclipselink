@@ -237,7 +237,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
         } else {
             qname = new QName(rootNamespaceUri, rootName);
         }
-        return createJAXBElement(qname, obj.getClass(), obj);
+        if(declaredClass != null){
+        	return createJAXBElement(qname, declaredClass, obj);
+        }else{
+        	return createJAXBElement(qname, obj.getClass(), obj);
+        }
     }
 
     public JAXBElement unmarshal(Node node, Class javaClass) throws JAXBException {
