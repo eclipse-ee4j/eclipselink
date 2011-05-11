@@ -29,7 +29,6 @@ import org.eclipse.persistence.logging.SessionLog;
  */
 public class MetadataRepositoryAdapter implements MetadataRepositoryReader {
 
-    @Override
     public XMLEntityMappings getEntityMappings(Properties properties, ClassLoader classLoader, SessionLog log) {
         return null;
     }
