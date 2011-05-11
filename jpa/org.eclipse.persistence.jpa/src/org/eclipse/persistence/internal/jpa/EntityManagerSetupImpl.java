@@ -285,10 +285,11 @@ public class EntityManagerSetupImpl {
         }
 
         if (isComposite(puInfo)) {
-            // In case no SESSION_NAME specified (or empty String) - build one
-            // by concatenating persistenceUnitUniqueName and suffix build of connection properties' names and values.
+            // Composite doesn't use connection properties.
             return persistenceUnitUniqueName;
         } else {
+            // In case no SESSION_NAME specified (or empty String) - build one
+            // by concatenating persistenceUnitUniqueName and suffix build of connection properties' names and values.
             return persistenceUnitUniqueName + buildSessionNameSuffixFromConnectionProperties(properties);
         }
     }
@@ -1163,15 +1164,21 @@ public class EntityManagerSetupImpl {
     
                 if (isSessionLoadedFromSessionsXML) {
                     // Loading session from sessions-xml.
-                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "loading_session_xml", sessionsXMLStr, sessionName);
-                    if (sessionName == null) {
+                    String tempSessionName = sessionName;
+                    if (isCompositeMember()) {
+                        // composite member session name is always the same as puName
+                        // need the session name specified in properties to read correct session from sessions.xml
+                        tempSessionName = (String)predeployProperties.get(PersistenceUnitProperties.SESSION_NAME);
+                    }
+                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "loading_session_xml", sessionsXMLStr, tempSessionName);
+                    if (tempSessionName == null) {
                         throw new PersistenceException(EntityManagerSetupException.sessionNameNeedBeSpecified(persistenceUnitInfo.getPersistenceUnitName(), sessionsXMLStr));
                     }                
                     XMLSessionConfigLoader xmlLoader = new XMLSessionConfigLoader(sessionsXMLStr);
                     // Do not register the session with the SessionManager at this point, create temporary session using a local SessionManager and private class loader.
                     // This allows for the project to be accessed without loading any of the classes to allow weaving.
                     // Note that this method assigns sessionName to session.
-                    Session tempSession = new SessionManager().getSession(xmlLoader, sessionName, privateClassLoader, false, false);
+                    Session tempSession = new SessionManager().getSession(xmlLoader, tempSessionName, privateClassLoader, false, false);
                     // Load path of sessions-xml resource before throwing error so user knows which sessions-xml file was found (may be multiple).
                     session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "sessions_xml_path_where_session_load_from", xmlLoader.getSessionName(), xmlLoader.getResourcePath());
                     if (tempSession == null) {
@@ -1180,6 +1187,10 @@ public class EntityManagerSetupImpl {
                     // Currently the session must be either a ServerSession or a SessionBroker, cannot be just a DatabaseSessionImpl. 
                     if (tempSession.isServerSession() || tempSession.isSessionBroker()) {
                        session = (DatabaseSessionImpl) tempSession;
+                       if (tempSessionName != sessionName) {
+                           // set back the original session name
+                           session.setName(sessionName);
+                       }
                     } else {
                         throw new PersistenceException(EntityManagerSetupException.sessionLoadedFromSessionsXMLMustBeServerSession(persistenceUnitInfo.getPersistenceUnitName(), (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML), tempSession));
                     }
