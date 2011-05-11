@@ -4,9 +4,9 @@
       <xsd:complexContent>
          <xsd:extension base="b-type">
             <xsd:sequence>
-               <xsd:element name="ddd" type="xsd:int"/>
                <xsd:element name="foo" type="xsd:int"/>
                <xsd:element name="ccc" type="xsd:int"/>
+               <xsd:element name="ddd" type="xsd:int"/>
                <xsd:element name="eee" type="xsd:int"/>
             </xsd:sequence>
          </xsd:extension>

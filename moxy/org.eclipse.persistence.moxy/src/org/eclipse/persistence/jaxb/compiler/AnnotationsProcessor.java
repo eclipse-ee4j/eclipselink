@@ -1554,14 +1554,14 @@ public class AnnotationsProcessor {
             if (null != superClass) {
                 TypeInfo superClassInfo = typeInfo.get(superClass.getQualifiedName());
                 while (superClassInfo != null && superClassInfo.isTransient()) {
-                    if (info.getXmlAccessType() == XmlAccessType.FIELD) {
-                        returnList.addAll(getFieldPropertiesForClass(superClass, superClassInfo, false));
+                    if (info.getXmlAccessType() == XmlAccessType.FIELD) {                    	
+                        returnList.addAll(0, getFieldPropertiesForClass(superClass, superClassInfo, false));
                     } else if (info.getXmlAccessType() == XmlAccessType.PROPERTY) {
-                        returnList.addAll(getPropertyPropertiesForClass(superClass, superClassInfo, false));
+                        returnList.addAll(0, getPropertyPropertiesForClass(superClass, superClassInfo, false));
                     } else if (info.getXmlAccessType() == XmlAccessType.PUBLIC_MEMBER) {
-                        returnList.addAll(getPublicMemberPropertiesForClass(superClass, superClassInfo));
+                        returnList.addAll(0, getPublicMemberPropertiesForClass(superClass, superClassInfo));
                     } else {
-                        returnList.addAll(getNoAccessTypePropertiesForClass(superClass, superClassInfo));
+                        returnList.addAll(0, getNoAccessTypePropertiesForClass(superClass, superClassInfo));
                     }
                     superClass = superClass.getSuperclass();
                     superClassInfo = typeInfo.get(superClass.getQualifiedName());
