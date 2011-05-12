@@ -46,7 +46,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor.Mode;
-import org.eclipse.persistence.jpa.metadata.MetadataRepositoryReader;
+import org.eclipse.persistence.jpa.metadata.MetadataSource;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -90,7 +90,7 @@ public class MetadataProcessor {
     protected Map m_predeployProperties;
     protected MetadataProcessor m_compositeProcessor;
     protected Set<MetadataProcessor> m_compositeMemberProcessors;
-    protected MetadataRepositoryReader m_metadataRepository;
+    protected MetadataSource m_metadataSource;
 
     /**
      * INTERNAL:
@@ -156,8 +156,8 @@ public class MetadataProcessor {
         return m_factory;
     }
 
-    public MetadataRepositoryReader getMetadataRepository(){
-        return m_metadataRepository;
+    public MetadataSource getMetadataSource(){
+        return m_metadataSource;
     }
 
     /**
@@ -343,8 +343,8 @@ public class MetadataProcessor {
             loadStandardMappingFiles(MetadataHelper.ECLIPSELINK_ORM_FILE);
         }
 
-        if (m_metadataRepository !=null) {
-            m_project.addEntityMappings(m_metadataRepository.getEntityMappings(m_project.getPersistenceUnitInfo().getProperties(), m_loader, m_session.getSessionLog()));
+        if (m_metadataSource !=null) {
+            m_project.addEntityMappings(m_metadataSource.getEntityMappings(this.m_predeployProperties/*m_project.getPersistenceUnitInfo().getProperties()*/, m_loader, m_session.getSessionLog()));
         }
     }
 
@@ -572,10 +572,10 @@ public class MetadataProcessor {
 
     /**
      * INTERNAL:
-     * Use this method to set the MetadataRepository class to use for loading
+     * Use this method to set the MetadataSource class to use for loading
      * extensible mappings
      */
-    public void setMetadataRepository(MetadataRepositoryReader repository){
-        m_metadataRepository = repository;
+    public void setMetadataSource(MetadataSource source){
+        m_metadataSource = source;
     }
 }

@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jpa.metadata;
 
-import java.util.Properties;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.logging.SessionLog;
@@ -27,9 +27,9 @@ import org.eclipse.persistence.logging.SessionLog;
  * @author Chris Delahunt
  * @since EclipseLink 2.3
  */
-public class MetadataRepositoryAdapter implements MetadataRepositoryReader {
+public class MetadataSourceAdapter implements MetadataSource {
 
-    public XMLEntityMappings getEntityMappings(Properties properties, ClassLoader classLoader, SessionLog log) {
+    public XMLEntityMappings getEntityMappings(Map properties, ClassLoader classLoader, SessionLog log) {
         return null;
     }
 

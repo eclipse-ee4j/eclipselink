@@ -116,8 +116,8 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
-import org.eclipse.persistence.jpa.metadata.MetadataRepositoryReader;
-import org.eclipse.persistence.jpa.metadata.XMLMetadataRepository;
+import org.eclipse.persistence.jpa.metadata.MetadataSource;
+import org.eclipse.persistence.jpa.metadata.XMLMetadataSource;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
@@ -2190,16 +2190,16 @@ public class EntityManagerSetupImpl {
      * Load the Metadata Repository for Extensibility
      */
     protected void updateMetadataRepository(Map m, ClassLoader loader){
-        String repository = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.METADATA_REPOSITORY, m, null, session);
+        String repository = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.METADATA_SOURCE, m, null, session);
         if (repository!=null) {
             if (repository.equalsIgnoreCase("XML")) {
-                processor.setMetadataRepository(new XMLMetadataRepository());
+                processor.setMetadataSource(new XMLMetadataSource());
             } else {
-                Class transportClass = findClassForProperty(repository, PersistenceUnitProperties.METADATA_REPOSITORY, loader);
+                Class transportClass = findClassForProperty(repository, PersistenceUnitProperties.METADATA_SOURCE, loader);
                 try {
-                    processor.setMetadataRepository((MetadataRepositoryReader)transportClass.newInstance());
+                    processor.setMetadataSource((MetadataSource)transportClass.newInstance());
                 } catch (Exception invalid) {
-                    session.handleException(EntityManagerSetupException.failedToInstantiateProperty(repository, PersistenceUnitProperties.METADATA_REPOSITORY,invalid));
+                    session.handleException(EntityManagerSetupException.failedToInstantiateProperty(repository, PersistenceUnitProperties.METADATA_SOURCE,invalid));
                 }
             }
         }

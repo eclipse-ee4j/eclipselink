@@ -27,6 +27,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Properties;
+import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -108,7 +109,7 @@ public class XMLEntityMappingsReader {
     /**
      * INTERNAL:
      */
-    protected static XMLEntityMappings read(String mappingFile, Reader reader1, Reader reader2, ClassLoader classLoader, Properties properties) {
+    protected static XMLEntityMappings read(String mappingFile, Reader reader1, Reader reader2, ClassLoader classLoader, Map properties) {
         // Get the schema validation flag if present in the persistence unit properties
         boolean validateORMSchema = isORMSchemaValidationPerformed(properties);
         
@@ -134,7 +135,7 @@ public class XMLEntityMappingsReader {
     /**
      * INTERNAL:
      */
-    public static XMLEntityMappings read(String sourceName, Reader reader, ClassLoader classLoader, Properties properties){
+    public static XMLEntityMappings read(String sourceName, Reader reader, ClassLoader classLoader, Map properties){
         return read(sourceName, null, reader, classLoader, properties);
     }
    
@@ -236,7 +237,7 @@ public class XMLEntityMappingsReader {
      * @param properties - PersistenceUnitInfo properties on the project
      * @return
      */
-    private static boolean isORMSchemaValidationPerformed(Properties properties) {
+    private static boolean isORMSchemaValidationPerformed(Map properties) {
         // Get property from persistence.xml (we are not yet parsing sessions.xml)
         String value = EntityManagerFactoryProvider.getConfigPropertyAsString(
                 PersistenceUnitProperties.ORM_SCHEMA_VALIDATION,

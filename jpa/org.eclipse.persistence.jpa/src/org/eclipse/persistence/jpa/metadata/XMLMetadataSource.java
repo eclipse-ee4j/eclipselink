@@ -19,7 +19,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Properties;
+import java.util.Map;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -32,13 +32,13 @@ import org.eclipse.persistence.logging.SessionLog;
  * <p><b>Purpose</b>: Support reading metadata for a persistence unit in an XML format from a file
  * or URL.  If undefined, it will look for  repository-orm.xml as a URL and then as a file.  
  */
-public class XMLMetadataRepository extends MetadataRepositoryAdapter {
-    public Reader getEntityMappingsStream(Properties properties, ClassLoader classLoader, SessionLog log) {
+public class XMLMetadataSource extends MetadataSourceAdapter {
+    public Reader getEntityMappingsStream(Map properties, ClassLoader classLoader, SessionLog log) {
         InputStreamReader reader = null;
         
         //read from a URL
         String mappingURLName = EntityManagerFactoryProvider.getConfigPropertyAsString(
-                PersistenceUnitProperties.METADATA_REPOSITORY_XML_URL,
+                PersistenceUnitProperties.METADATA_SOURCE_XML_URL,
                 properties);
         if (mappingURLName !=null && !mappingURLName.isEmpty()) {
             try {
@@ -53,7 +53,7 @@ public class XMLMetadataRepository extends MetadataRepositoryAdapter {
         //read a file using the classloader
         if (reader == null) {
             String mappingFileName = EntityManagerFactoryProvider.getConfigPropertyAsString(
-                    PersistenceUnitProperties.METADATA_REPOSITORY_XML_FILE,
+                    PersistenceUnitProperties.METADATA_SOURCE_XML_FILE,
                     properties);
             try {
                 Enumeration<URL> mappingFileURLs = classLoader.getResources(mappingFileName);
@@ -83,7 +83,7 @@ public class XMLMetadataRepository extends MetadataRepositoryAdapter {
         return reader;
     }
     
-    public XMLEntityMappings getEntityMappings(Properties properties, ClassLoader classLoader, SessionLog log) {
+    public XMLEntityMappings getEntityMappings(Map properties, ClassLoader classLoader, SessionLog log) {
         Reader reader = getEntityMappingsStream(properties, classLoader, log);
         try {
             return XMLEntityMappingsReader.read(getRepositoryName(), reader, classLoader, properties);

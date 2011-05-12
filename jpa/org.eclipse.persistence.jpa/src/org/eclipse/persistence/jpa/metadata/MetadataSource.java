@@ -13,7 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jpa.metadata;
 
-import java.util.Properties;
+import java.util.Map;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -21,12 +21,12 @@ import org.eclipse.persistence.logging.SessionLog;
  * <p><b>Purpose</b>: Interface used to support extensible metadata and mappings by a persistence unit.
  * A MetadataRepository will need to be registered with a persistence unit.  
  */
-public interface MetadataRepositoryReader {
+public interface MetadataSource {
 
     /**
      * PUBLIC:
      * This is used to return the object representation of the mappings used by EclipseLink from the repository.
      * It is called on initial deployment and when the EntityManagerFactoryImpl is reloaded.  
      */
-    public XMLEntityMappings getEntityMappings(Properties properties, ClassLoader classLoader, SessionLog log);
+    public XMLEntityMappings getEntityMappings(Map properties, ClassLoader classLoader, SessionLog log);
 }

@@ -422,7 +422,7 @@ public class ValidationException extends EclipseLinkException {
     
     // XML Metadata Repository
     public static final int NON_UNIQUE_REPOSITORY_FILE_NAME = 7340;
-    public static final int  MISSING_XML_FILE_FOR_METADATA_REPOSITORY = 7341;
+    public static final int  MISSING_XML_FILE_FOR_METADATA_SOURCE = 7341;
     
     public static final int UNSUPPORTED_WEAVING_VIRTUAL_ONE_TO_ONE = 7342;
 
@@ -1371,8 +1371,8 @@ public class ValidationException extends EclipseLinkException {
     
     public static ValidationException missingXMLMetadataRepositoryConfig(){
         Object[] args = {};
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_XML_FILE_FOR_METADATA_REPOSITORY, args));
-        validationException.setErrorCode(MISSING_XML_FILE_FOR_METADATA_REPOSITORY);
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_XML_FILE_FOR_METADATA_SOURCE, args));
+        validationException.setErrorCode(MISSING_XML_FILE_FOR_METADATA_SOURCE);
         return validationException;
     }
     

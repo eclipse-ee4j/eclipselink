@@ -1609,19 +1609,19 @@ public class PersistenceUnitProperties {
     public static final String NONE = "none";
     
     /**
-     * The <code>"eclipselink.metadata-repository"</code>property configures the type of
-     * MetadataRepositoryReader implementation to use to read from the MetadataRepository
+     * The <code>"eclipselink.metadata-source"</code>property configures the type of
+     * MetadataSource implementation to use to read Metadata
      * <p>
      * Values (case insensitive):
      * <ul>
-     * <li>"XML": Use {@link MetadataRepositoryReader}
-     * <li>Custom MetadataRepositoryReader - Specify a custom class name which
-     * implements {@link MetadataRepositoryReader}
+     * <li>"XML": Use {@link XMLMetadataSource}
+     * <li>Custom MetadataSource - Specify a custom class name which
+     * implements {@link MetadataSource}
      * </ul>
      * 
-     * @see MetadataRepositoryReader
+     * @see MetadataSource
      */
-    public static final String METADATA_REPOSITORY = "eclipselink.metadata-repository";
+    public static final String METADATA_SOURCE = "eclipselink.metadata-source";
     
     /**
      * The property <code>"eclipselink.metadata-repository.xml.file"</code>
@@ -1631,9 +1631,9 @@ public class PersistenceUnitProperties {
      * <p>This property should be used in conjunction with the 
      * <code>"eclipselink.metadata-repository"</code> when an XML repository is being used.</p>
      * 
-     * @see #METADATA_REPOSITORY
+     * @see #METADATA_SOURCE
      */
-    public static final String METADATA_REPOSITORY_XML_FILE = "eclipselink.metadata-repository.xml.file";
+    public static final String METADATA_SOURCE_XML_FILE = "eclipselink.metadata-source.xml.file";
     
     /**
      * The property <code>"eclipselink.metadata-repository.xml.URL"</code>
@@ -1643,9 +1643,9 @@ public class PersistenceUnitProperties {
      * <p>This property should be used in conjunction with the 
      * <code>"eclipselink.metadata-repository"</code> when an XML repository is being used.</p>
      * 
-     * @see #METADATA_REPOSITORY
+     * @see #METADATA_SOURCE
      */
-    public static final String METADATA_REPOSITORY_XML_URL = "eclipselink.metadata-repository.xml.url";
+    public static final String METADATA_SOURCE_XML_URL = "eclipselink.metadata-source.xml.url";
 
     /**
      * The property <code>"eclipselink.application-location"</code>
