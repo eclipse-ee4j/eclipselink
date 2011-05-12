@@ -393,6 +393,20 @@ public class MetadataAsmFactory extends MetadataFactory {
             }
             return null;
         }
+        @Override
+        public AnnotationVisitor visitAnnotationDefault() {
+            return null;
+        }
+
+        @Override
+        public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, boolean visible) {
+            return null;
+        }
+
+        @Override
+        public AnnotationVisitor visitAnnotation(String name, String desc) {
+            return null;
+        }
 
         /**
          * At the end of visiting this method add it to the
