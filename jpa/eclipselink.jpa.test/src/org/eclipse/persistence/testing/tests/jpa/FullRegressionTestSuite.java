@@ -89,6 +89,7 @@ import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJU
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
+import org.eclipse.persistence.testing.tests.jpa.extensibility.ExtensibilityTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupAPITests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupMergeWithCacheTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupTrackerWeavingTests;
@@ -293,6 +294,12 @@ public class FullRegressionTestSuite extends TestSuite {
 
         // Composite tests.
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite.suite());
+        
+        // Fetch Groups tests.
+        suite = new TestSuite();
+        suite.setName("Extensibility");
+        suite.addTest(ExtensibilityTests.suite());
+        fullSuite.addTest(suite);
         
         return fullSuite;
     }

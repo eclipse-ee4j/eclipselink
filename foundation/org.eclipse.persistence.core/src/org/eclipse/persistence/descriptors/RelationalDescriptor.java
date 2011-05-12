@@ -14,7 +14,9 @@
 package org.eclipse.persistence.descriptors;
 
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 
 /**
  * <p><b>Purpose</b>: EclipseLink has been designed to take advantage of the similarities between
@@ -53,12 +55,17 @@ public class RelationalDescriptor extends ClassDescriptor {
      */
     protected boolean weavingUsesPropertyAccess = false;
     
+    /** A list of methods that are used by virtual mappings.  This list is used to control weaving of methods
+     * used for virtual access*/
+    protected List<VirtualAttributeMethodInfo> virtualAttributeMethods = null;
+    
     /**
      * PUBLIC:
      * Return a new descriptor.
      */
     public RelationalDescriptor() {
         super();
+        this.virtualAttributeMethods = new ArrayList<VirtualAttributeMethodInfo>();
     }
 
     /**
@@ -88,6 +95,15 @@ public class RelationalDescriptor extends ClassDescriptor {
         return super.getTableNames();
     }
 
+    /** 
+     * INTERNAL:
+     * Return the list of virtual methods sets for this Entity.
+     * This list is used to control which methods are weaved
+     **/
+    public List<VirtualAttributeMethodInfo> getVirtualAttributeMethods() {
+        return virtualAttributeMethods;
+    }
+    
     /**
      * PUBLIC:
      * The descriptors default table can be configured if the first table is not desired.
@@ -124,6 +140,15 @@ public class RelationalDescriptor extends ClassDescriptor {
         super.setTableQualifier(tableQualifier);
     }
     
+
+    /** 
+     * INTERNAL:
+     * Set the list of methods used my mappings with virtual access
+     * this list is used to determine which methods to weave
+     */
+    public void setVirtualAttributeMethods(List<VirtualAttributeMethodInfo> virtualAttributeMethods) {
+        this.virtualAttributeMethods = virtualAttributeMethods;
+    }
     
     /**
      * INTERNAL:

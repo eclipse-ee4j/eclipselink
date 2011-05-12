@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.jpa.weaving;
 
 import java.util.*;
 
+import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -57,8 +58,16 @@ public class ClassDetails {
     protected boolean implementsCloneMethod = false;
     /** Determine if a new constructor can be used to bypass setting variables to default values. */
     protected boolean shouldWeaveConstructorOptimization = true;
+    /** The methods that are used by virtual attributes as getter methods.  
+     * These will be used by our weaver to properly weave those methods 
+     * This list should be kept in sync with virtualSetMethodNames. Every time
+     * a value is added, one should be added to virtualSetMethodNames so that at
+     * a particular index, the virtualGetMethodName and the virtualSetMethodCoorespond*/
+    protected List<VirtualAttributeMethodInfo> virtualAccessMethods = null;
+
     
     public ClassDetails() {
+        virtualAccessMethods = new ArrayList<VirtualAttributeMethodInfo>();
     }
     
     public MetadataClass getDescribedClass(){
@@ -161,6 +170,41 @@ public class ClassDetails {
         return implementsCloneMethod;
     }
     
+    /**
+     * INTERNAL:
+     * Search the list of virtualAccessMethods for a VirtualAttributeMethodInfo with the given
+     * getMethodName.  Return the VirtualAttributeMethodInfo if there is one, else return null
+     * @param getMethodName
+     * @return
+     */
+    public VirtualAttributeMethodInfo getInfoForVirtualGetMethod(String getMethodName){
+        Iterator<VirtualAttributeMethodInfo> i = virtualAccessMethods.iterator();
+        while (i.hasNext()){
+            VirtualAttributeMethodInfo info = i.next();
+            if (info.getGetMethodName() != null && info.getGetMethodName().equals(getMethodName)){
+                return info;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Search the list of virtualAccessMethods for a VirtualAttributeMethodInfo with the given
+     * setMethodName.  Return the VirtualAttributeMethodInfo if there is one, else return null
+     * @param getMethodName
+     * @return
+     */
+    public VirtualAttributeMethodInfo getInfoForVirtualSetMethod(String setMethodName){
+        Iterator<VirtualAttributeMethodInfo> i = virtualAccessMethods.iterator();
+        while (i.hasNext()){
+            VirtualAttributeMethodInfo info = i.next();
+            if (info.getGetMethodName() != null && info.getGetMethodName().equals(setMethodName)){
+                return info;
+            }
+        }
+        return null;
+    }
     
     public void setImplementsCloneMethod(boolean implementsCloneMethod){
         this.implementsCloneMethod = implementsCloneMethod;
@@ -180,6 +224,14 @@ public class ClassDetails {
         } else {
             return superClassDetails.getNameOfSuperclassImplementingCloneMethod();
         }   
+    }
+    
+    public List<VirtualAttributeMethodInfo> getVirtualAccessMethods() {
+        return virtualAccessMethods;
+    }
+
+    public void setVirtualAccessMethods(List<VirtualAttributeMethodInfo> virtualAccessMethods) {
+        this.virtualAccessMethods = virtualAccessMethods;
     }
     
     public boolean isMappedSuperClass(){

@@ -106,8 +106,10 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.ClassExtractor;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.Indexes;
+import org.eclipse.persistence.annotations.VirtualAccessMethods;
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -122,6 +124,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColum
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityClassListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -621,34 +624,47 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * need to use with our mapping attributes.
      */
     public void processAccessMethods() {
-        if (usesVirtualAccess()) {
-            // If we use virtual access and do not have any access methods
-            // specified then go look for access methods on a mapped superclass
-            // or inheritance parent.
-            if (hasAccessMethods()) {
-                getDescriptor().setDefaultAccessMethods(getAccessMethods());
-            } else {
-                // Go through the mapped superclasses.
-                for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
-                    if (mappedSuperclass.hasAccessMethods()) {
-                        getDescriptor().setDefaultAccessMethods(mappedSuperclass.getAccessMethods());
-                        return;
-                    }
+        // If we use virtual access and do not have any access methods
+        // specified then go look for access methods on a mapped superclass
+        // or inheritance parent.
+        if (hasAccessMethods()) {
+            getDescriptor().setDefaultAccessMethods(getAccessMethods());
+        } else {
+            MetadataAnnotation virtualAccessMethods = getAnnotation(VirtualAccessMethods.class);
+            if (virtualAccessMethods != null){
+                getDescriptor().setDefaultAccessMethods(new AccessMethodsMetadata(virtualAccessMethods, this));
+                return;
+            }
+            // Go through the mapped superclasses.
+            for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
+                if (mappedSuperclass.hasAccessMethods()) {
+                    getDescriptor().setDefaultAccessMethods(mappedSuperclass.getAccessMethods());
+                    return;
                 }
-                
-                // Go through the inheritance parents.
-                if (getDescriptor().isInheritanceSubclass()) {
-                    MetadataDescriptor parentDescriptor = getDescriptor().getInheritanceParentDescriptor();
-                    while (parentDescriptor.isInheritanceSubclass()) {
-                        if (parentDescriptor.getClassAccessor().hasAccessMethods()) {
-                            getDescriptor().setDefaultAccessMethods(parentDescriptor.getClassAccessor().getAccessMethods());
-                            return;
-                        }
-                        
-                        parentDescriptor = parentDescriptor.getInheritanceParentDescriptor();
-                    }
+                virtualAccessMethods = mappedSuperclass.getAnnotation(VirtualAccessMethods.class);
+                if (virtualAccessMethods != null){
+                    getDescriptor().setDefaultAccessMethods(new AccessMethodsMetadata(virtualAccessMethods, this));
+                    return;
                 }
             }
+            
+            // Go through the inheritance parents.
+            if (getDescriptor().isInheritanceSubclass()) {
+                MetadataDescriptor parentDescriptor = getDescriptor().getInheritanceParentDescriptor();
+                while (parentDescriptor.isInheritanceSubclass()) {
+                    if (parentDescriptor.getClassAccessor().hasAccessMethods()) {
+                        getDescriptor().setDefaultAccessMethods(parentDescriptor.getClassAccessor().getAccessMethods());
+                        return;
+                    }
+                    virtualAccessMethods = parentDescriptor.getClassAccessor().getAnnotation(VirtualAccessMethods.class);
+                    if (virtualAccessMethods != null){
+                        getDescriptor().setDefaultAccessMethods(new AccessMethodsMetadata(virtualAccessMethods, this));
+                        return;
+                    }
+                    parentDescriptor = parentDescriptor.getInheritanceParentDescriptor();
+                }
+            }
+            
         }
     }
     

@@ -64,6 +64,10 @@ public class VirtualAttributeAccessor extends MethodAttributeAccessor {
         initializeAttributes(theJavaClass, new Class[] { String.class });
     }
     
+    public boolean isVirtualAttributeAccessor(){
+        return true;
+    }
+    
     /**
      * Sets the value of the instance variable in the object to the value.
      */

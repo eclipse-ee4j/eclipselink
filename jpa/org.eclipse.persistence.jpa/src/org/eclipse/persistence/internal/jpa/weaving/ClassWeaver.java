@@ -60,6 +60,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     public static final String PERSISTENCE_OBJECT_SIGNATURE = "L" + PERSISTENCE_OBJECT_SHORT_SIGNATURE + ";";
     public static final String VECTOR_SIGNATURE = "Ljava/util/Vector;";
     public static final String OBJECT_SIGNATURE = "Ljava/lang/Object;";
+    public static final String STRING_SIGNATURE = "Ljava/lang/String;";
     public static final String CACHEKEY_SIGNATURE = "Lorg/eclipse/persistence/internal/identitymaps/CacheKey;";
 
     // Fetch groups
@@ -87,6 +88,10 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     // a copy is in the foundation project under internal.Helper
     public static final String PERSISTENCE_FIELDNAME_PREFIX = "_persistence_";
     public static final String PERSISTENCE_FIELDNAME_POSTFIX = "_vh";
+    
+    public static final String VIRTUAL_GETTER_SIGNATURE = "(" + ClassWeaver.STRING_SIGNATURE + ")" + ClassWeaver.OBJECT_SIGNATURE;
+    public static final String VIRTUAL_SETTER_SIGNATURE = "(" + ClassWeaver.STRING_SIGNATURE + ClassWeaver.OBJECT_SIGNATURE + ")" + ClassWeaver.OBJECT_SIGNATURE;
+    
     /** Store if JAXB is no the classpath. */
     protected static Boolean isJAXBOnPath;
 

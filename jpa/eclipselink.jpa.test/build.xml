@@ -386,6 +386,7 @@
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${jpa.performance}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.metamodel.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.delimited.model}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.extensibility.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.beanvalidation.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.composite.advanced.model.member_1}"/>
@@ -466,6 +467,7 @@
                 <path refid="compile.path"/>
             </classpath>
         </javac>
+
     </target>
 
     <target name="compile-fullregression">
@@ -529,7 +531,7 @@
     <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation, 
     package-composite-advanced, package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, 
     package-xml-composite-advanced, package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
-    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3" description="build EclipseLink jar">
+    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3, package-extensibility" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
@@ -590,6 +592,7 @@
                      excludes="org/eclipse/persistence/testing/models/jpa/xml/**
                                org/eclipse/persistence/testing/models/jpa/ddlgeneration/**
                                org/eclipse/persistence/testing/models/jpa/delimited/**
+                               org/eclipse/persistence/testing/models/jpa/extensibility/**
                                org/eclipse/persistence/testing/models/jpa/validationfailed/**
                                org/eclipse/persistence/testing/models/jpa/fieldaccess/**
                                org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/**
@@ -840,6 +843,23 @@
         </jar>
     </target>
 
+    <target name="package-extensibility" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.extensibility.model}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.extensibility.model}" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.extensibility.model}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/extensibility/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.extensibility.model}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.extensibility.model}">
+            </fileset>
+        </jar>
+        <copy todir="${jpatest.build.location}/${classes.dir}">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.extensibility.model}/repository"/>
+        </copy>
+    </target>
+
     <target name="package-beanvalidation" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.beanvalidation.model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.beanvalidation.model}" includes="*.xml"/>
@@ -1045,6 +1065,7 @@
             <fileset file="${eclipselink.jpa.test}/*.ear"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.cascade.deletes}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.extensibility.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.beanvalidation.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_1}.jar"/>
@@ -1087,6 +1108,7 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"/>
             <!--pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.extensibility.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.beanvalidation.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_1}.jar"/>
@@ -1282,6 +1304,7 @@
             <pathelement path="${eclipselink.jpa.test}/woven-${jpa.performance}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.metamodel.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.delimited.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.extensibility.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.beanvalidation.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.composite.advanced.model.member_1}.jar"/>
@@ -1797,6 +1820,13 @@
         </weave>
         <weave source= "${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"
                target = "${eclipselink.jpa.test}/woven-${eclipselink.delimited.model}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+         <weave source= "${eclipselink.jpa.test}/${eclipselink.extensibility.model}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink.extensibility.model}.jar"
                loglevel="${logging.level}">
                <classpath>
                     <path refid="run.classpath"/>

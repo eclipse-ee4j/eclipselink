@@ -54,6 +54,8 @@ public class AttributeDetails {
     /** Caches the set method signature. */
     protected String setMethodSignature;
     
+    protected boolean isVirtualProperty = false;
+    
     public AttributeDetails(String attributeName, DatabaseMapping mapping) {
         this.attributeName = attributeName;
         this.mapping = mapping;
@@ -73,7 +75,11 @@ public class AttributeDetails {
     
     public String getSetterMethodSignature() {
         if (setMethodSignature == null) {
-            setMethodSignature = "(" + getReferenceClassType().getDescriptor() + ")V";
+            if (isVirtualProperty){
+                setMethodSignature = ClassWeaver.VIRTUAL_SETTER_SIGNATURE;
+            } else {
+                setMethodSignature = "(" + getReferenceClassType().getDescriptor() + ")V";
+            }
         }
         return setMethodSignature;
     }
@@ -108,6 +114,14 @@ public class AttributeDetails {
     
     public void setAttributeOnSuperClass(boolean onSuperClass) {
         attributeOnSuperClass = onSuperClass;
+    }
+
+    public boolean isVirtualProperty() {
+        return isVirtualProperty;
+    }
+
+    public void setVirtualProperty(boolean isVirtualProperty) {
+        this.isVirtualProperty = isVirtualProperty;
     }
 
     public boolean isAttributeOnSuperClass() {

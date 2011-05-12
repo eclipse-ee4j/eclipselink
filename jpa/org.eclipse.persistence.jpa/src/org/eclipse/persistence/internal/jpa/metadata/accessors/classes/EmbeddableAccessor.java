@@ -346,35 +346,33 @@ public class EmbeddableAccessor extends ClassAccessor {
      * need to use with our mapping attributes.
      */
     public void processAccessMethods() {
-        if (usesVirtualAccess()) {
-            // If we use virtual access and do not have any access methods
-            // specified then get the default access methods from our owning
-            // entity.
-            if (hasAccessMethods()) {
-                getDescriptor().setDefaultAccessMethods(getAccessMethods());
-            } else {
-                // The embeddable does not define default access methods. We 
-                // need to look at our owning entities and 1) validate that
-                // they all use the same default access methods and 2) grab
-                // the default access methods from them.
-                ClassAccessor embeddingAccessor = null;
-                for (ClassAccessor currentEmbeddingAccessor : m_embeddingAccessors.values()) {
-                    if (embeddingAccessor == null) {
-                        embeddingAccessor = currentEmbeddingAccessor;
-                        continue;
-                    }
-                    
-                    if (! embeddingAccessor.getDescriptor().getDefaultAccessMethods().equals(currentEmbeddingAccessor.getDescriptor().getDefaultAccessMethods())) {
-                        throw ValidationException.conflictingAccessMethodsForEmbeddable(getJavaClassName(), embeddingAccessor.getJavaClassName(), embeddingAccessor.getDescriptor().getDefaultAccessMethods(), currentEmbeddingAccessor.getJavaClassName(), currentEmbeddingAccessor.getDescriptor().getDefaultAccessMethods());
-                    }
+        // If we use virtual access and do not have any access methods
+        // specified then get the default access methods from our owning
+        // entity.
+        if (hasAccessMethods()) {
+            getDescriptor().setDefaultAccessMethods(getAccessMethods());
+        } else {
+            // The embeddable does not define default access methods. We 
+            // need to look at our owning entities and 1) validate that
+            // they all use the same default access methods and 2) grab
+            // the default access methods from them.
+            ClassAccessor embeddingAccessor = null;
+            for (ClassAccessor currentEmbeddingAccessor : m_embeddingAccessors.values()) {
+                if (embeddingAccessor == null) {
+                    embeddingAccessor = currentEmbeddingAccessor;
+                    continue;
                 }
+                
+                if (! embeddingAccessor.getDescriptor().getDefaultAccessMethods().equals(currentEmbeddingAccessor.getDescriptor().getDefaultAccessMethods())) {
+                    throw ValidationException.conflictingAccessMethodsForEmbeddable(getJavaClassName(), embeddingAccessor.getJavaClassName(), embeddingAccessor.getDescriptor().getDefaultAccessMethods(), currentEmbeddingAccessor.getJavaClassName(), currentEmbeddingAccessor.getDescriptor().getDefaultAccessMethods());
+                }
+            }
 
-                // Set the default access methods on the descriptor and log a
-                // message if there is an embedding accessor. Otherwise we'll
-                // use the default set on our descriptor.
-                if (embeddingAccessor != null) {
-                    getDescriptor().setDefaultAccessMethods(embeddingAccessor.getDescriptor().getDefaultAccessMethods());
-                }
+            // Set the default access methods on the descriptor and log a
+            // message if there is an embedding accessor. Otherwise we'll
+            // use the default set on our descriptor.
+            if (embeddingAccessor != null) {
+                getDescriptor().setDefaultAccessMethods(embeddingAccessor.getDescriptor().getDefaultAccessMethods());
             }
         }
     }

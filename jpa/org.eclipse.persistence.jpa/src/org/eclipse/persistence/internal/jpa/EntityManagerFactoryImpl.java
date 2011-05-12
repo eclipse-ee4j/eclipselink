@@ -199,6 +199,15 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
 
     /**
+     * INTERNAL:
+     * Return the EntityManagerSetupImpl associated with this factory
+     * @return
+     */
+    public EntityManagerSetupImpl getSetupImpl(){
+        return setupImpl;
+    }
+    
+    /**
      * INTERNAL: Returns the ServerSession that the Factory will be using and
      * initializes it if it is not available. This method makes use of the
      * partially constructed session stored in our setupImpl and completes its

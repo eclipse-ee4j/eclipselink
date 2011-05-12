@@ -25,7 +25,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
+import org.eclipse.persistence.annotations.VirtualAccessMethods;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
  * INTERNAL:
@@ -51,6 +54,18 @@ public class AccessMethodsMetadata extends ORMetadata {
     String getMethodName = "get";
     String setMethodName = "set";
 
+    public AccessMethodsMetadata(MetadataAnnotation virtualAccessMethods, MetadataAccessor accessor){
+        super(virtualAccessMethods, accessor);
+        if (virtualAccessMethods.getName().equals(VirtualAccessMethods.class.getName())){
+            if (virtualAccessMethods.getAttribute("get") != null){
+                this.getMethodName = (String)virtualAccessMethods.getAttribute("get");
+            }
+            if (virtualAccessMethods.getAttribute("set") != null){
+                this.setMethodName = (String)virtualAccessMethods.getAttribute("set");
+            }
+        }
+    }
+    
     /**
      * INTERNAL:
      * Used for XML loading.

@@ -13,6 +13,7 @@
  package org.eclipse.persistence.internal.jpa.weaving;
 
 //ASM imports
+import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.libraries.asm.*;
 
 /**
@@ -244,6 +245,26 @@ public class MethodWeaver extends MethodAdapter implements Opcodes {
      *  
      *  // if not weaving for change tracking, but for fetch groups only:
      *  _persistence_checkFetchedForSet("attributeName");
+     *  
+     *  3. Modifies getter Method for attributes using virtual access
+     *  
+     *  add: _persistence_checkFetched(name);
+     *  
+     *  4. Modifies setter Method for attributes using virtual access
+     *  
+     *  add code of the following form:
+     *  
+     *   Object obj = null;
+     *   if(_persistence_listener != null){
+     *      obj = get(name);
+     *   } else {
+     *       _persistence_checkFetchedForSet(name);
+     *   }
+     *   _persistence_propertyChange(name, obj, value);
+     *   
+     *   _persistence_checkFetchedForSet(name) call will be excluded if weaving of fetch groups is not enabled
+     *   
+     *   _persistence_propertyChange(name, obj, value); will be excluded if weaving of change tracking is not enabled
      */
     public void weaveBeginningOfMethodIfRequired() {
         if (this.methodStarted){
@@ -251,23 +272,60 @@ public class MethodWeaver extends MethodAdapter implements Opcodes {
         }
         // Must set immediately, as weaving can trigger this method.
         this.methodStarted = true;
+        boolean isVirtual = false;
         AttributeDetails attributeDetails = tcw.classDetails.getGetterMethodToAttributeDetails().get(methodName);
-        boolean isGetMethod = (attributeDetails != null) && this.methodDescriptor.startsWith("()");
-        if (isGetMethod && !attributeDetails.hasField()) {
+        boolean isGetMethod = (attributeDetails != null) && (this.methodDescriptor.startsWith("()") ||
+                (attributeDetails.isVirtualProperty() && this.methodDescriptor.startsWith("(" + ClassWeaver.STRING_SIGNATURE +")")));
+        
+        String attributeName = null;
+        String referenceClassName = null;
+        String setterMethodName = null;
+        Type referenceClassType = null;
+        String getterMethodName = null;
+        int valueHoldingLocation = 1;
+        int valueStorageLocation = 2;
+        
+        if (attributeDetails == null){
+            VirtualAttributeMethodInfo info = tcw.classDetails.getInfoForVirtualGetMethod(methodName);
+            if ((info != null) && this.methodDescriptor.equals(ClassWeaver.VIRTUAL_GETTER_SIGNATURE) ){
+                isGetMethod = true;
+                isVirtual = true;
+                referenceClassName = "java.lang.Object";
+                setterMethodName = info.getSetMethodName();
+                referenceClassType = Type.getType(ClassWeaver.OBJECT_SIGNATURE);
+                getterMethodName = methodName;
+            }
+        } else {
+            attributeName = attributeDetails.getAttributeName();
+            referenceClassName = attributeDetails.getReferenceClassName();
+            setterMethodName = attributeDetails.getSetterMethodName();
+            referenceClassType = attributeDetails.getReferenceClassType();
+            getterMethodName = attributeDetails.getGetterMethodName();
+            isVirtual = attributeDetails.isVirtualProperty();
+        }
+        if (isVirtual){
+            valueHoldingLocation = 2;
+            valueStorageLocation = 3;
+        }
+        if (isVirtual || (isGetMethod && !attributeDetails.hasField())) {
             if (tcw.classDetails.shouldWeaveFetchGroups()) {
                 mv.visitVarInsn(ALOAD, 0);
-                mv.visitLdcInsn(attributeDetails.getAttributeName());
+                if (isVirtual){
+                    mv.visitVarInsn(ALOAD, 1);
+                } else {
+                    mv.visitLdcInsn(attributeName);
+                }
                 // _persistence_checkFetched("attributeName");
                 mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetched", "(Ljava/lang/String;)V");                
             }
-            if (attributeDetails.weaveValueHolders()) {
+            if (!isVirtual && attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_attributeName_vh();
                 mv.visitVarInsn(ALOAD, 0);
-                mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, "()V");
+                mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_initialize_" + attributeName + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, "()V");
                 
                 // if (!_persistence_attributeName_vh.isInstantiated()) {
                 mv.visitVarInsn(ALOAD, 0);
-                mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeName + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                 mv.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "isInstantiated", "()Z");
                 Label l0 = new Label();
                 mv.visitJumpInsn(IFNE, l0);
@@ -286,10 +344,10 @@ public class MethodWeaver extends MethodAdapter implements Opcodes {
                 // setAttributeName((AttributeType)_persistence_attributeName_vh.getValue());
                 mv.visitVarInsn(ALOAD, 0);
                 mv.visitVarInsn(ALOAD, 0);
-                mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX + attributeName + ClassWeaver.PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                 mv.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
-                mv.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
-                mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getSetterMethodName(), "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                mv.visitTypeInsn(CHECKCAST, referenceClassName.replace('.','/'));
+                mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), setterMethodName, "(" + referenceClassType.getDescriptor() + ")V");
                 
                 if (tcw.classDetails.shouldWeaveChangeTracking()) {
                     // _persistence_listener = temp_persistence_listener;
@@ -303,19 +361,40 @@ public class MethodWeaver extends MethodAdapter implements Opcodes {
         } else {
             attributeDetails = tcw.classDetails.getSetterMethodToAttributeDetails().get(methodName);
             boolean isSetMethod = (attributeDetails != null) && this.methodDescriptor.equals(attributeDetails.getSetterMethodSignature());
-            if (isSetMethod  && !attributeDetails.hasField()) {
+            if (attributeDetails == null){
+                VirtualAttributeMethodInfo info = tcw.classDetails.getInfoForVirtualSetMethod(methodName);
+                if (info != null && this.methodDescriptor.equals(ClassWeaver.VIRTUAL_GETTER_SIGNATURE) ){
+                    isGetMethod = true;
+                    isVirtual = true;
+                    referenceClassName = "java.lang.Object";
+                    setterMethodName = methodName;
+                    referenceClassType = Type.getType(ClassWeaver.OBJECT_SIGNATURE);
+                    getterMethodName = info.getGetMethodName();
+                }
+            } else {
+                attributeName = attributeDetails.getAttributeName();
+                referenceClassName = attributeDetails.getReferenceClassName();
+                setterMethodName = attributeDetails.getSetterMethodName();
+                referenceClassType = attributeDetails.getReferenceClassType();
+                getterMethodName = attributeDetails.getGetterMethodName();
+                isVirtual = attributeDetails.isVirtualProperty();
+            }
+            if (isVirtual){
+                valueHoldingLocation = 2;
+                valueStorageLocation = 3;
+            }
+            if (isVirtual || (isSetMethod  && !attributeDetails.hasField())) {
                 if(tcw.classDetails.shouldWeaveChangeTracking()) {
                     if(tcw.classDetails.shouldWeaveFetchGroups()) {
                         // if this is a primitive, get the wrapper class
-                        String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
+                        String wrapper = ClassWeaver.wrapperFor(referenceClassType.getSort());
                         
                         mv.visitInsn(ACONST_NULL);
                         if (wrapper != null){
-                            mv.visitVarInsn(ASTORE, 3);
+                            mv.visitVarInsn(ASTORE, valueStorageLocation + 1);
                         } else {
-                            mv.visitVarInsn(ASTORE, 2);
+                            mv.visitVarInsn(ASTORE, valueStorageLocation);
                         }
-        
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), "_persistence_listener", "Ljava/beans/PropertyChangeListener;");
                         Label l0 = new Label();
@@ -337,14 +416,21 @@ public class MethodWeaver extends MethodAdapter implements Opcodes {
                         // Call the getter
                         // getAttribute()
                         mv.visitVarInsn(ALOAD, 0);
-                        mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()" + attributeDetails.getReferenceClassType().getDescriptor());               
+                        String getterArgument = "";
+                        String getterReturn = referenceClassType.getDescriptor();
+                        if (isVirtual){
+                            getterArgument = ClassWeaver.STRING_SIGNATURE;
+                            getterReturn = ClassWeaver.OBJECT_SIGNATURE;
+                            mv.visitVarInsn(ALOAD, 1);
+                        }
+                        mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), getterMethodName, "(" + getterArgument + ")" + getterReturn);
                         if (wrapper != null){
                             // 2nd part of using constructor.
-                            mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
-                            mv.visitVarInsn(ASTORE, 3);
+                            mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + referenceClassType.getDescriptor() + ")V");
+                            mv.visitVarInsn(ASTORE,  valueStorageLocation + 1);
                         } else {
                             // store the result
-                            mv.visitVarInsn(ASTORE, 2);
+                            mv.visitVarInsn(ASTORE, valueStorageLocation);
                         }
                         
                         Label l1 = new Label();
@@ -352,25 +438,34 @@ public class MethodWeaver extends MethodAdapter implements Opcodes {
                         mv.visitLabel(l0);
                         mv.visitVarInsn(ALOAD, 0);
                         
-                        mv.visitLdcInsn(attributeDetails.getAttributeName());
+                        if (isVirtual){
+                            mv.visitVarInsn(ALOAD, 1);
+                        } else {
+                            mv.visitLdcInsn(attributeName);
+                        }
                         mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
                         mv.visitLabel(l1);
                         
                         mv.visitVarInsn(ALOAD, 0);
-                        mv.visitLdcInsn(attributeDetails.getAttributeName());
+                        
+                        if (isVirtual){
+                            mv.visitVarInsn(ALOAD, 1);
+                        } else {
+                            mv.visitLdcInsn(attributeName);
+                        }
                         
                         if (wrapper != null) {
-                            mv.visitVarInsn(ALOAD, 3);
+                            mv.visitVarInsn(ALOAD, valueStorageLocation + 1);
                             mv.visitTypeInsn(NEW, wrapper);
                             mv.visitInsn(DUP);
                         } else {
-                            mv.visitVarInsn(ALOAD, 2);
+                            mv.visitVarInsn(ALOAD, valueStorageLocation);
                         }
                         // get an appropriate load opcode for the type
-                        int opcode = attributeDetails.getReferenceClassType().getOpcode(ILOAD);
-                        mv.visitVarInsn(opcode, 1);
+                        int opcode = referenceClassType.getOpcode(ILOAD);
+                        mv.visitVarInsn(opcode, valueHoldingLocation);
                         if (wrapper != null){
-                            mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                            mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + referenceClassType.getDescriptor() + ")V");
                         }
                         mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
                     } else {
@@ -383,7 +478,7 @@ public class MethodWeaver extends MethodAdapter implements Opcodes {
                          * AttributeWrapperType oldAttribute = new AttributeWrapperType(getAttribute()); // for primitives
                          */                
                         // if this is a primitive, get the wrapper class
-                        String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
+                        String wrapper = ClassWeaver.wrapperFor(referenceClassType.getSort());
                         
                         // 1st part of invoking constructor for primitives to wrap them
                         if (wrapper != null) {
@@ -394,29 +489,42 @@ public class MethodWeaver extends MethodAdapter implements Opcodes {
                         // Call the getter
                         // getAttribute()
                         mv.visitVarInsn(ALOAD, 0);
-                        mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()" + attributeDetails.getReferenceClassType().getDescriptor());               
+                        String getterArgument = "";
+                        String getterReturn = referenceClassType.getDescriptor();
+                        if (isVirtual){
+                            getterArgument = ClassWeaver.STRING_SIGNATURE;
+                            getterReturn = ClassWeaver.OBJECT_SIGNATURE;
+                            mv.visitVarInsn(ALOAD, 1);
+                        }
+                        mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), getterMethodName, "(" + getterArgument + ")" + getterReturn);
                         if (wrapper != null){
                             // 2nd part of using constructor.
                             mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
-                            mv.visitVarInsn(ASTORE, 3);
+                            mv.visitVarInsn(ASTORE, valueStorageLocation + 1);
                         } else {
                             // store the result
-                            mv.visitVarInsn(ASTORE, 3);
+                            mv.visitVarInsn(ASTORE, valueStorageLocation);
                         }
 
                         // makes use of the value stored in weaveBeginningOfMethodIfRequired to call property change method
                         // _persistence_propertyChange("attributeName", oldAttribute, argument);
                         mv.visitVarInsn(ALOAD, 0);
-                        mv.visitLdcInsn(attributeDetails.getAttributeName());
-                        mv.visitVarInsn(ALOAD, 3);
+                        if (isVirtual){
+                            mv.visitVarInsn(ALOAD, 1);
+                        } else {
+                            mv.visitLdcInsn(attributeName);
+                        }
                         if (wrapper != null) {
+                            mv.visitVarInsn(ALOAD, valueStorageLocation + 1);
                             mv.visitTypeInsn(NEW, wrapper);
                             mv.visitInsn(DUP);
+                        } else {
+                            mv.visitVarInsn(ALOAD, valueStorageLocation);
                         }
-                        int opcode = attributeDetails.getReferenceClassType().getOpcode(ILOAD);
-                        mv.visitVarInsn(opcode, 1);
+                        int opcode = referenceClassType.getOpcode(ILOAD);
+                        mv.visitVarInsn(opcode, valueHoldingLocation);
                         if (wrapper != null) {
-                            mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                            mv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + referenceClassType.getDescriptor() + ")V");
                         }
                         mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
                     }
@@ -424,11 +532,14 @@ public class MethodWeaver extends MethodAdapter implements Opcodes {
                     // !tcw.classDetails.shouldWeaveChangeTracking()
                     if(tcw.classDetails.shouldWeaveFetchGroups()) {
                         mv.visitVarInsn(ALOAD, 0);
-                        mv.visitLdcInsn(attributeDetails.getAttributeName());
+                        if (isVirtual){
+                            mv.visitVarInsn(ALOAD, 1);
+                        } else {
+                            mv.visitLdcInsn(attributeName);
+                        }
                         // _persistence_checkFetchedForSet("variableName");
                         mv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
                     }
-
                 }
             }
         }

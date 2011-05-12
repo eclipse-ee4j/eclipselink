@@ -19,9 +19,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -160,6 +163,9 @@ public class TransformerFactory {
                     if (!descriptor.usesPropertyAccessForWeaving()){
                         classDetails.useAttributeAccess();
                     }
+                    
+                    classDetails.getVirtualAccessMethods().addAll(descriptor.getVirtualAttributeMethods());
+
                     List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
                     classDetailsMap.put(classDetails.getClassName() ,classDetails);
 
@@ -316,7 +322,9 @@ public class TransformerFactory {
      */
     private MetadataClass getAttributeTypeFromClass(MetadataClass metadataClass, String attributeName, DatabaseMapping mapping, boolean checkSuperclass){       
         String getterMethod = mapping.getGetMethodName();
-        if (mapping != null && getterMethod != null) {
+        if (mapping.isAbstractDirectMapping() && mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
+            return metadataClass.getMetadataClass(((AbstractDirectMapping)mapping).getAttributeClassificationName());
+        } else if (mapping != null && getterMethod != null) {
             MetadataMethod method = metadataClass.getMethod(getterMethod, new ArrayList(), checkSuperclass);
             if (method == null) {
                 return null;
@@ -349,6 +357,13 @@ public class TransformerFactory {
             String attribute = mapping.getAttributeName();
             AttributeDetails attributeDetails = new AttributeDetails(attribute, mapping);
 
+            if (mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
+                attributeDetails.setVirtualProperty(mapping.getAttributeAccessor().isVirtualAttributeAccessor());
+                if ((classDetails.getInfoForVirtualGetMethod(mapping.getGetMethodName()) == null) && (classDetails.getInfoForVirtualSetMethod(mapping.getSetMethodName()) == null)){
+                    VirtualAttributeMethodInfo info = new VirtualAttributeMethodInfo(mapping.getGetMethodName(), mapping.getSetMethodName());
+                    classDetails.getVirtualAccessMethods().add(info);
+                }
+            }
             // Initial look for the type of this attribute.
             MetadataClass typeClass = getAttributeTypeFromClass(metadataClass, attribute, mapping, false);
             if (typeClass == null) {
@@ -398,6 +413,9 @@ public class TransformerFactory {
                 }
                 if (weaveValueHolders && (foreignReferenceMapping.getIndirectionPolicy() instanceof BasicIndirectionPolicy) &&
                         (typeClass != null)  && (!typeClass.extendsInterface(ValueHolderInterface.class))) {
+                    if (mapping.isObjectReferenceMapping() && attributeDetails.isVirtualProperty()){
+                        throw ValidationException.unsupportedWeavingOfVirtualOneToOne(classDetails.getClassName(), attributeDetails.getAttributeName());
+                    }
                     lazyMappings.add(foreignReferenceMapping);
                     attributeDetails.weaveVH(weaveValueHolders, foreignReferenceMapping);
                 }

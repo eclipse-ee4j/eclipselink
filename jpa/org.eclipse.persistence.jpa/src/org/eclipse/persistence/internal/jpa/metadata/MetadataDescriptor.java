@@ -109,6 +109,7 @@ import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
 
@@ -1506,6 +1507,7 @@ public class MetadataDescriptor {
      */
     public void setDefaultAccessMethods(AccessMethodsMetadata accessMethods) {
         m_defaultAccessMethods = accessMethods;
+        getClassDescriptor().getVirtualAttributeMethods().add(new VirtualAttributeMethodInfo(accessMethods.getGetMethodName(),accessMethods.getSetMethodName()));
     }
     
     /**
