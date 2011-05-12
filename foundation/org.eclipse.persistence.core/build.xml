@@ -118,19 +118,11 @@
         <!-- dependency tests -->
         <available file="${persistence.lib}" property="persistence.bundle.exist"/>
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
-        
-        <selectbundle basename="org.eclipse.persistence.jpa.jpql" directory="${core.build.location}/${core.2.common.plugins.dir}" separator="_"
-                     criterion="[1.0.0,2.0.0)" property="hermes.lib" includepath="true"
-        />
-        <say message="hermes.lib = '${hermes.lib}'" if="hermes.lib"/>
-        <say message="Hermes bundle not found in '${core.build.location}/${core.2.common.plugins.dir}'!" unless="hermes.lib"/>
-        <fail message="Cannot find a hermes ('org.eclipse.persistence.jpa.jpql_*.jar') bundle." unless="hermes.lib"/>
 
         <!-- Set Compile Path-->
         <path id="core.compile.path">
             <pathelement path="${core.2.common.plugins.dir}/${antlr}"/>
             <pathelement path="${core.2.common.plugins.dir}/${asm}"/>
-            <pathelement path="${hermes.lib}"/>
             <pathelement path="${persistence.lib}"/>
             <fileset
                 dir="${core.2.common.plugins.dir}"
