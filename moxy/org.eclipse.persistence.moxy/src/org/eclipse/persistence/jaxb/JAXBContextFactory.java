@@ -34,6 +34,8 @@ import org.eclipse.persistence.jaxb.JAXBContext.ContextPathInput;
 import org.eclipse.persistence.jaxb.JAXBContext.TypeMappingInfoInput;
 import org.eclipse.persistence.jaxb.compiler.CompilerHelper;
 import org.eclipse.persistence.jaxb.compiler.XMLProcessor;
+import org.eclipse.persistence.jaxb.metadata.MetadataSource;
+import org.eclipse.persistence.jaxb.metadata.XMLMetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
@@ -197,11 +199,11 @@ public class JAXBContextFactory {
                         }
                         if(metadataSource instanceof List) {
                             for(Object next: (List)metadataSource) {
-                                XmlBindings binding = getXmlBindings(next, classLoader);
+                                XmlBindings binding = getXmlBindings(next, classLoader, properties);
                                 xmlBindings.add(binding);
                             }
                         } else {
-                            XmlBindings binding = getXmlBindings(metadataSource, classLoader);
+                            XmlBindings binding = getXmlBindings(metadataSource, classLoader, properties);
                             xmlBindings.add(binding);
                         }
                         if (xmlBindings != null) {
@@ -215,11 +217,11 @@ public class JAXBContextFactory {
                     if (metadataSource == null) {
                         throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource();
                     }
-                    bindings = processBindingFile(bindings, metadataSource, classLoader);
+                    bindings = processBindingFile(bindings, metadataSource, classLoader, properties);
                 }
             // handle Object
             } else {
-                bindings = processBindingFile(bindings, value, classLoader);
+                bindings = processBindingFile(bindings, value, classLoader, properties);
             }
         }
         Map<String, XmlBindings> mergedBindings = new HashMap<String, XmlBindings>(bindings.size());
@@ -238,9 +240,9 @@ public class JAXBContextFactory {
      * @param classLoader
      * @return
      */
-    private static Map<String, List<XmlBindings>> processBindingFile(Map<String, List<XmlBindings>> originalBindings, Object bindingHandle, ClassLoader classLoader) {
+    private static Map<String, List<XmlBindings>> processBindingFile(Map<String, List<XmlBindings>> originalBindings, Object bindingHandle, ClassLoader classLoader, Map<String, Object> properties) {
         Map<String, List<XmlBindings>> bindingMap = originalBindings;
-        XmlBindings binding = getXmlBindings(bindingHandle, classLoader);
+        XmlBindings binding = getXmlBindings(bindingHandle, classLoader, properties);
         if (binding != null) {
             String key = binding.getPackageName();
             if (key.equals(XMLProcessor.DEFAULT)) {
@@ -275,7 +277,7 @@ public class JAXBContextFactory {
      * 
      * @param metadata assumed to be one of:  File, InputSource, InputStream, Reader, Source
      */
-    private static XmlBindings getXmlBindings(Object metadata, ClassLoader classLoader) {
+    private static XmlBindings getXmlBindings(Object metadata, ClassLoader classLoader, Map<String, Object> properties) {
         XmlBindings xmlBindings = null;
         Unmarshaller unmarshaller;
         // only create the JAXBContext for our XmlModel once
@@ -300,6 +302,8 @@ public class JAXBContextFactory {
                 xmlBindings = (XmlBindings) unmarshaller.unmarshal((XMLEventReader) metadata);
             } else if (metadata instanceof XMLStreamReader) {
                 xmlBindings = (XmlBindings) unmarshaller.unmarshal((XMLStreamReader) metadata);
+            } else if (metadata instanceof MetadataSource){
+                xmlBindings = ((MetadataSource)metadata).getXmlBindings(properties, classLoader);
             } else {
                 throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
             }

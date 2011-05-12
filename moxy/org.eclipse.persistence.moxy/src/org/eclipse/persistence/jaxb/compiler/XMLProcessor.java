@@ -1958,9 +1958,7 @@ public class XMLProcessor {
         for(JAXBElement next:overrideAttributes.getJavaAttribute()) {
             JAXBElement existingAttribute = attributeMap.get(((JavaAttribute)next.getValue()).getJavaAttribute());
             if(existingAttribute != null) {
-                //attributes.getJavaAttribute().remove(existingAttribute);
-                //Throw an Exception for now:
-                throw JAXBException.samePropertyInMultipleFiles(((JavaAttribute)next.getValue()).getJavaAttribute(), javaType.getName());
+                attributes.getJavaAttribute().remove(existingAttribute);
             }
             attributes.getJavaAttribute().add(next);
         }

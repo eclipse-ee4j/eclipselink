@@ -2,6 +2,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindin
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.metadata.XMLMetadataSource;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Employee;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Person;
@@ -87,12 +89,12 @@ public class MultipleBindingsSimpleTestCases extends JAXBTestCases{
 	     "</xml-bindings>";
 			
 	        DOMSource src1 = null;
-	        DOMSource src2 = null;
+	        //DOMSource src2 = null;
 	        try {		      
 	            Document doc = parser.parse(new ByteArrayInputStream(bindings1.getBytes()));
 	            src1 = new DOMSource(doc.getDocumentElement());
-	            Document doc2 = parser.parse(new ByteArrayInputStream(bindings2.getBytes()));	            
-	            src2 = new DOMSource(doc2.getDocumentElement());	            
+	            //Document doc2 = parser.parse(new ByteArrayInputStream(bindings2.getBytes()));	            
+	            //src2 = new DOMSource(doc2.getDocumentElement());	            
 		    } catch (Exception e) {		    	
 		        e.printStackTrace();
 		        fail("An error occurred during setup");
@@ -100,7 +102,7 @@ public class MultipleBindingsSimpleTestCases extends JAXBTestCases{
 		    
 		    ArrayList<Object> bindingsList = new ArrayList();
 	        bindingsList.add(src1);
-	        bindingsList.add(src2);
+	        bindingsList.add(new XMLMetadataSource(new StringReader(bindings2)));
 			    
 	        overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple", bindingsList);
 
@@ -117,7 +119,7 @@ public class MultipleBindingsSimpleTestCases extends JAXBTestCases{
 	   	    	
 		    ArrayList<Object> bindingsList = new ArrayList();
 	        bindingsList.add(new StreamSource(iStream));
-	        bindingsList.add(new StreamSource(iStream2));
+	        bindingsList.add(new XMLMetadataSource(iStream2));
 			    
 	        overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple", bindingsList);
 

@@ -613,8 +613,11 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     	if(obj instanceof List){
     		List theList = (List)obj;
     		for(int i=0; i<theList.size(); i++){
-    			Source src = (Source)theList.get(i);
-    			validateBindingsFileAgainstSchema(src);
+    		    Object next = theList.get(i);
+    		    if(next instanceof Source) {
+    		        Source src = (Source)theList.get(i);
+    		        validateBindingsFileAgainstSchema(src);
+    		    }
     		}
     	}
     }

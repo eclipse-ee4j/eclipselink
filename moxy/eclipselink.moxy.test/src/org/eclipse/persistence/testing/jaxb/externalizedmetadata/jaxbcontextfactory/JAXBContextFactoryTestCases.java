@@ -30,6 +30,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.metadata.XMLMetadataSource;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.a.BeanA;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.b.BeanB;
@@ -303,6 +304,14 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     public void testBindingFormatFile() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(FILE_OXM_XML));
+        Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class };
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
+        doTestFile(jCtx);
+    }
+    
+    public void testBindingFormatXMLMetadataSource() throws Exception {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new XMLMetadataSource(new File(FILE_OXM_XML)));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestFile(jCtx);
