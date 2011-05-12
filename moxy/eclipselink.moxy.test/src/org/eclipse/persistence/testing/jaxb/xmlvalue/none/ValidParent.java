@@ -43,7 +43,7 @@ public class ValidParent {
         this.parentAttributeProperty = parentAttributeProperty;
     }
 
-    //@XmlAnyAttribute
+    @XmlAnyAttribute
     public Map<QName, Object> getAnyAttributes() {
         return anyAttributes;
     }

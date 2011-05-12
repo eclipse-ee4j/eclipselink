@@ -2144,7 +2144,7 @@ public class AnnotationsProcessor {
         }
 
         if (helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
-            if (info.isSetAnyAttributePropertyName()) {
+            if (info.isSetAnyAttributePropertyName() && !info.getAnyAttributePropertyName().equals(property.getPropertyName())) {
                 throw org.eclipse.persistence.exceptions.JAXBException.multipleAnyAttributeMapping(cls.getName());
             }
             if (!property.getType().getName().equals("java.util.Map")) {
