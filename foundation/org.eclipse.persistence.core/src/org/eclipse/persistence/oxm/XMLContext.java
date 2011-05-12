@@ -83,7 +83,11 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  */
 public class XMLContext {
 
-    private XMLContextState xmlContextState;
+    private volatile XMLContextState xmlContextState;
+
+    XMLContext(XMLContextState xmlContextState) {
+        this.xmlContextState = xmlContextState;
+    }
 
     /**
      * Create a new XMLContext based on the specified session name or list of
@@ -179,6 +183,29 @@ public class XMLContext {
     
     public XMLContext(Collection projects, ClassLoader classLoader) {
         xmlContextState = new XMLContextState(this, projects, classLoader);
+    }
+
+    /**
+     * INTERNAL:  Return the XMLContextState that represents the XMLContexts 
+     * stateful information.  This method is provided for the benefits of layers
+     * that build on top of the core OXM layer such as MOXy's JAXB
+     * implementation.
+     */
+    public XMLContextState getXMLContextState() {
+        return (XMLContextState) xmlContextState;
+    }
+
+    /**
+     * INTERNAL: Set the stateful information for this XMLContext.  Once the new
+     * state has been set, OXM operations (marshal, unmarshal, etc) will be 
+     * based on this new state.  This method is provided for the benefit of 
+     * layers that build on top of the core OXM layer such as MOXy's JAXB
+     * 
+     */
+    public void setXMLContextState(XMLContextState xcs) {
+        synchronized(this) {
+            this.xmlContextState = xcs;
+        }
     }
 
     /**
@@ -1025,7 +1052,7 @@ public class XMLContext {
          * object may be mapped by more that one of the projects used to create the
          * XML Context, this method will return the first match.
          */
-        private AbstractSession getSession(Object object) {
+        public AbstractSession getSession(Object object) {
             if (null == object) {
                 return null;
             }

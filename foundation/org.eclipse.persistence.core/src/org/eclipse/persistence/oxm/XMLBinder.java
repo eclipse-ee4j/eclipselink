@@ -63,10 +63,10 @@ public class XMLBinder {
     DOMReader reader;
 
     public XMLBinder(XMLContext context) {
-        marshaller = context.createMarshaller();
-        unmarshaller = context.createUnmarshaller();
+        this.context = new XMLContext(context.getXMLContextState());
+        marshaller = this.context.createMarshaller();
+        unmarshaller = this.context.createUnmarshaller();
         saxUnmarshaller = new SAXUnmarshaller(unmarshaller, null);
-        this.context = context;
         documentPreservationPolicy = new XMLBinderPolicy();
         reader = new DOMReader(unmarshaller);
     }

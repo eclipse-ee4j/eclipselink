@@ -123,7 +123,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);
     }
 
-    private JAXBContextState contextState;
+    private JAXBContextInput contextInput;
+    private volatile JAXBContextState contextState;
 
     protected JAXBContext() {
         super();
@@ -131,6 +132,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     protected JAXBContext (JAXBContextInput contextInput) throws javax.xml.bind.JAXBException {
+        this.contextInput = contextInput;
         this.contextState = contextInput.createContextState();
     }
 
@@ -156,6 +158,34 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      */
     public JAXBContext(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
         contextState = new JAXBContextState(context, generator, boundTypes);
+    }
+
+    /**
+     * ADVANCED:
+     * <p>Refresh the underlying metadata based on the inputs that were 
+     * used to create the JAXBContext.  This is particularly useful when using
+     * the virtual property mappings.  The refreshMetadata call could be made
+     * in the following way:</p>
+     * <pre>org.eclipse.persistence.jaxb.JAXBHelper.getJAXBContext(aJAXBContext).refreshMetadata();</pre>
+     * <b>Note:</b>
+     * <ul>
+     * <li>As instances of Binder maintain a cache, calling refreshMetadata will
+     * not affect instances of Binder.  To get the new metadata you must create
+     * a new instance of Binder after the refresh metadata call has been made.</li>
+     * </ul>
+     * @throws javax.xml.bind.JAXBException
+     */
+    public void refeshMetadata() throws javax.xml.bind.JAXBException {
+        if(null == contextInput) {
+            return;
+        }
+        synchronized(this) {
+            JAXBContextState newState = contextInput.createContextState();
+            XMLContext xmlContext = getXMLContext();
+            xmlContext.setXMLContextState(newState.getXMLContext().getXMLContextState());
+            newState.setXMLContext(xmlContext);
+            contextState = newState;
+        }
     }
 
     /**
