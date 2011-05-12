@@ -107,7 +107,11 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * Return the freshly-built delegate.
      */
     protected Hashtable buildDelegate() {
-        return (Hashtable)getValueHolder().getValue();
+        Hashtable value = (Hashtable)getValueHolder().getValue();
+        if (value == null) {
+            value = new Hashtable(this.initialCapacity, this.loadFactor);
+        }
+        return value;
     }
 
     /**

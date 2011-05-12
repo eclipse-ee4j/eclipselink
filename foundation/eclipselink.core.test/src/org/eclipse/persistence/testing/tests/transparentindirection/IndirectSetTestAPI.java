@@ -14,8 +14,8 @@ package org.eclipse.persistence.testing.tests.transparentindirection;
 
 import java.util.*;
 import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.models.transparentindirection.IndirectSet;
 
 /**
  * Test a simple IndirectSet.

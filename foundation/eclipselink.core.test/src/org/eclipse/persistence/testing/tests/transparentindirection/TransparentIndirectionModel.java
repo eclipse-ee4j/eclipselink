@@ -16,6 +16,10 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.tools.schemaframework.*;
 import org.eclipse.persistence.testing.models.transparentindirection.*;
 
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.indirection.IndirectSet;
+
 /**
  * Test transparent indirection.
  */
@@ -43,6 +47,8 @@ public class TransparentIndirectionModel extends TestModel {
 
         addTest(getCustomIndirectContainerTestSuite());
         addTest(getBidirectionalRelationshipTestSuite());
+        // Bug 345495
+        addTest(getNullDelegateInValueHolderTestSuite());
     }
 
     public TestSuite getCustomIndirectContainerTestSuite() {
@@ -67,4 +73,17 @@ public class TransparentIndirectionModel extends TestModel {
 
         return suite;
     }
+    
+    public TestSuite getNullDelegateInValueHolderTestSuite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("NullDelegateInValueHolderTestSuite");
+        suite.setDescription("This suite tests setting a ValueHolder in a transparent collection");
+
+        suite.addTest(new NullDelegateInValueHolderTest(IndirectList.class));
+        suite.addTest(new NullDelegateInValueHolderTest(IndirectSet.class));
+        suite.addTest(new NullDelegateInValueHolderTest(IndirectMap.class));
+        
+        return suite;
+    }
+    
 }

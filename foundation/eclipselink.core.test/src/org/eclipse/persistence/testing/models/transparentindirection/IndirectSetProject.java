@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.models.transparentindirection;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.indirection.IndirectSet;
 
 /**
  * configure Order descriptor to use IndirectSets
