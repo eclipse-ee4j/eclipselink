@@ -593,11 +593,11 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      */
     protected Map<String, Parameter<?>> getInternalParameters() {
         if (this.parameters == null) {
+            this.parameters = new HashMap<String, Parameter<?>>();
             DatabaseQuery query = getDatabaseQueryInternal(); // Retrieve named
                                                               // query
             int count = 0;
             if (query.getArguments() != null && !query.getArguments().isEmpty()) {
-                this.parameters = new HashMap<String, Parameter<?>>();
                 for (String argName : query.getArguments()) {
                     Parameter<?> param = new ParameterExpressionImpl(null, query.getArgumentTypes().get(count), argName);
                     this.parameters.put(argName, param);

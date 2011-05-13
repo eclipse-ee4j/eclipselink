@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import junit.framework.Assert;
@@ -79,6 +80,7 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLParameterTestSuite("testSetup"));
         suite.addTest(new JUnitJPQLParameterTestSuite("multipleParameterTest"));
         suite.addTest(new JUnitJPQLParameterTestSuite("updateEnumParameter"));
+        suite.addTest(new JUnitJPQLParameterTestSuite("emptyParametersForNonParameterizedNamedQueryTest"));
         
         return suite;
     }
@@ -169,4 +171,16 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         Object result = q.getSingleResult();
         return ((Number)result).intValue();
     }
+    
+    // Bug 344492
+    public void emptyParametersForNonParameterizedNamedQueryTest() {
+        EntityManager em = createEntityManager();
+        assertNotNull(em);
+        Query query = em.createNamedQuery("findAllEmployeesOrderById");
+        assertNotNull(query);
+        Set parameters = query.getParameters();
+        assertNotNull(parameters);
+        assertEquals("Parameters size should be 0", 0, parameters.size());
+    }
+    
 }
