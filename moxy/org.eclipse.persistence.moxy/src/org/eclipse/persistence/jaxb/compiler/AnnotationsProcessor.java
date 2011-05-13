@@ -789,24 +789,6 @@ public class AnnotationsProcessor {
                     if (targetInfo.getIDProperty() == null && targetInfo.getXmlKeyProperties() == null) {
                         throw JAXBException.noKeyOrIDPropertyOnJoinTarget(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
                     }
-                    for (org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode xmlJoinNode : property.getXmlJoinNodes().getXmlJoinNode()) {
-                        String refXPath = xmlJoinNode.getReferencedXmlPath();
-                        if (targetInfo.getIDProperty() != null && refXPath.equals(targetInfo.getIDProperty().getXmlPath())) {
-                            continue;
-                        }
-                        boolean matched = false;
-                        if (targetInfo.getXmlKeyProperties() != null) {
-                            for (Property xmlkeyProperty : targetInfo.getXmlKeyProperties()) {
-                                if (refXPath.equals(xmlkeyProperty.getXmlPath())) {
-                                    matched = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!matched) {
-                            throw JAXBException.invalidReferencedXmlPathOnJoin(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName(), refXPath);
-                        }
-                    }
                 }
             }
         }

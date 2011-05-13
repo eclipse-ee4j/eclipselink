@@ -2128,7 +2128,8 @@ public class MappingsGenerator {
         // here we need to setup source/target key field associations
         if (property.isSetXmlJoinNodes()) {
             for (XmlJoinNode xmlJoinNode: property.getXmlJoinNodes().getXmlJoinNode()) {
-                mapping.addSourceToTargetKeyFieldAssociation(xmlJoinNode.getXmlPath(), xmlJoinNode.getReferencedXmlPath());
+               validateJoinNode(descriptor.getJavaClassName(), property, xmlJoinNode.getReferencedXmlPath(), referenceClass);
+               mapping.addSourceToTargetKeyFieldAssociation(xmlJoinNode.getXmlPath(), xmlJoinNode.getReferencedXmlPath());
             }
         } else {
             // here we need to setup source/target key field associations
@@ -2209,6 +2210,7 @@ public class MappingsGenerator {
         // here we need to setup source/target key field associations
         if (property.isSetXmlJoinNodes()) {
             for (XmlJoinNode xmlJoinNode: property.getXmlJoinNodes().getXmlJoinNode()) {
+                validateJoinNode(descriptor.getJavaClassName(), property, xmlJoinNode.getReferencedXmlPath(), referenceClass);
                 mapping.addSourceToTargetKeyFieldAssociation(xmlJoinNode.getXmlPath(), xmlJoinNode.getReferencedXmlPath());
             }
         } else {
@@ -2248,6 +2250,37 @@ public class MappingsGenerator {
             }
         }
         return mapping;
+    }
+
+    private void validateJoinNode(String className, Property property, String referencedXmlPath, JavaClass referenceClass) {
+        TypeInfo targetInfo = this.typeInfo.get(referenceClass.getQualifiedName());
+        NamespaceInfo namespaceInfo = this.packageToPackageInfoMappings.get(referenceClass.getPackageName()).getNamespaceInfo();        
+        Property idProp = targetInfo.getIDProperty();
+        if(idProp != null) {
+            String idXpath = idProp.getXmlPath();
+            if(idXpath == null) {
+                idXpath = this.getXPathForField(idProp, namespaceInfo, !idProp.isAttribute()).getXPath();
+            }
+            if (referencedXmlPath.equals(idXpath)) {
+                return;
+            }
+        }
+        boolean matched = false;
+        if (targetInfo.getXmlKeyProperties() != null) {
+            for (Property xmlkeyProperty : targetInfo.getXmlKeyProperties()) {
+                String keyXpath = xmlkeyProperty.getXmlPath();
+                if(keyXpath == null) {
+                    keyXpath = this.getXPathForField(xmlkeyProperty, namespaceInfo, !xmlkeyProperty.isAttribute()).getXPath();
+                }
+                if (referencedXmlPath.equals(keyXpath)) {
+                    matched = true;
+                    break;
+                }
+            }
+        }
+        if (!matched) {
+            throw JAXBException.invalidReferencedXmlPathOnJoin(className, property.getPropertyName(), referenceClass.getQualifiedName(), referencedXmlPath);
+        }
     }
 
     public XMLField getXPathForField(Property property, NamespaceInfo namespaceInfo, boolean isTextMapping) {

@@ -22,7 +22,7 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 public class Address {
     @XmlID
-    @XmlPath("@id")
+    @XmlAttribute
     public int id;
     
     public String street;
