@@ -4,8 +4,8 @@
             org.eclipse.persistence.jpa.PersistenceProvider
         </provider>
         <properties>
-            <property name="eclipselink.metadata-repository.xml.file" value="extension.xml"/>
-            <property name="eclipselink.metadata-repository" value="XML"/>
+            <property name="eclipselink.metadata-source.xml.file" value="extension.xml"/>
+            <property name="eclipselink.metadata-source" value="XML"/>
         </properties>
 
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
