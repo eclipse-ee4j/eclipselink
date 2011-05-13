@@ -50,6 +50,7 @@ public class XMLMarshallerTestSuite extends TestCase {
         suite.addTestSuite(XMLContextStoreXMLDescriptorSimpleType.class);
         suite.addTestSuite(UnmarshalChildElementNSTestCases.class);
         suite.addTestSuite(UnmarshalLevelTestCases.class);
+        suite.addTestSuite(XMLMarshallerContentHandlerTestCases.class);
         return suite;
     }
 

@@ -181,7 +181,11 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     private void openAndCloseStartElement() {
         try {
-            contentHandler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
+            String namespaceUri = xPathFragment.getNamespaceURI();
+            if(namespaceUri == null) {
+                namespaceUri = XMLConstants.EMPTY_STRING;
+            }
+            contentHandler.startElement(namespaceUri, xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -215,6 +219,9 @@ public class ContentHandlerRecord extends MarshalRecord {
         try {
             this.attributes.clear();
             String namespaceURI = frag.getNamespaceURI();
+            if(namespaceURI == null) {
+                namespaceURI = XMLConstants.EMPTY_STRING;
+            }
             String localName = frag.getLocalName();
             String shortName = frag.getShortName();
             contentHandler.startElement(namespaceURI, localName, shortName, attributes);
@@ -262,7 +269,11 @@ public class ContentHandlerRecord extends MarshalRecord {
             isStartElementOpen = false;
         }
         try {
-            contentHandler.endElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName());
+            String uri = xPathFragment.getNamespaceURI();
+            if(uri == null) {
+                uri = XMLConstants.EMPTY_STRING;
+            }
+            contentHandler.endElement(uri, xPathFragment.getLocalName(), xPathFragment.getShortName());
             List<String> currentLevelPrefixMappings = prefixMappings.remove(prefixMappings.size()-1);
             if(null != currentLevelPrefixMappings) {
                 for(String prefix : currentLevelPrefixMappings) {
