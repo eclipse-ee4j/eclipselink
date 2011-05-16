@@ -134,5 +134,10 @@ public class XMLConstants {
     public static final String BOOLEAN_STRING_TRUE = "true";
     public static final String BOOLEAN_STRING_FALSE = "false";
 
+    public static final String ANY_NAMESPACE_ANY = "##any";
+    public static final String ANY_NAMESPACE_LOCAL = "##local";
+    public static final String ANY_NAMESPACE_OTHER = "##other";
+    public static final String ANY_NAMESPACE_TARGETNS = "##targetNamespace";
+
     public final static Class UUID = java.util.UUID.class;
 }

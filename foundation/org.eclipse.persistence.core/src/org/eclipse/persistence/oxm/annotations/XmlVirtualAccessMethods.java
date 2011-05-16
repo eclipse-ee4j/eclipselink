@@ -19,22 +19,28 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * The XmlExtensible annotation is used to indicate that this class has
- * been configured to hold XML Extensions (additional MOXy mappings
- * added at runtime)
+ * The XmlVirtualAccessMethods annotation is used to indicate that this class has
+ * been configured to hold virtual properties.
  */
 @Target({TYPE})
 @Retention(RUNTIME)
-public @interface XmlExtensible {
+public @interface XmlVirtualAccessMethods {
 
     /**
-     * (Optional) Defines the name of the method used to retrieve XML Extensions.
+     * (Optional) Defines the name of the method used to retrieve virtual properties.
      */
     String getMethod() default "get";
 
     /**
-     * (Optional) Defines the name of the method used to store XML Extensions.
+     * (Optional) Defines the name of the method used to store virtual properties.
      */
     String setMethod() default "set";
+
+    /**
+     * (Optional) Configure the way that virtual properties will appear in generated schemas.<br><br>
+     * <b>XmlExtensibleSchema.NODES</b> (default) - Virtual properties will appear as individual nodes<br>
+     * <b>XmlExtensibleSchema.ANY</b> - An XSD &lt;any&gt; element will be written to the schema to represent all of the defined virtual properties
+     */
+    XmlVirtualAccessMethodsSchema schema() default XmlVirtualAccessMethodsSchema.NODES;
 
 }

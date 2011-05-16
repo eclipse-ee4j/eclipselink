@@ -10,17 +10,23 @@
  * Contributors:
  * rbarkhouse - 2011 March 21 - 2.3 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.xmlextensions;
+package org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods;
 
 import java.util.ArrayList;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="ext-object-root")
+@XmlRootElement(name = "ext-object-root")
 public class ExtObjectRoot {
 
+    @XmlElement(name = "objA")
+    @XmlElementWrapper(name = "flexObjectAs")
     public ArrayList<ExtObjectA> flexObjectAs = new ArrayList<ExtObjectA>();
+
+    @XmlElement(name = "objB")
+    @XmlElementWrapper(name = "flexObjectBs")
     public ArrayList<ExtObjectB> flexObjectBs = new ArrayList<ExtObjectB>();
-    public ArrayList<ExtObjectC> flexObjectCs = new ArrayList<ExtObjectC>();
 
 }

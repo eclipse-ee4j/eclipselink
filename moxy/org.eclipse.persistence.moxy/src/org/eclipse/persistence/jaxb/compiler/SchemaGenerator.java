@@ -60,6 +60,7 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethodsSchema;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -107,7 +108,6 @@ public class SchemaGenerator {
     private static final String DOT = ".";
     private static final String SKIP = "skip";
     private static final String ENTRY = "entry";
-    private static final String OTHER = "##other";
     private static final String DEFAULT = "##default";
     private static final String GENERATE = "##generate";
     private static final String SCHEMA = "schema";
@@ -391,7 +391,10 @@ public class SchemaGenerator {
         	ownerTypeInfo.setCompositor(null);
         	return;
         }
-        // generate schema components for each property 
+
+        boolean extAnyAdded = false;
+
+        // generate schema components for each property
         for (Property next : properties) {
             if (next == null) { continue; }
             Schema currentSchema = workingSchema;
@@ -400,6 +403,25 @@ public class SchemaGenerator {
             ComplexType parentType = type;
             // ignore transient and inverse reference properties
             if (!next.isTransient() && !next.isInverseReference()) {
+                // handle xml extensions
+                if (next.isVirtual()) {
+                    boolean extSchemaAny = false;
+                    if (ownerTypeInfo.getXmlVirtualAccessMethods().getSchema() != null) {
+                        extSchemaAny = ownerTypeInfo.getXmlVirtualAccessMethods().getSchema().equals(XmlVirtualAccessMethodsSchema.ANY);
+                    }
+                    if (extSchemaAny && !next.isAttribute()) {
+                        if (!extAnyAdded) {
+                            addAnyToSchema(next, compositor, true, XMLConstants.ANY_NAMESPACE_ANY);
+                            extAnyAdded = true;
+                            continue;
+                        } else {
+                            // any already added
+                            continue;
+                        }
+                    } else {
+                        // proceed, adding the schema element as usual
+                    }
+                }
                 // handle transformers
                 if (next.isSetXmlTransformation() && next.getXmlTransformation().isSetXmlWriteTransformers()) {
                     addTransformerToSchema(next, ownerTypeInfo, compositor, type, workingSchema);
@@ -1546,7 +1568,7 @@ public class SchemaGenerator {
     private void addAnyAttributeToSchema(ComplexType type) {
         AnyAttribute anyAttribute = new AnyAttribute();
         anyAttribute.setProcessContents(SKIP);
-        anyAttribute.setNamespace(OTHER);
+        anyAttribute.setNamespace(XMLConstants.ANY_NAMESPACE_OTHER);
         if (type.getSimpleContent() != null) {
             SimpleContent content = type.getSimpleContent();
             content.getRestriction().setAnyAttribute(anyAttribute);
@@ -1563,9 +1585,21 @@ public class SchemaGenerator {
      * @param compositor the sequence/choice/all to modify
      */
     private void addAnyToSchema(Property property, TypeDefParticle compositor) {
-        addAnyToSchema(property, compositor, isCollectionType(property));
+        addAnyToSchema(property, compositor, isCollectionType(property), XMLConstants.ANY_NAMESPACE_OTHER);
     }
 
+    /**
+     * Convenience method for processing an any property. Required
+     * schema components will be generated and set accordingly.
+     *
+     * @param property the choice property to be processed 
+     * @param compositor the sequence/choice/all to modify
+     * @param isCollection if true will be unbounded
+     */
+    private void addAnyToSchema(Property property, TypeDefParticle compositor, boolean isCollection) {
+        addAnyToSchema(property, compositor, isCollection, XMLConstants.ANY_NAMESPACE_OTHER);
+    }
+    
     /**
      * Convenience method for processing an any property. Required
      * schema components will be generated and set accordingly.
@@ -1573,10 +1607,11 @@ public class SchemaGenerator {
      * @param property the choice property to be processed 
      * @param compositor the sequence/choice/all to modify
      * @param isCollection if true will be unbounded
+     * @param anyNamespace value for the Any's namespace attribute
      */
-    private void addAnyToSchema(Property property, TypeDefParticle compositor, boolean isCollection) {
+    private void addAnyToSchema(Property property, TypeDefParticle compositor, boolean isCollection, String anyNamespace) {
         Any any = new Any();
-        any.setNamespace(OTHER);
+        any.setNamespace(anyNamespace);
         if (property.isLax()) {
             any.setProcessContents(Any.LAX);
         } else {

@@ -192,8 +192,8 @@ public class XMLProcessor {
                         info.setXmlNameTransformer(transformer);
                     }
                     // handle class-level @XmlExtensible override
-                    if (javaType.getXmlExtensible() != null) {
-                        info.setXmlExtensible(javaType.getXmlExtensible());
+                    if (javaType.getXmlVirtualAccessMethods() != null) {
+                        info.setXmlVirtualAccessMethods(javaType.getXmlVirtualAccessMethods());
                     }
 
                     // handle class-level @XmlAccessorOrder override
@@ -413,7 +413,7 @@ public class XMLProcessor {
 
                 Property originalProperty = typeInfo.getOriginalProperties().get(javaAttribute.getJavaAttribute());
                 if (originalProperty == null) {
-                    if (typeInfo.getXmlExtensible() != null) {
+                    if (typeInfo.getXmlVirtualAccessMethods() != null) {
                         Property newProperty = new Property(this.aProcessor.getHelper());
                         newProperty.setPropertyName(javaAttribute.getJavaAttribute());
                         newProperty.setExtension(true);

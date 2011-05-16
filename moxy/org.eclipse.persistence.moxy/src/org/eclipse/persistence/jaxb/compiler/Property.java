@@ -88,7 +88,7 @@ public class Property implements Cloneable {
     private Boolean isReadOnly;
     private Boolean isWriteOnly;
     private Boolean isCdata;
-    private boolean isExtension = false;
+    private boolean isVirtual = false;
     private static final String OPEN_BRACKET =  "[";
     private XmlTransformation xmlTransformation;
     private XmlAbstractNullPolicy nullPolicy;
@@ -1219,12 +1219,12 @@ public class Property implements Cloneable {
         return this.xmlJoinNodesList != null;
     }
 
-    public boolean isExtension() {
-        return isExtension;
+    public boolean isVirtual() {
+        return isVirtual;
     }
 
-    public void setExtension(boolean isExtension) {
-        this.isExtension = isExtension;
+    public void setExtension(boolean value) {
+        this.isVirtual = value;
     }
 
 }

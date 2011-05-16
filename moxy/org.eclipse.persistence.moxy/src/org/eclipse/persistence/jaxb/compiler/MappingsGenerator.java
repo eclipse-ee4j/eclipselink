@@ -2021,12 +2021,12 @@ public class MappingsGenerator {
             Property next = propertiesInOrder.get(i);
             if (next != null){
                 DatabaseMapping mapping = generateMapping(next, descriptor, namespaceInfo);
-                if (next.isExtension()) {
+                if (next.isVirtual()) {
                     VirtualAttributeAccessor accessor = new VirtualAttributeAccessor();
                     accessor.setAttributeName(mapping.getAttributeName());
 
-                    String getMethod = info.getXmlExtensible().getGetMethod();
-                    String setMethod = info.getXmlExtensible().getSetMethod();
+                    String getMethod = info.getXmlVirtualAccessMethods().getGetMethod();
+                    String setMethod = info.getXmlVirtualAccessMethods().getSetMethod();
 
                     // Check to see if get/set were overridden in the mapping
                     if (mapping.getAttributeAccessor().isMethodAttributeAccessor()) {

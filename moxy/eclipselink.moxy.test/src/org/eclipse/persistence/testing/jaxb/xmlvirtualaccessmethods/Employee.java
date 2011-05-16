@@ -10,7 +10,7 @@
  * Contributors:
  * rbarkhouse - 2011 March 21 - 2.3 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.xmlextensions;
+package org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,10 +22,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.eclipse.persistence.oxm.annotations.XmlExtensible;
+import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
 
 @XmlRootElement
-@XmlExtensible
+@XmlVirtualAccessMethods
 public class Employee {
 
     @XmlAttribute

@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlList;
  *       &lt;all>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-type" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-root-element" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-virtual-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-see-also" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-class-extractor" minOccurs="0"/>
@@ -75,6 +76,8 @@ public class JavaType {
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType;
     @javax.xml.bind.annotation.XmlElement(name = "xml-root-element")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRootElement;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-virtual-access-methods")
+    protected XmlVirtualAccessMethods xmlVirtualAccessMethods;
     @XmlList
     @javax.xml.bind.annotation.XmlElement(name = "xml-see-also")
     protected List<String> xmlSeeAlso;
@@ -104,8 +107,6 @@ public class JavaType {
     protected Boolean xmlInlineBinaryData;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-transient")
     protected Boolean xmlTransient;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-extensible")
-    protected XmlExtensible xmlExtensible;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-name-transformer")
     protected String xmlNameTransformer;
 
@@ -155,6 +156,30 @@ public class JavaType {
      */
     public void setXmlRootElement(org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement value) {
         this.xmlRootElement = value;
+    }
+    
+    /**
+     * Gets the value of the xmlVirtualAccessMethods property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlVirtualAccessMethods }
+     *     
+     */
+    public XmlVirtualAccessMethods getXmlVirtualAccessMethods() {
+        return xmlVirtualAccessMethods;
+    }
+
+    /**
+     * Sets the value of the xmlVirtualAccessMethods property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlVirtualAccessMethods }
+     *     
+     */
+    public void setXmlVirtualAccessMethods(XmlVirtualAccessMethods value) {
+        this.xmlVirtualAccessMethods = value;
     }
 
     /**
@@ -649,14 +674,6 @@ public class JavaType {
             return this.javaAttribute;
         }
 
-    }
-
-    public XmlExtensible getXmlExtensible() {
-        return xmlExtensible;
-    }
-
-    public void setXmlExtensible(XmlExtensible xmlExtensible) {
-        this.xmlExtensible = xmlExtensible;
     }
 
 }

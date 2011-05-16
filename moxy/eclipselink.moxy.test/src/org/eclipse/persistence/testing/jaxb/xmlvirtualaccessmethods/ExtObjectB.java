@@ -10,17 +10,17 @@
  * Contributors:
  * rbarkhouse - 2011 March 21 - 2.3 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.xmlextensions;
+package org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.eclipse.persistence.oxm.annotations.XmlExtensible;
+import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
 
-@XmlExtensible
-public class ExtObjectC {
+@XmlVirtualAccessMethods
+public class ExtObjectB {
 
     @XmlTransient
     private Map<String, Object> extensions;

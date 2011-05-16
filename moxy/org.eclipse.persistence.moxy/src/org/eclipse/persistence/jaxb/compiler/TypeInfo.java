@@ -33,7 +33,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlExtensible;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlType;
@@ -99,7 +99,7 @@ public class TypeInfo {
     private XmlAccessOrder xmlAccessOrder;
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
     private String xmlCustomizer;
-    private XmlExtensible xmlExtensible;
+    private XmlVirtualAccessMethods xmlExtensible;
 
     private String anyAttributePropertyName;
     private String anyElementPropertyName;
@@ -1040,11 +1040,11 @@ public class TypeInfo {
         return originalProperties;
     }
 
-    public XmlExtensible getXmlExtensible() {
+    public XmlVirtualAccessMethods getXmlVirtualAccessMethods() {
         return xmlExtensible;
     }
 
-    public void setXmlExtensible(XmlExtensible xmlExtensible) {
+    public void setXmlVirtualAccessMethods(XmlVirtualAccessMethods xmlExtensible) {
         this.xmlExtensible = xmlExtensible;
     }
 

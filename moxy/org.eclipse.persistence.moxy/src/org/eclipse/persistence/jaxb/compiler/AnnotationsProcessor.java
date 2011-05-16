@@ -111,7 +111,7 @@ import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
 import org.eclipse.persistence.oxm.annotations.XmlElementsJoinNodes;
-import org.eclipse.persistence.oxm.annotations.XmlExtensible;
+import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
@@ -1183,12 +1183,13 @@ public class AnnotationsProcessor {
      * @param info
      */
     private void processXmlExtensible(JavaClass javaClass, TypeInfo info) {
-        if (helper.isAnnotationPresent(javaClass, XmlExtensible.class)) {
-            XmlExtensible extAnnotation = (XmlExtensible) helper.getAnnotation(javaClass, XmlExtensible.class);
-            org.eclipse.persistence.jaxb.xmlmodel.XmlExtensible xmlExt = new org.eclipse.persistence.jaxb.xmlmodel.XmlExtensible();
+        if (helper.isAnnotationPresent(javaClass, XmlVirtualAccessMethods.class)) {
+            XmlVirtualAccessMethods extAnnotation = (XmlVirtualAccessMethods) helper.getAnnotation(javaClass, XmlVirtualAccessMethods.class);
+            org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods xmlExt = new org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods();
             xmlExt.setGetMethod(extAnnotation.getMethod());
             xmlExt.setSetMethod(extAnnotation.setMethod());
-            info.setXmlExtensible(xmlExt);
+            xmlExt.setSchema(org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethodsSchema.valueOf(extAnnotation.schema().toString()));
+            info.setXmlVirtualAccessMethods(xmlExt);
         }
     }
 

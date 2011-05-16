@@ -10,59 +10,57 @@
  * Contributors:
  * rbarkhouse - 2011 March 21 - 2.3 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.xmlextensions;
+package org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods;
 
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.math.*;
+import java.util.*;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
+import javax.xml.bind.util.JAXBSource;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.*;
+import javax.xml.validation.Validator;
 
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.oxm.XMLTestCase;
-import org.w3c.dom.Document;
+import org.w3c.dom.*;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.xml.sax.*;
 
-public class XmlExtensionsTestCases extends XMLTestCase {
+public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
+
+    private static boolean DEBUG = false;
+    private static boolean THROW_VALIDATION_ERRORS = false;
 
     private JAXBContext ctx;
-    private Map<String, Object> ctxProperties;
 
     private byte[] bytes = new byte[] {23,1,112,12,1,64,1,14,3,2};
     private Byte[] bigBytes = new Byte[] {23,1,112,12,1,64,1,14,3,2};
 
-    public XmlExtensionsTestCases(String name) {
+    public XmlVirtualAccessMethodsTestCases(String name) {
         super(name);
     }
 
     public String getName() {
-        return "XML Extensions: " + super.getName();
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        InputStream oxm = ClassLoader.getSystemClassLoader().getResourceAsStream(
-                "org/eclipse/persistence/testing/jaxb/xmlextensions/eclipselink-oxm.xml");
-
-        ctxProperties = new HashMap<String, Object>();
-        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        return "XML Virtual Access Methods: " + super.getName();
     }
 
     public void testBasicModel() throws Exception {
+        InputStream oxm = ClassLoader.getSystemClassLoader().getResourceAsStream(
+            "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/basic-eclipselink-oxm.xml");
+
+        Map<String, Object> ctxProperties = new HashMap<String, Object>();
+        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+
         /**
          * Employee extensions:
          *      - salary (BigDecimal)
@@ -83,6 +81,11 @@ public class XmlExtensionsTestCases extends XMLTestCase {
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         m.marshal(getControlObjectBasic(), marshalDoc);
 
+        if (DEBUG) {
+            System.out.println("*** TEST BASIC MODEL ***");
+            m.marshal(getControlObjectBasic(), System.out);
+        }
+
         String[] extensions = new String[] {
                 "salary", "age", "batphone", "ext", "country-code", "forwards"
         };
@@ -102,6 +105,12 @@ public class XmlExtensionsTestCases extends XMLTestCase {
     }
 
     public void testCompleteModel() throws Exception {
+        InputStream oxm = ClassLoader.getSystemClassLoader().getResourceAsStream(
+            "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/eclipselink-oxm.xml");
+
+        Map<String, Object> ctxProperties = new HashMap<String, Object>();
+        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+
         /**
          * Extensions:
          *       - @directatt
@@ -114,7 +123,7 @@ public class XmlExtensionsTestCases extends XMLTestCase {
          *       - base64
          *       - hex
          *       - bigByteArray
-         *       - stringArray
+         *       - myStringArray
          */
 
         ctx = JAXBContextFactory.createContext(new Class[] {ExtObjectRoot.class, ExtObjectA.class,
@@ -126,11 +135,16 @@ public class XmlExtensionsTestCases extends XMLTestCase {
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         m.marshal(getControlObjectComplete(), marshalDoc);
 
+        if (DEBUG) {
+            System.out.println("*** TEST COMPLETE MODEL ***");
+            m.marshal(getControlObjectComplete(), System.out);
+        }
+
         String[] extensions = new String[] {
-                "directelem", "nullpol", "join", "idref", "xmllist", "references", "base64", "hex", "bigByteArray", "stringArray"
+                "directelem", "nullpol", "join", "idref", "xmllist", "references", "base64", "hex", /*"bigByteArray",*/ "myStringArray"
         };
 
-        Node attNode = marshalDoc.getDocumentElement().getChildNodes().item(0).getAttributes().getNamedItem("directatt");
+        Node attNode = marshalDoc.getDocumentElement().getChildNodes().item(0).getChildNodes().item(0).getAttributes().getNamedItem("directatt");
         assertNotNull("'directatt' extension not found.", attNode);
 
         for (int i = 0; i < extensions.length; i++) {
@@ -169,29 +183,64 @@ public class XmlExtensionsTestCases extends XMLTestCase {
         assertEquals(hexStr, hexElem.getFirstChild().getNodeValue());
     }
 
-    /*
-    public void testXmlExtensionsSchemaElements() throws Exception {
-        ctx.generateSchema(new SchemaOutputResolver() {
-            @Override
-            public Result createOutput(String namespaceUri, String suggestedFileName)
-                    throws IOException {
-                StreamResult s = new StreamResult(System.out);
-                return s;
-            }
-        });
+    public void testSchemaValidationBasic() throws Exception {
+        InputStream oxm = ClassLoader.getSystemClassLoader().getResourceAsStream(
+            "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/basic-eclipselink-oxm.xml");
+
+        Map<String, Object> ctxProperties = new HashMap<String, Object>();
+        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+
+        ctx = JAXBContextFactory.createContext(new Class[] {Employee.class, PhoneNumber.class}, ctxProperties);
+
+        validateAgainstSchema(ctx, getControlObjectBasic());
     }
 
-    public void testXmlExtensionsSchemaAny() throws Exception {
-        ctx.generateSchema(new SchemaOutputResolver() {
-            @Override
-            public Result createOutput(String namespaceUri, String suggestedFileName)
-                    throws IOException {
-                StreamResult s = new StreamResult(System.out);
-                return s;
-            }
-        });
+    public void testSchemaValidationComplete() throws Exception {
+        InputStream oxm = ClassLoader.getSystemClassLoader().getResourceAsStream(
+            "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/eclipselink-oxm.xml");
+
+        Map<String, Object> ctxProperties = new HashMap<String, Object>();
+        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+
+        ctx = JAXBContextFactory.createContext(new Class[] {ExtObjectRoot.class, ExtObjectA.class,
+                ExtObjectB.class, ExtObjectC.class}, ctxProperties);
+
+        validateAgainstSchema(ctx, getControlObjectComplete());
     }
-    */
+
+    private void validateAgainstSchema(JAXBContext ctx, Object obj) throws Exception {
+        JAXBSource source = new JAXBSource(ctx, obj);
+
+        // Generate Schemas
+        StringOutputResolver sor = new StringOutputResolver();
+        ctx.generateSchema(sor);
+
+        if (DEBUG) {
+            System.out.println("*** VALIDATE SCHEMA " + obj.getClass());
+            System.out.println(sor.getSchemas());
+            Marshaller m = ctx.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            m.marshal(obj, System.out);
+        }
+
+        // Build javax.xml.validation.Schema
+        Schema schema;
+        Source[] schemaSources = new StreamSource[sor.getSchemas().size()];
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        for (int i = 0; i < sor.getSchemas().size() ; i++) {
+            StringReader r = new StringReader(sor.getSchemas().get(i));
+            schemaSources[i] = new StreamSource(r);
+        }
+        schema = schemaFactory.newSchema(schemaSources);
+
+
+        LogErrorHandler handler = new LogErrorHandler();
+        Validator validator = schema.newValidator();
+        validator.setErrorHandler(handler);
+        validator.validate(source);
+
+        assertEquals("Unexpected number of validation errors thrown.", 0, handler.getErrorCount());
+    }
 
     // ========================================================================
 
@@ -255,7 +304,7 @@ public class XmlExtensionsTestCases extends XMLTestCase {
         objC2.set("directelem", "Baz2");
 
         ExtObjectB objB = new ExtObjectB();
-        objB.set("directatt", "123");
+        objB.set("directatt", "z123");
         objB.set("directelem", "Bar");
 
         ArrayList<ExtObjectC> references = new ArrayList<ExtObjectC>();
@@ -264,7 +313,7 @@ public class XmlExtensionsTestCases extends XMLTestCase {
         objB.set("references", references);
         objC.set("inverse", objB);
         objC2.set("inverse", objB);
-        
+
         ExtObjectA objA = new ExtObjectA();
         objA.set("directatt", "888");
         objA.set("directelem", "Foo");
@@ -277,27 +326,102 @@ public class XmlExtensionsTestCases extends XMLTestCase {
         xmllist.add("ONE"); xmllist.add("TWO"); xmllist.add("THREE");
         objA.set("xmllist", xmllist);
 
-        ArrayList<Object> mixed = new ArrayList<Object>();
-        mixed.add("Hello ");
-        mixed.add(new JAXBElement<String>(new QName("myNamespace", "title"), String.class, objA.getClass(), "MR"));
-        mixed.add(new JAXBElement<String>(new QName("myNamespace", "name"), String.class, objA.getClass(), "Bob Dobbs"));
-        mixed.add(", your point balance is ");
-        mixed.add(new JAXBElement<BigInteger>(new QName("myNamespace", "rewardPoints"), BigInteger.class, objA.getClass(), BigInteger.valueOf(175)));
-        mixed.add("Visit www.rewards.com!");
-        objA.set("mixed", mixed);
+        ArrayList elements = new ArrayList();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        factory.setIgnoringElementContentWhitespace(true);
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            InputStream xml = ClassLoader.getSystemClassLoader().getResourceAsStream(
+                "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/basic-eclipselink-oxm.xml");
+            Document doc = builder.parse(xml);
+            Element rootElem = doc.getDocumentElement();
+            NodeList children = rootElem.getChildNodes();
+            for(int i = 0; i < children.getLength(); i++) {
+                if(children.item(i).getNodeType() == Element.ELEMENT_NODE) {
+                    elements.add(children.item(i));
+                }
+            }
+        } catch(Exception ex) {}
+        objA.set("mixed", elements);
 
         objA.set("base64", bytes);
         objA.set("hex", bytes);
         objA.set("bigByteArray", bigBytes);
 
         String[] s = new String[] {"one", "two", "three", "for"};
-        objA.set("stringArray", s);
-        
+        objA.set("myStringArray", s);
+
         ExtObjectRoot root = new ExtObjectRoot();
         root.flexObjectAs.add(objA);
         root.flexObjectBs.add(objB);
 
         return root;
+    }
+
+    private class LogErrorHandler implements ErrorHandler {
+        private int errorCount = 0;
+
+        public void warning(SAXParseException exception) throws SAXException {
+            errorCount++;
+            if (DEBUG) {
+                System.out.println("\nWARNING");
+                System.out.println(exception.getMessage());
+            }
+            if (THROW_VALIDATION_ERRORS) throw exception;
+        }
+
+        public void error(SAXParseException exception) throws SAXException {
+            errorCount++;
+            if (DEBUG) {
+                System.out.println("\nERROR");
+                System.out.println(exception.getMessage());
+            }
+            if (THROW_VALIDATION_ERRORS) throw exception;
+        }
+
+        public void fatalError(SAXParseException exception) throws SAXException {
+            errorCount++;
+            if (DEBUG) {
+                System.out.println("\nFATAL ERROR");
+                exception.printStackTrace();
+            }
+            if (THROW_VALIDATION_ERRORS) throw exception;
+        }
+
+        public int getErrorCount() {
+            return errorCount;
+        }
+    }
+
+    private class StringOutputResolver extends SchemaOutputResolver {
+        private HashMap<String, StringWriter> stringWriters;
+
+        public StringOutputResolver() {
+            stringWriters = new HashMap<String, StringWriter>();
+        }
+
+        @Override
+        public Result createOutput(String arg0, String arg1) throws IOException {
+            StringWriter sw = stringWriters.get(arg1);
+            if (sw == null) {
+                sw = new StringWriter();
+                stringWriters.put(arg1, sw);
+            }
+            StreamResult sr = new StreamResult(sw);
+            sr.setSystemId(arg1);
+            return sr;
+        }
+
+        private List<String> getSchemas() {
+            List<String> schemas = new ArrayList<String>();
+            Iterator<StringWriter> it = stringWriters.values().iterator();
+            while (it.hasNext()) {
+                StringWriter sw = it.next();
+                schemas.add(sw.toString());
+            }
+            return schemas;
+        }
     }
 
 }
