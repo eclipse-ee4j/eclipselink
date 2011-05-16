@@ -38,7 +38,9 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
 
     /** Store the value partitions. Each partition maps a value to a connectionPool. */
     protected Map<Object, String> partitions = new HashMap<Object, String>();
-    
+    /** Use to track order for compute UCP indx. */
+    protected List<String> orderedPartitions = new ArrayList<String>();
+
     /** The default connection pool is used for any unmapped values. */
     protected String defaultConnectionPool;
 
@@ -52,6 +54,14 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
     
     public ValuePartitioningPolicy(String partitionField, boolean unionUnpartitionableQueries) {
         super(partitionField, unionUnpartitionableQueries);
+    }
+    
+    public List<String> getOrderedPartitions() {
+        return orderedPartitions;
+    }
+
+    public void setOrderedPartitions(List<String> orderedPartitions) {
+        this.orderedPartitions = orderedPartitions;
     }
 
     /**
@@ -94,6 +104,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
      */
     public void addPartition(Object value, String connectionPool) {
         getPartitions().put(value, connectionPool);
+        getOrderedPartitions().add(connectionPool);
     }
 
     /**
@@ -127,7 +138,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
         }
         if (session.getPlatform().hasPartitioningCallback()) {
             // UCP support.
-            session.getPlatform().getPartitioningCallback().setPartitionId(Integer.parseInt(poolName));
+            session.getPlatform().getPartitioningCallback().setPartitionId(getOrderedPartitions().indexOf(poolName));
             return null;
         }
         accessors.add(getAccessor(poolName, session, query, false));
@@ -150,7 +161,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
         }
         if (session.getPlatform().hasPartitioningCallback()) {
             // UCP support.
-            session.getPlatform().getPartitioningCallback().setPartitionId(Integer.parseInt(poolName));
+            session.getPlatform().getPartitioningCallback().setPartitionId(getOrderedPartitions().indexOf(poolName));
         } else {
             getAccessor(poolName, session, null, false);
         }

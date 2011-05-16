@@ -771,8 +771,7 @@ public class EmployeePopulator {
     }
         
     public void persistExample(EntityManager em) {        
-        List allObjects = new ArrayList();        
-        em.getTransaction().begin();
+        List allObjects = new ArrayList();  
         
         buildExamples();
         this.populationManager.addAllObjectsForClass(Employee.class, allObjects);
@@ -781,8 +780,7 @@ public class EmployeePopulator {
         
         for (Object object : allObjects) {
             em.persist(object);
-        }       
-        em.getTransaction().commit();
+        }
     }
     
     protected boolean containsObject(Class domainClass, String identifier) {

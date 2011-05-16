@@ -1827,10 +1827,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * It may raise exceptions as described in the EJB3 specification
      */
     public void cascadePerformRemove(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-        ObjectBuilder builder = this.descriptor.getObjectBuilder();
         // PERF: Only process relationships.
-        if (!builder.isSimple()) {
-            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+        if (!this.isSimple) {
+            List<DatabaseMapping> mappings = this.relationshipMappings;
             for (int index = 0; index < mappings.size(); index++) {
                 DatabaseMapping mapping = mappings.get(index);
                 mapping.cascadePerformRemoveIfRequired(object, uow, visitedObjects);
@@ -1844,10 +1843,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * remove orphaned private owned objects from the UnitOfWorkChangeSet and IdentityMap.
      */
     public void cascadePerformRemovePrivateOwnedObjectFromChangeSet(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-        ObjectBuilder builder = this.descriptor.getObjectBuilder();
-        if (object != null && !builder.isSimple()) {
-            for (Iterator<DatabaseMapping> mappings = builder.getRelationshipMappings().iterator(); mappings.hasNext();) {
-                DatabaseMapping mapping = mappings.next();
+        if (object != null && !this.isSimple) {
+            for (DatabaseMapping mapping : this.relationshipMappings) {
                 // only cascade into private owned mappings
                 if (mapping.isPrivateOwned()) {
                     mapping.cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(object, uow, visitedObjects);
@@ -1899,10 +1896,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * It may raise exceptions as described in the EJB3 specification
      */
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
-        ObjectBuilder builder = this.descriptor.getObjectBuilder();
         // PERF: Only process relationships.
-        if (!builder.isSimple()) {
-            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+        if (!this.isSimple) {
+            List<DatabaseMapping> mappings = this.relationshipMappings;
             int size = mappings.size();
             FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
             // Only cascade fetched mappings.
@@ -2580,10 +2576,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * with client-side objects.
      */
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
-        ObjectBuilder builder = this.descriptor.getObjectBuilder();
         // PERF: Only process relationships.
-        if (!builder.isSimple()) {
-            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+        if (!this.isSimple) {
+            List<DatabaseMapping> mappings = this.relationshipMappings;
             for (int index = 0; index < mappings.size(); index++) {
                 mappings.get(index).fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
             }
@@ -3356,12 +3351,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (iterator.shouldIterateOnPrimitives()) {
             mappings = this.descriptor.getMappings();
         } else {
-            ObjectBuilder builder = this.descriptor.getObjectBuilder();
             // PERF: Only process relationships.
-            if (builder.isSimple()) {
+            if (this.isSimple) {
                 return;
             }
-            mappings = builder.getRelationshipMappings();
+            mappings = this.relationshipMappings;
         }
         int mappingsSize = mappings.size();
         for (int index = 0; index < mappingsSize; index++) {

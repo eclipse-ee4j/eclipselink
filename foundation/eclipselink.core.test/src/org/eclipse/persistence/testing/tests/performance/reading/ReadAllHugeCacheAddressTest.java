@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.tests.performance.PerformanceTest;
 public class ReadAllHugeCacheAddressTest extends PerformanceTest {
     public ReadAllHugeCacheAddressTest() {
         // Needs to run for a long time.
-        setTestRunTime(100000);
+        //setTestRunTime(100000);
         setDescription("This tests the performance of huge read-all queries.");
     }
 

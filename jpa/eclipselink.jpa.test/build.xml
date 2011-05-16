@@ -2456,6 +2456,7 @@
         <antcall target="server-test-metamodel" inheritRefs="true"/>
         <antcall target="server-test-nativeapitest" inheritRefs="true"/>
         <antcall target="server-test-orphanremoval" inheritRefs="true"/>
+        <antcall target="server-test-plsql" inheritRefs="true"/>
         <antcall target="server-test-privateowned" inheritRefs="true"/>
         <antcall target="server-test-relationships" inheritRefs="true"/>
         <antcall target="server-test-sessionbean" inheritRefs="true"/>
@@ -2696,6 +2697,32 @@
             <param name="TEST_NAME" value="eclipselink-inherited-model"/>
             <param name="EAR_NAME" value="eclipselink-inherited-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.inherited.InheritedServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+    
+    <target name="server-test-plsql">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="plsql"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/plsql"/>
+            <param name="MODEL_NAME" value="eclipselink-inherited-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/plsql"/>
+            <param name="TEST_NAME" value="eclipselink-plsql-model"/>
+            <param name="EAR_NAME" value="eclipselink-plsql-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+    
+    <target name="server-test-partitioned-gridlink">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="partitioned"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/partitioned"/>
+            <param name="MODEL_NAME" value="eclipselink-partitioned-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/partitioned"/>
+            <param name="TEST_NAME" value="eclipselink-partitioned-model"/>
+            <param name="EAR_NAME" value="eclipselink-partitioned-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

@@ -104,7 +104,7 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
                 return null;
             }
         }
-        int index = value.hashCode() & (this.connectionPools.size() - 1);
+        int index = value.hashCode() % this.connectionPools.size();
         if (session.getPlatform().hasPartitioningCallback()) {
             // UCP support.
             session.getPlatform().getPartitioningCallback().setPartitionId(index);
@@ -127,7 +127,7 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
         if (value == null) {
             return;
         }
-        int index = value.hashCode() & (this.connectionPools.size() - 1);
+        int index = value.hashCode() % this.connectionPools.size();
         if (session.getPlatform().hasPartitioningCallback()) {
             // UCP support.
             session.getPlatform().getPartitioningCallback().setPartitionId(index);

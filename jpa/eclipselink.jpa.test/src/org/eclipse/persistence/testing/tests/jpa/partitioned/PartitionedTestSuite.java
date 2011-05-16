@@ -72,6 +72,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
      */
     public void testSetup() {
         Map properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
+        boolean isRAC = false;
         if (getServerSession().getPlatform().isDerby()) {
             properties.put(
                     PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_MIN,
@@ -114,7 +115,8 @@ public class PartitionedTestSuite extends JUnitTestCase {
             properties.put(
                     PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_MAX,
                     "8");
-        } else if (getServerSession().getPlatform().isOracle() && (getServerSession().getLogin().getURL().indexOf("ems56442") != -1)) {
+        } else if (!isOnServer() && getServerSession().getPlatform().isOracle() && (getServerSession().getLogin().getURL().indexOf("ems56442") != -1)) {
+            isRAC = true;
             // RAC testing (direct node).
             String url = getServerSession().getLogin().getURL();
             properties.put(
@@ -129,18 +131,38 @@ public class PartitionedTestSuite extends JUnitTestCase {
             properties.put(
                     PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_MAX,
                     "8");            
-        } else if (getServerSession().getPlatform().isOracle() && (getServerSession().getLogin().getURL().indexOf("@(DESCRIPTION") != -1)) {
+        } else if (!isOnServer() && getServerSession().getPlatform().isOracle() && (getServerSession().getLogin().getURL().indexOf("@(DESCRIPTION") != -1)) {
+            isRAC = true;
             // UCP RAC callback testing.
             properties.put(
                     PersistenceUnitProperties.PARTITIONING_CALLBACK,
-                    "org.eclipse.persistence.platform.database.oracle.ucp.UCPDataPartitioningCallback");            
+                    "org.eclipse.persistence.platform.database.oracle.ucp.UCPDataPartitioningCallback");
+        } else if (isOnServer()) {
+            isRAC = true;
+            try {
+                Class.forName("weblogic.jdbc.common.internal.DataSourceManager");
+            } catch (Exception notWebLogic) {
+                warning("Partitioning tests only run on WebLogic with GridLink.");
+                return;
+            }
         } else {
-            warning("Partitioning tests only run on embedded databases or RAC.");
-            this.validDatabase = false;
-            return;
+            isRAC = true;
+            // Simulate a RAC using multiple connection pools to the same database.
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_MIN,
+                    "2");
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_URL,
+                    getServerSession().getLogin().getURL());
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_URL,
+                    getServerSession().getLogin().getURL());
+            properties.put(
+                    PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_MAX,
+                    "8");
         }
         getEntityManagerFactory(getPersistenceUnitName(), properties);
-        if (getDatabaseSession().getPlatform().isOracle()) {
+        if (isRAC) {
             // Disable replication and unioning in RAC.
             for (PartitioningPolicy policy : getDatabaseSession().getProject().getPartitioningPolicies().values()) {
                 if (policy instanceof RoundRobinPartitioningPolicy) {
@@ -168,14 +190,11 @@ public class PartitionedTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();    
         try {
             PopulationManager.resetDefaultManager();
+            beginTransaction(em);
             new EmployeePopulator().persistExample(em);
-            closeEntityManager(em);
-        }  catch (RuntimeException e) {
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
-            }            
-            closeEntityManager(em);
-            throw e;
+            commitTransaction(em);
+        } finally {
+            closeEntityManagerAndTransaction(em);
         }        
         clearCache();
     }
