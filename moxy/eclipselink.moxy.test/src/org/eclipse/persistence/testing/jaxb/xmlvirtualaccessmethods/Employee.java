@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
 
 @XmlRootElement
-@XmlVirtualAccessMethods
+@XmlVirtualAccessMethods(setMethod="put")
 public class Employee {
 
     @XmlAttribute
@@ -48,7 +48,7 @@ public class Employee {
         return extensions.get(name);
     }
 
-    public void set(String name, Object value) {
+    public void put(String name, Object value) {
         extensions.put(name, value);
     }
 
