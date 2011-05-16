@@ -8,6 +8,7 @@
         <properties>
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <property name="eclipselink.composite-unit.member" value="true"/>
+            <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.MemberEventListener"/>            
         </properties>
     </persistence-unit>
 </persistence>

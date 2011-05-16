@@ -123,6 +123,7 @@ import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
+import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
@@ -136,6 +137,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.PessimisticLock;
 import org.eclipse.persistence.config.QueryType;
+import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.config.ResultSetConcurrency;
 import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
@@ -166,9 +168,11 @@ import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
 import org.eclipse.persistence.testing.framework.ConnectionWrapper;
 //import org.eclipse.persistence.testing.framework.DriverWrapper;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.framework.SessionEventTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.models.jpa.composite.advanced.CompositeEventListener;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.Customizer;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.*;
@@ -425,6 +429,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // composite specific tests
         tests.add("testRollbackBroker");
         tests.add("testMustBeCompositeMember");
+        if (!isJPA10()) {
+            tests.add("testSessionEventListeners");
+        }
         Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new EntityManagerJUnitTestSuite(test));
@@ -439,13 +446,20 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         return "composite-advanced";
     }
 
+    /*
+     * n is a value between 1 and 3
+     */
+    public String getComponentMemberPuName(int n) {
+        return "composite-advanced-member_" + n;
+    }
+    
     public void testSetup() {
         SessionBroker broker = getSessionBroker();
         // member sessions
         ServerSession[] sessions = {
-                (ServerSession)broker.getSessionForName("composite-advanced-member_1"), 
-                (ServerSession)broker.getSessionForName("composite-advanced-member_2"), 
-                (ServerSession)broker.getSessionForName("composite-advanced-member_3")
+                (ServerSession)broker.getSessionForName(getComponentMemberPuName(1)), 
+                (ServerSession)broker.getSessionForName(getComponentMemberPuName(2)), 
+                (ServerSession)broker.getSessionForName(getComponentMemberPuName(3))
         }; 
         // table creators for each member session
         TableCreator[] tableCreators = { 
@@ -820,8 +834,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 int id = empToBeDeleted.getId();
                 // Note that for native query the user need to specify targetPU
                 // using COMPOSITE_MEMBER query hint.
-                em.createNativeQuery("DELETE FROM MBR2_SALARY WHERE EMP_ID = " + id).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_2").executeUpdate();
-                em.createNativeQuery("DELETE FROM MBR2_EMPLOYEE WHERE EMP_ID = " + id).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_2").executeUpdate();
+                em.createNativeQuery("DELETE FROM MBR2_SALARY WHERE EMP_ID = " + id).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(2)).executeUpdate();
+                em.createNativeQuery("DELETE FROM MBR2_EMPLOYEE WHERE EMP_ID = " + id).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(2)).executeUpdate();
             }
 
             // refresh the Employee - should fail with EntityNotFoundException
@@ -866,7 +880,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // the cache.
             em2 = createEntityManager();
             beginTransaction(em2);
-            em2.createNativeQuery("DELETE FROM MBR1_ADDRESS where address_id = ?1").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_1").setParameter(1, address.getID()).executeUpdate();
+            em2.createNativeQuery("DELETE FROM MBR1_ADDRESS where address_id = ?1").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(1)).setParameter(1, address.getID()).executeUpdate();
             commitTransaction(em2);
 
             // Call refresh to invalidate the object
@@ -1075,7 +1089,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 Query updateQuery = null;
 
                 if (getPlatform(Employee.class).isSymfoware()) {
-                    updateQuery = em.createNativeQuery("UPDATE MBR2_EMPLOYEE SET VERSION = (VERSION + 1) WHERE F_NAME LIKE '" + firstName + "' AND EMP_ID in (SELECT EMP_ID FROM MBR2_SALARY)").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_2");
+                    updateQuery = em.createNativeQuery("UPDATE MBR2_EMPLOYEE SET VERSION = (VERSION + 1) WHERE F_NAME LIKE '" + firstName + "' AND EMP_ID in (SELECT EMP_ID FROM MBR2_SALARY)").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(2));
                 } else {
                     updateQuery = em.createQuery("UPDATE Employee e set e.salary = 100 where e.firstName like '" + firstName + "'");
                 }
@@ -1083,7 +1097,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em.persist(emp);
                 updateQuery.executeUpdate();
                 if (getPlatform(Employee.class).isSymfoware()) {
-                    updateQuery = em.createNativeQuery("UPDATE MBR2_SALARY SET SALARY = 100 WHERE EMP_ID IN (SELECT EMP_ID FROM MBR2_EMPLOYEE WHERE F_NAME LIKE '" + firstName + "')").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_2");
+                    updateQuery = em.createNativeQuery("UPDATE MBR2_SALARY SET SALARY = 100 WHERE EMP_ID IN (SELECT EMP_ID FROM MBR2_EMPLOYEE WHERE F_NAME LIKE '" + firstName + "')").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(2));
                     updateQuery.setFlushMode(FlushModeType.AUTO);
                     updateQuery.executeUpdate();
                 }
@@ -2375,22 +2389,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             } else if (testMode2.equals("find")) {
                                 emp2 = em2.find(Employee.class, id, lockMode, properties);
                             } else if (testMode2.equals("update_name")) {
-                                em2.createNativeQuery("SELECT L_NAME FROM MBR2_EMPLOYEE" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_2").getSingleResult();
+                                em2.createNativeQuery("SELECT L_NAME FROM MBR2_EMPLOYEE" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(2)).getSingleResult();
                                 // em2.createNativeQuery("UPDATE CMP3_EMPLOYEE SET L_NAME = 'NEW' WHERE EMP_ID = "+id).executeUpdate();
                             } else if (testMode2.equals("update_salary")) {
-                                em2.createNativeQuery("SELECT SALARY FROM MBR2_SALARY" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_2").getSingleResult();
+                                em2.createNativeQuery("SELECT SALARY FROM MBR2_SALARY" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(2)).getSingleResult();
                                 // em2.createNativeQuery("UPDATE CMP3_SALARY SET SALARY = 1000 WHERE EMP_ID = "+id).executeUpdate();
                             } else if (testMode2.equals("remove_project")) {
-                                em2.createNativeQuery("SELECT PROJECTS_PROJ_ID FROM MBR3_EMP_PROJ" + lockingClauseBeforeWhereClause + " WHERE EMPLOYEES_EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_3").getResultList();
+                                em2.createNativeQuery("SELECT PROJECTS_PROJ_ID FROM MBR3_EMP_PROJ" + lockingClauseBeforeWhereClause + " WHERE EMPLOYEES_EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(3)).getResultList();
                                 // em2.createNativeQuery("DELETE FROM CMP3_EMP_PROJ WHERE EMPLOYEES_EMP_ID = "+id).executeUpdate();
                             } else if (testMode2.equals("remove_respons")) {
-                                em2.createNativeQuery("SELECT EMP_ID FROM MBR1_RESPONS" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_1").getResultList();
+                                em2.createNativeQuery("SELECT EMP_ID FROM MBR1_RESPONS" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(1)).getResultList();
                                 // em2.createNativeQuery("DELETE FROM CMP3_RESPONS WHERE EMP_ID = "+id).executeUpdate();
                             } else if (testMode2.equals("update_project")) {
-                                em2.createNativeQuery("SELECT PROJ_NAME FROM MBR3_PROJECT" + lockingClauseBeforeWhereClause + " WHERE PROJ_ID = " + smallProjId + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_3").getSingleResult();
+                                em2.createNativeQuery("SELECT PROJ_NAME FROM MBR3_PROJECT" + lockingClauseBeforeWhereClause + " WHERE PROJ_ID = " + smallProjId + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(3)).getSingleResult();
                                 // em2.createNativeQuery("UPDATE CMP3_PROJECT SET PROJ_NAME = 'NEW' WHERE PROJ_ID = "+smallProjId).executeUpdate();
                             } else if (testMode2.equals("update_respons")) {
-                                em2.createNativeQuery("SELECT DESCRIPTION FROM MBR1_RESPONS" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_1").getResultList();
+                                em2.createNativeQuery("SELECT DESCRIPTION FROM MBR1_RESPONS" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(1)).getResultList();
                                 // em2.createNativeQuery("UPDATE CMP3_RESPONS SET DESCRIPTION = 'NEW' WHERE EMP_ID = "+id).executeUpdate();
                             } else {
                                 emp2 = em2.find(Employee.class, id);
@@ -4274,7 +4288,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (shouldUpdateAll) {
                 nUpdated = em.createQuery("UPDATE Employee e set e.lastName = '" + lastNameNew + "' where e.firstName like '" + firstName + "'").setFlushMode(FlushModeType.AUTO).executeUpdate();
             } else {
-                nUpdated = em.createNativeQuery( "UPDATE MBR2_EMPLOYEE SET L_NAME = '" + lastNameNew + "', VERSION = VERSION + 1 WHERE F_NAME LIKE '" + firstName + "'").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, "composite-advanced-member_2").setFlushMode(FlushModeType.AUTO).executeUpdate();
+                nUpdated = em.createNativeQuery( "UPDATE MBR2_EMPLOYEE SET L_NAME = '" + lastNameNew + "', VERSION = VERSION + 1 WHERE F_NAME LIKE '" + firstName + "'").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getComponentMemberPuName(2)).setFlushMode(FlushModeType.AUTO).executeUpdate();
             }
             assertTrue("nUpdated==" + nUpdated + "; 1 was expected", nUpdated == 1);
 
@@ -9878,5 +9892,73 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
             }
         }
+    }
+    
+    // Bug 332581 - SessionBroker session event issues to consider and resolve when implementing JPA Session Broker
+    public void testSessionEventListeners() {        
+        EntityManager em = createEntityManager();
+        
+        UnitOfWorkImpl uow = em.unwrap(UnitOfWorkImpl.class);
+        SessionBroker clientBroker = (SessionBroker)uow.getParent();
+        SessionBroker broker = clientBroker.getParent();
+        
+        List<SessionEventListener> brokerListeners = getCompositeAndMemberListeners(broker);
+        if (brokerListeners.size() > 1) {
+            fail ("broker expected to have a single instance of CompositeEventListener, found " + brokerListeners.size());
+        } else {
+            if( !(brokerListeners.get(0) instanceof CompositeEventListener)) {
+                fail ("broker expected to have a single instance of CompositeEventListener, found " + brokerListeners.get(0).getClass().getName());
+            }
+        }
+        List<SessionEventListener> clientBrokerListeners = getCompositeAndMemberListeners(clientBroker);
+        if (!brokerListeners.equals(clientBrokerListeners)) {
+            fail("broker and clientBroker expected to share the same listeners");
+        }
+        List<SessionEventListener> uowListeners = getCompositeAndMemberListeners(uow);
+        if (!clientBrokerListeners.equals(uowListeners)) {
+            fail("clientBroker and uow expected to share the same listeners");
+        }
+        
+        // classes mapped by member persistence units
+        int n = 3;
+        Class[] classes = {Address.class, Employee.class, Project.class};
+        for (int i=0; i<n; i++) {
+            ClientSession clientSession = (ClientSession)clientBroker.getSessionForClass(classes[i]);
+            List<SessionEventListener> clientSessionListeners = getCompositeAndMemberListeners(clientSession);
+            if (clientSessionListeners.size() != 2) {
+                fail ("clientSession expected to have a CompositeEventListener and a MemberEventListener, found " + clientSessionListeners.size());
+            } else {
+                // note that the order of listeners (session's before broker's) only guaranteed if listeners were set before ServerSession was created.
+                // Listeners set after ServerSession has been created appear on the list in chronological order.
+                if( !(Helper.getShortClassName(clientSessionListeners.get(0)).equals("MemberEventListener")) ||
+                    !(Helper.getPackageName(clientSessionListeners.get(0).getClass()).equals(Helper.getPackageName(classes[i])))) {
+                    fail ("the first clientSession's listener expected to be MemberEventListener from its package, found " + clientSessionListeners.get(0).getClass().getName());
+                }
+                if( !(clientSessionListeners.get(1) instanceof CompositeEventListener)) {
+                    fail ("the second clientSession's listener expected to be CompositeEventListener, found " + clientSessionListeners.get(1).getClass().getName());
+                }
+            }
+
+            ServerSession serverSession = clientSession.getParent();
+            List<SessionEventListener> serverSessionListeners = getCompositeAndMemberListeners(serverSession);
+            if (!clientSessionListeners.equals(serverSessionListeners)) {
+                fail("clientSession and serverSession expected to share the same listeners");
+            }
+        }
+    }
+    // Collect instances of CompositeEventListener and MemberEventListener classes in order they found in session's EventManager. 
+    List<SessionEventListener> getCompositeAndMemberListeners(AbstractSession session) {
+        List<SessionEventListener> list = new ArrayList();
+        List<SessionEventListener> allListeners = session.getEventManager().getListeners();
+        int nListeners = allListeners.size();
+        for (int i=0; i<nListeners; i++) {
+            SessionEventListener listener = allListeners.get(i);
+            if (listener instanceof CompositeEventListener) {
+                list.add(listener);
+            } else if (Helper.getShortClassName(listener).equals("MemberEventListener")) {
+                list.add(listener);
+            }
+        }
+        return list;
     }
 }

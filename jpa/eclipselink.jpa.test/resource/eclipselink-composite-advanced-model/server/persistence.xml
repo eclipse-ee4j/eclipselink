@@ -12,6 +12,7 @@
             <property name="eclipselink.target-server" value="%%server-platform%%"/>
             <property name="eclipselink.composite-unit" value="true"/>
             <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.composite.advanced.Customizer"/>
+            <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.models.jpa.composite.advanced.CompositeEventListener"/>            
             <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
             <property name="eclipselink.validate-existence" value="true"/>
 			<property name="eclipselink.logging.parameters" value="true"/>

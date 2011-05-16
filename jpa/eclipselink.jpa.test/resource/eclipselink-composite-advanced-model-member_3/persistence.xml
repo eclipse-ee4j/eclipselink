@@ -6,6 +6,7 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.composite-unit.member" value="true"/>
+            <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.MemberEventListener"/>            
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://ottvm045.ca.oracle.com:3306/qa3"/>
             <property name="javax.persistence.jdbc.user" value="qa3"/>

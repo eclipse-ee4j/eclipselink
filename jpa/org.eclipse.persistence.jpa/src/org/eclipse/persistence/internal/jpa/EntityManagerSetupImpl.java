@@ -1868,9 +1868,6 @@ public class EntityManagerSetupImpl {
             session.getServerPlatform().disableJTA();
         }
         
-        setSessionEventListener(m, loader);
-        setExceptionHandler(m, loader);
-
         if(session.isServerSession()) {
             updatePools((ServerSession)session, m);
             updateConnectionSettings((ServerSession)session, m);
@@ -1893,11 +1890,17 @@ public class EntityManagerSetupImpl {
                     compositeMemberEmSetupImpl.updateSession(compositeMemberProperties, loader);
                     compositeMemberEmSetupImpl.session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_end_call", new Object[]{"updateSession", compositeMemberPuName, state});
                 }
-                updateAllowZeroIdSetting(m);
-                updateCacheCoordination(m, loader);
             }
+            setSessionEventListener(m, loader);
+            setExceptionHandler(m, loader);
+
+            updateAllowZeroIdSetting(m);
+            updateCacheCoordination(m, loader);
             processSessionCustomizer(m, loader);
         } else {
+            setSessionEventListener(m, loader);
+            setExceptionHandler(m, loader);
+
             updateBatchWritingSetting(m);
     
             updateNativeSQLSetting(m);
@@ -2116,7 +2119,7 @@ public class EntityManagerSetupImpl {
             try {
                 SessionEventListener sessionEventListener = (SessionEventListener)buildObjectForClass(sessionEventListenerClass, SessionEventListener.class);
                 if(sessionEventListener!=null){
-                    session.getEventManager().getListeners().add(sessionEventListener);
+                    session.getEventManager().addListener(sessionEventListener);
                 } else {
                     session.handleException(ValidationException.invalidSessionEventListenerClass(sessionEventListenerClassName));
                 }

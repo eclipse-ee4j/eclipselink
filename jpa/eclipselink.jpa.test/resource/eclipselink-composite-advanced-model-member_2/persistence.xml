@@ -6,6 +6,7 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.composite-unit.member" value="true"/>
+            <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.MemberEventListener"/>            
             <property name="javax.persistence.jdbc.driver" value="com.ibm.db2.jcc.DB2Driver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:db2://ottvm046.ca.oracle.com:50000/TOPLINK2"/>
             <property name="javax.persistence.jdbc.user" value="dev1"/>
