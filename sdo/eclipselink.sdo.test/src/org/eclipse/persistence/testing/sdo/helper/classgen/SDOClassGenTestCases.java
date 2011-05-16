@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sdo.helper.ClassBuffer;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestCases;
@@ -76,8 +78,8 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
         while (keysIter.hasNext()) {
             Object nextKey = keysIter.next();
             ClassBuffer next = generatedBuffers.get(nextKey);
-            generatedFiles.put(next.getInterfaceName() + ".java", next.getInterfaceBuffer().toString());
-            generatedFiles.put(next.getClassName() + ".java", next.getClassBuffer().toString());
+            generatedFiles.put(Helper.getShortClassName(next.getSdoType().getInstanceClassName()) + ".java", next.getInterfaceBuffer().toString());
+            generatedFiles.put(Helper.getShortClassName(next.getSdoType().getImplClassName()) +".java", next.getClassBuffer().toString());
         }
 
         return generatedFiles;

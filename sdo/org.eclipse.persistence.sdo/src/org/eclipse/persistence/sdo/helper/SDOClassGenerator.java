@@ -237,10 +237,12 @@ public class SDOClassGenerator {
                 packageDir = packageDir.replace('.', '/');
 
                 if(interfaceGenerator) {
-                    getCodeWriter().writeInterface(packageDir, nextBuffer.getInterfaceName() + ".java", nextBuffer.getInterfaceBuffer());
+                    String instanceClassName = Helper.getShortClassName(theType.getInstanceClassName());
+                    getCodeWriter().writeInterface(packageDir, instanceClassName + ".java", nextBuffer.getInterfaceBuffer());
                 }
                 if(implGenerator) {
-                    getCodeWriter().writeImpl(packageDir, nextBuffer.getClassName() + ".java", nextBuffer.getClassBuffer());
+                    String implClassName = Helper.getShortClassName(theType.getImplClassName());
+                    getCodeWriter().writeImpl(packageDir, implClassName + ".java", nextBuffer.getClassBuffer());
                 }
             }
         }
@@ -294,7 +296,8 @@ public class SDOClassGenerator {
         currentClassBuffer.append("public class ");
 
         // get the normalized name of the class without the package prefix
-        String upperClassName = Helper.getShortClassName(sdoType.getInstanceClassName());
+        String upperClassName = SDOUtil.className(sdoType.getName(), true, true, true);
+
         String interfaceName = upperClassName;
         classBuffer.setInterfaceName(interfaceName);
 

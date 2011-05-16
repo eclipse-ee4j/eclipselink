@@ -798,7 +798,7 @@ public class SDOType implements Type, Serializable {
 
             // Verify and fix any Class name that does not conform to conventions
             // run the class name through the JAXB mangler
-            String mangledClassName = SDOUtil.className(getName(), true);
+            String mangledClassName = SDOUtil.className(getName(), false, true, true);
 
             // we will not fix any type collision at this time as a result of class renaming
             // write fully qualified java class name
