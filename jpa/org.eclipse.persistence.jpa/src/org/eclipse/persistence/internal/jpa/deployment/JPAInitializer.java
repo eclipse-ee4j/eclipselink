@@ -268,9 +268,7 @@ public abstract class JPAInitializer {
             for (Archive archive: pars) {
                 archive.close();
             }
-            if(!keepInitialMaps) {
-                this.initialEmSetupImpls = null;
-            }
+            this.initialEmSetupImpls = null;
         }
     }    
 
