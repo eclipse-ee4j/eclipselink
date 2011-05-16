@@ -35,7 +35,6 @@ import org.eclipse.persistence.jaxb.JAXBContext.TypeMappingInfoInput;
 import org.eclipse.persistence.jaxb.compiler.CompilerHelper;
 import org.eclipse.persistence.jaxb.compiler.XMLProcessor;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
-import org.eclipse.persistence.jaxb.metadata.XMLMetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;

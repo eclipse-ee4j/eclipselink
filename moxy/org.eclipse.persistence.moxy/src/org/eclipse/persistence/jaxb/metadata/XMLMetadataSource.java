@@ -32,7 +32,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.compiler.CompilerHelper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
-import org.eclipse.persistence.logging.SessionLog;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 

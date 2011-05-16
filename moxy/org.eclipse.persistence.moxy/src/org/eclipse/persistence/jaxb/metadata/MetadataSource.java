@@ -15,7 +15,6 @@ package org.eclipse.persistence.jaxb.metadata;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
-import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * 
