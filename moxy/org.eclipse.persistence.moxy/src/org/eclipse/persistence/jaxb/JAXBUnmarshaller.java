@@ -35,7 +35,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
@@ -128,8 +127,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
-        } catch (XMLStreamException xmlStreamException) {
-            throw new UnmarshalException(xmlStreamException);
+        } catch (Exception exception) {
+            throw new UnmarshalException(exception);
         }
     }
 
@@ -167,8 +166,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
-        } catch (XMLStreamException xmlStreamException) {
-            throw new JAXBException(xmlStreamException);
+        } catch (Exception exception) {
+            throw new JAXBException(exception);
         }
     }
 
