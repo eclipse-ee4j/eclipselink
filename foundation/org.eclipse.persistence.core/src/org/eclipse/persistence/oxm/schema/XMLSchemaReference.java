@@ -139,9 +139,6 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
 
         if (schemaContextAsQName == null) {
             int idx = schemaContext.lastIndexOf("/");
-            if (idx == -1) {
-                idx = 0;
-            }
             String type = schemaContext.substring(idx + 1);
             idx = type.indexOf(XMLConstants.COLON);
             if (idx != -1) {

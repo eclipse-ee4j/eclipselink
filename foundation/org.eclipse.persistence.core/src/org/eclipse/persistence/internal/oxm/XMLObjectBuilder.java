@@ -790,13 +790,16 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
               XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
               if (xmlRef != null) {
+            	   if(leafType == null && xmlRef.getType() == XMLSchemaReference.ELEMENT ){
+            		   return false;
+            	   }
                    String typeValue = getTypeValueToWrite(record, xmlRef, addToNamespaceResolver);
                    if(leafType == null && referenceDescriptor == null){
                        writeXsiTypeAttribute(xmlDescriptor, record, typeValue, addToNamespaceResolver);
                        return true;
                    }
 
-                  if ((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) && xmlRef.isGlobalDefinition()) {
+                  if (((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) || (xmlRef.getType() == XMLSchemaReference.SIMPLE_TYPE)) && xmlRef.getSchemaContext()!=null && xmlRef.isGlobalDefinition()) {
                       QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
                       if(leafType != null){
                         if (!ctxQName.equals(leafType)) {

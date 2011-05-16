@@ -927,7 +927,7 @@ public class XMLMarshaller implements Cloneable {
             marshalRecord.namespaceDeclarations(nr);
             
             if (descriptor != null && !isNil) {            	   	        
-            	treeObjectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, null, null, root, object, isXMLRoot, true);
+            	treeObjectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
                 treeObjectBuilder.marshalAttributes(marshalRecord, object, session);
             }
             

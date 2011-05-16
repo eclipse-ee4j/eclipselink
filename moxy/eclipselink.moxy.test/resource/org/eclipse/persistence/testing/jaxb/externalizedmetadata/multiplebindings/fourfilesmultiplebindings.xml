@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<empRoot4 xmlns:newPrefixA="http://www.example.com/uriA" xmlns:prefixA="http://www.example.com/uriA" xmlns:prefixB="http://www.example.com/uriB" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" age="35" xsi:type="employee-type">
+<empRoot4 xmlns:newPrefixA="http://www.example.com/uriA" xmlns:prefixA="http://www.example.com/uriA" xmlns:prefixB="http://www.example.com/uriB" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" age="35">
    <the_id>someID</the_id>
    <the_employee_name>Bob Jones</the_employee_name>
    <address>123 theStreet</address>

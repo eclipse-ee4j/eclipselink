@@ -586,6 +586,9 @@ public class XMLDescriptor extends ClassDescriptor {
             defaultRootElementField.setNamespaceResolver(this.namespaceResolver);
             defaultRootElementField.initialize();
         }
+        if(schemaReference != null && schemaReference.getSchemaContext() != null && (schemaReference.getType() == XMLSchemaReference.COMPLEX_TYPE || schemaReference.getType() == XMLSchemaReference.SIMPLE_TYPE) && getDefaultRootElementType() == null){
+        	setDefaultRootElementType(schemaReference.getSchemaContextAsQName(getNamespaceResolver()));
+        }
 
         for(int x = 0, primaryKeyFieldsSize = this.primaryKeyFields.size(); x<primaryKeyFieldsSize; x++) {
             XMLField pkField = (XMLField) this.primaryKeyFields.get(x);
@@ -770,6 +773,9 @@ public class XMLDescriptor extends ClassDescriptor {
         if (null == newDefaultRootElement || 0 == newDefaultRootElement.length()) {
             setDefaultRootElementField((XMLField) null);
             return false;
+        }
+        if(getDefaultRootElementField() != null && newDefaultRootElement.equals(getDefaultRootElementField().getName())){
+        	return false;
         }
         // create the root element xml field based on default root element name
         setDefaultRootElementField(new XMLField(newDefaultRootElement));
