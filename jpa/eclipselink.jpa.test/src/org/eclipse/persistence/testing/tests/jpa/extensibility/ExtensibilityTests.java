@@ -75,7 +75,9 @@ public class ExtensibilityTests extends JUnitTestCase {
         
         RelationalDescriptor empDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Employee.class);
         assertTrue(empDescriptor.getMappingForAttributeName("phoneNumbers") != null);
-        assertTrue(empDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+        if (isWeavingEnabled("extensibility")){
+            assertTrue(empDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+        }
         assertTrue(empDescriptor.getVirtualAttributeMethods() != null);
         assertTrue(empDescriptor.getVirtualAttributeMethods().size() == 1);
         VirtualAttributeMethodInfo info = empDescriptor.getVirtualAttributeMethods().get(0);
@@ -84,7 +86,9 @@ public class ExtensibilityTests extends JUnitTestCase {
         
         RelationalDescriptor addDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Address.class);
         assertTrue(addDescriptor.getMappingForAttributeName("pobox") != null);
-        assertTrue(addDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+        if (isWeavingEnabled("extensibility")){
+            assertTrue(addDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+        }
         assertTrue(addDescriptor.getVirtualAttributeMethods() != null);
         assertTrue(addDescriptor.getVirtualAttributeMethods().size() == 1);
         info = addDescriptor.getVirtualAttributeMethods().get(0);
