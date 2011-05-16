@@ -35,7 +35,7 @@ public class SDOClassGenTestSuite {
         suite.addTest(new TestSuite(ClassGenWithImportsTestCases.class));
         suite.addTest(new TestSuite(ClassGenWithImportsDontProcessTestCases.class));
         suite.addTest(new TestSuite(ClassGenComplexTypesTestCases.class));
-        suite.addTest(new TestSuite(ClassGenUnicodeCharacterTestCases.class));
+        //suite.addTest(new TestSuite(ClassGenUnicodeCharacterTestCases.class));
         suite.addTest(new TestSuite(ClassGenElementsTestCases.class));
         suite.addTest(new TestSuite(SchemaTypesTestCases.class));
         suite.addTest(new TestSuite(NestedBaseTypesTestCases.class));
