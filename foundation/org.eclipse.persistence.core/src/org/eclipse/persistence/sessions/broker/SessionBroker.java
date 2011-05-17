@@ -79,10 +79,23 @@ public class SessionBroker extends DatabaseSessionImpl {
      * acquire session broker is done under the covers on each session inside
      * the session broker, and a new broker is returned.
      *
-     * NOTE: when finished with the client broker, it should be releases.  See
-     * releaseClientSessionBroker.
+     * NOTE: when finished with the client broker, it should be released.
      */
     public SessionBroker acquireClientSessionBroker() {
+        return acquireClientSessionBroker(null, null);
+    }
+    
+    /**
+     * PUBLIC:
+     * Return a session broker that behaves as a client session broker.  An
+     * acquire session broker is done under the covers on each session inside
+     * the session broker, and a new broker is returned.
+     *
+     * NOTE: when finished with the client broker, it should be released.
+     * @param connectionPolicies maps session name to connectionPolicy to be used for this session;
+     * @param mapOfProperties maps session name to properties to be used for this session. 
+     */
+    public SessionBroker acquireClientSessionBroker(Map<String, ConnectionPolicy> connectionPolicies, Map mapOfProperties) {
         log(SessionLog.FINER, SessionLog.CONNECTION, "acquire_client_session_broker");
         SessionBroker clientBroker = copySessionBroker();
         clientBroker.parent = this;
@@ -92,16 +105,28 @@ public class SessionBroker extends DatabaseSessionImpl {
         clientBroker.externalTransactionController = getExternalTransactionController();
         clientBroker.setServerPlatform(getServerPlatform());
         String sessionName;
-        AbstractSession serverSession;
+        AbstractSession session;
         Iterator names = this.getSessionsByName().keySet().iterator();
         while (names.hasNext()) {
             sessionName = (String)names.next();
-            serverSession = getSessionForName(sessionName);
-            if (serverSession instanceof org.eclipse.persistence.sessions.server.ServerSession) {
+            session = getSessionForName(sessionName);
+            if (session.isServerSession()) {
+                ServerSession serverSession = (ServerSession)session;
                 if (serverSession.getProject().hasIsolatedCacheClassWithoutUOWIsolation()) {
                     throw ValidationException.isolatedDataNotSupportedInSessionBroker(sessionName);
                 }
-                clientBroker.registerSession(sessionName, ((org.eclipse.persistence.sessions.server.ServerSession)serverSession).acquireClientSession());
+                ConnectionPolicy connectionPolicy = null;
+                if (connectionPolicies != null) {
+                    connectionPolicy = connectionPolicies.get(sessionName);
+                }
+                if (connectionPolicy == null) {
+                    connectionPolicy = serverSession.getDefaultConnectionPolicy();
+                }
+                Map properties = null;
+                if (mapOfProperties != null) {
+                    properties = (Map)mapOfProperties.get(sessionName);
+                }
+                clientBroker.registerSession(sessionName, ((ServerSession)serverSession).acquireClientSession(connectionPolicy, properties));
             } else {
                 throw ValidationException.cannotAcquireClientSessionFromSession();
             }

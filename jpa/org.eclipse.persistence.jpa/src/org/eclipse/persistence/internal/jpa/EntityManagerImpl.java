@@ -116,8 +116,16 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Connection policy used to create ClientSession, allows using a different
      * pool/connection/exclusive connections.
+     * Not used in SessionBroker case (composite persistence unit case).
      */
     protected ConnectionPolicy connectionPolicy;
+
+    /**
+     * In case of composite persistence unit this map is used instead of connectionPolicy attribute.
+     * Member sessions' ConnectionPolicies keyed by sessions' names (composite members' persistence unit names).
+     * Used only in SessionBroker case (composite persistence unit case): in that case guaranteed to be always non null.
+     */
+    protected Map<String, ConnectionPolicy> connectionPolicies;
 
     /**
      * Property to avoid resuming unit of work if going to be closed on commit
@@ -238,6 +246,24 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     em.extendedPersistenceContext.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_sets_property_while_context_is_active", new Object[]{name});
                 }
             }});
+
+            put(EntityManagerProperties.COMPOSITE_UNIT_PROPERTIES, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                if( em.connectionPolicies != null) {
+                    Map mapOfProperties = (Map)value;
+                    Iterator it = mapOfProperties.keySet().iterator();
+                    while (it.hasNext()) {
+                        String sessionName = (String)it.next();
+                        if (em.connectionPolicies.containsKey(sessionName)) {
+                            // Property used to create ConnectionPolicy has changed - already existing ConnectionPolicy should be removed.
+                            // A new one will be created when the new active persistence context is created.
+                            em.connectionPolicies.put(sessionName, null);
+                        }
+                    }
+                    if (em.hasActivePersistenceContext()) {
+                        em.extendedPersistenceContext.log(SessionLog.WARNING, SessionLog.PROPERTIES, "entity_manager_sets_property_while_context_is_active", new Object[]{name});
+                    }
+                }
+            }});
         }
     };
 
@@ -323,6 +349,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         // then connectionPolicy will be set to null and re-created when when active persistence context is created. 
         if(this.databaseSession.isServerSession()) {
             this.connectionPolicy = ((ServerSession)this.databaseSession).getDefaultConnectionPolicy();
+        } else if (this.databaseSession.isBroker()) {
+            SessionBroker broker = (SessionBroker)this.databaseSession;
+            this.connectionPolicies = new HashMap(broker.getSessionsByName().size());
+            Iterator<Map.Entry<String, AbstractSession>> it = broker.getSessionsByName().entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, AbstractSession> entry = it.next();
+                this.connectionPolicies.put(entry.getKey(), ((ServerSession)entry.getValue()).getDefaultConnectionPolicy());
+            }
         }
         // bug 236249: In JPA session.setProperty() throws
         // UnsupportedOperationException.
@@ -1262,8 +1296,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if(this.databaseSession.isServerSession()) {
             return ((ServerSession)this.databaseSession).acquireClientSession(connectionPolicy, properties);
         } else if(this.databaseSession.isBroker()) {
-            // TODO: should handle properties
-            return ((SessionBroker)this.databaseSession).acquireClientSessionBroker();
+            return ((SessionBroker)this.databaseSession).acquireClientSessionBroker(this.connectionPolicies, (Map)this.properties.get(EntityManagerProperties.COMPOSITE_UNIT_PROPERTIES));
         } else {
             // currently this can't happen - the databaseSession is either ServerSession or SessionBroker. 
             return this.databaseSession;
@@ -1639,14 +1672,17 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
             AbstractSession client;
             if(this.databaseSession.isServerSession()) {
-                if(this.connectionPolicy == null) {
-                    createConnectionPolicy();
-                }
-                client = ((ServerSession)this.databaseSession).acquireClientSession(connectionPolicy, properties);
+                createConnectionPolicy();
+                client = ((ServerSession)this.databaseSession).acquireClientSession(this.connectionPolicy, this.properties);
             } else if(this.databaseSession.isBroker()) {
-                // TODO: should handle properties
-                client = ((SessionBroker)this.databaseSession).acquireClientSessionBroker();
+                Map mapOfProperties = null;
+                if (properties != null) {
+                    mapOfProperties = (Map)this.properties.get(EntityManagerProperties.COMPOSITE_UNIT_PROPERTIES);
+                }
+                createConnectionPolicies(mapOfProperties);
+                client = ((SessionBroker)this.databaseSession).acquireClientSessionBroker(this.connectionPolicies, mapOfProperties);
             } else {
+                // currently this can't happen - the databaseSession is either ServerSession or SessionBroker. 
                 client = this.databaseSession;
             }
             this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(client, this.referenceMode);
@@ -1848,14 +1884,46 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Create connection policy using properties.
      * Default connection policy created if no connection properties specified.
+     * Should be called only in case this.databaseSession is a ServerSession.
      */
     protected void createConnectionPolicy() {
-        ServerSession serverSession = getServerSession();
+        if (this.connectionPolicy == null) {
+            this.connectionPolicy = createConnectionPolicy((ServerSession)this.databaseSession, this.properties);
+        }
+    }
+    
+    /**
+     * Create connection policy using properties.
+     * Default connection policy created if no connection properties specified.
+     * Should be called only in case this.databaseSession is a SessionBroker.
+     */
+    protected void createConnectionPolicies(Map mapOfProperties) {
+        // Because the method called only in SessionBroker case this.connectionPolicies is guaranteed to be non null.
+        Iterator<Map.Entry<String, ConnectionPolicy>> it = this.connectionPolicies.entrySet().iterator();
+        while (it.hasNext()) {
+            // key - sessionName, value - ConnectionPolicy
+            Map.Entry<String, ConnectionPolicy> entry = it.next();
+            if (entry.getValue() == null) {
+                // ConnectionPolicy is null - should be recreated
+                Map properties = null;
+                if (mapOfProperties != null) {
+                    properties = (Map)mapOfProperties.get(entry.getKey());
+                }
+                ConnectionPolicy connectionPolicy = createConnectionPolicy((ServerSession)this.databaseSession.getSessionForName(entry.getKey()), properties);
+                this.connectionPolicies.put(entry.getKey(), connectionPolicy);
+            }
+        }
+    }
+    
+    /**
+     * Create connection policy using properties.
+     * Default connection policy created if no connection properties specified.
+     */
+    protected static ConnectionPolicy createConnectionPolicy(ServerSession serverSession, Map properties) {
         ConnectionPolicy policy = serverSession.getDefaultConnectionPolicy();
 
         if (properties == null || properties.isEmpty()) {
-            this.connectionPolicy = policy;
-            return;
+            return policy;
         }
 
         // Search only the properties map - serverSession's properties have been
@@ -2102,9 +2170,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
 
         if (newPolicy != null) {
-            this.connectionPolicy = newPolicy;
+            return newPolicy;
         } else {
-            this.connectionPolicy = policy;
+            return policy;
         }
     }
 
@@ -2139,7 +2207,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @return null: no change; TRUE: substitute oldValue by newValue; FALSE:
      *         remove oldValue
      */
-    protected Boolean isPropertyValueToBeUpdated(String oldValue, String newValue) {
+    protected static Boolean isPropertyValueToBeUpdated(String oldValue, String newValue) {
         if (newValue == null) {
             // no new value - no change
             return null;

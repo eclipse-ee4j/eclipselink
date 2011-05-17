@@ -260,6 +260,27 @@ public class EntityManagerProperties {
      */
     public static final String FLUSH_CLEAR_CACHE = PersistenceUnitProperties.FLUSH_CLEAR_CACHE;
 
+    /**
+     * The property may be passed to createEntityManager method of a composite persistence unit
+     * to pass properties to member persistence units.
+     * The value is a map: 
+     * the key is a member persistence unit's name,
+     * the value is a map of properties to be passed to this persistence unit. 
+     * "eclipselink.composite-unit.properties" -> (
+     *   ("memberPu1" -> (   "javax.persistence.jdbc.user" -> "user1", 
+     *                       "javax.persistence.jdbc.password" -> "password1",
+     *                       "javax.persistence.jdbc.driver" -> "oracle.jdbc.OracleDriver",
+     *                       "javax.persistence.jdbc.url" -> "jdbc:oracle:thin:@oracle_db_url:1521:db",
+     *                    ) , 
+     *   ("memberPu2" -> (   "javax.persistence.jdbc.user" -> "user2",
+     *                       "javax.persistence.jdbc.password" -> "password2"
+     *                       "javax.persistence.jdbc.driver" -> "com.mysql.jdbc.Driver",
+     *                       "javax.persistence.jdbc.url" -> "jdbc:mysql://my_sql_db_url:3306/user2",
+     *                    )
+     * )
+     */
+    public static final String COMPOSITE_UNIT_PROPERTIES = PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES;
+    
     private static final Set<String> supportedProperties = new HashSet<String>() {
 
         {
@@ -282,6 +303,7 @@ public class EntityManagerProperties {
             add(VALIDATE_EXISTENCE);
             add(ORDER_UPDATES);
             add(FLUSH_CLEAR_CACHE);
+            add(COMPOSITE_UNIT_PROPERTIES);
         }
     };
 
