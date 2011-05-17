@@ -326,6 +326,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         incrementProfile(SessionProfiler.UowCreated);
         // PERF: Cache the write-lock check to avoid cost of checking in every register/clone.
         this.shouldCheckWriteLock = getParent().getDatasourceLogin().shouldSynchronizedReadOnWrite() || getParent().getDatasourceLogin().shouldSynchronizeWrites();
+        
+        // Order updates by id
+        this.shouldOrderUpdates = true;
     }
 
     /**

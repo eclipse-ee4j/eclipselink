@@ -1810,10 +1810,10 @@ public class PersistenceUnitProperties {
 
     /**
      * Configures if updates should be ordered by primary key.
-     * This can be used to avoid possible database deadlocks from concurrent threads
-     * updating the same objects in different order.
+     * This can be used to avoid possible database deadlocks from concurrent 
+     * threads updating the same objects in a different order.
      * If not set to true, the order of updates is not guaranteed.
-     * "false" by default.
+     * "true" by default.
      */    
     public static final String ORDER_UPDATES = "eclipselink.order-updates";
     

@@ -123,8 +123,8 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     /** Default to determine if does-exist should be performed on persist. */
     protected boolean shouldValidateExistence;    
 
-    /** Allow updates to be ordered by id to avoid possible deadlocks. */
-    protected boolean shouldOrderUpdates;
+    /** Order updates by id to avoid potential deadlocks. Default is true. */
+    protected boolean shouldOrderUpdates = true;
     
     protected boolean commitWithoutPersistRules;
 
@@ -738,7 +738,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     /**
      * ADVANCED:
-     * Return if updates should be ordered by primary key to avoid possible database deadlocks.
+     * Return if updates should be ordered by primary key, to avoid potential database deadlocks.
      */
     public boolean shouldOrderUpdates() {
         return shouldOrderUpdates;
@@ -746,7 +746,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     /**
      * ADVANCED:
-     * Set updates should be ordered by primary key to avoid possible database deadlocks.
+     * Set update ordering by primary key, to avoid potential database deadlocks.
      */
     public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
         this.shouldOrderUpdates = shouldOrderUpdates;
