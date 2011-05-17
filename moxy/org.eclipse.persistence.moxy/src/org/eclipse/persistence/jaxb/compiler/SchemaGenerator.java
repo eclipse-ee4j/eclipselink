@@ -1520,14 +1520,13 @@ public class SchemaGenerator {
             lookupNamespace = EMPTY_STRING;
         }
         NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace);
-        boolean isAttributeFormQualified = true;
+        boolean isAttributeFormQualified = false;
         if (namespaceInfo != null) {
             isAttributeFormQualified = namespaceInfo.isAttributeFormQualified();
         }
-
         if ((isAttributeFormQualified && !attributeName.getNamespaceURI().equals(lookupNamespace))
-                || (!namespaceInfo.isAttributeFormQualified() && !attributeName.getNamespaceURI().equals(EMPTY_STRING))) {
-
+                || !isAttributeFormQualified && !attributeName.getNamespaceURI().equals(EMPTY_STRING)) {
+                
             Schema attributeSchema = this.getSchemaForNamespace(attributeName.getNamespaceURI());
             if (attributeSchema != null && attributeSchema.getTopLevelAttributes().get(attribute.getName()) == null) {
                 //don't overwrite existing global elements and attributes.
