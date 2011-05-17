@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceContext;
@@ -86,8 +85,10 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                 parseEvent(xmlStreamReader);
             }
             contentHandler.endDocument();
-        }catch(XMLStreamException e) {
-            throw new RuntimeException(e);
+        } catch(SAXException e ) {
+            throw e;
+        } catch(Exception e) {
+            throw new SAXException(e);
         }
     }
 

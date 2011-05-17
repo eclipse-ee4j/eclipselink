@@ -125,6 +125,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 xmlStreamReader.close();
                 return value;
             }
+        } catch(JAXBException jaxbException) {
+            throw jaxbException;
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         } catch (Exception exception) {
@@ -164,10 +166,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 xmlStreamReader.close();
                 return value;
             }
+        } catch(JAXBException jaxbException) {
+            throw jaxbException;
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         } catch (Exception exception) {
-            throw new JAXBException(exception);
+            throw new UnmarshalException(exception);
         }
     }
 
