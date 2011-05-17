@@ -35,6 +35,7 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 public class PartitionedTestSuite extends JUnitTestCase {
     public static boolean validDatabase = true;
+    public static boolean isRAC = false;
         
     public static Test suite() {
         TestSuite suite = new TestSuite("PartitioningTests");
@@ -72,7 +73,6 @@ public class PartitionedTestSuite extends JUnitTestCase {
      */
     public void testSetup() {
         Map properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
-        boolean isRAC = false;
         if (getServerSession().getPlatform().isDerby()) {
             properties.put(
                     PersistenceUnitProperties.CONNECTION_POOL + "node2." + PersistenceUnitProperties.CONNECTION_POOL_MIN,
@@ -471,11 +471,11 @@ public class PartitionedTestSuite extends JUnitTestCase {
                 query.setParameter(1, project.getId());
                 List results = query.getResultList();
                 if (!results.isEmpty()) {
-                    if (found && !getServerSession().getPlatform().isOracle()) {
+                    if (found && !isRAC) {
                         fail("Data found in more than one partition.");
                     }
                     found = true;
-                } else if (getServerSession().getPlatform().isOracle()) {
+                } else if (isRAC) {
                     fail("Data not found in all partitions.");
                 }
                 commitTransaction(em);
