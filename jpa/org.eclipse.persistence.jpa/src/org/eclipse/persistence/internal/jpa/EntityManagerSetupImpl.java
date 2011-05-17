@@ -2531,8 +2531,9 @@ public class EntityManagerSetupImpl {
                          } else {
                             PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false).set(clazz, attribute);
                          }  
-                    }
-                    catch (Exception e) {
+                    } catch (NoSuchFieldException nsfe) {
+                        // Ignore fields missing in canonical model (dclarke bug 346106)
+                    } catch (Exception e) {
                        ValidationException v = ValidationException.invalidFieldForClass(fieldName, clazz);
                        v.setInternalException(e);
                        throw v;

@@ -207,7 +207,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      * Return the databaseMapping that represents the type
      * @return
      */
-    protected DatabaseMapping getMapping() {
+    public DatabaseMapping getMapping() {
         return this.mapping;
     }
     
