@@ -4754,7 +4754,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 LockModeType lt7 = em.getLockMode(emp7);
                 assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC, lt);
                 assertEquals("Did not return correct LockModeType", LockModeType.OPTIMISTIC_FORCE_INCREMENT, lt1);
-
+    
                 // Note: On some databases EclipseLink automatically upgrade LockModeType to PESSIMSITIC_WRITE
                 assertTrue("Did not return correct LockModeType", lt2 == LockModeType.PESSIMISTIC_WRITE || lt2 == LockModeType.PESSIMISTIC_READ);
                 
@@ -4880,7 +4880,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     // The class will be used to test QueryHints.RESULT_COLLECTION_TYPE
-    public static class CustomCollection<V> extends HashSet<V> { 
+    public static class CustomerCollection<V> extends HashSet<V> { 
     }
     public void testQueryHints() {
         EntityManager em = (EntityManager)getEntityManagerFactory().createEntityManager().getDelegate();
@@ -5139,8 +5139,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "java.util.Vector");
         assertTrue("Vector not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClass().equals(java.util.Vector.class)); 
 
-        query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite$CustomCollection");
-        assertTrue("HashSet not set.", ((ReadAllQuery) olrQuery).getContainerPolicy().getContainerClass().equals(CustomCollection.class));
+        query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite$CustomerCollection");
+        assertTrue("CustomerCollection not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClass().equals(CustomerCollection.class)); 
         
         // Query type
         query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
@@ -7684,7 +7684,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // clear all already allocated sequencing values for seqName
             ss.getSequencingControl().initializePreallocated(seqName);
         }
-
+        
         // test
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -7725,7 +7725,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int nextSequenceNumber_Dealer = dealer2.getId();
         // only need nextSequenceNumber, no need to commit
         rollbackTransaction(em);
-
+        
         // cleanup
         // remove the object that has been created in setup
         em = createEntityManager();
@@ -7737,7 +7737,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.remove(employee1);
         em.remove(dealer1);
         commitTransaction(em);
-
+        
         // report result
         String errorMsg = "";
         if (assignedSequenceNumber_Customer + 1 != nextSequenceNumber_Customer) {
@@ -8169,12 +8169,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isInTransaction) {
                 rollbackTransaction(em);
             }
-            if (em != null) {
+            if(em != null) {
                 closeEntityManager(em);
             }
         }
-
-        if (errorMsg.length() > 0) {
+        
+        if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
     }
@@ -8725,7 +8725,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("Wrong Exception was caught when setting a named temporal Calendar parameter on a query with a closed em.", caughtException instanceof IllegalStateException);
     }
     
-    public void testTransientMapping() {
+    public void testTransientMapping(){
         DatabaseSessionImpl session = getDatabaseSession();
         ClassDescriptor descriptor = session.getClassDescriptor(Customer.class);
         assertTrue("There should not be a mapping for transientField.", descriptor.getMappingForAttributeName("transientField") == null);
@@ -9271,7 +9271,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             
             // verify that backup objects are identical to originals
             Iterator<Map.Entry> it = backupMap.entrySet().iterator();
-            while (it.hasNext()) {
+            while(it.hasNext()) {
                 Map.Entry entry = it.next();
                 Object original = entry.getKey();
                 ClassDescriptor descriptor = dbs.getDescriptor(original);
@@ -9477,19 +9477,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // before comparison clear all read-only mappings that we didn't set in the attached to em objects.
             for(Object object : updatedObjects) {
                 Object readBack = uow2.readObject(object);
-               if (readBack instanceof Address) {
-                    ((Address) readBack).getEmployees().clear();
-                } else if (readBack instanceof PhoneNumber) {
-                    ((PhoneNumber) readBack).setId(null);
-                } else if (readBack instanceof Department) {
-                    ((Department) readBack).getEmployees().clear();
+               if(readBack instanceof Address) {
+                    ((Address)readBack).getEmployees().clear();
+                } else if(readBack instanceof PhoneNumber) {
+                    ((PhoneNumber)readBack).setId(null);
+                } else if(readBack instanceof Department) {
+                    ((Department)readBack).getEmployees().clear();
                 }
                 updatedToReadBack.put(object, readBack);
             }
-            // now compare object attached to em with the object read from the
-            // db
-            for (Object entryObject : updatedToReadBack.entrySet()) {
-                Map.Entry entry = (Map.Entry) entryObject;
+            // now compare object attached to em with the object read from the db
+            for(Object entryObject : updatedToReadBack.entrySet()) {
+                Map.Entry entry = (Map.Entry)entryObject;
                 Object object = entry.getKey();
                 Object readBack = entry.getValue();
                 if (!dbs.compareObjects(object, readBack)) {
@@ -9497,11 +9496,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
             }
             rollbackTransaction(em2);
-
+            
             // clean up
             beginTransaction(em);
             Set objectsToRemove = new HashSet();
-            // remove all dependencies and add cache objects to be directly
+            // remove all dependencies and add cache objects to be directly removed.
             for(Object object : updatedObjects) {
                 if(object instanceof Employee) {
                     ((Employee)object).getManagedEmployees().clear();

@@ -60,10 +60,10 @@ public class Equipment  {
     }
     
     @Id
-    @GeneratedValue(strategy=TABLE, generator="EQUIPMENT_TABLE_GENERATOR")
+    @GeneratedValue(strategy=TABLE, generator="MBR3_EQUIPMENT_TABLE_GENERATOR")
 	@TableGenerator(
-        name="EQUIPMENT_TABLE_GENERATOR", 
-        table="CMP3_ADV_EQUIPMENT_SEQ", 
+        name="MBR3_EQUIPMENT_TABLE_GENERATOR", 
+        table="MBR3_ADV_EQUIPMENT_SEQ", 
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",
         pkColumnValue="EQUIP_SEQ"

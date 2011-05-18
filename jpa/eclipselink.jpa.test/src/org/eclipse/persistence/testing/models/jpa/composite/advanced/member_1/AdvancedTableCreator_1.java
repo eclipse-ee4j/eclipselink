@@ -280,37 +280,6 @@ public class AdvancedTableCreator_1 extends TogglingFastTableCreator {
        return table;
    }
    
-/*   public TableDefinition buildDEPT_EMPTable() {
-       TableDefinition table = new TableDefinition();
-       table.setName("CMP3_DEPT_CMP3_EMPLOYEE");
-
-       // SECTION: FIELD
-       FieldDefinition fieldID = new FieldDefinition();
-       fieldID.setName("ADV_DEPT_ID");
-       fieldID.setTypeName("NUMERIC");
-       fieldID.setSize(15);
-       fieldID.setShouldAllowNull(false);
-       fieldID.setIsPrimaryKey(true);
-       fieldID.setUnique(false);
-       fieldID.setIsIdentity(false);
-       fieldID.setForeignKeyFieldName("CMP3_DEPT.ID");
-       table.addField(fieldID);
-       
-       // SECTION: FIELD
-       FieldDefinition fieldEMP = new FieldDefinition();
-       fieldEMP.setName("managers_EMP_ID");
-       fieldEMP.setTypeName("NUMERIC");
-       fieldEMP.setSize(15);
-       fieldEMP.setShouldAllowNull(false);
-       fieldEMP.setIsPrimaryKey(true);
-       fieldEMP.setUnique(false);
-       fieldEMP.setIsIdentity(false);
-       fieldEMP.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
-       table.addField(fieldEMP);
-       
-       return table;   
-   }*/
-   
     public TableDefinition buildRESPONSTable() {
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE

@@ -921,9 +921,9 @@ public class EmployeePopulator {
         String statement = null;
         if(session.getPlatform().isSQLServer()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            statement = "SELECT @street_v=STREET, @city_v=CITY, @country_v=COUNTRY, @province_v=PROVINCE, @p_code_v=P_CODE FROM CMP3_ADDRESS WHERE ADDRESS_ID = @address_id_v";
+            statement = "SELECT @street_v=STREET, @city_v=CITY, @country_v=COUNTRY, @province_v=PROVINCE, @p_code_v=P_CODE FROM MBR1_ADDRESS WHERE ADDRESS_ID = @address_id_v";
         } else {
-            statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM CMP3_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+            statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM MBR1_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
         }
         
         proc.addStatement(statement);
@@ -940,9 +940,9 @@ public class EmployeePopulator {
         String statement = null;
         if(session.getPlatform().isSQLServer()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            statement = "SELECT @address_id_v=ADDRESS_ID, @street_v=STREET from CMP3_ADDRESS where (ADDRESS_ID = @address_id_v)";
+            statement = "SELECT @address_id_v=ADDRESS_ID, @street_v=STREET from MBR1_ADDRESS where (ADDRESS_ID = @address_id_v)";
         } else {
-            statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from CMP3_ADDRESS where (ADDRESS_ID = address_id_v)";
+            statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from MBR1_ADDRESS where (ADDRESS_ID = address_id_v)";
         }
         
         proc.addStatement(statement);
