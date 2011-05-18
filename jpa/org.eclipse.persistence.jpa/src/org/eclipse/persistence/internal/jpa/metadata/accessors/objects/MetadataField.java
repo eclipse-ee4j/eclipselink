@@ -20,10 +20,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.weaving.ClassWeaver;
 
 /**
  * INTERNAL:
@@ -97,6 +97,6 @@ public class MetadataField extends MetadataAnnotatedElement {
      * @return
      */
     public boolean shouldBeIgnored(){
-        return (getName() != null) && (getName().equals(EntityManagerImpl.PERSITENCE_FETCH_GROUP_WEAVED_FIELD_NAME));
+        return (getName() != null) && (getName().startsWith(ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX));
     }
 }

@@ -20,7 +20,6 @@ package org.eclipse.persistence.internal.jpa.weaving;
 import java.util.*;
 
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.libraries.asm.*;
 import org.eclipse.persistence.internal.libraries.asm.commons.*;
 
@@ -957,7 +956,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
      * _persistence_session;
      */
     public void addFetchGroupVariables() {
-        FieldVisitor fv = cv.visitField(ACC_PROTECTED, EntityManagerImpl.PERSITENCE_FETCH_GROUP_WEAVED_FIELD_NAME, FETCHGROUP_SIGNATURE, null, null);
+        FieldVisitor fv = cv.visitField(ACC_PROTECTED, "_persistence_fetchGroup", FETCHGROUP_SIGNATURE, null, null);
         // Only add javax.persistence.Transient annotation if attribute access
         // is being used
         if (classDetails.usesAttributeAccess()) {
